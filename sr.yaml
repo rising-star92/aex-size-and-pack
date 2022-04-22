@@ -1,0 +1,32 @@
+schemaVersion: 1.0.0
+notify:
+  slack:
+    channelName: apparel-precision-ops
+applications:
+  - name: aex-size-and-pack
+    key: AEX_SIZE_AND_PACK
+    description: App to provide REST endpoints for BQ
+    organization: ApparelPrecision
+    companyCatalog: true
+    businessCriticality: MINOR
+    members:
+      - homeoffice\jkollip
+    environments:
+      - name: dev
+        type: DEVELOPMENT
+        description: SP Service in dev cluster
+        externalCatalog: false
+        serviceType: REST
+        wcnpProximity: true
+        consumerIdInfos:
+        - consumerId: c6e447f1-fbcd-4879-b68a-ba8fff778603
+          publicKey: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAr8aKWSCmw4T13u0jDPGcbJ9vHThmR4fVjV2UMF8Hc+5IhZSCa87ylsVv/66L4BLGuWxZS7JI8yWKrjE98vgAE32tLHBFogVnZS5VTb5LcwOZZQYRH2qgLIFHE3n9sA0rnLiDlkkvkv9PuMZfOvoQIg6rQUDfDfxYyUP/uy6Vvf/A/Fq2gugGj105cePkgoFYWiFVqzEZFnvP1wuGWXWShsqFa9xRsxpjlSoSBthMkqhHRLpFTdcSqrIUoyM1VfI4tRYDEmJE7gqiOAbk7C7Z4vHevDHpB4Q2Qf35UDr/LTbdATE/YQL9qDBTJ+vJmjXzUO/hIS7QEuhiGNnJekAUVQIDAQAB      
+      - name: stg
+        type: STAGING
+        description: SP Service in stg cluster
+        externalCatalog: false
+        serviceType: REST
+        wcnpProximity: true
+        consumerIdInfos:
+        - consumerId: 4a1cec89-20a5-41ba-acfa-141ca677b71e
+          publicKey: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2BfPidV+Tpn/tz8iY4xK/gAV7mcA6wK/PwnVMC+FtycgfMiohvnesAVhc3O35HpZo8id9MecwigItXAgFgPv+vxRcBjn+M5mRsmYBxXTHVuGsYP0e9XV6MJSTQ5vJYnzf5BJjDat7y7jLVIHWz32FXwIKa23E1dTIgVpQtoCiIuOGB6Y7RPG2KYXZSuONJMCpkW1iFYoC8GpvRni1UiTRtnhOKESQ7wkfj3nuiK0Hc8a7db53abqngW6SikB8Crp5tIdmlTgJ2dR0CWm0WdBdEvsz5K1dLGSsJQFSlbsPNQnc146CnTHkl+yQQA7xSpvPuPxHQX4aoqFwTWI/M56LQIDAQAB

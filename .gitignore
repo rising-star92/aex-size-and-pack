@@ -1,0 +1,14 @@
+/target/
+/target/**
+*/target/**
+**/META-INF/
+
+
+.classpath
+.factorypath
+.project
+.settings
+**/*.class
+**/*.DS_Store
+**/*.db
+

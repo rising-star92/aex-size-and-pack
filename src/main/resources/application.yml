@@ -1,0 +1,174 @@
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  jpa:
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+      ddl-auto: none
+    show-sql: true
+  config:
+    activate:
+      on-profile: local
+logging:
+  level:
+    ROOT: INFO
+    org.springframework: INFO
+    com.walmart.aex.line.plan: info
+    org.hibernate.SQL: DEBUG
+    #org.hibernate.type: TRACE
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} AEX_FLOW_PLAN [%thread] %-5level %logger{36} - %msg%n"
+runtime:
+  context:
+    appVersion: 1.0.0-SNAPSHOT
+    environment: DEV
+    system:
+      property:
+        override:
+          enabled: true
+    environmentType: dev
+    appName: aex-size-and-pack
+
+scm:
+  server:
+    access:
+      enabled: true
+  snapshot:
+    enabled: true
+---
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  jpa:
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+      ddl-auto: none
+    show-sql: true
+  config:
+    activate:
+      on-profile: dev
+logging:
+  level:
+    ROOT: INFO
+    org.springframework: INFO
+    com.walmart.aex.line.plan: info
+    org.hibernate.SQL: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} AEX_FLOW_PLAN [%thread] %-5level %logger{36} - %msg%n"
+
+
+runtime:
+  context:
+    appVersion: 1.0.0-SNAPSHOT
+    environment: DEV
+    system:
+      property:
+        override:
+          enabled: true
+    environmentType: dev
+    appName: aex-size-and-pack
+
+scm:
+  server:
+    access:
+      enabled: true
+  snapshot:
+    enabled: true
+---
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  jpa:
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+      ddl-auto: none
+    show-sql: true
+  config:
+    activate:
+      on-profile: stg
+logging:
+  level:
+    ROOT: INFO
+    org.springframework: INFO
+    com.walmart.aex.line.plan: info
+    org.hibernate.SQL: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} AEX_FLOW_PLAN [%thread] %-5level %logger{36} - %msg%n"
+
+runtime:
+  context:
+    appVersion: 1.0.0-SNAPSHOT
+    environment: STG
+    system:
+      property:
+        override:
+          enabled: true
+    environmentType: stg
+    appName: aex-size-and-pack
+
+scm:
+  server:
+    access:
+      enabled: true
+  snapshot:
+    enabled: true
+---
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  jpa:
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+      ddl-auto: none
+    show-sql: true
+  config:
+    activate:
+      on-profile: prod
+logging:
+  level:
+    ROOT: INFO
+    org.springframework: INFO
+    com.walmart.aex.line.plan: info
+    org.hibernate.SQL: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} AEX_FLOW_PLAN [%thread] %-5level %logger{36} - %msg%n"
+
+
+runtime:
+  context:
+    appVersion: 1.0.0-SNAPSHOT
+    environment: PROD
+    system:
+      property:
+        override:
+          enabled: true
+    environmentType: prod
+    appName: aex-size-and-pack
+
+scm:
+  server:
+    access:
+      enabled: true
+  snapshot:
+    enabled: true
+---
+management:
+  health:
+    db:
+      enabled: false
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - info
+          - loggers
+    health:
+      show-details: always
+  endpoint:
+    loggers:
+      enabled: true
