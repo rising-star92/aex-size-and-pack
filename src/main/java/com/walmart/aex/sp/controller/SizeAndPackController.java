@@ -1,6 +1,7 @@
 package com.walmart.aex.sp.controller;
 
 
+import com.walmart.aex.sp.dto.PlanStrategyDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,3 +24,16 @@ public class SizeAndPackController {
          return ResponseEntity.status(HttpStatus.OK).body("Hello");
      }
 }
+
+
+
+//    @PostMapping(path = "/sizeAndPackService")
+//    public @ResponseBody
+//    PlanStrategyListenerResponse createPlanStrategy(@RequestBody PlanStrategyDTO request) {
+//        try {
+//            return planStrategyService.addPlanStrategy(request);
+//        } catch (Exception exp) {
+//            log.error("Exception occurred when creating a plan Strategy: {}", exp.getMessage());
+//            throw new CustomException("Exception occurred when creating a plan Strategy: " + exp);
+//        }
+//    }
