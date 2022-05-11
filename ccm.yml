@@ -24,7 +24,7 @@
 #        description: "SP SQL Server DB URL"
 #        type: "STRING"
 #        kind: "SINGLE"
-#        defaultValue: "jdbc:sqlserver://us-wm-cbam-nonprod-61425f3a.database.windows.net:1433;database=us_wm_cbam;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;authentication=ActiveDirectoryPassword"
+#        defaultValue: "jdbc:sqlserver://us-wm-aex-dev-spo-nonprod-625febf5.database.windows.net:1433;database=us_wm_cbam;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;authentication=ActiveDirectoryPassword"
 #      "sqlServer.driverClassName":
 #        description: "SQL Server Driver Class Name"
 #        type: "STRING"
