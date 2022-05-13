@@ -31,15 +31,13 @@ public class DatabaseConfig {
 
     @Bean
     public DataSource dataSource(SecretsProperties secretsProperties) throws IOException {
-        /*HikariConfig config = new HikariConfig();
-        config.setDriverClassName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-        config.setJdbcUrl("jdbc:sqlserver://us-wm-aex-dev-spo-nonprod-625febf5.database.windows.net:1433;database=us_wm_cbam;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;authentication=ActiveDirectoryPassword");
-        config.setUsername("SVCaexSPUser_US");
-        config.setPassword("p>]/LbVed+zE1DP|c$Ha!T");
+        HikariConfig config = new HikariConfig();
+        config.setDriverClassName(databaseProperties.getDriver());
+        config.setJdbcUrl(databaseProperties.getUrl());
+        config.setUsername(secretsProperties.fetchSQLServerUserName());
+        config.setPassword(secretsProperties.fetchSQLServerPassword());
         log.info("DataSource Properties Fetched Successfully ");
-        return new HikariDataSource(config);*/
-
-        return null;
+        return new HikariDataSource(config);
     }
 
     @Bean
