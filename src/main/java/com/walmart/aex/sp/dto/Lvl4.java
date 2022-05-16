@@ -5,6 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
+//Sub category
 public class Lvl4 {
 
     private Integer lvl4Nbr;

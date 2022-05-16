@@ -78,6 +78,26 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- Strati dependency -->
+        <dependency>
+            <groupId>io.strati.tunr.utils</groupId>
+            <artifactId>strati-af-tunr-utils-client-spring</artifactId>
+            <version>${ccm.client.version}</version>
+        </dependency>
+
+        <!-- SQL Server Dependency -->
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+            <version>9.2.0.jre11</version>
+        </dependency>
+
+        <!-- AD Auth Dependency -->
+        <dependency>
+            <groupId>com.microsoft.azure</groupId>
+            <artifactId>msal4j</artifactId>
+            <version>1.9.1</version>
+        </dependency>
 
         <!-- HTTP Client Dependencies -->
         <dependency>
@@ -92,12 +112,15 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-module-junit4</artifactId>
             <version>2.0.2</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
         <dependency>
             <groupId>org.powermock</groupId>

@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class PlanStrategyDTO {
+public class PlanSizeAndPackDTO {
     private Long planId;
     private String planDesc;
     private Integer lvl0Nbr;
