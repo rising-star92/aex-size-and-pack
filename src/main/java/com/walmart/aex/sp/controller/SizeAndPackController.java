@@ -26,7 +26,7 @@ public class SizeAndPackController {
 
 
     @GetMapping("/health")
-    public ResponseEntity<String> helloWorld() {
+    public ResponseEntity<String> healthCheck() {
         return ResponseEntity.status(HttpStatus.OK).body("Hello");
     }
 
