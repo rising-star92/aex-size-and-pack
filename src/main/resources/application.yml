@@ -1,4 +1,9 @@
 spring:
+  profiles:
+    active:
+      - dev
+---
+spring:
   main:
     allow-bean-definition-overriding: true
   jpa:
