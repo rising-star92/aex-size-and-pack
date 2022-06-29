@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,7 +22,7 @@ import lombok.Setter;
 @EqualsAndHashCode
 public class fineLinePackOptimizationID implements Serializable{
 	
-	@Column(name="plan_id", nullable = false)
+	/*@Column(name="plan_id", nullable = false)
     private Long planId;
     @Column(name="rpt_lvl_0_nbr",nullable = false)
     private Integer repTLvl0;
@@ -33,7 +34,10 @@ public class fineLinePackOptimizationID implements Serializable{
     private Integer repTLvl3;
 	
 	@Column(name="rpt_lvl_4_nbr",nullable = false)
-    private Integer repTLvl4;
+    private Integer repTLvl4;*/
+	
+	@Embedded
+	private SubCatgPackOptimizationID subCatgPackOptimizationID;
 	
 	@Column(name="fineline_nbr", nullable=false)
 	private Integer finelineNbr;

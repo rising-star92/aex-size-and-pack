@@ -2,11 +2,16 @@ package com.walmart.aex.sp.entity;
 
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Set;
+
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Getter
 @Setter
@@ -18,7 +23,22 @@ import javax.persistence.*;
 public class fineLinePackOptimization {
 
     @EmbeddedId
+    @EqualsAndHashCode.Include
     fineLinePackOptimizationID finelinePackOptId;
+    
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "plan_id", referencedColumnName = "plan_id", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "rpt_lvl_0_nbr", referencedColumnName = "rpt_lvl_0_nbr", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "rpt_lvl_1_nbr", referencedColumnName = "rpt_lvl_1_nbr", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "rpt_lvl_2_nbr", referencedColumnName = "rpt_lvl_2_nbr", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "rpt_lvl_3_nbr", referencedColumnName = "rpt_lvl_3_nbr", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "rpt_lvl_4_nbr", referencedColumnName = "rpt_lvl_4_nbr", nullable = false, insertable = false, updatable = false)
+    @JsonIgnore
+    private SubCatgPackOptimization subCatgPackOptimization;
+    
+    @OneToMany(mappedBy = "finelinePackOpitmization", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<StylePackOptimization> stylePackOptimization;
 
     @Column(name="vendor_nbr_6")
     private Integer vendorNbr6;
@@ -34,6 +54,12 @@ public class fineLinePackOptimization {
 
     @Column(name="origin_country_name")
     private String originCountryName;
+    
+    @Column(name="factory_id")
+    private String factoryId;
+    
+    @Column(name="factory_name")
+    private String factoryName;
 
     @Column(name="single_pack_ind")
     private Integer singlePackInd;

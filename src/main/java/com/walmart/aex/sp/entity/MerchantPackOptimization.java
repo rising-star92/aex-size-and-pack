@@ -2,6 +2,8 @@ package com.walmart.aex.sp.entity;
 
 import lombok.*;
 
+import java.util.Set;
+
 import javax.persistence.*;
 
 @Getter
@@ -29,6 +31,10 @@ public class MerchantPackOptimization {
 	@EmbeddedId
 	@EqualsAndHashCode.Include
 	MerchantPackOptimizationID merchantPackOptimizationID;
+	
+	@OneToMany(mappedBy = "merchantPackOptimization", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL, orphanRemoval = true)
+	private Set<SubCatgPackOptimization> subCatgPackOptimization;
 
     @Column(name="vendor_nbr_6")
     private Integer vendorNbr6;
@@ -44,6 +50,12 @@ public class MerchantPackOptimization {
 
     @Column(name="origin_country_name")
     private String originCountryName;
+    
+    @Column(name="factory_id")
+    private String factoryId;
+    
+    @Column(name="factory_name")
+    private String factoryName;
 
     @Column(name="single_pack_ind")
     private Integer singlePackInd;

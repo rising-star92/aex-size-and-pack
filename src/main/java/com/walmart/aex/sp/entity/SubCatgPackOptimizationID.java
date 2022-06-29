@@ -22,10 +22,10 @@ import lombok.Setter;
 @EqualsAndHashCode
 public class SubCatgPackOptimizationID implements Serializable{
 
-	/*@Embedded
-	private MerchantPackOptimizationID merchantPackOptimizationID;*/
+	@Embedded
+	private MerchantPackOptimizationID merchantPackOptimizationID;
 	
-	@Column(name="plan_id", nullable = false)
+	/*@Column(name="plan_id", nullable = false)
     private Long planId;
     @Column(name="rpt_lvl_0_nbr",nullable = false)
     private Integer repTLvl0;
@@ -34,7 +34,7 @@ public class SubCatgPackOptimizationID implements Serializable{
     @Column(name="rpt_lvl_2_nbr",nullable = false)
     private Integer repTLvl2;
     @Column(name="rpt_lvl_3_nbr",nullable = false)
-    private Integer repTLvl3;
+    private Integer repTLvl3;*/
 	
 	@Column(name="rpt_lvl_4_nbr",nullable = false)
     private Integer repTLvl4;

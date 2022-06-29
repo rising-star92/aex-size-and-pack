@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,7 +22,7 @@ import lombok.Setter;
 @EqualsAndHashCode
 public class StylePackOptimizationID implements Serializable{
 	
-	@Column(name="plan_id", nullable = false)
+	/*@Column(name="plan_id", nullable = false)
     private Long planId;
     @Column(name="rpt_lvl_0_nbr",nullable = false)
     private Integer repTLvl0;
@@ -36,7 +37,10 @@ public class StylePackOptimizationID implements Serializable{
     private Integer repTLvl4;
 	
 	@Column(name="fineline_nbr", nullable=false)
-	private Integer finelineNbr;
+	private Integer finelineNbr;*/
+	
+	@Embedded
+	private fineLinePackOptimizationID finelinePackOptimizationID;
 	
 	@Column(name="style_nbr", nullable=false)
 	private String styleNbr;

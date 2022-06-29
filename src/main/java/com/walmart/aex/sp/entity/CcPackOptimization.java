@@ -3,6 +3,9 @@ package com.walmart.aex.sp.entity;
 import lombok.*;
 
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.math.BigInteger;
 import java.util.Date;
 
@@ -16,7 +19,20 @@ import java.util.Date;
 public class CcPackOptimization {
 
     @EmbeddedId
-    CcPackOptimizationID ccPackOptimization;
+    @EqualsAndHashCode.Include
+    CcPackOptimizationID ccPackOptimizationId;
+    
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "plan_id", referencedColumnName = "plan_id", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "rpt_lvl_0_nbr", referencedColumnName = "rpt_lvl_0_nbr", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "rpt_lvl_1_nbr", referencedColumnName = "rpt_lvl_1_nbr", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "rpt_lvl_2_nbr", referencedColumnName = "rpt_lvl_2_nbr", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "rpt_lvl_3_nbr", referencedColumnName = "rpt_lvl_3_nbr", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "rpt_lvl_4_nbr", referencedColumnName = "rpt_lvl_4_nbr", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "fineline_nbr", referencedColumnName = "fineline_nbr", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "style_nbr", referencedColumnName = "style_nbr", nullable = false, insertable = false, updatable = false)
+    @JsonIgnore
+    private StylePackOptimization stylePackOptimization;
 
     @Column(name="vendor_nbr_6")
     private Integer vendorNbr6;
@@ -32,6 +48,12 @@ public class CcPackOptimization {
 
     @Column(name="origin_country_name")
     private String originCountryName;
+    
+    @Column(name="factory_id")
+    private String factoryId;
+    
+    @Column(name="factory_name")
+    private String factoryName;
 
     @Column(name="single_pack_ind")
     private Integer singlePackInd;
