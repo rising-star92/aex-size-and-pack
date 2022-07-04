@@ -20,7 +20,7 @@ public class AnalyticsMlSend {
     @Column(name = "analytics_send_id", nullable = false)
     private BigInteger analyticssendid;
 
-    @JoinColumn(name = "run_status_text", insertable = false, updatable = false)
+    @JoinColumn(name = "run_status_code", insertable = false, updatable = false)
     @ManyToOne(targetEntity = RunStatusText.class, fetch = FetchType.LAZY)
     private RunStatusText runstatuscode;
 
@@ -44,7 +44,7 @@ public class AnalyticsMlSend {
     private String payloadobj;
 
     @Column(name="return_message")
-    private String returnmessag;
+    private String returnmessage;
 
 
 

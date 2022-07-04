@@ -16,17 +16,6 @@ import javax.persistence.*;
 @Embeddable
 public class MerchantPackOptimization {
 
-    /*@Id
-    @Column(name="plan_id", nullable = false)
-    private Long planId;
-    @Column(name="rpt_lvl_0_nbr",nullable = false)
-    private Integer repTLvl0;
-    @Column(name="rpt_lvl_1_nbr",nullable = false)
-    private Integer repTLvl1;
-    @Column(name="rpt_lvl_2_nbr",nullable = false)
-    private Integer repTLvl2;
-    @Column(name="rpt_lvl_3_nbr",nullable = false)
-    private Integer repTLvl3;*/
 	
 	@EmbeddedId
 	@EqualsAndHashCode.Include
@@ -82,9 +71,6 @@ public class MerchantPackOptimization {
     @JoinColumn(name = "channel_id", insertable = false, updatable = false)
     @ManyToOne(targetEntity = ChannelText.class, fetch = FetchType.LAZY)
     private ChannelText channelText;
-
-
-
 
 
 }
