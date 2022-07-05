@@ -15,12 +15,14 @@ import javax.persistence.Table;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "channel_text", schema = "dbo")
-public class ChannelText {
-    @Id
-    @Column(name = "channel_id", nullable = false)
-    private Integer channelId;
+@Table(name = "run_status_text", schema = "dbo")
+public class RunStatusText {
 
-    @Column(name = "channel_desc", nullable = false)
-    private String channelDesc;
+    @Id
+    @Column(name = "run_status_code", nullable = false)
+     private Integer runStatusCode;
+
+    @Column(name = "run_status_desc", nullable = false)
+     private String runStatusDesc;
+
 }
