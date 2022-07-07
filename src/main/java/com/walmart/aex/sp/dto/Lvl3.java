@@ -1,8 +1,8 @@
 package com.walmart.aex.sp.dto;
 
-import lombok.Data;
-
 import java.util.List;
+
+import lombok.Data;
 
 @Data
 //category
@@ -16,6 +16,12 @@ public class Lvl3 {
 
     private Strategy strategy;
 
-    private List<Lvl4> lvl4List;
+   
+    
+    //Adding constraints
+    private Constraints constraints;
+    
+	 private List<Lvl4> lvl4List; 
+    
 
 }

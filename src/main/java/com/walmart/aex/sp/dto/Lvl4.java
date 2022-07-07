@@ -12,9 +12,8 @@ public class Lvl4 {
 
     private String lvl4Name;
 
-    private String channel;
-
-    private Strategy strategy;
-
+    private Constraints constraints;
+    
     private List<Fineline> finelines;
+    
 }
