@@ -28,12 +28,12 @@ import lombok.Setter;
 @NoArgsConstructor
 @Table(name = "sp_cc_buy_qty", schema = "dbo")
 @Embeddable
-public class SpCCBuyQuantity {
+public class SpCcBuyQuantity {
 	
 
 	 @EmbeddedId
 	    @EqualsAndHashCode.Include
-	    SpCCBuyQuantityId spCCBuyQuantityId;
+	    private SpCcBuyQuantityId spCcBuyQuantityId;
 	    
 	    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	    @JoinColumn(name = "plan_id", referencedColumnName = "plan_id", nullable = false, insertable = false, updatable = false)
@@ -48,32 +48,32 @@ public class SpCCBuyQuantity {
 	   
 	    
 	    @JsonIgnore
-	    private SpStyleBuyQuantity spStyleQBuyQuatity;
+	    private SpStyleBuyQuantity spStyleBuyQuantity;
 	    
-	    @OneToMany(mappedBy = "spCCBuyQuantity", fetch = FetchType.LAZY,
+	    @OneToMany(mappedBy = "spCcBuyQuantity", fetch = FetchType.LAZY,
 	            cascade = CascadeType.ALL, orphanRemoval = true)
-	    private Set<SpCcSpBuyQuantity> spCCapBuyQuantities;
+	    private Set<SpCcSpBuyQuantity> spCcSpBuyQuantity;
 
 	    
 	    @Column(name = "color_name", nullable = false)
-	    private Integer colorname;
+	    private Integer colorName;
 
 	   @Column(name = "weeks_supply", nullable = false)
-	    private Integer weekssupply;
+	    private Integer weeksSupply;
 
 	   @Column(name = "avg_sp_pct", nullable = false)
-	    private Integer avgsppct;
+	    private Integer avgSpPct;
 	    
 	    @Column(name = "adj_sp_pct", nullable = false)
-	    private Integer adjsppct;
+	    private Integer adjSpPct;
 	    
 	    
 	    @Column(name = "buy_qty", nullable = false)
-	    private Integer buyqty;
+	    private Integer buyQty;
 	    
 	    
 	    @Column(name = "final_buy_qty", nullable = false)
-	    private Integer finalbuyqty;
+	    private Integer finalBuyQty;
 
 	    
 

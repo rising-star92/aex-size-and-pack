@@ -32,7 +32,7 @@ public class SpStyleBuyQuantity {
 	
 	    @EmbeddedId
 	    @EqualsAndHashCode.Include
-	    SpStyleBuyQuantityId spStyleBuyQuantityId;
+	    private SpStyleBuyQuantityId spStyleBuyQuantityId;
 	    
 	    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	    @JoinColumn(name = "plan_id", referencedColumnName = "plan_id", nullable = false, insertable = false, updatable = false)
@@ -45,39 +45,30 @@ public class SpStyleBuyQuantity {
 	    @JsonIgnore
 	    private SpFineLineBuyQuantity spFineLineBuyQuantity;
 	    
-	    @OneToMany(mappedBy = "spStyleQBuyQuatity", fetch = FetchType.LAZY,
+	    @OneToMany(mappedBy = "spStyleBuyQuantity", fetch = FetchType.LAZY,
 	            cascade = CascadeType.ALL, orphanRemoval = true)
-	    private Set<SpCCBuyQuantity> spCCBuyQuantities;
+	    private Set<SpCcBuyQuantity> spCcBuyQuantity;
 
 	    @Column(name="weeks_supply")
 	    private Integer weeksSupply;
 	    
 	    @Column(name="fineline_desc")
-	    private Integer finelineDesc;
+	    private Integer fineLineDesc;
 	    
 	    @Column(name = "avg_sp_pct", nullable = false)
-	    private Integer avgsppct;
+	    private Integer avgSpPct;
 	    
 	    
 	   @Column(name = "adj_sp_pct", nullable = false)
-	    private Integer adjsppct;
+	    private Integer adjSpPct;
 
 	    
 	    @Column(name = "buy_qty", nullable = false)
-	    private Integer buyqty;
+	    private Integer buyQty;
 	    
 	    
 	    @Column(name = "final_buy_qty", nullable = false)
-	    private Integer finalbuyqty;
-
-	    
-	    
-	    
-	    
-	    
-	    
-	    
-	    
+	    private Integer finalBuyQty;	    
 }
 
 

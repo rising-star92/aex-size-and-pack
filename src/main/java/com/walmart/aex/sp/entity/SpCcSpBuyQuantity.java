@@ -32,7 +32,7 @@ public class SpCcSpBuyQuantity {
 
 	@EmbeddedId
 	@EqualsAndHashCode.Include
-	SpCcSpBuyQuantityId spCcSpBuyQuantityId;
+	private SpCcSpBuyQuantityId spCcSpBuyQuantityId;
 
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "plan_id", referencedColumnName = "plan_id", nullable = false, insertable = false, updatable = false)
@@ -48,23 +48,23 @@ public class SpCcSpBuyQuantity {
 	@JoinColumn(name = "customer_choice", referencedColumnName = "customer_choice", nullable = false, insertable = false, updatable = false)
 
 	@JsonIgnore
-	private SpCCBuyQuantity spCCBuyQuantity;
+	private SpCcBuyQuantity spCcBuyQuantity;
 
 	@Column(name = "ahs_size_desc", nullable = false)
-	private Integer ahssizedesc;
+	private Integer ahsSizeDesc;
 
 	@Column(name = "weeks_supply", nullable = false)
-	private Integer weekssupply;
+	private Integer weeksSupply;
 
 	@Column(name = "avg_sp_pct", nullable = false)
-	private Integer avgsppct;
+	private Integer avgSpPct;
 
 	@Column(name = "adj_sp_pct", nullable = false)
-	private Integer adjsppct;
+	private Integer adjSpPct;
 
 	@Column(name = "buy_qty", nullable = false)
-	private Integer buyqty;
+	private Integer buyQty;
 
 	@Column(name = "final_buy_qty", nullable = false)
-	private Integer finalbuyqty;
+	private Integer finalBuyQty;
 }

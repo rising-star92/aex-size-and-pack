@@ -46,35 +46,26 @@ public class SpFineLineBuyQuantity {
 	    
 	    @OneToMany(mappedBy = "spFineLineBuyQuantity", fetch = FetchType.LAZY,
 	            cascade = CascadeType.ALL, orphanRemoval = true)
-	    private Set<SpStyleBuyQuantity> spStyleBuyQuatities;
+	    private Set<SpStyleBuyQuantity> spStyleBuyQuantity;
 
 	    @Column(name="weeks_supply")
 	    private Integer weeksSupply;
 	    
 	    @Column(name="fineline_desc")
-	    private Integer finelineDesc;
+	    private Integer fineLineDesc;
 	    
 	    @Column(name = "avg_sp_pct", nullable = false)
-	    private Integer avgsppct;
+	    private Integer avgSpPct;
 	    
 	    
 	   @Column(name = "adj_sp_pct", nullable = false)
-	    private Integer adjsppct;
+	    private Integer adjSpPct;
 
 	    
 	    @Column(name = "buy_qty", nullable = false)
-	    private Integer buyqty;
+	    private Integer buyQty;
 	    
 	    
 	    @Column(name = "final_buy_qty", nullable = false)
-	    private Integer finalbuyqty;
-
-	    
-	    
-	    
-	    
-	    
-	    
-	    
-	    
+	    private Integer finalBuyQty;
 }

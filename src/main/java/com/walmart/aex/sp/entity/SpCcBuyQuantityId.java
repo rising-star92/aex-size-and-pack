@@ -20,7 +20,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Embeddable
 @EqualsAndHashCode
-public class SpCCBuyQuantityId implements Serializable{
+public class SpCcBuyQuantityId implements Serializable{
 	
 	@Embedded
 	private SpStyleBuyQuantityId spStyleBuyQuantityId;

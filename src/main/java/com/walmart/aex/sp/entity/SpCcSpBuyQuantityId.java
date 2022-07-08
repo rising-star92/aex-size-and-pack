@@ -23,10 +23,10 @@ import lombok.Setter;
 public class SpCcSpBuyQuantityId implements Serializable{
 	
 	@Embedded
-	private SpCCBuyQuantityId spCCBuyQuantityId;
+	private SpCcBuyQuantityId spCcBuyQuantityId;
 	
 	@Column(name="ahs_size_id", nullable=false)
-	private String ahs_size_id;
+	private String ahsSizeId;
 	
 
 }

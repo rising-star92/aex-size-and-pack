@@ -23,7 +23,7 @@ import lombok.Setter;
 public class SpStyleBuyQuantityId implements Serializable {
 	
 	@Embedded
-	private fineLinePackOptimizationID finelinePackOptimizationID;
+	private fineLinePackOptimizationID finelinePackOptimizationId;
 	
 	@Column(name="style_nbr", nullable=false)
 	private String styleNbr;
