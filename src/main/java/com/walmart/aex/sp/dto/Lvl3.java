@@ -12,13 +12,7 @@ public class Lvl3 {
 
     private String lvl3Name;
 
-    private String channel;
-
-    private Strategy strategy;
-
-   
-    
-    //Adding constraints
+   //Adding constraints
     private Constraints constraints;
     
 	 private List<Lvl4> lvl4List; 

@@ -51,9 +51,6 @@ public class PackOptimizationServiceTest {
 	{
 		Long planId = 362L;
 		Integer channelid = 1;
-		
-		packOptResponse = new PackOptimizationResponse();
-		
 		ChannelText channeltext = new ChannelText();
 		channeltext.setChannelId(1);
 		channeltext.setChannelDesc("Store");
@@ -123,6 +120,8 @@ public class PackOptimizationServiceTest {
 		
 		
 		assertNotNull(packOptResponse);
+		assertEquals(packOptResponse.getPlanId(), 362L);
+	    
 		
 	}
 

@@ -10,5 +10,5 @@ public class PackOptimizationResponse {
 	private Long planId;
 	private Integer channel;
 	
-	private List<Lvl3> lvl3list;
+	private List<Lvl3> lvl3List;
 }
