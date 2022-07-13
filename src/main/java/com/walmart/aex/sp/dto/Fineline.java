@@ -8,9 +8,8 @@ import java.util.List;
 public class Fineline {
     private Integer finelineNbr;
     private String finelineName;
-    private String channel;
-    private String traitChoice;
-    private UpdatedFields updatedFields;
-    private Strategy strategy;
+    private String packOptimizationStatus;
+    private Constraints constraints;
     private List<Style> styles;
+    
 }
