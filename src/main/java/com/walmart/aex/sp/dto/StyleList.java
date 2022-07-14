@@ -8,7 +8,7 @@ import java.util.List;
 @Data
 public class StyleList {
 
-    private Integer styleNbr;
+    private String styleNbr;
     private MetricsDto metricsObj;
     private List<ClustersDto> clusterList;
 
