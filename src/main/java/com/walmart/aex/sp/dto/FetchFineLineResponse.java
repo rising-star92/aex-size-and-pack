@@ -6,7 +6,7 @@ import java.util.List;
 
 @Data
 public class FetchFineLineResponse {
-    private Integer planId;
+    private Long planId;
     private String planDesc;
     private Integer lvl0Nbr;
     private String lvl0Desc;

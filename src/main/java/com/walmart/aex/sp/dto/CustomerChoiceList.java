@@ -9,7 +9,7 @@ public class CustomerChoiceList {
 
     private String ccId;
     private String colorName;
-    private MetricsDto metricsObj;
-    private List<ClustersDto> clusterList;
+    private MetricsDto metrics;
+    private List<ClustersDto> cluster;
 
 }

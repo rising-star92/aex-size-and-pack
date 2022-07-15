@@ -50,13 +50,6 @@ public class SpCustomerChoiceChannelFixtureSize {
     @Column(name="merch_method_short_desc", nullable = false)
     private String merchMethodShortDesc;
 
-    @Column(name = "avg_sp_pct", nullable = false)
-    private Integer avgSpPct;
-
-
-    @Column(name = "adj_sp_pct", nullable = false)
-    private Integer adjSpPct;
-
 
     @Column(name = "bump_pack_qty", nullable = false)
     private Integer bumpPackQty;

@@ -9,8 +9,8 @@ import java.util.List;
 public class StyleList {
 
     private String styleNbr;
-    private MetricsDto metricsObj;
-    private List<ClustersDto> clusterList;
+    private MetricsDto metrics;
+    private List<ClustersDto> cluster;
 
 
 }
