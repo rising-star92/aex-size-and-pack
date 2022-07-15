@@ -1,0 +1,72 @@
+type Query {
+     getPackOptimizationValues(planid: Int!, channelid : Int!): PackOptimizationResponse!
+}
+
+type PackOptimizationResponse{
+    planId: Int!
+    channel:Int!
+    lvl3List: [Lvl3]
+}
+
+type Lvl3 {
+    lvl3Nbr: Int
+    constraints:Constraints
+   	lvl4List: [Lvl4]
+}
+
+type Constraints{
+ supplierConstraints:SupplierConstraints
+ ccLevelConstraints:[CcLevelConstraints]
+}
+
+type SupplierConstraints{
+   supplierName:String
+   maxUnitsPerPack:Int
+   maxPacks:Int
+}
+
+type CcLevelConstraints{
+ factoryIds:String
+ countryOfOrigin:String 
+ portOfOrigin:String
+ singlePackIndicator:Int	
+ colorCombination:String 
+}
+
+type Lvl4 {
+    lvl4Nbr: Int
+    lvl4Name: String
+    constraints:Constraints
+    finelines: [Fineline]
+}
+
+type Fineline {
+    finelineNbr: Int
+    finelineName: String
+    packOptimizationStatus: String
+    constraints:Constraints
+    styles:[Style]
+}
+
+type Style {
+    styleNbr: String
+    constraints:Constraints
+    customerChoices:[CustomerChoice]
+}
+
+type CustomerChoice {
+    ccId: String
+    colorName: String
+    constraints:Constraints
+    
+}
+
+
+
+
+
+
+
+
+
+

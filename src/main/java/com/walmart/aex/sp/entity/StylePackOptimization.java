@@ -80,10 +80,7 @@ public class StylePackOptimization {
     @Column(name="color_combination")
     private String colorCombination;
 
-    @JoinColumn(name = "run_status_code", insertable = false, updatable = false)
-    @ManyToOne(targetEntity = RunStatusText.class, fetch = FetchType.LAZY)
-    private RunStatusText runStatusText;
-    
+	
     @JoinColumn(name = "channel_id", insertable = false, updatable = false)
     @ManyToOne(targetEntity = ChannelText.class, fetch = FetchType.LAZY)
     private ChannelText channelText;
