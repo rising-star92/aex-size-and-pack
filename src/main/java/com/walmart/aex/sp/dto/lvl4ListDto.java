@@ -8,5 +8,5 @@ import java.util.List;
 public class lvl4ListDto {
     private Integer lvl4Nbr;
     private String lvl4Desc;
-    private List<FineLines> fineLines;
+    private List<FineLines> finelines;
 }

@@ -1,5 +1,6 @@
 type Query {
      getPackOptimizationValues(planid: Int!, channelid : Int!): PackOptimizationResponse!
+     fineLineResponse(buyQtyRequest: BuyQtyRequest): FetchFineLineResponse!
 }
 
 type PackOptimizationResponse{
@@ -61,8 +62,52 @@ type CustomerChoice {
     
 }
 
+input BuyQtyRequest {
+    planId: Int!
+    planDesc: String!
+    channel:String!
+}
 
+type FetchFineLineResponse {
+    planId: Int
+    planDesc: String
+    lvl0Nbr: Int
+    lvl0Desc: String
+    lvl1Nbr: Int
+    lvl1Desc: String
+    lvl2Nbr: Int
+    lvl2Desc: String
+    lvl3List:[lvl3ListDto]
+}
 
+type lvl3ListDto {
+    lvl3Nbr: Int
+    lvl3Desc: String
+    lvl4List:[lvl4ListDto]
+}
+
+type lvl4ListDto {
+    lvl4Nbr: Int
+    lvl4Desc: String
+    finelines: [FineLines]
+}
+
+type FineLines {
+    finelineNbr: Int
+    finelineDesc: String
+    metrics: MetricsDto
+}
+
+type MetricsDto {
+    sizeProfilePct:Int
+    adjSizeProfilePct:Int
+    avgSizeProfilePct:Int
+    adjAvgSizeProfilePct:Int
+    buyQty:Int
+    finalBuyQty:Int
+    finalInitialSetQty:Int
+    finalReplenishmentQty:Int
+}
 
 
 

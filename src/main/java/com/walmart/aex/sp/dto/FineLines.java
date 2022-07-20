@@ -6,8 +6,9 @@ import java.util.List;
 
 @Data
 public class FineLines {
-    private Integer fineLineNbr;
-    private String fineLineDesc;
+    private Integer finelineNbr;
+    private String finelineDesc;
     private MetricsDto metrics;
-    private List<ClustersDto> cluster;
+    private List<ClustersDto> clusters;
+    private List<StyleList> styles;
 }

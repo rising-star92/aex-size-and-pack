@@ -10,7 +10,9 @@ public class StyleList {
 
     private String styleNbr;
     private MetricsDto metrics;
-    private List<ClustersDto> cluster;
+    private List<ClustersDto> clusters;
+    private List<CustomerChoiceList> customerChoices;
+
 
 
 }

@@ -4,10 +4,10 @@ import lombok.Data;
 
 @Data
 public class MetricsDto {
-    private Integer sizeProfilePct;
-    private Integer adjSizeProfilePct;
-    private Integer avgSizeProfilePct;
-    private Integer adjAvgSizeProfilePct;
+    private Double sizeProfilePct;
+    private Double adjSizeProfilePct;
+    private Double avgSizeProfilePct;
+    private Double adjAvgSizeProfilePct;
     private Integer buyQty;
     private Integer finalBuyQty;
     private Integer finalInitialSetQty;
