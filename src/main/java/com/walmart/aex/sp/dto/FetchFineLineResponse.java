@@ -14,5 +14,5 @@ public class FetchFineLineResponse {
     private String lvl1Desc;
     private Integer lvl2Nbr;
     private String lvl2Desc;
-    private List<lvl3ListDto> lvl3List;
+    private List<lvl3Dto> lvl3List;
 }

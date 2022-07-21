@@ -5,8 +5,8 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class lvl4ListDto {
+public class lvl4Dto {
     private Integer lvl4Nbr;
     private String lvl4Desc;
-    private List<FineLines> finelines;
+    private List<FinelineDto> finelines;
 }

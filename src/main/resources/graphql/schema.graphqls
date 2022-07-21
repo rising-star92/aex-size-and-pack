@@ -77,22 +77,22 @@ type FetchFineLineResponse {
     lvl1Desc: String
     lvl2Nbr: Int
     lvl2Desc: String
-    lvl3List:[lvl3ListDto]
+    lvl3List:[lvl3Dto]
 }
 
-type lvl3ListDto {
+type lvl3Dto {
     lvl3Nbr: Int
     lvl3Desc: String
-    lvl4List:[lvl4ListDto]
+    lvl4List:[lvl4Dto]
 }
 
-type lvl4ListDto {
+type lvl4Dto {
     lvl4Nbr: Int
     lvl4Desc: String
-    finelines: [FineLines]
+    finelines: [FinelineDto]
 }
 
-type FineLines {
+type FinelineDto {
     finelineNbr: Int
     finelineDesc: String
     metrics: MetricsDto

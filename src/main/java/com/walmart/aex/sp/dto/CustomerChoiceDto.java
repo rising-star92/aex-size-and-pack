@@ -5,10 +5,12 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class FineLines {
-    private Integer finelineNbr;
-    private String finelineDesc;
+public class CustomerChoiceDto {
+
+    private String ccId;
+    private String colorName;
     private MetricsDto metrics;
     private List<ClustersDto> clusters;
-    private List<StyleList> styles;
+
+
 }

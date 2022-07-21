@@ -1,18 +1,14 @@
 package com.walmart.aex.sp.dto;
 
-
 import lombok.Data;
 
 import java.util.List;
 
 @Data
-public class StyleList {
-
-    private String styleNbr;
+public class FinelineDto {
+    private Integer finelineNbr;
+    private String finelineDesc;
     private MetricsDto metrics;
     private List<ClustersDto> clusters;
-    private List<CustomerChoiceList> customerChoices;
-
-
-
+    private List<StyleDto> styles;
 }

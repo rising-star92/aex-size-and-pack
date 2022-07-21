@@ -1,16 +1,18 @@
 package com.walmart.aex.sp.dto;
 
+
 import lombok.Data;
 
 import java.util.List;
 
 @Data
-public class CustomerChoiceList {
+public class StyleDto {
 
-    private String ccId;
-    private String colorName;
+    private String styleNbr;
     private MetricsDto metrics;
     private List<ClustersDto> clusters;
+    private List<CustomerChoiceDto> customerChoices;
+
 
 
 }
