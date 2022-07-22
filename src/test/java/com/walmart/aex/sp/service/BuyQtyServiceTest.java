@@ -77,7 +77,7 @@ public class BuyQtyServiceTest {
         buyQtyRequest.setRepTLvl3(12);
 
 
-        Mockito.when(fineLineBuyRepo.findSpFineLineChannelFixtureBySpFineLineChannelFixtureId_PlanIdAndSpFineLineChannelFixtureId_ChannelIdAndSpFineLineChannelFixtureId_repTLvl3(planId, channelId,repTLvl3)).thenReturn(spFineLineChannelFixtureList);
+        Mockito.when(fineLineBuyRepo.findBySpFineLineChannelFixtureIdPlanIdAndSpFineLineChannelFixtureIdChannelId(planId, channelId)).thenReturn(spFineLineChannelFixtureList);
         fetchFineLineResponse = fineLineBuyService.getFineLineResponse(buyQtyRequest);
 
 
