@@ -10,6 +10,6 @@ import java.util.List;
 @Repository
 public interface FineLineBuyRepo extends JpaRepository <SpFineLineChannelFixture, SpFineLineChannelFixtureId>
     {
-        List<SpFineLineChannelFixture> findSpFineLineChannelFixtureBySpFineLineChannelFixtureId_PlanIdAndSpFineLineChannelFixtureId_ChannelIdAndSpFineLineChannelFixtureId_repTLvl3(Long planId, Integer channelId,Integer repTLvl3);
+        List<SpFineLineChannelFixture> findBySpFineLineChannelFixtureIdPlanIdAndSpFineLineChannelFixtureIdChannelId(Long planId, Integer channelId);
     }
 

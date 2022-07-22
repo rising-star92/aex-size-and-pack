@@ -39,63 +39,78 @@ public class FineLineBuyService {
         String planDesc = buyQtyRequest.getPlanDesc();
         int channelId = getChannelId(buyQtyRequest.getChannel());
         Integer repTLvl3 = buyQtyRequest.getRepTLvl3();
-        List<SpFineLineChannelFixture> spFineLineChannelFixtureList= fineLineBuyRepo.findSpFineLineChannelFixtureBySpFineLineChannelFixtureId_PlanIdAndSpFineLineChannelFixtureId_ChannelIdAndSpFineLineChannelFixtureId_repTLvl3(planId, channelId,repTLvl3);
+        List<SpFineLineChannelFixture> spFineLineChannelFixtureList= fineLineBuyRepo.findBySpFineLineChannelFixtureIdPlanIdAndSpFineLineChannelFixtureIdChannelId(planId, channelId);
+
+        Set<SpFineLineChannelFixture> spLvl3List=spFineLineChannelFixtureList.stream().filter(distinctByKey(x->x.getSpFineLineChannelFixtureId().getRepTLvl3())).collect(Collectors.toSet());
 
 
-        Set<SpFineLineChannelFixture> spLvl4List = spFineLineChannelFixtureList.stream().filter(distinctByKey(x->x.getSpFineLineChannelFixtureId().getRepTLvl4())).collect(Collectors.toSet());
+        Set<SpFineLineChannelFixture> spLvl4List = spFineLineChannelFixtureList.stream().filter(distinctByKey(x->x.getSpFineLineChannelFixtureId().getRepTLvl3()+ x.getSpFineLineChannelFixtureId().getRepTLvl4())).collect(Collectors.toSet());
 
 
 
-        return fineLineDetails(spFineLineChannelFixtureList,spLvl4List);
+        return fineLineDetails(spFineLineChannelFixtureList,spLvl3List,spLvl4List);
     }
 
-    public FetchFineLineResponse fineLineDetails( List<SpFineLineChannelFixture> spFineLineChannelFixtureList,Set<SpFineLineChannelFixture> lvl4Set)
+
+    public FetchFineLineResponse fineLineDetails( List<SpFineLineChannelFixture> spFineLineChannelFixtureList,Set<SpFineLineChannelFixture> spLvl3List, Set<SpFineLineChannelFixture> spLvl4List)
 
     {
         int index = 0;
-        SpFineLineChannelFixture spFineLineChannelFixture = spFineLineChannelFixtureList.get(index);
+        SpFineLineChannelFixture spFineLineChannelFixtureObj = spFineLineChannelFixtureList.get(index);
         FetchFineLineResponse fineLineResponse= new FetchFineLineResponse();
-        fineLineResponse.setPlanId(spFineLineChannelFixture.getSpFineLineChannelFixtureId().getPlanId());
-        fineLineResponse.setLvl0Nbr(spFineLineChannelFixture.getSpFineLineChannelFixtureId().getRepTLvl0());
-        fineLineResponse.setLvl1Nbr(spFineLineChannelFixture.getSpFineLineChannelFixtureId().getRepTLvl1());
-        fineLineResponse.setLvl2Nbr(spFineLineChannelFixture.getSpFineLineChannelFixtureId().getRepTLvl2());
+        fineLineResponse.setPlanId(spFineLineChannelFixtureObj.getSpFineLineChannelFixtureId().getPlanId());
+        fineLineResponse.setLvl0Nbr(spFineLineChannelFixtureObj.getSpFineLineChannelFixtureId().getRepTLvl0());
+        fineLineResponse.setLvl1Nbr(spFineLineChannelFixtureObj.getSpFineLineChannelFixtureId().getRepTLvl1());
+        fineLineResponse.setLvl2Nbr(spFineLineChannelFixtureObj.getSpFineLineChannelFixtureId().getRepTLvl2());
 
         List<lvl3Dto> lvl3ListDto= new ArrayList<>();
-        lvl3Dto lvl3List=new lvl3Dto();
-        lvl3List.setLvl3Nbr(spFineLineChannelFixture.getSpFineLineChannelFixtureId().getRepTLvl3());
 
+        for (SpFineLineChannelFixture spFineLineChannelFixture : spLvl3List)
+        {
 
-        List<lvl4Dto> lvl4ListDtoList = new ArrayList<>();
-        lvl4ListDtoList=lvl4ResponseList(lvl4Set,spFineLineChannelFixtureList);
+            lvl3Dto lvl3List = new lvl3Dto();
+            lvl3List.setLvl3Nbr(spFineLineChannelFixture.getSpFineLineChannelFixtureId().getRepTLvl3());
+            Integer lvl3Nbr=spFineLineChannelFixture.getSpFineLineChannelFixtureId().getRepTLvl3();
 
-        lvl3List.setLvl4List(lvl4ListDtoList);
-        lvl3ListDto.add(lvl3List);
+            List<lvl4Dto> lvl4ListDtoList = new ArrayList<>();
+            lvl4ListDtoList = lvl4ResponseList(spLvl4List, spFineLineChannelFixtureList,lvl3Nbr);
+
+            lvl3List.setLvl4List(lvl4ListDtoList);
+            lvl3ListDto.add(lvl3List);
+        }
+
+        //  lvl3ListDto=lvl3responseList(spFineLineChannelFixtureList,spLvl3List,spLvl4List);
+
         fineLineResponse.setLvl3List(lvl3ListDto);
         return fineLineResponse;
 
     }
-    private List<lvl4Dto> lvl4ResponseList(Set<SpFineLineChannelFixture> lvl4Set, List<SpFineLineChannelFixture> spFineLineChannelFixtureList) {
+
+
+    private List<lvl4Dto> lvl4ResponseList(Set<SpFineLineChannelFixture> lvl4Set, List<SpFineLineChannelFixture> spFineLineChannelFixtureList,Integer lvl3Nbr) {
         List<lvl4Dto> lvl4ListList = new ArrayList<>();
         List<Integer> lvl4ListNbr = new ArrayList<>();
 
         for (SpFineLineChannelFixture spFineLineChannelFixture : lvl4Set) {
-            lvl4Dto lvl4List = new lvl4Dto();
-            lvl4List.setLvl4Nbr(spFineLineChannelFixture.getSpFineLineChannelFixtureId().getRepTLvl4());
-            lvl4List.setLvl4Desc(null);
-            Integer nbr=spFineLineChannelFixture.getSpFineLineChannelFixtureId().getRepTLvl4();
-            lvl4ListNbr.add(nbr);
-            List<FinelineDto> fineLineList = new ArrayList<>();
-            fineLineList = fineLineResponseList(nbr,spFineLineChannelFixtureList);
-            lvl4List.setFinelines(fineLineList);
-            lvl4ListList.add(lvl4List);
+            if(spFineLineChannelFixture.getSpFineLineChannelFixtureId().getRepTLvl3().equals(lvl3Nbr)) {
+                lvl4Dto lvl4List = new lvl4Dto();
+                lvl4List.setLvl4Nbr(spFineLineChannelFixture.getSpFineLineChannelFixtureId().getRepTLvl4());
+                lvl4List.setLvl4Desc(null);
+                Integer nbr = spFineLineChannelFixture.getSpFineLineChannelFixtureId().getRepTLvl4();
+                lvl4ListNbr.add(nbr);
+                List<FinelineDto> fineLineList = new ArrayList<>();
+                fineLineList = fineLineResponseList(lvl3Nbr,nbr, spFineLineChannelFixtureList);
+                lvl4List.setFinelines(fineLineList);
+                lvl4ListList.add(lvl4List);
+            }
         }
         return lvl4ListList;
     }
 
-    private List<FinelineDto> fineLineResponseList(Integer nbr, List<SpFineLineChannelFixture> spFineLineChannelFixtureList) {
+    private List<FinelineDto> fineLineResponseList(Integer lvl3Nbr,Integer nbr, List<SpFineLineChannelFixture> spFineLineChannelFixtureList) {
         List<FinelineDto> fineLineList = new ArrayList<>();
         for (SpFineLineChannelFixture spFineLineChannelFixture : spFineLineChannelFixtureList) {
-            if(spFineLineChannelFixture.getSpFineLineChannelFixtureId().getRepTLvl4().equals(nbr)) {
+            if((spFineLineChannelFixture.getSpFineLineChannelFixtureId().getRepTLvl4().equals(nbr)) && (spFineLineChannelFixture.getSpFineLineChannelFixtureId().getRepTLvl3().equals(lvl3Nbr))) {
                 FinelineDto fineLine = new FinelineDto();
                 fineLine.setFinelineNbr(spFineLineChannelFixture.getSpFineLineChannelFixtureId().getFineLineNbr());
                 fineLine.setFinelineDesc(null);
