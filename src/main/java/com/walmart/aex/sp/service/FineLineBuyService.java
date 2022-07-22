@@ -41,7 +41,6 @@ public class FineLineBuyService {
         Integer repTLvl3 = buyQtyRequest.getRepTLvl3();
         List<SpFineLineChannelFixture> spFineLineChannelFixtureList= fineLineBuyRepo.findSpFineLineChannelFixtureBySpFineLineChannelFixtureId_PlanIdAndSpFineLineChannelFixtureId_ChannelIdAndSpFineLineChannelFixtureId_repTLvl3(planId, channelId,repTLvl3);
 
-        //List<SpFineLineChannelFixture> spFineLineChannelFixtureList=spFineLineChannelFixtureList.stream().filter(x->x.getSpFineLineChannelFixtureId().getRepTLvl3().equals(repTLvl3)).collect(Collectors.toList());
 
         Set<SpFineLineChannelFixture> spLvl4List = spFineLineChannelFixtureList.stream().filter(distinctByKey(x->x.getSpFineLineChannelFixtureId().getRepTLvl4())).collect(Collectors.toSet());
 
