@@ -38,6 +38,7 @@ public class BuyQtyServiceTest {
         ChannelText channeltext = new ChannelText();
         channeltext.setChannelId(1);
         channeltext.setChannelDesc("Store");
+        Integer repTLvl3=12;
 
         SpFineLineChannelFixture spFineLineChannelFixture = new SpFineLineChannelFixture();
 
@@ -73,10 +74,10 @@ public class BuyQtyServiceTest {
         buyQtyRequest.setPlanId(planId);
         buyQtyRequest.setPlanDesc(null);
         buyQtyRequest.setChannel("store");
-        buyQtyRequest.setRepTLvl3(null);
+        buyQtyRequest.setRepTLvl3(12);
 
 
-        Mockito.when(fineLineBuyRepo.findBySpFineLineChannelFixtureIdPlanIdAndSpFineLineChannelFixtureIdChannelId(planId, channelId)).thenReturn(spFineLineChannelFixtureList);
+        Mockito.when(fineLineBuyRepo.findSpFineLineChannelFixtureBySpFineLineChannelFixtureId_PlanIdAndSpFineLineChannelFixtureId_ChannelIdAndSpFineLineChannelFixtureId_repTLvl3(planId, channelId,repTLvl3)).thenReturn(spFineLineChannelFixtureList);
         fetchFineLineResponse = fineLineBuyService.getFineLineResponse(buyQtyRequest);
 
 
