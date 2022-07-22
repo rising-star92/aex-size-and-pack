@@ -21,8 +21,8 @@ public class FineLineBQController {
     private FineLineBuyService fineLineBuyService;
 
     @QueryMapping
-    public FetchFineLineResponse fineLineResponse(@Argument BuyQtyRequest buyQtyRequest)
+    public FetchFineLineResponse getBuyQtyDetails(@Argument BuyQtyRequest buyQtyRequest)
     {
-        return fineLineBuyService.fineLineResponse(buyQtyRequest);
+        return fineLineBuyService.getFineLineResponse(buyQtyRequest);
     }
 }
