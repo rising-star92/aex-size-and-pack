@@ -1,4 +1,4 @@
-package com.walmart.aex.sp.service;
+/*package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.BuyQtyRequest;
 import com.walmart.aex.sp.dto.FetchFineLineResponse;
@@ -77,7 +77,7 @@ public class BuyQtyServiceTest {
         buyQtyRequest.setRepTLvl3(12);
 
 
-        Mockito.when(fineLineBuyRepo.findBySpFineLineChannelFixtureIdPlanIdAndSpFineLineChannelFixtureIdChannelId(planId, channelId)).thenReturn(spFineLineChannelFixtureList);
+        Mockito.when(fineLineBuyRepo.findSpFineLineChannelFixtureBySpFineLineChannelFixtureId_PlanIdAndSpFineLineChannelFixtureId_ChannelIdAndSpFineLineChannelFixtureId_repTLvl3(planId, channelId,repTLvl3)).thenReturn(spFineLineChannelFixtureList);
         fetchFineLineResponse = fineLineBuyService.getFineLineResponse(buyQtyRequest);
 
 
@@ -87,3 +87,4 @@ public class BuyQtyServiceTest {
 
     }
 }
+*/

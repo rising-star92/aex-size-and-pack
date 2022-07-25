@@ -34,10 +34,12 @@ public class SpCustomerChoiceChannelFixture {
     @JsonIgnore
     private SpStyleChannelFixture spStyleChannelFixture;
 
-
     @JoinColumn(name = "flow_strategy_code", insertable = false, updatable = false)
     @ManyToOne(targetEntity = FpStrategyText.class, fetch = FetchType.LAZY)
     private FpStrategyText fpStrategyText;
+
+    @Column(name = "flow_strategy_code", nullable = false)
+    private Integer flowStrategyCode;
 
     @Column(name="merch_method_code", nullable = false)
     private Integer merchMethodCode;
@@ -45,19 +47,14 @@ public class SpCustomerChoiceChannelFixture {
     @Column(name="merch_method_short_desc", nullable = false)
     private String merchMethodShortDesc;
 
-
     @Column(name = "bump_pack_qty", nullable = false)
     private Integer bumpPackQty;
-
 
     @Column(name = "initial_set_qty", nullable = false)
     private Integer initialSetQty;
 
-
-
     @Column(name = "buy_qty", nullable = false)
     private Integer buyQty;
-
 
     @Column(name = "repln_qty", nullable = false)
     private Integer replnQty;
@@ -68,7 +65,7 @@ public class SpCustomerChoiceChannelFixture {
     @Column(name = "store_obj", nullable = false)
     private String storeObj;
 
-    @OneToMany(mappedBy = "spCustomerChoiceChannelFixture", fetch = FetchType.LAZY,
+    @OneToMany(mappedBy = "spCustomerChoiceChannelFixture", fetch = FetchType.EAGER,
             cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<SpCustomerChoiceChannelFixtureSize> spCustomerChoiceChannelFixtureSize;
 

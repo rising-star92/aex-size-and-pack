@@ -29,14 +29,15 @@ public class SpStyleChannelFixture {
     @JoinColumn(name = "fineline_nbr", referencedColumnName = "fineline_nbr", nullable = false, insertable = false, updatable = false)
     @JoinColumn(name = "channel_id", referencedColumnName = "channel_id", nullable = false, insertable = false, updatable = false)
     @JoinColumn(name = "fixturetype_rollup_id", referencedColumnName = "fixturetype_rollup_id", nullable = false, insertable = false, updatable = false)
-
     @JsonIgnore
     private SpFineLineChannelFixture spFineLineChannelFixture;
-
 
     @JoinColumn(name = "flow_strategy_code", insertable = false, updatable = false)
     @ManyToOne(targetEntity = FpStrategyText.class, fetch = FetchType.LAZY)
     private FpStrategyText fpStrategyText;
+
+    @Column(name = "flow_strategy_code", nullable = false)
+    private Integer flowStrategyCode;
 
     @Column(name="merch_method_code", nullable = false)
     private Integer merchMethodCode;
@@ -44,19 +45,14 @@ public class SpStyleChannelFixture {
     @Column(name="merch_method_short_desc", nullable = false)
     private String merchMethodShortDesc;
 
-
     @Column(name = "bump_pack_qty", nullable = false)
     private Integer bumpPackQty;
-
 
     @Column(name = "initial_set_qty", nullable = false)
     private Integer initialSetQty;
 
-
-
     @Column(name = "buy_qty", nullable = false)
     private Integer buyQty;
-
 
     @Column(name = "repln_qty", nullable = false)
     private Integer replnQty;
@@ -67,9 +63,7 @@ public class SpStyleChannelFixture {
     @Column(name = "store_obj", nullable = false)
     private String storeObj;
 
-    @OneToMany(mappedBy = "spStyleChannelFixture", fetch = FetchType.LAZY,
+    @OneToMany(mappedBy = "spStyleChannelFixture", fetch = FetchType.EAGER,
             cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<SpCustomerChoiceChannelFixture> spCustomerChoiceChannelFixture;
-
-
 }

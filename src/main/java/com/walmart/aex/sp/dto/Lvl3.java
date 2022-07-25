@@ -5,14 +5,11 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-//category
 public class Lvl3 {
 
     private Integer lvl3Nbr;
 
     private String lvl3Name;
-
-   //Adding constraints
     private Constraints constraints;
     
 	 private List<Lvl4> lvl4List; 

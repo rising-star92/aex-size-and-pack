@@ -59,13 +59,14 @@ type CustomerChoice {
     ccId: String
     colorName: String
     constraints:Constraints
-
+    
 }
 
 input BuyQtyRequest {
     planId: Int!
     planDesc: String!
     channel: String!
+    repTLvl3: Int
 }
 
 type FetchFineLineResponse {

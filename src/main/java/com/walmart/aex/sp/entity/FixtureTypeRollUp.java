@@ -27,7 +27,7 @@ public class FixtureTypeRollUp  {
     private String fixtureTypeRollupDesc;
 
 
-    @OneToMany(mappedBy = "fixtureTypeRollUp", fetch = FetchType.LAZY,
+    @OneToMany(mappedBy = "fixtureTypeRollUp", fetch = FetchType.EAGER,
             cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<SpFineLineChannelFixture> spFineLineChannelFixtures;
 

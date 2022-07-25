@@ -6,8 +6,6 @@ import lombok.*;
 
 import javax.persistence.*;
 
-
-
 @Getter
 @Setter
 @Entity
@@ -36,7 +34,6 @@ public class SpCustomerChoiceChannelFixtureSize {
     @JsonIgnore
     private SpCustomerChoiceChannelFixture spCustomerChoiceChannelFixture;
 
-
     @Column(name="ahs_size_desc", nullable = false)
     private Integer ahsSizeDesc;
 
@@ -44,25 +41,23 @@ public class SpCustomerChoiceChannelFixtureSize {
     @ManyToOne(targetEntity = FpStrategyText.class, fetch = FetchType.LAZY)
     private FpStrategyText fpStrategyText;
 
+    @Column(name = "flow_strategy_code", nullable = false)
+    private Integer flowStrategyCode;
+
     @Column(name="merch_method_code", nullable = false)
     private Integer merchMethodCode;
 
     @Column(name="merch_method_short_desc", nullable = false)
     private String merchMethodShortDesc;
 
-
     @Column(name = "bump_pack_qty", nullable = false)
     private Integer bumpPackQty;
-
 
     @Column(name = "initial_set_qty", nullable = false)
     private Integer initialSetQty;
 
-
-
     @Column(name = "buy_qty", nullable = false)
     private Integer buyQty;
-
 
     @Column(name = "repln_qty", nullable = false)
     private Integer replnQty;
@@ -72,6 +67,4 @@ public class SpCustomerChoiceChannelFixtureSize {
 
     @Column(name = "store_obj", nullable = false)
     private String storeObj;
-
-
 }

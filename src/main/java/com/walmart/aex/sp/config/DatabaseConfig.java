@@ -7,12 +7,9 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
@@ -34,8 +31,8 @@ public class DatabaseConfig {
         HikariConfig config = new HikariConfig();
         config.setDriverClassName(databaseProperties.getDriver());
         config.setJdbcUrl(databaseProperties.getUrl());
-        config.setUsername(secretsProperties.fetchSQLServerUserName());
-        config.setPassword(secretsProperties.fetchSQLServerPassword());
+        config.setUsername("SVCaexSPUser_US@svc.wmtcloud.com");
+        config.setPassword("p>]/LbVed+zE1DP|c$Ha!T");
         log.info("DataSource Properties Fetched Successfully ");
         return new HikariDataSource(config);
     }

@@ -7,7 +7,6 @@ import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import java.io.Serializable;
 
-
 @Getter
 @Setter
 @Builder
@@ -15,11 +14,10 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Embeddable
 @EqualsAndHashCode
-public class StylePlanId implements Serializable {
-
+public class CustChoicePlanId implements Serializable {
     @Embedded
-    private FinelinePlanId finelinePlanId;
+    private StylePlanId stylePlanId;
 
-    @Column(name="style_nbr",nullable = false)
-    private String styleNbr;
+    @Column(name="customer_choice",nullable = false)
+    private String ccId;
 }

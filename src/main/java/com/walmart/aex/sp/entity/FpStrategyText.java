@@ -24,7 +24,4 @@ public class FpStrategyText {
 
     @Column(name = "flow_strategy_desc", nullable = false)
     private String  flowStrategyDesc;
-
-
-
 }

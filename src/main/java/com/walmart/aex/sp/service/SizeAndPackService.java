@@ -1,36 +1,71 @@
 package com.walmart.aex.sp.service;
 
-
-import com.walmart.aex.sp.dto.PlanSizeAndPackDTO;
-import com.walmart.aex.sp.dto.SizeAndPackResponse;
+import com.walmart.aex.sp.dto.*;
+import com.walmart.aex.sp.enums.ChannelType;
+import com.walmart.aex.sp.exception.CustomException;
+import com.walmart.aex.sp.repository.SpCustomerChoiceChannelFixtureRepository;
+import com.walmart.aex.sp.repository.SpFineLineChannelFixtureRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
 public class SizeAndPackService {
 
-//    @Autowired
-//    CustomerChoiceRepository customerChoiceRepository;
-//
-//    @Autowired
-//    MerchCatPlanRepository merchCatPlanRepository;
-//
-//    @Autowired
-//    StylePlanRepository stylePlanRepository;
-//
-//    @Autowired
-//    SubCatPlanRepository subCatPlanRepository;
-//
-//    @Autowired
-//    ObjectMapper objectMapper;
-//
-//    @Autowired
-//    SizeAndPackObjectMapper sizeAndPackObjectMapper;
-
     public static final String FAILED_STATUS = "Failed";
     public static final String SUCCESS_STATUS = "Success";
+
+    private final SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository;
+    private final SpCustomerChoiceChannelFixtureRepository spCustomerChoiceChannelFixtureRepository;
+    private final BuyQunatityMapper buyQunatityMapper;
+
+    public SizeAndPackService(SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository, BuyQunatityMapper buyQunatityMapper,
+                              SpCustomerChoiceChannelFixtureRepository spCustomerChoiceChannelFixtureRepository) {
+        this.spFineLineChannelFixtureRepository = spFineLineChannelFixtureRepository;
+        this.buyQunatityMapper = buyQunatityMapper;
+        this.spCustomerChoiceChannelFixtureRepository = spCustomerChoiceChannelFixtureRepository;
+    }
+
+    public FetchFineLineResponse fetchFinelineBuyQnty(BuyQtyRequest buyQtyRequest) {
+        FetchFineLineResponse fetchFineLineResponse = new FetchFineLineResponse();
+        try {
+            List<BuyQntyResponseDTO> buyQntyResponseDTOS = spFineLineChannelFixtureRepository
+                    .getBuyQntyByPlanChannel(buyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(buyQtyRequest.getChannel()));
+            Optional.of(buyQntyResponseDTOS)
+                    .stream()
+                    .flatMap(Collection::stream)
+                    .forEach(buyQntyResponseDTO -> buyQunatityMapper
+                            .mapBuyQntyLvl2Sp(buyQntyResponseDTO, fetchFineLineResponse, null));
+        } catch (Exception e) {
+            log.error("Exception While fetching Fineline Buy Qunatities :", e);
+            throw new CustomException("Failed to fetch Fineline Buy Qunatities, due to" + e);
+        }
+        log.info("Fetch Buy Qty Fineline response: {}", fetchFineLineResponse);
+        return fetchFineLineResponse;
+    }
+
+    public FetchFineLineResponse fetchCcBuyQnty(BuyQtyRequest buyQtyRequest, Integer finelineNbr) {
+        FetchFineLineResponse fetchFineLineResponse = new FetchFineLineResponse();
+        try {
+            List<BuyQntyResponseDTO> buyQntyResponseDTOS = spCustomerChoiceChannelFixtureRepository
+                    .getBuyQntyByPlanChannelFineline(buyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(buyQtyRequest.getChannel()), finelineNbr);
+            Optional.of(buyQntyResponseDTOS)
+                    .stream()
+                    .flatMap(Collection::stream)
+                    .forEach(buyQntyResponseDTO -> buyQunatityMapper
+                            .mapBuyQntyLvl2Sp(buyQntyResponseDTO, fetchFineLineResponse, finelineNbr));
+        } catch (Exception e) {
+            log.error("Exception While fetching CC Buy Qunatities :", e);
+            throw new CustomException("Failed to fetch CC Buy Qunatities, due to" + e);
+        }
+        log.info("Fetch Buy Qty CC response: {}", fetchFineLineResponse);
+        return fetchFineLineResponse;
+    }
 
 
     @Transactional
@@ -65,6 +100,8 @@ public class SizeAndPackService {
 //
         return null;
   }
+
+
 
 
 }

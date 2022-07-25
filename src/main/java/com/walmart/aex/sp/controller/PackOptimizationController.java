@@ -1,7 +1,6 @@
 package com.walmart.aex.sp.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.walmart.aex.sp.dto.PackOptimizationResponse;
@@ -27,8 +26,4 @@ public class PackOptimizationController {
 	public PackOptimizationResponse getPackOptimizationValues(@Argument Long planid, @Argument Integer channelid) {
 		return packOptService.getPackOptDetails(planid, channelid);
 	}
-
-
-
-
 }

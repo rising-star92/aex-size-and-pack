@@ -11,7 +11,5 @@ public class Lvl2 {
 
     private String lvl2Name;
 
-    private Strategy strategy;
-
     private List<Lvl3> lvl3List;
 }

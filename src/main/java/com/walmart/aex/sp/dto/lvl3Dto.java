@@ -4,9 +4,9 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class lvl3Dto {
+public class Lvl3Dto {
     private Integer lvl3Nbr;
     private String lvl3Desc;
-   private List<lvl4Dto> lvl4List;
+   private List<Lvl4Dto> lvl4List;
 }
 
