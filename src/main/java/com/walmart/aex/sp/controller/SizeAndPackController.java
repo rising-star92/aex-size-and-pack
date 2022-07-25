@@ -1,8 +1,8 @@
-package com.walmart.aex.sp.controller;
+/*package com.walmart.aex.sp.controller;
 
 
-import com.walmart.aex.sp.dto.PlanSizeAndPackDTO;
-import com.walmart.aex.sp.dto.SizeAndPackResponse;
+import com.walmart.aex.sp.dto.planHierarchy.PlanSizeAndPackDTO;
+import com.walmart.aex.sp.dto.planHierarchy.SizeAndPackResponse;
 import com.walmart.aex.sp.service.SizeAndPackService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -42,7 +42,7 @@ public class SizeAndPackController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
     }
 
-}
+}*/
 
 
 

@@ -6,19 +6,17 @@ import lombok.*;
 import javax.persistence.*;
 import java.util.Set;
 
-
 @Getter
 @Setter
 @Entity
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "style_plan", schema = "dbo")
-public class StylePlan {
-
+@Table(name = "fineline_plan", schema = "dbo")
+public class FinelinePlan {
     @EmbeddedId
     @EqualsAndHashCode.Include
-    private StylePlanId stylePlanId;
+    private FinelinePlanId finelinePlanId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "plan_id", referencedColumnName = "plan_id", nullable = false, insertable = false, updatable = false)
@@ -27,16 +25,21 @@ public class StylePlan {
     @JoinColumn(name = "rpt_lvl_2_nbr", referencedColumnName = "rpt_lvl_2_nbr", nullable = false, insertable = false, updatable = false)
     @JoinColumn(name = "rpt_lvl_3_nbr", referencedColumnName = "rpt_lvl_3_nbr", nullable = false, insertable = false, updatable = false)
     @JoinColumn(name = "rpt_lvl_4_nbr", referencedColumnName = "rpt_lvl_4_nbr", nullable = false, insertable = false, updatable = false)
-    @JoinColumn(name = "fineline_nbr", referencedColumnName = "fineline_nbr", nullable = false, insertable = false, updatable = false)
     @JsonIgnore
-    private FinelinePlan finelinePlan;
+    private SubCatPlan subCatPlan;
+
+    @Column(name = "fineline_desc")
+    private String finelineDesc;
+
+    @Column(name = "alt_fineline_desc")
+    private String altFinelineName;
 
     @Column(name = "channel_id")
     private Integer channelId;
 
-    @OneToMany(mappedBy = "stylePlan", fetch = FetchType.LAZY,
+    @OneToMany(mappedBy = "finelinePlan", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<CustChoicePlan> custChoicePlans;
+    private Set<StylePlan> stylePlans;
 
     @JoinColumn(name = "channel_id", insertable = false, updatable = false)
     @ManyToOne(targetEntity = ChannelText.class, fetch = FetchType.LAZY)

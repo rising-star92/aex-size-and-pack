@@ -3,8 +3,7 @@ package com.walmart.aex.sp.entity;
 
 import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import javax.persistence.*;
 import java.io.Serializable;
 
 @Getter
@@ -14,7 +13,10 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Embeddable
 @EqualsAndHashCode
-public class MerchCatPlanId implements Serializable {
+public class SpFineLineChannelFixtureId implements Serializable {
+
+    @Embedded
+    private FixtureTypeRollUpId fixtureTypeRollUpId;
 
     @Column(name="plan_id", nullable = false)
     private Long planId;
@@ -26,4 +28,10 @@ public class MerchCatPlanId implements Serializable {
     private Integer lvl2Nbr;
     @Column(name="rpt_lvl_3_nbr",nullable = false)
     private Integer lvl3Nbr;
+    @Column(name="rpt_lvl_4_nbr",nullable = false)
+    private Integer lvl4Nbr;
+    @Column(name="fineline_nbr",nullable = false)
+    private Integer fineLineNbr;
+    @Column(name="channel_id",nullable = false)
+    private Integer channelId;
 }

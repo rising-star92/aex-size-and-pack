@@ -1,12 +1,12 @@
 package com.walmart.aex.sp.entity;
 
+
 import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import java.io.Serializable;
-
 
 @Getter
 @Setter
@@ -15,11 +15,12 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Embeddable
 @EqualsAndHashCode
-public class StylePlanId implements Serializable {
+public class SpStyleChannelFixtureId implements Serializable {
 
     @Embedded
-    private FinelinePlanId finelinePlanId;
+    private SpFineLineChannelFixtureId spFineLineChannelFixtureId;
 
-    @Column(name="style_nbr",nullable = false)
+    @Column(name="style_nbr", nullable=false)
     private String styleNbr;
+
 }

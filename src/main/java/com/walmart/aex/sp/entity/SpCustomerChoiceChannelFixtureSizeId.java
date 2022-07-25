@@ -15,11 +15,12 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Embeddable
 @EqualsAndHashCode
-public class StylePlanId implements Serializable {
+public class SpCustomerChoiceChannelFixtureSizeId implements Serializable {
 
     @Embedded
-    private FinelinePlanId finelinePlanId;
+    private SpCustomerChoiceChannelFixtureId spCustomerChoiceChannelFixtureId;
 
-    @Column(name="style_nbr",nullable = false)
-    private String styleNbr;
+    @Column(name="ahs_size_id", nullable=false)
+    private Integer ahsSizeId;
+
 }
