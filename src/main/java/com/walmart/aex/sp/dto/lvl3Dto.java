@@ -7,6 +7,6 @@ import java.util.List;
 public class Lvl3Dto {
     private Integer lvl3Nbr;
     private String lvl3Desc;
-   private List<Lvl4Dto> lvl4List;
+    private List<Lvl4Dto> lvl4List;
 }
 
