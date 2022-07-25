@@ -11,7 +11,7 @@ import java.util.Optional;
 @Service
 @Slf4j
 public class BuyQuantityMapper {
-    public void mapBuyQntyLvl2Sp(BuyQntyResponseDTO buyQntyResponseDTO, FetchFineLineResponse response, Integer finelineNbr) {
+    public void mapBuyQntyLvl2Sp(BuyQntyResponseDTO buyQntyResponseDTO, BuyQtyResponse response, Integer finelineNbr) {
         if (response.getPlanId() == null) {
             response.setPlanId(buyQntyResponseDTO.getPlanId());
         }
@@ -24,7 +24,7 @@ public class BuyQuantityMapper {
         response.setLvl3List(mapBuyQntyLvl3Sp(buyQntyResponseDTO, response, finelineNbr));
     }
 
-    private List<Lvl3Dto> mapBuyQntyLvl3Sp(BuyQntyResponseDTO buyQntyResponseDTO, FetchFineLineResponse response, Integer finelineNbr) {
+    private List<Lvl3Dto> mapBuyQntyLvl3Sp(BuyQntyResponseDTO buyQntyResponseDTO, BuyQtyResponse response, Integer finelineNbr) {
         List<Lvl3Dto> lvl3List = Optional.ofNullable(response.getLvl3List()).orElse(new ArrayList<>());
 
         lvl3List.stream()

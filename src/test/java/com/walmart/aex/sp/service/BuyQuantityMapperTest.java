@@ -1,6 +1,6 @@
 package com.walmart.aex.sp.service;
 import com.walmart.aex.sp.dto.buyquantity.BuyQntyResponseDTO;
-import com.walmart.aex.sp.dto.buyquantity.FetchFineLineResponse;
+import com.walmart.aex.sp.dto.buyquantity.BuyQtyResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,7 +20,7 @@ public class BuyQuantityMapperTest {
     @Test
     public void testMapBuyQntyLvl2Sp() {
 
-        FetchFineLineResponse fetchFineLineResponse= new FetchFineLineResponse();
+        BuyQtyResponse fetchFineLineResponse= new BuyQtyResponse();
         buyQntyResponseDTO=new BuyQntyResponseDTO();
         buyQntyResponseDTO.setChannelId(2);
         buyQntyResponseDTO.setPlanId(planId);

@@ -2,7 +2,7 @@ package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.buyquantity.BuyQntyResponseDTO;
 import com.walmart.aex.sp.dto.buyquantity.BuyQtyRequest;
-import com.walmart.aex.sp.dto.buyquantity.FetchFineLineResponse;
+import com.walmart.aex.sp.dto.buyquantity.BuyQtyResponse;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.repository.SpCustomerChoiceChannelFixtureRepository;
@@ -32,8 +32,8 @@ public class SizeAndPackService {
         this.spCustomerChoiceChannelFixtureRepository = spCustomerChoiceChannelFixtureRepository;
     }
 
-    public FetchFineLineResponse fetchFinelineBuyQnty(BuyQtyRequest buyQtyRequest) {
-        FetchFineLineResponse fetchFineLineResponse = new FetchFineLineResponse();
+    public BuyQtyResponse fetchFinelineBuyQnty(BuyQtyRequest buyQtyRequest) {
+        BuyQtyResponse buyQtyResponse = new BuyQtyResponse();
         try {
             List<BuyQntyResponseDTO> buyQntyResponseDTOS = spFineLineChannelFixtureRepository
                     .getBuyQntyByPlanChannel(buyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(buyQtyRequest.getChannel()));
@@ -41,17 +41,17 @@ public class SizeAndPackService {
                     .stream()
                     .flatMap(Collection::stream)
                     .forEach(buyQntyResponseDTO -> buyQunatityMapper
-                            .mapBuyQntyLvl2Sp(buyQntyResponseDTO, fetchFineLineResponse, null));
+                            .mapBuyQntyLvl2Sp(buyQntyResponseDTO, buyQtyResponse, null));
         } catch (Exception e) {
             log.error("Exception While fetching Fineline Buy Qunatities :", e);
             throw new CustomException("Failed to fetch Fineline Buy Qunatities, due to" + e);
         }
-        log.info("Fetch Buy Qty Fineline response: {}", fetchFineLineResponse);
-        return fetchFineLineResponse;
+        log.info("Fetch Buy Qty Fineline response: {}", buyQtyRequest);
+        return buyQtyResponse;
     }
 
-    public FetchFineLineResponse fetchCcBuyQnty(BuyQtyRequest buyQtyRequest, Integer finelineNbr) {
-        FetchFineLineResponse fetchFineLineResponse = new FetchFineLineResponse();
+    public BuyQtyResponse fetchCcBuyQnty(BuyQtyRequest buyQtyRequest, Integer finelineNbr) {
+        BuyQtyResponse buyQtyResponse = new BuyQtyResponse();
         try {
             List<BuyQntyResponseDTO> buyQntyResponseDTOS = spCustomerChoiceChannelFixtureRepository
                     .getBuyQntyByPlanChannelFineline(buyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(buyQtyRequest.getChannel()), finelineNbr);
@@ -59,13 +59,13 @@ public class SizeAndPackService {
                     .stream()
                     .flatMap(Collection::stream)
                     .forEach(buyQntyResponseDTO -> buyQunatityMapper
-                            .mapBuyQntyLvl2Sp(buyQntyResponseDTO, fetchFineLineResponse, finelineNbr));
+                            .mapBuyQntyLvl2Sp(buyQntyResponseDTO, buyQtyResponse, finelineNbr));
         } catch (Exception e) {
             log.error("Exception While fetching CC Buy Qunatities :", e);
             throw new CustomException("Failed to fetch CC Buy Qunatities, due to" + e);
         }
-        log.info("Fetch Buy Qty CC response: {}", fetchFineLineResponse);
-        return fetchFineLineResponse;
+        log.info("Fetch Buy Qty CC response: {}", buyQtyResponse);
+        return buyQtyResponse;
     }
 
 

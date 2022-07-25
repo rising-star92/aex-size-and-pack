@@ -1,7 +1,7 @@
 type Query {
      getPackOptimizationValues(planid: Int!, channelid : Int!): PackOptimizationResponse!
-     getFinelineBuyQtyDetails(buyQtyRequest: BuyQtyRequest!): FetchFineLineResponse!
-     getCcBuyQtyDetails(buyQtyRequest: BuyQtyRequest!, finelineNbr: Int!): FetchFineLineResponse!
+     getFinelineBuyQtyDetails(buyQtyRequest: BuyQtyRequest!): BuyQtyResponse!
+     getCcBuyQtyDetails(buyQtyRequest: BuyQtyRequest!, finelineNbr: Int!): BuyQtyResponse!
 }
 
 type PackOptimizationResponse{
@@ -65,11 +65,11 @@ type CustomerChoice {
 
 input BuyQtyRequest {
     planId: Int!
-    planDesc: String!
+    planDesc: String
     channel: String!
 }
 
-type FetchFineLineResponse {
+type BuyQtyResponse {
     planId: Int
     planDesc: String
     lvl0Nbr: Int
