@@ -4,7 +4,6 @@ import com.walmart.aex.sp.dto.buyQuantity.BuyQtyRequest;
 import com.walmart.aex.sp.dto.buyQuantity.FetchFineLineResponse;
 import com.walmart.aex.sp.service.SizeAndPackService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.web.bind.annotation.RestController;
