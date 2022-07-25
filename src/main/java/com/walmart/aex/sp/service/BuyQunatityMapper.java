@@ -121,7 +121,8 @@ public class BuyQunatityMapper {
 
         customerChoiceDtoList.stream()
                 .filter(customerChoiceDto -> buyQntyResponseDTO.getCcId().equals(customerChoiceDto.getCcId())).findFirst()
-                .ifPresentOrElse(customerChoiceDto -> customerChoiceDto.setClusters(mapBuyQntySizeSp(buyQntyResponseDTO, customerChoiceDto)),
+                .ifPresentOrElse(customerChoiceDto ->log.info("Size implementation"),
+                        //customerChoiceDto -> customerChoiceDto.setClusters(mapBuyQntySizeSp(buyQntyResponseDTO, customerChoiceDto)),
                         () -> setCcSP(buyQntyResponseDTO, customerChoiceDtoList));
         return customerChoiceDtoList;
     }
@@ -136,7 +137,7 @@ public class BuyQunatityMapper {
         metricsDto.setFinalReplenishmentQty(buyQntyResponseDTO.getCcReplnQty());
         metricsDto.setFinalBuyQty(buyQntyResponseDTO.getCcBuyQty());
         customerChoiceDto.setMetrics(metricsDto);
-        customerChoiceDto.setClusters(mapBuyQntySizeSp(buyQntyResponseDTO, customerChoiceDto));
+        //customerChoiceDto.setClusters(mapBuyQntySizeSp(buyQntyResponseDTO, customerChoiceDto));
         customerChoiceDtoList.add(customerChoiceDto);
     }
 
