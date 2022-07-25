@@ -1,11 +1,11 @@
-package com.walmart.aex.sp.dto.buyQuantity;
+package com.walmart.aex.sp.dto.buyquantity;
 
 import lombok.Data;
 
 import java.util.List;
 
 @Data
-public class FetchFineLineResponse {
+public class BuyQtyResponse {
     private Long planId;
     private String planDesc;
     private Integer lvl0Nbr;

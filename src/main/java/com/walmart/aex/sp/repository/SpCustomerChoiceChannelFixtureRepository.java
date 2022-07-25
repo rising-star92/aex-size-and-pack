@@ -1,6 +1,6 @@
 package com.walmart.aex.sp.repository;
 
-import com.walmart.aex.sp.dto.buyQuantity.BuyQntyResponseDTO;
+import com.walmart.aex.sp.dto.buyquantity.BuyQntyResponseDTO;
 import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixture;
 import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixtureId;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface SpCustomerChoiceChannelFixtureRepository extends JpaRepository<SpCustomerChoiceChannelFixture, SpCustomerChoiceChannelFixtureId> {
 
-    @Query(value="select new com.walmart.aex.sp.dto.buyQuantity.BuyQntyResponseDTO(msp.merchCatPlanId.planId, " +
+    @Query(value="select new com.walmart.aex.sp.dto.buyquantity.BuyQntyResponseDTO(msp.merchCatPlanId.planId, " +
             "msp.merchCatPlanId.lvl0Nbr, " +
             "msp.merchCatPlanId.lvl1Nbr, " +
             "msp.merchCatPlanId.lvl2Nbr, " +

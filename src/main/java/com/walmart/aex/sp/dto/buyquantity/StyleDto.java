@@ -1,9 +1,6 @@
-package com.walmart.aex.sp.dto.buyQuantity;
+package com.walmart.aex.sp.dto.buyquantity;
 
 
-import com.walmart.aex.sp.dto.buyQuantity.ClustersDto;
-import com.walmart.aex.sp.dto.buyQuantity.CustomerChoiceDto;
-import com.walmart.aex.sp.dto.buyQuantity.MetricsDto;
 import lombok.Data;
 
 import java.util.List;

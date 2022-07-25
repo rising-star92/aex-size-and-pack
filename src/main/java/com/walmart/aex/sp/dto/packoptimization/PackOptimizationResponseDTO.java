@@ -1,7 +1,4 @@
-package com.walmart.aex.sp.dto.packOptimization;
-
-import java.util.List;
-
+package com.walmart.aex.sp.dto.packoptimization;
 
 
 import lombok.AllArgsConstructor;
