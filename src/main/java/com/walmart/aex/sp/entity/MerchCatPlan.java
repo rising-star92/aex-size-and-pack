@@ -28,4 +28,13 @@ public class MerchCatPlan {
     @JoinColumn(name = "channel_id", insertable = false, updatable = false)
     @ManyToOne(targetEntity = ChannelText.class, fetch = FetchType.LAZY)
     private ChannelText channelText;
+
+    @Column(name="rpt_lvl_0_gen_desc1",nullable = false)
+    private String lvl0Desc;
+    @Column(name="rpt_lvl_1_gen_desc1",nullable = false)
+    private String lvl1Desc;
+    @Column(name="rpt_lvl_2_gen_desc1",nullable = false)
+    private String lvl2Desc;
+    @Column(name="rpt_lvl_3_gen_desc1",nullable = false)
+    private String lvl3Desc;
 }

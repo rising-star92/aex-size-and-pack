@@ -1,6 +1,6 @@
 type Query {
      getPackOptimizationValues(planid: Int!, channelid : Int!): PackOptimizationResponse!
-     getBuyQtyDetails(buyQtyRequest: BuyQtyRequest): FetchFineLineResponse!
+     getFinelineBuyQtyDetails(buyQtyRequest: BuyQtyRequest): FetchFineLineResponse!
 }
 
 type PackOptimizationResponse{
@@ -66,7 +66,6 @@ input BuyQtyRequest {
     planId: Int!
     planDesc: String!
     channel: String!
-    repTLvl3: Int
 }
 
 type FetchFineLineResponse {
@@ -97,6 +96,17 @@ type FinelineDto {
     finelineNbr: Int
     finelineDesc: String
     metrics: MetricsDto
+    clusters: [ClustersDto]
+}
+type ClustersDto {
+    clusterID: Int
+    sizeList: [SizeList]
+}
+
+type SizeList {
+    sizeId: Int
+    sizeDesc: String
+    metrics: MetricsDto
 }
 
 type MetricsDto {
@@ -109,6 +119,10 @@ type MetricsDto {
     finalInitialSetQty:Int
     finalReplenishmentQty:Int
 }
+
+
+
+
 
 
 

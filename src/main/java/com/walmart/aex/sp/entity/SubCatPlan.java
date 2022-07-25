@@ -32,19 +32,19 @@ public class SubCatPlan {
     @Column(name = "channel_id")
     private Integer channelId;
 
-    @Column(name="rpt_lvl_0_gen_desc0",nullable = false)
+    @Column(name="rpt_lvl_0_gen_desc1",nullable = false)
     private String lvl0Desc;
 
     @Column(name="rpt_lvl_1_gen_desc1",nullable = false)
     private String lvl1Desc;
 
-    @Column(name="rpt_lvl_2_gen_desc2",nullable = false)
+    @Column(name="rpt_lvl_2_gen_desc1",nullable = false)
     private String lvl2Desc;
 
-    @Column(name="rpt_lvl_3_gen_desc3",nullable = false)
+    @Column(name="rpt_lvl_3_gen_desc1",nullable = false)
     private String lvl3Desc;
 
-    @Column(name="rpt_lvl_4_gen_desc4",nullable = false)
+    @Column(name="rpt_lvl_4_gen_desc1",nullable = false)
     private String lvl4Desc;
 
     @OneToMany(mappedBy = "subCatPlan", fetch = FetchType.EAGER,
