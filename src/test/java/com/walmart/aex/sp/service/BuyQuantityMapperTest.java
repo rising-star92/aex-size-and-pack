@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class BuyQuantityMapperTest {
 
     @InjectMocks
-    BuyQunatityMapper buyQunatityMapper;
+    BuyQuantityMapper buyQunatityMapper;
     @Mock
     BuyQntyResponseDTO buyQntyResponseDTO;
     private static final Integer finelineNbr=3470;

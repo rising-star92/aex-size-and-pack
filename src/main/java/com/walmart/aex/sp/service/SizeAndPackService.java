@@ -26,9 +26,9 @@ public class SizeAndPackService {
 
     private final SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository;
     private final SpCustomerChoiceChannelFixtureRepository spCustomerChoiceChannelFixtureRepository;
-    private final BuyQunatityMapper buyQunatityMapper;
+    private final BuyQuantityMapper buyQunatityMapper;
 
-    public SizeAndPackService(SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository, BuyQunatityMapper buyQunatityMapper,
+    public SizeAndPackService(SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository, BuyQuantityMapper buyQunatityMapper,
                               SpCustomerChoiceChannelFixtureRepository spCustomerChoiceChannelFixtureRepository) {
         this.spFineLineChannelFixtureRepository = spFineLineChannelFixtureRepository;
         this.buyQunatityMapper = buyQunatityMapper;

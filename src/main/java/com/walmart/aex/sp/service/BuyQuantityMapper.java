@@ -10,7 +10,7 @@ import java.util.Optional;
 
 @Service
 @Slf4j
-public class BuyQunatityMapper {
+public class BuyQuantityMapper {
     public void mapBuyQntyLvl2Sp(BuyQntyResponseDTO buyQntyResponseDTO, FetchFineLineResponse response, Integer finelineNbr) {
         if (response.getPlanId() == null) {
             response.setPlanId(buyQntyResponseDTO.getPlanId());
