@@ -13,8 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 
 public class BuyQntyController {
-    @Autowired
-    private SizeAndPackService sizeAndPackService;
+
+    private final SizeAndPackService sizeAndPackService;
+
+    public BuyQntyController(SizeAndPackService sizeAndPackService) {
+        this.sizeAndPackService = sizeAndPackService;
+    }
 
     @QueryMapping
     public FetchFineLineResponse getFinelineBuyQtyDetails(@Argument BuyQtyRequest buyQtyRequest)
