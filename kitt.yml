@@ -38,10 +38,10 @@ deploy:
           - destination: /sql.password.txt
             content: aex-size-and-pack/{{ $.kittExec.currentCluster.profile }}#sqlServer.password
       livenessProbe:
-        wait: 60
+        wait: 120
         path: "/actuator/health"
       readinessProbe:
-        wait: 60
+        wait: 120
         path: "/actuator/health"
       networking:
         httpsEnabled: true
@@ -80,7 +80,7 @@ deploy:
           metadata:
             labels:
               ccm.serviceId: AEX_SIZE_AND_PACK
-              ccm.serviceConfigVersion: "1.2"
+              ccm.serviceConfigVersion: "1.0"
           env:
             JAVA_OPTS: "-Dspring.profiles.active=dev
                         -Dccm.configs.dir=/etc/config
@@ -114,7 +114,7 @@ deploy:
           metadata:
             labels:
               ccm.serviceId: AEX_SIZE_AND_PACK
-              ccm.serviceConfigVersion: "1.2"
+              ccm.serviceConfigVersion: "1.0"
           env:
             JAVA_OPTS: "-Dspring.profiles.active=stg
                           -Dccm.configs.dir=/etc/config
@@ -148,7 +148,7 @@ deploy:
           metadata:
             labels:
               ccm.serviceId: AEX_SIZE_AND_PACK
-              ccm.serviceConfigVersion: "1.2"
+              ccm.serviceConfigVersion: "1.0"
           env:
             JAVA_OPTS: "-Dspring.profiles.active=prod
                           -Dccm.configs.dir=/etc/config
