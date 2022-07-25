@@ -1,6 +1,6 @@
 package com.walmart.aex.sp.service;
-import com.walmart.aex.sp.dto.buyQuantity.BuyQntyResponseDTO;
-import com.walmart.aex.sp.dto.buyQuantity.FetchFineLineResponse;
+import com.walmart.aex.sp.dto.buyquantity.BuyQntyResponseDTO;
+import com.walmart.aex.sp.dto.buyquantity.FetchFineLineResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

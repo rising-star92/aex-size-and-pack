@@ -1,6 +1,6 @@
 package com.walmart.aex.sp.service;
 
-import com.walmart.aex.sp.dto.buyQuantity.*;
+import com.walmart.aex.sp.dto.buyquantity.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

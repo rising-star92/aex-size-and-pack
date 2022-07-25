@@ -1,6 +1,6 @@
-package com.walmart.aex.sp.dto.packOptimization;
+package com.walmart.aex.sp.dto.packoptimization;
 
-import com.walmart.aex.sp.dto.planHierarchy.Style;
+import com.walmart.aex.sp.dto.planhierarchy.Style;
 import lombok.Data;
 
 import java.util.List;

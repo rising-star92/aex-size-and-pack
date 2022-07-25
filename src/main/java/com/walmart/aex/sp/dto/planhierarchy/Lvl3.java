@@ -1,8 +1,8 @@
-package com.walmart.aex.sp.dto.planHierarchy;
+package com.walmart.aex.sp.dto.planhierarchy;
 
 import java.util.List;
 
-import com.walmart.aex.sp.dto.packOptimization.Constraints;
+import com.walmart.aex.sp.dto.packoptimization.Constraints;
 import lombok.Data;
 
 @Data
