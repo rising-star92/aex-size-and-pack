@@ -1,4 +1,4 @@
-package com.walmart.aex.sp.dto;
+package com.walmart.aex.sp.dto.packOptimization;
 
 import lombok.Data;
 

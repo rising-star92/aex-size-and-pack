@@ -1,4 +1,4 @@
-package com.walmart.aex.sp.dto;
+package com.walmart.aex.sp.dto.planHierarchy;
 
 import lombok.Data;
 

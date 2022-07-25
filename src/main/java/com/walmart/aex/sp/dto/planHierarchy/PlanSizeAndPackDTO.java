@@ -1,5 +1,6 @@
-package com.walmart.aex.sp.dto;
+package com.walmart.aex.sp.dto.planHierarchy;
 
+import com.walmart.aex.sp.dto.planHierarchy.Lvl1;
 import lombok.Data;
 
 import java.util.List;

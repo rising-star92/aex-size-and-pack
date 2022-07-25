@@ -1,7 +1,7 @@
 package com.walmart.aex.sp.controller;
 
-import com.walmart.aex.sp.dto.BuyQtyRequest;
-import com.walmart.aex.sp.dto.FetchFineLineResponse;
+import com.walmart.aex.sp.dto.buyQuantity.BuyQtyRequest;
+import com.walmart.aex.sp.dto.buyQuantity.FetchFineLineResponse;
 import com.walmart.aex.sp.service.SizeAndPackService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

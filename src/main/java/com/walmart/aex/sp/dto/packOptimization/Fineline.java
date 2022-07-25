@@ -1,5 +1,6 @@
-package com.walmart.aex.sp.dto;
+package com.walmart.aex.sp.dto.packOptimization;
 
+import com.walmart.aex.sp.dto.planHierarchy.Style;
 import lombok.Data;
 
 import java.util.List;
@@ -11,5 +12,4 @@ public class Fineline {
     private String packOptimizationStatus;
     private Constraints constraints;
     private List<Style> styles;
-    
 }

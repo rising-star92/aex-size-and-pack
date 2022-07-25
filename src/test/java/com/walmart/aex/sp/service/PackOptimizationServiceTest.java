@@ -12,7 +12,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.walmart.aex.sp.dto.PackOptimizationResponse;
+import com.walmart.aex.sp.dto.packOptimization.PackOptimizationResponse;
 import com.walmart.aex.sp.entity.CcPackOptimization;
 import com.walmart.aex.sp.entity.CcPackOptimizationID;
 import com.walmart.aex.sp.entity.ChannelText;
@@ -28,8 +28,6 @@ import com.walmart.aex.sp.repository.PackOptimizationRepository;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class PackOptimizationServiceTest {

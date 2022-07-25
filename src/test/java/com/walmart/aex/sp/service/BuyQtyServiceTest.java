@@ -1,7 +1,7 @@
 /*package com.walmart.aex.sp.service;
 
-import com.walmart.aex.sp.dto.BuyQtyRequest;
-import com.walmart.aex.sp.dto.FetchFineLineResponse;
+import com.walmart.aex.sp.dto.buyQuantity.BuyQtyRequest;
+import com.walmart.aex.sp.dto.buyQuantity.FetchFineLineResponse;
 import com.walmart.aex.sp.entity.*;
 import com.walmart.aex.sp.repository.FineLineBuyRepo;
 import org.junit.jupiter.api.Test;

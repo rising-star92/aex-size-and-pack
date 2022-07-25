@@ -10,7 +10,4 @@ public interface PackOptimizationRepository
 extends JpaRepository<MerchantPackOptimization, MerchantPackOptimizationID> {
 
 	List<MerchantPackOptimization> findByMerchantPackOptimizationIDPlanIdAndChannelTextChannelId(Long planid, Integer channelid);
-
-
-
 }

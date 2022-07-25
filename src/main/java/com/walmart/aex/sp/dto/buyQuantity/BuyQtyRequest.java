@@ -1,4 +1,4 @@
-package com.walmart.aex.sp.dto;
+package com.walmart.aex.sp.dto.buyQuantity;
 
 import lombok.Data;
 
@@ -7,6 +7,4 @@ public class BuyQtyRequest {
     private Long planId;
     private String channel;
     private String planDesc;
-    private Integer repTLvl3;
-
 }

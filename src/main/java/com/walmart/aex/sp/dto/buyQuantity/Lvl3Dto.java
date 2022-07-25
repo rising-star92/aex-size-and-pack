@@ -1,4 +1,4 @@
-package com.walmart.aex.sp.dto;
+package com.walmart.aex.sp.dto.buyQuantity;
 import lombok.Data;
 
 import java.util.List;

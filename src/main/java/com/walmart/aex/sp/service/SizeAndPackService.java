@@ -1,6 +1,10 @@
 package com.walmart.aex.sp.service;
 
-import com.walmart.aex.sp.dto.*;
+import com.walmart.aex.sp.dto.buyQuantity.BuyQntyResponseDTO;
+import com.walmart.aex.sp.dto.buyQuantity.BuyQtyRequest;
+import com.walmart.aex.sp.dto.buyQuantity.FetchFineLineResponse;
+import com.walmart.aex.sp.dto.planHierarchy.PlanSizeAndPackDTO;
+import com.walmart.aex.sp.dto.planHierarchy.SizeAndPackResponse;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.repository.SpCustomerChoiceChannelFixtureRepository;
@@ -68,8 +72,8 @@ public class SizeAndPackService {
     }
 
 
-    @Transactional
-    public SizeAndPackResponse saveSizeAndPackData(PlanSizeAndPackDTO planSizeAndPackDTO) {
+//    @Transactional
+//    public SizeAndPackResponse saveSizeAndPackData(PlanSizeAndPackDTO planSizeAndPackDTO) {
 //        SizeAndPackResponse sizeAndPackResponse = new SizeAndPackResponse();
 //        try {
 //            log.info("Received the payload from strategy listener for CLP & Analytics: {}", objectMapper.writeValueAsString(planSizeAndPackDTO));
@@ -98,8 +102,8 @@ public class SizeAndPackService {
 //
 //        return sizeAndPackResponse;
 //
-        return null;
-  }
+//        return null;
+//  }
 
 
 
