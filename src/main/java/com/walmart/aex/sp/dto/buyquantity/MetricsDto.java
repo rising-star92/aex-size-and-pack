@@ -12,4 +12,9 @@ public class MetricsDto {
     private Integer finalBuyQty;
     private Integer finalInitialSetQty;
     private Integer finalReplenishmentQty;
+    private Integer vendorPack;
+    private Integer warehousePack;
+    private Integer packRatio;
+    private Integer replenishmentPacks;
+
 }

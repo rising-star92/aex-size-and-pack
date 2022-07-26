@@ -8,5 +8,6 @@ import java.util.List;
 public class Lvl4Dto {
     private Integer lvl4Nbr;
     private String lvl4Desc;
+    private MetricsDto metrics;
     private List<FinelineDto> finelines;
 }
