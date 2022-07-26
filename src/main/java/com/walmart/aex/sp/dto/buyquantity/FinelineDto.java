@@ -8,6 +8,7 @@ import java.util.List;
 public class FinelineDto {
     private Integer finelineNbr;
     private String finelineDesc;
+    private String finelineAltDesc;
     private MetricsDto metrics;
     private List<ClustersDto> clusters;
     private List<StyleDto> styles;

@@ -62,6 +62,7 @@ public interface SpFineLineChannelFixtureRepository extends JpaRepository<SpFine
             "AND fp.finelinePlanId.subCatPlanId.merchCatPlanId.lvl3Nbr = sfcf.spFineLineChannelFixtureId.lvl3Nbr " +
             "AND fp.finelinePlanId.subCatPlanId.lvl4Nbr = sfcf.spFineLineChannelFixtureId.lvl4Nbr " +
             "AND fp.finelinePlanId.finelineNbr = sfcf.spFineLineChannelFixtureId.fineLineNbr " +
-            "where fp.channelId in (:channelId,3) and msp.merchCatPlanId.planId = :planId and (sfcf.spFineLineChannelFixtureId.channelId is NULL or sfcf.spFineLineChannelFixtureId.channelId = :channelId)")
+            "where fp.channelId in (:channelId,3) and msp.merchCatPlanId.planId = :planId and (sfcf.spFineLineChannelFixtureId.channelId is NULL or sfcf.spFineLineChannelFixtureId.channelId = :channelId)"
+    )
     List<BuyQntyResponseDTO> getBuyQntyByPlanChannel(@Param("planId") Long planId, @Param("channelId") Integer channelId);
 }
