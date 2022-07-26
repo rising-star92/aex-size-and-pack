@@ -17,7 +17,7 @@ import java.io.Serializable;
 public class FinelineReplenishmentPackId implements Serializable
 {
     @Embedded
-    private SubReplenishmentPackId subReplenishmentPackId;
+    private SubCatgReplenishmentPackId subCatgReplenishmentPackId;
 
     @Column(name="fineline_nbr",nullable = false)
     private Integer finelineNbr;

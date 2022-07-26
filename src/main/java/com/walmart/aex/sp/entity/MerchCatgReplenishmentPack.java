@@ -1,6 +1,5 @@
 package com.walmart.aex.sp.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -14,7 +13,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Table(name = "merchcatg_replpk_cons", schema = "dbo")
 @Embeddable
-public class MerchantReplenishmentPack
+public class MerchCatgReplenishmentPack
 {
     @EmbeddedId
     @EqualsAndHashCode.Include
@@ -30,12 +29,12 @@ public class MerchantReplenishmentPack
     private Integer vendorPackCnt;
 
     @Column(name="whse_pack_cnt")
-    private Integer WhsePackCnt;
+    private Integer whsePackCnt;
 
     @Column(name="vnpk_whpk_ratio")
     private Integer vnpkWhpkRatio;
 
-    @OneToMany(mappedBy = "merchantReplenishmentPack", fetch = FetchType.LAZY,
+    @OneToMany(mappedBy = "merchCatgReplenishmentPack", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<SubReplenishmentPack> subReplenishmentPack;
+    private Set<SubCatgReplenishmentPack> subReplenishmentPack;
 }

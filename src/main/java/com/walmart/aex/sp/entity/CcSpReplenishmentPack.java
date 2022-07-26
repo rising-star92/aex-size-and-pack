@@ -49,7 +49,7 @@ public class CcSpReplenishmentPack
     private Integer vendorPackCnt;
 
     @Column(name="whse_pack_cnt")
-    private Integer WhsePackCnt;
+    private Integer whsePackCnt;
 
     @Column(name="vnpk_whpk_ratio")
     private Integer vnpkWhpkRatio;

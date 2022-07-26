@@ -40,13 +40,14 @@ public class FinelineReplenishmentPack
     private Integer vendorPackCnt;
 
     @Column(name="whse_pack_cnt")
-    private Integer WhsePackCnt;
+    private Integer whsePackCnt;
 
     @Column(name="vnpk_whpk_ratio")
     private Integer vnpkWhpkRatio;
 
-    @Column(name="run_status_code")
-    private Integer runstatusCode;
+    @JoinColumn(name = "run_status_code", insertable = false, updatable = false)
+    @ManyToOne(targetEntity = RunStatusText.class, fetch = FetchType.LAZY)
+    private RunStatusText runStatusText;
 
     @OneToMany(mappedBy = "finelineReplenishmentPack", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL, orphanRemoval = true)

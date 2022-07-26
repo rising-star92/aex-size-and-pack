@@ -14,11 +14,11 @@ import java.util.Set;
 @NoArgsConstructor
 @Table(name = "subcatg_replpk_cons", schema = "dbo")
 @Embeddable
-public class SubReplenishmentPack
+public class SubCatgReplenishmentPack
 {
     @EmbeddedId
     @EqualsAndHashCode.Include
-    SubReplenishmentPackId subReplenishmentPackId;
+    SubCatgReplenishmentPackId subCatgReplenishmentPackId;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "plan_id", referencedColumnName = "plan_id", nullable = false, insertable = false, updatable = false)
@@ -27,7 +27,7 @@ public class SubReplenishmentPack
     @JoinColumn(name = "rpt_lvl_2_nbr", referencedColumnName = "rpt_lvl_2_nbr", nullable = false, insertable = false, updatable = false)
     @JoinColumn(name = "rpt_lvl_3_nbr", referencedColumnName = "rpt_lvl_3_nbr", nullable = false, insertable = false, updatable = false)
     @JsonIgnore
-    private MerchantReplenishmentPack merchantReplenishmentPack;
+    private MerchCatgReplenishmentPack merchCatgReplenishmentPack;
 
     @Column(name="final_buy_units")
     private Integer finalBuyUnits;
@@ -39,7 +39,7 @@ public class SubReplenishmentPack
     private Integer vendorPackCnt;
 
     @Column(name="whse_pack_cnt")
-    private Integer WhsePackCnt;
+    private Integer whsePackCnt;
 
     @Column(name="vnpk_whpk_ratio")
     private Integer vnpkWhpkRatio;

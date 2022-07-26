@@ -14,7 +14,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Embeddable
 @EqualsAndHashCode
-public class SubReplenishmentPackId implements Serializable
+public class SubCatgReplenishmentPackId implements Serializable
 {
     @Embedded
     private MerchantPackOptimizationID merchantPackOptimizationID;
