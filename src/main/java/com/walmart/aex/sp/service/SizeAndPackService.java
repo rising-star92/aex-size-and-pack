@@ -3,12 +3,21 @@ package com.walmart.aex.sp.service;
 import com.walmart.aex.sp.dto.buyquantity.BuyQntyResponseDTO;
 import com.walmart.aex.sp.dto.buyquantity.BuyQtyRequest;
 import com.walmart.aex.sp.dto.buyquantity.BuyQtyResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.walmart.aex.sp.dto.planhierarchy.Lvl1;
+import com.walmart.aex.sp.dto.planhierarchy.Lvl2;
+import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
+import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDTO;
+import com.walmart.aex.sp.dto.planhierarchy.SizeAndPackResponse;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.exception.CustomException;
+import com.walmart.aex.sp.repository.MerchCatPlanRepository;
 import com.walmart.aex.sp.repository.SpCustomerChoiceChannelFixtureRepository;
 import com.walmart.aex.sp.repository.SpFineLineChannelFixtureRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
@@ -23,13 +32,23 @@ public class SizeAndPackService {
 
     private final SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository;
     private final SpCustomerChoiceChannelFixtureRepository spCustomerChoiceChannelFixtureRepository;
+
+    private final MerchCatPlanRepository merchCatPlanRepository;
     private final BuyQuantityMapper buyQunatityMapper;
 
+    private final SizeAndPackObjectMapper sizeAndPackObjectMapper;
+
+    final ObjectMapper objectMapper = new ObjectMapper();
+
     public SizeAndPackService(SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository, BuyQuantityMapper buyQunatityMapper,
-                              SpCustomerChoiceChannelFixtureRepository spCustomerChoiceChannelFixtureRepository) {
+                              SpCustomerChoiceChannelFixtureRepository spCustomerChoiceChannelFixtureRepository,
+                              SizeAndPackObjectMapper sizeAndPackObjectMapper,
+                              MerchCatPlanRepository merchCatPlanRepository) {
         this.spFineLineChannelFixtureRepository = spFineLineChannelFixtureRepository;
         this.buyQunatityMapper = buyQunatityMapper;
         this.spCustomerChoiceChannelFixtureRepository = spCustomerChoiceChannelFixtureRepository;
+        this.sizeAndPackObjectMapper = sizeAndPackObjectMapper;
+        this.merchCatPlanRepository = merchCatPlanRepository;
     }
 
     public BuyQtyResponse fetchFinelineBuyQnty(BuyQtyRequest buyQtyRequest) {
@@ -69,38 +88,36 @@ public class SizeAndPackService {
     }
 
 
-//    @Transactional
-//    public SizeAndPackResponse saveSizeAndPackData(PlanSizeAndPackDTO planSizeAndPackDTO) {
-//        SizeAndPackResponse sizeAndPackResponse = new SizeAndPackResponse();
-//        try {
-//            log.info("Received the payload from strategy listener for CLP & Analytics: {}", objectMapper.writeValueAsString(planSizeAndPackDTO));
-//        } catch (JsonProcessingException exp) {
-//            sizeAndPackResponse.setStatus(FAILED_STATUS);
-//            log.error("Couldn't parse the payload sent to Strategy Listener. Error: {}", exp.toString());
-//        }
-//
-//        for (Lvl1 lvl1 : planSizeAndPackDTO.getLvl1List()) {
-//            for (Lvl2 lvl2 : lvl1.getLvl2List()) {
-//                for (Lvl3 lvl3 : lvl2.getLvl3List()) {
-//                    for (Lvl4 lvl4 : lvl3.getLvl4List()) {
-//                        for (Fineline fineline : lvl4.getFinelines()) {
-//                            for (Style style : fineline.getStyles()) {
-//                                customerChoiceRepository.save(sizeAndPackObjectMapper.mapCustChoice(planSizeAndPackDTO, lvl1, lvl2, lvl3, lvl4, fineline, style));
-//                                merchCatPlanRepository.save(sizeAndPackObjectMapper.mapMerchCatPlan(planSizeAndPackDTO, lvl1, lvl2, lvl3, fineline));
-//                                stylePlanRepository.save(sizeAndPackObjectMapper.mapStylePlan(planSizeAndPackDTO, lvl1, lvl2, lvl3, lvl4, fineline, style));
-//                                subCatPlanRepository.save(sizeAndPackObjectMapper.mapSubCatPlan(planSizeAndPackDTO, lvl1, lvl2, lvl3, lvl4, fineline));
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        sizeAndPackResponse.setStatus("Success");
-//
-//        return sizeAndPackResponse;
-//
-//        return null;
-//  }
+    @Transactional
+    public SizeAndPackResponse saveSizeAndPackData(PlanSizeAndPackDTO planSizeAndPackDTO) {
+        SizeAndPackResponse sizeAndPackResponse = new SizeAndPackResponse();
+        try {
+            log.info("Received the payload from strategy listener for CLP & Analytics: {}", objectMapper.writeValueAsString(planSizeAndPackDTO));
+        } catch (JsonProcessingException exp) {
+            sizeAndPackResponse.setStatus(FAILED_STATUS);
+            log.error("Couldn't parse the payload sent to Strategy Listener. Error: {}", exp.toString());
+        }
+
+        try {
+            for (Lvl1 lvl1 : planSizeAndPackDTO.getLvl1List()) {
+                for (Lvl2 lvl2 : lvl1.getLvl2List()) {
+                    for (Lvl3 lvl3 : lvl2.getLvl3List()) {
+                        //Since the category and sub category does not have the channel info, getting it from the fineline
+                        String channel = Optional.ofNullable(lvl3.getLvl4List())
+                                        .map(lvl4s -> lvl4s.get(0))
+                                        .map(finelines -> finelines.getFinelines().get(0).getChannel())
+                                        .orElse(null);
+                        merchCatPlanRepository.saveAll(sizeAndPackObjectMapper.setMerchCatPlan(planSizeAndPackDTO, lvl1, lvl2, lvl3, channel));
+                    }
+                }
+            }
+            sizeAndPackResponse.setStatus(SUCCESS_STATUS);
+        } catch (Exception ex) {
+            sizeAndPackResponse.setStatus(FAILED_STATUS);
+            log.error("Failed to save the line plan events to size and pack database. Error: {}", ex.toString());
+        }
+        return sizeAndPackResponse;
+  }
 
 
 
