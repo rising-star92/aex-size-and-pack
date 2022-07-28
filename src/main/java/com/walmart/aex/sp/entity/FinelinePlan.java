@@ -25,6 +25,7 @@ public class FinelinePlan {
     @JoinColumn(name = "rpt_lvl_2_nbr", referencedColumnName = "rpt_lvl_2_nbr", nullable = false, insertable = false, updatable = false)
     @JoinColumn(name = "rpt_lvl_3_nbr", referencedColumnName = "rpt_lvl_3_nbr", nullable = false, insertable = false, updatable = false)
     @JoinColumn(name = "rpt_lvl_4_nbr", referencedColumnName = "rpt_lvl_4_nbr", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "channel_id", referencedColumnName = "channel_id", nullable = false, insertable = false, updatable = false)
     @JsonIgnore
     private SubCatPlan subCatPlan;
 
@@ -34,14 +35,7 @@ public class FinelinePlan {
     @Column(name = "alt_fineline_desc")
     private String altFinelineName;
 
-    @Column(name = "channel_id")
-    private Integer channelId;
-
     @OneToMany(mappedBy = "finelinePlan", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<StylePlan> stylePlans;
-
-    @JoinColumn(name = "channel_id", insertable = false, updatable = false)
-    @ManyToOne(targetEntity = ChannelText.class, fetch = FetchType.LAZY)
-    private ChannelText channelText;
 }

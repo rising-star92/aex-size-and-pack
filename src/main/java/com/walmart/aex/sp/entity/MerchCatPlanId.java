@@ -26,4 +26,6 @@ public class MerchCatPlanId implements Serializable {
     private Integer lvl2Nbr;
     @Column(name="rpt_lvl_3_nbr",nullable = false)
     private Integer lvl3Nbr;
+    @Column(name = "channel_id")
+    private Integer channelId;
 }

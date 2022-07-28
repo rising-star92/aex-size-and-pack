@@ -41,7 +41,7 @@ public interface SpFineLineChannelFixtureRepository extends JpaRepository<SpFine
             "AND msp.merchCatPlanId.lvl1Nbr = ssp.subCatPlanId.merchCatPlanId.lvl1Nbr " +
             "AND msp.merchCatPlanId.lvl2Nbr = ssp.subCatPlanId.merchCatPlanId.lvl2Nbr " +
             "AND msp.merchCatPlanId.lvl3Nbr = ssp.subCatPlanId.merchCatPlanId.lvl3Nbr " +
-            "AND msp.channelId = ssp.channelId " +
+            "AND msp.merchCatPlanId.channelId = ssp.subCatPlanId.merchCatPlanId.channelId " +
             "inner join " +
             "FinelinePlan fp " +
             "ON " +
@@ -51,7 +51,7 @@ public interface SpFineLineChannelFixtureRepository extends JpaRepository<SpFine
             "AND ssp.subCatPlanId.merchCatPlanId.lvl2Nbr = fp.finelinePlanId.subCatPlanId.merchCatPlanId.lvl2Nbr " +
             "AND ssp.subCatPlanId.merchCatPlanId.lvl3Nbr = fp.finelinePlanId.subCatPlanId.merchCatPlanId.lvl3Nbr " +
             "AND ssp.subCatPlanId.lvl4Nbr = fp.finelinePlanId.subCatPlanId.lvl4Nbr " +
-            "AND ssp.channelId = fp.channelId " +
+            "AND ssp.subCatPlanId.merchCatPlanId.channelId = fp.finelinePlanId.subCatPlanId.merchCatPlanId.channelId " +
             "left join " +
             "SpFineLineChannelFixture sfcf " +
             "ON " +
@@ -62,6 +62,7 @@ public interface SpFineLineChannelFixtureRepository extends JpaRepository<SpFine
             "AND fp.finelinePlanId.subCatPlanId.merchCatPlanId.lvl3Nbr = sfcf.spFineLineChannelFixtureId.lvl3Nbr " +
             "AND fp.finelinePlanId.subCatPlanId.lvl4Nbr = sfcf.spFineLineChannelFixtureId.lvl4Nbr " +
             "AND fp.finelinePlanId.finelineNbr = sfcf.spFineLineChannelFixtureId.fineLineNbr " +
-            "where fp.channelId in (:channelId,3) and msp.merchCatPlanId.planId = :planId and (sfcf.spFineLineChannelFixtureId.channelId is NULL or sfcf.spFineLineChannelFixtureId.channelId = :channelId)")
+            "AND fp.finelinePlanId.subCatPlanId.merchCatPlanId.channelId = sfcf.spFineLineChannelFixtureId.channelId " +
+            "where fp.finelinePlanId.subCatPlanId.merchCatPlanId.channelId in (:channelId) and msp.merchCatPlanId.planId = :planId and (sfcf.spFineLineChannelFixtureId.channelId is NULL or sfcf.spFineLineChannelFixtureId.channelId = :channelId)")
     List<BuyQntyResponseDTO> getBuyQntyByPlanChannel(@Param("planId") Long planId, @Param("channelId") Integer channelId);
 }
