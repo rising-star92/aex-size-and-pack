@@ -105,8 +105,8 @@ public interface SpCustomerChoiceChannelFixtureRepository extends JpaRepository<
             "AND ccp.custChoicePlanId.stylePlanId.styleNbr = sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.styleNbr " +
             "AND ccp.custChoicePlanId.ccId = sccf.spCustomerChoiceChannelFixtureId.customerChoice " +
             "AND ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId = sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.channelId " +
-            "where sp.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId in (:channelId) and " +
-            "ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId in (:channelId) and msp.merchCatPlanId.planId = :planId and " +
+            "where sp.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId in (:channelId,3) and " +
+            "ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId in (:channelId,3) and msp.merchCatPlanId.planId = :planId and " +
             "fp.finelinePlanId.finelineNbr = :finelineNbr and " +
             "(sscf.spStyleChannelFixtureId.spFineLineChannelFixtureId.channelId is NULL or sscf.spStyleChannelFixtureId.spFineLineChannelFixtureId.channelId = :channelId) and " +
             "(sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.channelId is NULL or sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.channelId = :channelId) ")
