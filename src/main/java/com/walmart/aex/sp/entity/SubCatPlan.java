@@ -26,11 +26,9 @@ public class SubCatPlan {
     @JoinColumn(name = "rpt_lvl_1_nbr", referencedColumnName = "rpt_lvl_1_nbr", nullable = false, insertable = false, updatable = false)
     @JoinColumn(name = "rpt_lvl_2_nbr", referencedColumnName = "rpt_lvl_2_nbr", nullable = false, insertable = false, updatable = false)
     @JoinColumn(name = "rpt_lvl_3_nbr", referencedColumnName = "rpt_lvl_3_nbr", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "channel_id", referencedColumnName = "channel_id", nullable = false, insertable = false, updatable = false)
     @JsonIgnore
     private MerchCatPlan merchCatPlan;
-
-    @Column(name = "channel_id")
-    private Integer channelId;
 
     @Column(name="rpt_lvl_0_gen_desc1",nullable = false)
     private String lvl0Desc;
@@ -50,8 +48,4 @@ public class SubCatPlan {
     @OneToMany(mappedBy = "subCatPlan", fetch = FetchType.EAGER,
             cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<FinelinePlan> finelinePlans;
-
-    @JoinColumn(name = "channel_id", insertable = false, updatable = false)
-    @ManyToOne(targetEntity = ChannelText.class, fetch = FetchType.LAZY)
-    private ChannelText channelText;
 }

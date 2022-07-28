@@ -46,7 +46,7 @@ public interface SpCustomerChoiceChannelFixtureRepository extends JpaRepository<
             "AND msp.merchCatPlanId.lvl1Nbr = ssp.subCatPlanId.merchCatPlanId.lvl1Nbr " +
             "AND msp.merchCatPlanId.lvl2Nbr = ssp.subCatPlanId.merchCatPlanId.lvl2Nbr " +
             "AND msp.merchCatPlanId.lvl3Nbr = ssp.subCatPlanId.merchCatPlanId.lvl3Nbr " +
-            "AND msp.channelId = ssp.channelId " +
+            "AND msp.merchCatPlanId.channelId = ssp.subCatPlanId.merchCatPlanId.channelId " +
             "inner join " +
             "FinelinePlan fp " +
             "ON " +
@@ -56,7 +56,7 @@ public interface SpCustomerChoiceChannelFixtureRepository extends JpaRepository<
             "AND ssp.subCatPlanId.merchCatPlanId.lvl2Nbr = fp.finelinePlanId.subCatPlanId.merchCatPlanId.lvl2Nbr " +
             "AND ssp.subCatPlanId.merchCatPlanId.lvl3Nbr = fp.finelinePlanId.subCatPlanId.merchCatPlanId.lvl3Nbr " +
             "AND ssp.subCatPlanId.lvl4Nbr = fp.finelinePlanId.subCatPlanId.lvl4Nbr " +
-            "AND ssp.channelId = fp.channelId " +
+            "AND ssp.subCatPlanId.merchCatPlanId.channelId = fp.finelinePlanId.subCatPlanId.merchCatPlanId.channelId " +
             "inner join " +
             "StylePlan sp " +
             "ON " +
@@ -67,6 +67,7 @@ public interface SpCustomerChoiceChannelFixtureRepository extends JpaRepository<
             "AND fp.finelinePlanId.subCatPlanId.merchCatPlanId.lvl3Nbr = sp.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.lvl3Nbr " +
             "AND fp.finelinePlanId.subCatPlanId.lvl4Nbr = sp.stylePlanId.finelinePlanId.subCatPlanId.lvl4Nbr " +
             "AND fp.finelinePlanId.finelineNbr = sp.stylePlanId.finelinePlanId.finelineNbr " +
+            "AND fp.finelinePlanId.subCatPlanId.merchCatPlanId.channelId = sp.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId " +
             "inner join " +
             "CustChoicePlan ccp " +
             "ON " +
@@ -78,6 +79,7 @@ public interface SpCustomerChoiceChannelFixtureRepository extends JpaRepository<
             "AND sp.stylePlanId.finelinePlanId.subCatPlanId.lvl4Nbr = ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.lvl4Nbr " +
             "AND sp.stylePlanId.finelinePlanId.finelineNbr = ccp.custChoicePlanId.stylePlanId.finelinePlanId.finelineNbr " +
             "AND sp.stylePlanId.styleNbr = ccp.custChoicePlanId.stylePlanId.styleNbr " +
+            "AND sp.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId = ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId " +
             "left join " +
             "SpStyleChannelFixture sscf " +
             "ON " +
@@ -89,6 +91,7 @@ public interface SpCustomerChoiceChannelFixtureRepository extends JpaRepository<
             "AND sp.stylePlanId.finelinePlanId.subCatPlanId.lvl4Nbr = sscf.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl4Nbr " +
             "AND sp.stylePlanId.finelinePlanId.finelineNbr = sscf.spStyleChannelFixtureId.spFineLineChannelFixtureId.fineLineNbr " +
             "AND sp.stylePlanId.styleNbr = sscf.spStyleChannelFixtureId.styleNbr " +
+            "AND sp.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId = sscf.spStyleChannelFixtureId.spFineLineChannelFixtureId.channelId " +
             "left join " +
             "SpCustomerChoiceChannelFixture sccf " +
             "ON " +
@@ -101,7 +104,9 @@ public interface SpCustomerChoiceChannelFixtureRepository extends JpaRepository<
             "AND ccp.custChoicePlanId.stylePlanId.finelinePlanId.finelineNbr = sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.fineLineNbr " +
             "AND ccp.custChoicePlanId.stylePlanId.styleNbr = sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.styleNbr " +
             "AND ccp.custChoicePlanId.ccId = sccf.spCustomerChoiceChannelFixtureId.customerChoice " +
-            "where sp.channelId in (:channelId,3) and ccp.channelId in (:channelId,3) and msp.merchCatPlanId.planId = :planId and " +
+            "AND ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId = sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.channelId " +
+            "where sp.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId in (:channelId,3) and " +
+            "ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId in (:channelId,3) and msp.merchCatPlanId.planId = :planId and " +
             "fp.finelinePlanId.finelineNbr = :finelineNbr and " +
             "(sscf.spStyleChannelFixtureId.spFineLineChannelFixtureId.channelId is NULL or sscf.spStyleChannelFixtureId.spFineLineChannelFixtureId.channelId = :channelId) and " +
             "(sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.channelId is NULL or sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.channelId = :channelId) ")

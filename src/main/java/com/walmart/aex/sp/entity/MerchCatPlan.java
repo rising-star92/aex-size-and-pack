@@ -18,16 +18,9 @@ public class MerchCatPlan {
     @EqualsAndHashCode.Include
     private MerchCatPlanId merchCatPlanId;
 
-    @Column(name = "channel_id")
-    private Integer channelId;
-
     @OneToMany(mappedBy = "merchCatPlan", fetch = FetchType.EAGER,
             cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<SubCatPlan> subCatPlans;
-
-    @JoinColumn(name = "channel_id", insertable = false, updatable = false)
-    @ManyToOne(targetEntity = ChannelText.class, fetch = FetchType.LAZY)
-    private ChannelText channelText;
 
     @Column(name="rpt_lvl_0_gen_desc1",nullable = false)
     private String lvl0Desc;
