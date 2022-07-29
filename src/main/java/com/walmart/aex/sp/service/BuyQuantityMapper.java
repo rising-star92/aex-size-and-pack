@@ -5,12 +5,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @Slf4j
 public class BuyQuantityMapper {
+
     public void mapBuyQntyLvl2Sp(BuyQntyResponseDTO buyQntyResponseDTO, BuyQtyResponse response, Integer finelineNbr) {
         if (response.getPlanId() == null) {
             response.setPlanId(buyQntyResponseDTO.getPlanId());
@@ -136,36 +138,21 @@ public class BuyQuantityMapper {
         metricsDto.setFinalReplenishmentQty(buyQntyResponseDTO.getCcReplnQty());
         metricsDto.setFinalBuyQty(buyQntyResponseDTO.getCcBuyQty());
         customerChoiceDto.setMetrics(metricsDto);
-        //customerChoiceDto.setClusters(mapBuyQntySizeSp(buyQntyResponseDTO, customerChoiceDto));
         customerChoiceDtoList.add(customerChoiceDto);
     }
 
-    /*private List<ClustersDto> mapBuyQntySizeSp(BuyQntyResponseDTO buyQntyResponseDTO, CustomerChoiceDto customerChoiceDto) {
-        List<SizeDto> sizeDtoList = Optional.ofNullable(customerChoiceDto.getClusters())
+    public void mapBuyQntySizeSp(BuyQntyResponseDTO buyQntyResponseDTO, List<SizeDto> sizeDtos) {
+        Optional.of(sizeDtos)
                 .stream()
                 .flatMap(Collection::stream)
-                .filter(clustersDto -> clustersDto.getClusterId().equals(0))
+                .filter(sizeDto -> sizeDto.getAhsSizeId().equals(buyQntyResponseDTO.getAhsSizeId()))
                 .findFirst()
-                .map(ClustersDto::getSizeList)
-                .orElse(new ArrayList<>());
-        return setBuyQntySizeSp(buyQntyResponseDTO, sizeDtoList);
+                .ifPresent(sizeDto -> {
+                    MetricsDto metricsDto = sizeDto.getMetrics();
+                    metricsDto.setBuyQty(buyQntyResponseDTO.getBuyQty());
+                    metricsDto.setFinalInitialSetQty(buyQntyResponseDTO.getInitialSetQty());
+                    metricsDto.setFinalReplenishmentQty(buyQntyResponseDTO.getReplnQty());
+                    metricsDto.setFinalBuyQty(buyQntyResponseDTO.getBuyQty());
+                });
     }
-
-    private List<ClustersDto> setBuyQntySizeSp(BuyQntyResponseDTO buyQntyResponseDTO, List<SizeDto> sizeDtoList) {
-        List<ClustersDto> clustersDtoList = new ArrayList<>();
-        ClustersDto clustersDto = new ClustersDto();
-        SizeDto sizeDto = new SizeDto();
-        MetricsDto metricsDto = new MetricsDto();
-        metricsDto.setBuyQty(buyQntyResponseDTO.getBuyQty());
-        metricsDto.setFinalInitialSetQty(buyQntyResponseDTO.getInitialSetQty());
-        metricsDto.setFinalReplenishmentQty(buyQntyResponseDTO.getReplnQty());
-        metricsDto.setFinalBuyQty(buyQntyResponseDTO.getBuyQty());
-        sizeDto.setMetrics(metricsDto);
-        sizeDto.setSizeId(buyQntyResponseDTO.getSizeId());
-        sizeDto.setSizeDesc(buyQntyResponseDTO.getSizeDesc());
-        sizeDtoList.add(sizeDto);
-        clustersDto.setSizeList(sizeDtoList);
-        clustersDtoList.add(clustersDto);
-        return clustersDtoList;
-    }*/
 }

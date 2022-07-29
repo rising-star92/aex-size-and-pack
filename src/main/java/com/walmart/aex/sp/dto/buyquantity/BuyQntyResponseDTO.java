@@ -22,7 +22,7 @@ public class BuyQntyResponseDTO {
     private String finelineDesc;
     private String styleNbr;
     private String ccId;
-    private Integer sizeId;
+    private Integer ahsSizeId;
     private String sizeDesc;
     private Integer flowStrategyCode;
     private Integer merchMethodCode;
@@ -106,5 +106,30 @@ public class BuyQntyResponseDTO {
         this.ccBuyQty=ccBuyQty;
         this.ccReplnQty=ccReplnQty;
         this.ccAdjReplnQty=ccAdjReplnQty;
+    }
+
+    public BuyQntyResponseDTO(Long planId, Integer lvl0Nbr, Integer lvl1Nbr, Integer lvl2Nbr,
+                              Integer lvl3Nbr, Integer lvl4Nbr, Integer finelineNbr, String styleNbr, String ccId, Integer ahsSizeId, String sizeDesc,
+                              Integer flowStrategyCode, Integer merchMethodCode, String merchMethodShortDesc, Integer bumpPackQty,
+                              Integer initialSetQty, Integer buyQty, Integer replnQty, Integer adjReplnQty) {
+        this.planId=planId;
+        this.lvl0Nbr=lvl0Nbr;
+        this.lvl1Nbr=lvl1Nbr;
+        this.lvl2Nbr=lvl2Nbr;
+        this.lvl3Nbr=lvl3Nbr;
+        this.lvl4Nbr=lvl4Nbr;
+        this.finelineNbr=finelineNbr;
+        this.styleNbr=styleNbr;
+        this.ccId=ccId;
+        this.ahsSizeId=ahsSizeId;
+        this.sizeDesc=sizeDesc;
+        this.flowStrategyCode=flowStrategyCode;
+        this.merchMethodCode=merchMethodCode;
+        this.merchMethodShortDesc=merchMethodShortDesc;
+        this.bumpPackQty=bumpPackQty;
+        this.initialSetQty=initialSetQty;
+        this.buyQty=buyQty;
+        this.replnQty=replnQty;
+        this.adjReplnQty=adjReplnQty;
     }
 }
