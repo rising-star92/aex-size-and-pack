@@ -80,3 +80,53 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "AEX_FLOW_PLAN"
+  httpConfig:
+    description: "HTTP Configurations"
+    resolutionPaths:
+      - default: "/envProfile/envName"
+    properties:
+      "http.connectTimeout":
+        description: "Connection Timeout for HTTP Calls"
+        type: "INTEGER"
+        kind: "SINGLE"
+        defaultValue: 18000
+      "http.connectionRequestTimeout":
+        description: "Connection Request Timeout for HTTP Calls"
+        type: "INTEGER"
+        kind: "SINGLE"
+        defaultValue: 18000
+      "http.readTimeout":
+        description: "Read Timeout for HTTP calls"
+        type: "INTEGER"
+        kind: "SINGLE"
+        defaultValue: 18000
+  graphQlConfig:
+    description: "GraphQL Config"
+    resolutionPaths:
+      - default: "/envProfile/envName"
+    properties:
+      "size.profile.url":
+        description: "Get Size Profile URL from strategy Service"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "https://strategy.aex.dev.walmart.net/graphql"
+      "size.profile.query":
+        description: "Size Profile Query for GraphQL Call"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "query ($sizeProfileRequest:SizeProfileRequest!)\n {\n getCcSizeClus(sizeProfileRequest:  $sizeProfileRequest)\n {\n planId\n lvl0Nbr\n lvl1Nbr\n lvl2Nbr\n lvl3List{\n lvl3Nbr\n lvl4List{\n lvl4Nbr\n finelines{\n finelineNbr\n styles{\n styleNbr\n customerChoices{\n ccId\n clusters{\n clusterID\n sizes{\n ahsSizeId\n sizeDesc\n metrics{\n sizeProfilePct\n adjSizeProfilePct\n avgSizeProfilePct\n adjAvgSizeProfilePct\n }}}}}}}}}}"
+      "size.profile.consumer.id":
+        description: "Consumer ID to call Strategy Service"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "34f7ca77-3dfc-46df-a86b-1ba6e4908d0e"
+      "size.profile.consumer.name":
+        description: "Consumer service name"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "AEX_STRATEGY_SERVICE"
+      "size.profile.consumer.env":
+        description: "Consumer Environment"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "dev"

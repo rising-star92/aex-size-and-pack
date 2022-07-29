@@ -31,4 +31,7 @@ public class CustChoicePlan {
     @JoinColumn(name = "channel_id", referencedColumnName = "channel_id", nullable = false, insertable = false, updatable = false)
     @JsonIgnore
     private StylePlan stylePlan;
+
+    @Column(name = "color_name")
+    private String colorName;
 }
