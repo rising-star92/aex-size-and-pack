@@ -55,3 +55,28 @@ configDefinitions:
         type: "INTEGER"
         kind: "SINGLE"
         defaultValue: 30000
+  bqfpServiceConfig:
+    description: ""
+    resolutionPaths:
+      - default: "/envProfile/envName"
+    properties:
+      "bqfp.url":
+        description: "BQFP Service URL"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "https://flow-plan.aex.dev.walmart.net/flow-plan/v1/getBuyQtyFromFlowPlan"
+      "bqfp.consumerId":
+        description: "BQFP SR Consumer ID"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "34f7ca77-3dfc-46df-a86b-1ba6e4908d0e"
+      "bqfp.env":
+        description: "BQFP SR Env"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "dev"
+      "bqfp.svcName":
+        description: "BQFP SR Service Name"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "AEX_FLOW_PLAN"
