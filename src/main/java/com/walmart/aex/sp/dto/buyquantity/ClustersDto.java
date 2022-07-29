@@ -7,5 +7,5 @@ import java.util.List;
 @Data
 public class ClustersDto {
     private Integer clusterId;
-    private List<SizeDto> sizeList;
+    private List<SizeDto> sizes;
 }
