@@ -122,7 +122,7 @@ type CustomerChoiceDto {
 }
 
 type ClustersDto {
-    clusterId: Int
+    clusterID: Int
     sizes: [SizeList]
 }
 

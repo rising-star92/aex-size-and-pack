@@ -142,7 +142,7 @@ public class SizeAndPackService {
                 .map(CustomerChoiceDto::getClusters)
                 .stream()
                 .flatMap(Collection::stream)
-                .filter(clustersDto -> clustersDto.getClusterId().equals(0))
+                .filter(clustersDto -> clustersDto.getClusterID().equals(0))
                 .findFirst()
                 .map(ClustersDto::getSizes)
                 .orElse(new ArrayList<>());
