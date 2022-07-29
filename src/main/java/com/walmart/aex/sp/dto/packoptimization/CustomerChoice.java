@@ -6,5 +6,6 @@ import lombok.Data;
 public class CustomerChoice {
     private String ccId;
     private String colorName;
+    private String channel;
     private Constraints constraints;
 }
