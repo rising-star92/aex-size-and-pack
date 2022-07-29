@@ -17,7 +17,7 @@ public class MerchCatgReplenishmentPack
 {
     @EmbeddedId
     @EqualsAndHashCode.Include
-    MerchantPackOptimizationID merchantPackOptimizationID;
+    MerchantPackOptimizationID merchantPackOptimizationId;
 
     @Column(name="final_buy_units")
     private Integer finalBuyUnits;
@@ -32,7 +32,10 @@ public class MerchCatgReplenishmentPack
     private Integer whsePackCnt;
 
     @Column(name="vnpk_whpk_ratio")
-    private Integer vnpkWhpkRatio;
+    private Double vnpkWhpkRatio;
+
+    @Column(name="repl_pack_cnt")
+    private Integer replPackCnt;
 
     @OneToMany(mappedBy = "merchCatgReplenishmentPack", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL, orphanRemoval = true)

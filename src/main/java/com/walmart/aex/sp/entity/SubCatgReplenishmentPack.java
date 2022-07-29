@@ -42,7 +42,10 @@ public class SubCatgReplenishmentPack
     private Integer whsePackCnt;
 
     @Column(name="vnpk_whpk_ratio")
-    private Integer vnpkWhpkRatio;
+    private Double vnpkWhpkRatio;
+
+    @Column(name="repl_pack_cnt")
+    private Integer replPackCnt;
 
     @OneToMany(mappedBy = "subCatgPackOptimization", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL, orphanRemoval = true)

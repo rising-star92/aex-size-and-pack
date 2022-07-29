@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class SizeDto {
+    private Integer ahsSizeId;
     private Integer sizeId;
     private String sizeDesc;
     private MetricsDto metrics;

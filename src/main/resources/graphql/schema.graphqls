@@ -2,6 +2,9 @@ type Query {
      getPackOptimizationValues(planid: Int!, channelid : Int!): PackOptimizationResponse!
      getFinelineBuyQtyDetails(buyQtyRequest: BuyQtyRequest!): BuyQtyResponse!
      getCcBuyQtyDetails(buyQtyRequest: BuyQtyRequest!, finelineNbr: Int!): BuyQtyResponse!
+     fetchReplnByPlan(replenishmentRequest: ReplenishmentRequest!): ReplenishmentResponse!
+     fetchReplnByPlanFineline(replenishmentRequest: ReplenishmentRequest!): ReplenishmentResponse!
+     fetchReplnByPlanFinelineStyleCc(replenishmentRequest: ReplenishmentRequest!): ReplenishmentResponse!
 }
 
 type PackOptimizationResponse{
@@ -96,6 +99,7 @@ type Lvl4Dto {
 type FinelineDto {
     finelineNbr: Int
     finelineDesc: String
+    finelineAltDesc: String
     metrics: MetricsDto
     clusters: [ClustersDto]
     styles: [StyleDto]
@@ -113,6 +117,7 @@ type CustomerChoiceDto {
     colorName: String
     metrics: MetricsDto
     clusters: [ClustersDto]
+    merchMethods : [MerchMethodsDto]
 }
 
 type ClustersDto {
@@ -135,6 +140,43 @@ type MetricsDto {
     finalBuyQty:Int
     finalInitialSetQty:Int
     finalReplenishmentQty:Int
+    vendorPack: Int
+    warehousePack: Int
+    packRatio: Float
+    replenishmentPacks: Int
+}
+
+type MerchMethodsDto {
+    merchMethod: String
+    metrics: MetricsDto
+    sizes: [SizeDto]
+}
+
+type ReplenishmentResponse {
+    planId: Int
+    planDesc: String
+    lvl0Nbr: Int
+    lvl0Desc: String
+    lvl1Nbr: Int
+    lvl1Desc: String
+    lvl2Nbr: Int
+    lvl2Desc: String
+    lvl3List:[Lvl3Dto]
+}
+
+type SizeDto {
+     ahsSizeId: Int
+     sizeDesc: String
+     metrics: MetricsDto
+}
+
+input ReplenishmentRequest {
+    planId: Int!
+    planDesc: String
+    channel: String!
+    finelineNbr: Int
+    styleNbr: String
+    ccId: String
 }
 
 

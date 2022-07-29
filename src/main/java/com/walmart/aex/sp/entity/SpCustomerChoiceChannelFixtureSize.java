@@ -17,7 +17,7 @@ public class SpCustomerChoiceChannelFixtureSize {
 
     @EmbeddedId
     @EqualsAndHashCode.Include
-    private SpCustomerChoiceChannelFixtureId spCustomerChoiceChannelFixtureId;
+    private SpCustomerChoiceChannelFixtureSizeId spCustomerChoiceChannelFixtureSizeId;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "plan_id", referencedColumnName = "plan_id", nullable = false, insertable = false, updatable = false)
@@ -35,7 +35,7 @@ public class SpCustomerChoiceChannelFixtureSize {
     private SpCustomerChoiceChannelFixture spCustomerChoiceChannelFixture;
 
     @Column(name="ahs_size_desc", nullable = false)
-    private Integer ahsSizeDesc;
+    private String ahsSizeDesc;
 
     @JoinColumn(name = "flow_strategy_code", insertable = false, updatable = false)
     @ManyToOne(targetEntity = FpStrategyText.class, fetch = FetchType.LAZY)
