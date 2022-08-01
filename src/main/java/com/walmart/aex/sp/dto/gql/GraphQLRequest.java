@@ -1,4 +1,4 @@
-package com.walmart.aex.sp.dto.buyquantity;
+package com.walmart.aex.sp.dto.gql;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

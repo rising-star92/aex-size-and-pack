@@ -5,6 +5,8 @@ import com.walmart.aex.sp.dto.assortproduct.APResponse;
 import com.walmart.aex.sp.dto.buyquantity.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.walmart.aex.sp.dto.gql.GraphQLResponse;
+import com.walmart.aex.sp.dto.gql.Payload;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl1;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl2;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
@@ -22,6 +24,7 @@ import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.function.Function;
@@ -167,7 +170,7 @@ public class SizeAndPackService {
         headers.put("WM_SVC.ENV", graphQLProperties.getAssortProductConsumerEnv());
 
         Map<String, Object> data = new HashMap<>();
-        data.put("rfaSizePackRequest", request);
+        data.put("request", request);
 
         return (APResponse) post(graphQLProperties.getAssortProductUrl(), graphQLProperties.getAssortProductRFAQuery(), headers, data, Payload::getGetRFADataFromSizePack);
     }
@@ -186,12 +189,16 @@ public class SizeAndPackService {
     private Object post(String url, String query, Map<String, String> headers, Map<String, Object> data, Function<Payload, ?> responseFunc) throws SizeAndPackException {
         GraphQLResponse graphQLResponse = graphQLService.post(url, query, headers,data);
 
-        return Optional.ofNullable(graphQLResponse)
+        if (CollectionUtils.isEmpty(graphQLResponse.getErrors()))
+            return Optional.ofNullable(graphQLResponse)
               .stream()
               .map(GraphQLResponse::getData)
               .map(responseFunc)
               .findFirst()
               .orElse(null);
+
+        log.error("Error returned in GraphQL call: {}", graphQLResponse.getErrors());
+        return null;
     }
 
 

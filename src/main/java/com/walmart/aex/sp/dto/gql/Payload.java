@@ -1,6 +1,7 @@
-package com.walmart.aex.sp.dto.buyquantity;
+package com.walmart.aex.sp.dto.gql;
 
 import com.walmart.aex.sp.dto.assortproduct.APResponse;
+import com.walmart.aex.sp.dto.buyquantity.BuyQtyResponse;
 import lombok.Data;
 
 @Data
