@@ -1,4 +1,4 @@
-package com.walmart.aex.sp;
+package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.bqfp.BQFPRequest;
 import com.walmart.aex.sp.dto.bqfp.BQFPResponse;
