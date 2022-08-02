@@ -52,5 +52,17 @@ public class CcSpReplenishmentPack
     private Integer whsePackCnt;
 
     @Column(name="vnpk_whpk_ratio")
-    private Integer vnpkWhpkRatio;
+    private Double vnpkWhpkRatio;
+
+    @Column(name="repl_pack_cnt")
+    private Integer replPackCnt;
+
+    @Column(name="merch_method_code")
+    private Integer merchMethodCode;
+
+    @Column(name="merch_method_short_desc")
+    private String merchMethodDesc;
+
+    @Column(name="replen_obj")
+    private String replenObj;
 }
