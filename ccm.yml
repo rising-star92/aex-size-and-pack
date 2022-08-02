@@ -130,3 +130,28 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "dev"
+      "size.profile.assortproduct.url":
+        description: "Get RFA output from Assort Product Service"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "https://assortproduct.aex.dev.walmart.net/graphql"
+      "size.profile.assortproduct.query":
+        description: "Query to retrieve RFA output"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "query($request:RFASizePackRequest!){getRFADataFromSizePack(rfaSizePackRequest:$request){rfaSizePackData{rpt_lvl_0_nbr rpt_lvl_1_nbr rpt_lvl_2_nbr rpt_lvl_3_nbr rpt_lvl_4_nbr fineline_nbr style_nbr customer_choice fixture_type fixture_group color_family size_cluster_id volume_group_cluster_id store_list store_cnt plan_id_partition}}}"
+      "size.profile.assortproduct.consumer.id":
+        description: "Consumer ID to call Assort Product"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "34f7ca77-3dfc-46df-a86b-1ba6e4908d0e"
+      "size.profile.assortproduct.consumer.name":
+        description: "Consumer service name"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "AEX_ASSORTPRODUCT_SERVICE"
+      "size.profile.assortproduct.consumer.env":
+        description: "Consumer Environment"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "dev"
