@@ -32,11 +32,11 @@ public class SizeAndPackController {
 
     @PostMapping(path = "/sizeAndPackService")
     public @ResponseBody
-    ResponseEntity<SizeAndPackResponse> createPlanStrategy(@RequestBody PlanSizeAndPackDTO request) {
+    ResponseEntity<SizeAndPackResponse> createLinePlan(@RequestBody PlanSizeAndPackDTO request) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(sizeAndPackService.saveSizeAndPackData(request));
         } catch (Exception exp) {
-            log.error("Exception occurred when creating a plan Strategy: {}", exp.getMessage());
+            log.error("Exception occurred when creating a line plan: {}", exp.getMessage());
             //throw new CustomException("Exception occurred when creating a plan Strategy: " + exp);
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
@@ -44,11 +44,11 @@ public class SizeAndPackController {
 
     @PutMapping(path = "/sizeAndPackService")
     public @ResponseBody
-    ResponseEntity<SizeAndPackResponse> updatePlanStrategy(@RequestBody PlanSizeAndPackDTO request) {
+    ResponseEntity<SizeAndPackResponse> updateLinePlan(@RequestBody PlanSizeAndPackDTO request) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(sizeAndPackService.updateSizeAndPackData(request));
         } catch (Exception exp) {
-            log.error("Exception occurred when updating a plan Strategy: {}", exp.getMessage());
+            log.error("Exception occurred when updating a line plan : {}", exp.getMessage());
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
     }
