@@ -55,3 +55,103 @@ configDefinitions:
         type: "INTEGER"
         kind: "SINGLE"
         defaultValue: 30000
+  bqfpServiceConfig:
+    description: ""
+    resolutionPaths:
+      - default: "/envProfile/envName"
+    properties:
+      "bqfp.url":
+        description: "BQFP Service URL"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "https://flow-plan.aex.dev.walmart.net/flow-plan/v1/getBuyQtyFromFlowPlan"
+      "bqfp.consumerId":
+        description: "BQFP SR Consumer ID"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "34f7ca77-3dfc-46df-a86b-1ba6e4908d0e"
+      "bqfp.env":
+        description: "BQFP SR Env"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "dev"
+      "bqfp.svcName":
+        description: "BQFP SR Service Name"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "AEX_FLOW_PLAN"
+  httpConfig:
+    description: "HTTP Configurations"
+    resolutionPaths:
+      - default: "/envProfile/envName"
+    properties:
+      "http.connectTimeout":
+        description: "Connection Timeout for HTTP Calls"
+        type: "INTEGER"
+        kind: "SINGLE"
+        defaultValue: 18000
+      "http.connectionRequestTimeout":
+        description: "Connection Request Timeout for HTTP Calls"
+        type: "INTEGER"
+        kind: "SINGLE"
+        defaultValue: 18000
+      "http.readTimeout":
+        description: "Read Timeout for HTTP calls"
+        type: "INTEGER"
+        kind: "SINGLE"
+        defaultValue: 18000
+  graphQlConfig:
+    description: "GraphQL Config"
+    resolutionPaths:
+      - default: "/envProfile/envName"
+    properties:
+      "size.profile.url":
+        description: "Get Size Profile URL from strategy Service"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "https://strategy.aex.dev.walmart.net/graphql"
+      "size.profile.query":
+        description: "Size Profile Query for GraphQL Call"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "query ($sizeProfileRequest:SizeProfileRequest!)\n {\n getCcSizeClus(sizeProfileRequest:  $sizeProfileRequest)\n {\n planId\n lvl0Nbr\n lvl1Nbr\n lvl2Nbr\n lvl3List{\n lvl3Nbr\n lvl4List{\n lvl4Nbr\n finelines{\n finelineNbr\n styles{\n styleNbr\n customerChoices{\n ccId\n clusters{\n clusterID\n sizes{\n ahsSizeId\n sizeDesc\n metrics{\n sizeProfilePct\n adjSizeProfilePct\n avgSizeProfilePct\n adjAvgSizeProfilePct\n }}}}}}}}}}"
+      "size.profile.consumer.id":
+        description: "Consumer ID to call Strategy Service"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "34f7ca77-3dfc-46df-a86b-1ba6e4908d0e"
+      "size.profile.consumer.name":
+        description: "Consumer service name"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "AEX_STRATEGY_SERVICE"
+      "size.profile.consumer.env":
+        description: "Consumer Environment"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "dev"
+      "size.profile.assortproduct.url":
+        description: "Get RFA output from Assort Product Service"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "https://assortproduct.aex.dev.walmart.net/graphql"
+      "size.profile.assortproduct.query":
+        description: "Query to retrieve RFA output"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "query($request:RFASizePackRequest!){getRFADataFromSizePack(rfaSizePackRequest:$request){rfaSizePackData{rpt_lvl_0_nbr rpt_lvl_1_nbr rpt_lvl_2_nbr rpt_lvl_3_nbr rpt_lvl_4_nbr fineline_nbr style_nbr customer_choice fixture_type fixture_group color_family size_cluster_id volume_group_cluster_id store_list store_cnt plan_id_partition}}}"
+      "size.profile.assortproduct.consumer.id":
+        description: "Consumer ID to call Assort Product"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "34f7ca77-3dfc-46df-a86b-1ba6e4908d0e"
+      "size.profile.assortproduct.consumer.name":
+        description: "Consumer service name"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "AEX_ASSORTPRODUCT_SERVICE"
+      "size.profile.assortproduct.consumer.env":
+        description: "Consumer Environment"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "dev"

@@ -6,6 +6,6 @@ import java.util.List;
 
 @Data
 public class ClustersDto {
-    private Integer clusterId;
-    private List<SizeDto> sizeList;
+    private Integer clusterID;
+    private List<SizeDto> sizes;
 }

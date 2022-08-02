@@ -30,4 +30,10 @@ public class BuyQntyController {
     {
         return sizeAndPackService.fetchCcBuyQnty(buyQtyRequest, finelineNbr);
     }
+
+    @QueryMapping
+    public BuyQtyResponse getSizeBuyQtyDetails(@Argument BuyQtyRequest buyQtyRequest)
+    {
+        return sizeAndPackService.fetchSizeBuyQnty(buyQtyRequest);
+    }
 }

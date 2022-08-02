@@ -5,6 +5,7 @@ type Query {
      fetchReplnByPlan(replenishmentRequest: ReplenishmentRequest!): ReplenishmentResponse!
      fetchReplnByPlanFineline(replenishmentRequest: ReplenishmentRequest!): ReplenishmentResponse!
      fetchReplnByPlanFinelineStyleCc(replenishmentRequest: ReplenishmentRequest!): ReplenishmentResponse!
+     getSizeBuyQtyDetails(buyQtyRequest: BuyQtyRequest!): BuyQtyResponse!
 }
 
 type PackOptimizationResponse{
@@ -70,6 +71,11 @@ input BuyQtyRequest {
     planId: Int!
     planDesc: String
     channel: String!
+    lvl3Nbr: Int
+    lvl4Nbr: Int
+    finelineNbr: Int
+    styleNbr: String
+    ccId: String
 }
 
 type BuyQtyResponse {
@@ -122,11 +128,11 @@ type CustomerChoiceDto {
 
 type ClustersDto {
     clusterID: Int
-    sizeList: [SizeList]
+    sizes: [SizeList]
 }
 
 type SizeList {
-    sizeId: Int
+    ahsSizeId: Int
     sizeDesc: String
     metrics: MetricsDto
 }
