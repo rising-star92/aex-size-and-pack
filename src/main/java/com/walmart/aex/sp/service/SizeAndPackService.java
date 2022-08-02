@@ -183,12 +183,7 @@ public class SizeAndPackService {
             for (Lvl1 lvl1 : planSizeAndPackDTO.getLvl1List()) {
                 for (Lvl2 lvl2 : lvl1.getLvl2List()) {
                     for (Lvl3 lvl3 : lvl2.getLvl3List()) {
-                        //Since the category and sub category does not have the channel info, getting it from the fineline
-                        String channel = Optional.ofNullable(lvl3.getLvl4List())
-                                        .map(lvl4s -> lvl4s.get(0))
-                                        .map(finelines -> finelines.getFinelines().get(0).getChannel())
-                                        .orElse(null);
-                        merchCatPlanRepository.saveAll(sizeAndPackObjectMapper.setMerchCatPlan(planSizeAndPackDTO, lvl1, lvl2, lvl3, channel));
+                        merchCatPlanRepository.saveAll(sizeAndPackObjectMapper.setMerchCatPlan(planSizeAndPackDTO, lvl1, lvl2, lvl3));
                     }
                 }
             }
@@ -199,4 +194,31 @@ public class SizeAndPackService {
         }
         return sizeAndPackResponse;
   }
+
+
+    @Transactional
+    public SizeAndPackResponse updateSizeAndPackData(PlanSizeAndPackDTO planSizeAndPackDTO) {
+        SizeAndPackResponse sizeAndPackResponse = new SizeAndPackResponse();
+        try {
+            log.info("Received the Updated payload from strategy listener for CLP & Analytics: {}", objectMapper.writeValueAsString(planSizeAndPackDTO));
+        } catch (JsonProcessingException exp) {
+            sizeAndPackResponse.setStatus(FAILED_STATUS);
+            log.error("Couldn't parse the payload sent to Size and Pack. Error: {}", exp.toString());
+        }
+
+        try {
+            for (Lvl1 lvl1 : planSizeAndPackDTO.getLvl1List()) {
+                for (Lvl2 lvl2 : lvl1.getLvl2List()) {
+                    for (Lvl3 lvl3 : lvl2.getLvl3List()) {
+                        merchCatPlanRepository.saveAll(sizeAndPackObjectMapper.updateMerchCatPlan(planSizeAndPackDTO, lvl1, lvl2, lvl3, lvl2.getLvl3List(), merchCatPlanRepository));
+                    }
+                }
+            }
+            sizeAndPackResponse.setStatus(SUCCESS_STATUS);
+        } catch (Exception ex) {
+            sizeAndPackResponse.setStatus(FAILED_STATUS);
+            log.error("Failed to save the line plan events to size and pack database. Error: {}", ex.toString());
+        }
+        return sizeAndPackResponse;
+    }
 }

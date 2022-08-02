@@ -9,16 +9,20 @@ import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
 import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDTO;
 import com.walmart.aex.sp.dto.planhierarchy.Style;
 import com.walmart.aex.sp.entity.MerchCatPlan;
+import com.walmart.aex.sp.entity.MerchCatPlanId;
+import com.walmart.aex.sp.entity.SubCatPlan;
+import com.walmart.aex.sp.repository.MerchCatPlanRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,6 +31,9 @@ public class SizeAndPackObjectMapperTest {
     @InjectMocks
     SizeAndPackObjectMapper sizeAndPackObjectMapper;
 
+    @Mock
+    MerchCatPlanRepository merchCatPlanRepository;
+
     @Test
     void testAddLinePlanEvents() {
         PlanSizeAndPackDTO planSizeAndPackDTO = getPlanSizeAndPackDTOObj();
@@ -34,7 +41,42 @@ public class SizeAndPackObjectMapperTest {
         Lvl2 lvl2 = lvl1.getLvl2List().get(0);
         Lvl3 lvl3 = lvl2.getLvl3List().get(0);
         String channel = "store";
-        Set<MerchCatPlan> merchCatPlanSet = sizeAndPackObjectMapper.setMerchCatPlan(planSizeAndPackDTO, lvl1, lvl2, lvl3, channel);
+        Set<MerchCatPlan> merchCatPlanSet = sizeAndPackObjectMapper.setMerchCatPlan(planSizeAndPackDTO, lvl1, lvl2, lvl3);
+        assertTrue(!merchCatPlanSet.isEmpty());
+    }
+
+    @Test
+    void testUpdateLinePlanEvents() {
+        PlanSizeAndPackDTO planSizeAndPackDTO = getPlanSizeAndPackDTOObj();
+        Lvl1 lvl1 = planSizeAndPackDTO.getLvl1List().get(0);
+        Lvl2 lvl2 = lvl1.getLvl2List().get(0);
+        Lvl3 lvl3 = lvl2.getLvl3List().get(0);
+        String channel = "store";
+        MerchCatPlan merchCatPlan1 = new MerchCatPlan();
+        MerchCatPlanId merchCatPlanId1 = new MerchCatPlanId(planSizeAndPackDTO.getPlanId(),planSizeAndPackDTO.getLvl0Nbr(), lvl1.getLvl1Nbr(), lvl2.getLvl2Nbr(), lvl3.getLvl3Nbr(), 1);
+        merchCatPlan1.setMerchCatPlanId(merchCatPlanId1);
+        merchCatPlan1.setLvl0Desc(planSizeAndPackDTO.getLvl0Name());
+        merchCatPlan1.setLvl1Desc(lvl1.getLvl1Name());
+        merchCatPlan1.setLvl2Desc(lvl2.getLvl2Name());
+        merchCatPlan1.setLvl3Desc(lvl3.getLvl3Name());
+        Set<SubCatPlan> subCatPlanSet1 =  sizeAndPackObjectMapper.setSubCatPlans(merchCatPlan1, planSizeAndPackDTO, lvl1, lvl2, lvl3, lvl3.getLvl4List());
+        merchCatPlan1.setSubCatPlans(subCatPlanSet1);
+        MerchCatPlan merchCatPlan2 = new MerchCatPlan();
+        MerchCatPlanId merchCatPlanId2 = new MerchCatPlanId(planSizeAndPackDTO.getPlanId(),planSizeAndPackDTO.getLvl0Nbr(), lvl1.getLvl1Nbr(), lvl2.getLvl2Nbr(), lvl3.getLvl3Nbr(), 2);
+        merchCatPlan2.setMerchCatPlanId(merchCatPlanId2);
+        merchCatPlan2.setLvl0Desc(planSizeAndPackDTO.getLvl0Name());
+        merchCatPlan2.setLvl1Desc(lvl1.getLvl1Name());
+        merchCatPlan2.setLvl2Desc(lvl2.getLvl2Name());
+        merchCatPlan2.setLvl3Desc(lvl3.getLvl3Name());
+        Set<SubCatPlan> subCatPlanSet2 =  sizeAndPackObjectMapper.setSubCatPlans(merchCatPlan2, planSizeAndPackDTO, lvl1, lvl2, lvl3, lvl3.getLvl4List());
+        merchCatPlan2.setSubCatPlans(subCatPlanSet2);
+        List<MerchCatPlan> merchCatPlanSetResult = new ArrayList<>();
+        merchCatPlanSetResult.add(merchCatPlan1);
+        merchCatPlanSetResult.add(merchCatPlan2);
+
+        Mockito.when(merchCatPlanRepository.findMerchCatPlanByMerchCatPlanId_planIdAndMerchCatPlanId_lvl0NbrAndMerchCatPlanId_lvl1NbrAndMerchCatPlanId_lvl2NbrAndMerchCatPlanId_lvl3Nbr(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt())).thenReturn(merchCatPlanSetResult);
+        Mockito.doNothing().when(merchCatPlanRepository).deleteById(merchCatPlanId2);
+        Set<MerchCatPlan> merchCatPlanSet = sizeAndPackObjectMapper.updateMerchCatPlan(planSizeAndPackDTO, lvl1, lvl2, lvl3, lvl2.getLvl3List(), merchCatPlanRepository);
         assertTrue(!merchCatPlanSet.isEmpty());
     }
 

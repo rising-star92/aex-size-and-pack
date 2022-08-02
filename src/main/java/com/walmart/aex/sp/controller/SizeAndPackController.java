@@ -42,6 +42,17 @@ public class SizeAndPackController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
     }
 
+    @PutMapping(path = "/sizeAndPackService")
+    public @ResponseBody
+    ResponseEntity<SizeAndPackResponse> updatePlanStrategy(@RequestBody PlanSizeAndPackDTO request) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(sizeAndPackService.updateSizeAndPackData(request));
+        } catch (Exception exp) {
+            log.error("Exception occurred when updating a plan Strategy: {}", exp.getMessage());
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+    }
+
 }
 
 
