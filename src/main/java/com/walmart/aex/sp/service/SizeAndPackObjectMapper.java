@@ -10,6 +10,8 @@ import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDTO;
 import com.walmart.aex.sp.dto.planhierarchy.Style;
 import com.walmart.aex.sp.entity.*;
 import com.walmart.aex.sp.enums.ChannelType;
+import com.walmart.aex.sp.repository.MerchCatPlanRepository;
+import com.walmart.aex.sp.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -20,15 +22,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class SizeAndPackObjectMapper {
-
-    public Set<MerchCatPlan> setMerchCatPlan(PlanSizeAndPackDTO request, Lvl1 lvl1, Lvl2 lvl2, Lvl3 lvl3, String channel) {
+    public Set<MerchCatPlan> setMerchCatPlan(PlanSizeAndPackDTO request, Lvl1 lvl1, Lvl2 lvl2, Lvl3 lvl3) {
         Set<MerchCatPlan> merchCatPlanSet = new HashSet<>();
-        Integer channelId = ChannelType.getChannelIdFromName(channel);
-        List<Integer> channelList = getChannelListFromChannelId(channelId);
+        Integer finelineChannel = ChannelType.getChannelIdFromName(CommonUtil.getRequestedFlChannel(lvl3));
+        List<Integer> channelList = getChannelListFromChannelId(finelineChannel);
 
         if (!CollectionUtils.isEmpty(channelList)) {
             channelList.forEach(chan -> {
@@ -160,4 +162,163 @@ public class SizeAndPackObjectMapper {
         }
         return channelList;
     }
+
+    public Set<MerchCatPlan> updateMerchCatPlan(PlanSizeAndPackDTO request, Lvl1 lvl1, Lvl2 lvl2, Lvl3 lvl3, List<Lvl3> lvl3s, MerchCatPlanRepository merchCatPlanRepository) {
+        Integer finelineChannel = ChannelType.getChannelIdFromName(CommonUtil.getRequestedFlChannel(lvl3));
+        List<Integer> channelList = getChannelListFromChannelId(finelineChannel);
+
+        List<MerchCatPlan> merchCatPlans = merchCatPlanRepository.findMerchCatPlanByMerchCatPlanId_planIdAndMerchCatPlanId_lvl0NbrAndMerchCatPlanId_lvl1NbrAndMerchCatPlanId_lvl2NbrAndMerchCatPlanId_lvl3Nbr(request.getPlanId(),
+                request.getLvl0Nbr(), lvl1.getLvl1Nbr(), lvl2.getLvl2Nbr(), lvl3.getLvl3Nbr());
+
+        Set<MerchCatPlan> merchCatPlanSet = merchCatPlans.stream().collect(Collectors.toSet());
+        if (!CollectionUtils.isEmpty(channelList)) {
+            channelList.forEach(channelId -> {
+                if (!CollectionUtils.isEmpty(merchCatPlanSet)) {
+                   deleteMerchCatPlan(merchCatPlanSet, lvl3, channelId, merchCatPlanRepository);
+                }
+            });
+        }
+        return setMerchCatPlan(request,lvl1, lvl2, lvl3);
+    }
+
+    private Set<MerchCatPlan> deleteMerchCatPlan(Set<MerchCatPlan> merchCatPlanSet, Lvl3 lvl3, Integer channelId, MerchCatPlanRepository merchCatPlanRepository) {
+        deleteMerchSubCatPlan(merchCatPlanSet, lvl3, channelId);
+        if (!channelId.equals(3)) {
+            MerchCatPlan merchCatPlan = fetchMerchCatPlan(merchCatPlanSet, lvl3.getLvl3Nbr(), channelId);
+            if(merchCatPlan != null) {
+                if (CollectionUtils.isEmpty(merchCatPlan.getSubCatPlans())) {
+                    //Only removing from set is not deleting the entry in the DB. Hence deleting by the ID
+                    merchCatPlanRepository.deleteById(merchCatPlan.getMerchCatPlanId());
+                }
+            }
+            merchCatPlanSet.removeIf(merchCatPlan1 -> CollectionUtils.isEmpty(merchCatPlan1.getSubCatPlans()) && merchCatPlan1.getMerchCatPlanId().getLvl3Nbr().equals(lvl3.getLvl3Nbr()) &&
+                    !merchCatPlan1.getMerchCatPlanId().getChannelId().equals(channelId));
+        }
+        return merchCatPlanSet;
+    }
+
+    private void deleteMerchSubCatPlan(Set<MerchCatPlan> merchCatPlanSet, Lvl3 lvl3, Integer channelId) {
+        lvl3.getLvl4List().forEach(lvl4 -> {
+            deleteFinelinePlan(merchCatPlanSet, lvl3, lvl4);
+            if (!channelId.equals(3)) {
+                MerchCatPlan merchCatPlan = fetchMerchCatPlan(merchCatPlanSet, lvl3.getLvl3Nbr(), channelId);
+                if (merchCatPlan != null) {
+                    merchCatPlan.getSubCatPlans().removeIf(subCatPlan -> CollectionUtils.isEmpty(subCatPlan.getFinelinePlans()) && subCatPlan.getSubCatPlanId().getLvl4Nbr().equals(lvl4.getLvl4Nbr()) &&
+                            !subCatPlan.getSubCatPlanId().getMerchCatPlanId().getChannelId().equals(channelId));
+                }
+            }
+        });
+    }
+
+    private void deleteFinelinePlan(Set<MerchCatPlan> merchCatPlanSet, Lvl3 lvl3, Lvl4 lvl4) {
+        lvl4.getFinelines().forEach(fineline -> {
+            deleteStylePlan(merchCatPlanSet, lvl3, lvl4, fineline);
+            if (!ChannelType.getChannelIdFromName(fineline.getChannel()).equals(3)) {
+                SubCatPlan subCatPlan = fetchMerchSubCatPlan(merchCatPlanSet, lvl3.getLvl3Nbr(), lvl4.getLvl4Nbr(), ChannelType.getChannelIdFromName(fineline.getChannel()));
+                if (subCatPlan != null) {
+                    subCatPlan.getFinelinePlans().removeIf(finelinePlan -> CollectionUtils.isEmpty(finelinePlan.getStylePlans()) && finelinePlan.getFinelinePlanId().getFinelineNbr().equals(fineline.getFinelineNbr()) &&
+                            !finelinePlan.getFinelinePlanId().getSubCatPlanId().getMerchCatPlanId().getChannelId().equals(ChannelType.getChannelIdFromName(fineline.getChannel())));
+                }
+            }
+        });
+    }
+
+    private void deleteStylePlan(Set<MerchCatPlan> merchCatPlanSet, Lvl3 lvl3, Lvl4 lvl4, Fineline fineline) {
+        fineline.getStyles().forEach(style -> {
+            deleteCCPlan(merchCatPlanSet, lvl3, lvl4, fineline, style);
+            if (!ChannelType.getChannelIdFromName(style.getChannel()).equals(3)) {
+                FinelinePlan finelinePlan = fetchFinelinePlan(merchCatPlanSet, lvl3.getLvl3Nbr(), lvl4.getLvl4Nbr(), fineline.getFinelineNbr(), ChannelType.getChannelIdFromName(style.getChannel()));
+                if (finelinePlan != null) {
+                    finelinePlan.getStylePlans().removeIf(stylePlan -> CollectionUtils.isEmpty(stylePlan.getCustChoicePlans()) && stylePlan.getStylePlanId().getStyleNbr().equalsIgnoreCase(style.getStyleNbr()) &&
+                            !stylePlan.getStylePlanId().getFinelinePlanId().getSubCatPlanId().getMerchCatPlanId().getChannelId().equals(ChannelType.getChannelIdFromName(style.getChannel())));
+                }
+            }
+        });
+    }
+
+    private void deleteCCPlan(Set<MerchCatPlan> merchCatPlanSet, Lvl3 lvl3, Lvl4 lvl4, Fineline fineline, Style style) {
+        style.getCustomerChoices().forEach(customerChoice -> {
+            if (!ChannelType.getChannelIdFromName(customerChoice.getChannel()).equals(3)) {
+                StylePlan stylePlan = fetchStylePlan(merchCatPlanSet, lvl3.getLvl3Nbr(), lvl4.getLvl4Nbr(), fineline.getFinelineNbr(), style.getStyleNbr(), ChannelType.getChannelIdFromName(customerChoice.getChannel()));
+                if (stylePlan != null) {
+                    stylePlan.getCustChoicePlans().removeIf(custChoicePlan -> custChoicePlan.getCustChoicePlanId().getCcId().equalsIgnoreCase(customerChoice.getCcId()) &&
+                            !custChoicePlan.getCustChoicePlanId().getStylePlanId().getFinelinePlanId().getSubCatPlanId().getMerchCatPlanId()
+                                    .getChannelId().equals(ChannelType.getChannelIdFromName(customerChoice.getChannel())));
+                }
+            }
+        });
+    }
+
+    private MerchCatPlan fetchMerchCatPlan(Set<MerchCatPlan> merchCatPlanSet, Integer lvl3Nbr, Integer channelId) {
+        return Optional.ofNullable(merchCatPlanSet)
+                .stream()
+                .flatMap(Collection::stream)
+                .filter(merchCatPlan -> merchCatPlan.getMerchCatPlanId().getLvl3Nbr().equals(lvl3Nbr) &&
+                        !merchCatPlan.getMerchCatPlanId().getChannelId().equals(channelId))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private SubCatPlan fetchMerchSubCatPlan(Set<MerchCatPlan> merchCatPlanSet, Integer lvl3Nbr, Integer lvl4Nbr, Integer channelId) {
+        return Optional.ofNullable(merchCatPlanSet)
+                .stream()
+                .flatMap(Collection::stream)
+                .filter(merchCatPlan -> merchCatPlan.getMerchCatPlanId().getLvl3Nbr().equals(lvl3Nbr) &&
+                        !merchCatPlan.getMerchCatPlanId().getChannelId().equals(channelId))
+                .findFirst()
+                .map(MerchCatPlan::getSubCatPlans)
+                .stream()
+                .flatMap(Collection::stream)
+                .filter(merchSubCatPlan -> merchSubCatPlan.getSubCatPlanId().getLvl4Nbr().equals(lvl4Nbr))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private FinelinePlan fetchFinelinePlan(Set<MerchCatPlan> merchCatPlanSet, Integer lvl3Nbr, Integer lvl4Nbr, Integer finelineNbr, Integer channelId) {
+        return Optional.ofNullable(merchCatPlanSet)
+                .stream()
+                .flatMap(Collection::stream)
+                .filter(merchCatPlan -> merchCatPlan.getMerchCatPlanId().getLvl3Nbr().equals(lvl3Nbr) &&
+                        !merchCatPlan.getMerchCatPlanId().getChannelId().equals(channelId))
+                .findFirst()
+                .map(MerchCatPlan::getSubCatPlans)
+                .stream()
+                .flatMap(Collection::stream)
+                .filter(subCatPlan -> subCatPlan.getSubCatPlanId().getLvl4Nbr().equals(lvl4Nbr))
+                .findFirst()
+                .map(SubCatPlan::getFinelinePlans)
+                .stream()
+                .flatMap(Collection::stream)
+                .filter(finelinePlan -> finelinePlan.getFinelinePlanId().getFinelineNbr().equals(finelineNbr))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private StylePlan fetchStylePlan(Set<MerchCatPlan> merchCatPlanSet, Integer lvl3Nbr, Integer lvl4Nbr, Integer finelineNbr, String styleNum, Integer channelId) {
+        return Optional.ofNullable(merchCatPlanSet)
+                .stream()
+                .flatMap(Collection::stream)
+                .filter(merchCatPlan -> merchCatPlan.getMerchCatPlanId().getLvl3Nbr().equals(lvl3Nbr) &&
+                        !merchCatPlan.getMerchCatPlanId().getChannelId().equals(channelId))
+                .findFirst()
+                .map(MerchCatPlan::getSubCatPlans)
+                .stream()
+                .flatMap(Collection::stream)
+                .filter(subCatPlan -> subCatPlan.getSubCatPlanId().getLvl4Nbr().equals(lvl4Nbr))
+                .findFirst()
+                .map(SubCatPlan::getFinelinePlans)
+                .stream()
+                .flatMap(Collection::stream)
+                .filter(finelinePlan -> finelinePlan.getFinelinePlanId().getFinelineNbr().equals(finelineNbr))
+                .findFirst()
+                .map(FinelinePlan::getStylePlans)
+                .stream()
+                .flatMap(Collection::stream)
+                .filter(stylePlan -> stylePlan.getStylePlanId().getStyleNbr().equals(styleNum))
+                .findFirst()
+                .orElse(null);
+    }
+
+
+
 }
