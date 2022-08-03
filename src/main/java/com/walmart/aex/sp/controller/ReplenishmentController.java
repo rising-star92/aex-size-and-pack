@@ -44,12 +44,12 @@ public class ReplenishmentController {
     }
     
     @MutationMapping
-    public UpdateVnPkWhPkResponse updateReplnConfigByCategory(@Argument UpdateVnPkWhPkReplnRequest updateVnPkWhPkReplnRequest)
+    public UpdateVnPkWhPkResponse updateReplnConfigByCategory(@Argument UpdateVnPkWhPkReplnRequest request)
     {
        UpdateVnPkWhPkResponse response = new UpdateVnPkWhPkResponse();
        try
        {
-          replenishmentService.updateVnpkWhpkForCatgReplnCons(updateVnPkWhPkReplnRequest);
+          replenishmentService.updateVnpkWhpkForCatgReplnCons(request);
        }
        catch(Exception e)
        {
@@ -61,12 +61,12 @@ public class ReplenishmentController {
     }
 
     @MutationMapping
-    public UpdateVnPkWhPkResponse updateReplnConfigBySubCategory(@Argument UpdateVnPkWhPkReplnRequest updateVnPkWhPkReplnRequest)
+    public UpdateVnPkWhPkResponse updateReplnConfigBySubCategory(@Argument UpdateVnPkWhPkReplnRequest request)
     {
        UpdateVnPkWhPkResponse response = new UpdateVnPkWhPkResponse();
        try
        {
-          replenishmentService.updateVnpkWhpkForSubCatgReplnCons(updateVnPkWhPkReplnRequest);
+          replenishmentService.updateVnpkWhpkForSubCatgReplnCons(request);
        }
        catch(Exception e)
        {
@@ -77,13 +77,13 @@ public class ReplenishmentController {
        return response;
     }
     @MutationMapping
-	public UpdateVnPkWhPkResponse updateReplnConfigByFineline(@Argument UpdateVnPkWhPkReplnRequest updateVnPkWhPkReplnRequest)
+	public UpdateVnPkWhPkResponse updateReplnConfigByFineline(@Argument UpdateVnPkWhPkReplnRequest request)
 	{
     	UpdateVnPkWhPkResponse response = new UpdateVnPkWhPkResponse();
 		
 		try
 		{
-			replenishmentService.updateVnpkWhpkForFinelineReplnCons(updateVnPkWhPkReplnRequest);
+			replenishmentService.updateVnpkWhpkForFinelineReplnCons(request);
 		}
 		catch(Exception e)
 		{
@@ -97,13 +97,13 @@ public class ReplenishmentController {
 
     
     @MutationMapping
-    public UpdateVnPkWhPkResponse updateReplnConfigByStyle(@Argument UpdateVnPkWhPkReplnRequest updateVnPkWhPkReplnRequest)
+    public UpdateVnPkWhPkResponse updateReplnConfigByStyle(@Argument UpdateVnPkWhPkReplnRequest request)
     {
         UpdateVnPkWhPkResponse response = new UpdateVnPkWhPkResponse();
         
         try
         {
-            replenishmentService.updateVnpkWhpkForStyleReplnCons(updateVnPkWhPkReplnRequest);
+            replenishmentService.updateVnpkWhpkForStyleReplnCons(request);
         }
         catch(Exception e)
         {
@@ -116,13 +116,13 @@ public class ReplenishmentController {
     }
     
 	@MutationMapping
-	public UpdateVnPkWhPkResponse updateReplnConfigByCc(@Argument UpdateVnPkWhPkReplnRequest updateVnPkWhPkReplnRequest)
+	public UpdateVnPkWhPkResponse updateReplnConfigByCc(@Argument UpdateVnPkWhPkReplnRequest request)
 	{
 		UpdateVnPkWhPkResponse response = new UpdateVnPkWhPkResponse();
 		
 		try
 		{
-			replenishmentService.updateVnpkWhpkForCcReplnPkCons(updateVnPkWhPkReplnRequest);
+			replenishmentService.updateVnpkWhpkForCcReplnPkCons(request);
 		}
 		catch(Exception e)
 		{
@@ -135,12 +135,12 @@ public class ReplenishmentController {
 	}
 	
 	@MutationMapping
-    public UpdateVnPkWhPkResponse updateReplnConfigByCcSpMerchMethod(@Argument UpdateVnPkWhPkReplnRequest updateVnPkWhPkReplnRequest) {
+    public UpdateVnPkWhPkResponse updateReplnConfigByCcSpMerchMethod(@Argument UpdateVnPkWhPkReplnRequest request) {
 
 		UpdateVnPkWhPkResponse response = new UpdateVnPkWhPkResponse();
 
         try {
-            replenishmentService.updateVnPkWhPkCcSpMerchMethodReplnCon(updateVnPkWhPkReplnRequest);
+            replenishmentService.updateVnPkWhPkCcSpMerchMethodReplnCon(request);
         } catch (Exception e) {
             response.setStatus(FAILURE_STATUS);
         }
@@ -149,12 +149,12 @@ public class ReplenishmentController {
     }
 	
 	@MutationMapping
-    public UpdateVnPkWhPkResponse updateReplnConfigByCcSpSize(@Argument UpdateVnPkWhPkReplnRequest updateVnPkWhPkReplnRequest) {
+    public UpdateVnPkWhPkResponse updateReplnConfigByCcSpSize(@Argument UpdateVnPkWhPkReplnRequest request) {
 
 		UpdateVnPkWhPkResponse response = new UpdateVnPkWhPkResponse();
 
         try {
-            replenishmentService.updateVnPkWhPkCcSpSizeReplnCon(updateVnPkWhPkReplnRequest);
+            replenishmentService.updateVnPkWhPkCcSpSizeReplnCon(request);
         } catch (Exception e) {
             response.setStatus(FAILURE_STATUS);
         }
