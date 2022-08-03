@@ -8,6 +8,37 @@ type Query {
      getSizeBuyQtyDetails(buyQtyRequest: BuyQtyRequest!): BuyQtyResponse!
 }
 
+type Mutation {
+	updateReplnConfigByCategory(updateVnPkWhPkReplnRequest: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse
+	updateReplnConfigBySubCategory(updateVnPkWhPkReplnRequest: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse
+	updateReplnConfigByCc(updateVnPkWhPkReplnRequest: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse!
+	updateReplnConfigByStyle(updateVnPkWhPkReplnRequest: UpdateVnPkWhPkReplnRequest!):UpdateVnPkWhPkResponse!
+	updateReplnConfigByFineline(updateVnPkWhPkReplnRequest: UpdateVnPkWhPkReplnRequest!):UpdateVnPkWhPkResponse!
+	updateReplnConfigByCcSpMerchMethod(updateVnPkWhPkReplnRequest: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse
+	updateReplnConfigByCcSpSize(updateVnPkWhPkReplnRequest: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse
+}
+
+input UpdateVnPkWhPkReplnRequest {
+	planId: Int!
+	planDesc: String!
+	channel: String!
+	lvl3Nbr: Int
+	lvl4Nbr: Int
+	fineline: Int
+	style: String
+	customerChoice: String
+	merchMethodDesc: String
+	ahsSizeId: Int
+	vnpk: Int!
+	whpk: Int!
+}
+
+
+
+type UpdateVnPkWhPkResponse {
+	status: String!
+}
+
 type PackOptimizationResponse{
     planId: Int!
     channel:Int!
