@@ -9,13 +9,13 @@ type Query {
 }
 
 type Mutation {
-	updateReplnConfigByCategory(updateVnPkWhPkReplnRequest: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse
-	updateReplnConfigBySubCategory(updateVnPkWhPkReplnRequest: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse
-	updateReplnConfigByCc(updateVnPkWhPkReplnRequest: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse!
-	updateReplnConfigByStyle(updateVnPkWhPkReplnRequest: UpdateVnPkWhPkReplnRequest!):UpdateVnPkWhPkResponse!
-	updateReplnConfigByFineline(updateVnPkWhPkReplnRequest: UpdateVnPkWhPkReplnRequest!):UpdateVnPkWhPkResponse!
-	updateReplnConfigByCcSpMerchMethod(updateVnPkWhPkReplnRequest: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse
-	updateReplnConfigByCcSpSize(updateVnPkWhPkReplnRequest: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse
+	updateReplnConfigByCategory(request: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse
+	updateReplnConfigBySubCategory(request: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse
+	updateReplnConfigByCc(request: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse!
+	updateReplnConfigByStyle(request: UpdateVnPkWhPkReplnRequest!):UpdateVnPkWhPkResponse!
+	updateReplnConfigByFineline(request: UpdateVnPkWhPkReplnRequest!):UpdateVnPkWhPkResponse!
+	updateReplnConfigByCcSpMerchMethod(request: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse
+	updateReplnConfigByCcSpSize(request: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse
 }
 
 input UpdateVnPkWhPkReplnRequest {
