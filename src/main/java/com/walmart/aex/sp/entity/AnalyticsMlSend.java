@@ -18,33 +18,65 @@ public class AnalyticsMlSend {
 
     @Id
     @Column(name = "analytics_send_id", nullable = false)
-    private BigInteger analyticssendid;
+    private BigInteger analyticsSendId;
+
+    @Column(name="plan_id")
+    private Long planId;
+
+    @Column(name="strategy_id")
+    private Integer strategyId;
+
+    @Column(name="analytics_cluster_id")
+    private Integer analyticsClusterId;
+
+    @Column(name="rpt_lvl_0_nbr")
+    private Integer lvl0Nbr;
+
+    @Column(name="rpt_lvl_1_nbr")
+    private Integer lvl1Nbr;
+
+    @Column(name="rpt_lvl_2_nbr")
+    private Integer lvl2Nbr;
+
+    @Column(name="rpt_lvl_3_nbr")
+    private Integer lvl3Nbr;
+
+    @Column(name="rpt_lvl_4_nbr")
+    private Integer lvl4Nbr;
+
+    @Column(name="fineline_nbr")
+    private Integer finelineNbr;
+
+    @Column(name="style_nbr")
+    private String styleNbr;
+
+    @Column(name="customer_choice")
+    private String customerChoice;
 
     @JoinColumn(name = "run_status_code", insertable = false, updatable = false)
     @ManyToOne(targetEntity = RunStatusText.class, fetch = FetchType.LAZY)
-    private RunStatusText runstatuscode;
-
+    private RunStatusText runStatusCode;
 
     @Column(name="analytics_send_desc")
-    private String analyticssend;
+    private String analyticsSendDesc;
 
     @Column(name="process_id")
-    private String processid;
+    private String processId;
 
     @Column(name="start_ts")
-    private Date startts;
+    private Date startTs;
 
     @Column(name="end_ts")
-    private Date endts;
+    private Date endTs;
 
     @Column(name="retry_cnt")
-    private Integer retrycnt;
+    private Integer retryCnt;
 
     @Column(name="payload_obj")
-    private String payloadobj;
+    private String payloadObj;
 
     @Column(name="return_message")
-    private String returnmessage;
+    private String returnMessage;
 
 
 
