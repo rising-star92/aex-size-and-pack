@@ -156,8 +156,8 @@ configDefinitions:
         kind: "SINGLE"
         defaultValue: "dev"
 
-  integrationHubServiceConfig":
-    description: ""
+  integrationHubServiceConfig:
+    description: "Integration Hub Config"
     resolutionPaths:
       - default: "/envProfile/envName"
     properties:
