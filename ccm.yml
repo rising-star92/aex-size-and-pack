@@ -155,3 +155,19 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "dev"
+
+  integrationHubServiceConfig:
+    description: "Integration Hub Config"
+    resolutionPaths:
+      - default: "/envProfile/envName"
+    properties:
+      "integrationhub.url":
+        description: "Integration Hub Service URL"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "http://10.22.137.216/api/packopt?scenario=pack_optimization_dataproc"
+      "integrationhub.sizeAndPackBaseUrl":
+        description: "SizeAndPack Base URL"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "http://aex-size-and-pack.aex.dev.walmart.net"
