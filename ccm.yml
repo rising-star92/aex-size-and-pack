@@ -157,12 +157,12 @@ configDefinitions:
         defaultValue: "dev"
 
   integrationHubServiceConfig:
-    description: "Integration Hub Config"
+    description: "IntegrationHub Config"
     resolutionPaths:
       - default: "/envProfile/envName"
     properties:
       "integrationhub.url":
-        description: "Integration Hub Service URL"
+        description: "IntegrationHub Service URL"
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "http://10.22.137.216/api/packopt?scenario=pack_optimization_dataproc"
