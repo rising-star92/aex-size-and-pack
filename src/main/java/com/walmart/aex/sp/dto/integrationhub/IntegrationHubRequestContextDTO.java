@@ -1,4 +1,4 @@
-package com.walmart.aex.sp.dto.packoptimization;
+package com.walmart.aex.sp.dto.integrationhub;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
