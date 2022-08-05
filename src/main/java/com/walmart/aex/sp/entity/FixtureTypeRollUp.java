@@ -31,4 +31,8 @@ public class FixtureTypeRollUp  {
             cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<SpFineLineChannelFixture> spFineLineChannelFixtures;
 
+    @OneToMany(mappedBy = "fixtureTypeRollUp", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<MerchCatgReplPack> merchCatgReplPack;
+
 }
