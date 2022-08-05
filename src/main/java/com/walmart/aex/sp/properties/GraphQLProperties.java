@@ -35,4 +35,7 @@ public interface GraphQLProperties {
     @Property(propertyName = "size.profile.assortproduct.consumer.env")
     String getAssortProductConsumerEnv();
 
+    @Property(propertyName = "size.profile.all.cc.query")
+    String getAllCcSizeProfileQuery();
+
 }

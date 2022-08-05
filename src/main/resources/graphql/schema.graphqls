@@ -16,6 +16,7 @@ type Mutation {
 	updateReplnConfigByFineline(request: UpdateVnPkWhPkReplnRequest!):UpdateVnPkWhPkResponse!
 	updateReplnConfigByCcSpMerchMethod(request: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse
 	updateReplnConfigByCcSpSize(request: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse
+    calculateBuyQty(calculateBuyQtyRequest: CalculateBuyQtyRequest!): StatusResponse!
 }
 
 input UpdateVnPkWhPkReplnRequest {
@@ -31,6 +32,47 @@ input UpdateVnPkWhPkReplnRequest {
 	ahsSizeId: Int
 	vnpk: Int!
 	whpk: Int!
+}
+
+input CalculateBuyQtyRequest {
+    planId: Int
+    channel: String
+    planDesc: String
+    lvl0Nbr: Int
+    lvl1Nbr: Int
+    lvl2Nbr: Int
+    lvl3List:[Lvl3Request]
+}
+
+input Lvl3Request {
+    lvl3Nbr: Int
+    lvl3Desc: String
+    lvl4List:[Lvl4Request]
+}
+
+input Lvl4Request {
+    lvl4Nbr: Int
+    lvl4Name: String
+    finelines: [FinelineRequest]
+}
+
+input FinelineRequest {
+    finelineNbr: Int
+    finelineName: String
+    styles:[StyleRequest]
+}
+
+input StyleRequest {
+    styleNbr: String
+    customerChoices:[CustomerChoiceRequest]
+}
+
+input CustomerChoiceRequest {
+    ccId: String
+}
+
+type StatusResponse {
+    status: String!
 }
 
 

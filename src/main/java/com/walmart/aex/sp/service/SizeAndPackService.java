@@ -254,4 +254,15 @@ public class SizeAndPackService {
         }
         return sizeAndPackResponse;
     }
+
+    private BuyQtyResponse getAllCcSizeProfiles(BuyQtyRequest buyQtyRequest) throws SizeAndPackException {
+        Map<String, String> headers = new HashMap<>();
+        headers.put("WM_CONSUMER.ID", graphQLProperties.getSizeProfileConsumerId());
+        headers.put("WM_SVC.NAME", graphQLProperties.getSizeProfileConsumerName());
+        headers.put("WM_SVC.ENV", graphQLProperties.getSizeProfileConsumerEnv());
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("sizeProfileRequest", buyQtyRequest);
+        return (BuyQtyResponse) post(graphQLProperties.getSizeProfileUrl(), graphQLProperties.getAllCcSizeProfileQuery(), headers, data, Payload::getGetCcSizeClus);
+    }
 }

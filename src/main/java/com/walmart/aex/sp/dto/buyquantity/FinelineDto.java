@@ -12,4 +12,5 @@ public class FinelineDto {
     private MetricsDto metrics;
     private List<ClustersDto> clusters;
     private List<StyleDto> styles;
+    private List<MerchMethodsDto> merchMethods;
 }
