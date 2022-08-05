@@ -1,5 +1,6 @@
 package com.walmart.aex.sp.dto.buyquantity;
 
+import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
 import lombok.Data;
 
 import java.util.List;

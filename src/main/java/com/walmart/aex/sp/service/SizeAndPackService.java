@@ -39,6 +39,7 @@ public class SizeAndPackService {
     private final SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository;
     private final SpCustomerChoiceChannelFixtureRepository spCustomerChoiceChannelFixtureRepository;
     private final SpCustomerChoiceChannelFixtureSizeRepository spCustomerChoiceChannelFixtureSizeRepository;
+    private final CalculateBuyQuantityService calculateBuyQuantityService;
 
     private final MerchCatPlanRepository merchCatPlanRepository;
     private final BuyQuantityMapper buyQuantityMapper;
@@ -56,7 +57,8 @@ public class SizeAndPackService {
                               SpCustomerChoiceChannelFixtureRepository spCustomerChoiceChannelFixtureRepository,
                               SizeAndPackObjectMapper sizeAndPackObjectMapper,
                               MerchCatPlanRepository merchCatPlanRepository, GraphQLService graphQLService,
-                              SpCustomerChoiceChannelFixtureSizeRepository spCustomerChoiceChannelFixtureSizeRepository) {
+                              SpCustomerChoiceChannelFixtureSizeRepository spCustomerChoiceChannelFixtureSizeRepository,
+                              CalculateBuyQuantityService calculateBuyQuantityService) {
         this.spFineLineChannelFixtureRepository = spFineLineChannelFixtureRepository;
         this.buyQuantityMapper = buyQuantityMapper;
         this.spCustomerChoiceChannelFixtureRepository = spCustomerChoiceChannelFixtureRepository;
@@ -64,6 +66,7 @@ public class SizeAndPackService {
         this.merchCatPlanRepository = merchCatPlanRepository;
         this.graphQLService = graphQLService;
         this.spCustomerChoiceChannelFixtureSizeRepository = spCustomerChoiceChannelFixtureSizeRepository;
+        this.calculateBuyQuantityService = calculateBuyQuantityService;
     }
 
     public BuyQtyResponse fetchFinelineBuyQnty(BuyQtyRequest buyQtyRequest) {
@@ -255,7 +258,28 @@ public class SizeAndPackService {
         return sizeAndPackResponse;
     }
 
-    private BuyQtyResponse getAllCcSizeProfiles(BuyQtyRequest buyQtyRequest) throws SizeAndPackException {
+    @Transactional
+    public void calculateBuyQuantity(CalculateBuyQtyRequest calculateBuyQtyRequest) {
+        try {
+        if (!CollectionUtils.isEmpty(calculateBuyQtyRequest.getLvl3List())) {
+            calculateBuyQtyRequest.getLvl3List().forEach(lvl3Dto -> {
+                if (!CollectionUtils.isEmpty(lvl3Dto.getLvl4List())) {
+                    lvl3Dto.getLvl4List().forEach(lvl4Dto -> {
+                        if (!CollectionUtils.isEmpty(lvl4Dto.getFinelines())) {
+                            calculateBuyQuantityService.calculateFinelinesParallel(calculateBuyQtyRequest, lvl3Dto, lvl4Dto);
+                        } else
+                            log.info("No Finelines available to calculate buy quantity for request: {}", calculateBuyQtyRequest);
+                    });
+                } else
+                    log.info("No Sub Categories available to calculate buy quantity for request: {}", calculateBuyQtyRequest);
+            });
+        } else log.info("No Categories available to calculate buy quantity for request: {}", calculateBuyQtyRequest); }
+        catch (Exception e) {
+            log.error("Failed to Calculate Buy Quantity. Error: ", e);
+        }
+    }
+
+    public BuyQtyResponse getAllCcSizeProfiles(BuyQtyRequest buyQtyRequest) throws SizeAndPackException {
         Map<String, String> headers = new HashMap<>();
         headers.put("WM_CONSUMER.ID", graphQLProperties.getSizeProfileConsumerId());
         headers.put("WM_SVC.NAME", graphQLProperties.getSizeProfileConsumerName());
