@@ -20,11 +20,6 @@ public class MerchCatgReplPack
     @EqualsAndHashCode.Include
     MerchCatgReplPackId merchCatgReplPackId;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "fixturetype_rollup_id", referencedColumnName = "fixturetype_rollup_id", nullable = false, insertable = false, updatable = false)
-    @JsonIgnore
-    private FixtureTypeRollUp fixtureTypeRollUp;
-
     @Column(name="final_buy_units")
     private Integer finalBuyUnits;
 
@@ -42,14 +37,13 @@ public class MerchCatgReplPack
 
     @Column(name="repl_pack_cnt")
     private Integer replPackCnt;
+    
+    @Column(name="fixturetype_rollup_name", nullable = false)
+    private String fixtureTypeRollupName;
 
     @JoinColumn(name = "run_status_code", insertable = false, updatable = false)
-    @ManyToOne(targetEntity = ChannelText.class, fetch = FetchType.LAZY)
+    @ManyToOne(targetEntity = RunStatusText.class, fetch = FetchType.LAZY)
     private RunStatusText runStatusText;
-
-    @JoinColumn(name = "fixturetype_rollup_name", insertable = false, updatable = false)
-    @ManyToOne(targetEntity = ChannelText.class, fetch = FetchType.LAZY)
-    private FixtureTypeRollUp fixtureTypeRollUpName;
 
     @OneToMany(mappedBy = "merchCatgReplPack", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL, orphanRemoval = true)
