@@ -14,15 +14,17 @@ type Mutation {
 	updateReplnConfigByCc(request: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse!
 	updateReplnConfigByStyle(request: UpdateVnPkWhPkReplnRequest!):UpdateVnPkWhPkResponse!
 	updateReplnConfigByFineline(request: UpdateVnPkWhPkReplnRequest!):UpdateVnPkWhPkResponse!
-	updateReplnConfigByCcSpMerchMethod(request: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse
-	updateReplnConfigByCcSpSize(request: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse
+	updateReplnConfigByCcMerchMethod(request: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse
+	updateReplnConfigByCcSpMmSize(request: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse
     calculateBuyQty(calculateBuyQtyRequest: CalculateBuyQtyRequest!): StatusResponse!
 }
 
 input UpdateVnPkWhPkReplnRequest {
 	planId: Int!
-	planDesc: String!
+	planDesc: String
 	channel: String!
+	fixtureTypeRollupId: Int
+	fixtureTypeRollupName: String
 	lvl3Nbr: Int
 	lvl4Nbr: Int
 	fineline: Int
