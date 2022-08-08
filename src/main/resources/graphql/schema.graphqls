@@ -167,12 +167,14 @@ type Lvl3Dto {
     lvl3Nbr: Int
     lvl3Desc: String
     lvl4List:[Lvl4Dto]
+    metrics: MetricsDto
 }
 
 type Lvl4Dto {
     lvl4Nbr: Int
     lvl4Desc: String
     finelines: [FinelineDto]
+    metrics: MetricsDto
 }
 
 type FinelineDto {
