@@ -79,6 +79,7 @@ public class IntegrationHubServiceTest {
         inputRequestList.add(inputRequest);
         inputRequestList.add(inputRequest2);
         request.setPlanId(13L);
+        request.setRunUser("FirstName LastName");
         request.setInputRequest(inputRequestList);
         return request;
     }
