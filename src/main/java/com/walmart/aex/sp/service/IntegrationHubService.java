@@ -40,16 +40,18 @@ import java.util.stream.Collectors;
 public class IntegrationHubService {
 
     @Autowired
-    RestTemplate restTemplate;
+    private RestTemplate restTemplate;
 
     @ManagedConfiguration
-    IntegrationHubServiceProperties integrationHubServiceProperties;
+    private IntegrationHubServiceProperties integrationHubServiceProperties;
 
     final ObjectMapper objectMapper = new ObjectMapper();
 
+    @Autowired
     private AnalyticsMlSendRepository analyticsMlSendRepository;
 
     public IntegrationHubService() {
+
     }
 
     public IntegrationHubService(RestTemplate restTemplate,
@@ -129,6 +131,8 @@ public class IntegrationHubService {
                 analyticsMlSend.setLvl3Nbr(inputRequest.getLvl3Nbr());
                 analyticsMlSend.setLvl4Nbr(inputRequest.getLvl4Nbr());
                 analyticsMlSend.setFinelineNbr(inputRequest.getFinelineNbr());
+                analyticsMlSend.setFirstName(getFirstName(request.getRunUser()));
+                analyticsMlSend.setLastName(getLastName(request.getRunUser()));
                 RunStatusText runStatusText = new RunStatusText();
                 runStatusText.setRunStatusCode(3);
                 analyticsMlSend.setRunStatusCode(runStatusText);
@@ -153,5 +157,25 @@ public class IntegrationHubService {
         }
 
         return analyticsMlSendSet;
+    }
+
+    private  String getFirstName(String fullName) {
+        if (fullName != null) {
+            int index = fullName.lastIndexOf(" ");
+            if (index > -1) {
+                return fullName.substring(0, index);
+            }
+        }
+        return fullName;
+    }
+
+    private  String getLastName(String fullName) {
+        if (fullName != null) {
+            int index = fullName.lastIndexOf(" ");
+            if (index > -1) {
+                return fullName.substring(index + 1, fullName.length());
+            }
+        }
+        return fullName;
     }
 }
