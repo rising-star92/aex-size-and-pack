@@ -1,15 +1,17 @@
 package com.walmart.aex.sp.controller;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.walmart.aex.sp.dto.replenishment.ReplenishmentRequest;
 import com.walmart.aex.sp.dto.replenishment.ReplenishmentResponse;
 import com.walmart.aex.sp.dto.replenishment.UpdateVnPkWhPkReplnRequest;
 import com.walmart.aex.sp.dto.replenishment.UpdateVnPkWhPkResponse;
 import com.walmart.aex.sp.service.ReplenishmentService;
-import org.springframework.web.bind.annotation.RestController;
+
+import lombok.extern.slf4j.Slf4j;
 
 
 @RestController
@@ -50,13 +52,14 @@ public class ReplenishmentController {
        try
        {
           replenishmentService.updateVnpkWhpkForCatgReplnCons(request);
+          response.setStatus(SUCCESS_STATUS);
        }
        catch(Exception e)
        {
           response.setStatus(FAILURE_STATUS);
+          log.error("Exception While updating Category Replenishment :", e);
        }
-
-       response.setStatus(SUCCESS_STATUS);
+      
        return response;
     }
 
@@ -67,13 +70,14 @@ public class ReplenishmentController {
        try
        {
           replenishmentService.updateVnpkWhpkForSubCatgReplnCons(request);
+          response.setStatus(SUCCESS_STATUS);
        }
        catch(Exception e)
        {
           response.setStatus(FAILURE_STATUS);
+          log.error("Exception While updating Sub Category Replenishment :", e);
        }
 
-       response.setStatus(SUCCESS_STATUS);
        return response;
     }
     @MutationMapping
@@ -84,13 +88,13 @@ public class ReplenishmentController {
 		try
 		{
 			replenishmentService.updateVnpkWhpkForFinelineReplnCons(request);
+			response.setStatus(SUCCESS_STATUS);
 		}
 		catch(Exception e)
 		{
 			response.setStatus(FAILURE_STATUS);
+			log.error("Exception While updating Fineline Replenishment :", e);
 		}
-		
-		response.setStatus(SUCCESS_STATUS);
 		
 		return response;
 	}
@@ -104,14 +108,14 @@ public class ReplenishmentController {
         try
         {
             replenishmentService.updateVnpkWhpkForStyleReplnCons(request);
+            response.setStatus(SUCCESS_STATUS);
         }
         catch(Exception e)
         {
             response.setStatus(FAILURE_STATUS);
+            log.error("Exception While updating Style Replenishment :", e);
         }
-
-        response.setStatus(SUCCESS_STATUS);
-        
+   
         return response;
     }
     
@@ -123,42 +127,46 @@ public class ReplenishmentController {
 		try
 		{
 			replenishmentService.updateVnpkWhpkForCcReplnPkCons(request);
+			response.setStatus(SUCCESS_STATUS);
 		}
 		catch(Exception e)
 		{
 			response.setStatus(FAILURE_STATUS);
+			log.error("Exception While updating Customer choice Replenishment :", e);
 		}
-		
-		response.setStatus(SUCCESS_STATUS);
-		
+			
 		return response;
 	}
 	
 	@MutationMapping
-    public UpdateVnPkWhPkResponse updateReplnConfigByCcSpMerchMethod(@Argument UpdateVnPkWhPkReplnRequest request) {
+    public UpdateVnPkWhPkResponse updateReplnConfigByCcMerchMethod(@Argument UpdateVnPkWhPkReplnRequest request) {
 
 		UpdateVnPkWhPkResponse response = new UpdateVnPkWhPkResponse();
 
         try {
-            replenishmentService.updateVnPkWhPkCcSpMerchMethodReplnCon(request);
+            replenishmentService.updateVnPkWhPkCcMerchMethodReplnCon(request);
+            response.setStatus(SUCCESS_STATUS);
         } catch (Exception e) {
             response.setStatus(FAILURE_STATUS);
+            log.error("Exception While updating Cc Merch method Replenishment :", e);
         }
-        response.setStatus(SUCCESS_STATUS);
+        
         return response;
     }
 	
 	@MutationMapping
-    public UpdateVnPkWhPkResponse updateReplnConfigByCcSpSize(@Argument UpdateVnPkWhPkReplnRequest request) {
+    public UpdateVnPkWhPkResponse updateReplnConfigByCcSpMmSize(@Argument UpdateVnPkWhPkReplnRequest request) {
 
 		UpdateVnPkWhPkResponse response = new UpdateVnPkWhPkResponse();
 
         try {
             replenishmentService.updateVnPkWhPkCcSpSizeReplnCon(request);
+            response.setStatus(SUCCESS_STATUS);
         } catch (Exception e) {
             response.setStatus(FAILURE_STATUS);
+            log.error("Exception While updating Cc Size Replenishment :", e);
         }
-        response.setStatus(SUCCESS_STATUS);
+        
         return response;
     }
 
