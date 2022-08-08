@@ -54,11 +54,20 @@ public class ReplenishmentMapper {
     private void setLvl3SP(ReplenishmentResponseDTO replenishmentResponseDTO, List<Lvl3Dto> lvl3List, Integer finelineNbr, String ccId) {
         Lvl3Dto lvl3 = new Lvl3Dto();
         lvl3.setLvl3Nbr(replenishmentResponseDTO.getLvl3Nbr());
-
         lvl3.setLvl3Desc(replenishmentResponseDTO.getLvl3Desc());
-
+        if (finelineNbr == null && ccId == null){
+            MetricsDto metricsDto = new MetricsDto();
+            metricsDto.setVendorPack(replenishmentResponseDTO.getLvl3VenderPackCount());
+            metricsDto.setWarehousePack(replenishmentResponseDTO.getLvl3WhsePackCount());
+            metricsDto.setPackRatio(replenishmentResponseDTO.getLvl3vnpkWhpkRatio());
+            lvl3.setMetrics(metricsDto);
+            lvl3.setLvl4List(mapReplenishmentLvl4Sp(replenishmentResponseDTO, lvl3, finelineNbr, ccId));
+        }
+        else {
+            lvl3.setLvl4List(mapReplenishmentLvl4Sp(replenishmentResponseDTO, lvl3, finelineNbr, ccId));
+        }
         lvl3List.add(lvl3);
-        lvl3.setLvl4List(mapReplenishmentLvl4Sp(replenishmentResponseDTO, lvl3, finelineNbr, ccId));
+
     }
 
     private List<Lvl4Dto> mapReplenishmentLvl4Sp(ReplenishmentResponseDTO replenishmentResponseDTO, Lvl3Dto lvl3, Integer finelineNbr, String ccId) {
@@ -74,11 +83,21 @@ public class ReplenishmentMapper {
     private void setLvl4SP(ReplenishmentResponseDTO replenishmentResponseDTO, List<Lvl4Dto> lvl4DtoList, Integer finelineNbr, String ccId) {
         Lvl4Dto lvl4 = new Lvl4Dto();
         lvl4.setLvl4Nbr(replenishmentResponseDTO.getLvl4Nbr());
-
         lvl4.setLvl4Desc(replenishmentResponseDTO.getLvl4Desc());
 
+        if (finelineNbr == null && ccId == null) {
+            MetricsDto metricsDto = new MetricsDto();
+            metricsDto.setVendorPack(replenishmentResponseDTO.getLvl4VenderPackCount());
+            metricsDto.setWarehousePack(replenishmentResponseDTO.getLvl4WhsePackCount());
+            metricsDto.setPackRatio(replenishmentResponseDTO.getLvl4vnpkWhpkRatio());
+            lvl4.setMetrics(metricsDto);
+            lvl4.setFinelines(mapReplenishmentFl(replenishmentResponseDTO, lvl4, finelineNbr, ccId));
+        }
+        else {
+            lvl4.setFinelines(mapReplenishmentFl(replenishmentResponseDTO, lvl4, finelineNbr, ccId));
+        }
         lvl4DtoList.add(lvl4);
-        lvl4.setFinelines(mapReplenishmentFl(replenishmentResponseDTO, lvl4, finelineNbr, ccId));
+
     }
 
     private List<FinelineDto> mapReplenishmentFl(ReplenishmentResponseDTO replenishmentResponseDTO, Lvl4Dto lvl4, Integer finelineNbr, String ccId) {
@@ -209,8 +228,8 @@ public class ReplenishmentMapper {
 
         sizeDtoList.stream()
                 .filter(sizeDto -> replenishmentResponseDTO.getAhsSizeId().equals(sizeDto.getAhsSizeId())).findFirst()
-                 .ifPresentOrElse(customerChoiceDto ->log.info("Size implementation"),
-                         ()->setSizes(replenishmentResponseDTO, sizeDtoList));
+                .ifPresentOrElse(customerChoiceDto ->log.info("Size implementation"),
+                        ()->setSizes(replenishmentResponseDTO, sizeDtoList));
         return sizeDtoList;
     }
 
