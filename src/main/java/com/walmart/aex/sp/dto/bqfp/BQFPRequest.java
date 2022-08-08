@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class BQFPRequest {
 
-   private Integer planId;
+   private Long planId;
    private String channel;
    private Integer finelineNbr;
 }

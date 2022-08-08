@@ -4,6 +4,7 @@ import com.walmart.aex.sp.dto.buyquantity.BuyQtyRequest;
 import com.walmart.aex.sp.dto.buyquantity.BuyQtyResponse;
 import com.walmart.aex.sp.dto.buyquantity.CalculateBuyQtyRequest;
 import com.walmart.aex.sp.dto.buyquantity.StatusResponse;
+import com.walmart.aex.sp.service.CalculateBuyQuantityService;
 import com.walmart.aex.sp.service.SizeAndPackService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -20,9 +21,11 @@ public class BuyQntyController {
     private static final String FAILURE_STATUS = "Failure";
 
     private final SizeAndPackService sizeAndPackService;
+    private final CalculateBuyQuantityService calculateBuyQuantityService;
 
-    public BuyQntyController(SizeAndPackService sizeAndPackService) {
+    public BuyQntyController(SizeAndPackService sizeAndPackService, CalculateBuyQuantityService calculateBuyQuantityService) {
         this.sizeAndPackService = sizeAndPackService;
+        this.calculateBuyQuantityService = calculateBuyQuantityService;
     }
 
     @QueryMapping
@@ -44,12 +47,13 @@ public class BuyQntyController {
     }
 
     @MutationMapping
-    public StatusResponse calculateBuyQty(@Argument CalculateBuyQtyRequest request) {
+    public StatusResponse calculateBuyQty(@Argument CalculateBuyQtyRequest calculateBuyQtyRequest) {
 
         StatusResponse response = new StatusResponse();
 
         try {
             //TODO: Add Calculate Buy Qty Service
+            calculateBuyQuantityService.calculateBuyQuantity(calculateBuyQtyRequest);
             response.setStatus(SUCCESS_STATUS);
             return response;
         } catch (Exception e) {

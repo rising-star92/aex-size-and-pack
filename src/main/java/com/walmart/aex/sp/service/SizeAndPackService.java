@@ -165,7 +165,7 @@ public class SizeAndPackService {
 
     private APResponse getAPRunFixtureAllocationOutput(APRequest request) throws SizeAndPackException {
         Map<String, String> headers = new HashMap<>();
-        headers.put("WM_CONSUMER.ID", graphQLProperties.getAssortProductConsumerEnv());
+        headers.put("WM_CONSUMER.ID", graphQLProperties.getAssortProductConsumerId());
         headers.put("WM_SVC.NAME", graphQLProperties.getAssortProductConsumerName());
         headers.put("WM_SVC.ENV", graphQLProperties.getAssortProductConsumerEnv());
 
@@ -255,7 +255,7 @@ public class SizeAndPackService {
         return sizeAndPackResponse;
     }
 
-    private BuyQtyResponse getAllCcSizeProfiles(BuyQtyRequest buyQtyRequest) throws SizeAndPackException {
+    public BuyQtyResponse getAllCcSizeProfiles(BuyQtyRequest buyQtyRequest) throws SizeAndPackException {
         Map<String, String> headers = new HashMap<>();
         headers.put("WM_CONSUMER.ID", graphQLProperties.getSizeProfileConsumerId());
         headers.put("WM_SVC.NAME", graphQLProperties.getSizeProfileConsumerName());
@@ -263,6 +263,6 @@ public class SizeAndPackService {
 
         Map<String, Object> data = new HashMap<>();
         data.put("sizeProfileRequest", buyQtyRequest);
-        return (BuyQtyResponse) post(graphQLProperties.getSizeProfileUrl(), graphQLProperties.getAllCcSizeProfileQuery(), headers, data, Payload::getGetCcSizeClus);
+        return (BuyQtyResponse) post(graphQLProperties.getSizeProfileUrl(), graphQLProperties.getAllCcSizeProfileQuery(), headers, data, Payload::getGetAllCcSizeClus);
     }
 }

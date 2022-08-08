@@ -42,20 +42,20 @@ public class BQFPServiceTest {
       ResponseEntity<BQFPResponse> response = ResponseEntity.status(HttpStatus.OK).body(successResponse());
       when(properties.getUrl()).thenReturn("https://bqfp.dev/flow-plan/v1/getBuyQuantityFromFlowPlan");
       when(restTemplate.exchange(any(URI.class), eq(HttpMethod.GET), any(), eq(BQFPResponse.class))).thenReturn(response);
-      BQFPResponse result = bqfpService.getBuyQuantityUnits(new BQFPRequest(485, "1", 572));
+      BQFPResponse result = bqfpService.getBuyQuantityUnits(new BQFPRequest(485L, "1", 572));
       verify(restTemplate, times(1)).exchange(any(URI.class), eq(HttpMethod.GET), any(), eq(BQFPResponse.class));
       assertNotNull(result);
    }
 
    @Test(expected = CustomException.class)
    public void exceptionThrownWithInvalidURI() {
-      bqfpService.getBuyQuantityUnits(new BQFPRequest(485, "1", 572));
+      bqfpService.getBuyQuantityUnits(new BQFPRequest(485L, "1", 572));
    }
 
    @Test(expected = CustomException.class)
    public void exceptionThrownWhenNonSuccessResponseFromBQFP() {
       when(restTemplate.exchange(any(URI.class), eq(HttpMethod.GET), any(), eq(BQFPResponse.class))).thenThrow(new RestClientException("Bad Request"));
-      bqfpService.getBuyQuantityUnits(new BQFPRequest(485, "1", 572));
+      bqfpService.getBuyQuantityUnits(new BQFPRequest(485L, "1", 572));
    }
 
    private BQFPResponse successResponse() {
