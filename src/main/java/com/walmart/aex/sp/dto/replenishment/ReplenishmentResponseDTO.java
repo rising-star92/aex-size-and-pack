@@ -17,8 +17,14 @@ public class ReplenishmentResponseDTO {
     private String lvl2Desc;
     private Integer lvl3Nbr;
     private String lvl3Desc;
+    private Integer lvl3VenderPackCount;
+    private Integer lvl3WhsePackCount;
+    private Double lvl3vnpkWhpkRatio;
     private Integer lvl4Nbr;
     private String lvl4Desc;
+    private Integer lvl4VenderPackCount;
+    private Integer lvl4WhsePackCount;
+    private Double lvl4vnpkWhpkRatio;
     private Integer finelineNbr;
     private String finelineDesc;
     private String finelineAltDesc;
@@ -54,11 +60,14 @@ public class ReplenishmentResponseDTO {
     private Integer ccSpReplPack;
 
     public ReplenishmentResponseDTO(Long planId, Integer lvl0Nbr, String lvl0Desc, Integer lvl1Nbr, String lvl1Desc,
-                                    Integer lvl2Nbr, String lvl2Desc, Integer lvl3Nbr, String lvl3Desc, Integer lvl4Nbr,
-                                    String lvl4Desc, Integer finelineNbr, String finelineDesc, String finelineAltDesc ,
+                                    Integer lvl2Nbr, String lvl2Desc, Integer lvl3Nbr, String lvl3Desc, Integer lvl3VenderPackCount ,
+                                    Integer lvl3WhsePackCount ,Double lvl3vnpkWhpkRatio  ,Integer lvl4Nbr,
+                                    String lvl4Desc,   Integer lvl4VenderPackCount ,
+                                    Integer lvl4WhsePackCount ,Double lvl4vnpkWhpkRatio  ,Integer finelineNbr, String finelineDesc, String finelineAltDesc ,
+                                    Integer finelineFinalBuyUnits,Integer finelineReplQty,
                                     Integer finelineVenderPackCount,Integer finelineWhsePackCount,
                                     Double finelineVnpkWhpkRatio,
-                                    Integer finelineReplPack ,Integer finelineFinalBuyUnits,Integer finelineReplQty) {
+                                    Integer finelineReplPack ) {
         this.planId = planId;
         this.lvl0Nbr = lvl0Nbr;
         this.lvl0Desc = lvl0Desc;
@@ -68,17 +77,23 @@ public class ReplenishmentResponseDTO {
         this.lvl2Desc = lvl2Desc;
         this.lvl3Nbr = lvl3Nbr;
         this.lvl3Desc = lvl3Desc;
+        this.lvl3VenderPackCount = lvl3VenderPackCount;
+        this.lvl3WhsePackCount = lvl3WhsePackCount;
+        this.lvl3vnpkWhpkRatio = lvl3vnpkWhpkRatio;
         this.lvl4Nbr = lvl4Nbr;
         this.lvl4Desc = lvl4Desc;
+        this.lvl4VenderPackCount = lvl4VenderPackCount;
+        this.lvl4WhsePackCount = lvl4WhsePackCount;
+        this.lvl4vnpkWhpkRatio = lvl4vnpkWhpkRatio;
         this.finelineNbr = finelineNbr;
         this.finelineDesc = finelineDesc;
         this.finelineAltDesc = finelineAltDesc;
+        this.finelineFinalBuyUnits = finelineFinalBuyUnits;
+        this.finelineReplQty = finelineReplQty;
         this.finelineVenderPackCount=finelineVenderPackCount;
         this.finelineWhsePackCount=finelineWhsePackCount;
         this.finelineVnpkWhpkRatio=finelineVnpkWhpkRatio;
         this.finelineReplPack=finelineReplPack;
-        this.finelineFinalBuyUnits=finelineFinalBuyUnits;
-        this.finelineReplQty=finelineReplQty;
     }
 
     public ReplenishmentResponseDTO(Long planId, Integer lvl0Nbr, String lvl0Desc, Integer lvl1Nbr, String lvl1Desc,
