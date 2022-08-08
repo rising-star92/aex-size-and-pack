@@ -39,7 +39,6 @@ public class SizeAndPackService {
     private final SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository;
     private final SpCustomerChoiceChannelFixtureRepository spCustomerChoiceChannelFixtureRepository;
     private final SpCustomerChoiceChannelFixtureSizeRepository spCustomerChoiceChannelFixtureSizeRepository;
-    private final CalculateBuyQuantityService calculateBuyQuantityService;
 
     private final MerchCatPlanRepository merchCatPlanRepository;
     private final BuyQuantityMapper buyQuantityMapper;
@@ -57,8 +56,7 @@ public class SizeAndPackService {
                               SpCustomerChoiceChannelFixtureRepository spCustomerChoiceChannelFixtureRepository,
                               SizeAndPackObjectMapper sizeAndPackObjectMapper,
                               MerchCatPlanRepository merchCatPlanRepository, GraphQLService graphQLService,
-                              SpCustomerChoiceChannelFixtureSizeRepository spCustomerChoiceChannelFixtureSizeRepository,
-                              CalculateBuyQuantityService calculateBuyQuantityService) {
+                              SpCustomerChoiceChannelFixtureSizeRepository spCustomerChoiceChannelFixtureSizeRepository) {
         this.spFineLineChannelFixtureRepository = spFineLineChannelFixtureRepository;
         this.buyQuantityMapper = buyQuantityMapper;
         this.spCustomerChoiceChannelFixtureRepository = spCustomerChoiceChannelFixtureRepository;
@@ -66,7 +64,6 @@ public class SizeAndPackService {
         this.merchCatPlanRepository = merchCatPlanRepository;
         this.graphQLService = graphQLService;
         this.spCustomerChoiceChannelFixtureSizeRepository = spCustomerChoiceChannelFixtureSizeRepository;
-        this.calculateBuyQuantityService = calculateBuyQuantityService;
     }
 
     public BuyQtyResponse fetchFinelineBuyQnty(BuyQtyRequest buyQtyRequest) {
@@ -168,7 +165,7 @@ public class SizeAndPackService {
 
     private APResponse getAPRunFixtureAllocationOutput(APRequest request) throws SizeAndPackException {
         Map<String, String> headers = new HashMap<>();
-        headers.put("WM_CONSUMER.ID", graphQLProperties.getAssortProductConsumerEnv());
+        headers.put("WM_CONSUMER.ID", graphQLProperties.getAssortProductConsumerId());
         headers.put("WM_SVC.NAME", graphQLProperties.getAssortProductConsumerName());
         headers.put("WM_SVC.ENV", graphQLProperties.getAssortProductConsumerEnv());
 
@@ -258,27 +255,6 @@ public class SizeAndPackService {
         return sizeAndPackResponse;
     }
 
-    @Transactional
-    public void calculateBuyQuantity(CalculateBuyQtyRequest calculateBuyQtyRequest) {
-        try {
-        if (!CollectionUtils.isEmpty(calculateBuyQtyRequest.getLvl3List())) {
-            calculateBuyQtyRequest.getLvl3List().forEach(lvl3Dto -> {
-                if (!CollectionUtils.isEmpty(lvl3Dto.getLvl4List())) {
-                    lvl3Dto.getLvl4List().forEach(lvl4Dto -> {
-                        if (!CollectionUtils.isEmpty(lvl4Dto.getFinelines())) {
-                            calculateBuyQuantityService.calculateFinelinesParallel(calculateBuyQtyRequest, lvl3Dto, lvl4Dto);
-                        } else
-                            log.info("No Finelines available to calculate buy quantity for request: {}", calculateBuyQtyRequest);
-                    });
-                } else
-                    log.info("No Sub Categories available to calculate buy quantity for request: {}", calculateBuyQtyRequest);
-            });
-        } else log.info("No Categories available to calculate buy quantity for request: {}", calculateBuyQtyRequest); }
-        catch (Exception e) {
-            log.error("Failed to Calculate Buy Quantity. Error: ", e);
-        }
-    }
-
     public BuyQtyResponse getAllCcSizeProfiles(BuyQtyRequest buyQtyRequest) throws SizeAndPackException {
         Map<String, String> headers = new HashMap<>();
         headers.put("WM_CONSUMER.ID", graphQLProperties.getSizeProfileConsumerId());
@@ -287,6 +263,6 @@ public class SizeAndPackService {
 
         Map<String, Object> data = new HashMap<>();
         data.put("sizeProfileRequest", buyQtyRequest);
-        return (BuyQtyResponse) post(graphQLProperties.getSizeProfileUrl(), graphQLProperties.getAllCcSizeProfileQuery(), headers, data, Payload::getGetCcSizeClus);
+        return (BuyQtyResponse) post(graphQLProperties.getSizeProfileUrl(), graphQLProperties.getAllCcSizeProfileQuery(), headers, data, Payload::getGetAllCcSizeClus);
     }
 }

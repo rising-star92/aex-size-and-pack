@@ -149,7 +149,7 @@ configDefinitions:
         description: "Consumer ID to call Assort Product"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "34f7ca77-3dfc-46df-a86b-1ba6e4908d0e"
+        defaultValue: "19ce2bf5-4c24-4bbf-bee9-84496dd07e3c"
       "size.profile.assortproduct.consumer.name":
         description: "Consumer service name"
         type: "STRING"

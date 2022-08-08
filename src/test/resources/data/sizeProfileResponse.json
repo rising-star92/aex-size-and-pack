@@ -1,0 +1,184 @@
+{
+    "planId": 485,
+            "lvl0Nbr": 50000,
+            "lvl1Nbr": 34,
+            "lvl2Nbr": 1488,
+            "lvl3List": [
+                {
+                    "lvl3Nbr": 9074,
+                    "lvl4List": [
+                        {
+                            "lvl4Nbr": 7211,
+                            "finelines": [
+                                {
+                                    "finelineNbr": 572,
+                                    "merchMethods": [
+                                        {
+                                            "fixtureTypeRollupId": 3,
+                                            "merchMethod": 1
+                                        },
+                                        {
+                                            "fixtureTypeRollupId": 4,
+                                            "merchMethod": 1
+                                        }
+                                    ],
+                                    "metrics": {
+                                        "sizeProfilePct": null,
+                                        "adjSizeProfilePct": null,
+                                        "avgSizeProfilePct": null,
+                                        "adjAvgSizeProfilePct": null
+                                    },
+                                    "clusters": null,
+                                    "styles": [
+                                        {
+                                            "styleNbr": "34_572_1_22_5",
+                                            "metrics": {
+                                                "sizeProfilePct": null,
+                                                "adjSizeProfilePct": null,
+                                                "avgSizeProfilePct": null,
+                                                "adjAvgSizeProfilePct": null
+                                            },
+                                            "clusters": null,
+                                            "customerChoices": [
+                                                {
+                                                    "ccId": "34_572_1_22_5_BLACK SOOT",
+                                                    "metrics": {
+                                                        "sizeProfilePct": null,
+                                                        "adjSizeProfilePct": null,
+                                                        "avgSizeProfilePct": 0.0,
+                                                        "adjAvgSizeProfilePct": 0.0
+                                                    },
+                                                    "clusters": [
+                                                        {
+                                                            "clusterID": 0,
+                                                            "sizes": [
+                                                                {
+                                                                    "ahsSizeId": 229,
+                                                                    "sizeDesc": "S/M",
+                                                                    "metrics": {
+                                                                        "sizeProfilePct": 0.0,
+                                                                        "adjSizeProfilePct": 0.0,
+                                                                        "avgSizeProfilePct": 0.0,
+                                                                        "adjAvgSizeProfilePct": 0.0
+                                                                    }
+                                                                },
+                                                                {
+                                                                    "ahsSizeId": 230,
+                                                                    "sizeDesc": "L/XL",
+                                                                    "metrics": {
+                                                                        "sizeProfilePct": 0.0,
+                                                                        "adjSizeProfilePct": 0.0,
+                                                                        "avgSizeProfilePct": 0.0,
+                                                                        "adjAvgSizeProfilePct": 0.0
+                                                                    }
+                                                                },
+                                                                {
+                                                                    "ahsSizeId": 231,
+                                                                    "sizeDesc": "XL",
+                                                                    "metrics": {
+                                                                        "sizeProfilePct": 0.0,
+                                                                        "adjSizeProfilePct": 0.0,
+                                                                        "avgSizeProfilePct": 0.0,
+                                                                        "adjAvgSizeProfilePct": 0.0
+                                                                    }
+                                                                },
+                                                                {
+                                                                    "ahsSizeId": 234,
+                                                                    "sizeDesc": "0X",
+                                                                    "metrics": {
+                                                                        "sizeProfilePct": 0.0,
+                                                                        "adjSizeProfilePct": 0.0,
+                                                                        "avgSizeProfilePct": 0.0,
+                                                                        "adjAvgSizeProfilePct": 0.0
+                                                                    }
+                                                                },
+                                                                {
+                                                                    "ahsSizeId": 235,
+                                                                    "sizeDesc": "1X",
+                                                                    "metrics": {
+                                                                        "sizeProfilePct": 0.0,
+                                                                        "adjSizeProfilePct": 0.0,
+                                                                        "avgSizeProfilePct": 0.0,
+                                                                        "adjAvgSizeProfilePct": 0.0
+                                                                    }
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "ccId": "34_572_1_22_5_CHARTREUSE",
+                                                    "metrics": {
+                                                        "sizeProfilePct": null,
+                                                        "adjSizeProfilePct": null,
+                                                        "avgSizeProfilePct": 0.0,
+                                                        "adjAvgSizeProfilePct": 0.0
+                                                    },
+                                                    "clusters": [
+                                                        {
+                                                            "clusterID": 0,
+                                                            "sizes": [
+                                                                {
+                                                                    "ahsSizeId": 229,
+                                                                    "sizeDesc": "S/M",
+                                                                    "metrics": {
+                                                                        "sizeProfilePct": 0.0,
+                                                                        "adjSizeProfilePct": 0.0,
+                                                                        "avgSizeProfilePct": 0.0,
+                                                                        "adjAvgSizeProfilePct": 0.0
+                                                                    }
+                                                                },
+                                                                {
+                                                                    "ahsSizeId": 230,
+                                                                    "sizeDesc": "L/XL",
+                                                                    "metrics": {
+                                                                        "sizeProfilePct": 0.0,
+                                                                        "adjSizeProfilePct": 0.0,
+                                                                        "avgSizeProfilePct": 0.0,
+                                                                        "adjAvgSizeProfilePct": 0.0
+                                                                    }
+                                                                },
+                                                                {
+                                                                    "ahsSizeId": 231,
+                                                                    "sizeDesc": "XL",
+                                                                    "metrics": {
+                                                                        "sizeProfilePct": 0.0,
+                                                                        "adjSizeProfilePct": 0.0,
+                                                                        "avgSizeProfilePct": 0.0,
+                                                                        "adjAvgSizeProfilePct": 0.0
+                                                                    }
+                                                                },
+                                                                {
+                                                                    "ahsSizeId": 234,
+                                                                    "sizeDesc": "0X",
+                                                                    "metrics": {
+                                                                        "sizeProfilePct": 0.0,
+                                                                        "adjSizeProfilePct": 0.0,
+                                                                        "avgSizeProfilePct": 0.0,
+                                                                        "adjAvgSizeProfilePct": 0.0
+                                                                    }
+                                                                },
+                                                                {
+                                                                    "ahsSizeId": 235,
+                                                                    "sizeDesc": "1X",
+                                                                    "metrics": {
+                                                                        "sizeProfilePct": 0.0,
+                                                                        "adjSizeProfilePct": 0.0,
+                                                                        "avgSizeProfilePct": 0.0,
+                                                                        "adjAvgSizeProfilePct": 0.0
+                                                                    }
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+}

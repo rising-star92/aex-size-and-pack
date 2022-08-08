@@ -4,10 +4,10 @@ import java.util.stream.Stream;
 
 public enum FixtureTypeRollup {
 
-    WALLS(1, "WALL"),
-    ENDCAPS(2, "ENDCAP"),
-    RACKS(3, "RACK"),
-    TABLES(4, "TABLE");
+    WALLS(1, "WALLS"),
+    ENDCAPS(2, "ENDCAPS"),
+    RACKS(3, "RACKS"),
+    TABLES(4, "TABLES");
 
     private Integer code;
     private String description;

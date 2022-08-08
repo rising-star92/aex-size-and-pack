@@ -1,11 +1,13 @@
 package com.walmart.aex.sp.dto.bqfp;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.walmart.aex.sp.enums.ChannelType;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CustomerChoice {
    private String ccId;
    private String ccName;
@@ -25,5 +27,5 @@ public class CustomerChoice {
    private List<BumpSet> bumpList;
    private Reconciliation recon;
    private FlowStrategy flowStrategy;
-   private List<Replenishment> replenishment;
+   private List<Replenishment> replenishments;
 }
