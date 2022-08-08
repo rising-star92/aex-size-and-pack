@@ -170,7 +170,7 @@ configDefinitions:
         description: "IntegrationHub Service URL"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "http://10.22.137.216/api/packopt?scenario=pack_optimization_dataproc"
+        defaultValue: "http://analytics-api.stg.us-central1.walmart.net/api/packopt?scenario=pack_optimization_dataproc"
       "integrationhub.sizeAndPackBaseUrl":
         description: "SizeAndPack Base URL"
         type: "STRING"
