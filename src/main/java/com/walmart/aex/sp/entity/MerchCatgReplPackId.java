@@ -17,9 +17,6 @@ import java.io.Serializable;
 public class MerchCatgReplPackId implements Serializable
 {
 
-    @Embedded
-    FixtureTypeRollUpId fixtureTypeRollUpId;
-
     @Column(name="plan_id", nullable = false)
     private Long planId;
     @Column(name="rpt_lvl_0_nbr",nullable = false)
@@ -32,5 +29,7 @@ public class MerchCatgReplPackId implements Serializable
     private Integer repTLvl3;
     @Column(name="channel_id",nullable = false)
     private Integer channelId;
+    @Column(name="fixturetype_rollup_id", nullable = false)
+    private Integer fixtureTypeRollupId;
 
 }

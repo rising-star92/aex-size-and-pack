@@ -49,12 +49,11 @@ public class SubCatgReplPack
     @Column(name="repl_pack_cnt")
     private Integer replPackCnt;
 
-    @JoinColumn(name = "fixturetype_rollup_name", insertable = false, updatable = false)
-    @ManyToOne(targetEntity = ChannelText.class, fetch = FetchType.LAZY)
-    private FixtureTypeRollUp fixtureTypeRollUp;
+    @Column(name="fixturetype_rollup_name", nullable = false)
+    private String fixtureTypeRollupName;
 
     @JoinColumn(name = "run_status_code", insertable = false, updatable = false)
-    @ManyToOne(targetEntity = ChannelText.class, fetch = FetchType.LAZY)
+    @ManyToOne(targetEntity = RunStatusText.class, fetch = FetchType.LAZY)
     private RunStatusText runStatusText;
 
     @OneToMany(mappedBy = "subCatgReplPack", fetch = FetchType.LAZY,

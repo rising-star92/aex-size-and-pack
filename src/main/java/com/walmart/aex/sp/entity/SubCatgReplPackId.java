@@ -17,7 +17,7 @@ import java.io.Serializable;
 public class SubCatgReplPackId implements Serializable
 {
     @Embedded
-    private MerchCatgReplPackId merchCatgReplePackId;
+    private MerchCatgReplPackId merchCatgReplPackId;
 
     @Column(name="rpt_lvl_4_nbr",nullable = false)
     private Integer repTLvl4;

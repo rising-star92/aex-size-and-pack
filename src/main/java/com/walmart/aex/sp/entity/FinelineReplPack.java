@@ -50,13 +50,12 @@ public class FinelineReplPack
     @Column(name="repl_pack_cnt")
     private Integer replPackCnt;
 
+    @Column(name="fixturetype_rollup_name", nullable = false)
+    private String fixtureTypeRollupName;
+    
     @JoinColumn(name = "run_status_code", insertable = false, updatable = false)
     @ManyToOne(targetEntity = RunStatusText.class, fetch = FetchType.LAZY)
     private RunStatusText runStatusText;
-
-    @JoinColumn(name = "fixturetype_rollup_name", insertable = false, updatable = false)
-    @ManyToOne(targetEntity = ChannelText.class, fetch = FetchType.LAZY)
-    private FixtureTypeRollUp fixtureTypeRollUp;
 
     @OneToMany(mappedBy = "finelineReplPack", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL, orphanRemoval = true)
