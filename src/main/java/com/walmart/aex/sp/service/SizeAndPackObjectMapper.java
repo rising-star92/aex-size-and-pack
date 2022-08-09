@@ -91,7 +91,9 @@ public class SizeAndPackObjectMapper {
             if (finelinePlan.getFinelinePlanId() == null) {
                 finelinePlan.setFinelinePlanId(finelinePlanId);
             }
+
             finelinePlan.setFinelineDesc(fineline.getFinelineName());
+            finelinePlan.setAltFinelineName(fineline.getAltFinelineName());
             if (!CollectionUtils.isEmpty(fineline.getStyles())) {
                 finelinePlan.setStylePlans(setStylesPlans(finelinePlan, fineline.getStyles()));
             }
