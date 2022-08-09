@@ -19,4 +19,5 @@ public class UpdateVnPkWhPkReplnRequest {
     private Integer ahsSizeId;
     private Integer vnpk;
     private Integer whpk;
+    private Integer repleshUnits;
 }
