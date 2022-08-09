@@ -216,10 +216,10 @@ type SizeList {
 }
 
 type MetricsDto {
-    sizeProfilePct:Int
-    adjSizeProfilePct:Int
-    avgSizeProfilePct:Int
-    adjAvgSizeProfilePct:Int
+    sizeProfilePct:Float
+    adjSizeProfilePct:Float
+    avgSizeProfilePct:Float
+    adjAvgSizeProfilePct:Float
     buyQty:Int
     finalBuyQty:Int
     finalInitialSetQty:Int
