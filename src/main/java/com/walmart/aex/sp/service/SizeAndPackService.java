@@ -211,12 +211,11 @@ public class SizeAndPackService {
             sizeAndPackResponse.setStatus(FAILED_STATUS);
             log.error("Couldn't parse the payload sent to Strategy Listener. Error: {}", exp.toString());
         }
-
         try {
             for (Lvl1 lvl1 : planSizeAndPackDTO.getLvl1List()) {
                 for (Lvl2 lvl2 : lvl1.getLvl2List()) {
                     for (Lvl3 lvl3 : lvl2.getLvl3List()) {
-                        merchCatPlanRepository.saveAll(sizeAndPackObjectMapper.setMerchCatPlan(planSizeAndPackDTO, lvl1, lvl2, lvl3));
+                        merchCatPlanRepository.saveAll(sizeAndPackObjectMapper.setMerchCatPlan(planSizeAndPackDTO, lvl1, lvl2, lvl3,merchCatPlanRepository));
                     }
                 }
             }
