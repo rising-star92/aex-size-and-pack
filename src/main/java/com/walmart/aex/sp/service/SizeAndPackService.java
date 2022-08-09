@@ -12,6 +12,8 @@ import com.walmart.aex.sp.dto.planhierarchy.Lvl2;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
 import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDTO;
 import com.walmart.aex.sp.dto.planhierarchy.SizeAndPackResponse;
+import com.walmart.aex.sp.entity.MerchCatPlan;
+import com.walmart.aex.sp.entity.MerchCatPlanId;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.exception.SizeAndPackException;
@@ -211,12 +213,11 @@ public class SizeAndPackService {
             sizeAndPackResponse.setStatus(FAILED_STATUS);
             log.error("Couldn't parse the payload sent to Strategy Listener. Error: {}", exp.toString());
         }
-
         try {
             for (Lvl1 lvl1 : planSizeAndPackDTO.getLvl1List()) {
                 for (Lvl2 lvl2 : lvl1.getLvl2List()) {
                     for (Lvl3 lvl3 : lvl2.getLvl3List()) {
-                        merchCatPlanRepository.saveAll(sizeAndPackObjectMapper.setMerchCatPlan(planSizeAndPackDTO, lvl1, lvl2, lvl3));
+                        merchCatPlanRepository.saveAll(sizeAndPackObjectMapper.setMerchCatPlan(planSizeAndPackDTO, lvl1, lvl2, lvl3,merchCatPlanRepository));
                     }
                 }
             }
