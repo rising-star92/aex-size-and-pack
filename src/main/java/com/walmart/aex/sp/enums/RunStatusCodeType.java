@@ -5,7 +5,7 @@ public enum RunStatusCodeType {
     NOT_SENT_TO_ANALYTICS(0, "NOT SENT TO ANALYTICS"),
     SENT_TO_ANALYTICS(3, "SENT TO ANALYTICS"),
     ANALYTICS_RUN_COMPLETED(6, "ANALYTICS RUN COMPLETED"),
-    ANALYTICS_ERROR(6, "ANALYTICS ERROR");
+    ANALYTICS_ERROR(10, "ANALYTICS ERROR");
 
     private Integer id;
     private String description;
