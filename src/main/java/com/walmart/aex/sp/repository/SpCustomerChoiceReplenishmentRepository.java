@@ -97,7 +97,7 @@ public interface SpCustomerChoiceReplenishmentRepository extends JpaRepository<C
             "AND sp.stylePlanId.finelinePlanId.finelineNbr = srp.styleReplPackId.finelineReplPackId.finelineNbr " +
             "AND sp.stylePlanId.styleNbr = srp.styleReplPackId.styleNbr " +
             "AND sp.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId = srp.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId " +
-            "left join " +
+            "inner join " +
             "CcReplPack crp " +
             "ON " +
             "ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.planId = crp.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.planId " +
