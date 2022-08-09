@@ -56,7 +56,10 @@ public class AnalyticsMlSend {
 
     @JoinColumn(name = "run_status_code", insertable = false, updatable = false)
     @ManyToOne(targetEntity = RunStatusText.class, fetch = FetchType.LAZY)
-    private RunStatusText runStatusCode;
+    private RunStatusText runStatusText;
+
+    @Column(name = "run_status_code", nullable = false)
+    private Integer runStatusCode;
 
     @Column(name="analytics_send_desc")
     private String analyticsSendDesc;

@@ -133,9 +133,7 @@ public class IntegrationHubService {
                 analyticsMlSend.setFinelineNbr(inputRequest.getFinelineNbr());
                 analyticsMlSend.setFirstName(getFirstName(request.getRunUser()));
                 analyticsMlSend.setLastName(getLastName(request.getRunUser()));
-                RunStatusText runStatusText = new RunStatusText();
-                runStatusText.setRunStatusCode(3);
-                analyticsMlSend.setRunStatusCode(runStatusText);
+                analyticsMlSend.setRunStatusCode(3);
                 //todo - hard coding values as its non null property
                 analyticsMlSend.setAnalyticsSendDesc("analytics Desc");
                 analyticsMlSend.setStartTs(null);
