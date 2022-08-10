@@ -18,7 +18,7 @@ public class MerchCatPlan {
     @EqualsAndHashCode.Include
     private MerchCatPlanId merchCatPlanId;
 
-    @OneToMany(mappedBy = "merchCatPlan", fetch = FetchType.EAGER,
+    @OneToMany(mappedBy = "merchCatPlan", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<SubCatPlan> subCatPlans;
 

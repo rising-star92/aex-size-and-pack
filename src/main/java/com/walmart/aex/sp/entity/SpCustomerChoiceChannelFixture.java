@@ -65,7 +65,7 @@ public class SpCustomerChoiceChannelFixture {
     @Column(name = "store_obj")
     private String storeObj;
 
-    @OneToMany(mappedBy = "spCustomerChoiceChannelFixture", fetch = FetchType.EAGER,
+    @OneToMany(mappedBy = "spCustomerChoiceChannelFixture", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<SpCustomerChoiceChannelFixtureSize> spCustomerChoiceChannelFixtureSize;
 
