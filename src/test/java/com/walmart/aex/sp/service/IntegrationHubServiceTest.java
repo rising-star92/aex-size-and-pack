@@ -1,7 +1,10 @@
 package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.integrationhub.IntegrationHubResponseDTO;
+import com.walmart.aex.sp.dto.packoptimization.FinelineDTO;
 import com.walmart.aex.sp.dto.packoptimization.InputRequest;
+import com.walmart.aex.sp.dto.packoptimization.Lvl3DTO;
+import com.walmart.aex.sp.dto.packoptimization.Lvl4DTO;
 import com.walmart.aex.sp.dto.packoptimization.RunPackOptRequest;
 import com.walmart.aex.sp.dto.packoptimization.RunPackOptResponse;
 import com.walmart.aex.sp.properties.IntegrationHubServiceProperties;
@@ -63,27 +66,36 @@ public class IntegrationHubServiceTest {
 
     private RunPackOptRequest getRequest() {
         RunPackOptRequest request = new RunPackOptRequest();
-        List<InputRequest> inputRequestList = new ArrayList<>();
         InputRequest inputRequest = new InputRequest();
-        inputRequest.setFinelineNbr(15);
         inputRequest.setLvl0Nbr(10);
         inputRequest.setLvl1Nbr(11);
         inputRequest.setLvl2Nbr(12);
-        inputRequest.setLvl3Nbr(13);
-        inputRequest.setLvl4Nbr(14);
-        InputRequest inputRequest2 = new InputRequest();
-        inputRequest2.setFinelineNbr(25);
-        inputRequest2.setLvl0Nbr(20);
-        inputRequest2.setLvl1Nbr(21);
-        inputRequest2.setLvl2Nbr(22);
-        inputRequest2.setLvl3Nbr(23);
-        inputRequest2.setLvl4Nbr(24);
+        List<FinelineDTO> finelinesList = new ArrayList<>();
+        FinelineDTO finelineDTO = new FinelineDTO();
+        finelineDTO.setFinelineNbr(50);
+        FinelineDTO finelineDTO1 = new FinelineDTO();
+        finelineDTO1.setFinelineNbr(51);
+        finelinesList.add(finelineDTO);
+        finelinesList.add(finelineDTO1);
+        List<Lvl4DTO> lvl4DTOS = new ArrayList<>();
+        Lvl4DTO lvl4DTO = new Lvl4DTO();
+        lvl4DTO.setLvl4Nbr(40);
+        Lvl4DTO lvl4DTO1 = new Lvl4DTO();
+        lvl4DTO.setLvl4Nbr(41);
+        lvl4DTO.setFinelines(finelinesList);
+        lvl4DTOS.add(lvl4DTO);
+        List<Lvl3DTO> lvl3DTOS = new ArrayList<>();
+        Lvl3DTO lvl3DTO = new Lvl3DTO();
+        lvl3DTO.setLvl3Nbr(30);
+        Lvl3DTO lvl3DTO1 = new Lvl3DTO();
+        lvl3DTO.setLvl3Nbr(31);
+        lvl3DTO.setLvl4DTOList(lvl4DTOS);
+        lvl3DTOS.add(lvl3DTO);
+        inputRequest.setLvl3List(lvl3DTOS);
+        request.setPlanId(46L);
+        request.setRunUser("Ravi Narayan Sukhasare");
+        request.setInputRequest(inputRequest);
 
-        inputRequestList.add(inputRequest);
-        inputRequestList.add(inputRequest2);
-        request.setPlanId(13L);
-        request.setRunUser("FirstName LastName");
-        request.setInputRequest(inputRequestList);
         return request;
     }
 
