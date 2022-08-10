@@ -6,6 +6,7 @@ import com.walmart.aex.sp.dto.assortproduct.APResponse;
 import com.walmart.aex.sp.dto.bqfp.BQFPRequest;
 import com.walmart.aex.sp.dto.bqfp.BQFPResponse;
 import com.walmart.aex.sp.dto.buyquantity.*;
+import com.walmart.aex.sp.entity.MerchCatgReplPack;
 import com.walmart.aex.sp.entity.SpFineLineChannelFixture;
 import com.walmart.aex.sp.exception.SizeAndPackException;
 import com.walmart.aex.sp.repository.SpFineLineChannelFixtureRepository;
@@ -117,9 +118,24 @@ public class CalculateFinelineBuyQuantityTest {
         BQFPResponse bqfpResponse = objectMapper1.readValue(readJsonFileAsString("bqfpServiceResponse"), BQFPResponse.class);
         Mockito.when(bqfpService.getBuyQuantityUnits(bqfpRequest)).thenReturn(bqfpResponse);
 
-        List<SpFineLineChannelFixture> spFineLineChannelFixtures = calculateFinelineBuyQuantity.calculateFinelineBuyQty(calculateBuyQtyRequest,lvl3Dto,lvl4Dto,finelineDto,spFineLineChannelFixtures1);
+        CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest = new CalculateBuyQtyParallelRequest();
+        calculateBuyQtyParallelRequest.setPlanId(485L);
+        calculateBuyQtyParallelRequest.setChannel("store");
+        calculateBuyQtyParallelRequest.setLvl0Nbr(50000);
+        calculateBuyQtyParallelRequest.setLvl1Nbr(34);
+        calculateBuyQtyParallelRequest.setLvl2Nbr(1488);
+        calculateBuyQtyParallelRequest.setLvl3Nbr(9074);
+        calculateBuyQtyParallelRequest.setLvl4Nbr(7211);
+        calculateBuyQtyParallelRequest.setFinelineNbr(572);
 
-        assertEquals(2,spFineLineChannelFixtures.size());
+        List<MerchCatgReplPack> merchCatgReplPacks = new ArrayList<>();
+        CalculateBuyQtyResponse calculateBuyQtyResponse = new CalculateBuyQtyResponse();
+        calculateBuyQtyResponse.setSpFineLineChannelFixtures(spFineLineChannelFixtures1);
+        calculateBuyQtyResponse.setMerchCatgReplPacks(merchCatgReplPacks);
+
+        CalculateBuyQtyResponse calculateBuyQtyResponse1 = calculateFinelineBuyQuantity.calculateFinelineBuyQty(calculateBuyQtyRequest,calculateBuyQtyParallelRequest,calculateBuyQtyResponse);
+
+        assertEquals(2,calculateBuyQtyResponse1.getSpFineLineChannelFixtures().size());
     }
 
     private String readTextFileAsString(String fileName) throws IOException {
