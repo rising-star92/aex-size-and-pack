@@ -11,6 +11,7 @@ import com.walmart.aex.sp.dto.packoptimization.RunPackOptRequest;
 import com.walmart.aex.sp.dto.packoptimization.RunPackOptResponse;
 import com.walmart.aex.sp.entity.AnalyticsMlSend;
 import com.walmart.aex.sp.entity.RunStatusText;
+import com.walmart.aex.sp.enums.RunStatusCodeType;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.properties.IntegrationHubServiceProperties;
 import com.walmart.aex.sp.repository.AnalyticsMlSendRepository;
@@ -133,9 +134,8 @@ public class IntegrationHubService {
                 analyticsMlSend.setFinelineNbr(inputRequest.getFinelineNbr());
                 analyticsMlSend.setFirstName(getFirstName(request.getRunUser()));
                 analyticsMlSend.setLastName(getLastName(request.getRunUser()));
-                RunStatusText runStatusText = new RunStatusText();
-                runStatusText.setRunStatusCode(3);
-                analyticsMlSend.setRunStatusCode(runStatusText);
+                //Setting the run status as 3, which is Sent to Analytics
+                analyticsMlSend.setRunStatusCode(RunStatusCodeType.SENT_TO_ANALYTICS.getId());
                 //todo - hard coding values as its non null property
                 analyticsMlSend.setAnalyticsSendDesc("analytics Desc");
                 analyticsMlSend.setStartTs(null);

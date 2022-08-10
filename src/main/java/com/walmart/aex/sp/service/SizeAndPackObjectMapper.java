@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class SizeAndPackObjectMapper {
-    public Set<MerchCatPlan> setMerchCatPlan(PlanSizeAndPackDTO request, Lvl1 lvl1, Lvl2 lvl2, Lvl3 lvl3) {
+    public Set<MerchCatPlan> setMerchCatPlan(PlanSizeAndPackDTO request, Lvl1 lvl1, Lvl2 lvl2, Lvl3 lvl3, MerchCatPlanRepository merchCatPlanRepository) {
         Set<MerchCatPlan> merchCatPlanSet = new HashSet<>();
         Integer finelineChannel = ChannelType.getChannelIdFromName(CommonUtil.getRequestedFlChannel(lvl3));
         List<Integer> channelList = getChannelListFromChannelId(finelineChannel);
@@ -35,11 +35,7 @@ public class SizeAndPackObjectMapper {
         if (!CollectionUtils.isEmpty(channelList)) {
             channelList.forEach(chan -> {
                 MerchCatPlanId merchCatPlanId = new MerchCatPlanId(request.getPlanId(), request.getLvl0Nbr(), lvl1.getLvl1Nbr(), lvl2.getLvl2Nbr(), lvl3.getLvl3Nbr(), chan);
-                MerchCatPlan merchCatPlan = Optional.of(merchCatPlanSet)
-                        .stream()
-                        .flatMap(Collection::stream).filter(merchCatPlan1 -> merchCatPlan1.getMerchCatPlanId().equals(merchCatPlanId))
-                        .findFirst()
-                        .orElse(new MerchCatPlan());
+                MerchCatPlan merchCatPlan = merchCatPlanRepository.findById(merchCatPlanId).orElse(new MerchCatPlan());
                 if (merchCatPlan.getMerchCatPlanId() == null) {
                     merchCatPlan.setMerchCatPlanId(merchCatPlanId);
                 }
@@ -95,7 +91,9 @@ public class SizeAndPackObjectMapper {
             if (finelinePlan.getFinelinePlanId() == null) {
                 finelinePlan.setFinelinePlanId(finelinePlanId);
             }
+
             finelinePlan.setFinelineDesc(fineline.getFinelineName());
+            finelinePlan.setAltFinelineName(fineline.getAltFinelineName());
             if (!CollectionUtils.isEmpty(fineline.getStyles())) {
                 finelinePlan.setStylePlans(setStylesPlans(finelinePlan, fineline.getStyles()));
             }
@@ -178,7 +176,7 @@ public class SizeAndPackObjectMapper {
                 }
             });
         }
-        return setMerchCatPlan(request,lvl1, lvl2, lvl3);
+        return setMerchCatPlan(request,lvl1, lvl2, lvl3,merchCatPlanRepository);
     }
 
     private Set<MerchCatPlan> deleteMerchCatPlan(Set<MerchCatPlan> merchCatPlanSet, Lvl3 lvl3, Integer channelId, MerchCatPlanRepository merchCatPlanRepository) {

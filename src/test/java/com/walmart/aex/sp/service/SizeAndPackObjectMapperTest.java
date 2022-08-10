@@ -41,7 +41,7 @@ public class SizeAndPackObjectMapperTest {
         Lvl2 lvl2 = lvl1.getLvl2List().get(0);
         Lvl3 lvl3 = lvl2.getLvl3List().get(0);
         String channel = "store";
-        Set<MerchCatPlan> merchCatPlanSet = sizeAndPackObjectMapper.setMerchCatPlan(planSizeAndPackDTO, lvl1, lvl2, lvl3);
+        Set<MerchCatPlan> merchCatPlanSet = sizeAndPackObjectMapper.setMerchCatPlan(planSizeAndPackDTO, lvl1, lvl2, lvl3,merchCatPlanRepository);
         assertTrue(!merchCatPlanSet.isEmpty());
     }
 

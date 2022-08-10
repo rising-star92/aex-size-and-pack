@@ -37,7 +37,6 @@ public class SizeAndPackController {
             return ResponseEntity.status(HttpStatus.OK).body(sizeAndPackService.saveSizeAndPackData(request));
         } catch (Exception exp) {
             log.error("Exception occurred when creating a line plan: {}", exp.getMessage());
-            //throw new CustomException("Exception occurred when creating a plan Strategy: " + exp);
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
     }
