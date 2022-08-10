@@ -47,45 +47,48 @@ public class UpdateReplnConfigMapper {
 	   this.ccSpReplnPkConsRepository = ccSpReplnPkConsRepository;
 	}
 	
-	public void updateVnpkWhpkForCatgReplnConsMapper(List<MerchCatgReplPack> catgReplnPkConsList, Integer vnpk, Integer whpk, Double vnpkwhpkRatio)
+	public void updateVnpkWhpkForCatgReplnConsMapper(List<MerchCatgReplPack> catgReplnPkConsList, Integer vnpk, Integer whpk, Double vnpkwhpkRatio, Integer replPackCnt)
 	{
 	   catgReplnPkConsList.forEach(catgReplnPkCons -> {
 
 	      catgReplnPkCons.setVendorPackCnt(vnpk);
 	      catgReplnPkCons.setWhsePackCnt(whpk);
 	      catgReplnPkCons.setVnpkWhpkRatio(vnpkwhpkRatio);
+		  catgReplnPkCons.setReplPackCnt(replPackCnt);
 	      catgReplnPkConsRepository.save(catgReplnPkCons);
 	   });
 	   List<SubCatgReplPack> subCatgReplnPkConsList = catgReplnPkConsList
 	         .stream()
 	         .flatMap(catgReplnPkCons -> catgReplnPkCons.getSubReplPack().stream()).collect(Collectors.toList());
-	   updateVnpkWhpkForSubCatgReplnConsMapper(subCatgReplnPkConsList, vnpk, whpk, vnpkwhpkRatio);
+	   updateVnpkWhpkForSubCatgReplnConsMapper(subCatgReplnPkConsList, vnpk, whpk, vnpkwhpkRatio, replPackCnt);
 
 	}
 
-	public void updateVnpkWhpkForSubCatgReplnConsMapper(List<SubCatgReplPack> SubcatgReplnPkConsList, Integer vnpk, Integer whpk, Double vnpkwhpkRatio)
+	public void updateVnpkWhpkForSubCatgReplnConsMapper(List<SubCatgReplPack> SubcatgReplnPkConsList, Integer vnpk, Integer whpk, Double vnpkwhpkRatio, Integer replPackCnt)
 	{
 	   SubcatgReplnPkConsList.forEach(subCatgReplnPkCons -> {
 
 	      subCatgReplnPkCons.setVendorPackCnt(vnpk);
 	      subCatgReplnPkCons.setWhsePackCnt(whpk);
 	      subCatgReplnPkCons.setVnpkWhpkRatio(vnpkwhpkRatio);
+		  subCatgReplnPkCons.setReplPackCnt(replPackCnt);
 	      subCatgReplnPkConsRepository.save(subCatgReplnPkCons);
 	   });
 	   List<FinelineReplPack> finelineReplnPkConsList = SubcatgReplnPkConsList
 	         .stream()
 	         .flatMap(subCatgReplnPkCons -> subCatgReplnPkCons.getFinelineReplPack().stream()).collect(Collectors.toList());
-	   updateVnpkWhpkForFinelineReplnConsMapper(finelineReplnPkConsList, vnpk, whpk, vnpkwhpkRatio);
+	   updateVnpkWhpkForFinelineReplnConsMapper(finelineReplnPkConsList, vnpk, whpk, vnpkwhpkRatio, replPackCnt);
 
 	}
 	
-	public void updateVnpkWhpkForFinelineReplnConsMapper(List<FinelineReplPack> finelineReplnPkConsList, Integer vnpk, Integer whpk, Double vnpkwhpkRatio)
+	public void updateVnpkWhpkForFinelineReplnConsMapper(List<FinelineReplPack> finelineReplnPkConsList, Integer vnpk, Integer whpk, Double vnpkwhpkRatio, Integer replPackCnt)
 	{
 		finelineReplnPkConsList.forEach(finelieneReplnPkCons -> {
 			
 			finelieneReplnPkCons.setVendorPackCnt(vnpk);
 			finelieneReplnPkCons.setWhsePackCnt(whpk);
 			finelieneReplnPkCons.setVnpkWhpkRatio(vnpkwhpkRatio);
+			finelieneReplnPkCons.setReplPackCnt(replPackCnt);
 			
 			finelineReplnPkConsRepository.save(finelieneReplnPkCons);
 		});
@@ -94,18 +97,19 @@ public class UpdateReplnConfigMapper {
 				        .stream()
 						.flatMap(finelieneReplnPkCons -> finelieneReplnPkCons.getStyleReplPack().stream()).collect(Collectors.toList());	
 						
-		updateVnpkWhpkForStyleReplnConsMapper(stylReplnPkConsList, vnpk, whpk, vnpkwhpkRatio);
+		updateVnpkWhpkForStyleReplnConsMapper(stylReplnPkConsList, vnpk, whpk, vnpkwhpkRatio, replPackCnt);
 		
 	}
 
 	
 	public void updateVnpkWhpkForStyleReplnConsMapper(List<StyleReplPack> styleReplnPkConsList, Integer vnpk,
-            Integer whpk, Double vnpkwhpkRatio) {
+            Integer whpk, Double vnpkwhpkRatio, Integer replPackCnt) {
         styleReplnPkConsList.forEach(styleReplnPkCons -> {
 
             styleReplnPkCons.setVendorPackCnt(vnpk);
             styleReplnPkCons.setWhsePackCnt(whpk);
             styleReplnPkCons.setVnpkWhpkRatio(vnpkwhpkRatio);
+			styleReplnPkCons.setReplPackCnt(replPackCnt);
 
             styleReplnConsRepository.save(styleReplnPkCons);
         });
@@ -114,17 +118,18 @@ public class UpdateReplnConfigMapper {
                 .flatMap(styleReplnPkCons -> styleReplnPkCons.getCcReplPack().stream())
                 .collect(Collectors.toList());
 
-        updateVnpkWhpkForCcReplnPkConsMapper(ccReplnPkConsList, vnpk, whpk, vnpkwhpkRatio);
+        updateVnpkWhpkForCcReplnPkConsMapper(ccReplnPkConsList, vnpk, whpk, vnpkwhpkRatio, replPackCnt);
 
     }
 	
-	public void updateVnpkWhpkForCcReplnPkConsMapper(List<CcReplPack> ccReplnPkConsList, Integer vnpk, Integer whpk, Double vnpkwhpkRatio)
+	public void updateVnpkWhpkForCcReplnPkConsMapper(List<CcReplPack> ccReplnPkConsList, Integer vnpk, Integer whpk, Double vnpkwhpkRatio, Integer replPackCnt)
 	{
 		ccReplnPkConsList.forEach(ccReplnPkCons -> {
 			
 			ccReplnPkCons.setVendorPackCnt(vnpk);
 			ccReplnPkCons.setWhsePackCnt(whpk);
 			ccReplnPkCons.setVnpkWhpkRatio(vnpkwhpkRatio);
+			ccReplnPkCons.setReplPackCnt(replPackCnt);
 			
 			ccReplnPkConsRepository.save(ccReplnPkCons);
 		});
@@ -132,17 +137,18 @@ public class UpdateReplnConfigMapper {
 		List<CcMmReplPack> ccMmReplnPkConsList = ccReplnPkConsList.stream().
 						flatMap(ccReplnPkCons -> ccReplnPkCons.getCcMmReplPack().stream()).collect(Collectors.toList());
 		
-		updateVnpkWhpkForCcMmReplnPkConsMapper(ccMmReplnPkConsList, vnpk, whpk, vnpkwhpkRatio);
+		updateVnpkWhpkForCcMmReplnPkConsMapper(ccMmReplnPkConsList, vnpk, whpk, vnpkwhpkRatio,replPackCnt);
 		
 	}
 	
-	public void updateVnpkWhpkForCcMmReplnPkConsMapper(List<CcMmReplPack> ccMmReplnPkConsList, Integer vnpk, Integer whpk, Double vnpkwhpkRatio)
+	public void updateVnpkWhpkForCcMmReplnPkConsMapper(List<CcMmReplPack> ccMmReplnPkConsList, Integer vnpk, Integer whpk, Double vnpkwhpkRatio, Integer replPackCnt)
 	{
 		ccMmReplnPkConsList.forEach(ccMmReplnPkCons -> {
 
 			ccMmReplnPkCons.setVendorPackCnt(vnpk);
 			ccMmReplnPkCons.setWhsePackCnt(whpk);
 			ccMmReplnPkCons.setVnpkWhpkRatio(vnpkwhpkRatio);
+			ccMmReplnPkCons.setReplPackCnt(replPackCnt);
 
 			ccMmReplnPkConsRepository.save(ccMmReplnPkCons);
 		});
@@ -150,17 +156,18 @@ public class UpdateReplnConfigMapper {
 		List<CcSpMmReplPack> ccSpMmReplnPkConsList = ccMmReplnPkConsList.stream().
 						flatMap(ccMmReplnPkCons -> ccMmReplnPkCons.getCcSpMmReplPack().stream()).collect(Collectors.toList());
 
-		updateVnpkWhpkForCcSpMmReplnPkConsMapper(ccSpMmReplnPkConsList, vnpk, whpk, vnpkwhpkRatio);
+		updateVnpkWhpkForCcSpMmReplnPkConsMapper(ccSpMmReplnPkConsList, vnpk, whpk, vnpkwhpkRatio, replPackCnt);
 
 	}
 	
-	public void updateVnpkWhpkForCcSpMmReplnPkConsMapper(List<CcSpMmReplPack> ccSpReplnPkConsList, Integer vnpk, Integer whpk, Double vnpkwhpkRatio)
+	public void updateVnpkWhpkForCcSpMmReplnPkConsMapper(List<CcSpMmReplPack> ccSpReplnPkConsList, Integer vnpk, Integer whpk, Double vnpkwhpkRatio, Integer replPackCnt)
 	{
 		ccSpReplnPkConsList.forEach(ccSpReplnCons -> {
 			
 			ccSpReplnCons.setVendorPackCnt(vnpk);
 			ccSpReplnCons.setWhsePackCnt(whpk);
 			ccSpReplnCons.setVnpkWhpkRatio(vnpkwhpkRatio);
+			ccSpReplnCons.setReplPackCnt(replPackCnt);
 			
 			ccSpReplnPkConsRepository.save(ccSpReplnCons);
 		});
