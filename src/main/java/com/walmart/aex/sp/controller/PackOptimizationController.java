@@ -1,4 +1,5 @@
 package com.walmart.aex.sp.controller;
+import com.walmart.aex.sp.dto.packoptimization.Execution;
 import com.walmart.aex.sp.dto.packoptimization.RunPackOptRequest;
 import com.walmart.aex.sp.dto.packoptimization.RunPackOptResponse;
 import com.walmart.aex.sp.service.IntegrationHubService;
@@ -14,6 +15,8 @@ import org.springframework.graphql.data.method.annotation.QueryMapping;
 
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
+
+import java.math.BigInteger;
 
 @Slf4j
 
@@ -38,8 +41,18 @@ public class PackOptimizationController {
 	}
 
 	@MutationMapping
-	public RunPackOptResponse createRunPackOptExecution(@Argument RunPackOptRequest runPackOptRequest)
+	public RunPackOptResponse createRunPackOptExecution(@Argument RunPackOptRequest request)
 	{
-		return integrationHubService.callIntegrationHubForPackOpt(runPackOptRequest);
+		RunPackOptResponse response= new RunPackOptResponse();
+		response = integrationHubService.callIntegrationHubForPackOpt(request);
+		if(response!=null)
+		{
+			return response;
+		}
+		else {
+			BigInteger bigInteger = BigInteger.ONE;
+			response = new RunPackOptResponse(new Execution(bigInteger, 0, "NOT SENT TO ANALYTICS", "Error connecting with Integration Hub service"));
+			return response;
+		}
 	}
 }

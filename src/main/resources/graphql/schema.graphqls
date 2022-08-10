@@ -17,7 +17,7 @@ type Mutation {
 	updateReplnConfigByCcMerchMethod(request: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse
 	updateReplnConfigByCcSpMmSize(request: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse
     calculateBuyQty(calculateBuyQtyRequest: CalculateBuyQtyRequest!): StatusResponse!
-    createRunPackOptExecution(request: RunPackOptRequest): RunPackOptResponse!
+    createRunPackOptExecution(request: RunPackOptRequest!): RunPackOptResponse
 }
 
 input UpdateVnPkWhPkReplnRequest {
@@ -265,12 +265,12 @@ input ReplenishmentRequest {
 }
 
 input RunPackOptRequest {
-  planId: Int!
+  planId: Int
   inputRequest: [InputRequest]
-  runUser: String!
+  runUser: String
 }
 
-type InputRequest {
+input InputRequest {
      lvl0Nbr: Int
      lvl1Nbr: Int
      lvl2Nbr: Int
