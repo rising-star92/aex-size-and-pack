@@ -6,6 +6,7 @@ type Query {
      fetchReplnByPlanFineline(replenishmentRequest: ReplenishmentRequest!): ReplenishmentResponse!
      fetchReplnByPlanFinelineStyleCc(replenishmentRequest: ReplenishmentRequest!): ReplenishmentResponse!
      getSizeBuyQtyDetails(buyQtyRequest: BuyQtyRequest!): BuyQtyResponse!
+     getPackOptFinelineDetails(planId: Int, finelineNbr : Int): FinelinePackOptimizationResponse!
 }
 
 type Mutation {
@@ -186,6 +187,7 @@ type FinelineDto {
     metrics: MetricsDto
     clusters: [ClustersDto]
     styles: [StyleDto]
+    customerChoices: [CustomerChoiceDto]
 }
 
 type StyleDto {
@@ -201,6 +203,7 @@ type CustomerChoiceDto {
     metrics: MetricsDto
     clusters: [ClustersDto]
     merchMethods : [MerchMethodsDto]
+   fixtures :[FixtureDto]
 }
 
 type ClustersDto {
@@ -262,6 +265,30 @@ input ReplenishmentRequest {
     ccId: String
 }
 
+type FinelinePackOptimizationResponse{
+    planId:Int!
+	planDesc:String
+	finelines:[FinelineDto]
+}
+
+type FixtureDto{
+  fixtureType:String
+	merchMethod: String 
+	flowStrategyType: String 
+	sizes:[SizePackDto] 
+}
+type SizePackDto {
+ sizeDesc:String
+	metrics:[MetricsPackDto]
+}
+
+
+type MetricsPackDto{
+  clusterId:Int
+  storeList:[Int]
+   initialSet:Int
+	  bumpSet:Int
+}
 
 
 

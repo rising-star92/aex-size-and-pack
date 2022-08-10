@@ -7,11 +7,12 @@ import java.util.List;
 
 @Data
 public class FinelineDto {
-    private Integer finelineNbr;
-    private String finelineDesc;
-    private String finelineAltDesc;
-    private MetricsDto metrics;
-    private List<ClustersDto> clusters;
-    private List<StyleDto> styles;
-    private List<MerchMethodsDto> merchMethods;
+	 private Integer finelineNbr;
+	    private String finelineDesc;
+	    private String finelineAltDesc;
+	    private MetricsDto metrics;
+	    private List<ClustersDto> clusters;
+	    private List<StyleDto> styles;
+	    private List<MerchMethodsDto> merchMethods;
+	    private List<CustomerChoiceDto> customerChoices;
 }
