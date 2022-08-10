@@ -20,5 +20,5 @@ public class CcMmReplPackId implements Serializable
     private CcReplPackId ccReplPackId;
 
     @Column(name="merch_method_code",nullable = false)
-    private String merchMethodCode;
+    private Integer merchMethodCode;
 }

@@ -45,7 +45,7 @@ public class SubCatPlan {
     @Column(name="rpt_lvl_4_gen_desc1",nullable = false)
     private String lvl4Desc;
 
-    @OneToMany(mappedBy = "subCatPlan", fetch = FetchType.EAGER,
+    @OneToMany(mappedBy = "subCatPlan", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<FinelinePlan> finelinePlans;
 }

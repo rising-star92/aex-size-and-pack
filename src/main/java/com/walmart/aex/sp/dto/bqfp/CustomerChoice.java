@@ -26,6 +26,6 @@ public class CustomerChoice {
    private InitialSet initialSet;
    private List<BumpSet> bumpList;
    private Reconciliation recon;
-   private FlowStrategy flowStrategy;
+   private String flowStrategy;
    private List<Replenishment> replenishments;
 }
