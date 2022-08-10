@@ -154,7 +154,6 @@ public class ReplenishmentService  {
 	   vnpkwhpkRatio = getVnpkWhpkRatio(vnpk, whpk);
 	   
 	   List<MerchCatgReplPack> catgReplnPkConsList = catgReplnPkConsRepository.getCatgReplnConsData(planId, channelId, lvl3Nbr, fixtureTypeRollupId);
-	   System.out.println(catgReplnPkConsList);
 	   updateReplnConfigMapper.updateVnpkWhpkForCatgReplnConsMapper(catgReplnPkConsList, vnpk, whpk, vnpkwhpkRatio, getReplenishmentPackCount(replenishmentUnits, vnpk));
 
 	}
