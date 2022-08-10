@@ -163,6 +163,11 @@ public class CalculateFinelineBuyQuantity {
             if (spCustomerChoiceChannelFixture.getSpCustomerChoiceChannelFixtureId() == null) {
                 spCustomerChoiceChannelFixture.setSpCustomerChoiceChannelFixtureId(spCustomerChoiceChannelFixtureId);
             }
+
+            if (!CollectionUtils.isEmpty(customerChoiceDto.getClusters())) {
+                getCcClusters(styleDto, customerChoiceDto, merchMethodsDto, apResponse, bqfpResponse, spCustomerChoiceChannelFixture);
+            }
+
             //Replenishment
             List<Replenishment> replenishments = getReplenishments(merchMethodsDto, bqfpResponse);
             log.info("Get All Replenishments: {}", replenishments);
@@ -172,9 +177,8 @@ public class CalculateFinelineBuyQuantity {
                 setAllReplenishments(styleDto, merchMethodsDto, spStyleChannelFixture, calculateBuyQtyParallelRequest, calculateBuyQtyResponse, customerChoiceDto, replenishments);
             }
 
-            if (!CollectionUtils.isEmpty(customerChoiceDto.getClusters())) {
-                getCcClusters(styleDto, customerChoiceDto, merchMethodsDto, apResponse, bqfpResponse, spCustomerChoiceChannelFixture);
-            }
+            //TODO: Final Buy Qty
+
             spCustomerChoiceChannelFixtures.add(spCustomerChoiceChannelFixture);
         });
         log.info("calculating Style IS and BS Qty");

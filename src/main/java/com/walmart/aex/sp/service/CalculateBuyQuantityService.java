@@ -112,6 +112,15 @@ public class CalculateBuyQuantityService {
                     .flatMap(Collection::stream)
                     .collect(Collectors.toSet());
             spFineLineChannelFixtureRepository.saveAll(spFineLineChannelFixtures2);
+
+            //Save Replenishment
+            Set<MerchCatgReplPack> merchCatgReplPacks1 = calculateBuyQtyResponses
+                    .stream()
+                    .map(CalculateBuyQtyResponse::getMerchCatgReplPacks)
+                    .flatMap(Collection::stream)
+                    .collect(Collectors.toSet());
+            merchCatgReplPackRepository.saveAll(merchCatgReplPacks1);
+
         } else throw new CustomException("Not All finelines complted successfully");
     }
 }
