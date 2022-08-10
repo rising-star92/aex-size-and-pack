@@ -164,10 +164,6 @@ public class CalculateFinelineBuyQuantity {
                 spCustomerChoiceChannelFixture.setSpCustomerChoiceChannelFixtureId(spCustomerChoiceChannelFixtureId);
             }
 
-            if (!CollectionUtils.isEmpty(customerChoiceDto.getClusters())) {
-                getCcClusters(styleDto, customerChoiceDto, merchMethodsDto, apResponse, bqfpResponse, spCustomerChoiceChannelFixture);
-            }
-
             //Replenishment
             List<Replenishment> replenishments = getReplenishments(merchMethodsDto, bqfpResponse);
             log.info("Get All Replenishments: {}", replenishments);
@@ -178,6 +174,9 @@ public class CalculateFinelineBuyQuantity {
             }
 
             //TODO: Final Buy Qty
+            if (!CollectionUtils.isEmpty(customerChoiceDto.getClusters())) {
+                getCcClusters(styleDto, customerChoiceDto, merchMethodsDto, apResponse, bqfpResponse, spCustomerChoiceChannelFixture);
+            }
 
             spCustomerChoiceChannelFixtures.add(spCustomerChoiceChannelFixture);
         });
@@ -505,7 +504,7 @@ public class CalculateFinelineBuyQuantity {
     private BQFPResponse getBqfpResponse(CalculateBuyQtyRequest calculateBuyQtyRequest, Integer finelineNbr) {
         BQFPRequest bqfpRequest = new BQFPRequest();
         bqfpRequest.setPlanId(calculateBuyQtyRequest.getPlanId());
-        bqfpRequest.setChannel(calculateBuyQtyRequest.getChannel());
+        bqfpRequest.setChannel(ChannelType.getChannelIdFromName(calculateBuyQtyRequest.getChannel()).toString());
         bqfpRequest.setFinelineNbr(finelineNbr);
 
         return bqfpService.getBuyQuantityUnits(bqfpRequest);

@@ -15,7 +15,7 @@ public class Fixture {
    private List<BumpSet> bumpList;
    private Reconciliation recon;
    private List<Cluster>clusters;
-   private FlowStrategy flowStrategy;
+   private String flowStrategy;
    private List<Replenishment> replenishments;
    private Long remainingUnits;
 }

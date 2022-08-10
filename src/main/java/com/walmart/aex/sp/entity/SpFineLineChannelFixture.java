@@ -24,35 +24,35 @@ public class SpFineLineChannelFixture {
     @JsonIgnore
     private FixtureTypeRollUp fixtureTypeRollUp;
 
-    @Column(name = "flow_strategy_code", nullable = false)
+    @Column(name = "flow_strategy_code")
     private Integer flowStrategyCode;
 
     @JoinColumn(name = "flow_strategy_code", insertable = false, updatable = false)
     @ManyToOne(targetEntity = FpStrategyText.class, fetch = FetchType.LAZY)
     private FpStrategyText fpStrategyText;
 
-    @Column(name="merch_method_code", nullable = false)
+    @Column(name="merch_method_code")
     private Integer merchMethodCode;
 
-    @Column(name="merch_method_short_desc", nullable = false)
+    @Column(name="merch_method_short_desc")
     private String merchMethodShortDesc;
 
-    @Column(name = "bump_pack_qty", nullable = false)
+    @Column(name = "bump_pack_qty")
     private Integer bumpPackQty;
 
-    @Column(name = "initial_set_qty", nullable = false)
+    @Column(name = "initial_set_qty")
     private Integer initialSetQty;
 
-    @Column(name = "buy_qty", nullable = false)
+    @Column(name = "buy_qty")
     private Integer buyQty;
 
-    @Column(name = "repln_qty", nullable = false)
+    @Column(name = "repln_qty")
     private Integer replnQty;
 
-    @Column(name = "adj_repln_qty", nullable = false)
+    @Column(name = "adj_repln_qty")
     private Integer adjReplnQty;
 
-    @Column(name = "store_obj", nullable = false)
+    @Column(name = "store_obj")
     private String storeObj;
 
     @OneToMany(mappedBy = "spFineLineChannelFixture", fetch = FetchType.EAGER,

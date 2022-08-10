@@ -45,6 +45,7 @@ public class BQFPService {
    public BQFPResponse getBuyQuantityUnits(BQFPRequest request) {
       try {
          final URI uri = createURIWithParams(bqfpServiceProperties.getUrl(), request);
+         log.info("BQFP Request: {}", uri);
          final HttpHeaders headers = getHeaders();
          final ResponseEntity<BQFPResponse> respEntity = restTemplate.exchange(uri, HttpMethod.GET, new HttpEntity<>(null, headers), BQFPResponse.class);
          if (respEntity.getStatusCode().is2xxSuccessful())

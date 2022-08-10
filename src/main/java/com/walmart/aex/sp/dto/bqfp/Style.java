@@ -14,7 +14,7 @@ public class Style {
    private InitialSet initialSet;
    private List<BumpSet> bumpList;
    private Reconciliation recon;
-   private FlowStrategy flowStrategy;
+   private String flowStrategy;
    private List<CustomerChoice> customerChoices;
    private List<Replenishment> replenishment;
 }
