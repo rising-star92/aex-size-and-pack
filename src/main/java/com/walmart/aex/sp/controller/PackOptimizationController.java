@@ -3,6 +3,8 @@ package com.walmart.aex.sp.controller;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.walmart.aex.sp.dto.packoptimization.FineLinePackOptimizationResponse;
@@ -31,10 +33,16 @@ public class PackOptimizationController {
 		return packOptService.getPackOptDetails(planid, channelid);
 	}
 
-	@QueryMapping
-	public FineLinePackOptimizationResponse getPackOptFinelineDetails(@Argument Long planId,@Argument Integer finelineNbr)
-	{
+	
+	
+	@GetMapping("/api/packOptimization/plan/{planId}/fineline/{finelineNbr}")
+	public FineLinePackOptimizationResponse getPackOptFinelineDetails(@PathVariable Long planId, @PathVariable Integer finelineNbr) {
 		return packOptService.getPackOptFinelineDetails(planId,finelineNbr);
-
 	}
+	
+	
+	
+	
+	
+	
 }

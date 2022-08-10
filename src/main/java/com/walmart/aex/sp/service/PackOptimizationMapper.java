@@ -14,6 +14,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.buyquantity.CustomerChoiceDto;
 import com.walmart.aex.sp.dto.buyquantity.FinelineDto;
 import com.walmart.aex.sp.dto.packoptimization.BuyQuantitiesDto;
+import com.walmart.aex.sp.dto.packoptimization.CcPackDto;
+import com.walmart.aex.sp.dto.packoptimization.FineLinePackDto;
 import com.walmart.aex.sp.dto.packoptimization.FineLinePackOptimizationResponse;
 import com.walmart.aex.sp.dto.packoptimization.FineLinePackOptimizationResponseDTO;
 import com.walmart.aex.sp.dto.packoptimization.FixtureDto;
@@ -42,8 +44,8 @@ public class PackOptimizationMapper {
 		response.setFinelines(mapReplenishmentFl(finelinePackOptimizationResponseDTO, response));
 	}
 
-	private List<FinelineDto> mapReplenishmentFl(FineLinePackOptimizationResponseDTO finelinePackOptimizationResponseDTO, FineLinePackOptimizationResponse response) {
-		List<FinelineDto> finelineDtoList = Optional.ofNullable(response.getFinelines()).orElse(new ArrayList<>());
+	private List<FineLinePackDto> mapReplenishmentFl(FineLinePackOptimizationResponseDTO finelinePackOptimizationResponseDTO, FineLinePackOptimizationResponse response) {
+		List<FineLinePackDto> finelineDtoList = Optional.ofNullable(response.getFinelines()).orElse(new ArrayList<>());
 
 		finelineDtoList.stream()
 		.filter(finelineDto -> finelinePackOptimizationResponseDTO.getFinelineNbr().equals(finelineDto.getFinelineNbr())).findFirst()
@@ -52,16 +54,16 @@ public class PackOptimizationMapper {
 		return finelineDtoList;
 	}
 
-	private void setFinelineSP(FineLinePackOptimizationResponseDTO finelinePackOptimizationResponseDTO, List<FinelineDto> finelineDtoList) {
-		FinelineDto fineline = new FinelineDto();
+	private void setFinelineSP(FineLinePackOptimizationResponseDTO finelinePackOptimizationResponseDTO, List<FineLinePackDto> finelineDtoList) {
+		FineLinePackDto fineline = new FineLinePackDto();
 		fineline.setFinelineNbr(finelinePackOptimizationResponseDTO.getFinelineNbr());
 		fineline.setCustomerChoices(mapReplenishmentCc(finelinePackOptimizationResponseDTO, fineline));
 		finelineDtoList.add(fineline);
 	}
 
 
-	private List<CustomerChoiceDto> mapReplenishmentCc(FineLinePackOptimizationResponseDTO finelinePackOptimizationResponseDTO, FinelineDto finelineDto) {
-		List<CustomerChoiceDto> customerChoiceList = Optional.ofNullable(finelineDto.getCustomerChoices()).orElse(new ArrayList<>());
+	private List<CcPackDto> mapReplenishmentCc(FineLinePackOptimizationResponseDTO finelinePackOptimizationResponseDTO, FineLinePackDto finelineDto) {
+		List<CcPackDto> customerChoiceList = Optional.ofNullable(finelineDto.getCustomerChoices()).orElse(new ArrayList<>());
 
 		customerChoiceList.stream()
 		.filter(customerChoiceDto -> finelinePackOptimizationResponseDTO.getCcId().equals(customerChoiceDto.getCcId())).findFirst()
@@ -71,15 +73,15 @@ public class PackOptimizationMapper {
 
 	}
 
-	private void setCcSP(FineLinePackOptimizationResponseDTO finelinePackOptimizationResponseDTO, List<CustomerChoiceDto> customerChoiceDtoList) {
+	private void setCcSP(FineLinePackOptimizationResponseDTO finelinePackOptimizationResponseDTO, List<CcPackDto> customerChoiceDtoList) {
 
-		CustomerChoiceDto customerChoiceDto = new CustomerChoiceDto();
+		CcPackDto customerChoiceDto = new CcPackDto();
 		customerChoiceDto.setCcId(finelinePackOptimizationResponseDTO.getCcId());
 		customerChoiceDto.setFixtures(mapMerchMethod(finelinePackOptimizationResponseDTO, customerChoiceDto));
 		customerChoiceDtoList.add(customerChoiceDto);
 	}
 
-	private List<FixtureDto> mapMerchMethod(FineLinePackOptimizationResponseDTO finelinePackOptimizationResponseDTO, CustomerChoiceDto customerChoiceDto) {
+	private List<FixtureDto> mapMerchMethod(FineLinePackOptimizationResponseDTO finelinePackOptimizationResponseDTO, CcPackDto customerChoiceDto) {
 		List<FixtureDto> merchMethodsDtoList = Optional.ofNullable(customerChoiceDto.getFixtures()).orElse(new ArrayList<>());
 
 		merchMethodsDtoList.stream()

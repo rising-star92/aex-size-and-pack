@@ -7,15 +7,14 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.walmart.aex.sp.dto.packoptimization.CcLevelConstraints;
 import com.walmart.aex.sp.dto.packoptimization.Constraints;
 import com.walmart.aex.sp.dto.packoptimization.CustomerChoice;
-import com.walmart.aex.sp.dto.packoptimization.Fineline;
 import com.walmart.aex.sp.dto.packoptimization.FineLinePackOptimizationResponse;
 import com.walmart.aex.sp.dto.packoptimization.FineLinePackOptimizationResponseDTO;
+import com.walmart.aex.sp.dto.packoptimization.Fineline;
 import com.walmart.aex.sp.dto.packoptimization.PackOptimizationResponse;
 import com.walmart.aex.sp.dto.packoptimization.SupplierConstraints;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
@@ -28,6 +27,7 @@ import com.walmart.aex.sp.entity.SubCatgPackOptimization;
 import com.walmart.aex.sp.entity.fineLinePackOptimization;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.repository.FineLinePackOptimizationRepository;
+import com.walmart.aex.sp.repository.PackOptimizationRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,14 +35,14 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class PackOptimizationService {
 
-	@Autowired
-	private com.walmart.aex.sp.repository.PackOptimizationRepository packOptRepo;
 	
+	private final PackOptimizationRepository packOptRepo;
 	private final FineLinePackOptimizationRepository finelinePackOptimizationRepository;
-
 	private final PackOptimizationMapper packOptimizationMapper;
 
-	public PackOptimizationService(FineLinePackOptimizationRepository finelinePackOptimizationRepository,PackOptimizationMapper packOptimizationMapper) {
+	public PackOptimizationService(PackOptimizationRepository packOptRepo, 
+			FineLinePackOptimizationRepository finelinePackOptimizationRepository,PackOptimizationMapper packOptimizationMapper) {
+		this.packOptRepo=packOptRepo;
 		this.finelinePackOptimizationRepository = finelinePackOptimizationRepository;
 		this.packOptimizationMapper = packOptimizationMapper;
 	}
