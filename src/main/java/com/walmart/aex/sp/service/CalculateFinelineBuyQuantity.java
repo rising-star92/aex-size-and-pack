@@ -87,7 +87,7 @@ public class CalculateFinelineBuyQuantity {
             FixtureTypeRollUpId fixtureTypeRollUpId = new FixtureTypeRollUpId(merchMethodsDto.getFixtureTypeRollupId());
             SpFineLineChannelFixtureId spFineLineChannelFixtureId = new SpFineLineChannelFixtureId(fixtureTypeRollUpId, calculateBuyQtyRequest.getPlanId(), calculateBuyQtyRequest.getLvl0Nbr(),
                     calculateBuyQtyRequest.getLvl1Nbr(), calculateBuyQtyRequest.getLvl2Nbr(), calculateBuyQtyParallelRequest.getLvl3Nbr(), calculateBuyQtyParallelRequest.getLvl4Nbr(), finelineDto.getFinelineNbr(), ChannelType.getChannelIdFromName(calculateBuyQtyRequest.getChannel()));
-
+            log.info("Checking if Fineline Chan Fixture Id is existing: {}", spFineLineChannelFixtureId);
             SpFineLineChannelFixture spFineLineChannelFixture = Optional.of(spFineLineChannelFixtures)
                     .stream()
                     .flatMap(Collection::stream)
@@ -115,6 +115,7 @@ public class CalculateFinelineBuyQuantity {
         styles.forEach(styleDto -> {
 
             SpStyleChannelFixtureId spStyleChannelFixtureId = new SpStyleChannelFixtureId(spFineLineChannelFixture.getSpFineLineChannelFixtureId(), styleDto.getStyleNbr());
+            log.info("Checking if Style Chan Fixture Id is existing: {}", spStyleChannelFixtureId);
             SpStyleChannelFixture spStyleChannelFixture = Optional.of(spStyleChannelFixtures)
                     .stream()
                     .flatMap(Collection::stream)
@@ -130,7 +131,7 @@ public class CalculateFinelineBuyQuantity {
             }
             spStyleChannelFixtures.add(spStyleChannelFixture);
         });
-
+        log.info("calculating fineline IS and BS Qty");
         spFineLineChannelFixture.setInitialSetQty(spStyleChannelFixtures.stream()
                 .filter(Objects::nonNull)
                 .mapToInt(spCustomerChoiceChannelFixtureSize -> Optional.ofNullable(spCustomerChoiceChannelFixtureSize.getInitialSetQty()).orElse(0))
@@ -151,6 +152,7 @@ public class CalculateFinelineBuyQuantity {
         styleDto.getCustomerChoices().forEach(customerChoiceDto -> {
 
             SpCustomerChoiceChannelFixtureId spCustomerChoiceChannelFixtureId = new SpCustomerChoiceChannelFixtureId(spStyleChannelFixture.getSpStyleChannelFixtureId(), customerChoiceDto.getCcId());
+            log.info("Checking if Cc Chan Fixture Id is existing: {}", spCustomerChoiceChannelFixtureId);
             SpCustomerChoiceChannelFixture spCustomerChoiceChannelFixture = Optional.of(spCustomerChoiceChannelFixtures)
                     .stream()
                     .flatMap(Collection::stream)
@@ -163,8 +165,10 @@ public class CalculateFinelineBuyQuantity {
             }
             //Replenishment
             List<Replenishment> replenishments = getReplenishments(merchMethodsDto, bqfpResponse);
+            log.info("Get All Replenishments: {}", replenishments);
             if (!CollectionUtils.isEmpty(replenishments)) {
                 //Replenishment
+                log.info("Set All Replenishments");
                 setAllReplenishments(styleDto, merchMethodsDto, spStyleChannelFixture, calculateBuyQtyParallelRequest, calculateBuyQtyResponse, customerChoiceDto, replenishments);
             }
 
@@ -173,7 +177,7 @@ public class CalculateFinelineBuyQuantity {
             }
             spCustomerChoiceChannelFixtures.add(spCustomerChoiceChannelFixture);
         });
-
+        log.info("calculating Style IS and BS Qty");
         spStyleChannelFixture.setInitialSetQty(spCustomerChoiceChannelFixtures.stream()
                 .filter(Objects::nonNull)
                 .mapToInt(spCustomerChoiceChannelFixtureSize -> Optional.ofNullable(spCustomerChoiceChannelFixtureSize.getInitialSetQty()).orElse(0))
@@ -225,6 +229,8 @@ public class CalculateFinelineBuyQuantity {
                 .flatMap(Collection::stream)
                 .filter(clustersDto1 -> clustersDto1.getClusterID().equals(0))
                 .findFirst().ifPresent(clustersDto -> setReplenishmentSizes(ccMmReplPack, clustersDto, replenishments));
+
+        log.info("Calculating CC MM Repln Qty");
         ccMmReplPack.setReplUnits(ccMmReplPack.getCcSpMmReplPack()
                 .stream()
                 .filter(Objects::nonNull)
@@ -235,6 +241,7 @@ public class CalculateFinelineBuyQuantity {
 
         //CC
         ccReplPack.setCcMmReplPack(ccMmReplPacks);
+        log.info("Calculating CC Repln Qty");
         ccReplPack.setReplUnits(ccMmReplPacks.stream()
                 .filter(Objects::nonNull)
                 .mapToInt(ccMmReplPack1 -> Optional.ofNullable(ccMmReplPack1.getReplUnits()).orElse(0))
@@ -243,6 +250,7 @@ public class CalculateFinelineBuyQuantity {
 
         //Style
         styleReplPack.setCcReplPack(ccReplPacks);
+        log.info("Calculating Style Repln Qty");
         styleReplPack.setReplUnits(ccReplPacks.stream()
                 .filter(Objects::nonNull)
                 .mapToInt(ccReplPack1 -> Optional.ofNullable(ccReplPack1.getReplUnits()).orElse(0))
@@ -252,6 +260,7 @@ public class CalculateFinelineBuyQuantity {
 
         //Fineline
         finelineReplPack.setStyleReplPack(styleReplPacks);
+        log.info("Calculating fineline Repln Qty");
         finelineReplPack.setReplUnits(styleReplPacks.stream()
                 .filter(Objects::nonNull)
                 .mapToInt(styleReplPack1 -> Optional.ofNullable(styleReplPack1.getReplUnits()).orElse(0))
@@ -261,6 +270,7 @@ public class CalculateFinelineBuyQuantity {
 
         //Sub catg
         subCatgReplPack.setFinelineReplPack(finelineReplPacks);
+        log.info("Calculating Sub Catg Repln Qty");
         subCatgReplPack.setReplUnits(finelineReplPacks.stream()
                 .filter(Objects::nonNull)
                 .mapToInt(finelineReplPack1 -> Optional.ofNullable(finelineReplPack1.getReplUnits()).orElse(0))
@@ -270,6 +280,7 @@ public class CalculateFinelineBuyQuantity {
 
         //Catg
         merchCatgReplPack.setSubReplPack(subCatgReplPacks);
+        log.info("Calculating Catg Repln Qty");
         merchCatgReplPack.setReplUnits(subCatgReplPacks.stream()
                 .filter(Objects::nonNull)
                 .mapToInt(subCatgReplPack1 -> Optional.ofNullable(subCatgReplPack1.getReplUnits()).orElse(0))
@@ -344,6 +355,7 @@ public class CalculateFinelineBuyQuantity {
         clustersDto.getSizes().forEach(sizeDto -> {
             List<Replenishment> replObj = new ArrayList<>();
             CcSpMmReplPackId ccSpMmReplPackId = new CcSpMmReplPackId(ccMmReplPack.getCcMmReplPackId(), sizeDto.getAhsSizeId());
+            log.info("Check if Size Replenishment is existing: {}", ccSpMmReplPackId);
             CcSpMmReplPack ccSpMmReplPack = Optional.of(ccSpMmReplPacks)
                     .stream()
                     .flatMap(Collection::stream)
