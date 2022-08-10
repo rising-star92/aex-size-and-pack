@@ -1,6 +1,7 @@
 package com.walmart.aex.sp.service;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -148,7 +149,9 @@ public class UpdateReplnConfigMapperTest {
 		//Assert
     	Mockito.verify(replenishmentMapper,Mockito.times(1)).updateVnpkWhpkForCatgReplnConsMapper(catgReplnPkConsList, vnpk, whpk, vnpkwhpkRatio, replUnits);
     	
-    	assertNotNull(catgReplnPkConsList);
+    	assertEquals(catgReplnPkConsList.get(0).getVendorPackCnt(), 500);    	
+    	assertEquals(catgReplnPkConsList.get(0).getWhsePackCnt(), 500);
+    	assertEquals(catgReplnPkConsList.get(0).getVnpkWhpkRatio(), 1d);
     			
 	}
 }
