@@ -266,7 +266,7 @@ input ReplenishmentRequest {
 
 input RunPackOptRequest {
   planId: Int
-  inputRequest: [InputRequest]
+  inputRequest: InputRequest
   runUser: String
 }
 
@@ -274,9 +274,7 @@ input InputRequest {
      lvl0Nbr: Int
      lvl1Nbr: Int
      lvl2Nbr: Int
-     lvl3Nbr: Int
-     lvl4Nbr: Int
-     finelineNbr: Int
+     lvl3List:[Lvl3Request]
 }
 
 type RunPackOptResponse {
