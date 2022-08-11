@@ -6,14 +6,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-<<<<<<< HEAD
-=======
 import com.walmart.aex.sp.repository.AnalyticsMlSendRepository;
 import org.springframework.beans.factory.annotation.Autowired;
->>>>>>> ff019969582bfe1ace604db7db855fa14aada594
+import com.walmart.aex.sp.repository.AnalyticsMlSendRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.walmart.aex.sp.dto.packoptimization.CcLevelConstraints;
 import com.walmart.aex.sp.dto.packoptimization.Constraints;
 import com.walmart.aex.sp.dto.packoptimization.CustomerChoice;

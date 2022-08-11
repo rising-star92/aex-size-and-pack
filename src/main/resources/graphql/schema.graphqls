@@ -6,7 +6,7 @@ type Query {
      fetchReplnByPlanFineline(replenishmentRequest: ReplenishmentRequest!): ReplenishmentResponse!
      fetchReplnByPlanFinelineStyleCc(replenishmentRequest: ReplenishmentRequest!): ReplenishmentResponse!
      getSizeBuyQtyDetails(buyQtyRequest: BuyQtyRequest!): BuyQtyResponse!
-  }
+   }
 
 type Mutation {
 	updateReplnConfigByCategory(request: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse
@@ -284,20 +284,10 @@ type RunPackOptResponse {
   execution: Execution
 }
 
-<<<<<<< HEAD
-
-
-
-
-
-
-
-
-=======
 type Execution {
   id: Int
   statusCode: Int
   statusDesc: String
   validationMessage: String
 }
->>>>>>> ff019969582bfe1ace604db7db855fa14aada594
+
