@@ -176,3 +176,33 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "http://aex-size-and-pack.aex.dev.walmart.net"
+
+  configOverrides:
+    graphQlConfig:
+      - name: "stage"
+        description: "GraphQL override for STAGE profile"
+        pathElements:
+          envName: "stage"
+          envProfile: "stage"
+        value:
+          properties:
+            "size.profile.url": "https://strategy.aex.stg.walmart.net/graphql"
+            "size.profile.assortproduct.url": "https://assortproduct.aex.stg.walmart.net/graphql"
+    bqfpServiceConfig:
+      - name: "stage"
+        description: "Flow Plan override for STAGE profile"
+        pathElements:
+          envName: "stage"
+          envProfile: "stage"
+        value:
+          properties:
+            "bqfp.url": "https://flow-plan.aex.stg.walmart.net/flow-plan/v1/getBuyQtyFromFlowPlan"
+    databaseConfig:
+      - name: "stage"
+        description: "DB for STAGE profile"
+        pathElements:
+          envName: "stage"
+          envProfile: "stage"
+        value:
+          properties:
+            "sqlServer.url": "jdbc:sqlserver://us-wm-aex-stg-spo-nonprod-62cd5875.database.windows.net:1433;database=us_wm_aex_spo;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;authentication=ActiveDirectoryPassword"

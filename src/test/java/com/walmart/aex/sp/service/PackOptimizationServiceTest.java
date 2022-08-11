@@ -7,18 +7,19 @@ import java.util.Set;
 
 import com.walmart.aex.sp.dto.mapper.FineLineMapperDto;
 import com.walmart.aex.sp.repository.FinelinePackOptRepository;
+import com.walmart.aex.sp.repository.AnalyticsMlSendRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.walmart.aex.sp.dto.packoptimization.PackOptimizationResponse;
 import com.walmart.aex.sp.entity.CcPackOptimization;
 import com.walmart.aex.sp.entity.CcPackOptimizationID;
 import com.walmart.aex.sp.entity.ChannelText;
-import com.walmart.aex.sp.entity.MerchantPackOptimization;
 import com.walmart.aex.sp.entity.MerchantPackOptimizationID;
 import com.walmart.aex.sp.entity.StylePackOptimization;
 import com.walmart.aex.sp.entity.StylePackOptimizationID;
@@ -35,10 +36,12 @@ import static org.mockito.ArgumentMatchers.any;
 public class PackOptimizationServiceTest {
 
 	@InjectMocks
+	@Spy
 	private PackOptimizationService packOptimizationService;
 
 	@Mock
-	private PackOptimizationRepository packOptimizationRepo;
+	private AnalyticsMlSendRepository analyticsMlSendRepository;
+	
 
 	@Mock
 	PackOptimizationResponse packOptResponse;
@@ -120,4 +123,14 @@ public class PackOptimizationServiceTest {
 
 	}
 
+	@Test
+	public void testUpdateRunStatusCode()
+	{
+		Long planId = 234L;
+		Integer finelineNbr = 46;
+		Integer status = 10;
+		packOptimizationService.UpdatePkOptServiceStatus(planId, finelineNbr, status);
+		Mockito.verify(packOptimizationService,Mockito.times(1)).UpdatePkOptServiceStatus(planId, finelineNbr, status);
+		assertEquals(finelineNbr,46);
+	}
 }
