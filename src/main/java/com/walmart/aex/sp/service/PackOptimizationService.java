@@ -116,13 +116,8 @@ public class PackOptimizationService {
 	{
 
 		PackOptimizationResponse packOptResp = new PackOptimizationResponse();
-		if(!fineLineMapperDtos.isEmpty()) {
-			packOptResp.setPlanId(fineLineMapperDtos.get(0).getPlanId());
-			packOptResp.setChannel(fineLineMapperDtos.get(0).getChannelId());
-		} else{
-			packOptResp.setPlanId(planId);
-			packOptResp.setChannel(channelId);
-		}
+		packOptResp.setPlanId(planId);
+		packOptResp.setChannel(channelId);
 		List<Lvl3> lvl3List = new ArrayList<>();
 		fineLineMapperDtos.forEach(fineLineMapperDto -> {
 			packOptResp.setLvl3List(maplvl3PackOpResponse(fineLineMapperDto,lvl3List));
@@ -135,13 +130,13 @@ public class PackOptimizationService {
 		lvl3List.stream()
 				.filter(lvl3 -> fineLineMapperDto.getLvl3Nbr().equals(lvl3.getLvl3Nbr())).findFirst()
 				.ifPresentOrElse(lvl3 -> lvl3.setLvl4List(maplvl4PackOp(fineLineMapperDto, lvl3, fineLineMapperDto.getFineLineNbr())),
-						() -> setLvl3SP(fineLineMapperDto, lvl3List, fineLineMapperDto.getFineLineNbr()));
+						() -> setLvl3SP(fineLineMapperDto, lvl3List));
 		return lvl3List;
 	}
 
 
 
-	private void setLvl3SP(FineLineMapperDto fineLineMapperDto, List<Lvl3> lvl3List, Integer finelineNbr) {
+	private void setLvl3SP(FineLineMapperDto fineLineMapperDto, List<Lvl3> lvl3List) {
 		Lvl3 lvl3 = new Lvl3();
 		lvl3.setLvl3Nbr(fineLineMapperDto.getLvl3Nbr());
 		lvl3.setLvl3Name(fineLineMapperDto.getLvl3Desc());
