@@ -27,10 +27,8 @@ import com.walmart.aex.sp.entity.SubCatgPackOptimization;
 import com.walmart.aex.sp.entity.SubCatgPackOptimizationID;
 import com.walmart.aex.sp.entity.fineLinePackOptimization;
 import com.walmart.aex.sp.entity.fineLinePackOptimizationID;
-import com.walmart.aex.sp.repository.PackOptimizationRepository;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
 public class PackOptimizationServiceTest {
@@ -70,7 +68,8 @@ public class PackOptimizationServiceTest {
 		merchpackOptObj.setLvl1Nbr(0);
 		merchpackOptObj.setLvl2Nbr(0);
 		merchpackOptObj.setLvl3Nbr(25);
-		merchpackOptObj.setLvl4Nbr("252");
+		merchpackOptObj.setLvl4Nbr(252);
+		merchpackOptObj.setFineLineNbr(2542);
 		merchpackOptObj.setChannelId(1);
 
 		SubCatgPackOptimization subctgOptObj = new SubCatgPackOptimization();

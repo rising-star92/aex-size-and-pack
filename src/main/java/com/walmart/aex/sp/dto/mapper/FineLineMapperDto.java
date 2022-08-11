@@ -20,7 +20,7 @@ public class FineLineMapperDto {
     private Integer lvl1Nbr;
     private Integer lvl2Nbr;
     private Integer lvl3Nbr;
-    private String lvl4Nbr;
+    private Integer lvl4Nbr;
     private Integer fineLineNbr;
     private String fineLineDesc;
     private String altfineLineDesc;

@@ -93,6 +93,7 @@ type PackOptimizationResponse{
 
 type Lvl3 {
     lvl3Nbr: Int
+    lvl3Name: String
     constraints:Constraints
    	lvl4List: [Lvl4]
 }

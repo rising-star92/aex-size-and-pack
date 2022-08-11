@@ -46,7 +46,7 @@ public class SubCatPlan {
     private String lvl4Desc;
 
     @Column(name="rpt_lvl_4_nbr",nullable = false,insertable = false ,updatable = false)
-    private String lvl4Nbr;
+    private Integer lvl4Nbr;
 
     @OneToMany(mappedBy = "subCatPlan", fetch = FetchType.EAGER,
             cascade = CascadeType.ALL, orphanRemoval = true)
