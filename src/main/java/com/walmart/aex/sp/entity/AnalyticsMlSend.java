@@ -1,10 +1,8 @@
 package com.walmart.aex.sp.entity;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+
+import lombok.*;
 
 import javax.persistence.*;
 import java.math.BigInteger;
@@ -20,16 +18,17 @@ public class AnalyticsMlSend {
 
     @Id
     @Column(name = "analytics_send_id", nullable = false)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private BigInteger analyticsSendId;
 
     @Column(name="plan_id")
     private Long planId;
 
     @Column(name="strategy_id")
-    private Integer strategyId;
+    private BigInteger strategyId;
 
     @Column(name="analytics_cluster_id")
-    private Integer analyticsClusterId;
+    private BigInteger analyticsClusterId;
 
     @Column(name="rpt_lvl_0_nbr")
     private Integer lvl0Nbr;
@@ -49,21 +48,21 @@ public class AnalyticsMlSend {
     @Column(name="fineline_nbr")
     private Integer finelineNbr;
 
-    @Column(name="style_nbr")
-    private String styleNbr;
+    @Column(name="first_name")
+    private String firstName;
 
-    @Column(name="customer_choice")
-    private String customerChoice;
+    @Column(name="last_name")
+    private String lastName;
 
     @JoinColumn(name = "run_status_code", insertable = false, updatable = false)
     @ManyToOne(targetEntity = RunStatusText.class, fetch = FetchType.LAZY)
-    private RunStatusText runStatusCode;
+    private RunStatusText runStatusText;
+
+    @Column(name = "run_status_code", nullable = false)
+    private Integer runStatusCode;
 
     @Column(name="analytics_send_desc")
     private String analyticsSendDesc;
-
-    @Column(name="process_id")
-    private String processId;
 
     @Column(name="start_ts")
     private Date startTs;
@@ -80,12 +79,7 @@ public class AnalyticsMlSend {
     @Column(name="return_message")
     private String returnMessage;
 
-    @Column(name="first_name")
-    private String firstName;
-
-    @Column(name="last_name")
-    private String lastName;
-
-
+    @Column(name="analytics_job_id")
+    private String analyticsJobId;
 
 }

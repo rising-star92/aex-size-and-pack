@@ -115,6 +115,11 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "query ($sizeProfileRequest:SizeProfileRequest!)\n {\n getCcSizeClus(sizeProfileRequest:  $sizeProfileRequest)\n {\n planId\n lvl0Nbr\n lvl1Nbr\n lvl2Nbr\n lvl3List{\n lvl3Nbr\n lvl4List{\n lvl4Nbr\n finelines{\n finelineNbr\n styles{\n styleNbr\n customerChoices{\n ccId\n clusters{\n clusterID\n sizes{\n ahsSizeId\n sizeDesc\n metrics{\n sizeProfilePct\n adjSizeProfilePct\n avgSizeProfilePct\n adjAvgSizeProfilePct\n }}}}}}}}}}"
+      "size.profile.all.cc.query":
+        description: "Get All CC's Size Profile Query for GraphQL Call"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "query ($sizeProfileRequest:SizeProfileRequest!)\n {\n getAllCcSizeClus(sizeProfileRequest:  $sizeProfileRequest)\n {\n planId\n lvl0Nbr\n lvl1Nbr\n lvl2Nbr\n lvl3List{\n lvl3Nbr\n lvl4List{\n lvl4Nbr\n finelines{\n finelineNbr\n merchMethods{\n fixtureTypeRollupId\n merchMethod\n }\n metrics{\n sizeProfilePct\n adjSizeProfilePct\n avgSizeProfilePct\n adjAvgSizeProfilePct\n }\n clusters{\n clusterID\n sizes{\n ahsSizeId\n sizeDesc\n metrics{\n sizeProfilePct\n adjSizeProfilePct\n avgSizeProfilePct\n adjAvgSizeProfilePct\n }\n }\n }\n styles{\n styleNbr\n metrics{\n sizeProfilePct\n adjSizeProfilePct\n avgSizeProfilePct\n adjAvgSizeProfilePct\n }\n clusters{\n clusterID\n sizes{\n ahsSizeId\n sizeDesc\n metrics{\n sizeProfilePct\n adjSizeProfilePct\n avgSizeProfilePct\n adjAvgSizeProfilePct\n }\n }\n }\n customerChoices{\n ccId\n metrics{\n sizeProfilePct\n adjSizeProfilePct\n avgSizeProfilePct\n adjAvgSizeProfilePct\n }\n clusters{\n clusterID\n sizes{\n ahsSizeId\n sizeDesc\n metrics{\n sizeProfilePct\n adjSizeProfilePct\n avgSizeProfilePct\n adjAvgSizeProfilePct\n }}}}}}}}}}"
       "size.profile.consumer.id":
         description: "Consumer ID to call Strategy Service"
         type: "STRING"
@@ -144,7 +149,7 @@ configDefinitions:
         description: "Consumer ID to call Assort Product"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "34f7ca77-3dfc-46df-a86b-1ba6e4908d0e"
+        defaultValue: "19ce2bf5-4c24-4bbf-bee9-84496dd07e3c"
       "size.profile.assortproduct.consumer.name":
         description: "Consumer service name"
         type: "STRING"
@@ -155,3 +160,19 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "dev"
+
+  integrationHubServiceConfig:
+    description: "IntegrationHub Config"
+    resolutionPaths:
+      - default: "/envProfile/envName"
+    properties:
+      "integrationhub.url":
+        description: "IntegrationHub Service URL"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "http://analytics-api.stg.us-central1.walmart.net/api/packopt?scenario=pack_optimization_dataproc"
+      "integrationhub.sizeAndPackBaseUrl":
+        description: "SizeAndPack Base URL"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "http://aex-size-and-pack.aex.dev.walmart.net"

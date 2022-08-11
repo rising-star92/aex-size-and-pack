@@ -1,5 +1,18 @@
 package com.walmart.aex.sp.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import com.walmart.aex.sp.repository.AnalyticsMlSendRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.walmart.aex.sp.dto.packoptimization.CcLevelConstraints;
+import com.walmart.aex.sp.dto.packoptimization.Constraints;
+import com.walmart.aex.sp.dto.packoptimization.CustomerChoice;
+import com.walmart.aex.sp.dto.packoptimization.Fineline;
 import com.walmart.aex.sp.dto.mapper.FineLineMapperDto;
 import com.walmart.aex.sp.dto.packoptimization.*;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
@@ -73,6 +86,9 @@ public class PackOptimizationService {
 		stylePackOptimizationID.setFinelinePackOptimizationID(fineLinePackOptimizationID);
 		ccPackOptimizationID.setStylePackOptimizationID(stylePackOptimizationID);
 		};
+	@Autowired
+	private AnalyticsMlSendRepository analyticsMlSendRepository;
+
 
 	public PackOptimizationResponse getPackOptDetails(Long planId, Integer channelid)
 	{
@@ -353,8 +369,7 @@ public class PackOptimizationService {
 		return customerChoiceList;
 	}
 
-
-
-
-
+	public void UpdatePkOptServiceStatus(Long planId, Integer finelineNbr, Integer status) {
+		analyticsMlSendRepository.updateStatus(planId, finelineNbr, status);
+	}
 }

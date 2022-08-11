@@ -8,6 +8,83 @@ type Query {
      getSizeBuyQtyDetails(buyQtyRequest: BuyQtyRequest!): BuyQtyResponse!
 }
 
+type Mutation {
+	updateReplnConfigByCategory(request: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse
+	updateReplnConfigBySubCategory(request: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse
+	updateReplnConfigByCc(request: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse!
+	updateReplnConfigByStyle(request: UpdateVnPkWhPkReplnRequest!):UpdateVnPkWhPkResponse!
+	updateReplnConfigByFineline(request: UpdateVnPkWhPkReplnRequest!):UpdateVnPkWhPkResponse!
+	updateReplnConfigByCcMerchMethod(request: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse
+	updateReplnConfigByCcSpMmSize(request: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse
+    calculateBuyQty(calculateBuyQtyRequest: CalculateBuyQtyRequest!): StatusResponse!
+    createRunPackOptExecution(request: RunPackOptRequest!): RunPackOptResponse
+}
+
+input UpdateVnPkWhPkReplnRequest {
+	planId: Int!
+	planDesc: String
+	channel: String!
+	fixtureTypeRollupId: Int
+	fixtureTypeRollupName: String
+	lvl3Nbr: Int
+	lvl4Nbr: Int
+	fineline: Int
+	style: String
+	customerChoice: String
+	merchMethodDesc: String
+	ahsSizeId: Int
+	vnpk: Int!
+	whpk: Int!
+	repleshUnits: Int!
+}
+
+input CalculateBuyQtyRequest {
+    planId: Int
+    channel: String
+    planDesc: String
+    lvl0Nbr: Int
+    lvl1Nbr: Int
+    lvl2Nbr: Int
+    lvl3List:[Lvl3Request]
+}
+
+input Lvl3Request {
+    lvl3Nbr: Int
+    lvl3Desc: String
+    lvl4List:[Lvl4Request]
+}
+
+input Lvl4Request {
+    lvl4Nbr: Int
+    lvl4Name: String
+    finelines: [FinelineRequest]
+}
+
+input FinelineRequest {
+    finelineNbr: Int
+    finelineName: String
+    styles:[StyleRequest]
+}
+
+input StyleRequest {
+    styleNbr: String
+    customerChoices:[CustomerChoiceRequest]
+}
+
+input CustomerChoiceRequest {
+    ccId: String
+}
+
+type StatusResponse {
+    status: String!
+}
+
+
+
+type UpdateVnPkWhPkResponse {
+	status: String!
+}
+
 type PackOptimizationResponse{
     planId: Int!
     channel:Int!
@@ -102,12 +179,14 @@ type Lvl3Dto {
     lvl3Nbr: Int
     lvl3Desc: String
     lvl4List:[Lvl4Dto]
+    metrics: MetricsDto
 }
 
 type Lvl4Dto {
     lvl4Nbr: Int
     lvl4Desc: String
     finelines: [FinelineDto]
+    metrics: MetricsDto
 }
 
 type FinelineDto {
@@ -146,10 +225,10 @@ type SizeList {
 }
 
 type MetricsDto {
-    sizeProfilePct:Int
-    adjSizeProfilePct:Int
-    avgSizeProfilePct:Int
-    adjAvgSizeProfilePct:Int
+    sizeProfilePct:Float
+    adjSizeProfilePct:Float
+    avgSizeProfilePct:Float
+    adjAvgSizeProfilePct:Float
     buyQty:Int
     finalBuyQty:Int
     finalInitialSetQty:Int
@@ -193,13 +272,28 @@ input ReplenishmentRequest {
     ccId: String
 }
 
+input RunPackOptRequest {
+  planId: Int
+  inputRequest: [InputRequest]
+  runUser: String
+}
 
+input InputRequest {
+     lvl0Nbr: Int
+     lvl1Nbr: Int
+     lvl2Nbr: Int
+     lvl3Nbr: Int
+     lvl4Nbr: Int
+     finelineNbr: Int
+}
 
+type RunPackOptResponse {
+  execution: Execution
+}
 
-
-
-
-
-
-
-
+type Execution {
+  id: Int
+  statusCode: Int
+  statusDesc: String
+  validationMessage: String
+}

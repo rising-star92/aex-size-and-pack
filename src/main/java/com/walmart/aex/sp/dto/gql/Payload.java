@@ -8,4 +8,5 @@ import lombok.Data;
 public class Payload {
     private BuyQtyResponse getCcSizeClus;
     private APResponse getRFADataFromSizePack;
+    private BuyQtyResponse getAllCcSizeClus;
 }

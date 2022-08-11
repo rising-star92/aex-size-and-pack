@@ -1,15 +1,15 @@
 package com.walmart.aex.sp.repository;
 
 import com.walmart.aex.sp.dto.replenishment.ReplenishmentResponseDTO;
-import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixtureSize;
-import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixtureSizeId;
+import com.walmart.aex.sp.entity.CcSpMmReplPack;
+import com.walmart.aex.sp.entity.CcSpMmReplPackId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface SizeListReplenishmentRepository extends JpaRepository<SpCustomerChoiceChannelFixtureSize, SpCustomerChoiceChannelFixtureSizeId> {
+public interface SizeListReplenishmentRepository extends JpaRepository<CcSpMmReplPack, CcSpMmReplPackId> {
 
     @Query(value="select new com.walmart.aex.sp.dto.replenishment.ReplenishmentResponseDTO(msp.merchCatPlanId.planId, " +
             "msp.merchCatPlanId.lvl0Nbr, " +
@@ -29,10 +29,10 @@ public interface SizeListReplenishmentRepository extends JpaRepository<SpCustome
             "ccp.custChoicePlanId.ccId as ccId, " +
             "ccp.colorName as colorName, " +
             "csrp.merchMethodDesc as merchMethod, " +
-            "csrp.ccSpReplenishmentPackId.ahsSizeId as ahsSizeId, " +
-            "sccfs.ahsSizeDesc as sizeDesc, " +
-            "sccfs.buyQty as ccSpFinalBuyUnits, " +
-            "sccfs.replnQty as ccSpReplQty, " +
+            "csrp.ccSpReplPackId.ahsSizeId as ahsSizeId, " +
+            "csrp.sizeDesc as sizeDesc, " +
+            "csrp.finalBuyUnits as ccSpFinalBuyUnits, " +
+            "csrp.replUnits as ccSpReplQty, " +
             "csrp.vendorPackCnt as ccSpVenderPackCount, " +
             "csrp.whsePackCnt as ccSpWhsePackCount, " +
             "csrp.vnpkWhpkRatio as ccSpVnpkWhpkRatio, " +
@@ -81,37 +81,35 @@ public interface SizeListReplenishmentRepository extends JpaRepository<SpCustome
             "AND sp.stylePlanId.styleNbr = ccp.custChoicePlanId.stylePlanId.styleNbr " +
             "AND sp.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId = ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId " +
             "left join " +
-            "SpCustomerChoiceChannelFixtureSize sccfs " +
+            "CcMmReplPack sccfs " +
             "ON " +
-            "ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.planId = sccfs.spCustomerChoiceChannelFixtureSizeId.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.planId " +
-            "AND ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.lvl0Nbr = sccfs.spCustomerChoiceChannelFixtureSizeId.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl0Nbr " +
-            "AND ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.lvl1Nbr = sccfs.spCustomerChoiceChannelFixtureSizeId.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl1Nbr " +
-            "AND ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.lvl2Nbr = sccfs.spCustomerChoiceChannelFixtureSizeId.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl2Nbr " +
-            "AND ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.lvl3Nbr = sccfs.spCustomerChoiceChannelFixtureSizeId.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl3Nbr " +
-            "AND ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.lvl4Nbr = sccfs.spCustomerChoiceChannelFixtureSizeId.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl4Nbr " +
-            "AND ccp.custChoicePlanId.stylePlanId.finelinePlanId.finelineNbr = sccfs.spCustomerChoiceChannelFixtureSizeId.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.fineLineNbr " +
-            "AND ccp.custChoicePlanId.stylePlanId.styleNbr = sccfs.spCustomerChoiceChannelFixtureSizeId.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.styleNbr " +
-            "AND ccp.custChoicePlanId.ccId = sccfs.spCustomerChoiceChannelFixtureSizeId.spCustomerChoiceChannelFixtureId.customerChoice " +
-            "AND ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId = sccfs.spCustomerChoiceChannelFixtureSizeId.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.channelId " +
-            "left join " +
-            "CcSpReplenishmentPack csrp " +
+            "ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.planId = sccfs.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.planId " +
+            "AND ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.lvl0Nbr = sccfs.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.repTLvl0 " +
+            "AND ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.lvl1Nbr = sccfs.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.repTLvl1 " +
+            "AND ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.lvl2Nbr = sccfs.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.repTLvl2 " +
+            "AND ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.lvl3Nbr = sccfs.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.repTLvl3 " +
+            "AND ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.lvl4Nbr = sccfs.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.repTLvl4 " +
+            "AND ccp.custChoicePlanId.stylePlanId.finelinePlanId.finelineNbr = sccfs.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.finelineNbr " +
+            "AND ccp.custChoicePlanId.stylePlanId.styleNbr = sccfs.ccMmReplPackId.ccReplPackId.styleReplPackId.styleNbr " +
+            "AND ccp.custChoicePlanId.ccId = sccfs.ccMmReplPackId.ccReplPackId.customerChoice " +
+            "AND ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId = sccfs.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId " +
+            "inner join " +
+            "CcSpMmReplPack csrp " +
             "ON " +
-            "sccfs.spCustomerChoiceChannelFixtureSizeId.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.planId = csrp.ccSpReplenishmentPackId.ccReplenishmentPackId.styleReplenishmentPackId.finelineReplenishmentPackId.subCatgReplenishmentPackId.merchantPackOptimizationId.planId " +
-            "AND sccfs.spCustomerChoiceChannelFixtureSizeId.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl0Nbr = csrp.ccSpReplenishmentPackId.ccReplenishmentPackId.styleReplenishmentPackId.finelineReplenishmentPackId.subCatgReplenishmentPackId.merchantPackOptimizationId.repTLvl0 " +
-            "AND sccfs.spCustomerChoiceChannelFixtureSizeId.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl1Nbr = csrp.ccSpReplenishmentPackId.ccReplenishmentPackId.styleReplenishmentPackId.finelineReplenishmentPackId.subCatgReplenishmentPackId.merchantPackOptimizationId.repTLvl1 " +
-            "AND sccfs.spCustomerChoiceChannelFixtureSizeId.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl2Nbr = csrp.ccSpReplenishmentPackId.ccReplenishmentPackId.styleReplenishmentPackId.finelineReplenishmentPackId.subCatgReplenishmentPackId.merchantPackOptimizationId.repTLvl2 " +
-            "AND sccfs.spCustomerChoiceChannelFixtureSizeId.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl3Nbr = csrp.ccSpReplenishmentPackId.ccReplenishmentPackId.styleReplenishmentPackId.finelineReplenishmentPackId.subCatgReplenishmentPackId.merchantPackOptimizationId.repTLvl3 " +
-            "AND sccfs.spCustomerChoiceChannelFixtureSizeId.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl4Nbr = csrp.ccSpReplenishmentPackId.ccReplenishmentPackId.styleReplenishmentPackId.finelineReplenishmentPackId.subCatgReplenishmentPackId.repTLvl4 " +
-            "AND sccfs.spCustomerChoiceChannelFixtureSizeId.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.fineLineNbr = csrp.ccSpReplenishmentPackId.ccReplenishmentPackId.styleReplenishmentPackId.finelineReplenishmentPackId.finelineNbr " +
-            "AND sccfs.spCustomerChoiceChannelFixtureSizeId.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.styleNbr = csrp.ccSpReplenishmentPackId.ccReplenishmentPackId.styleReplenishmentPackId.styleNbr " +
-            "AND sccfs.spCustomerChoiceChannelFixtureSizeId.spCustomerChoiceChannelFixtureId.customerChoice = csrp.ccSpReplenishmentPackId.ccReplenishmentPackId.customerChoice " +
-            "AND sccfs.spCustomerChoiceChannelFixtureSizeId.ahsSizeId = csrp.ccSpReplenishmentPackId.ahsSizeId " +
-            "where sp.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId in (:channelId) and ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId in (:channelId) and msp.merchCatPlanId.planId = :planId and " +
+            "sccfs.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.planId = csrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.planId " +
+            "AND sccfs.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.repTLvl0 = csrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.repTLvl0 " +
+            "AND sccfs.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.repTLvl1 = csrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.repTLvl1 " +
+            "AND sccfs.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.repTLvl2 = csrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.repTLvl2 " +
+            "AND sccfs.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.repTLvl3 = csrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.repTLvl3 " +
+            "AND sccfs.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.repTLvl4 = csrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.repTLvl4 " +
+            "AND sccfs.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.finelineNbr = csrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.finelineNbr " +
+            "AND sccfs.ccMmReplPackId.ccReplPackId.styleReplPackId.styleNbr = csrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.styleNbr " +
+            "AND sccfs.ccMmReplPackId.ccReplPackId.customerChoice = csrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.customerChoice " +
+            "where sp.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId = :channelId and ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId = :channelId and msp.merchCatPlanId.planId = :planId and " +
             "fp.finelinePlanId.finelineNbr = :finelineNbr and " +
             "sp.stylePlanId.styleNbr = :styleNbr and " +
-            "ccp.custChoicePlanId.ccId = :ccId and " +
-            "(sccfs.spCustomerChoiceChannelFixtureSizeId.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.channelId is NULL or sccfs.spCustomerChoiceChannelFixtureSizeId.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.channelId = :channelId) ")
+            "ccp.custChoicePlanId.ccId = :ccId ")
     List<ReplenishmentResponseDTO> getReplenishmentPlanChannelFinelineCc(@Param("planId") Long planId, @Param("channelId") Integer channelId,
-                                                          @Param("finelineNbr") Integer finelineNbr,@Param("styleNbr") String styleNbr, @Param("ccId") String ccId);
+                                                                         @Param("finelineNbr") Integer finelineNbr,@Param("styleNbr") String styleNbr, @Param("ccId") String ccId);
 
 }

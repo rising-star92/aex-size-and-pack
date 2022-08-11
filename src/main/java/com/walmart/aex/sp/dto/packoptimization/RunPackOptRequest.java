@@ -6,6 +6,6 @@ import java.util.List;
 @Data
 public class RunPackOptRequest {
     private Long planId;
-    private List<Integer> finelines;
+    private InputRequest inputRequest;
     private String runUser;
 }

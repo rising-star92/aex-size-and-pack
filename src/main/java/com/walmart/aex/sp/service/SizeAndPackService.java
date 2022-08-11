@@ -165,7 +165,7 @@ public class SizeAndPackService {
 
     private APResponse getAPRunFixtureAllocationOutput(APRequest request) throws SizeAndPackException {
         Map<String, String> headers = new HashMap<>();
-        headers.put("WM_CONSUMER.ID", graphQLProperties.getAssortProductConsumerEnv());
+        headers.put("WM_CONSUMER.ID", graphQLProperties.getAssortProductConsumerId());
         headers.put("WM_SVC.NAME", graphQLProperties.getAssortProductConsumerName());
         headers.put("WM_SVC.ENV", graphQLProperties.getAssortProductConsumerEnv());
 
@@ -211,12 +211,11 @@ public class SizeAndPackService {
             sizeAndPackResponse.setStatus(FAILED_STATUS);
             log.error("Couldn't parse the payload sent to Strategy Listener. Error: {}", exp.toString());
         }
-
         try {
             for (Lvl1 lvl1 : planSizeAndPackDTO.getLvl1List()) {
                 for (Lvl2 lvl2 : lvl1.getLvl2List()) {
                     for (Lvl3 lvl3 : lvl2.getLvl3List()) {
-                        merchCatPlanRepository.saveAll(sizeAndPackObjectMapper.setMerchCatPlan(planSizeAndPackDTO, lvl1, lvl2, lvl3));
+                        merchCatPlanRepository.saveAll(sizeAndPackObjectMapper.setMerchCatPlan(planSizeAndPackDTO, lvl1, lvl2, lvl3,merchCatPlanRepository));
                     }
                 }
             }
@@ -253,5 +252,16 @@ public class SizeAndPackService {
             log.error("Failed to save the line plan events to size and pack database. Error: {}", ex.toString());
         }
         return sizeAndPackResponse;
+    }
+
+    public BuyQtyResponse getAllCcSizeProfiles(BuyQtyRequest buyQtyRequest) throws SizeAndPackException {
+        Map<String, String> headers = new HashMap<>();
+        headers.put("WM_CONSUMER.ID", graphQLProperties.getSizeProfileConsumerId());
+        headers.put("WM_SVC.NAME", graphQLProperties.getSizeProfileConsumerName());
+        headers.put("WM_SVC.ENV", graphQLProperties.getSizeProfileConsumerEnv());
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("sizeProfileRequest", buyQtyRequest);
+        return (BuyQtyResponse) post(graphQLProperties.getSizeProfileUrl(), graphQLProperties.getAllCcSizeProfileQuery(), headers, data, Payload::getGetAllCcSizeClus);
     }
 }

@@ -4,7 +4,8 @@ import lombok.Data;
 
 @Data
 public class Replenishment {
-   private Integer wmYearWeek;
-   private String weekDesc;
-   private Long replenishUnits;
+   private Integer replnWeek;
+   private String replnWeekDesc;
+   private Long replnUnits;
+   private Long remainingUnits;
 }

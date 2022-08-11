@@ -1,15 +1,18 @@
 package com.walmart.aex.sp.controller;
+import com.walmart.aex.sp.dto.packoptimization.*;
+import com.walmart.aex.sp.service.IntegrationHubService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.walmart.aex.sp.dto.packoptimization.PackOptimizationResponse;
 import com.walmart.aex.sp.service.PackOptimizationService;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
-
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
+import java.math.BigInteger;
 
 @Slf4j
 
@@ -19,11 +22,54 @@ import lombok.extern.slf4j.Slf4j;
 
 public class PackOptimizationController {
 
+	public static final String SUCCESS_STATUS = "Success";
+	private static final String FAILURE_STATUS = "Failure";
+
 	@Autowired
 	private PackOptimizationService packOptService;
+
+	private final IntegrationHubService integrationHubService;
+
+	public PackOptimizationController(IntegrationHubService integrationHubService) {
+		this.integrationHubService = integrationHubService;
+	}
 
 	@QueryMapping
 	public PackOptimizationResponse getPackOptimizationValues(@Argument Long planid, @Argument Integer channelid) {
 		return packOptService.getPackOptDetails(planid, channelid);
+	}
+
+	@MutationMapping
+	public RunPackOptResponse createRunPackOptExecution(@Argument RunPackOptRequest request)
+	{
+		RunPackOptResponse response= new RunPackOptResponse();
+		response = integrationHubService.callIntegrationHubForPackOpt(request);
+		if(response!=null)
+		{
+			return response;
+		}
+		else {
+			BigInteger bigInteger = BigInteger.ONE;
+			response = new RunPackOptResponse(new Execution(bigInteger, 0, "NOT SENT TO ANALYTICS", "Error connecting with Integration Hub service"));
+			return response;
+		}
+	}
+
+	@PutMapping(path = "/api/packOptimization/plan/{planId}/fineline/{finelineNbr}/status/{status}")
+	public UpdatePkOptResponse updatePackOptStatus(@PathVariable Long planId, @PathVariable Integer finelineNbr, @PathVariable Integer status) {
+		UpdatePkOptResponse response = new UpdatePkOptResponse();
+		if (status.equals(6) || status.equals(10)) {
+			try {
+				packOptService.UpdatePkOptServiceStatus(planId, finelineNbr, status);
+				response.setStatus(SUCCESS_STATUS);
+			} catch (Exception e) {
+				response.setStatus(FAILURE_STATUS);
+				log.error("Exception while updating status :", e);
+			}
+			return response;
+		} else {
+			response.setStatus(FAILURE_STATUS);
+			return response;
+		}
 	}
 }

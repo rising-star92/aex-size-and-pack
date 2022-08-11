@@ -9,6 +9,7 @@ import java.util.List;
 public class Fineline {
     private Integer finelineNbr;
     private String finelineName;
+    private String altFinelineName;
     private String channel;
     private String packOptimizationStatus;
     private Constraints constraints;
