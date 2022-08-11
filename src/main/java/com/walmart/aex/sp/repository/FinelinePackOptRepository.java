@@ -44,12 +44,13 @@ public interface FinelinePackOptRepository
             "AND merchCatPlan.merchCatPlanId.channelId = subCatPlan.merchCatPlan.merchCatPlanId.channelId \n" +
             "AND merchCatPlan.merchCatPlanId.planId = subCatPlan.merchCatPlan.merchCatPlanId.planId \n" +
 
-            "inner JOIN  FinelinePlan  fineplan ON fineplan.lvl3Nbr = merchCatPlan.merchCatPlanId.lvl3Nbr \n" +
-            "AND merchCatPlan.merchCatPlanId.lvl2Nbr = fineplan.finelinePlanId.subCatPlanId.merchCatPlanId.lvl2Nbr \n" +
-            "AND merchCatPlan.merchCatPlanId.lvl1Nbr = fineplan.finelinePlanId.subCatPlanId.merchCatPlanId.lvl1Nbr \n" +
-            "AND merchCatPlan.merchCatPlanId.lvl0Nbr = fineplan.finelinePlanId.subCatPlanId.merchCatPlanId.lvl0Nbr \n" +
-            "AND merchCatPlan.merchCatPlanId.channelId = fineplan.finelinePlanId.subCatPlanId.merchCatPlanId.channelId \n" +
-            "AND merchCatPlan.merchCatPlanId.planId = fineplan.finelinePlanId.subCatPlanId.merchCatPlanId.planId \n" +
+            "inner JOIN  FinelinePlan  fineplan ON fineplan.lvl3Nbr = subCatPlan.merchCatPlan.merchCatPlanId.lvl3Nbr \n" +
+            "AND subCatPlan.lvl4Nbr = fineplan.finelinePlanId.subCatPlanId.lvl4Nbr \n" +
+            "AND subCatPlan.merchCatPlan.merchCatPlanId.lvl2Nbr = fineplan.finelinePlanId.subCatPlanId.merchCatPlanId.lvl2Nbr \n" +
+            "AND subCatPlan.merchCatPlan.merchCatPlanId.lvl1Nbr = fineplan.finelinePlanId.subCatPlanId.merchCatPlanId.lvl1Nbr \n" +
+            "AND subCatPlan.merchCatPlan.merchCatPlanId.lvl0Nbr = fineplan.finelinePlanId.subCatPlanId.merchCatPlanId.lvl0Nbr \n" +
+            "AND subCatPlan.merchCatPlan.merchCatPlanId.channelId = fineplan.finelinePlanId.subCatPlanId.merchCatPlanId.channelId \n" +
+            "AND subCatPlan.merchCatPlan.merchCatPlanId.planId = fineplan.finelinePlanId.subCatPlanId.merchCatPlanId.planId \n" +
 
             "left JOIN AnalyticsMlSend analytic " +
             " ON analytic.planId = fineplan.finelinePlanId.subCatPlanId.merchCatPlanId.planId \n" +
