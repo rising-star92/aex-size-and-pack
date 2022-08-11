@@ -10,7 +10,7 @@ public class Cluster {
    private String volClusterLevel;
    private Integer analyticsClusterId;
    private Integer strategyId;
-   private FlowStrategy flowStrategy;
+   private String flowStrategy;
    private Metrics metrics;
    private InitialSet initialSet;
    private List<BumpSet> bumpList;
