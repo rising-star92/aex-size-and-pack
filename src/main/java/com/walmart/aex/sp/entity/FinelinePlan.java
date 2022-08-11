@@ -35,6 +35,9 @@ public class FinelinePlan {
     @Column(name = "alt_fineline_desc")
     private String altFinelineName;
 
+    @Column(name="rpt_lvl_3_nbr",nullable = false,insertable = false, updatable = false)
+    private String lvl3Nbr;
+
     @OneToMany(mappedBy = "finelinePlan", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<StylePlan> stylePlans;

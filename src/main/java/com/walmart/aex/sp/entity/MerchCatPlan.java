@@ -30,4 +30,6 @@ public class MerchCatPlan {
     private String lvl2Desc;
     @Column(name="rpt_lvl_3_gen_desc1",nullable = false)
     private String lvl3Desc;
+    @Column(name="rpt_lvl_3_nbr",nullable = false, insertable = false, updatable = false)
+    private String lvl3Nbr;
 }
