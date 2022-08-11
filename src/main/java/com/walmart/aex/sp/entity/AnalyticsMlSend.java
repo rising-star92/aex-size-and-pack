@@ -1,8 +1,10 @@
 package com.walmart.aex.sp.entity;
 
 
-
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.math.BigInteger;
@@ -77,6 +79,12 @@ public class AnalyticsMlSend {
 
     @Column(name="return_message")
     private String returnMessage;
+
+    @Column(name="first_name")
+    private String firstName;
+
+    @Column(name="last_name")
+    private String lastName;
 
 
 

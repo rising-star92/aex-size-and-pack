@@ -49,9 +49,17 @@ type Lvl4 {
 type Fineline {
     finelineNbr: Int
     finelineName: String
+    optimizationDetails: [RunOptimization]
     packOptimizationStatus: String
     constraints:Constraints
     styles:[Style]
+}
+type RunOptimization{
+    name: String
+    startTs: String
+    endTs: String
+    returnMessage: String
+    runStatusCode: Int
 }
 
 type Style {
