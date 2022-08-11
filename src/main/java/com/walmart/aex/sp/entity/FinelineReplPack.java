@@ -50,7 +50,7 @@ public class FinelineReplPack
     @Column(name="repl_pack_cnt")
     private Integer replPackCnt;
 
-    @Column(name="fixturetype_rollup_name", nullable = false)
+    @Column(name="fixturetype_rollup_name")
     private String fixtureTypeRollupName;
     
     @JoinColumn(name = "run_status_code", insertable = false, updatable = false)

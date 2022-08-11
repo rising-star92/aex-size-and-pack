@@ -6,8 +6,7 @@ type Query {
      fetchReplnByPlanFineline(replenishmentRequest: ReplenishmentRequest!): ReplenishmentResponse!
      fetchReplnByPlanFinelineStyleCc(replenishmentRequest: ReplenishmentRequest!): ReplenishmentResponse!
      getSizeBuyQtyDetails(buyQtyRequest: BuyQtyRequest!): BuyQtyResponse!
-     
-}
+  }
 
 type Mutation {
 	updateReplnConfigByCategory(request: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse
@@ -18,6 +17,7 @@ type Mutation {
 	updateReplnConfigByCcMerchMethod(request: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse
 	updateReplnConfigByCcSpMmSize(request: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse
     calculateBuyQty(calculateBuyQtyRequest: CalculateBuyQtyRequest!): StatusResponse!
+    createRunPackOptExecution(request: RunPackOptRequest!): RunPackOptResponse
 }
 
 input UpdateVnPkWhPkReplnRequest {
@@ -188,8 +188,7 @@ type FinelineDto {
     metrics: MetricsDto
     clusters: [ClustersDto]
     styles: [StyleDto]
-    
-}
+    }
 
 type StyleDto {
     styleNbr: String
@@ -266,6 +265,26 @@ input ReplenishmentRequest {
     ccId: String
 }
 
+input RunPackOptRequest {
+  planId: Int
+  inputRequest: [InputRequest]
+  runUser: String
+}
+
+input InputRequest {
+     lvl0Nbr: Int
+     lvl1Nbr: Int
+     lvl2Nbr: Int
+     lvl3Nbr: Int
+     lvl4Nbr: Int
+     finelineNbr: Int
+}
+
+type RunPackOptResponse {
+  execution: Execution
+}
+
+<<<<<<< HEAD
 
 
 
@@ -274,6 +293,11 @@ input ReplenishmentRequest {
 
 
 
-
-
-
+=======
+type Execution {
+  id: Int
+  statusCode: Int
+  statusDesc: String
+  validationMessage: String
+}
+>>>>>>> ff019969582bfe1ace604db7db855fa14aada594

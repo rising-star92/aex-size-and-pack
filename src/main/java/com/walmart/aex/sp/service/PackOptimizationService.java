@@ -7,6 +7,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+<<<<<<< HEAD
+=======
+import com.walmart.aex.sp.repository.AnalyticsMlSendRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+>>>>>>> ff019969582bfe1ace604db7db855fa14aada594
 import org.springframework.stereotype.Service;
 
 import com.walmart.aex.sp.dto.packoptimization.CcLevelConstraints;
@@ -46,6 +51,9 @@ public class PackOptimizationService {
 		this.finelinePackOptimizationRepository = finelinePackOptimizationRepository;
 		this.packOptimizationMapper = packOptimizationMapper;
 	}
+
+	@Autowired
+	private AnalyticsMlSendRepository analyticsMlSendRepository;
 
 
 	public PackOptimizationResponse getPackOptDetails(Long planId, Integer channelid)
@@ -311,8 +319,7 @@ public class PackOptimizationService {
 		return finelinePackOptimizationResponse;
 	}
 
-
-
-
-
+	public void UpdatePkOptServiceStatus(Long planId, Integer finelineNbr, Integer status) {
+		analyticsMlSendRepository.updateStatus(planId, finelineNbr, status);
+	}
 }

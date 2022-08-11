@@ -108,7 +108,7 @@ public class IntegrationHubService {
         IntegrationHubRequestDTO integrationHubRequestDTO = new IntegrationHubRequestDTO();
         IntegrationHubRequestContextDTO integrationHubRequestContextDTO = new IntegrationHubRequestContextDTO();
         final String packOptFinelineDetailsSuffix = "/api/packOptimization/plan/{planId}/fineline/{finelineNbr}";
-        final String packOptFinelineStatusSuffix = "/api/packOptimization/fineline/status";
+        final String packOptFinelineStatusSuffix = "/api/packOptimization/plan/{planId}/fineline/{finelineNbr}/status/{status}";
         String sizeAndPackSvcUrl = integrationHubServiceProperties.getSizeAndPackUrl();
         integrationHubRequestContextDTO.setGetPackOptFinelineDetails(sizeAndPackSvcUrl + packOptFinelineDetailsSuffix);
         integrationHubRequestContextDTO.setUpdatePackOptFinelineStatus(sizeAndPackSvcUrl  + packOptFinelineStatusSuffix);
