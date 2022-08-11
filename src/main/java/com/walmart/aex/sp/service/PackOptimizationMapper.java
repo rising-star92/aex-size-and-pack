@@ -176,9 +176,9 @@ public class PackOptimizationMapper {
 				}	
 			}
 		} catch (JsonMappingException e) {
-			e.printStackTrace();
+			log.error("Error while parsing the Json",e.getMessage());
 		} catch (JsonProcessingException e) {
-			e.printStackTrace();
+			log.error("Error while parsing the Json",e.getMessage());
 		}
 
 
