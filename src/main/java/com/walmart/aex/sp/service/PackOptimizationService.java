@@ -138,6 +138,9 @@ public class PackOptimizationService {
 
 	private void setLvl3SP(FineLineMapperDto fineLineMapperDto, List<Lvl3> lvl3List) {
 		Lvl3 lvl3 = new Lvl3();
+		lvl3.setLvl0Nbr(fineLineMapperDto.getLvl0Nbr());
+		lvl3.setLvl1Nbr(fineLineMapperDto.getLvl1Nbr());
+		lvl3.setLvl2Nbr(fineLineMapperDto.getLvl2Nbr());
 		lvl3.setLvl3Nbr(fineLineMapperDto.getLvl3Nbr());
 		lvl3.setLvl3Name(fineLineMapperDto.getLvl3Desc());
 		lvl3List.add(lvl3);
