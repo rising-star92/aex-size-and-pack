@@ -6,6 +6,6 @@ import java.util.List;
 @Data
 public class RunPackOptRequest {
     private Long planId;
-    private List<InputRequest> inputRequest;
+    private InputRequest inputRequest;
     private String runUser;
 }

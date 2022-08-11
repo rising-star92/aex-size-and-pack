@@ -1,5 +1,8 @@
 package com.walmart.aex.sp.service;
 
+import com.walmart.aex.sp.dto.buyquantity.FinelineDto;
+import com.walmart.aex.sp.dto.buyquantity.Lvl3Dto;
+import com.walmart.aex.sp.dto.buyquantity.Lvl4Dto;
 import com.walmart.aex.sp.dto.integrationhub.IntegrationHubResponseDTO;
 import com.walmart.aex.sp.dto.packoptimization.InputRequest;
 import com.walmart.aex.sp.dto.packoptimization.RunPackOptRequest;
@@ -63,27 +66,32 @@ public class IntegrationHubServiceTest {
 
     private RunPackOptRequest getRequest() {
         RunPackOptRequest request = new RunPackOptRequest();
-        List<InputRequest> inputRequestList = new ArrayList<>();
         InputRequest inputRequest = new InputRequest();
-        inputRequest.setFinelineNbr(15);
         inputRequest.setLvl0Nbr(10);
         inputRequest.setLvl1Nbr(11);
         inputRequest.setLvl2Nbr(12);
-        inputRequest.setLvl3Nbr(13);
-        inputRequest.setLvl4Nbr(14);
-        InputRequest inputRequest2 = new InputRequest();
-        inputRequest2.setFinelineNbr(25);
-        inputRequest2.setLvl0Nbr(20);
-        inputRequest2.setLvl1Nbr(21);
-        inputRequest2.setLvl2Nbr(22);
-        inputRequest2.setLvl3Nbr(23);
-        inputRequest2.setLvl4Nbr(24);
+        List<FinelineDto> finelinesList = new ArrayList<>();
+        FinelineDto fineline = new FinelineDto();
+        fineline.setFinelineNbr(50);
+        FinelineDto finelineDTO1 = new FinelineDto();
+        finelineDTO1.setFinelineNbr(51);
+        finelinesList.add(fineline);
+        finelinesList.add(finelineDTO1);
+        List<Lvl4Dto> lvl4DTOS = new ArrayList<>();
+        Lvl4Dto lvl4DTO = new Lvl4Dto();
+        lvl4DTO.setLvl4Nbr(40);
+        lvl4DTO.setFinelines(finelinesList);
+        lvl4DTOS.add(lvl4DTO);
+        List<Lvl3Dto> lvl3DTOS = new ArrayList<>();
+        Lvl3Dto lvl3DTO = new Lvl3Dto();
+        lvl3DTO.setLvl3Nbr(30);
+        lvl3DTO.setLvl4List(lvl4DTOS);
+        lvl3DTOS.add(lvl3DTO);
+        inputRequest.setLvl3List(lvl3DTOS);
+        request.setPlanId(48L);
+        request.setRunUser("Ravi Narayan Sukhasare");
+        request.setInputRequest(inputRequest);
 
-        inputRequestList.add(inputRequest);
-        inputRequestList.add(inputRequest2);
-        request.setPlanId(13L);
-        request.setRunUser("FirstName LastName");
-        request.setInputRequest(inputRequestList);
         return request;
     }
 
