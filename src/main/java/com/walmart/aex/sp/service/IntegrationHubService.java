@@ -2,14 +2,14 @@ package com.walmart.aex.sp.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.walmart.aex.sp.dto.buyquantity.FinelineDto;
+import com.walmart.aex.sp.dto.buyquantity.Lvl3Dto;
+import com.walmart.aex.sp.dto.buyquantity.Lvl4Dto;
 import com.walmart.aex.sp.dto.integrationhub.IntegrationHubRequestDTO;
 import com.walmart.aex.sp.dto.integrationhub.IntegrationHubResponseDTO;
 import com.walmart.aex.sp.dto.integrationhub.IntegrationHubRequestContextDTO;
 import com.walmart.aex.sp.dto.packoptimization.Execution;
-import com.walmart.aex.sp.dto.packoptimization.FinelineDTO;
 import com.walmart.aex.sp.dto.packoptimization.InputRequest;
-import com.walmart.aex.sp.dto.packoptimization.Lvl3DTO;
-import com.walmart.aex.sp.dto.packoptimization.Lvl4DTO;
 import com.walmart.aex.sp.dto.packoptimization.RunPackOptRequest;
 import com.walmart.aex.sp.dto.packoptimization.RunPackOptResponse;
 import com.walmart.aex.sp.entity.AnalyticsMlSend;
@@ -106,9 +106,9 @@ public class IntegrationHubService {
     private IntegrationHubRequestDTO getIntegrationHubRequest(RunPackOptRequest request, InputRequest inputRequest) {
         List<Integer> finelinesList = new ArrayList<>();
         if (inputRequest != null) {
-            for (Lvl3DTO lvl3 : inputRequest.getLvl3List()) {
-                for (Lvl4DTO lv4 : lvl3.getLvl4DTOList()) {
-                    for (FinelineDTO finelines : lv4.getFinelines()) {
+            for (Lvl3Dto lvl3 : inputRequest.getLvl3List()) {
+                for (Lvl4Dto lv4 : lvl3.getLvl4List()) {
+                    for (FinelineDto finelines : lv4.getFinelines()) {
                         finelinesList.add(finelines.getFinelineNbr());
                     }
                 }
@@ -131,9 +131,9 @@ public class IntegrationHubService {
         Set<AnalyticsMlSend> analyticsMlSendSet = new HashSet<>();
         InputRequest inputRequest = request.getInputRequest();
         if (inputRequest != null) {
-            for (Lvl3DTO lvl3 : inputRequest.getLvl3List()) {
-                for (Lvl4DTO lv4 : lvl3.getLvl4DTOList()) {
-                    for (FinelineDTO finelines : lv4.getFinelines()) {
+            for (Lvl3Dto lvl3 : inputRequest.getLvl3List()) {
+                for (Lvl4Dto lv4 : lvl3.getLvl4List()) {
+                    for (FinelineDto finelines : lv4.getFinelines()) {
                         AnalyticsMlSend analyticsMlSend = new AnalyticsMlSend();
                         analyticsMlSend.setPlanId(request.getPlanId());
                         analyticsMlSend.setStrategyId(null);
