@@ -190,7 +190,7 @@ configDefinitions:
             size.profile.assortproduct.url: "https://assortproduct.aex.stg.walmart.net/graphql"
     bqfpServiceConfig:
       name: "stage"
-      description: "GraphQL override for STAGE profile"
+      description: "Flow Plan override for STAGE profile"
       pathElements:
         envName: "stage"
         envProfile: "stage"
@@ -199,7 +199,7 @@ configDefinitions:
           bqfp.url: "https://flow-plan.aex.stg.walmart.net/flow-plan/v1/getBuyQtyFromFlowPlan"
     databaseConfig:
       name: "stage"
-      description: "GraphQL override for STAGE profile"
+      description: "DB for STAGE profile"
       pathElements:
         envName: "stage"
         envProfile: "stage"
