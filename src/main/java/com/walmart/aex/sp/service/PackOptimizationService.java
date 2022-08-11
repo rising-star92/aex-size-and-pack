@@ -95,8 +95,6 @@ public class PackOptimizationService {
 	{
 		try {
 			List<FineLineMapperDto> finePlanPackOptimizationList = packOptfineplanRepo.findByFinePlanPackOptimizationIDPlanIdAndChannelTextChannelId(planId, channelid);
-			Map<String, List<FineLineMapperDto>> map = finePlanPackOptimizationList.stream().collect(Collectors.groupingBy(f -> f.getPlanId().toString().concat(f.getFineLineNbr().toString())));
-			finePlanPackOptimizationList = map.keySet().stream().map(k -> map.get(k).stream().sorted(Comparator.comparing(FineLineMapperDto::getStartTs, Comparator.nullsLast(Comparator.reverseOrder())).reversed()).collect(Collectors.toList()).get(0)).collect(Collectors.toList());
 			Set<StylePackOptimization> stylePkOptList = Collections.emptySet();
 			List<CcPackOptimization> ccPkOptList = Collections.emptyList();
 			return packOptDetails(finePlanPackOptimizationList, stylePkOptList, ccPkOptList, planId, channelid);
@@ -178,12 +176,17 @@ public class PackOptimizationService {
 				.orElse(null);
 
 		if(fineline == null){
-			setFinelineSP(fineLineMapperDto, finelineDtoList,finelineNbr);
+			setFinelineSP(fineLineMapperDto, finelineDtoList);
+		} else {
+			if(fineline.getOptimizationDetails().get(0).getStartTs().compareTo(fineLineMapperDto.getStartTs()) < 0 ) {
+				finelineDtoList.remove(fineline);
+				setFinelineSP(fineLineMapperDto, finelineDtoList);
+			}
 		}
 		return finelineDtoList;
 	}
 
-	private Fineline setFinelineSP(FineLineMapperDto fineLineMapperDto, List<Fineline> finelineDtoList, Integer finelineNbr) {
+	private Fineline setFinelineSP(FineLineMapperDto fineLineMapperDto, List<Fineline> finelineDtoList) {
 		Fineline fineline = new Fineline();
 		String status = Optional.ofNullable(fineLineMapperDto.getRunStatusDesc()).orElse("NOT SENT");
 		fineline.setFinelineNbr(fineLineMapperDto.getFineLineNbr());
