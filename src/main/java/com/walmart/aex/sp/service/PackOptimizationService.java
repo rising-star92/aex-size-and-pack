@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import com.walmart.aex.sp.repository.AnalyticsMlSendRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +32,9 @@ public class PackOptimizationService {
 
 	@Autowired
 	private com.walmart.aex.sp.repository.PackOptimizationRepository packOptRepo;
+
+	@Autowired
+	private AnalyticsMlSendRepository analyticsMlSendRepository;
 
 
 	public PackOptimizationResponse getPackOptDetails(Long planId, Integer channelid)
@@ -273,8 +278,7 @@ public class PackOptimizationService {
 		return customerChoiceList;
 	}
 
-
-
-
-
+	public void UpdatePkOptServiceStatus(Long planId, Integer finelineNbr, Integer status) {
+		analyticsMlSendRepository.updateStatus(planId, finelineNbr, status);
+	}
 }
