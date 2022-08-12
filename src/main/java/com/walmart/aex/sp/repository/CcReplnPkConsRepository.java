@@ -18,8 +18,8 @@ public interface CcReplnPkConsRepository extends JpaRepository <CcReplPack, CcRe
 	@Transactional
     @Modifying(clearAutomatically = true, flushAutomatically = true)
 	@Query(value = "select * from dbo.rc_cc_replpk_fixtr_cons where plan_id = :planId and channel_id = :channelId and rpt_lvl_3_nbr = :lvl3Nbr \n" + 
-			"and rpt_lvl_4_nbr = :lvl4Nbr and fineline_nbr=:fineline and style_nbr=:style and customer_choice = :customerChoice and fixturetype_rollup_id = :fixtureTypeRollupId", nativeQuery = true)
+			"and rpt_lvl_4_nbr = :lvl4Nbr and fineline_nbr=:fineline and style_nbr=:style and customer_choice = :customerChoice ", nativeQuery = true)
 	List<CcReplPack> getCcReplnConsData(@Param("planId")Long planId, @Param("channelId") Integer channelId, @Param("lvl3Nbr") Integer lvl3Nbr, 
 			@Param("lvl4Nbr") Integer lvl4Nbr, @Param("fineline") Integer fineline, @Param("style") String style, 
-			@Param("customerChoice") String customerChoice, @Param("fixtureTypeRollupId") Integer fixtureTypeRollupId);
+			@Param("customerChoice") String customerChoice);
 }
