@@ -146,33 +146,18 @@ public class PackOptimizationMapper {
 					metricsDto.setClusterId(stObj.getSizeCluster());
 					metricsDto.setStoreList(stObj.getStoreList());
 					metricsDto.setInitialSet(stObj.getIsUnits());
-					metricsDto.setBumpSet(stObj.getBumpSets().get(0).getBsUnits());
+					if(stObj.getBumpSets().size()!=0) {
+						metricsDto.setBumpSet(stObj.getBumpSets().get(0).getBsUnits());	
+					}
 					metricsDtoList.add(metricsDto);
 
 				}
 				else
 				{ 
-					for (MetricsPackDto metricsDtos: metricsDtoList) {
-
-						if( (metricsDtos.getClusterId().equals(stObj.getSizeCluster()))&& (metricsDtos.getInitialSet().equals(stObj.getIsUnits())))
-						{
-							metricsDtos.getStoreList().addAll(stObj.getStoreList());
-
-							break;
-						}
-						else
-						{
-
-							MetricsPackDto metricsObj = new MetricsPackDto();
-							metricsObj.setClusterId(stObj.getSizeCluster());
-							metricsObj.setStoreList(stObj.getStoreList());
-							metricsObj.setInitialSet(stObj.getIsUnits());
-							metricsObj.setBumpSet(stObj.getBumpSets().get(0).getBsUnits());
-							metricsDtoList.add(metricsObj);
-						}
-
-					}
-
+					metricsDtoList.stream()
+					.filter(metrics -> ((metrics.getClusterId().equals(stObj.getSizeCluster())) && (metrics.getInitialSet().equals(stObj.getIsUnits())) )).findFirst()
+					.ifPresentOrElse(metrics ->metrics.getStoreList().addAll(stObj.getStoreList()),
+							()->setMetrics(metricsDtoList,stObj));
 				}	
 			}
 		} catch (JsonMappingException e) {
@@ -183,6 +168,21 @@ public class PackOptimizationMapper {
 
 
 		return metricsDtoList; 
+	}
+
+	private void setMetrics(List<MetricsPackDto> metricsDtoList,BuyQuantitiesDto stObj) {
+
+		MetricsPackDto metricsObj = new MetricsPackDto();
+		metricsObj.setClusterId(stObj.getSizeCluster());
+		metricsObj.setStoreList(stObj.getStoreList());
+		metricsObj.setInitialSet(stObj.getIsUnits());
+		if(stObj.getBumpSets().size()!=0) {
+			metricsObj.setBumpSet(stObj.getBumpSets().get(0).getBsUnits()); 
+		}
+		metricsDtoList.add(metricsObj); 
+
+
+
 	}
 
 

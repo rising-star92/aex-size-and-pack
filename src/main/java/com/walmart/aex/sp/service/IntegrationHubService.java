@@ -144,8 +144,8 @@ public class IntegrationHubService {
                         analyticsMlSend.setLvl3Nbr(lvl3.getLvl3Nbr());
                         analyticsMlSend.setLvl4Nbr(lv4.getLvl4Nbr());
                         analyticsMlSend.setFinelineNbr(finelines.getFinelineNbr());
-                        analyticsMlSend.setFirstName(getFirstName(request.getRunUser()));
-                        analyticsMlSend.setLastName(getLastName(request.getRunUser()));
+                        analyticsMlSend.setFirstName(request.getRunUser());
+                        analyticsMlSend.setLastName(request.getRunUser());
                         //Setting the run status as 3, which is Sent to Analytics
                         analyticsMlSend.setRunStatusCode(RunStatusCodeType.SENT_TO_ANALYTICS.getId());
                         //todo - hard coding values as its non null property

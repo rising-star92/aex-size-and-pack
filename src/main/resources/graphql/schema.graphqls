@@ -92,7 +92,11 @@ type PackOptimizationResponse{
 }
 
 type Lvl3 {
+    lvl0Nbr:Int
+    lvl1Nbr:Int
+    lvl2Nbr:Int
     lvl3Nbr: Int
+    lvl3Name: String
     constraints:Constraints
    	lvl4List: [Lvl4]
 }
@@ -126,9 +130,17 @@ type Lvl4 {
 type Fineline {
     finelineNbr: Int
     finelineName: String
+    optimizationDetails: [RunOptimization]
     packOptimizationStatus: String
     constraints:Constraints
     styles:[Style]
+}
+type RunOptimization{
+    name: String
+    startTs: String
+    endTs: String
+    returnMessage: String
+    runStatusCode: Int
 }
 
 type Style {
@@ -267,7 +279,7 @@ input ReplenishmentRequest {
 
 input RunPackOptRequest {
   planId: Int
-  inputRequest: [InputRequest]
+  inputRequest: InputRequest
   runUser: String
 }
 
@@ -275,9 +287,7 @@ input InputRequest {
      lvl0Nbr: Int
      lvl1Nbr: Int
      lvl2Nbr: Int
-     lvl3Nbr: Int
-     lvl4Nbr: Int
-     finelineNbr: Int
+     lvl3List:[Lvl3Request]
 }
 
 type RunPackOptResponse {
