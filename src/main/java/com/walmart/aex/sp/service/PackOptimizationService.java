@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 
+import com.walmart.aex.sp.dto.packoptimization.isbpqty.ISAndBPQtyDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -441,5 +442,9 @@ public class PackOptimizationService {
 
 	public void UpdatePkOptServiceStatus(Long planId, Integer finelineNbr, Integer status) {
 		analyticsMlSendRepository.updateStatus(planId, finelineNbr, status);
+	}
+
+	public void updateInitialSetAndBumpPackAty(Long planId, Integer finelineNbr, ISAndBPQtyDTO isAndBPQtyDTO) {
+
 	}
 }
