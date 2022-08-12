@@ -2,6 +2,7 @@ package com.walmart.aex.sp.controller;
 
 
 import com.walmart.aex.sp.dto.packoptimization.isbpqty.ISAndBPQtyDTO;
+import com.walmart.aex.sp.service.PostPackOptimizationService;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.http.MediaType;
@@ -33,12 +34,16 @@ import java.math.BigInteger;
 
 public class PackOptimizationController {
 	private final PackOptimizationService packOptService;
-  private final IntegrationHubService integrationHubService;
 
-	public PackOptimizationController(PackOptimizationService packOptService,IntegrationHubService integrationHubService) {
+	private final PostPackOptimizationService postPackOptimizationService;
+
+	private final IntegrationHubService integrationHubService;
+
+	public PackOptimizationController(PackOptimizationService packOptService,IntegrationHubService integrationHubService,PostPackOptimizationService postPackOptimizationService) {
 
 		this.packOptService = packOptService;
     	this.integrationHubService = integrationHubService;
+		this.postPackOptimizationService = postPackOptimizationService;
 	}
 
 	public static final String SUCCESS_STATUS = "Success";
@@ -92,7 +97,7 @@ public class PackOptimizationController {
 	@PostMapping(path = "/api/packOptimization/plan/{planId}/fineline/{finelineNbr}")
 	public ResponseEntity<String> postInitialSetAndBumpPackQty(@PathVariable Long planId, @PathVariable Integer finelineNbr, @RequestBody ISAndBPQtyDTO isAndBPQtyDTO) {
 		try{
-			packOptService.updateInitialSetAndBumpPackAty(planId,finelineNbr,isAndBPQtyDTO);
+			postPackOptimizationService.updateInitialSetAndBumpPackAty(planId,finelineNbr,isAndBPQtyDTO);
 		} catch (Exception e){
 			log.error("Error Occurred while updating values for Initial Set and Bump Pack ", e);
 			return ResponseEntity.internalServerError().build();
