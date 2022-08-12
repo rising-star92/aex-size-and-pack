@@ -147,7 +147,6 @@ public class PackOptimizationMapper {
 						metricsDto.setBumpSet(stObj.getBumpSets().get(0).getBsUnits());	
 					}
 					metricsDtoList.add(metricsDto);
-
 				}
 				else
 				{ 
