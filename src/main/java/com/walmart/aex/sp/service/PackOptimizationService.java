@@ -1,51 +1,77 @@
 package com.walmart.aex.sp.service;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.function.Function;
 
-import com.walmart.aex.sp.dto.buyquantity.*;
-import com.walmart.aex.sp.repository.AnalyticsMlSendRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.walmart.aex.sp.dto.mapper.FineLineMapperDto;
 import com.walmart.aex.sp.dto.packoptimization.CcLevelConstraints;
 import com.walmart.aex.sp.dto.packoptimization.Constraints;
 import com.walmart.aex.sp.dto.packoptimization.CustomerChoice;
+import com.walmart.aex.sp.dto.packoptimization.FineLinePackOptimizationResponse;
+import com.walmart.aex.sp.dto.packoptimization.FineLinePackOptimizationResponseDTO;
 import com.walmart.aex.sp.dto.packoptimization.Fineline;
-import com.walmart.aex.sp.dto.mapper.FineLineMapperDto;
-import com.walmart.aex.sp.dto.packoptimization.*;
+import com.walmart.aex.sp.dto.packoptimization.PackOptimizationResponse;
+import com.walmart.aex.sp.dto.packoptimization.RunOptimization;
+import com.walmart.aex.sp.dto.packoptimization.SupplierConstraints;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
 import com.walmart.aex.sp.dto.planhierarchy.Style;
-import com.walmart.aex.sp.entity.*;
+import com.walmart.aex.sp.entity.CcPackOptimization;
+import com.walmart.aex.sp.entity.CcPackOptimizationID;
+import com.walmart.aex.sp.entity.MerchantPackOptimization;
+import com.walmart.aex.sp.entity.MerchantPackOptimizationID;
+import com.walmart.aex.sp.entity.StylePackOptimization;
+import com.walmart.aex.sp.entity.StylePackOptimizationID;
+import com.walmart.aex.sp.entity.SubCatgPackOptimization;
+import com.walmart.aex.sp.entity.SubCatgPackOptimizationID;
+import com.walmart.aex.sp.entity.fineLinePackOptimization;
+import com.walmart.aex.sp.entity.fineLinePackOptimizationID;
+import com.walmart.aex.sp.exception.CustomException;
+import com.walmart.aex.sp.repository.AnalyticsMlSendRepository;
 import com.walmart.aex.sp.repository.CcPackOptimizationRepository;
+import com.walmart.aex.sp.repository.FineLinePackOptimizationRepository;
+import com.walmart.aex.sp.repository.FinelinePackOptRepository;
+import com.walmart.aex.sp.repository.PackOptimizationRepository;
 import com.walmart.aex.sp.repository.StylePackOptimizationRepository;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-import java.util.*;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
 public class PackOptimizationService {
 
-	@Autowired
-	private com.walmart.aex.sp.repository.PackOptimizationRepository packOptRepo;
+	
+	
+	private final PackOptimizationRepository packOptRepo;
+	private final FineLinePackOptimizationRepository finelinePackOptimizationRepository;
+	private final PackOptimizationMapper packOptimizationMapper;
+	private final FinelinePackOptRepository packOptfineplanRepo;
+	private final CcPackOptimizationRepository ccPackOptimizationRepository;
+	private final StylePackOptimizationRepository stylePackOptimizationRepository;
+	private final AnalyticsMlSendRepository analyticsMlSendRepository;
 
-	@Autowired
-	private com.walmart.aex.sp.repository.FinelinePackOptRepository packOptfineplanRepo;
-
-	@Autowired
-	private CcPackOptimizationRepository ccPackOptimizationRepository;
-
-	@Autowired
-	private StylePackOptimizationRepository stylePackOptimizationRepository;
+	public PackOptimizationService(PackOptimizationRepository packOptRepo, 
+			FineLinePackOptimizationRepository finelinePackOptimizationRepository,
+			FinelinePackOptRepository packOptfineplanRepo,CcPackOptimizationRepository ccPackOptimizationRepository,
+			StylePackOptimizationRepository stylePackOptimizationRepository,AnalyticsMlSendRepository analyticsMlSendRepository,PackOptimizationMapper packOptimizationMapper) {
+		this.packOptRepo=packOptRepo;
+		this.finelinePackOptimizationRepository = finelinePackOptimizationRepository;
+		this.packOptfineplanRepo=packOptfineplanRepo;
+		this.ccPackOptimizationRepository=ccPackOptimizationRepository;
+		this.stylePackOptimizationRepository=stylePackOptimizationRepository;
+		this.packOptimizationMapper = packOptimizationMapper;
+		this.analyticsMlSendRepository=analyticsMlSendRepository;
+	}
 
 	Function<Object, String> ifNullThenEmpty = o -> Objects.nonNull(o) ? o.toString() : "";
 	private FineLineMapperDto prepareFineLineMapperDto(Object[] object){
@@ -87,8 +113,7 @@ public class PackOptimizationService {
 		stylePackOptimizationID.setFinelinePackOptimizationID(fineLinePackOptimizationID);
 		ccPackOptimizationID.setStylePackOptimizationID(stylePackOptimizationID);
 		};
-	@Autowired
-	private AnalyticsMlSendRepository analyticsMlSendRepository;
+	
 
 
 	public PackOptimizationResponse getPackOptDetails(Long planId, Integer channelid)
@@ -390,6 +415,28 @@ public class PackOptimizationService {
 		}
 
 		return customerChoiceList;
+	}
+	
+	
+	public FineLinePackOptimizationResponse getPackOptFinelineDetails(Long planId, Integer finelineNbr)
+	{
+		FineLinePackOptimizationResponse finelinePackOptimizationResponse = new FineLinePackOptimizationResponse();
+
+		try {
+			List<FineLinePackOptimizationResponseDTO> finelinePackOptimizationResponseDTOS = finelinePackOptimizationRepository.getPackOptByFineline(planId, finelineNbr);
+			Optional.of(finelinePackOptimizationResponseDTOS)
+			.stream()
+			.flatMap(Collection::stream)
+			.forEach(FinelinePackOptimizationResponseDTO -> packOptimizationMapper.
+					mapPackOptimizationFineline(FinelinePackOptimizationResponseDTO, finelinePackOptimizationResponse));
+
+
+		} catch (Exception e) {
+			log.error("Exception While fetching Fineline pack Optimization :", e);
+			throw new CustomException("Failed to fetch Fineline Pack Optimization , due to" + e);
+		}
+		log.info("Fetch Pack Optimization Fineline response: {}", finelinePackOptimizationResponse);
+		return finelinePackOptimizationResponse;
 	}
 
 	public void UpdatePkOptServiceStatus(Long planId, Integer finelineNbr, Integer status) {

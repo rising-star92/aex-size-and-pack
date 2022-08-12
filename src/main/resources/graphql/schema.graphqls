@@ -10,6 +10,7 @@ type Query {
      fetchHistoricalMetricsCC(request: HistoricalMetricsRequest!) : HistoricalMetricsResponse!
 }
 
+
 type Mutation {
 	updateReplnConfigByCategory(request: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse
 	updateReplnConfigBySubCategory(request: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse
@@ -202,7 +203,7 @@ type FinelineDto {
     metrics: MetricsDto
     clusters: [ClustersDto]
     styles: [StyleDto]
-}
+    }
 
 type StyleDto {
     styleNbr: String
@@ -217,6 +218,7 @@ type CustomerChoiceDto {
     metrics: MetricsDto
     clusters: [ClustersDto]
     merchMethods : [MerchMethodsDto]
+  
 }
 
 type ClustersDto {
@@ -302,6 +304,7 @@ type Execution {
   validationMessage: String
 }
 
+
 input HistoricalMetricsRequest {
   lvl0Nbr: Int!
   lvl1Nbr: Int!
@@ -325,3 +328,4 @@ type HistoricalMetric {
   lyActualReceiptUnits: Int
   lyActualReceiptUnitsPct: Float
 }
+
