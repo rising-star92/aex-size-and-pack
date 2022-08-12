@@ -176,6 +176,51 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "http://aex-size-and-pack.aex.dev.walmart.net"
+  midasConfig:
+    description: "Midas Data API Service to Service Authentication"
+    resolutionPaths:
+      - default: "/envProfile/envName"
+    properties:
+      "midas.baseURL":
+        description: "Midas api base url"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "http://midas-data-api.stg.midas-api.catdev.prod.us.walmart.net"
+      "midas.clickhouse.table":
+        description: "midas clickhouse table"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "omni_item_channel_sales_wkly_v4_dist"
+      "midas.header.contentType":
+        description: "Midas api header content type"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "application/json"
+      "midas.header.consumer":
+        description: "Midas api header consumer Id"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "13705f9d-3eb8-46b5-b2c1-63a1b569af4c"
+      "midas.header.signatureKeyVersion":
+        description: "Midas api header signature Key Version"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "1"
+      "midas.header.signatureAuthFlag":
+        description: "Midas api header signature Auth Flag"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "true"
+      "midas.header.signatureTS":
+        description: "Midas api header signature TS"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "1639068838648"
+      "midas.header.tenant":
+        description: "Midas api header tenant"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "aex"
 
 configOverrides:
   graphQlConfig:
