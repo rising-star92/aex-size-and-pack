@@ -27,8 +27,6 @@ input UpdateVnPkWhPkReplnRequest {
 	planId: Int!
 	planDesc: String
 	channel: String!
-	fixtureTypeRollupId: Int
-	fixtureTypeRollupName: String
 	lvl3Nbr: Int
 	lvl4Nbr: Int
 	fineline: Int

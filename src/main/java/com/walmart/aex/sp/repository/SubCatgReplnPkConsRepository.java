@@ -18,8 +18,8 @@ public interface SubCatgReplnPkConsRepository extends JpaRepository<SubCatgReplP
 	@Transactional
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(value = "select * from dbo.rc_subcatg_replpk_fixtr_cons where plan_id = :planId and channel_id = :channelId and rpt_lvl_3_nbr = :lvl3Nbr \n" +
-            "and rpt_lvl_4_nbr = :lvl4Nbr  and fixturetype_rollup_id = :fixtureTypeRollupId", nativeQuery = true)
+            "and rpt_lvl_4_nbr = :lvl4Nbr  ", nativeQuery = true)
     List<SubCatgReplPack> getSubCatgReplnConsData(@Param("planId")Long planId, @Param("channelId") Integer channelId, 
-    		@Param("lvl3Nbr") Integer lvl3Nbr, @Param("lvl4Nbr") Integer lvl4Nbr, @Param("fixtureTypeRollupId") Integer fixtureTypeRollupId);
+    		@Param("lvl3Nbr") Integer lvl3Nbr, @Param("lvl4Nbr") Integer lvl4Nbr);
 
 }
