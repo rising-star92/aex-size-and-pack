@@ -1,7 +1,6 @@
 package com.walmart.aex.sp.service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -11,8 +10,6 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.walmart.aex.sp.dto.buyquantity.CustomerChoiceDto;
-import com.walmart.aex.sp.dto.buyquantity.FinelineDto;
 import com.walmart.aex.sp.dto.packoptimization.BuyQuantitiesDto;
 import com.walmart.aex.sp.dto.packoptimization.CcPackDto;
 import com.walmart.aex.sp.dto.packoptimization.FineLinePackDto;
