@@ -1,55 +1,22 @@
 package com.walmart.aex.sp.service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Function;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.walmart.aex.sp.dto.mapper.FineLineMapperDto;
-import com.walmart.aex.sp.dto.packoptimization.CcLevelConstraints;
-import com.walmart.aex.sp.dto.packoptimization.Constraints;
-import com.walmart.aex.sp.dto.packoptimization.CustomerChoice;
-import com.walmart.aex.sp.dto.packoptimization.FineLinePackOptimizationResponse;
-import com.walmart.aex.sp.dto.packoptimization.FineLinePackOptimizationResponseDTO;
-import com.walmart.aex.sp.dto.packoptimization.Fineline;
-import com.walmart.aex.sp.dto.packoptimization.PackOptimizationResponse;
-import com.walmart.aex.sp.dto.packoptimization.RunOptimization;
-import com.walmart.aex.sp.dto.packoptimization.SupplierConstraints;
+import com.walmart.aex.sp.dto.packoptimization.*;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
 import com.walmart.aex.sp.dto.planhierarchy.Style;
-import com.walmart.aex.sp.entity.CcPackOptimization;
-import com.walmart.aex.sp.entity.CcPackOptimizationID;
-import com.walmart.aex.sp.entity.MerchantPackOptimization;
-import com.walmart.aex.sp.entity.MerchantPackOptimizationID;
-import com.walmart.aex.sp.entity.StylePackOptimization;
-import com.walmart.aex.sp.entity.StylePackOptimizationID;
-import com.walmart.aex.sp.entity.SubCatgPackOptimization;
-import com.walmart.aex.sp.entity.SubCatgPackOptimizationID;
-import com.walmart.aex.sp.entity.fineLinePackOptimization;
-import com.walmart.aex.sp.entity.fineLinePackOptimizationID;
+import com.walmart.aex.sp.entity.*;
 import com.walmart.aex.sp.exception.CustomException;
-import com.walmart.aex.sp.repository.AnalyticsMlSendRepository;
-import com.walmart.aex.sp.repository.CcPackOptimizationRepository;
-import com.walmart.aex.sp.repository.FineLinePackOptimizationRepository;
-import com.walmart.aex.sp.repository.FinelinePackOptRepository;
-import com.walmart.aex.sp.repository.PackOptimizationRepository;
-import com.walmart.aex.sp.repository.StylePackOptimizationRepository;
-
+import com.walmart.aex.sp.repository.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
+import java.util.function.Function;
 
 @Service
 @Slf4j
 public class PackOptimizationService {
-
 
 
     private final PackOptimizationRepository packOptRepo;
@@ -59,22 +26,22 @@ public class PackOptimizationService {
     private final CcPackOptimizationRepository ccPackOptimizationRepository;
     private final StylePackOptimizationRepository stylePackOptimizationRepository;
     private final AnalyticsMlSendRepository analyticsMlSendRepository;
+    Function<Object, String> ifNullThenEmpty = o -> Objects.nonNull(o) ? o.toString() : "";
 
     public PackOptimizationService(PackOptimizationRepository packOptRepo,
                                    FineLinePackOptimizationRepository finelinePackOptimizationRepository,
-                                   FinelinePackOptRepository packOptfineplanRepo,CcPackOptimizationRepository ccPackOptimizationRepository,
-                                   StylePackOptimizationRepository stylePackOptimizationRepository,AnalyticsMlSendRepository analyticsMlSendRepository,PackOptimizationMapper packOptimizationMapper) {
-        this.packOptRepo=packOptRepo;
+                                   FinelinePackOptRepository packOptfineplanRepo, CcPackOptimizationRepository ccPackOptimizationRepository,
+                                   StylePackOptimizationRepository stylePackOptimizationRepository, AnalyticsMlSendRepository analyticsMlSendRepository, PackOptimizationMapper packOptimizationMapper) {
+        this.packOptRepo = packOptRepo;
         this.finelinePackOptimizationRepository = finelinePackOptimizationRepository;
-        this.packOptfineplanRepo=packOptfineplanRepo;
-        this.ccPackOptimizationRepository=ccPackOptimizationRepository;
-        this.stylePackOptimizationRepository=stylePackOptimizationRepository;
+        this.packOptfineplanRepo = packOptfineplanRepo;
+        this.ccPackOptimizationRepository = ccPackOptimizationRepository;
+        this.stylePackOptimizationRepository = stylePackOptimizationRepository;
         this.packOptimizationMapper = packOptimizationMapper;
-        this.analyticsMlSendRepository=analyticsMlSendRepository;
+        this.analyticsMlSendRepository = analyticsMlSendRepository;
     }
 
-    Function<Object, String> ifNullThenEmpty = o -> Objects.nonNull(o) ? o.toString() : "";
-    private FineLineMapperDto prepareFineLineMapperDto(Object[] object){
+    private FineLineMapperDto prepareFineLineMapperDto(Object[] object) {
         FineLineMapperDto fineLineMapperDto = new FineLineMapperDto();
         fineLineMapperDto.setPlanId(Long.valueOf(ifNullThenEmpty.apply(object[0])));
         fineLineMapperDto.setChannelId(Integer.valueOf(ifNullThenEmpty.apply(object[1])));
@@ -93,10 +60,11 @@ public class PackOptimizationService {
         fineLineMapperDto.setLvl4Desc(ifNullThenEmpty.apply(object[13]));
         fineLineMapperDto.setFirstName(ifNullThenEmpty.apply(object[15]));
         fineLineMapperDto.setLastName(ifNullThenEmpty.apply(object[16]));
-        fineLineMapperDto.setStartTs((Date)object[17]);
+        fineLineMapperDto.setStartTs((Date) object[17]);
         fineLineMapperDto.setReturnMessage(ifNullThenEmpty.apply(object[19]));
         return fineLineMapperDto;
     }
+
     private void prepareCcPackOptimizationID() {
         CcPackOptimizationID ccPackOptimizationID = new CcPackOptimizationID();
         StylePackOptimizationID stylePackOptimizationID = new StylePackOptimizationID();
@@ -112,24 +80,21 @@ public class PackOptimizationService {
         fineLinePackOptimizationID.setSubCatgPackOptimizationID(subCatgPackOptimizationID);
         stylePackOptimizationID.setFinelinePackOptimizationID(fineLinePackOptimizationID);
         ccPackOptimizationID.setStylePackOptimizationID(stylePackOptimizationID);
-    };
+    }
 
 
-
-    public PackOptimizationResponse getPackOptDetails(Long planId, Integer channelid)
-    {
+    public PackOptimizationResponse getPackOptDetails(Long planId, Integer channelid) {
         try {
             List<FineLineMapperDto> finePlanPackOptimizationList = packOptfineplanRepo.findByFinePlanPackOptimizationIDPlanIdAndChannelTextChannelId(planId, channelid);
             Set<StylePackOptimization> stylePkOptList = Collections.emptySet();
             List<CcPackOptimization> ccPkOptList = Collections.emptyList();
             return packOptDetails(finePlanPackOptimizationList, stylePkOptList, ccPkOptList, planId, channelid);
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("Error Occurred while fetching Pack Opt", e);
-            throw  e;
+            throw e;
         }
 
     }
-
 
 
     public PackOptimizationResponse packOptDetails(
@@ -137,28 +102,26 @@ public class PackOptimizationService {
             Set<StylePackOptimization> stylePkOptList,
             List<CcPackOptimization> ccPkOptList,
             Long planId,
-            Integer channelId)
-    {
+            Integer channelId) {
 
         PackOptimizationResponse packOptResp = new PackOptimizationResponse();
         packOptResp.setPlanId(planId);
         packOptResp.setChannel(channelId);
         List<Lvl3> lvl3List = new ArrayList<>();
         fineLineMapperDtos.forEach(fineLineMapperDto -> {
-            packOptResp.setLvl3List(maplvl3PackOpResponse(fineLineMapperDto,lvl3List));
+            packOptResp.setLvl3List(maplvl3PackOpResponse(fineLineMapperDto, lvl3List));
         });
 
         return packOptResp;
     }
 
-    private List<Lvl3> maplvl3PackOpResponse(FineLineMapperDto fineLineMapperDto,List<Lvl3> lvl3List) {
+    private List<Lvl3> maplvl3PackOpResponse(FineLineMapperDto fineLineMapperDto, List<Lvl3> lvl3List) {
         lvl3List.stream()
                 .filter(lvl3 -> fineLineMapperDto.getLvl3Nbr().equals(lvl3.getLvl3Nbr())).findFirst()
                 .ifPresentOrElse(lvl3 -> lvl3.setLvl4List(maplvl4PackOp(fineLineMapperDto, lvl3, fineLineMapperDto.getFineLineNbr())),
                         () -> setLvl3SP(fineLineMapperDto, lvl3List));
         return lvl3List;
     }
-
 
 
     private void setLvl3SP(FineLineMapperDto fineLineMapperDto, List<Lvl3> lvl3List) {
@@ -193,15 +156,15 @@ public class PackOptimizationService {
     private List<Fineline> mapFLPackOp(FineLineMapperDto fineLineMapperDto, Lvl4 lvl4, Integer finelineNbr) {
         List<Fineline> finelineDtoList = Optional.ofNullable(lvl4.getFinelines()).orElse(new ArrayList<Fineline>());
 
-        Fineline fineline =  finelineDtoList.stream()
+        Fineline fineline = finelineDtoList.stream()
                 .filter(f -> finelineNbr.equals(f.getFinelineNbr()))
                 .findAny()
                 .orElse(null);
 
-        if(fineline == null){
+        if (fineline == null) {
             setFinelineSP(fineLineMapperDto, finelineDtoList);
         } else {
-            if(fineline.getOptimizationDetails().get(0).getStartTs().compareTo(fineLineMapperDto.getStartTs()) < 0 ) {
+            if (fineline.getOptimizationDetails().get(0).getStartTs().compareTo(fineLineMapperDto.getStartTs()) < 0) {
                 finelineDtoList.remove(fineline);
                 setFinelineSP(fineLineMapperDto, finelineDtoList);
             }
@@ -232,14 +195,14 @@ public class PackOptimizationService {
 
     public Constraints getConstraintsDetails(SubCatgPackOptimization subCtgPkopt) {
 
-        Constraints cList= new Constraints();
-        SupplierConstraints spList=new SupplierConstraints();
+        Constraints cList = new Constraints();
+        SupplierConstraints spList = new SupplierConstraints();
         spList.setSupplierName(subCtgPkopt.getVendorName());
         spList.setMaxPacks(subCtgPkopt.getMaxNbrOfPacks());
         spList.setMaxUnitsPerPack(subCtgPkopt.getMaxUnitsPerPack());
 
-        List<CcLevelConstraints> ccLevelList= new ArrayList<>();
-        CcLevelConstraints ccLevel=new CcLevelConstraints();
+        List<CcLevelConstraints> ccLevelList = new ArrayList<>();
+        CcLevelConstraints ccLevel = new CcLevelConstraints();
         ccLevel.setFactoryIds(subCtgPkopt.getFactoryId());
         ccLevel.setCountryOfOrigin(subCtgPkopt.getOriginCountryName());
         ccLevel.setPortOfOrigin(subCtgPkopt.getPortOfOriginName());
@@ -254,14 +217,14 @@ public class PackOptimizationService {
 
     public Constraints getMerchantPkOptConstraintDetails(MerchantPackOptimization merchPackOptObj) {
 
-        Constraints cList= new Constraints();
-        SupplierConstraints spList=new SupplierConstraints();
+        Constraints cList = new Constraints();
+        SupplierConstraints spList = new SupplierConstraints();
         spList.setSupplierName(merchPackOptObj.getVendorName());
         spList.setMaxPacks(merchPackOptObj.getMaxNbrOfPacks());
         spList.setMaxUnitsPerPack(merchPackOptObj.getMaxUnitsPerPack());
 
-        List<CcLevelConstraints> ccLevelList= new ArrayList<>();
-        CcLevelConstraints ccLevel=new CcLevelConstraints();
+        List<CcLevelConstraints> ccLevelList = new ArrayList<>();
+        CcLevelConstraints ccLevel = new CcLevelConstraints();
         ccLevel.setFactoryIds(merchPackOptObj.getFactoryId());
         ccLevel.setCountryOfOrigin(merchPackOptObj.getOriginCountryName());
         ccLevel.setPortOfOrigin(merchPackOptObj.getPortOfOriginName());
@@ -276,14 +239,14 @@ public class PackOptimizationService {
 
     public Constraints getFinelinePkOptConstraintDetails(fineLinePackOptimization finelinePackOptObj) {
 
-        Constraints cList= new Constraints();
-        SupplierConstraints spList=new SupplierConstraints();
+        Constraints cList = new Constraints();
+        SupplierConstraints spList = new SupplierConstraints();
         spList.setSupplierName(finelinePackOptObj.getVendorName());
         spList.setMaxPacks(finelinePackOptObj.getMaxNbrOfPacks());
         spList.setMaxUnitsPerPack(finelinePackOptObj.getMaxUnitsPerPack());
 
-        List<CcLevelConstraints> ccLevelList= new ArrayList<>();
-        CcLevelConstraints ccLevel=new CcLevelConstraints();
+        List<CcLevelConstraints> ccLevelList = new ArrayList<>();
+        CcLevelConstraints ccLevel = new CcLevelConstraints();
         ccLevel.setFactoryIds(finelinePackOptObj.getFactoryId());
         ccLevel.setCountryOfOrigin(finelinePackOptObj.getOriginCountryName());
         ccLevel.setPortOfOrigin(finelinePackOptObj.getPortOfOriginName());
@@ -298,14 +261,14 @@ public class PackOptimizationService {
 
     public Constraints getStylePkOptConstraintDetails(StylePackOptimization stylePackOptObj) {
 
-        Constraints cList= new Constraints();
-        SupplierConstraints spList=new SupplierConstraints();
+        Constraints cList = new Constraints();
+        SupplierConstraints spList = new SupplierConstraints();
         spList.setSupplierName(stylePackOptObj.getVendorName());
         spList.setMaxPacks(stylePackOptObj.getMaxNbrOfPacks());
         spList.setMaxUnitsPerPack(stylePackOptObj.getMaxUnitsPerPack());
 
-        List<CcLevelConstraints> ccLevelList= new ArrayList<>();
-        CcLevelConstraints ccLevel=new CcLevelConstraints();
+        List<CcLevelConstraints> ccLevelList = new ArrayList<>();
+        CcLevelConstraints ccLevel = new CcLevelConstraints();
         ccLevel.setFactoryIds(stylePackOptObj.getFactoryId());
         ccLevel.setCountryOfOrigin(stylePackOptObj.getOriginCountryName());
         ccLevel.setPortOfOrigin(stylePackOptObj.getPortOfOriginName());
@@ -320,14 +283,14 @@ public class PackOptimizationService {
 
     public Constraints getCcPkOptConstraintDetails(CcPackOptimization ccPackOptObj) {
 
-        Constraints cList= new Constraints();
-        SupplierConstraints spList=new SupplierConstraints();
+        Constraints cList = new Constraints();
+        SupplierConstraints spList = new SupplierConstraints();
         spList.setSupplierName(ccPackOptObj.getVendorName());
         spList.setMaxPacks(ccPackOptObj.getMaxNbrOfPacks());
         spList.setMaxUnitsPerPack(ccPackOptObj.getMaxUnitsPerPack());
 
-        List<CcLevelConstraints> ccLevelList= new ArrayList<>();
-        CcLevelConstraints ccLevel=new CcLevelConstraints();
+        List<CcLevelConstraints> ccLevelList = new ArrayList<>();
+        CcLevelConstraints ccLevel = new CcLevelConstraints();
         ccLevel.setFactoryIds(ccPackOptObj.getFactoryId());
         ccLevel.setCountryOfOrigin(ccPackOptObj.getOriginCountryName());
         ccLevel.setPortOfOrigin(ccPackOptObj.getPortOfOriginName());
@@ -341,13 +304,11 @@ public class PackOptimizationService {
     }
 
     public List<Lvl4> subCategoryResponseList(Set<SubCatgPackOptimization> subCatgList, Set<fineLinePackOptimization> finelineList,
-                                              Set<StylePackOptimization> stylePkOptList, Set<CcPackOptimization> ccPkOptList)
-    {
-        List<Lvl4> lvl4list=new ArrayList<>();
+                                              Set<StylePackOptimization> stylePkOptList, Set<CcPackOptimization> ccPkOptList) {
+        List<Lvl4> lvl4list = new ArrayList<>();
 
-        for(SubCatgPackOptimization subctgpkopt : subCatgList)
-        {
-            Lvl4 lvl4=new Lvl4();
+        for (SubCatgPackOptimization subctgpkopt : subCatgList) {
+            Lvl4 lvl4 = new Lvl4();
             lvl4.setConstraints(getConstraintsDetails(subctgpkopt));
 
             List<Fineline> fineLinelist = new ArrayList<>();
@@ -360,13 +321,11 @@ public class PackOptimizationService {
     }
 
     public List<Fineline> finelineResponseList(Set<fineLinePackOptimization> finelinePkOptList,
-                                               Set<StylePackOptimization> stylePkOptList, Set<CcPackOptimization> ccPkOptList)
-    {
+                                               Set<StylePackOptimization> stylePkOptList, Set<CcPackOptimization> ccPkOptList) {
         List<Fineline> finelineList = new ArrayList<>();
 
-        for(fineLinePackOptimization fineLinePkOpt : finelinePkOptList)
-        {
-            Fineline fineListObj=new Fineline();
+        for (fineLinePackOptimization fineLinePkOpt : finelinePkOptList) {
+            Fineline fineListObj = new Fineline();
             fineListObj.setFinelineNbr(fineLinePkOpt.getFinelinePackOptId().getFinelineNbr());
 
             List<Style> styleList = new ArrayList<>();
@@ -380,12 +339,10 @@ public class PackOptimizationService {
         return finelineList;
     }
 
-    public List<Style> styleResponseList(Set<StylePackOptimization> stylePkOptList, Set<CcPackOptimization> ccPkOptList)
-    {
+    public List<Style> styleResponseList(Set<StylePackOptimization> stylePkOptList, Set<CcPackOptimization> ccPkOptList) {
         List<Style> styleList = new ArrayList<>();
 
-        for(StylePackOptimization stylePkOptObj : stylePkOptList)
-        {
+        for (StylePackOptimization stylePkOptObj : stylePkOptList) {
             Style style = new Style();
             List<CustomerChoice> customerChoiceList = new ArrayList();
             customerChoiceList = customerChoiceResponseList(ccPkOptList);
@@ -400,12 +357,10 @@ public class PackOptimizationService {
         return styleList;
     }
 
-    public List<CustomerChoice> customerChoiceResponseList(Set<CcPackOptimization> ccPkOptList)
-    {
+    public List<CustomerChoice> customerChoiceResponseList(Set<CcPackOptimization> ccPkOptList) {
         List<CustomerChoice> customerChoiceList = new ArrayList();
 
-        for(CcPackOptimization ccpkOptObj : ccPkOptList)
-        {
+        for (CcPackOptimization ccpkOptObj : ccPkOptList) {
             CustomerChoice customerChoice = new CustomerChoice();
             customerChoice.setCcId(ccpkOptObj.getCcPackOptimizationId().getCustomerChoice());
             customerChoice.setColorName(null);
@@ -418,8 +373,7 @@ public class PackOptimizationService {
     }
 
 
-    public FineLinePackOptimizationResponse getPackOptFinelineDetails(Long planId, Integer finelineNbr)
-    {
+    public FineLinePackOptimizationResponse getPackOptFinelineDetails(Long planId, Integer finelineNbr) {
         FineLinePackOptimizationResponse finelinePackOptimizationResponse = new FineLinePackOptimizationResponse();
 
         try {
