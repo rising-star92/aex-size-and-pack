@@ -382,7 +382,7 @@ public class PackOptimizationService {
                     .stream()
                     .flatMap(Collection::stream)
                     .forEach(FinelinePackOptimizationResponseDTO -> packOptimizationMapper.
-                            mapPackOptimizationFineline(FinelinePackOptimizationResponseDTO, finelinePackOptimizationResponse));
+                            mapPackOptimizationFineline(FinelinePackOptimizationResponseDTO, finelinePackOptimizationResponse,planId));
 
 
         } catch (Exception e) {
