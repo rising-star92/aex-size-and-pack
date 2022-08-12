@@ -6,6 +6,8 @@ type Query {
      fetchReplnByPlanFineline(replenishmentRequest: ReplenishmentRequest!): ReplenishmentResponse!
      fetchReplnByPlanFinelineStyleCc(replenishmentRequest: ReplenishmentRequest!): ReplenishmentResponse!
      getSizeBuyQtyDetails(buyQtyRequest: BuyQtyRequest!): BuyQtyResponse!
+     fetchHistoricalMetricsFineline(request: HistoricalMetricsRequest!) : HistoricalMetricsResponse!
+     fetchHistoricalMetricsCC(request: HistoricalMetricsRequest!) : HistoricalMetricsResponse!
 }
 
 type Mutation {
@@ -298,4 +300,28 @@ type Execution {
   statusCode: Int
   statusDesc: String
   validationMessage: String
+}
+
+input HistoricalMetricsRequest {
+  lvl0Nbr: Int!
+  lvl1Nbr: Int!
+  lvl2Nbr: Int!
+  lvl3Nbr: Int!
+  lvl4Nbr: Int!
+  finelineNbr: Int
+  styleNbr: String
+  customerChoice: String
+  channel: String!
+}
+
+type HistoricalMetricsResponse {
+  metrics: [HistoricalMetric]
+}
+
+type HistoricalMetric {
+  sizeDesc: String
+  lyActualSalesUnits: Int
+  lyActualSalesUnitsPct: Float
+  lyActualReceiptUnits: Int
+  lyActualReceiptUnitsPct: Float
 }
