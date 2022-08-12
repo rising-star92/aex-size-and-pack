@@ -1,6 +1,7 @@
 package com.walmart.aex.sp.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -22,4 +23,11 @@ public interface CcReplnPkConsRepository extends JpaRepository <CcReplPack, CcRe
 	List<CcReplPack> getCcReplnConsData(@Param("planId")Long planId, @Param("channelId") Integer channelId, @Param("lvl3Nbr") Integer lvl3Nbr, 
 			@Param("lvl4Nbr") Integer lvl4Nbr, @Param("fineline") Integer fineline, @Param("style") String style, 
 			@Param("customerChoice") String customerChoice);
+
+	@Query(value="select crp from CcReplPack crp " +
+			"where crp.ccReplPackId.styleReplPackId.finelineReplPackId.finelineNbr=:finelineNbr " +
+			"and crp.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.planId=:planId " +
+			"and crp.ccReplPackId.customerChoice=:ccId " +
+			"and crp.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId=1")
+	Optional<CcReplPack> findByPlanIdAndCCId(@Param("planId")  Long planId, @Param("finelineNbr")  Integer finelineNbr,@Param("ccId")  String ccId);
 }

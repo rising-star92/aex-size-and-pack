@@ -94,7 +94,9 @@ public class PackOptimizationController {
 		try{
 			packOptService.updateInitialSetAndBumpPackAty(planId,finelineNbr,isAndBPQtyDTO);
 		} catch (Exception e){
-			log.error("Error Occurred while updating values for Inital Set and Bump Pack ", e);
+			log.error("Error Occurred while updating values for Initial Set and Bump Pack ", e);
+			return ResponseEntity.internalServerError().build();
+
 		}
 		return ResponseEntity.ok("Success");
 	}

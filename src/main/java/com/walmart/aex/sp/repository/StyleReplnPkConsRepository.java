@@ -1,6 +1,7 @@
 package com.walmart.aex.sp.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -21,4 +22,13 @@ public interface StyleReplnPkConsRepository extends JpaRepository <StyleReplPack
 			"and rpt_lvl_4_nbr = :lvl4Nbr and fineline_nbr=:fineline and style_nbr=:style ", nativeQuery = true)
 	List<StyleReplPack> getStyleReplnConsData(@Param("planId")Long planId, @Param("channelId") Integer channelId, @Param("lvl3Nbr") Integer lvl3Nbr, 
 			@Param("lvl4Nbr") Integer lvl4Nbr, @Param("fineline") Integer fineline, @Param("style") String style);
+
+	@Query(value="select srp from StyleReplPack srp join CcReplPack  crp on " +
+			"crp.ccReplPackId.styleReplPackId.styleNbr = srp.styleReplPackId.styleNbr " +
+			"And crp.ccReplPackId.styleReplPackId.finelineReplPackId.finelineNbr = srp.styleReplPackId.finelineReplPackId.finelineNbr " +
+			"where srp.styleReplPackId.finelineReplPackId.finelineNbr=:finelineNbr " +
+			"and srp.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.planId=:planId " +
+			"and crp.ccReplPackId.customerChoice=:ccId" +
+			" and srp.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId=1")
+    Optional<StyleReplPack> findByPlanIdAndCCId(@Param("planId")  Long planId, @Param("finelineNbr")  Integer finelineNbr,@Param("ccId")  String ccId);
 }

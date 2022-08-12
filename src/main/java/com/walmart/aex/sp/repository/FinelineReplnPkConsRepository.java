@@ -1,6 +1,7 @@
 package com.walmart.aex.sp.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -21,4 +22,7 @@ public interface FinelineReplnPkConsRepository extends JpaRepository <FinelineRe
             "and rpt_lvl_4_nbr = :lvl4Nbr and fineline_nbr=:fineline ", nativeQuery = true)
     List<FinelineReplPack> getFinelineReplnConsData(@Param("planId")Long planId, @Param("channelId") Integer channelId, @Param("lvl3Nbr") Integer lvl3Nbr,
             @Param("lvl4Nbr") Integer lvl4Nbr, @Param("fineline") Integer fineline);
+    @Query(value="select frp from FinelineReplPack frp " +
+            "where frp.finelineReplPackId.finelineNbr=:finelineNbr and frp.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.planId=:planId and frp.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId=1")
+    Optional<FinelineReplPack> findByPlanIdAndFinelineNbr(@Param("planId") Long planId,@Param("finelineNbr") Integer finelineNbr);
 }
