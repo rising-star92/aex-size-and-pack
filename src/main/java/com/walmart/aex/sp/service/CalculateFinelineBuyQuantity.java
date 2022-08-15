@@ -221,7 +221,7 @@ public class CalculateFinelineBuyQuantity {
                     long totalReplenishment = buyQtyObj.getReplenishments()
                             .stream()
                             .filter(Objects::nonNull)
-                            .mapToLong(replenishment -> Optional.ofNullable(replenishment.getReplnUnits()).orElse(0L))
+                            .mapToLong(replenishment -> Optional.ofNullable(replenishment.getAdjReplnUnits()).orElse(0L))
                             .sum();
 
                     if (totalReplenishment > 0) {
@@ -234,8 +234,8 @@ public class CalculateFinelineBuyQuantity {
                         int perReplenishmentReduced = (int) (totalReducedReplenishment / replenishmentSize);
                         int perReplenishmentReducedRemainder = (int) (totalReducedReplenishment % replenishmentSize);
 
-                        buyQtyObj.getReplenishments().forEach(replenishment -> replenishment.setReplnUnits(replenishment.getReplnUnits() - perReplenishmentReduced));
-                        buyQtyObj.getReplenishments().get(0).setReplnUnits(buyQtyObj.getReplenishments().get(0).getReplnUnits() - perReplenishmentReducedRemainder);
+                        buyQtyObj.getReplenishments().forEach(replenishment -> replenishment.setReplnUnits(replenishment.getAdjReplnUnits() - perReplenishmentReduced));
+                        buyQtyObj.getReplenishments().get(0).setReplnUnits(buyQtyObj.getReplenishments().get(0).getAdjReplnUnits() - perReplenishmentReducedRemainder);
 
                         perStoreQty = initialSetThreshold;
                     }
@@ -295,7 +295,7 @@ public class CalculateFinelineBuyQuantity {
             totalReplenishment = entry.getValue().getReplenishments()
                     .stream()
                     .filter(Objects::nonNull)
-                    .mapToLong(replenishment -> Optional.ofNullable(replenishment.getReplnUnits()).orElse(0L))
+                    .mapToLong(replenishment -> Optional.ofNullable(replenishment.getAdjReplnUnits()).orElse(0L))
                     .sum();
             if (totalReplenishment < replenishmentThreshold && totalReplenishment > 0) {
                 isBuyQty = (int) (isBuyQty + totalReplenishment);
@@ -554,7 +554,9 @@ public class CalculateFinelineBuyQuantity {
 
             replenishments.forEach(replenishment -> {
                 Replenishment replenishment1 = new Replenishment();
-                replenishment1.setReplnUnits((long) (replenishment.getReplnUnits() * getAvgSizePct(sizeDto)) / 100);
+                replenishment1.setReplnWeek(replenishment.getReplnWeek());
+                replenishment1.setReplnWeekDesc(replenishment.getReplnWeekDesc());
+                replenishment1.setAdjReplnUnits((long) (replenishment.getAdjReplnUnits() * getAvgSizePct(sizeDto)) / 100);
                 replObj.add(replenishment1);
             });
             buyQtyObj.setReplenishments(replObj);

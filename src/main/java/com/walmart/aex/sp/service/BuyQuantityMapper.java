@@ -81,21 +81,21 @@ public class BuyQuantityMapper {
     private void updateFineline(BuyQntyResponseDTO buyQntyResponseDTO, FinelineDto finelineDto) {
         MetricsDto metricsDto = finelineDto.getMetrics();
 
-        int buyQty =  buyQntyResponseDTO.getBuyQty() != null
+        int buyQty = buyQntyResponseDTO.getBuyQty() != null
                 ? Optional.ofNullable(buyQntyResponseDTO.getBuyQty())
                 .orElse(0)
                 : 0;
 
         metricsDto.setBuyQty(buyQty + metricsDto.getBuyQty());
 
-        int isQty =  buyQntyResponseDTO.getBuyQty() != null
+        int isQty = buyQntyResponseDTO.getBuyQty() != null
                 ? Optional.ofNullable(buyQntyResponseDTO.getInitialSetQty())
                 .orElse(0)
                 : 0;
 
         metricsDto.setFinalInitialSetQty(isQty + metricsDto.getFinalInitialSetQty());
 
-        int rplnQty =  buyQntyResponseDTO.getBuyQty() != null
+        int rplnQty = buyQntyResponseDTO.getBuyQty() != null
                 ? Optional.ofNullable(buyQntyResponseDTO.getReplnQty())
                 .orElse(0)
                 : 0;
@@ -197,21 +197,21 @@ public class BuyQuantityMapper {
     private void updateCc(BuyQntyResponseDTO buyQntyResponseDTO, CustomerChoiceDto customerChoiceDto) {
         MetricsDto metricsDto = customerChoiceDto.getMetrics();
 
-        int buyQty =  buyQntyResponseDTO.getBuyQty() != null
+        int buyQty = buyQntyResponseDTO.getBuyQty() != null
                 ? Optional.ofNullable(buyQntyResponseDTO.getBuyQty())
                 .orElse(0)
                 : 0;
 
         metricsDto.setBuyQty(buyQty + metricsDto.getBuyQty());
 
-        int isQty =  buyQntyResponseDTO.getBuyQty() != null
+        int isQty = buyQntyResponseDTO.getBuyQty() != null
                 ? Optional.ofNullable(buyQntyResponseDTO.getInitialSetQty())
                 .orElse(0)
                 : 0;
 
         metricsDto.setFinalInitialSetQty(isQty + metricsDto.getFinalInitialSetQty());
 
-        int rplnQty =  buyQntyResponseDTO.getBuyQty() != null
+        int rplnQty = buyQntyResponseDTO.getBuyQty() != null
                 ? Optional.ofNullable(buyQntyResponseDTO.getReplnQty())
                 .orElse(0)
                 : 0;
