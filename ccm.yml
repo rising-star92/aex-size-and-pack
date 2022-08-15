@@ -184,14 +184,14 @@ configDefinitions:
     properties:
       "initialSet.constraint":
         description: "Initial set threshold"
-          type: "INTEGER"
-          kind: "SINGLE"
-          defaultValue: 2
+        type: "INTEGER"
+        kind: "SINGLE"
+        defaultValue: 2
       "replenishment.constraint":
         description: "Replenishment threshold"
-          type: "INTEGER"
-          kind: "SINGLE"
-          defaultValue: 500
+        type: "INTEGER"
+        kind: "SINGLE"
+        defaultValue: 500
 
   midasConfig:
     description: "Midas Data API Service to Service Authentication"
