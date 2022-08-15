@@ -71,7 +71,11 @@ public class BuyQuantityMapper {
 
         finelineDtoList.stream()
                 .filter(finelineDto -> buyQntyResponseDTO.getFinelineNbr().equals(finelineDto.getFinelineNbr())).findFirst()
-                .ifPresentOrElse(finelineDto -> finelineDto.setStyles(mapBuyQntyStyleSp(buyQntyResponseDTO, finelineDto, finelineNbr)),
+                .ifPresentOrElse(finelineDto -> {
+                            if (finelineNbr != null) {
+                                finelineDto.setStyles(mapBuyQntyStyleSp(buyQntyResponseDTO, finelineDto, finelineNbr));
+                            }
+                        },
                         () -> setFinelineSP(buyQntyResponseDTO, finelineDtoList, finelineNbr));
         return finelineDtoList;
     }
@@ -106,7 +110,7 @@ public class BuyQuantityMapper {
     private void setStyleSP(BuyQntyResponseDTO buyQntyResponseDTO, List<StyleDto> styleDtoList) {
         StyleDto styleDto = new StyleDto();
         styleDto.setStyleNbr(buyQntyResponseDTO.getStyleNbr());
-        
+
         MetricsDto metricsDto = new MetricsDto();
         metricsDto.setBuyQty(buyQntyResponseDTO.getStyleBuyQty());
         metricsDto.setFinalInitialSetQty(buyQntyResponseDTO.getStyleIsQty());
@@ -122,7 +126,7 @@ public class BuyQuantityMapper {
 
         customerChoiceDtoList.stream()
                 .filter(customerChoiceDto -> buyQntyResponseDTO.getCcId().equals(customerChoiceDto.getCcId())).findFirst()
-                .ifPresentOrElse(customerChoiceDto ->log.info("Size implementation"),
+                .ifPresentOrElse(customerChoiceDto -> log.info("Size implementation"),
                         //customerChoiceDto -> customerChoiceDto.setClusters(mapBuyQntySizeSp(buyQntyResponseDTO, customerChoiceDto)),
                         () -> setCcSP(buyQntyResponseDTO, customerChoiceDtoList));
         return customerChoiceDtoList;
