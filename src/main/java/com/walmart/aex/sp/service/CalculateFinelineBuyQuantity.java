@@ -297,7 +297,7 @@ public class CalculateFinelineBuyQuantity {
                     .filter(Objects::nonNull)
                     .mapToLong(replenishment -> Optional.ofNullable(replenishment.getReplnUnits()).orElse(0L))
                     .sum();
-            if (totalReplenishment < replenishmentThreshold) {
+            if (totalReplenishment < replenishmentThreshold && totalReplenishment > 0) {
                 isBuyQty = (int) (isBuyQty + totalReplenishment);
                 totalReplenishment = 0L;
                 //TODO: Adjust IS BS Store Obj
@@ -313,7 +313,7 @@ public class CalculateFinelineBuyQuantity {
         spCustomerChoiceChannelFixtureSize.setBuyQty(totalBuyQty);
 
         try {
-            log.info("Store Obj: {}", objectMapper.writeValueAsString(entry.getValue()));
+            log.info("Store Obj: {}", objectMapper.writeValueAsString(entry.getValue().getBuyQtyStoreObj()));
             spCustomerChoiceChannelFixtureSize.setStoreObj(objectMapper.writeValueAsString(entry.getValue()));
         } catch (Exception e) {
             log.error("Error parsing Json: ", e);
