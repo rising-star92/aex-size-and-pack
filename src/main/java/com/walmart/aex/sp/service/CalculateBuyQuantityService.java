@@ -23,9 +23,9 @@ public class CalculateBuyQuantityService {
     private final SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository;
     private final MerchCatgReplPackRepository merchCatgReplPackRepository;
 
-    public CalculateBuyQuantityService (CalculateFinelineBuyQuantity calculateFinelineBuyQuantity,
-                                        SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository,
-                                        MerchCatgReplPackRepository merchCatgReplPackRepository) {
+    public CalculateBuyQuantityService(CalculateFinelineBuyQuantity calculateFinelineBuyQuantity,
+                                       SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository,
+                                       MerchCatgReplPackRepository merchCatgReplPackRepository) {
         this.calculateFinelineBuyQuantity = calculateFinelineBuyQuantity;
         this.spFineLineChannelFixtureRepository = spFineLineChannelFixtureRepository;
         this.merchCatgReplPackRepository = merchCatgReplPackRepository;
@@ -58,12 +58,12 @@ public class CalculateBuyQuantityService {
                     } else
                         log.info("No Sub Categories available to calculate buy quantity for request: {}", calculateBuyQtyRequest);
                 });
-            } else log.info("No Categories available to calculate buy quantity for request: {}", calculateBuyQtyRequest);
+            } else
+                log.info("No Categories available to calculate buy quantity for request: {}", calculateBuyQtyRequest);
             if (!CollectionUtils.isEmpty(calculateBuyQtyParallelRequests)) {
                 calculateFinelinesParallel(calculateBuyQtyRequest, calculateBuyQtyParallelRequests);
             } else log.info("No Fineline to process");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error("Failed to Calculate Buy Quantity. Error: ", e);
         }
     }
@@ -82,7 +82,8 @@ public class CalculateBuyQuantityService {
                     List<MerchCatgReplPack> merchCatgReplPacks1 = Optional.of(merchCatgReplPacks)
                             .stream()
                             .flatMap(Collection::stream)
-                            .filter(merchCatgReplPack -> merchCatgReplPack.getMerchCatgReplPackId().getRepTLvl3().equals(calculateBuyQtyParallelRequest.getLvl3Nbr()))
+                            .filter(merchCatgReplPack -> merchCatgReplPack.getMerchCatgReplPackId().getRepTLvl3().equals(calculateBuyQtyParallelRequest.getLvl3Nbr())
+                            )
                             .collect(Collectors.toList());
 
                     CalculateBuyQtyResponse calculateBuyQtyResponse = new CalculateBuyQtyResponse();
@@ -94,7 +95,7 @@ public class CalculateBuyQuantityService {
                         return calculateFinelineBuyQuantity.calculateFinelineBuyQty(calculateBuyQtyRequest, calculateBuyQtyParallelRequest, calculateBuyQtyResponse);
                     } catch (Exception e) {
                         log.error("Failed to get Size profiles: ", e);
-                        throw new CustomException("Failed to calculate buy quantity: "+ e);
+                        throw new CustomException("Failed to calculate buy quantity: " + e);
                     }
                 })
         ).collect(Collectors.toList());
@@ -127,5 +128,23 @@ public class CalculateBuyQuantityService {
             merchCatgReplPackRepository.saveAll(merchCatgReplPacks1);
 
         } else throw new CustomException("Not All finelines complted successfully");
+    }
+
+    private FinelineReplPack getMerchCatgByFineline(CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, MerchCatgReplPack merchCatgReplPack) {
+        return Optional.ofNullable(merchCatgReplPack)
+                .filter(merchCatgReplPack1 -> merchCatgReplPack1.getMerchCatgReplPackId().getRepTLvl3().equals(calculateBuyQtyParallelRequest.getLvl3Nbr()))
+                .stream().findFirst()
+                .map(MerchCatgReplPack::getSubReplPack)
+                .stream()
+                .flatMap(Collection::stream)
+                .filter(subCatgReplPack -> subCatgReplPack.getSubCatgReplPackId().getRepTLvl4().equals(calculateBuyQtyParallelRequest.getLvl4Nbr()))
+                .findFirst()
+                .map(SubCatgReplPack::getFinelineReplPack)
+                .stream()
+                .flatMap(Collection::stream)
+                .filter(finelineReplPack -> finelineReplPack.getFinelineReplPackId().getFinelineNbr().equals(calculateBuyQtyParallelRequest.getFinelineNbr()))
+                .findFirst()
+                .orElse(null);
+
     }
 }

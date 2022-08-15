@@ -124,7 +124,7 @@ configDefinitions:
         description: "Consumer ID to call Strategy Service"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "34f7ca77-3dfc-46df-a86b-1ba6e4908d0e"
+        defaultValue: "19ce2bf5-4c24-4bbf-bee9-84496dd07e3c"
       "size.profile.consumer.name":
         description: "Consumer service name"
         type: "STRING"
@@ -188,6 +188,10 @@ configOverrides:
         properties:
           "size.profile.url": "https://strategy.aex.stg.walmart.net/graphql"
           "size.profile.assortproduct.url": "https://assortproduct.aex.stg.walmart.net/graphql"
+          "size.profile.consumer.id": "93c617a1-31ec-4333-a819-683ef7514cc0"
+          "size.profile.consumer.env": "stg"
+          "size.profile.assortproduct.consumer.id": "93c617a1-31ec-4333-a819-683ef7514cc0"
+          "size.profile.assortproduct.consumer.env": "stg"
   bqfpServiceConfig:
     - name: "stage"
       description: "Flow Plan override for STAGE profile"
