@@ -19,11 +19,13 @@ public interface FineLineReplenishmentRepository extends JpaRepository<FinelineR
             "ssp.lvl2Desc, " +
             "msp.merchCatPlanId.lvl3Nbr, " +
             "ssp.lvl3Desc, " +
+            "mrp.replUnits as lvl3ReplQty, " +
             "mrp.vendorPackCnt as lvl3VenderPackCount, " +
             "mrp.whsePackCnt as lvl3WhsePackCount, " +
             "mrp.vnpkWhpkRatio as lvl3vnpkWhpkRatio, " +
             "ssp.subCatPlanId.lvl4Nbr, " +
             "ssp.lvl4Desc, " +
+            "srp.replUnits as lvl4ReplQty, " +
             "srp.vendorPackCnt as lvl4VenderPackCount, " +
             "srp.whsePackCnt as lvl4WhsePackCount, " +
             "srp.vnpkWhpkRatio as lvl4vnpkWhpkRatio, " +

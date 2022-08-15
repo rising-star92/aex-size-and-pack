@@ -16,8 +16,8 @@ public interface CatgReplnPkConsRepository extends JpaRepository<MerchCatgReplPa
 
 	@Transactional
     @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query(value = "select * from dbo.rc_merchcatg_replpk_fixtr_cons where plan_id = :planId and channel_id = :channelId and rpt_lvl_3_nbr = :lvl3Nbr and fixturetype_rollup_id = :fixtureTypeRollupId", nativeQuery = true)
+    @Query(value = "select * from dbo.rc_merchcatg_replpk_fixtr_cons where plan_id = :planId and channel_id = :channelId and rpt_lvl_3_nbr = :lvl3Nbr ", nativeQuery = true)
     List<MerchCatgReplPack> getCatgReplnConsData(@Param("planId") Long planId, @Param("channelId") Integer channelId, 
-    		@Param("lvl3Nbr") Integer lvl3Nbr, @Param("fixtureTypeRollupId") Integer fixtureTypeRollupId);
+    		@Param("lvl3Nbr") Integer lvl3Nbr);
 
 }

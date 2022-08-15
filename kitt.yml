@@ -37,6 +37,8 @@ deploy:
             content: aex-size-and-pack/{{ $.kittExec.currentCluster.profile }}#sqlServer.username
           - destination: /sql.password.txt
             content: aex-size-and-pack/{{ $.kittExec.currentCluster.profile }}#sqlServer.password
+          - destination: /midasApi.authorization.txt
+            content: aex-size-and-pack/{{ $.kittExec.currentCluster.profile }}#midasApi.authorization
       livenessProbe:
         wait: 120
         path: "/actuator/health"
