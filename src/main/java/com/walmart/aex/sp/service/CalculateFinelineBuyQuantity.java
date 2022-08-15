@@ -195,9 +195,12 @@ public class CalculateFinelineBuyQuantity {
                 storeBuyQtyBySizeId.put(sizeDto, new BuyQtyObj());
                 buyQtyObj = storeBuyQtyBySizeId.get(sizeDto);
             }
-            BuyQtyStoreObj buyQtyStoreObj = buyQtyObj.getBuyQtyStoreObj();
-
-            List<StoreQuantity> initialSetQuantities = Optional.ofNullable(buyQtyStoreObj.getBuyQuantities()).orElse(new ArrayList<>());
+            BuyQtyStoreObj buyQtyStoreObj = Optional.ofNullable(buyQtyObj)
+                    .map(BuyQtyObj::getBuyQtyStoreObj)
+                    .orElse(new BuyQtyStoreObj());
+            List<StoreQuantity> initialSetQuantities = Optional.of(buyQtyStoreObj)
+                    .map(BuyQtyStoreObj::getBuyQuantities)
+                    .orElse(new ArrayList<>());
             log.info("Size Cluster: {}", clustersDto.getClusterID());
             log.info("Style Nbr: {} : {}", styleDto.getStyleNbr(), customerChoiceDto.getCcId());
             rfaSizePackDataList.forEach(rfaSizePackData -> {
@@ -239,6 +242,8 @@ public class CalculateFinelineBuyQuantity {
                 initialSetQuantities.add(storeQuantity);
             });
             buyQtyStoreObj.setBuyQuantities(initialSetQuantities);
+            buyQtyObj.setBuyQtyStoreObj(buyQtyStoreObj);
+            storeBuyQtyBySizeId.put(sizeDto, buyQtyObj);
         });
     }
 
@@ -257,7 +262,8 @@ public class CalculateFinelineBuyQuantity {
             spCustomerChoiceChannelFixtureSize.setSpCustomerChoiceChannelFixtureSizeId(spCustomerChoiceChannelFixtureSizeId);
         }
 
-        int isBuyQty = entry.getValue().getBuyQtyStoreObj().getBuyQuantities()
+        int isBuyQty = entry.getValue().getBuyQtyStoreObj()
+                .getBuyQuantities()
                 .stream()
                 .filter(Objects::nonNull)
                 .mapToInt(storeQuantity -> Optional.ofNullable(storeQuantity.getTotalUnits()).orElse(ZERO))
