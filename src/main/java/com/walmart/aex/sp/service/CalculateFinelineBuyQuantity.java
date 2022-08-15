@@ -28,12 +28,15 @@ public class CalculateFinelineBuyQuantity {
     private final BQFPService bqfpService;
     private final ObjectMapper objectMapper;
     private final SizeAndPackService sizeAndPackService;
+    private final BuyQtyReplenishmentMapperService buyQtyReplenishmentMapperService;
 
     public CalculateFinelineBuyQuantity(BQFPService bqfpService,
-                                        ObjectMapper objectMapper, SizeAndPackService sizeAndPackService) {
+                                        ObjectMapper objectMapper, SizeAndPackService sizeAndPackService,
+                                        BuyQtyReplenishmentMapperService buyQtyReplenishmentMapperService) {
         this.bqfpService = bqfpService;
         this.objectMapper = objectMapper;
         this.sizeAndPackService = sizeAndPackService;
+        this.buyQtyReplenishmentMapperService = buyQtyReplenishmentMapperService;
     }
 
     public CalculateBuyQtyResponse calculateFinelineBuyQty(CalculateBuyQtyRequest calculateBuyQtyRequest, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, CalculateBuyQtyResponse calculateBuyQtyResponse) throws SizeAndPackException {
@@ -51,32 +54,6 @@ public class CalculateFinelineBuyQuantity {
             }
         } else log.info("Size Profile Fineline is null: {}", buyQtyResponse);
         return calculateBuyQtyResponse;
-    }
-
-    private BuyQtyResponse getSizeProfiles(CalculateBuyQtyRequest calculateBuyQtyRequest, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest) throws SizeAndPackException {
-        BuyQtyRequest buyQtyRequest = new BuyQtyRequest();
-        buyQtyRequest.setPlanId(calculateBuyQtyRequest.getPlanId());
-        buyQtyRequest.setChannel(calculateBuyQtyRequest.getChannel());
-        buyQtyRequest.setLvl3Nbr(calculateBuyQtyParallelRequest.getLvl3Nbr());
-        buyQtyRequest.setLvl4Nbr(calculateBuyQtyParallelRequest.getLvl4Nbr());
-        buyQtyRequest.setFinelineNbr(calculateBuyQtyParallelRequest.getFinelineNbr());
-        return sizeAndPackService.getAllCcSizeProfiles(buyQtyRequest);
-    }
-
-    private FinelineDto getFineline(BuyQtyResponse buyQtyResponse) {
-        return Optional.ofNullable(buyQtyResponse.getLvl3List())
-                .stream()
-                .flatMap(Collection::stream)
-                .findFirst()
-                .map(Lvl3Dto::getLvl4List)
-                .stream()
-                .flatMap(Collection::stream)
-                .findFirst()
-                .map(Lvl4Dto::getFinelines)
-                .stream()
-                .flatMap(Collection::stream)
-                .findFirst()
-                .orElse(null);
     }
 
     private void getMerchMethod(CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, FinelineDto finelineDto, APResponse apResponse, BQFPResponse bqfpResponse,
@@ -131,26 +108,7 @@ public class CalculateFinelineBuyQuantity {
             spStyleChannelFixtures.add(spStyleChannelFixture);
         });
         log.info("calculating fineline IS and BS Qty");
-        spFineLineChannelFixture.setInitialSetQty(spStyleChannelFixtures.stream()
-                .filter(Objects::nonNull)
-                .mapToInt(spStyleChannelFixture -> Optional.ofNullable(spStyleChannelFixture.getInitialSetQty()).orElse(0))
-                .sum()
-        );
-        spFineLineChannelFixture.setBumpPackQty(spStyleChannelFixtures.stream()
-                .filter(Objects::nonNull)
-                .mapToInt(spStyleChannelFixture -> Optional.ofNullable(spStyleChannelFixture.getBumpPackQty()).orElse(0))
-                .sum()
-        );
-        spFineLineChannelFixture.setBuyQty(spStyleChannelFixtures.stream()
-                .filter(Objects::nonNull)
-                .mapToInt(spStyleChannelFixture -> Optional.ofNullable(spStyleChannelFixture.getBuyQty()).orElse(0))
-                .sum()
-        );
-        spFineLineChannelFixture.setReplnQty(spStyleChannelFixtures.stream()
-                .filter(Objects::nonNull)
-                .mapToInt(spStyleChannelFixture -> Optional.ofNullable(spStyleChannelFixture.getReplnQty()).orElse(0))
-                .sum()
-        );
+        setFinelineChanFixtures(spFineLineChannelFixture, spStyleChannelFixtures);
         spFineLineChannelFixture.setSpStyleChannelFixtures(spStyleChannelFixtures);
     }
 
@@ -179,26 +137,7 @@ public class CalculateFinelineBuyQuantity {
             spCustomerChoiceChannelFixtures.add(spCustomerChoiceChannelFixture);
         });
         log.info("calculating Style IS and BS Qty");
-        spStyleChannelFixture.setInitialSetQty(spCustomerChoiceChannelFixtures.stream()
-                .filter(Objects::nonNull)
-                .mapToInt(spCustomerChoiceChannelFixture -> Optional.ofNullable(spCustomerChoiceChannelFixture.getInitialSetQty()).orElse(0))
-                .sum()
-        );
-        spStyleChannelFixture.setBumpPackQty(spCustomerChoiceChannelFixtures.stream()
-                .filter(Objects::nonNull)
-                .mapToInt(spCustomerChoiceChannelFixture -> Optional.ofNullable(spCustomerChoiceChannelFixture.getBumpPackQty()).orElse(0))
-                .sum()
-        );
-        spStyleChannelFixture.setBuyQty(spCustomerChoiceChannelFixtures.stream()
-                .filter(Objects::nonNull)
-                .mapToInt(spCustomerChoiceChannelFixture -> Optional.ofNullable(spCustomerChoiceChannelFixture.getBuyQty()).orElse(0))
-                .sum()
-        );
-        spStyleChannelFixture.setReplnQty(spCustomerChoiceChannelFixtures.stream()
-                .filter(Objects::nonNull)
-                .mapToInt(spCustomerChoiceChannelFixture -> Optional.ofNullable(spCustomerChoiceChannelFixture.getReplnQty()).orElse(0))
-                .sum()
-        );
+        setStyleChanFixtures(spStyleChannelFixture, spCustomerChoiceChannelFixtures);
         spStyleChannelFixture.setSpCustomerChoiceChannelFixture(spCustomerChoiceChannelFixtures);
     }
 
@@ -231,292 +170,17 @@ public class CalculateFinelineBuyQuantity {
         Set<SpCustomerChoiceChannelFixtureSize> spCustomerChoiceChannelFixtureSizes = Optional.ofNullable(spCustomerChoiceChannelFixture.getSpCustomerChoiceChannelFixtureSize()).orElse(new HashSet<>());
         Set<CcSpMmReplPack> ccSpMmReplPacks = new HashSet<>();
         for (Map.Entry<SizeDto, BuyQtyObj> entry : storeBuyQtyBySizeId.entrySet()) {
-            final Integer ZERO = 0;
-            SpCustomerChoiceChannelFixtureSizeId spCustomerChoiceChannelFixtureSizeId = new SpCustomerChoiceChannelFixtureSizeId(spCustomerChoiceChannelFixture.getSpCustomerChoiceChannelFixtureId(), entry.getKey().getAhsSizeId());
-            SpCustomerChoiceChannelFixtureSize spCustomerChoiceChannelFixtureSize = Optional.of(spCustomerChoiceChannelFixtureSizes)
-                    .stream()
-                    .flatMap(Collection::stream)
-                    .filter(spCustomerChoiceChannelFixtureSize1 -> spCustomerChoiceChannelFixtureSize1.getSpCustomerChoiceChannelFixtureSizeId().equals(spCustomerChoiceChannelFixtureSizeId))
-                    .findFirst()
-                    .orElse(new SpCustomerChoiceChannelFixtureSize());
-            if (spCustomerChoiceChannelFixtureSize.getSpCustomerChoiceChannelFixtureSizeId() == null) {
-                spCustomerChoiceChannelFixtureSize.setSpCustomerChoiceChannelFixtureSizeId(spCustomerChoiceChannelFixtureSizeId);
-            }
-
-            int isBuyQty = entry.getValue().getBuyQtyStoreObj().getBuyQuantities()
-                    .stream()
-                    .filter(Objects::nonNull)
-                    .mapToInt(storeQuantity -> Optional.ofNullable(storeQuantity.getTotalUnits()).orElse(ZERO))
-                    .sum();
-
-            int bsBuyQty = entry.getValue().getBuyQtyStoreObj().getBuyQuantities()
-                    .stream()
-                    .map(StoreQuantity::getBumpSets)
-                    .flatMap(Collection::stream)
-                    .filter(Objects::nonNull)
-                    .mapToInt(bumpSetQuantity -> Optional.ofNullable(bumpSetQuantity.getTotalUnits()).orElse(ZERO))
-                    .sum();
-
-            //TODO: move threshold to CCM
-            double replenishmentThreshold = 500.0;
-            long totalReplenishment = 0L;
-            if ((!CollectionUtils.isEmpty(entry.getValue().getReplenishments()))) {
-                totalReplenishment = entry.getValue().getReplenishments()
-                        .stream()
-                        .filter(Objects::nonNull)
-                        .mapToLong(replenishment -> Optional.ofNullable(replenishment.getReplnUnits()).orElse(0L))
-                        .sum();
-                if (totalReplenishment < 500) {
-                    isBuyQty = (int) (isBuyQty + totalReplenishment);
-                    totalReplenishment = 0L;
-                    //TODO: Adjust IS BS Store Obj
-
-                }
-
-            }
-
-            int totalBuyQty = isBuyQty + bsBuyQty + (int) totalReplenishment;
-            spCustomerChoiceChannelFixtureSize.setInitialSetQty(isBuyQty);
-            spCustomerChoiceChannelFixtureSize.setBumpPackQty(bsBuyQty);
-            spCustomerChoiceChannelFixtureSize.setMerchMethodCode(merchMethodsDto.getMerchMethodCode());
-            spCustomerChoiceChannelFixtureSize.setAhsSizeDesc(entry.getKey().getSizeDesc());
-            spCustomerChoiceChannelFixtureSize.setReplnQty((int) totalReplenishment);
-            spCustomerChoiceChannelFixtureSize.setBuyQty(totalBuyQty);
-
-            try {
-                log.info("Store Obj: {}", objectMapper.writeValueAsString(entry.getValue()));
-                spCustomerChoiceChannelFixtureSize.setStoreObj(objectMapper.writeValueAsString(entry.getValue()));
-            } catch (Exception e) {
-                log.error("Error parsing Json: ", e);
-                throw new CustomException("Error parsing Json: " + e);
-            }
-            spCustomerChoiceChannelFixtureSizes.add(spCustomerChoiceChannelFixtureSize);
-
-            //Replenishment
-            if (!CollectionUtils.isEmpty(replenishments) && totalReplenishment > 0) {
-                CcSpMmReplPackId ccSpMmReplPackId = new CcSpMmReplPackId();
-                ccSpMmReplPackId.setAhsSizeId(entry.getKey().getAhsSizeId());
-
-                CcSpMmReplPack ccSpMmReplPack = new CcSpMmReplPack();
-
-                ccSpMmReplPack.setFinalBuyUnits(totalBuyQty);
-                ccSpMmReplPack.setReplUnits((int) totalReplenishment);
-                try {
-                    ccSpMmReplPack.setReplenObj(objectMapper.writeValueAsString(entry.getValue().getReplenishments()));
-                } catch (Exception e) {
-                    log.error("Failed to create replenishment Obj for size: {}", entry.getKey(), e);
-                    throw new CustomException("Failed to create replenishment Obj for size " + e);
-                }
-
-                ccSpMmReplPacks.add(ccSpMmReplPack);
-            }
+            setSizeChanFixtureBuyQty(merchMethodsDto, spCustomerChoiceChannelFixture, replenishments, spCustomerChoiceChannelFixtureSizes, ccSpMmReplPacks, entry);
         }
 
         if (!CollectionUtils.isEmpty(ccSpMmReplPacks)) {
             //Replenishment
-            setAllReplenishments(styleDto, merchMethodsDto, calculateBuyQtyParallelRequest, calculateBuyQtyResponse, customerChoiceDto, ccSpMmReplPacks);
+            List<MerchCatgReplPack> merchCatgReplPacks = buyQtyReplenishmentMapperService.setAllReplenishments(styleDto, merchMethodsDto, calculateBuyQtyParallelRequest, calculateBuyQtyResponse, customerChoiceDto, ccSpMmReplPacks);
+            calculateBuyQtyResponse.setMerchCatgReplPacks(merchCatgReplPacks);
         }
 
         spCustomerChoiceChannelFixture.setSpCustomerChoiceChannelFixtureSize(spCustomerChoiceChannelFixtureSizes);
-        spCustomerChoiceChannelFixture.setInitialSetQty(spCustomerChoiceChannelFixtureSizes.stream()
-                .filter(Objects::nonNull)
-                .mapToInt(spCustomerChoiceChannelFixtureSize -> Optional.ofNullable(spCustomerChoiceChannelFixtureSize.getInitialSetQty()).orElse(0))
-                .sum()
-        );
-        spCustomerChoiceChannelFixture.setBumpPackQty(spCustomerChoiceChannelFixtureSizes.stream()
-                .filter(Objects::nonNull)
-                .mapToInt(spCustomerChoiceChannelFixtureSize -> Optional.ofNullable(spCustomerChoiceChannelFixtureSize.getBumpPackQty()).orElse(0))
-                .sum()
-        );
-        spCustomerChoiceChannelFixture.setBuyQty(spCustomerChoiceChannelFixtureSizes.stream()
-                .filter(Objects::nonNull)
-                .mapToInt(spCustomerChoiceChannelFixtureSize -> Optional.ofNullable(spCustomerChoiceChannelFixtureSize.getBuyQty()).orElse(0))
-                .sum()
-        );
-        spCustomerChoiceChannelFixture.setReplnQty(spCustomerChoiceChannelFixtureSizes.stream()
-                .filter(Objects::nonNull)
-                .mapToInt(spCustomerChoiceChannelFixtureSize -> Optional.ofNullable(spCustomerChoiceChannelFixtureSize.getReplnQty()).orElse(0))
-                .sum()
-        );
-    }
-
-    private void setAllReplenishments(StyleDto styleDto, MerchMethodsDto merchMethodsDto, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, CalculateBuyQtyResponse calculateBuyQtyResponse, CustomerChoiceDto customerChoiceDto, Set<CcSpMmReplPack> ccSpMmReplPacks) {
-        List<MerchCatgReplPack> merchCatgReplPacks = calculateBuyQtyResponse.getMerchCatgReplPacks();
-        MerchCatgReplPackId merchCatgReplPackId = new MerchCatgReplPackId(calculateBuyQtyParallelRequest.getPlanId(), calculateBuyQtyParallelRequest.getLvl0Nbr(),
-                calculateBuyQtyParallelRequest.getLvl1Nbr(), calculateBuyQtyParallelRequest.getLvl2Nbr(), calculateBuyQtyParallelRequest.getLvl3Nbr(),
-                ChannelType.getChannelIdFromName(calculateBuyQtyParallelRequest.getChannel()), merchMethodsDto.getFixtureTypeRollupId());
-        log.info("Replenishment: Check if merch catg pack Id is existing: {}", merchCatgReplPackId);
-        MerchCatgReplPack merchCatgReplPack = setMerchCatgReplPack(merchCatgReplPacks, merchCatgReplPackId);
-
-        Set<SubCatgReplPack> subCatgReplPacks = Optional.ofNullable(merchCatgReplPack.getSubReplPack()).orElse(new HashSet<>());
-        SubCatgReplPackId subCatgReplPackId = new SubCatgReplPackId(merchCatgReplPackId, calculateBuyQtyParallelRequest.getLvl4Nbr());
-        log.info("Replenishment: Check if sub catg pack Id is existing: {}", subCatgReplPackId);
-        SubCatgReplPack subCatgReplPack = setSubCatgReplPack(subCatgReplPacks, subCatgReplPackId);
-
-        Set<FinelineReplPack> finelineReplPacks = Optional.ofNullable(subCatgReplPack.getFinelineReplPack()).orElse(new HashSet<>());
-        FinelineReplPackId finelineReplPackId = new FinelineReplPackId(subCatgReplPackId, calculateBuyQtyParallelRequest.getFinelineNbr());
-        log.info("Replenishment: Check if fineline pack Id is existing: {}", finelineReplPackId);
-        FinelineReplPack finelineReplPack = setFinelineReplenishment(finelineReplPacks, finelineReplPackId);
-
-        Set<StyleReplPack> styleReplPacks = Optional.ofNullable(finelineReplPack.getStyleReplPack()).orElse(new HashSet<>());
-        StyleReplPackId styleReplPackId = new StyleReplPackId(finelineReplPack.getFinelineReplPackId(), styleDto.getStyleNbr());
-        log.info("Replenishment: Check if Style Repln pack Id is existing: {}", styleReplPackId);
-        StyleReplPack styleReplPack = setStyleReplPack(styleReplPacks, styleReplPackId);
-
-        Set<CcReplPack> ccReplPacks = Optional.ofNullable(styleReplPack.getCcReplPack()).orElse(new HashSet<>());
-        CcReplPackId ccReplPackId = new CcReplPackId(styleReplPack.getStyleReplPackId(), customerChoiceDto.getCcId());
-        log.info("Replenishment: Check if Cc Repln pack Id is existing: {}", ccReplPackId);
-        CcReplPack ccReplPack = setCcReplPack(ccReplPacks, ccReplPackId);
-
-        Set<CcMmReplPack> ccMmReplPacks = Optional.ofNullable(ccReplPack.getCcMmReplPack()).orElse(new HashSet<>());
-        CcMmReplPackId ccMmReplPackId = new CcMmReplPackId(ccReplPack.getCcReplPackId(), merchMethodsDto.getMerchMethodCode());
-        log.info("Replenishment: Check if Cc MM Repln pack Id is existing: {}", ccMmReplPackId);
-        CcMmReplPack ccMmReplPack = setCcMmReplnPack(ccMmReplPacks, ccMmReplPackId);
-
-        ccSpMmReplPacks.forEach(ccSpMmReplPack -> setReplenishmentSizeEntity(ccMmReplPack, ccSpMmReplPack));
-
-        log.info("Calculating CC MM Repln Qty");
-        //Repln Units
-        ccMmReplPack.setReplUnits(ccMmReplPack.getCcSpMmReplPack()
-                .stream()
-                .filter(Objects::nonNull)
-                .mapToInt(ccSpMmReplPack -> Optional.ofNullable(ccSpMmReplPack.getReplUnits()).orElse(0))
-                .sum()
-        );
-        //Total Buy Units
-        ccMmReplPack.setFinalBuyUnits(ccMmReplPack.getCcSpMmReplPack()
-                .stream()
-                .filter(Objects::nonNull)
-                .mapToInt(ccSpMmReplPack -> Optional.ofNullable(ccSpMmReplPack.getFinalBuyUnits()).orElse(0))
-                .sum()
-        );
-        ccMmReplPacks.add(ccMmReplPack);
-
-        //CC
-        ccReplPack.setCcMmReplPack(ccMmReplPacks);
-        log.info("Calculating CC Repln Qty");
-        ccReplPack.setReplUnits(ccMmReplPacks.stream()
-                .filter(Objects::nonNull)
-                .mapToInt(ccMmReplPack1 -> Optional.ofNullable(ccMmReplPack1.getReplUnits()).orElse(0))
-                .sum());
-        ccReplPack.setFinalBuyUnits(ccMmReplPacks.stream()
-                .filter(Objects::nonNull)
-                .mapToInt(ccMmReplPack1 -> Optional.ofNullable(ccMmReplPack1.getFinalBuyUnits()).orElse(0))
-                .sum());
-        ccReplPacks.add(ccReplPack);
-
-        //Style
-        styleReplPack.setCcReplPack(ccReplPacks);
-        log.info("Calculating Style Repln Qty");
-        styleReplPack.setReplUnits(ccReplPacks.stream()
-                .filter(Objects::nonNull)
-                .mapToInt(ccReplPack1 -> Optional.ofNullable(ccReplPack1.getReplUnits()).orElse(0))
-                .sum()
-        );
-        styleReplPack.setFinalBuyUnits(ccReplPacks.stream()
-                .filter(Objects::nonNull)
-                .mapToInt(ccReplPack1 -> Optional.ofNullable(ccReplPack1.getFinalBuyUnits()).orElse(0))
-                .sum()
-        );
-        styleReplPacks.add(styleReplPack);
-
-        //Fineline
-        finelineReplPack.setStyleReplPack(styleReplPacks);
-        log.info("Calculating fineline Repln Qty");
-        finelineReplPack.setReplUnits(styleReplPacks.stream()
-                .filter(Objects::nonNull)
-                .mapToInt(styleReplPack1 -> Optional.ofNullable(styleReplPack1.getReplUnits()).orElse(0))
-                .sum()
-        );
-        finelineReplPack.setFinalBuyUnits(styleReplPacks.stream()
-                .filter(Objects::nonNull)
-                .mapToInt(styleReplPack1 -> Optional.ofNullable(styleReplPack1.getFinalBuyUnits()).orElse(0))
-                .sum()
-        );
-        finelineReplPacks.add(finelineReplPack);
-
-        //Sub catg
-        subCatgReplPack.setFinelineReplPack(finelineReplPacks);
-        log.info("Calculating Sub Catg Repln Qty");
-        subCatgReplPack.setReplUnits(finelineReplPacks.stream()
-                .filter(Objects::nonNull)
-                .mapToInt(finelineReplPack1 -> Optional.ofNullable(finelineReplPack1.getReplUnits()).orElse(0))
-                .sum()
-        );
-        subCatgReplPack.setFinalBuyUnits(finelineReplPacks.stream()
-                .filter(Objects::nonNull)
-                .mapToInt(finelineReplPack1 -> Optional.ofNullable(finelineReplPack1.getFinalBuyUnits()).orElse(0))
-                .sum()
-        );
-        subCatgReplPacks.add(subCatgReplPack);
-
-        //Catg
-        merchCatgReplPack.setSubReplPack(subCatgReplPacks);
-        log.info("Calculating Catg Repln Qty");
-        merchCatgReplPack.setReplUnits(subCatgReplPacks.stream()
-                .filter(Objects::nonNull)
-                .mapToInt(subCatgReplPack1 -> Optional.ofNullable(subCatgReplPack1.getReplUnits()).orElse(0))
-                .sum()
-        );
-        merchCatgReplPack.setFinalBuyUnits(subCatgReplPacks.stream()
-                .filter(Objects::nonNull)
-                .mapToInt(subCatgReplPack1 -> Optional.ofNullable(subCatgReplPack1.getFinalBuyUnits()).orElse(0))
-                .sum()
-        );
-        merchCatgReplPacks.add(merchCatgReplPack);
-
-        calculateBuyQtyResponse.setMerchCatgReplPacks(merchCatgReplPacks);
-    }
-
-    private void setReplenishmentSizeEntity(CcMmReplPack ccMmReplPack, CcSpMmReplPack ccSpMmReplPack) {
-        Set<CcSpMmReplPack> ccSpMmReplPacks = Optional.ofNullable(ccMmReplPack.getCcSpMmReplPack()).orElse(new HashSet<>());
-
-        ccSpMmReplPack.getCcSpReplPackId().setCcMmReplPackId(ccMmReplPack.getCcMmReplPackId());
-        ccSpMmReplPacks.add(ccSpMmReplPack);
-        ccMmReplPack.setCcSpMmReplPack(ccSpMmReplPacks);
-    }
-
-    private void setReplenishmentSizes(ClustersDto clustersDto, List<Replenishment> replenishments, Map<SizeDto, BuyQtyObj> storeBuyQtyBySizeId) {
-        clustersDto.getSizes().forEach(sizeDto -> {
-
-            BuyQtyObj buyQtyObj;
-
-            if (storeBuyQtyBySizeId.containsKey(sizeDto)) {
-                buyQtyObj = storeBuyQtyBySizeId.get(sizeDto);
-            } else {
-                storeBuyQtyBySizeId.put(sizeDto, new BuyQtyObj());
-                buyQtyObj = storeBuyQtyBySizeId.get(sizeDto);
-            }
-
-            List<Replenishment> replObj = new ArrayList<>();
-
-            replenishments.forEach(replenishment -> {
-                Replenishment replenishment1 = new Replenishment();
-                replenishment1.setReplnUnits((long) (replenishment.getReplnUnits() * getAvgSizePct(sizeDto)));
-                replObj.add(replenishment1);
-            });
-            buyQtyObj.setReplenishments(replObj);
-        });
-    }
-
-    private List<Replenishment> getReplenishments(MerchMethodsDto merchMethodsDto, BQFPResponse bqfpResponse, StyleDto styleDto, CustomerChoiceDto customerChoiceDto) {
-        return Optional.ofNullable(bqfpResponse.getStyles())
-                .stream()
-                .flatMap(Collection::stream)
-                .filter(style -> style.getStyleId().equalsIgnoreCase(styleDto.getStyleNbr()))
-                .findFirst()
-                .map(Style::getCustomerChoices)
-                .stream()
-                .flatMap(Collection::stream)
-                .filter(customerChoice -> customerChoice.getCcId().equalsIgnoreCase(customerChoiceDto.getCcId()))
-                .findFirst()
-                .map(CustomerChoice::getFixtures)
-                .stream()
-                .flatMap(Collection::stream)
-                .filter(fixture -> fixture.getFixtureTypeRollupId().equals(merchMethodsDto.getFixtureTypeRollupId()))
-                .findFirst()
-                .map(Fixture::getReplenishments)
-                .orElse(new ArrayList<>());
+        setCcChanFixtures(spCustomerChoiceChannelFixture, spCustomerChoiceChannelFixtureSizes);
     }
 
     private void getClusterSizes(StyleDto styleDto, CustomerChoiceDto customerChoiceDto, ClustersDto clustersDto, MerchMethodsDto merchMethodsDto,
@@ -557,7 +221,7 @@ public class CalculateFinelineBuyQuantity {
                     int perReplenishmentReduced = (int) (totalReducedReplenishment / replenishmentSize);
                     int perReplenishmentReducedRemainder = (int) (totalReducedReplenishment % replenishmentSize);
 
-                    buyQtyObj.getReplenishments().forEach(replenishment -> replenishment.setReplnUnits((long) (replenishment.getReplnUnits() - perReplenishmentReduced)));
+                    buyQtyObj.getReplenishments().forEach(replenishment -> replenishment.setReplnUnits(replenishment.getReplnUnits() - perReplenishmentReduced));
                     buyQtyObj.getReplenishments().get(0).setReplnUnits(buyQtyObj.getReplenishments().get(0).getReplnUnits() - perReplenishmentReducedRemainder);
 
                     perStoreQty = initialSetThreshold;
@@ -576,6 +240,74 @@ public class CalculateFinelineBuyQuantity {
             });
             buyQtyStoreObj.setBuyQuantities(initialSetQuantities);
         });
+    }
+
+    private void setSizeChanFixtureBuyQty(MerchMethodsDto merchMethodsDto, SpCustomerChoiceChannelFixture spCustomerChoiceChannelFixture,
+                                          List<Replenishment> replenishments, Set<SpCustomerChoiceChannelFixtureSize> spCustomerChoiceChannelFixtureSizes,
+                                          Set<CcSpMmReplPack> ccSpMmReplPacks, Map.Entry<SizeDto, BuyQtyObj> entry) {
+        final Integer ZERO = 0;
+        SpCustomerChoiceChannelFixtureSizeId spCustomerChoiceChannelFixtureSizeId = new SpCustomerChoiceChannelFixtureSizeId(spCustomerChoiceChannelFixture.getSpCustomerChoiceChannelFixtureId(), entry.getKey().getAhsSizeId());
+        SpCustomerChoiceChannelFixtureSize spCustomerChoiceChannelFixtureSize = Optional.of(spCustomerChoiceChannelFixtureSizes)
+                .stream()
+                .flatMap(Collection::stream)
+                .filter(spCustomerChoiceChannelFixtureSize1 -> spCustomerChoiceChannelFixtureSize1.getSpCustomerChoiceChannelFixtureSizeId().equals(spCustomerChoiceChannelFixtureSizeId))
+                .findFirst()
+                .orElse(new SpCustomerChoiceChannelFixtureSize());
+        if (spCustomerChoiceChannelFixtureSize.getSpCustomerChoiceChannelFixtureSizeId() == null) {
+            spCustomerChoiceChannelFixtureSize.setSpCustomerChoiceChannelFixtureSizeId(spCustomerChoiceChannelFixtureSizeId);
+        }
+
+        int isBuyQty = entry.getValue().getBuyQtyStoreObj().getBuyQuantities()
+                .stream()
+                .filter(Objects::nonNull)
+                .mapToInt(storeQuantity -> Optional.ofNullable(storeQuantity.getTotalUnits()).orElse(ZERO))
+                .sum();
+
+        int bsBuyQty = entry.getValue().getBuyQtyStoreObj().getBuyQuantities()
+                .stream()
+                .map(StoreQuantity::getBumpSets)
+                .flatMap(Collection::stream)
+                .filter(Objects::nonNull)
+                .mapToInt(bumpSetQuantity -> Optional.ofNullable(bumpSetQuantity.getTotalUnits()).orElse(ZERO))
+                .sum();
+
+        //TODO: move threshold to CCM
+        double replenishmentThreshold = 500.0;
+        long totalReplenishment = 0L;
+        if ((!CollectionUtils.isEmpty(entry.getValue().getReplenishments()))) {
+            totalReplenishment = entry.getValue().getReplenishments()
+                    .stream()
+                    .filter(Objects::nonNull)
+                    .mapToLong(replenishment -> Optional.ofNullable(replenishment.getReplnUnits()).orElse(0L))
+                    .sum();
+            if (totalReplenishment < replenishmentThreshold) {
+                isBuyQty = (int) (isBuyQty + totalReplenishment);
+                totalReplenishment = 0L;
+                //TODO: Adjust IS BS Store Obj
+            }
+        }
+
+        int totalBuyQty = isBuyQty + bsBuyQty + (int) totalReplenishment;
+        spCustomerChoiceChannelFixtureSize.setInitialSetQty(isBuyQty);
+        spCustomerChoiceChannelFixtureSize.setBumpPackQty(bsBuyQty);
+        spCustomerChoiceChannelFixtureSize.setMerchMethodCode(merchMethodsDto.getMerchMethodCode());
+        spCustomerChoiceChannelFixtureSize.setAhsSizeDesc(entry.getKey().getSizeDesc());
+        spCustomerChoiceChannelFixtureSize.setReplnQty((int) totalReplenishment);
+        spCustomerChoiceChannelFixtureSize.setBuyQty(totalBuyQty);
+
+        try {
+            log.info("Store Obj: {}", objectMapper.writeValueAsString(entry.getValue()));
+            spCustomerChoiceChannelFixtureSize.setStoreObj(objectMapper.writeValueAsString(entry.getValue()));
+        } catch (Exception e) {
+            log.error("Error parsing Json: ", e);
+            throw new CustomException("Error parsing Json: " + e);
+        }
+        spCustomerChoiceChannelFixtureSizes.add(spCustomerChoiceChannelFixtureSize);
+
+        //Replenishment
+        if (!CollectionUtils.isEmpty(replenishments) && totalReplenishment > 0) {
+            setCcMmSpReplenishment(ccSpMmReplPacks, entry, (int) totalReplenishment, totalBuyQty);
+        }
     }
 
     private Double getSizePct(SizeDto sizeDto) {
@@ -610,6 +342,16 @@ public class CalculateFinelineBuyQuantity {
         return bumpPackQuantities;
     }
 
+    private BuyQtyResponse getSizeProfiles(CalculateBuyQtyRequest calculateBuyQtyRequest, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest) throws SizeAndPackException {
+        BuyQtyRequest buyQtyRequest = new BuyQtyRequest();
+        buyQtyRequest.setPlanId(calculateBuyQtyRequest.getPlanId());
+        buyQtyRequest.setChannel(calculateBuyQtyRequest.getChannel());
+        buyQtyRequest.setLvl3Nbr(calculateBuyQtyParallelRequest.getLvl3Nbr());
+        buyQtyRequest.setLvl4Nbr(calculateBuyQtyParallelRequest.getLvl4Nbr());
+        buyQtyRequest.setFinelineNbr(calculateBuyQtyParallelRequest.getFinelineNbr());
+        return sizeAndPackService.getAllCcSizeProfiles(buyQtyRequest);
+    }
+
     private APResponse getRfaSpResponse(CalculateBuyQtyRequest calculateBuyQtyRequest, Integer finelineNbr, BQFPResponse bqfpResponse) {
         APRequest apRequest = new APRequest();
         apRequest.setPlanId(calculateBuyQtyRequest.getPlanId());
@@ -641,8 +383,23 @@ public class CalculateFinelineBuyQuantity {
                 .collect(Collectors.toList());
     }
 
-    private Cluster getVolumeCluster(BQFPResponse bqfpResponse, String styleNbr, String ccId, Integer fixtureTypeRollupId, Integer volumeClusterId) {
+    private FinelineDto getFineline(BuyQtyResponse buyQtyResponse) {
+        return Optional.ofNullable(buyQtyResponse.getLvl3List())
+                .stream()
+                .flatMap(Collection::stream)
+                .findFirst()
+                .map(Lvl3Dto::getLvl4List)
+                .stream()
+                .flatMap(Collection::stream)
+                .findFirst()
+                .map(Lvl4Dto::getFinelines)
+                .stream()
+                .flatMap(Collection::stream)
+                .findFirst()
+                .orElse(null);
+    }
 
+    private Cluster getVolumeCluster(BQFPResponse bqfpResponse, String styleNbr, String ccId, Integer fixtureTypeRollupId, Integer volumeClusterId) {
         return Optional.ofNullable(bqfpResponse.getStyles())
                 .stream()
                 .flatMap(Collection::stream)
@@ -679,85 +436,131 @@ public class CalculateFinelineBuyQuantity {
         }
     }
 
-    private CcMmReplPack setCcMmReplnPack(Set<CcMmReplPack> ccMmReplPacks, CcMmReplPackId ccMmReplPackId) {
-        CcMmReplPack ccMmReplPack = Optional.of(ccMmReplPacks)
-                .stream()
-                .flatMap(Collection::stream)
-                .filter(ccMmReplPack1 -> ccMmReplPack1.getCcMmReplPackId().equals(ccMmReplPackId))
-                .findFirst()
-                .orElse(new CcMmReplPack());
-        if (ccMmReplPack.getCcMmReplPackId() == null) {
-            ccMmReplPack.setCcMmReplPackId(ccMmReplPackId);
-        }
-        return ccMmReplPack;
+    private void setFinelineChanFixtures(SpFineLineChannelFixture spFineLineChannelFixture, Set<SpStyleChannelFixture> spStyleChannelFixtures) {
+        spFineLineChannelFixture.setInitialSetQty(spStyleChannelFixtures.stream()
+                .filter(Objects::nonNull)
+                .mapToInt(spStyleChannelFixture -> Optional.ofNullable(spStyleChannelFixture.getInitialSetQty()).orElse(0))
+                .sum()
+        );
+        spFineLineChannelFixture.setBumpPackQty(spStyleChannelFixtures.stream()
+                .filter(Objects::nonNull)
+                .mapToInt(spStyleChannelFixture -> Optional.ofNullable(spStyleChannelFixture.getBumpPackQty()).orElse(0))
+                .sum()
+        );
+        spFineLineChannelFixture.setBuyQty(spStyleChannelFixtures.stream()
+                .filter(Objects::nonNull)
+                .mapToInt(spStyleChannelFixture -> Optional.ofNullable(spStyleChannelFixture.getBuyQty()).orElse(0))
+                .sum()
+        );
+        spFineLineChannelFixture.setReplnQty(spStyleChannelFixtures.stream()
+                .filter(Objects::nonNull)
+                .mapToInt(spStyleChannelFixture -> Optional.ofNullable(spStyleChannelFixture.getReplnQty()).orElse(0))
+                .sum()
+        );
     }
 
-    private CcReplPack setCcReplPack(Set<CcReplPack> ccReplPacks, CcReplPackId ccReplPackId) {
-        CcReplPack ccReplPack = Optional.of(ccReplPacks)
-                .stream()
-                .flatMap(Collection::stream)
-                .filter(ccReplPack1 -> ccReplPack1.getCcReplPackId().equals(ccReplPackId))
-                .findFirst()
-                .orElse(new CcReplPack());
-
-        if (ccReplPack.getCcReplPackId() == null) {
-            ccReplPack.setCcReplPackId(ccReplPackId);
-        }
-        return ccReplPack;
+    private void setStyleChanFixtures(SpStyleChannelFixture spStyleChannelFixture, Set<SpCustomerChoiceChannelFixture> spCustomerChoiceChannelFixtures) {
+        spStyleChannelFixture.setInitialSetQty(spCustomerChoiceChannelFixtures.stream()
+                .filter(Objects::nonNull)
+                .mapToInt(spCustomerChoiceChannelFixture -> Optional.ofNullable(spCustomerChoiceChannelFixture.getInitialSetQty()).orElse(0))
+                .sum()
+        );
+        spStyleChannelFixture.setBumpPackQty(spCustomerChoiceChannelFixtures.stream()
+                .filter(Objects::nonNull)
+                .mapToInt(spCustomerChoiceChannelFixture -> Optional.ofNullable(spCustomerChoiceChannelFixture.getBumpPackQty()).orElse(0))
+                .sum()
+        );
+        spStyleChannelFixture.setBuyQty(spCustomerChoiceChannelFixtures.stream()
+                .filter(Objects::nonNull)
+                .mapToInt(spCustomerChoiceChannelFixture -> Optional.ofNullable(spCustomerChoiceChannelFixture.getBuyQty()).orElse(0))
+                .sum()
+        );
+        spStyleChannelFixture.setReplnQty(spCustomerChoiceChannelFixtures.stream()
+                .filter(Objects::nonNull)
+                .mapToInt(spCustomerChoiceChannelFixture -> Optional.ofNullable(spCustomerChoiceChannelFixture.getReplnQty()).orElse(0))
+                .sum()
+        );
     }
 
-    private StyleReplPack setStyleReplPack(Set<StyleReplPack> styleReplPacks, StyleReplPackId styleReplPackId) {
-        StyleReplPack styleReplPack = Optional.of(styleReplPacks)
-                .stream()
-                .flatMap(Collection::stream)
-                .filter(styleReplPack1 -> styleReplPack1.getStyleReplPackId().equals(styleReplPackId))
-                .findFirst()
-                .orElse(new StyleReplPack());
-
-        if (styleReplPack.getStyleReplPackId() == null) {
-            styleReplPack.setStyleReplPackId(styleReplPackId);
-        }
-        return styleReplPack;
+    private void setCcChanFixtures(SpCustomerChoiceChannelFixture spCustomerChoiceChannelFixture, Set<SpCustomerChoiceChannelFixtureSize> spCustomerChoiceChannelFixtureSizes) {
+        spCustomerChoiceChannelFixture.setInitialSetQty(spCustomerChoiceChannelFixtureSizes.stream()
+                .filter(Objects::nonNull)
+                .mapToInt(spCustomerChoiceChannelFixtureSize -> Optional.ofNullable(spCustomerChoiceChannelFixtureSize.getInitialSetQty()).orElse(0))
+                .sum()
+        );
+        spCustomerChoiceChannelFixture.setBumpPackQty(spCustomerChoiceChannelFixtureSizes.stream()
+                .filter(Objects::nonNull)
+                .mapToInt(spCustomerChoiceChannelFixtureSize -> Optional.ofNullable(spCustomerChoiceChannelFixtureSize.getBumpPackQty()).orElse(0))
+                .sum()
+        );
+        spCustomerChoiceChannelFixture.setBuyQty(spCustomerChoiceChannelFixtureSizes.stream()
+                .filter(Objects::nonNull)
+                .mapToInt(spCustomerChoiceChannelFixtureSize -> Optional.ofNullable(spCustomerChoiceChannelFixtureSize.getBuyQty()).orElse(0))
+                .sum()
+        );
+        spCustomerChoiceChannelFixture.setReplnQty(spCustomerChoiceChannelFixtureSizes.stream()
+                .filter(Objects::nonNull)
+                .mapToInt(spCustomerChoiceChannelFixtureSize -> Optional.ofNullable(spCustomerChoiceChannelFixtureSize.getReplnQty()).orElse(0))
+                .sum()
+        );
     }
 
-    private MerchCatgReplPack setMerchCatgReplPack(List<MerchCatgReplPack> merchCatgReplPacks, MerchCatgReplPackId merchCatgReplPackId) {
-        MerchCatgReplPack merchCatgReplPack = Optional.of(merchCatgReplPacks)
-                .stream()
-                .flatMap(Collection::stream)
-                .filter(merchCatgReplPack1 -> merchCatgReplPack1.getMerchCatgReplPackId().equals(merchCatgReplPackId))
-                .findFirst()
-                .orElse(new MerchCatgReplPack());
-        if (merchCatgReplPack.getMerchCatgReplPackId() == null) {
-            merchCatgReplPack.setMerchCatgReplPackId(merchCatgReplPackId);
+    private void setCcMmSpReplenishment(Set<CcSpMmReplPack> ccSpMmReplPacks, Map.Entry<SizeDto, BuyQtyObj> entry, int totalReplenishment, int totalBuyQty) {
+        CcSpMmReplPackId ccSpMmReplPackId = new CcSpMmReplPackId();
+        ccSpMmReplPackId.setAhsSizeId(entry.getKey().getAhsSizeId());
+
+        CcSpMmReplPack ccSpMmReplPack = new CcSpMmReplPack();
+
+        ccSpMmReplPack.setFinalBuyUnits(totalBuyQty);
+        ccSpMmReplPack.setReplUnits(totalReplenishment);
+        try {
+            ccSpMmReplPack.setReplenObj(objectMapper.writeValueAsString(entry.getValue().getReplenishments()));
+        } catch (Exception e) {
+            log.error("Failed to create replenishment Obj for size: {}", entry.getKey(), e);
+            throw new CustomException("Failed to create replenishment Obj for size " + e);
         }
-        return merchCatgReplPack;
+
+        ccSpMmReplPacks.add(ccSpMmReplPack);
     }
 
-    private SubCatgReplPack setSubCatgReplPack(Set<SubCatgReplPack> subCatgReplPacks, SubCatgReplPackId subCatgReplPackId) {
-        SubCatgReplPack subCatgReplPack = Optional.of(subCatgReplPacks)
-                .stream()
-                .flatMap(Collection::stream)
-                .filter(subCatgReplPack1 -> subCatgReplPack1.getSubCatgReplPackId().equals(subCatgReplPackId))
-                .findFirst()
-                .orElse(new SubCatgReplPack());
+    private void setReplenishmentSizes(ClustersDto clustersDto, List<Replenishment> replenishments, Map<SizeDto, BuyQtyObj> storeBuyQtyBySizeId) {
+        clustersDto.getSizes().forEach(sizeDto -> {
+            BuyQtyObj buyQtyObj;
+            if (storeBuyQtyBySizeId.containsKey(sizeDto)) {
+                buyQtyObj = storeBuyQtyBySizeId.get(sizeDto);
+            } else {
+                storeBuyQtyBySizeId.put(sizeDto, new BuyQtyObj());
+                buyQtyObj = storeBuyQtyBySizeId.get(sizeDto);
+            }
 
-        if (subCatgReplPack.getSubCatgReplPackId() == null) {
-            subCatgReplPack.setSubCatgReplPackId(subCatgReplPackId);
-        }
-        return subCatgReplPack;
+            List<Replenishment> replObj = new ArrayList<>();
+
+            replenishments.forEach(replenishment -> {
+                Replenishment replenishment1 = new Replenishment();
+                replenishment1.setReplnUnits((long) (replenishment.getReplnUnits() * getAvgSizePct(sizeDto))/100);
+                replObj.add(replenishment1);
+            });
+            buyQtyObj.setReplenishments(replObj);
+        });
     }
 
-    private FinelineReplPack setFinelineReplenishment(Set<FinelineReplPack> finelineReplPacks, FinelineReplPackId finelineReplPackId) {
-        FinelineReplPack finelineReplPack = Optional.of(finelineReplPacks)
+    private List<Replenishment> getReplenishments(MerchMethodsDto merchMethodsDto, BQFPResponse bqfpResponse, StyleDto styleDto, CustomerChoiceDto customerChoiceDto) {
+        return Optional.ofNullable(bqfpResponse.getStyles())
                 .stream()
                 .flatMap(Collection::stream)
-                .filter(finelineReplPack1 -> finelineReplPack1.getFinelineReplPackId().equals(finelineReplPackId))
+                .filter(style -> style.getStyleId().equalsIgnoreCase(styleDto.getStyleNbr()))
                 .findFirst()
-                .orElse(new FinelineReplPack());
-
-        if (finelineReplPack.getFinelineReplPackId() == null) {
-            finelineReplPack.setFinelineReplPackId(finelineReplPackId);
-        }
-        return finelineReplPack;
+                .map(Style::getCustomerChoices)
+                .stream()
+                .flatMap(Collection::stream)
+                .filter(customerChoice -> customerChoice.getCcId().equalsIgnoreCase(customerChoiceDto.getCcId()))
+                .findFirst()
+                .map(CustomerChoice::getFixtures)
+                .stream()
+                .flatMap(Collection::stream)
+                .filter(fixture -> fixture.getFixtureTypeRollupId().equals(merchMethodsDto.getFixtureTypeRollupId()))
+                .findFirst()
+                .map(Fixture::getReplenishments)
+                .orElse(new ArrayList<>());
     }
 }

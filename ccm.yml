@@ -176,6 +176,21 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "http://aex-size-and-pack.aex.dev.walmart.net"
+  buyQtyConfig:
+    description: "Buy Quantity Constants Config"
+    resolutionPaths:
+      - default: "/envProfile/envName"
+    properties:
+      "initialSet.constraint":
+        description: "Initial set threshold"
+          type: "INTEGER"
+          kind: "SINGLE"
+          defaultValue: 2
+      "replenishment.constraint":
+        description: "Replenishment threshold"
+          type: "INTEGER"
+          kind: "SINGLE"
+          defaultValue: 500
 
 configOverrides:
   graphQlConfig:
