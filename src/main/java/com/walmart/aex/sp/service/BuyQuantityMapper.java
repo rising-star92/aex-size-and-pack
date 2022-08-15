@@ -80,10 +80,29 @@ public class BuyQuantityMapper {
 
     private void updateFineline(BuyQntyResponseDTO buyQntyResponseDTO, FinelineDto finelineDto) {
         MetricsDto metricsDto = finelineDto.getMetrics();
-        metricsDto.setBuyQty(buyQntyResponseDTO.getBuyQty() + metricsDto.getBuyQty());
-        metricsDto.setFinalInitialSetQty(buyQntyResponseDTO.getInitialSetQty() + metricsDto.getFinalInitialSetQty());
-        metricsDto.setFinalReplenishmentQty(buyQntyResponseDTO.getReplnQty() + metricsDto.getFinalReplenishmentQty());
-        metricsDto.setFinalBuyQty(buyQntyResponseDTO.getBuyQty() + metricsDto.getBuyQty());
+
+        int buyQty =  buyQntyResponseDTO.getBuyQty() != null
+                ? Optional.ofNullable(buyQntyResponseDTO.getBuyQty())
+                .orElse(0)
+                : 0;
+
+        metricsDto.setBuyQty(buyQty + metricsDto.getBuyQty());
+
+        int isQty =  buyQntyResponseDTO.getBuyQty() != null
+                ? Optional.ofNullable(buyQntyResponseDTO.getInitialSetQty())
+                .orElse(0)
+                : 0;
+
+        metricsDto.setFinalInitialSetQty(isQty + metricsDto.getFinalInitialSetQty());
+
+        int rplnQty =  buyQntyResponseDTO.getBuyQty() != null
+                ? Optional.ofNullable(buyQntyResponseDTO.getReplnQty())
+                .orElse(0)
+                : 0;
+
+        metricsDto.setFinalReplenishmentQty(rplnQty + metricsDto.getFinalReplenishmentQty());
+        metricsDto.setFinalBuyQty(buyQty + metricsDto.getBuyQty());
+
         finelineDto.setMetrics(metricsDto);
     }
 
@@ -177,10 +196,28 @@ public class BuyQuantityMapper {
 
     private void updateCc(BuyQntyResponseDTO buyQntyResponseDTO, CustomerChoiceDto customerChoiceDto) {
         MetricsDto metricsDto = customerChoiceDto.getMetrics();
-        metricsDto.setBuyQty(buyQntyResponseDTO.getBuyQty() + metricsDto.getBuyQty());
-        metricsDto.setFinalInitialSetQty(buyQntyResponseDTO.getInitialSetQty() + metricsDto.getFinalInitialSetQty());
-        metricsDto.setFinalReplenishmentQty(buyQntyResponseDTO.getReplnQty() + metricsDto.getFinalReplenishmentQty());
-        metricsDto.setFinalBuyQty(buyQntyResponseDTO.getBuyQty() + metricsDto.getBuyQty());
+
+        int buyQty =  buyQntyResponseDTO.getBuyQty() != null
+                ? Optional.ofNullable(buyQntyResponseDTO.getBuyQty())
+                .orElse(0)
+                : 0;
+
+        metricsDto.setBuyQty(buyQty + metricsDto.getBuyQty());
+
+        int isQty =  buyQntyResponseDTO.getBuyQty() != null
+                ? Optional.ofNullable(buyQntyResponseDTO.getInitialSetQty())
+                .orElse(0)
+                : 0;
+
+        metricsDto.setFinalInitialSetQty(isQty + metricsDto.getFinalInitialSetQty());
+
+        int rplnQty =  buyQntyResponseDTO.getBuyQty() != null
+                ? Optional.ofNullable(buyQntyResponseDTO.getReplnQty())
+                .orElse(0)
+                : 0;
+
+        metricsDto.setFinalReplenishmentQty(rplnQty + metricsDto.getFinalReplenishmentQty());
+        metricsDto.setFinalBuyQty(buyQty + metricsDto.getBuyQty());
         customerChoiceDto.setMetrics(metricsDto);
     }
 
