@@ -1,5 +1,9 @@
 package com.walmart.aex.sp.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.walmart.aex.sp.dto.bqfp.Replenishment;
 import com.walmart.aex.sp.dto.mapper.FineLineMapperDto;
 import com.walmart.aex.sp.dto.packoptimization.*;
 import com.walmart.aex.sp.dto.packoptimization.isbpqty.ISAndBPQtyDTO;
@@ -18,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -40,7 +45,8 @@ public class PostPackOptimizationService {
 
     private final CcSpReplnPkConsRepository ccSpReplnPkConsRepository;
 
-    Function<Object, String> ifNullThenEmpty = o -> Objects.nonNull(o) ? o.toString() : "";
+    private final ObjectMapper objectMapper;
+
 
     public PostPackOptimizationService(MerchCatgReplPackRepository merchCatgReplPackRepository,
                                        FinelineReplnPkConsRepository finelineReplnPkConsRepository,
@@ -48,7 +54,8 @@ public class PostPackOptimizationService {
                                        StyleReplnPkConsRepository styleReplnPkConsRepository,
                                        CcReplnPkConsRepository ccReplnPkConsRepository,
                                        CcMmReplnPkConsRepository ccMmReplnPkConsRepository,
-                                       CcSpReplnPkConsRepository ccSpReplnPkConsRepository) {
+                                       CcSpReplnPkConsRepository ccSpReplnPkConsRepository,
+                                       ObjectMapper objectMapper) {
         this.merchCatgReplPackRepository = merchCatgReplPackRepository;
         this.finelineReplnPkConsRepository = finelineReplnPkConsRepository;
         this.subCatgReplnPkConsRepository = subCatgReplnPkConsRepository;
@@ -56,6 +63,7 @@ public class PostPackOptimizationService {
         this.ccReplnPkConsRepository = ccReplnPkConsRepository;
         this.ccMmReplnPkConsRepository = ccMmReplnPkConsRepository;
         this.ccSpReplnPkConsRepository = ccSpReplnPkConsRepository;
+        this.objectMapper = objectMapper;
     }
 
 
@@ -79,6 +87,19 @@ public class PostPackOptimizationService {
             ccSpReplnPkConsRepository.findCcSpMmReplnPkConsData(planId, finelineNbr, cc.getCcId(), CommonUtil.getMerchMethod(fixtures.getMerchMethod()), CommonUtil.getFixtureRollUpId(fixtures.getFixtureType()), size.getSizeDesc()).ifPresent( ccSpMmReplPack ->{
                 Integer updatedReplenishmentQty = ccSpMmReplPack.getFinalBuyUnits() - size.getOptFinalBuyQty();
                 ccSpMmReplPack.setReplUnits(updatedReplenishmentQty);
+                String replObjJson = ccSpMmReplPack.getReplenObj();
+                if(replObjJson!= null && !replObjJson.isEmpty()){
+                    try {
+                        List<Replenishment> replObj = objectMapper.readValue(replObjJson, new TypeReference<>() {});
+                        Long value = (long) (updatedReplenishmentQty / replObj.size());
+                        List<Replenishment> updateReplObj = replObj.stream()
+                                .peek(replenishment -> replenishment.setReplnUnits(value))
+                                .collect(Collectors.toList());
+                        ccSpMmReplPack.setReplenObj(objectMapper.writeValueAsString(updateReplObj));
+                    } catch (JsonProcessingException e) {
+                       log.error("Could not convert Replenishment Object Json for week disaggregation ",e );
+                    }
+                }
                 ccSpReplnPkConsRepository.save(ccSpMmReplPack);
             } );
         })));
