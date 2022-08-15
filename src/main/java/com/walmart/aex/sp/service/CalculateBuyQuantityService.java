@@ -129,22 +129,4 @@ public class CalculateBuyQuantityService {
 
         } else throw new CustomException("Not All finelines complted successfully");
     }
-
-    private FinelineReplPack getMerchCatgByFineline(CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, MerchCatgReplPack merchCatgReplPack) {
-        return Optional.ofNullable(merchCatgReplPack)
-                .filter(merchCatgReplPack1 -> merchCatgReplPack1.getMerchCatgReplPackId().getRepTLvl3().equals(calculateBuyQtyParallelRequest.getLvl3Nbr()))
-                .stream().findFirst()
-                .map(MerchCatgReplPack::getSubReplPack)
-                .stream()
-                .flatMap(Collection::stream)
-                .filter(subCatgReplPack -> subCatgReplPack.getSubCatgReplPackId().getRepTLvl4().equals(calculateBuyQtyParallelRequest.getLvl4Nbr()))
-                .findFirst()
-                .map(SubCatgReplPack::getFinelineReplPack)
-                .stream()
-                .flatMap(Collection::stream)
-                .filter(finelineReplPack -> finelineReplPack.getFinelineReplPackId().getFinelineNbr().equals(calculateBuyQtyParallelRequest.getFinelineNbr()))
-                .findFirst()
-                .orElse(null);
-
-    }
 }
