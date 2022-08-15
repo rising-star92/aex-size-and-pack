@@ -16,13 +16,13 @@ public class HistoricalMetricsService {
    MidasServiceCall midasServiceCall;
 
    public HistoricalMetricsResponse fetchHistoricalMetricsFineline(HistoricalMetricsRequest request) {
-      return new HistoricalMetricsResponse(new ArrayList<>());
-   }
-
-   public HistoricalMetricsResponse fetchHistoricalMetricsCC(HistoricalMetricsRequest request) {
       request.setLyCompWeekStart(Integer.valueOf(String.valueOf(getLastYear()).concat(WEEK_START)));
       request.setLyCompWeekEnd(Integer.valueOf(String.valueOf(getCurrentYear()).concat(WEEK_START)));
       return midasServiceCall.fetchHistoricalMetrics(request);
+   }
+
+   public HistoricalMetricsResponse fetchHistoricalMetricsCC(HistoricalMetricsRequest request) {
+      return new HistoricalMetricsResponse(new ArrayList<>());
    }
 
    private Integer getLastYear() {
