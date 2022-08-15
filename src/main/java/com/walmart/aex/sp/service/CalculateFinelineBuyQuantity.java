@@ -215,19 +215,30 @@ public class CalculateFinelineBuyQuantity {
 
                 //TODO: move threshold to CCM
                 double initialSetThreshold = 2.0;
+
                 if ((perStoreQty < initialSetThreshold) && (!CollectionUtils.isEmpty(buyQtyObj.getReplenishments()))) {
-                    double unitsLessThanThreshold = initialSetThreshold - perStoreQty;
-                    double totalReducedReplenishment = unitsLessThanThreshold * rfaSizePackData.getStore_cnt();
 
-                    int replenishmentSize = buyQtyObj.getReplenishments().size();
+                    long totalReplenishment = buyQtyObj.getReplenishments()
+                            .stream()
+                            .filter(Objects::nonNull)
+                            .mapToLong(replenishment -> Optional.ofNullable(replenishment.getReplnUnits()).orElse(0L))
+                            .sum();
 
-                    int perReplenishmentReduced = (int) (totalReducedReplenishment / replenishmentSize);
-                    int perReplenishmentReducedRemainder = (int) (totalReducedReplenishment % replenishmentSize);
+                    if (totalReplenishment > 0) {
 
-                    buyQtyObj.getReplenishments().forEach(replenishment -> replenishment.setReplnUnits(replenishment.getReplnUnits() - perReplenishmentReduced));
-                    buyQtyObj.getReplenishments().get(0).setReplnUnits(buyQtyObj.getReplenishments().get(0).getReplnUnits() - perReplenishmentReducedRemainder);
+                        double unitsLessThanThreshold = initialSetThreshold - perStoreQty;
+                        double totalReducedReplenishment = unitsLessThanThreshold * rfaSizePackData.getStore_cnt();
 
-                    perStoreQty = initialSetThreshold;
+                        int replenishmentSize = buyQtyObj.getReplenishments().size();
+
+                        int perReplenishmentReduced = (int) (totalReducedReplenishment / replenishmentSize);
+                        int perReplenishmentReducedRemainder = (int) (totalReducedReplenishment % replenishmentSize);
+
+                        buyQtyObj.getReplenishments().forEach(replenishment -> replenishment.setReplnUnits(replenishment.getReplnUnits() - perReplenishmentReduced));
+                        buyQtyObj.getReplenishments().get(0).setReplnUnits(buyQtyObj.getReplenishments().get(0).getReplnUnits() - perReplenishmentReducedRemainder);
+
+                        perStoreQty = initialSetThreshold;
+                    }
                 }
 
                 storeQuantity.setTotalUnits((int) isQty);
@@ -543,7 +554,7 @@ public class CalculateFinelineBuyQuantity {
 
             replenishments.forEach(replenishment -> {
                 Replenishment replenishment1 = new Replenishment();
-                replenishment1.setReplnUnits((long) (replenishment.getReplnUnits() * getAvgSizePct(sizeDto))/100);
+                replenishment1.setReplnUnits((long) (replenishment.getReplnUnits() * getAvgSizePct(sizeDto)) / 100);
                 replObj.add(replenishment1);
             });
             buyQtyObj.setReplenishments(replObj);
