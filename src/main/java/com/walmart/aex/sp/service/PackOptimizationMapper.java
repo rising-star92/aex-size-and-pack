@@ -29,15 +29,8 @@ public class PackOptimizationMapper {
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 
 
-	public void mapPackOptimizationFineline(FineLinePackOptimizationResponseDTO finelinePackOptimizationResponseDTO, FineLinePackOptimizationResponse response) {
-		if (response.getPlanId() == null) {
-			response.setPlanId(finelinePackOptimizationResponseDTO.getPlanId());
-		}
-
-		if (response.getPlanDesc() == null) {
-			response.setPlanDesc(finelinePackOptimizationResponseDTO.getPlanDesc());
-		}
-
+	public void mapPackOptimizationFineline(FineLinePackOptimizationResponseDTO finelinePackOptimizationResponseDTO, FineLinePackOptimizationResponse response,Long planId ) {
+		response.setPlanId(planId);
 		response.setFinelines(mapReplenishmentFl(finelinePackOptimizationResponseDTO, response));
 	}
 

@@ -1,40 +1,27 @@
 package com.walmart.aex.sp.controller;
 
 
+import com.walmart.aex.sp.dto.packoptimization.isbpqty.ISAndBPQtyDTO;
+import com.walmart.aex.sp.service.PostPackOptimizationService;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import com.walmart.aex.sp.dto.packoptimization.FineLinePackOptimizationResponse;
 import com.walmart.aex.sp.dto.packoptimization.PackOptimizationResponse;
 import com.walmart.aex.sp.service.PackOptimizationService;
-import org.springframework.graphql.data.method.annotation.Argument;
-import org.springframework.graphql.data.method.annotation.QueryMapping;
 import com.walmart.aex.sp.dto.packoptimization.Execution;
 import com.walmart.aex.sp.dto.packoptimization.RunPackOptRequest;
 import com.walmart.aex.sp.dto.packoptimization.RunPackOptResponse;
 
 import com.walmart.aex.sp.dto.packoptimization.*;
 import com.walmart.aex.sp.service.IntegrationHubService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import com.walmart.aex.sp.dto.packoptimization.FineLinePackOptimizationResponse;
-import com.walmart.aex.sp.dto.packoptimization.PackOptimizationResponse;
-import com.walmart.aex.sp.service.PackOptimizationService;
-import com.walmart.aex.sp.dto.packoptimization.PackOptimizationResponse;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RestController;
-import com.walmart.aex.sp.service.PackOptimizationService;
-import org.springframework.graphql.data.method.annotation.Argument;
-import org.springframework.graphql.data.method.annotation.QueryMapping;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import java.math.BigInteger;
@@ -47,12 +34,16 @@ import java.math.BigInteger;
 
 public class PackOptimizationController {
 	private final PackOptimizationService packOptService;
-  private final IntegrationHubService integrationHubService;
 
-	public PackOptimizationController(PackOptimizationService packOptService,IntegrationHubService integrationHubService) {
+	private final PostPackOptimizationService postPackOptimizationService;
+
+	private final IntegrationHubService integrationHubService;
+
+	public PackOptimizationController(PackOptimizationService packOptService,IntegrationHubService integrationHubService,PostPackOptimizationService postPackOptimizationService) {
 
 		this.packOptService = packOptService;
     	this.integrationHubService = integrationHubService;
+		this.postPackOptimizationService = postPackOptimizationService;
 	}
 
 	public static final String SUCCESS_STATUS = "Success";
@@ -101,6 +92,18 @@ public class PackOptimizationController {
 			response.setStatus(FAILURE_STATUS);
 			return response;
 		}
+	}
+
+	@PostMapping(path = "/api/packOptimization/plan/{planId}/fineline/{finelineNbr}")
+	public ResponseEntity<String> postInitialSetAndBumpPackQty(@PathVariable Long planId, @PathVariable Integer finelineNbr, @RequestBody ISAndBPQtyDTO isAndBPQtyDTO) {
+		try{
+			postPackOptimizationService.updateInitialSetAndBumpPackAty(planId,finelineNbr,isAndBPQtyDTO);
+		} catch (Exception e){
+			log.error("Error Occurred while updating values for Initial Set and Bump Pack ", e);
+			return ResponseEntity.internalServerError().build();
+
+		}
+		return ResponseEntity.ok("Success");
 	}
 
 }
