@@ -304,6 +304,7 @@ type Execution {
 
 
 input HistoricalMetricsRequest {
+  planId: Int!
   lvl0Nbr: Int!
   lvl1Nbr: Int!
   lvl2Nbr: Int!

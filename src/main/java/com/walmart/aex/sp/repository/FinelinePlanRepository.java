@@ -3,6 +3,10 @@ package com.walmart.aex.sp.repository;
 import com.walmart.aex.sp.entity.FinelinePlan;
 import com.walmart.aex.sp.entity.FinelinePlanId;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import java.util.Optional;
 
 public interface FinelinePlanRepository extends JpaRepository<FinelinePlan, FinelinePlanId> {
+   Optional<FinelinePlan> findByPlanIdFinelineNbr(Long planId, Integer finelineNbr);
 }
