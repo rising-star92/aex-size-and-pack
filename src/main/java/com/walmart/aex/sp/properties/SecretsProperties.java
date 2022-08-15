@@ -53,4 +53,9 @@ public class SecretsProperties {
                 "/secrets/cbam.sql.password.txt")));
     }
 
+    public String fetchMidasAPIAuthorization() throws IOException {
+        return activeProfile.contains(LOCAL) ? midasAPIAuthorization : new String(Files.readAllBytes(Paths.get("/etc" +
+              "/secrets/midasApi.authorization.txt")));
+    }
+
 }

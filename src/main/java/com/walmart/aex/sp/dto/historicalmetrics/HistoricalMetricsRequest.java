@@ -13,4 +13,6 @@ public class HistoricalMetricsRequest {
    private String styleNbr;
    private String customerChoice;
    private String channel;
+   private Integer lyCompWeekStart;
+   private Integer lyCompWeekEnd;
 }
