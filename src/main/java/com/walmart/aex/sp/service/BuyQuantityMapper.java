@@ -3,11 +3,9 @@ package com.walmart.aex.sp.service;
 import com.walmart.aex.sp.dto.buyquantity.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -74,10 +72,19 @@ public class BuyQuantityMapper {
                 .ifPresentOrElse(finelineDto -> {
                             if (finelineNbr != null) {
                                 finelineDto.setStyles(mapBuyQntyStyleSp(buyQntyResponseDTO, finelineDto, finelineNbr));
-                            }
+                            } else updateFineline(buyQntyResponseDTO, finelineDto);
                         },
                         () -> setFinelineSP(buyQntyResponseDTO, finelineDtoList, finelineNbr));
         return finelineDtoList;
+    }
+
+    private void updateFineline(BuyQntyResponseDTO buyQntyResponseDTO, FinelineDto finelineDto) {
+        MetricsDto metricsDto = finelineDto.getMetrics();
+        metricsDto.setBuyQty(buyQntyResponseDTO.getBuyQty() + metricsDto.getBuyQty());
+        metricsDto.setFinalInitialSetQty(buyQntyResponseDTO.getInitialSetQty() + metricsDto.getFinalInitialSetQty());
+        metricsDto.setFinalReplenishmentQty(buyQntyResponseDTO.getReplnQty() + metricsDto.getFinalReplenishmentQty());
+        metricsDto.setFinalBuyQty(buyQntyResponseDTO.getBuyQty() + metricsDto.getBuyQty());
+        finelineDto.setMetrics(metricsDto);
     }
 
     private void setFinelineSP(BuyQntyResponseDTO buyQntyResponseDTO, List<FinelineDto> finelineDtoList, Integer finelineNbr) {
@@ -126,10 +133,55 @@ public class BuyQuantityMapper {
 
         customerChoiceDtoList.stream()
                 .filter(customerChoiceDto -> buyQntyResponseDTO.getCcId().equals(customerChoiceDto.getCcId())).findFirst()
-                .ifPresentOrElse(customerChoiceDto -> log.info("Size implementation"),
+                .ifPresentOrElse(customerChoiceDto -> {
+                            log.info("Size implementation");
+                            updateCc(buyQntyResponseDTO, customerChoiceDto);
+                        },
                         //customerChoiceDto -> customerChoiceDto.setClusters(mapBuyQntySizeSp(buyQntyResponseDTO, customerChoiceDto)),
                         () -> setCcSP(buyQntyResponseDTO, customerChoiceDtoList));
+
+        if (!CollectionUtils.isEmpty(customerChoiceDtoList)) {
+
+            updateStyle(styleDto, customerChoiceDtoList);
+        }
+
         return customerChoiceDtoList;
+    }
+
+    private void updateStyle(StyleDto styleDto, List<CustomerChoiceDto> customerChoiceDtoList) {
+        MetricsDto metricsDto = Optional.ofNullable(styleDto.getMetrics()).orElse(new MetricsDto());
+
+        metricsDto.setBuyQty(customerChoiceDtoList.stream()
+                .filter(Objects::nonNull)
+                .map(CustomerChoiceDto::getMetrics)
+                .mapToInt(metricsDto1 -> Optional.ofNullable(metricsDto1.getBuyQty()).orElse(0))
+                .sum());
+
+        metricsDto.setFinalBuyQty(customerChoiceDtoList.stream()
+                .filter(Objects::nonNull)
+                .map(CustomerChoiceDto::getMetrics)
+                .mapToInt(metricsDto1 -> Optional.ofNullable(metricsDto1.getFinalBuyQty()).orElse(0))
+                .sum());
+
+        metricsDto.setFinalInitialSetQty(customerChoiceDtoList.stream()
+                .filter(Objects::nonNull)
+                .map(CustomerChoiceDto::getMetrics)
+                .mapToInt(metricsDto1 -> Optional.ofNullable(metricsDto1.getFinalInitialSetQty()).orElse(0))
+                .sum());
+        metricsDto.setFinalReplenishmentQty(customerChoiceDtoList.stream()
+                .filter(Objects::nonNull)
+                .map(CustomerChoiceDto::getMetrics)
+                .mapToInt(metricsDto1 -> Optional.ofNullable(metricsDto1.getFinalReplenishmentQty()).orElse(0))
+                .sum());
+    }
+
+    private void updateCc(BuyQntyResponseDTO buyQntyResponseDTO, CustomerChoiceDto customerChoiceDto) {
+        MetricsDto metricsDto = customerChoiceDto.getMetrics();
+        metricsDto.setBuyQty(buyQntyResponseDTO.getBuyQty() + metricsDto.getBuyQty());
+        metricsDto.setFinalInitialSetQty(buyQntyResponseDTO.getInitialSetQty() + metricsDto.getFinalInitialSetQty());
+        metricsDto.setFinalReplenishmentQty(buyQntyResponseDTO.getReplnQty() + metricsDto.getFinalReplenishmentQty());
+        metricsDto.setFinalBuyQty(buyQntyResponseDTO.getBuyQty() + metricsDto.getBuyQty());
+        customerChoiceDto.setMetrics(metricsDto);
     }
 
     private void setCcSP(BuyQntyResponseDTO buyQntyResponseDTO, List<CustomerChoiceDto> customerChoiceDtoList) {
