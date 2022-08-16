@@ -1,15 +1,25 @@
 package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.buyquantity.*;
+import com.walmart.aex.sp.enums.ChannelType;
+import com.walmart.aex.sp.exception.SizeAndPackException;
+import com.walmart.aex.sp.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
+import java.util.stream.DoubleStream;
 
 @Service
 @Slf4j
 public class BuyQuantityMapper {
+
+    private final StrategyFetchService strategyFetchService;
+
+    BuyQuantityMapper(StrategyFetchService strategyFetchService){
+        this.strategyFetchService = strategyFetchService;
+    }
 
     public void mapBuyQntyLvl2Sp(BuyQntyResponseDTO buyQntyResponseDTO, BuyQtyResponse response, Integer finelineNbr) {
         if (response.getPlanId() == null) {
@@ -228,7 +238,43 @@ public class BuyQuantityMapper {
         CustomerChoiceDto customerChoiceDto = new CustomerChoiceDto();
         customerChoiceDto.setCcId(buyQntyResponseDTO.getCcId());
 
+        BuyQtyResponse sizeLevelData = null;
+        try {
+            BuyQtyRequest newBuyReq = new BuyQtyRequest();
+            newBuyReq.setPlanId(buyQntyResponseDTO.getPlanId());
+            newBuyReq.setChannel(ChannelType.getChannelNameFromId(buyQntyResponseDTO.getChannelId()));
+            newBuyReq.setLvl3Nbr(buyQntyResponseDTO.getLvl3Nbr());
+            newBuyReq.setLvl4Nbr(buyQntyResponseDTO.getLvl4Nbr());
+            newBuyReq.setFinelineNbr(buyQntyResponseDTO.getFinelineNbr());
+            newBuyReq.setStyleNbr(buyQntyResponseDTO.getStyleNbr());
+            newBuyReq.setCcId(buyQntyResponseDTO.getCcId());
+
+            sizeLevelData = strategyFetchService.getBuyQtyResponseSizeProfile(newBuyReq);
+        } catch (SizeAndPackException e) {
+            log.error("Error occured while fetching values from Strategy.",e);
+        }
+
         MetricsDto metricsDto = new MetricsDto();
+        if(sizeLevelData != null){
+            Double avgSizeProfilePctSum =  sizeLevelData.getLvl3List().stream()
+                    .flatMapToDouble(lvl3Dto -> lvl3Dto.getLvl4List().stream()
+                            .flatMapToDouble(lvl4Dto -> lvl4Dto.getFinelines().stream()
+                                    .flatMapToDouble(finelineDto -> finelineDto.getStyles().stream()
+                                            .flatMapToDouble(styleDto -> styleDto.getCustomerChoices().stream()
+                                                    .flatMapToDouble(cc->cc.getClusters().get(0).getSizes().stream()
+                                                            .flatMapToDouble(sizeDto -> DoubleStream.of(sizeDto.getMetrics().getAvgSizeProfilePct()))))))).sum();
+            Double adjSizeProfilePctSum =  sizeLevelData.getLvl3List().stream()
+                    .flatMapToDouble(lvl3Dto -> lvl3Dto.getLvl4List().stream()
+                            .flatMapToDouble(lvl4Dto -> lvl4Dto.getFinelines().stream()
+                                    .flatMapToDouble(finelineDto -> finelineDto.getStyles().stream()
+                                            .flatMapToDouble(styleDto -> styleDto.getCustomerChoices().stream()
+                                                    .flatMapToDouble(cc->cc.getClusters().get(0).getSizes().stream()
+                                                            .flatMapToDouble(sizeDto -> DoubleStream.of(sizeDto.getMetrics().getAdjAvgSizeProfilePct()))))))).sum();
+
+            metricsDto.setAvgSizeProfilePct(avgSizeProfilePctSum);
+            metricsDto.setAdjAvgSizeProfilePct(adjSizeProfilePctSum);
+
+        }
         metricsDto.setBuyQty(buyQntyResponseDTO.getCcBuyQty());
         metricsDto.setFinalInitialSetQty(buyQntyResponseDTO.getCcIsQty());
         metricsDto.setFinalReplenishmentQty(buyQntyResponseDTO.getCcReplnQty());
