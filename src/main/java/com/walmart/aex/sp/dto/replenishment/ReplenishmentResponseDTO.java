@@ -17,11 +17,15 @@ public class ReplenishmentResponseDTO {
     private String lvl2Desc;
     private Integer lvl3Nbr;
     private String lvl3Desc;
+
+    private Integer lvl3ReplQty;
     private Integer lvl3VenderPackCount;
     private Integer lvl3WhsePackCount;
     private Double lvl3vnpkWhpkRatio;
     private Integer lvl4Nbr;
     private String lvl4Desc;
+
+    private Integer lvl4ReplQty;
     private Integer lvl4VenderPackCount;
     private Integer lvl4WhsePackCount;
     private Double lvl4vnpkWhpkRatio;
@@ -49,7 +53,7 @@ public class ReplenishmentResponseDTO {
     private Integer ccWhsePackCount;
     private Double ccVnpkWhpkRatio;
     private Integer ccReplPack;
-    private String merchMethod;
+    private Integer merchMethod;
     private Integer ahsSizeId;
     private String sizeDesc;
     private Integer ccSpFinalBuyUnits;
@@ -60,9 +64,9 @@ public class ReplenishmentResponseDTO {
     private Integer ccSpReplPack;
 
     public ReplenishmentResponseDTO(Long planId, Integer lvl0Nbr, String lvl0Desc, Integer lvl1Nbr, String lvl1Desc,
-                                    Integer lvl2Nbr, String lvl2Desc, Integer lvl3Nbr, String lvl3Desc, Integer lvl3VenderPackCount ,
+                                    Integer lvl2Nbr, String lvl2Desc, Integer lvl3Nbr, String lvl3Desc, Integer lvl3ReplQty,Integer lvl3VenderPackCount ,
                                     Integer lvl3WhsePackCount ,Double lvl3vnpkWhpkRatio  ,Integer lvl4Nbr,
-                                    String lvl4Desc,   Integer lvl4VenderPackCount ,
+                                    String lvl4Desc,  Integer lvl4ReplQty, Integer lvl4VenderPackCount ,
                                     Integer lvl4WhsePackCount ,Double lvl4vnpkWhpkRatio  ,Integer finelineNbr, String finelineDesc, String finelineAltDesc ,
                                     Integer finelineFinalBuyUnits,Integer finelineReplQty,
                                     Integer finelineVenderPackCount,Integer finelineWhsePackCount,
@@ -77,11 +81,13 @@ public class ReplenishmentResponseDTO {
         this.lvl2Desc = lvl2Desc;
         this.lvl3Nbr = lvl3Nbr;
         this.lvl3Desc = lvl3Desc;
+        this.lvl3ReplQty = lvl3ReplQty;
         this.lvl3VenderPackCount = lvl3VenderPackCount;
         this.lvl3WhsePackCount = lvl3WhsePackCount;
         this.lvl3vnpkWhpkRatio = lvl3vnpkWhpkRatio;
         this.lvl4Nbr = lvl4Nbr;
         this.lvl4Desc = lvl4Desc;
+        this.lvl4ReplQty = lvl4ReplQty;
         this.lvl4VenderPackCount = lvl4VenderPackCount;
         this.lvl4WhsePackCount = lvl4WhsePackCount;
         this.lvl4vnpkWhpkRatio = lvl4vnpkWhpkRatio;
@@ -137,7 +143,7 @@ public class ReplenishmentResponseDTO {
     public ReplenishmentResponseDTO(Long planId, Integer lvl0Nbr, String lvl0Desc, Integer lvl1Nbr,
                                     String lvl1Desc, Integer lvl2Nbr, String lvl2Desc, Integer lvl3Nbr, String lvl3Desc,
                                     Integer lvl4Nbr, String lvl4Desc, Integer finelineNbr, String finelineDesc, String finelineAltDesc  ,
-                                    String styleNbr, String ccId, String colorName, String merchMethod, Integer ahsSizeId , String sizeDesc , Integer ccSpFinalBuyUnits, Integer ccSpReplQty ,Integer ccSpVenderPackCount,
+                                    String styleNbr, String ccId, String colorName, Integer merchMethod, Integer ahsSizeId , String sizeDesc , Integer ccSpFinalBuyUnits, Integer ccSpReplQty ,Integer ccSpVenderPackCount,
                                     Integer ccSpWhsePackCount, Double ccSpVnpkWhpkRatio, Integer ccSpReplPack) {
         this.planId = planId;
         this.lvl0Nbr = lvl0Nbr;

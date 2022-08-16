@@ -37,6 +37,8 @@ deploy:
             content: aex-size-and-pack/{{ $.kittExec.currentCluster.profile }}#sqlServer.username
           - destination: /sql.password.txt
             content: aex-size-and-pack/{{ $.kittExec.currentCluster.profile }}#sqlServer.password
+          - destination: /midasApi.authorization.txt
+            content: aex-size-and-pack/{{ $.kittExec.currentCluster.profile }}#midasApi.authorization
       livenessProbe:
         wait: 120
         path: "/actuator/health"
@@ -80,7 +82,7 @@ deploy:
           metadata:
             labels:
               ccm.serviceId: AEX_SIZE_AND_PACK
-              ccm.serviceConfigVersion: "1.0"
+              ccm.serviceConfigVersion: "1.1"
           env:
             JAVA_OPTS: "-Dspring.profiles.active=dev
                         -Dccm.configs.dir=/etc/config
@@ -114,7 +116,7 @@ deploy:
           metadata:
             labels:
               ccm.serviceId: AEX_SIZE_AND_PACK
-              ccm.serviceConfigVersion: "1.0"
+              ccm.serviceConfigVersion: "1.1"
           env:
             JAVA_OPTS: "-Dspring.profiles.active=stg
                           -Dccm.configs.dir=/etc/config

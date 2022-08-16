@@ -10,6 +10,7 @@ public class MerchMethodsDto {
     private String fixtureType;
     private Integer fixtureTypeRollupId;
     private String merchMethod;
+    private Integer merchMethodCode;
     private MetricsDto metrics;
     private List<SizeDto> sizes;
 

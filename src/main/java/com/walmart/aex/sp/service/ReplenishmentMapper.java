@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
+import com.walmart.aex.sp.util.CommonUtil;
 import org.springframework.stereotype.Service;
 import com.walmart.aex.sp.dto.buyquantity.CustomerChoiceDto;
 import com.walmart.aex.sp.dto.buyquantity.FinelineDto;
@@ -60,6 +61,8 @@ public class ReplenishmentMapper {
             metricsDto.setVendorPack(replenishmentResponseDTO.getLvl3VenderPackCount());
             metricsDto.setWarehousePack(replenishmentResponseDTO.getLvl3WhsePackCount());
             metricsDto.setPackRatio(replenishmentResponseDTO.getLvl3vnpkWhpkRatio());
+            metricsDto.setFinalReplenishmentQty(replenishmentResponseDTO.getLvl3ReplQty());
+
             lvl3.setMetrics(metricsDto);
             lvl3.setLvl4List(mapReplenishmentLvl4Sp(replenishmentResponseDTO, lvl3, finelineNbr, ccId));
         }
@@ -90,6 +93,8 @@ public class ReplenishmentMapper {
             metricsDto.setVendorPack(replenishmentResponseDTO.getLvl4VenderPackCount());
             metricsDto.setWarehousePack(replenishmentResponseDTO.getLvl4WhsePackCount());
             metricsDto.setPackRatio(replenishmentResponseDTO.getLvl4vnpkWhpkRatio());
+            metricsDto.setFinalReplenishmentQty(replenishmentResponseDTO.getLvl4ReplQty());
+
             lvl4.setMetrics(metricsDto);
             lvl4.setFinelines(mapReplenishmentFl(replenishmentResponseDTO, lvl4, finelineNbr, ccId));
         }
@@ -196,7 +201,7 @@ public class ReplenishmentMapper {
         List<MerchMethodsDto> merchMethodsDtoList = Optional.ofNullable(customerChoiceDto.getMerchMethods()).orElse(new ArrayList<>());
 
         merchMethodsDtoList.stream()
-                .filter(merchMethodsDto -> replenishmentResponseDTO.getMerchMethod().equals(merchMethodsDto.getMerchMethod())).findFirst()
+                .filter(merchMethodsDto -> CommonUtil.getMerchMethod(replenishmentResponseDTO.getMerchMethod()).equals(merchMethodsDto.getMerchMethod())).findFirst()
                 .ifPresentOrElse(merchMethodsDto -> merchMethodsDto.setSizes(mapSize(replenishmentResponseDTO, merchMethodsDto)),
                         () -> setMerch(replenishmentResponseDTO, merchMethodsDtoList));
         return merchMethodsDtoList;
@@ -206,7 +211,7 @@ public class ReplenishmentMapper {
     private void setMerch(ReplenishmentResponseDTO replenishmentResponseDTO, List<MerchMethodsDto> merchMethodsDtoList) {
 
         MerchMethodsDto merchMethodsDto = new MerchMethodsDto();
-        merchMethodsDto.setMerchMethod(replenishmentResponseDTO.getMerchMethod());
+        merchMethodsDto.setMerchMethod(CommonUtil.getMerchMethod(replenishmentResponseDTO.getMerchMethod()));
         MetricsDto metricsDto = new MetricsDto();
         metricsDto.setFinalBuyQty(replenishmentResponseDTO.getCcSpFinalBuyUnits());
         metricsDto.setFinalReplenishmentQty(replenishmentResponseDTO.getCcSpReplQty());

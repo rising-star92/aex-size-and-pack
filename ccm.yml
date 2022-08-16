@@ -1,7 +1,7 @@
 apiVersion: "2.0"
 kind: "ServiceConfig"
 metadata:
-  serviceConfigVersion: 1.0
+  serviceConfigVersion: 1.1
   serviceId: AEX_SIZE_AND_PACK
   authzPolicies:
     adminUI:
@@ -119,12 +119,12 @@ configDefinitions:
         description: "Get All CC's Size Profile Query for GraphQL Call"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "query ($sizeProfileRequest:SizeProfileRequest!)\n {\n getAllCcSizeClus(sizeProfileRequest:  $sizeProfileRequest)\n {\n planId\n lvl0Nbr\n lvl1Nbr\n lvl2Nbr\n lvl3List{\n lvl3Nbr\n lvl4List{\n lvl4Nbr\n finelines{\n finelineNbr\n merchMethods{\n fixtureTypeRollupId\n merchMethod\n }\n metrics{\n sizeProfilePct\n adjSizeProfilePct\n avgSizeProfilePct\n adjAvgSizeProfilePct\n }\n clusters{\n clusterID\n sizes{\n ahsSizeId\n sizeDesc\n metrics{\n sizeProfilePct\n adjSizeProfilePct\n avgSizeProfilePct\n adjAvgSizeProfilePct\n }\n }\n }\n styles{\n styleNbr\n metrics{\n sizeProfilePct\n adjSizeProfilePct\n avgSizeProfilePct\n adjAvgSizeProfilePct\n }\n clusters{\n clusterID\n sizes{\n ahsSizeId\n sizeDesc\n metrics{\n sizeProfilePct\n adjSizeProfilePct\n avgSizeProfilePct\n adjAvgSizeProfilePct\n }\n }\n }\n customerChoices{\n ccId\n metrics{\n sizeProfilePct\n adjSizeProfilePct\n avgSizeProfilePct\n adjAvgSizeProfilePct\n }\n clusters{\n clusterID\n sizes{\n ahsSizeId\n sizeDesc\n metrics{\n sizeProfilePct\n adjSizeProfilePct\n avgSizeProfilePct\n adjAvgSizeProfilePct\n }}}}}}}}}}"
+        defaultValue: "query ($sizeProfileRequest:SizeProfileRequest!)\n {\n getAllCcSizeClus(sizeProfileRequest:  $sizeProfileRequest)\n {\n planId\n lvl0Nbr\n lvl1Nbr\n lvl2Nbr\n lvl3List{\n lvl3Nbr\n lvl4List{\n lvl4Nbr\n finelines{\n finelineNbr\n merchMethods{\n fixtureTypeRollupId\n merchMethod\n merchMethodCode\n }\n metrics{\n sizeProfilePct\n adjSizeProfilePct\n avgSizeProfilePct\n adjAvgSizeProfilePct\n }\n clusters{\n clusterID\n sizes{\n ahsSizeId\n sizeDesc\n metrics{\n sizeProfilePct\n adjSizeProfilePct\n avgSizeProfilePct\n adjAvgSizeProfilePct\n }\n }\n }\n styles{\n styleNbr\n metrics{\n sizeProfilePct\n adjSizeProfilePct\n avgSizeProfilePct\n adjAvgSizeProfilePct\n }\n clusters{\n clusterID\n sizes{\n ahsSizeId\n sizeDesc\n metrics{\n sizeProfilePct\n adjSizeProfilePct\n avgSizeProfilePct\n adjAvgSizeProfilePct\n }\n }\n }\n customerChoices{\n ccId\n metrics{\n sizeProfilePct\n adjSizeProfilePct\n avgSizeProfilePct\n adjAvgSizeProfilePct\n }\n clusters{\n clusterID\n sizes{\n ahsSizeId\n sizeDesc\n metrics{\n sizeProfilePct\n adjSizeProfilePct\n avgSizeProfilePct\n adjAvgSizeProfilePct\n }}}}}}}}}}"
       "size.profile.consumer.id":
         description: "Consumer ID to call Strategy Service"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "34f7ca77-3dfc-46df-a86b-1ba6e4908d0e"
+        defaultValue: "19ce2bf5-4c24-4bbf-bee9-84496dd07e3c"
       "size.profile.consumer.name":
         description: "Consumer service name"
         type: "STRING"
@@ -177,6 +177,73 @@ configDefinitions:
         kind: "SINGLE"
         defaultValue: "http://aex-size-and-pack.aex.dev.walmart.net"
 
+  buyQtyConfig:
+    description: "Buy Quantity Constants Config"
+    resolutionPaths:
+      - default: "/envProfile/envName"
+    properties:
+      "initialSet.constraint":
+        description: "Initial set threshold"
+        type: "INTEGER"
+        kind: "SINGLE"
+        defaultValue: 2
+      "replenishment.constraint":
+        description: "Replenishment threshold"
+        type: "INTEGER"
+        kind: "SINGLE"
+        defaultValue: 500
+
+  midasConfig:
+    description: "Midas Data API Service to Service Authentication"
+    resolutionPaths:
+      - default: "/envProfile/envName"
+    properties:
+      "midas.baseURL":
+        description: "Midas api base url"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "http://midas-data-api.stg.midas-api.catdev.prod.us.walmart.net/api/workflow/v1/execute"
+      "midas.clickhouse.table":
+        description: "midas clickhouse table"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "omni_item_channel_sales_wkly_v4_dist"
+      "midas.header.contentType":
+        description: "Midas api header content type"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "application/json"
+      "midas.header.consumer":
+        description: "Midas api header consumer Id"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "13705f9d-3eb8-46b5-b2c1-63a1b569af4c"
+      "midas.header.signatureKeyVersion":
+        description: "Midas api header signature Key Version"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "1"
+      "midas.header.signatureAuthFlag":
+        description: "Midas api header signature Auth Flag"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "true"
+      "midas.header.signatureTS":
+        description: "Midas api header signature TS"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "1639068838648"
+      "midas.header.tenant":
+        description: "Midas api header tenant"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "aex"
+      "midas.historicalSizeMetricsQuery":
+        description: "JSON query for historical size metrics"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: '{"query":{"select":[{"field":"*"}],"from":"get_historical_size_metrics_fineline_cc","params":{"finelineNbr":%d,"lyCompWeekStart":%d,"lyCompWeekEnd":%d,"lvl0Nbr":%d,"lvl1Nbr":%d,"lvl2Nbr":%d,"lvl3Nbr":%d,"lvl4Nbr":%d,"channel":"%s"}}}'
+
 configOverrides:
   graphQlConfig:
     - name: "stage"
@@ -188,6 +255,10 @@ configOverrides:
         properties:
           "size.profile.url": "https://strategy.aex.stg.walmart.net/graphql"
           "size.profile.assortproduct.url": "https://assortproduct.aex.stg.walmart.net/graphql"
+          "size.profile.consumer.id": "93c617a1-31ec-4333-a819-683ef7514cc0"
+          "size.profile.consumer.env": "stg"
+          "size.profile.assortproduct.consumer.id": "93c617a1-31ec-4333-a819-683ef7514cc0"
+          "size.profile.assortproduct.consumer.env": "stg"
   bqfpServiceConfig:
     - name: "stage"
       description: "Flow Plan override for STAGE profile"

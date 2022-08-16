@@ -6,7 +6,10 @@ type Query {
      fetchReplnByPlanFineline(replenishmentRequest: ReplenishmentRequest!): ReplenishmentResponse!
      fetchReplnByPlanFinelineStyleCc(replenishmentRequest: ReplenishmentRequest!): ReplenishmentResponse!
      getSizeBuyQtyDetails(buyQtyRequest: BuyQtyRequest!): BuyQtyResponse!
+     fetchHistoricalMetricsFineline(request: HistoricalMetricsRequest!) : HistoricalMetricsResponse!
+     fetchHistoricalMetricsCC(request: HistoricalMetricsRequest!) : HistoricalMetricsResponse!
 }
+
 
 type Mutation {
 	updateReplnConfigByCategory(request: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse
@@ -24,8 +27,6 @@ input UpdateVnPkWhPkReplnRequest {
 	planId: Int!
 	planDesc: String
 	channel: String!
-	fixtureTypeRollupId: Int
-	fixtureTypeRollupName: String
 	lvl3Nbr: Int
 	lvl4Nbr: Int
 	fineline: Int
@@ -92,7 +93,11 @@ type PackOptimizationResponse{
 }
 
 type Lvl3 {
+    lvl0Nbr:Int
+    lvl1Nbr:Int
+    lvl2Nbr:Int
     lvl3Nbr: Int
+    lvl3Name: String
     constraints:Constraints
    	lvl4List: [Lvl4]
 }
@@ -126,9 +131,17 @@ type Lvl4 {
 type Fineline {
     finelineNbr: Int
     finelineName: String
+    optimizationDetails: [RunOptimization]
     packOptimizationStatus: String
     constraints:Constraints
     styles:[Style]
+}
+type RunOptimization{
+    name: String
+    startTs: String
+    endTs: String
+    returnMessage: String
+    runStatusCode: Int
 }
 
 type Style {
@@ -188,7 +201,7 @@ type FinelineDto {
     metrics: MetricsDto
     clusters: [ClustersDto]
     styles: [StyleDto]
-}
+    }
 
 type StyleDto {
     styleNbr: String
@@ -203,6 +216,7 @@ type CustomerChoiceDto {
     metrics: MetricsDto
     clusters: [ClustersDto]
     merchMethods : [MerchMethodsDto]
+  
 }
 
 type ClustersDto {
@@ -287,3 +301,29 @@ type Execution {
   statusDesc: String
   validationMessage: String
 }
+
+
+input HistoricalMetricsRequest {
+  lvl0Nbr: Int!
+  lvl1Nbr: Int!
+  lvl2Nbr: Int!
+  lvl3Nbr: Int!
+  lvl4Nbr: Int!
+  finelineNbr: Int
+  styleNbr: String
+  customerChoice: String
+  channel: String!
+}
+
+type HistoricalMetricsResponse {
+  metrics: [HistoricalMetric]
+}
+
+type HistoricalMetric {
+  sizeDesc: String
+  lyActualSalesUnits: Int
+  lyActualSalesUnitsPct: Float
+  lyActualReceiptUnits: Int
+  lyActualReceiptUnitsPct: Float
+}
+

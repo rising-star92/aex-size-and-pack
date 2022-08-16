@@ -95,16 +95,17 @@ public interface SpCustomerChoiceChannelFixtureRepository extends JpaRepository<
             "left join " +
             "SpCustomerChoiceChannelFixture sccf " +
             "ON " +
-            "ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.planId = sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.planId " +
-            "AND ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.lvl0Nbr = sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl0Nbr " +
-            "AND ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.lvl1Nbr = sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl1Nbr " +
-            "AND ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.lvl2Nbr = sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl2Nbr " +
-            "AND ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.lvl3Nbr = sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl3Nbr " +
-            "AND ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.lvl4Nbr = sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl4Nbr " +
-            "AND ccp.custChoicePlanId.stylePlanId.finelinePlanId.finelineNbr = sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.fineLineNbr " +
-            "AND ccp.custChoicePlanId.stylePlanId.styleNbr = sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.styleNbr " +
+            "sscf.spStyleChannelFixtureId.spFineLineChannelFixtureId.planId = sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.planId " +
+            "AND sscf.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl0Nbr = sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl0Nbr " +
+            "AND sscf.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl1Nbr = sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl1Nbr " +
+            "AND sscf.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl2Nbr = sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl2Nbr " +
+            "AND sscf.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl3Nbr = sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl3Nbr " +
+            "AND sscf.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl4Nbr = sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl4Nbr " +
+            "AND sscf.spStyleChannelFixtureId.spFineLineChannelFixtureId.fineLineNbr = sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.fineLineNbr " +
+            "AND sscf.spStyleChannelFixtureId.styleNbr = sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.styleNbr " +
             "AND ccp.custChoicePlanId.ccId = sccf.spCustomerChoiceChannelFixtureId.customerChoice " +
-            "AND ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId = sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.channelId " +
+            "AND sscf.spStyleChannelFixtureId.spFineLineChannelFixtureId.channelId = sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.channelId " +
+            "AND sscf.spStyleChannelFixtureId.spFineLineChannelFixtureId.fixtureTypeRollUpId.fixtureTypeRollupId = sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.fixtureTypeRollUpId.fixtureTypeRollupId " +
             "where sp.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId in (:channelId,3) and " +
             "ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId in (:channelId,3) and msp.merchCatPlanId.planId = :planId and " +
             "fp.finelinePlanId.finelineNbr = :finelineNbr and " +
