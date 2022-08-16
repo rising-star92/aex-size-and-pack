@@ -86,8 +86,9 @@ public class BuyQuantityMapper {
                 .orElse(0)
                 : 0;
 
-        metricsDto.setBuyQty(buyQty + metricsDto.getBuyQty());
-
+        if(metricsDto.getBuyQty() != null) {
+            metricsDto.setBuyQty(buyQty + metricsDto.getBuyQty());
+        }
         int isQty = buyQntyResponseDTO.getBuyQty() != null
                 ? Optional.ofNullable(buyQntyResponseDTO.getInitialSetQty())
                 .orElse(0)
