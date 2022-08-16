@@ -104,15 +104,21 @@ public class BuyQuantityMapper {
                 .orElse(0)
                 : 0;
 
-        metricsDto.setFinalInitialSetQty(isQty + metricsDto.getFinalInitialSetQty());
-
+        if(metricsDto.getFinalInitialSetQty() != null) {
+            metricsDto.setFinalInitialSetQty(isQty + metricsDto.getFinalInitialSetQty());
+        }
         int rplnQty = buyQntyResponseDTO.getBuyQty() != null
                 ? Optional.ofNullable(buyQntyResponseDTO.getReplnQty())
                 .orElse(0)
                 : 0;
 
-        metricsDto.setFinalReplenishmentQty(rplnQty + metricsDto.getFinalReplenishmentQty());
-        metricsDto.setFinalBuyQty(buyQty + metricsDto.getBuyQty());
+        if(metricsDto.getFinalReplenishmentQty() != null) {
+            metricsDto.setFinalReplenishmentQty(rplnQty + metricsDto.getFinalReplenishmentQty());
+        }
+
+        if(metricsDto.getBuyQty() != null) {
+            metricsDto.setFinalBuyQty(buyQty + metricsDto.getBuyQty());
+        }
 
         finelineDto.setMetrics(metricsDto);
     }
@@ -255,8 +261,8 @@ public class BuyQuantityMapper {
         }
 
         MetricsDto metricsDto = new MetricsDto();
-        if(sizeLevelData != null){
-            Double avgSizeProfilePctSum =  sizeLevelData.getLvl3List().stream()
+        if(sizeLevelData != null &&  sizeLevelData.getLvl3List() != null){
+            Double avgSizeProfilePctSum = sizeLevelData.getLvl3List().stream()
                     .flatMapToDouble(lvl3Dto -> lvl3Dto.getLvl4List().stream()
                             .flatMapToDouble(lvl4Dto -> lvl4Dto.getFinelines().stream()
                                     .flatMapToDouble(finelineDto -> finelineDto.getStyles().stream()
