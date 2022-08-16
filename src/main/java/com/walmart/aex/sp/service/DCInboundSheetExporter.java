@@ -13,10 +13,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
 import static org.apache.poi.ss.util.CellUtil.createCell;
@@ -47,7 +44,12 @@ public class DCInboundSheetExporter {
                 replWeekList.add(r.getReplnWeekDesc());
             }
         }
-        headerList.addAll(replWeekList);
+        // Sorting replenishment week desc
+        List<String> rwList = new ArrayList<String>();
+        for (String x : replWeekList)
+            rwList.add(x);
+        Collections.sort(rwList);
+        headerList.addAll(rwList);
         return headerList;
     }
 
