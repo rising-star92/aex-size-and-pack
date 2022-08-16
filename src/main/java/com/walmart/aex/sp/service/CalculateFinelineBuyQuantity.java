@@ -529,6 +529,7 @@ public class CalculateFinelineBuyQuantity {
         ccSpMmReplPackId.setAhsSizeId(entry.getKey().getAhsSizeId());
 
         CcSpMmReplPack ccSpMmReplPack = new CcSpMmReplPack();
+        ccSpMmReplPack.setSizeDesc(entry.getKey().getSizeDesc());
 
         ccSpMmReplPack.setCcSpReplPackId(ccSpMmReplPackId);
 

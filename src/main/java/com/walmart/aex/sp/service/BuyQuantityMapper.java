@@ -192,27 +192,29 @@ public class BuyQuantityMapper {
                 .map(CustomerChoiceDto::getMetrics)
                 .mapToInt(metricsDto1 -> Optional.ofNullable(metricsDto1.getFinalReplenishmentQty()).orElse(0))
                 .sum());
+
+        styleDto.setMetrics(metricsDto);
     }
 
     private void updateCc(BuyQntyResponseDTO buyQntyResponseDTO, CustomerChoiceDto customerChoiceDto) {
         MetricsDto metricsDto = customerChoiceDto.getMetrics();
 
-        int buyQty = buyQntyResponseDTO.getBuyQty() != null
-                ? Optional.ofNullable(buyQntyResponseDTO.getBuyQty())
+        int buyQty = buyQntyResponseDTO.getCcBuyQty() != null
+                ? Optional.ofNullable(buyQntyResponseDTO.getCcBuyQty())
                 .orElse(0)
                 : 0;
 
         metricsDto.setBuyQty(buyQty + metricsDto.getBuyQty());
 
-        int isQty = buyQntyResponseDTO.getBuyQty() != null
-                ? Optional.ofNullable(buyQntyResponseDTO.getInitialSetQty())
+        int isQty = buyQntyResponseDTO.getCcIsQty() != null
+                ? Optional.ofNullable(buyQntyResponseDTO.getCcIsQty())
                 .orElse(0)
                 : 0;
 
         metricsDto.setFinalInitialSetQty(isQty + metricsDto.getFinalInitialSetQty());
 
-        int rplnQty = buyQntyResponseDTO.getBuyQty() != null
-                ? Optional.ofNullable(buyQntyResponseDTO.getReplnQty())
+        int rplnQty = buyQntyResponseDTO.getCcReplnQty() != null
+                ? Optional.ofNullable(buyQntyResponseDTO.getCcReplnQty())
                 .orElse(0)
                 : 0;
 

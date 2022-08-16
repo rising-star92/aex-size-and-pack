@@ -66,6 +66,7 @@ public class BuyQtyReplenishmentMapperService {
                 .mapToInt(ccSpMmReplPack -> Optional.ofNullable(ccSpMmReplPack.getFinalBuyUnits()).orElse(0))
                 .sum()
         );
+        ccMmReplPack.setMerchMethodDesc(merchMethodsDto.getMerchMethod());
         ccMmReplPacks.add(ccMmReplPack);
 
         //CC
@@ -236,8 +237,9 @@ public class BuyQtyReplenishmentMapperService {
         Set<CcSpMmReplPack> ccSpMmReplPacks = Optional.ofNullable(ccMmReplPack.getCcSpMmReplPack()).orElse(new HashSet<>());
 
         CcSpMmReplPackId ccSpMmReplPackId = Optional.ofNullable(ccSpMmReplPack.getCcSpReplPackId()).orElse(new CcSpMmReplPackId());
-
         ccSpMmReplPackId.setCcMmReplPackId(ccMmReplPack.getCcMmReplPackId());
+
+        ccSpMmReplPack.setMerchMethodDesc(merchMethodsDto.getMerchMethod());
 
         ccSpMmReplPacks.add(ccSpMmReplPack);
         ccMmReplPack.setCcSpMmReplPack(ccSpMmReplPacks);
