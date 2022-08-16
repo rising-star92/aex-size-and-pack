@@ -146,6 +146,17 @@
             <artifactId>graphql-spring-boot-starter</artifactId>
             <version>1.0.0-M4</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>3.17-beta1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>3.17-beta1</version>
+        </dependency>
     </dependencies>
 
     <build>
