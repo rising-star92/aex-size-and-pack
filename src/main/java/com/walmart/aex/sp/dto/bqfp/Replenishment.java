@@ -7,5 +7,6 @@ public class Replenishment {
    private Integer replnWeek;
    private String replnWeekDesc;
    private Long replnUnits;
+   private Long adjReplnUnits;
    private Long remainingUnits;
 }

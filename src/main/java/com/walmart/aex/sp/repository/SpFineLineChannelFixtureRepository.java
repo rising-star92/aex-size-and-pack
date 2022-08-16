@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -65,7 +64,8 @@ public interface SpFineLineChannelFixtureRepository extends JpaRepository<SpFine
             "AND fp.finelinePlanId.subCatPlanId.lvl4Nbr = sfcf.spFineLineChannelFixtureId.lvl4Nbr " +
             "AND fp.finelinePlanId.finelineNbr = sfcf.spFineLineChannelFixtureId.fineLineNbr " +
             "AND fp.finelinePlanId.subCatPlanId.merchCatPlanId.channelId = sfcf.spFineLineChannelFixtureId.channelId " +
-            "where fp.finelinePlanId.subCatPlanId.merchCatPlanId.channelId in (:channelId,3) and msp.merchCatPlanId.planId = :planId and (sfcf.spFineLineChannelFixtureId.channelId is NULL or sfcf.spFineLineChannelFixtureId.channelId = :channelId)")
+            "where (fp.finelinePlanId.subCatPlanId.merchCatPlanId.channelId in (:channelId,3) and msp.merchCatPlanId.planId = :planId and (sfcf.spFineLineChannelFixtureId.channelId is NULL or sfcf.spFineLineChannelFixtureId.channelId = :channelId)) " +
+            " or :channelId is NULL")
     List<BuyQntyResponseDTO> getBuyQntyByPlanChannel(@Param("planId") Long planId, @Param("channelId") Integer channelId);
 
     Optional<List<SpFineLineChannelFixture>> findSpFineLineChannelFixtureBySpFineLineChannelFixtureId_planIdAndSpFineLineChannelFixtureId_channelId(Long planId, Integer channelId);

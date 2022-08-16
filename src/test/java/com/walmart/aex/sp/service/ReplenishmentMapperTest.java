@@ -25,6 +25,7 @@ public class ReplenishmentMapperTest {
             replenishmentResponseDTO=new ReplenishmentResponseDTO();
             replenishmentResponseDTO.setChannelId(2);
             replenishmentResponseDTO.setPlanId(planId);
+            replenishmentResponseDTO.setMerchMethod(1);
             replenishmentMapper.mapReplenishmentLvl2Sp(replenishmentResponseDTO,replenishmentResponse,finelineNbr,"black");
             assertNotNull(replenishmentResponse);
             assertEquals(replenishmentResponse.getPlanId(),471l);
