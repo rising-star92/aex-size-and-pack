@@ -55,4 +55,16 @@ public class CommonUtil {
         }
         throw new RuntimeException("Merch Method does not Match");
     }
+
+    public static String getMerchMethod(Integer merchMethod) {
+        switch (merchMethod){
+            case 1 :{
+                return "FOLDED";
+            }
+            case 2:{
+                return "HANGING";
+            }
+        }
+        throw new RuntimeException("Merch Method does not Match");
+    }
 }
