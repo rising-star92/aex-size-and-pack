@@ -60,6 +60,8 @@ public class CalculateFinelineBuyQuantity {
                                 CalculateBuyQtyResponse calculateBuyQtyResponse, CalculateBuyQtyRequest calculateBuyQtyRequest) {
         List<SpFineLineChannelFixture> spFineLineChannelFixtures = calculateBuyQtyResponse.getSpFineLineChannelFixtures();
         finelineDto.getMerchMethods().forEach(merchMethodsDto -> {
+            //TODO: Add Merch Method Code
+            if (merchMethodsDto.getMerchMethod() != null) {
             FixtureTypeRollUpId fixtureTypeRollUpId = new FixtureTypeRollUpId(merchMethodsDto.getFixtureTypeRollupId());
             SpFineLineChannelFixtureId spFineLineChannelFixtureId = new SpFineLineChannelFixtureId(fixtureTypeRollUpId, calculateBuyQtyRequest.getPlanId(), calculateBuyQtyRequest.getLvl0Nbr(),
                     calculateBuyQtyRequest.getLvl1Nbr(), calculateBuyQtyRequest.getLvl2Nbr(), calculateBuyQtyParallelRequest.getLvl3Nbr(), calculateBuyQtyParallelRequest.getLvl4Nbr(), finelineDto.getFinelineNbr(), ChannelType.getChannelIdFromName(calculateBuyQtyRequest.getChannel()));
@@ -78,7 +80,7 @@ public class CalculateFinelineBuyQuantity {
             if (!CollectionUtils.isEmpty(finelineDto.getStyles())) {
                 getStyles(finelineDto.getStyles(), merchMethodsDto, apResponse, bqfpResponse, spFineLineChannelFixture, calculateBuyQtyParallelRequest, calculateBuyQtyResponse);
             } else log.info("Styles Size Profiles are empty to calculate buy Qty: {}", finelineDto);
-            spFineLineChannelFixtures.add(spFineLineChannelFixture);
+            spFineLineChannelFixtures.add(spFineLineChannelFixture); }
 
         });
         calculateBuyQtyResponse.setSpFineLineChannelFixtures(spFineLineChannelFixtures);
@@ -314,7 +316,7 @@ public class CalculateFinelineBuyQuantity {
 
         try {
             log.info("Store Obj: {}", objectMapper.writeValueAsString(entry.getValue().getBuyQtyStoreObj()));
-            spCustomerChoiceChannelFixtureSize.setStoreObj(objectMapper.writeValueAsString(entry.getValue()));
+            spCustomerChoiceChannelFixtureSize.setStoreObj(objectMapper.writeValueAsString(entry.getValue().getBuyQtyStoreObj()));
         } catch (Exception e) {
             log.error("Error parsing Json: ", e);
             throw new CustomException("Error parsing Json: " + e);
@@ -527,6 +529,8 @@ public class CalculateFinelineBuyQuantity {
         ccSpMmReplPackId.setAhsSizeId(entry.getKey().getAhsSizeId());
 
         CcSpMmReplPack ccSpMmReplPack = new CcSpMmReplPack();
+
+        ccSpMmReplPack.setCcSpReplPackId(ccSpMmReplPackId);
 
         ccSpMmReplPack.setFinalBuyUnits(totalBuyQty);
         ccSpMmReplPack.setReplUnits(totalReplenishment);

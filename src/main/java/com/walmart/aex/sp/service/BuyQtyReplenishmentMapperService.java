@@ -7,6 +7,7 @@ import com.walmart.aex.sp.dto.buyquantity.StyleDto;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
 import com.walmart.aex.sp.entity.*;
 import com.walmart.aex.sp.enums.ChannelType;
+import com.walmart.aex.sp.enums.FixtureTypeRollup;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -48,7 +49,7 @@ public class BuyQtyReplenishmentMapperService {
         log.info("Replenishment: Check if Cc MM Repln pack Id is existing: {}", ccMmReplPackId);
         CcMmReplPack ccMmReplPack = setCcMmReplnPack(ccMmReplPacks, ccMmReplPackId);
 
-        ccSpMmReplPacks.forEach(ccSpMmReplPack -> setReplenishmentSizeEntity(ccMmReplPack, ccSpMmReplPack));
+        ccSpMmReplPacks.forEach(ccSpMmReplPack -> setReplenishmentSizeEntity(ccMmReplPack, ccSpMmReplPack, merchMethodsDto));
 
         log.info("Calculating CC MM Repln Qty");
         //Repln Units
@@ -108,6 +109,8 @@ public class BuyQtyReplenishmentMapperService {
                 .mapToInt(styleReplPack1 -> Optional.ofNullable(styleReplPack1.getFinalBuyUnits()).orElse(0))
                 .sum()
         );
+        finelineReplPack.setFixtureTypeRollupName(FixtureTypeRollup.getFixtureTypeFromId(merchMethodsDto.getFixtureTypeRollupId()));
+        finelineReplPack.setRunStatusCode(0);
         finelineReplPacks.add(finelineReplPack);
 
         //Sub catg
@@ -123,6 +126,8 @@ public class BuyQtyReplenishmentMapperService {
                 .mapToInt(finelineReplPack1 -> Optional.ofNullable(finelineReplPack1.getFinalBuyUnits()).orElse(0))
                 .sum()
         );
+        subCatgReplPack.setFixtureTypeRollupName(FixtureTypeRollup.getFixtureTypeFromId(merchMethodsDto.getFixtureTypeRollupId()));
+        subCatgReplPack.setRunStatusCode(0);
         subCatgReplPacks.add(subCatgReplPack);
 
         //Catg
@@ -138,6 +143,8 @@ public class BuyQtyReplenishmentMapperService {
                 .mapToInt(subCatgReplPack1 -> Optional.ofNullable(subCatgReplPack1.getFinalBuyUnits()).orElse(0))
                 .sum()
         );
+        merchCatgReplPack.setFixtureTypeRollupName(FixtureTypeRollup.getFixtureTypeFromId(merchMethodsDto.getFixtureTypeRollupId()));
+        merchCatgReplPack.setRunStatusCode(0);
         merchCatgReplPacks.add(merchCatgReplPack);
 
         return merchCatgReplPacks;
@@ -225,9 +232,13 @@ public class BuyQtyReplenishmentMapperService {
         return finelineReplPack;
     }
 
-    private void setReplenishmentSizeEntity(CcMmReplPack ccMmReplPack, CcSpMmReplPack ccSpMmReplPack) {
+    private void setReplenishmentSizeEntity(CcMmReplPack ccMmReplPack, CcSpMmReplPack ccSpMmReplPack, MerchMethodsDto merchMethodsDto) {
         Set<CcSpMmReplPack> ccSpMmReplPacks = Optional.ofNullable(ccMmReplPack.getCcSpMmReplPack()).orElse(new HashSet<>());
-        ccSpMmReplPack.getCcSpReplPackId().setCcMmReplPackId(ccMmReplPack.getCcMmReplPackId());
+
+        CcSpMmReplPackId ccSpMmReplPackId = Optional.ofNullable(ccSpMmReplPack.getCcSpReplPackId()).orElse(new CcSpMmReplPackId());
+
+        ccSpMmReplPackId.setCcMmReplPackId(ccMmReplPack.getCcMmReplPackId());
+
         ccSpMmReplPacks.add(ccSpMmReplPack);
         ccMmReplPack.setCcSpMmReplPack(ccSpMmReplPacks);
     }
