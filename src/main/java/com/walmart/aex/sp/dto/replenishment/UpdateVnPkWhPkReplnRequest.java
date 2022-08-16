@@ -5,9 +5,11 @@ import lombok.Data;
 @Data
 public class UpdateVnPkWhPkReplnRequest {
 
-	private Long planId;
+    private Long planId;
     private String planDesc;
     private String channel;
+    private Integer fixtureTypeRollupId;
+    private String fixtureTypeRollupName;
     private Integer lvl3Nbr;
     private Integer lvl4Nbr;
     private Integer fineline;
