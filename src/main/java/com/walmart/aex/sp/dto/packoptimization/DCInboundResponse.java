@@ -23,8 +23,7 @@ public class DCInboundResponse {
     private String finelineDesc;
     private String styleNbr;
     private String sizeDesc;
-    private String ccId;
-    private String colorName;
+    private String customerChoice;
     private Integer ahsSizeId;
     private String merchMethodDesc;
     private String replenishment;

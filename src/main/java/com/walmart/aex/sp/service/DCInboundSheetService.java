@@ -10,7 +10,6 @@ import com.walmart.aex.sp.repository.CcSpReplnPkConsRepository;
 import com.walmart.aex.sp.repository.MerchCatPlanRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.entity.ContentType;
-import org.apache.http.protocol.HTTP;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletResponse;
@@ -53,7 +52,7 @@ public class DCInboundSheetService {
                 dcInboundExcelResponse.setLvl4Desc(r.getLvl4Desc());
                 dcInboundExcelResponse.setFinelineDesc(r.getFinelineDesc());
                 dcInboundExcelResponse.setStyleNbr(r.getStyleNbr());
-                dcInboundExcelResponse.setCcId(r.getCcId());
+                dcInboundExcelResponse.setCcId(r.getCustomerChoice());
                 dcInboundExcelResponse.setMerchMethodDesc(r.getMerchMethodDesc());
                 dcInboundExcelResponse.setSizeDesc(r.getSizeDesc());
 

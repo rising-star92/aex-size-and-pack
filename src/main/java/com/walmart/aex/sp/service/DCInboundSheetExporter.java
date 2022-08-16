@@ -1,11 +1,9 @@
 package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.packoptimization.DCInboundExcelResponse;
-import com.walmart.aex.sp.dto.packoptimization.DCInboundResponse;
 import com.walmart.aex.sp.dto.packoptimization.DCinboundReplenishment;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Row;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -16,8 +14,8 @@ import java.io.IOException;
 import java.util.*;
 
 import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
-import static org.apache.poi.ss.util.CellUtil.createCell;
 
+@Slf4j
 public class DCInboundSheetExporter {
     private XSSFWorkbook workbook;
     private XSSFSheet sheet;
@@ -105,8 +103,25 @@ public class DCInboundSheetExporter {
             createCell(row, columnCount++, dcInboundData.getCcId(), style);
             createCell(row, columnCount++, dcInboundData.getMerchMethodDesc(), style);
             createCell(row, columnCount++, dcInboundData.getSizeDesc(), style);
+            while(columnCount < getHeaders().size()){
+                for(DCinboundReplenishment r: dcInboundData.getReplenishment()){
+                    int currColCount = columnCount++;
+                    if(getHeaderName(currColCount).equalsIgnoreCase(r.getReplnWeekDesc()))
+                        createCell(row, currColCount, r.getAdjReplnUnits(), style);
+                }
 
+
+            }
         }
+    }
+
+    private String getHeaderName(int columnCount)
+    {
+        Row row = sheet.getRow(ZERO);
+        Cell cell = row.getCell(columnCount);
+        log.info("column count is {}", columnCount);
+        return cell.getStringCellValue();
+
     }
 
     public void export(HttpServletResponse response) throws IOException {
