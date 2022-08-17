@@ -329,10 +329,6 @@ public class CalculateFinelineBuyQuantity {
         spCustomerChoiceChannelFixtureSize.setBuyQty(totalBuyQty);
 
         //TODO: Adjust Flow Strategy
-        //if (entry.getValue().getFlowStrategyCodes().size() > 0) {
-        //    spCustomerChoiceChannelFixtureSize.setFlowStrategyCode(entry.getValue().getFlowStrategyCodes().iterator().next());
-        //}
-
         try {
             log.info("Store Obj: {}", objectMapper.writeValueAsString(entry.getValue().getBuyQtyStoreObj()));
             spCustomerChoiceChannelFixtureSize.setStoreObj(objectMapper.writeValueAsString(entry.getValue().getBuyQtyStoreObj()));
