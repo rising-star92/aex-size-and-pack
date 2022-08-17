@@ -27,12 +27,10 @@ import static com.walmart.aex.sp.util.SizeAndPackConstants.DC_INBOUND_REPORT_NAM
 @Service
 public class DCInboundSheetService {
 
-    private final MerchCatPlanRepository merchCatPlanRepository;
     private final CcSpReplnPkConsRepository ccSpReplnPkConsRepository;
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public DCInboundSheetService(MerchCatPlanRepository merchCatPlanRepository, CcSpReplnPkConsRepository ccSpReplnPkConsRepository) {
-        this.merchCatPlanRepository = merchCatPlanRepository;
+    public DCInboundSheetService(CcSpReplnPkConsRepository ccSpReplnPkConsRepository) {
         this.ccSpReplnPkConsRepository = ccSpReplnPkConsRepository;
     }
 
