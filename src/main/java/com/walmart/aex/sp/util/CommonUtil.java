@@ -47,10 +47,22 @@ public class CommonUtil {
     public static Integer getMerchMethod(String merchMethod) {
         switch (merchMethod.toUpperCase()){
             case "FOLDED":{
-                return 1;
+                return 2;
             }
             case "HANGING":{
-                return 2;
+                return 1;
+            }
+        }
+        throw new RuntimeException("Merch Method does not Match");
+    }
+
+    public static String getMerchMethod(Integer merchMethod) {
+        switch (merchMethod){
+            case 2 :{
+                return "FOLDED";
+            }
+            case 1:{
+                return "HANGING";
             }
         }
         throw new RuntimeException("Merch Method does not Match");
