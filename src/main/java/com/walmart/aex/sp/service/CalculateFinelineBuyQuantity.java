@@ -11,6 +11,7 @@ import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
 import com.walmart.aex.sp.entity.*;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.enums.FixtureTypeRollup;
+import com.walmart.aex.sp.enums.FlowStrategy;
 import com.walmart.aex.sp.enums.VdLevelCode;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.exception.SizeAndPackException;
@@ -209,6 +210,7 @@ public class CalculateFinelineBuyQuantity {
             BuyQtyStoreObj buyQtyStoreObj = Optional.ofNullable(buyQtyObj)
                     .map(BuyQtyObj::getBuyQtyStoreObj)
                     .orElse(new BuyQtyStoreObj());
+
             List<StoreQuantity> initialSetQuantities = Optional.of(buyQtyStoreObj)
                     .map(BuyQtyStoreObj::getBuyQuantities)
                     .orElse(new ArrayList<>());
@@ -219,6 +221,9 @@ public class CalculateFinelineBuyQuantity {
                 Cluster volumeCluster = getVolumeCluster(bqfpResponse, styleDto.getStyleNbr(), customerChoiceDto.getCcId(),
                         merchMethodsDto.getFixtureTypeRollupId(), rfaSizePackData.getVolume_group_cluster_id());
 
+                if (volumeCluster.getFlowStrategy() != null) {
+                    storeQuantity.setFlowStrategyCode(FlowStrategy.getFlowStrategyIdFromName(volumeCluster.getFlowStrategy()));
+                }
                 //Calculate IS Buy Quantity
                 double isCalculatedBq = rfaSizePackData.getStore_cnt() * volumeCluster.getInitialSet().getInitialSetUnitsPerFix() * rfaSizePackData.getFixture_group();
                 double isQty = (isCalculatedBq * getSizePct(sizeDto)) / 100;
@@ -323,6 +328,7 @@ public class CalculateFinelineBuyQuantity {
         spCustomerChoiceChannelFixtureSize.setReplnQty((int) totalReplenishment);
         spCustomerChoiceChannelFixtureSize.setBuyQty(totalBuyQty);
 
+        //TODO: Adjust Flow Strategy
         try {
             log.info("Store Obj: {}", objectMapper.writeValueAsString(entry.getValue().getBuyQtyStoreObj()));
             spCustomerChoiceChannelFixtureSize.setStoreObj(objectMapper.writeValueAsString(entry.getValue().getBuyQtyStoreObj()));
