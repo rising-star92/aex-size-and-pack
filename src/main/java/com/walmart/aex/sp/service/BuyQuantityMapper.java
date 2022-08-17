@@ -1,15 +1,24 @@
 package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.buyquantity.*;
+import com.walmart.aex.sp.enums.ChannelType;
+import com.walmart.aex.sp.exception.SizeAndPackException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
+import java.util.stream.DoubleStream;
 
 @Service
 @Slf4j
 public class BuyQuantityMapper {
+
+    private final StrategyFetchService strategyFetchService;
+
+    BuyQuantityMapper(StrategyFetchService strategyFetchService){
+        this.strategyFetchService = strategyFetchService;
+    }
 
     public void mapBuyQntyLvl2Sp(BuyQntyResponseDTO buyQntyResponseDTO, BuyQtyResponse response, Integer finelineNbr) {
         if (response.getPlanId() == null) {
@@ -80,30 +89,25 @@ public class BuyQuantityMapper {
 
     private void updateFineline(BuyQntyResponseDTO buyQntyResponseDTO, FinelineDto finelineDto) {
         MetricsDto metricsDto = finelineDto.getMetrics();
-
         int buyQty = buyQntyResponseDTO.getBuyQty() != null
                 ? Optional.ofNullable(buyQntyResponseDTO.getBuyQty())
                 .orElse(0)
                 : 0;
 
-        if(metricsDto.getBuyQty() != null) {
-            metricsDto.setBuyQty(buyQty + metricsDto.getBuyQty());
-        }
-        int isQty = buyQntyResponseDTO.getBuyQty() != null
+        metricsDto.setBuyQty(buyQty + metricsDto.getBuyQty());
+        int isQty = buyQntyResponseDTO.getInitialSetQty() != null
                 ? Optional.ofNullable(buyQntyResponseDTO.getInitialSetQty())
                 .orElse(0)
                 : 0;
 
         metricsDto.setFinalInitialSetQty(isQty + metricsDto.getFinalInitialSetQty());
-
-        int rplnQty = buyQntyResponseDTO.getBuyQty() != null
+        int rplnQty = buyQntyResponseDTO.getReplnQty() != null
                 ? Optional.ofNullable(buyQntyResponseDTO.getReplnQty())
                 .orElse(0)
                 : 0;
 
         metricsDto.setFinalReplenishmentQty(rplnQty + metricsDto.getFinalReplenishmentQty());
         metricsDto.setFinalBuyQty(buyQty + metricsDto.getBuyQty());
-
         finelineDto.setMetrics(metricsDto);
     }
 
@@ -113,11 +117,27 @@ public class BuyQuantityMapper {
         if (finelineNbr == null) {
             fineline.setFinelineDesc(buyQntyResponseDTO.getFinelineDesc());
             MetricsDto metricsDto = new MetricsDto();
-            metricsDto.setBuyQty(buyQntyResponseDTO.getBuyQty());
-            metricsDto.setFinalInitialSetQty(buyQntyResponseDTO.getInitialSetQty());
-            metricsDto.setFinalReplenishmentQty(buyQntyResponseDTO.getReplnQty());
-            metricsDto.setFinalBuyQty(buyQntyResponseDTO.getBuyQty());
+            int buyQty = buyQntyResponseDTO.getBuyQty() != null
+                    ? Optional.ofNullable(buyQntyResponseDTO.getBuyQty())
+                    .orElse(0)
+                    : 0;
+
+            metricsDto.setBuyQty(buyQty);
+            int isQty = buyQntyResponseDTO.getInitialSetQty() != null
+                    ? Optional.ofNullable(buyQntyResponseDTO.getInitialSetQty())
+                    .orElse(0)
+                    : 0;
+
+            metricsDto.setFinalInitialSetQty(isQty);
+            int rplnQty = buyQntyResponseDTO.getReplnQty() != null
+                    ? Optional.ofNullable(buyQntyResponseDTO.getReplnQty())
+                    .orElse(0)
+                    : 0;
+
+            metricsDto.setFinalReplenishmentQty(rplnQty);
+            metricsDto.setFinalBuyQty(buyQty);
             fineline.setMetrics(metricsDto);
+
         } else {
             fineline.setStyles(mapBuyQntyStyleSp(buyQntyResponseDTO, fineline, finelineNbr));
         }
@@ -139,10 +159,28 @@ public class BuyQuantityMapper {
         styleDto.setStyleNbr(buyQntyResponseDTO.getStyleNbr());
 
         MetricsDto metricsDto = new MetricsDto();
-        metricsDto.setBuyQty(buyQntyResponseDTO.getStyleBuyQty());
-        metricsDto.setFinalInitialSetQty(buyQntyResponseDTO.getStyleIsQty());
-        metricsDto.setFinalReplenishmentQty(buyQntyResponseDTO.getStyleReplnQty());
-        metricsDto.setFinalBuyQty(buyQntyResponseDTO.getStyleBuyQty());
+
+        int buyQty = buyQntyResponseDTO.getStyleBuyQty() != null
+                ? Optional.ofNullable(buyQntyResponseDTO.getStyleBuyQty())
+                .orElse(0)
+                : 0;
+
+        metricsDto.setBuyQty(buyQty);
+        int isQty = buyQntyResponseDTO.getStyleIsQty() != null
+                ? Optional.ofNullable(buyQntyResponseDTO.getStyleIsQty())
+                .orElse(0)
+                : 0;
+
+        metricsDto.setFinalInitialSetQty(isQty);
+        int rplnQty = buyQntyResponseDTO.getStyleReplnQty() != null
+                ? Optional.ofNullable(buyQntyResponseDTO.getStyleReplnQty())
+                .orElse(0)
+                : 0;
+
+        metricsDto.setFinalReplenishmentQty(rplnQty);
+        metricsDto.setFinalBuyQty(buyQty);
+
+
         styleDto.setMetrics(metricsDto);
         styleDto.setCustomerChoices(mapBuyQntyCcSp(buyQntyResponseDTO, styleDto));
         styleDtoList.add(styleDto);
@@ -228,11 +266,64 @@ public class BuyQuantityMapper {
         CustomerChoiceDto customerChoiceDto = new CustomerChoiceDto();
         customerChoiceDto.setCcId(buyQntyResponseDTO.getCcId());
 
+        BuyQtyResponse sizeLevelData = null;
+        try {
+            BuyQtyRequest newBuyReq = new BuyQtyRequest();
+            newBuyReq.setPlanId(buyQntyResponseDTO.getPlanId());
+            newBuyReq.setChannel(ChannelType.getChannelNameFromId(buyQntyResponseDTO.getChannelId()));
+            newBuyReq.setLvl3Nbr(buyQntyResponseDTO.getLvl3Nbr());
+            newBuyReq.setLvl4Nbr(buyQntyResponseDTO.getLvl4Nbr());
+            newBuyReq.setFinelineNbr(buyQntyResponseDTO.getFinelineNbr());
+            newBuyReq.setStyleNbr(buyQntyResponseDTO.getStyleNbr());
+            newBuyReq.setCcId(buyQntyResponseDTO.getCcId());
+
+            sizeLevelData = strategyFetchService.getBuyQtyResponseSizeProfile(newBuyReq);
+        } catch (SizeAndPackException e) {
+            log.error("Error occured while fetching values from Strategy.",e);
+        }
+
         MetricsDto metricsDto = new MetricsDto();
-        metricsDto.setBuyQty(buyQntyResponseDTO.getCcBuyQty());
-        metricsDto.setFinalInitialSetQty(buyQntyResponseDTO.getCcIsQty());
-        metricsDto.setFinalReplenishmentQty(buyQntyResponseDTO.getCcReplnQty());
-        metricsDto.setFinalBuyQty(buyQntyResponseDTO.getCcBuyQty());
+        if(sizeLevelData != null &&  sizeLevelData.getLvl3List() != null){
+            Double avgSizeProfilePctSum = sizeLevelData.getLvl3List().stream()
+                    .flatMapToDouble(lvl3Dto -> lvl3Dto.getLvl4List().stream()
+                            .flatMapToDouble(lvl4Dto -> lvl4Dto.getFinelines().stream()
+                                    .flatMapToDouble(finelineDto -> finelineDto.getStyles().stream()
+                                            .flatMapToDouble(styleDto -> styleDto.getCustomerChoices().stream()
+                                                    .flatMapToDouble(cc->cc.getClusters().get(0).getSizes().stream()
+                                                            .flatMapToDouble(sizeDto -> DoubleStream.of(sizeDto.getMetrics().getAvgSizeProfilePct()))))))).sum();
+            Double adjSizeProfilePctSum =  sizeLevelData.getLvl3List().stream()
+                    .flatMapToDouble(lvl3Dto -> lvl3Dto.getLvl4List().stream()
+                            .flatMapToDouble(lvl4Dto -> lvl4Dto.getFinelines().stream()
+                                    .flatMapToDouble(finelineDto -> finelineDto.getStyles().stream()
+                                            .flatMapToDouble(styleDto -> styleDto.getCustomerChoices().stream()
+                                                    .flatMapToDouble(cc->cc.getClusters().get(0).getSizes().stream()
+                                                            .flatMapToDouble(sizeDto -> DoubleStream.of(sizeDto.getMetrics().getAdjAvgSizeProfilePct()))))))).sum();
+
+            metricsDto.setAvgSizeProfilePct(avgSizeProfilePctSum);
+            metricsDto.setAdjAvgSizeProfilePct(adjSizeProfilePctSum);
+
+        }
+
+        int buyQty = buyQntyResponseDTO.getCcBuyQty() != null
+                ? Optional.ofNullable(buyQntyResponseDTO.getCcBuyQty())
+                .orElse(0)
+                : 0;
+
+        metricsDto.setBuyQty(buyQty);
+        int isQty = buyQntyResponseDTO.getCcIsQty() != null
+                ? Optional.ofNullable(buyQntyResponseDTO.getCcIsQty())
+                .orElse(0)
+                : 0;
+
+        metricsDto.setFinalInitialSetQty(isQty);
+        int rplnQty = buyQntyResponseDTO.getCcReplnQty() != null
+                ? Optional.ofNullable(buyQntyResponseDTO.getCcReplnQty())
+                .orElse(0)
+                : 0;
+
+        metricsDto.setFinalReplenishmentQty(rplnQty);
+        metricsDto.setFinalBuyQty(buyQty);
+
         customerChoiceDto.setMetrics(metricsDto);
         customerChoiceDtoList.add(customerChoiceDto);
     }
