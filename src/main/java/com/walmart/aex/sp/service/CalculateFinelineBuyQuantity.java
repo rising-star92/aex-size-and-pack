@@ -27,7 +27,7 @@ public class CalculateFinelineBuyQuantity {
 
     private final BQFPService bqfpService;
     private final ObjectMapper objectMapper;
-    private final SizeAndPackService sizeAndPackService;
+    private final StrategyFetchService strategyFetchService;
     private final BuyQtyReplenishmentMapperService buyQtyReplenishmentMapperService;
     private final CalculateOnlineFinelineBuyQuantity calculateOnlineFinelineBuyQuantity;
 
@@ -37,7 +37,7 @@ public class CalculateFinelineBuyQuantity {
                                         CalculateOnlineFinelineBuyQuantity calculateOnlineFinelineBuyQuantity) {
         this.bqfpService = bqfpService;
         this.objectMapper = objectMapper;
-        this.sizeAndPackService = sizeAndPackService;
+        this.strategyFetchService = strategyFetchService;
         this.buyQtyReplenishmentMapperService = buyQtyReplenishmentMapperService;
         this.calculateOnlineFinelineBuyQuantity = calculateOnlineFinelineBuyQuantity;
     }
@@ -376,7 +376,7 @@ public class CalculateFinelineBuyQuantity {
         buyQtyRequest.setLvl3Nbr(calculateBuyQtyParallelRequest.getLvl3Nbr());
         buyQtyRequest.setLvl4Nbr(calculateBuyQtyParallelRequest.getLvl4Nbr());
         buyQtyRequest.setFinelineNbr(calculateBuyQtyParallelRequest.getFinelineNbr());
-        return sizeAndPackService.getAllCcSizeProfiles(buyQtyRequest);
+        return strategyFetchService.getAllCcSizeProfiles(buyQtyRequest);
     }
 
     private APResponse getRfaSpResponse(CalculateBuyQtyRequest calculateBuyQtyRequest, Integer finelineNbr, BQFPResponse bqfpResponse) {
@@ -385,7 +385,12 @@ public class CalculateFinelineBuyQuantity {
         apRequest.setFinelineNbr(finelineNbr);
         apRequest.setVolumeDeviationLevel(VdLevelCode.getVdLevelCodeFromId(bqfpResponse.getVolumeDeviationStrategyLevelSelection().intValue()));
 
-        return sizeAndPackService.fetchRunFixtureAllocationOutput(apRequest);
+        try {
+            return strategyFetchService.getAPRunFixtureAllocationOutput(apRequest);
+        } catch (Exception e) {
+            log.error("Exception While fetching RFA output:", e);
+            throw new CustomException("Failed to fetch RFA output: " + e);
+        }
     }
 
     private BQFPResponse getBqfpResponse(CalculateBuyQtyRequest calculateBuyQtyRequest, Integer finelineNbr) {
