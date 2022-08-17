@@ -8,5 +8,5 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Optional;
 
 public interface FinelinePlanRepository extends JpaRepository<FinelinePlan, FinelinePlanId> {
-   Optional<FinelinePlan> findByPlanIdFinelineNbr(Long planId, Integer finelineNbr);
+   Optional<FinelinePlan> findByFinelinePlanId_SubCatPlanId_MerchCatPlanId_PlanIdAndFinelinePlanId_FinelineNbrAndFinelinePlanId_SubCatPlanId_MerchCatPlanId_ChannelId(Long planId, Integer finelineNbr, Integer channel);
 }

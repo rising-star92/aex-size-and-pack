@@ -305,14 +305,9 @@ type Execution {
 
 input HistoricalMetricsRequest {
   planId: Int!
-  lvl0Nbr: Int!
-  lvl1Nbr: Int!
-  lvl2Nbr: Int!
   lvl3Nbr: Int!
   lvl4Nbr: Int!
   finelineNbr: Int
-  styleNbr: String
-  customerChoice: String
   channel: String!
 }
 

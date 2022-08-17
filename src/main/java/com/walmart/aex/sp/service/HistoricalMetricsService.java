@@ -4,6 +4,7 @@ import com.walmart.aex.sp.dto.historicalmetrics.HistoricalMetricsRequest;
 import com.walmart.aex.sp.dto.historicalmetrics.HistoricalMetricsResponse;
 import com.walmart.aex.sp.entity.FinelinePlan;
 import com.walmart.aex.sp.entity.MerchCatPlanId;
+import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.repository.FinelinePlanRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,8 @@ public class HistoricalMetricsService {
       request.setLyCompWeekEnd(Integer.valueOf(String.valueOf(getCurrentYear()).concat(WEEK_START)));
 
       try {
-         FinelinePlan fineline = finelinePlanRepository.findByPlanIdFinelineNbr((long) request.getPlanId(), request.getFinelineNbr())
+         Integer channelId = ChannelType.getChannelIdFromName(request.getChannel());
+         FinelinePlan fineline = finelinePlanRepository.findByFinelinePlanId_SubCatPlanId_MerchCatPlanId_PlanIdAndFinelinePlanId_FinelineNbrAndFinelinePlanId_SubCatPlanId_MerchCatPlanId_ChannelId((long)request.getPlanId(), request.getFinelineNbr(), channelId)
                .orElse(null);
 
          if (fineline == null) {
