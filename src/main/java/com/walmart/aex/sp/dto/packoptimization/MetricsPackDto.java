@@ -11,5 +11,6 @@ public class MetricsPackDto {
 	private List<Integer> storeList;
 	private Integer initialSet;
 	private Integer bumpSet;
+	private String flowStrategyType;
 
 }

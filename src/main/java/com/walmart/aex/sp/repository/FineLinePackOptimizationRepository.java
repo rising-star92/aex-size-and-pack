@@ -20,7 +20,6 @@ public interface FineLinePackOptimizationRepository  extends JpaRepository<SpCus
 			"sccfs.spCustomerChoiceChannelFixtureSizeId.spCustomerChoiceChannelFixtureId.customerChoice as ccId, " +
 			"sccfs.spCustomerChoiceChannelFixture.spStyleChannelFixture.spFineLineChannelFixture.fixtureTypeRollUp.fixtureTypeRollupName as fixtureTypeRollupName, " +
 			"sccfs.merchMethodShortDesc as merchMethod, " +
-			"sccfs.fpStrategyText.flowStrategyDesc as fpStrategyText, " +
 			"sccfs.ahsSizeDesc, " +
 			"sccfs.storeObj) " +
 			"from SpCustomerChoiceChannelFixtureSize sccfs " +
