@@ -222,7 +222,7 @@ public class CalculateFinelineBuyQuantity {
                         merchMethodsDto.getFixtureTypeRollupId(), rfaSizePackData.getVolume_group_cluster_id());
 
                 if (volumeCluster.getFlowStrategy() != null) {
-                    storeQuantity.setFlowStrategyCode(FlowStrategy.getFlowStrategyIdFromName(volumeCluster.getFlowStrategy()));
+                    storeQuantity.setFlowStrategyCode(volumeCluster.getFlowStrategy());
                 }
                 //Calculate IS Buy Quantity
                 double isCalculatedBq = rfaSizePackData.getStore_cnt() * volumeCluster.getInitialSet().getInitialSetUnitsPerFix() * rfaSizePackData.getFixture_group();

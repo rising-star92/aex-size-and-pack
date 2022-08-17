@@ -147,7 +147,7 @@ public class PackOptimizationMapper {
 				{ 
 					metricsDtoList.stream()
 					.filter(metrics -> ((metrics.getClusterId().equals(stObj.getSizeCluster())) && (metrics.getInitialSet().equals(stObj.getIsUnits()))
-							&& (metrics.getFlowStrategyType().equals(FlowStrategy.getFlowStrategyFromId(stObj.getFlowStrategyCode())))
+							&& (stObj.getFlowStrategyCode() != null) && (metrics.getFlowStrategyType().equals(FlowStrategy.getFlowStrategyFromId(stObj.getFlowStrategyCode())))
 					)).findFirst()
 					.ifPresentOrElse(metrics ->metrics.getStoreList().addAll(stObj.getStoreList()),
 							()->setMetrics(metricsDtoList,stObj));
