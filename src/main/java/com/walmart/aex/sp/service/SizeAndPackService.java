@@ -1,12 +1,8 @@
 package com.walmart.aex.sp.service;
 
-import com.walmart.aex.sp.dto.assortproduct.APRequest;
-import com.walmart.aex.sp.dto.assortproduct.APResponse;
 import com.walmart.aex.sp.dto.buyquantity.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.walmart.aex.sp.dto.gql.GraphQLResponse;
-import com.walmart.aex.sp.dto.gql.Payload;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl1;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl2;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
@@ -14,7 +10,6 @@ import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDTO;
 import com.walmart.aex.sp.dto.planhierarchy.SizeAndPackResponse;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.exception.CustomException;
-import com.walmart.aex.sp.exception.SizeAndPackException;
 import com.walmart.aex.sp.properties.GraphQLProperties;
 import com.walmart.aex.sp.repository.MerchCatPlanRepository;
 import com.walmart.aex.sp.repository.SpCustomerChoiceChannelFixtureRepository;
@@ -24,10 +19,8 @@ import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import java.util.*;
-import java.util.function.Function;
 
 @Service
 @Slf4j

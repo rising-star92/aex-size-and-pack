@@ -3,7 +3,6 @@ package com.walmart.aex.sp.service;
 import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.exception.SizeAndPackException;
-import com.walmart.aex.sp.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
