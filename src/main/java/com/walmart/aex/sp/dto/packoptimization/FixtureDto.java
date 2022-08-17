@@ -8,7 +8,6 @@ public class FixtureDto {
 
 	private String fixtureType;
 	private String merchMethod;
-	private String flowStrategyType;
 	private List <SizePackDto> sizes;
 
 
