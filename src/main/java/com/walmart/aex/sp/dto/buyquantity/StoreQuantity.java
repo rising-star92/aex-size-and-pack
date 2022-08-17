@@ -12,4 +12,5 @@ public class StoreQuantity {
     private Integer sizeCluster;
     private Integer volumeCluster;
     private List<BumpSetQuantity> bumpSets;
+    private Integer flowStrategyCode;
 }
