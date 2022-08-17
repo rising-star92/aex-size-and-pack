@@ -11,13 +11,13 @@ public class FineLinePackOptimizationResponseDTO {
 	private Integer finelineNbr;
 	private String ccId;
 	private String fixtureTypeRollupName;
-	private String merchMethod;
+	private Integer merchMethod;
 	private String ahsSizeDesc;
 	private String storeObj;
 
 public FineLinePackOptimizationResponseDTO(Long planId,
 			Integer finelineNbr, String ccId,  String  fixtureTypeRollupName,
-			String merchMethod,String ahsSizeDesc,String storeObj ) {
+										   Integer merchMethod,String ahsSizeDesc,String storeObj ) {
 		this.planId = planId;
 		this.finelineNbr = finelineNbr;
 		this.ccId = ccId;

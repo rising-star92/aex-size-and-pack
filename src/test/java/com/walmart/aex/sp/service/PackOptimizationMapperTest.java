@@ -29,7 +29,7 @@ public class PackOptimizationMapperTest {
 		fineLinePackOptimizationResponseDTO.setFinelineNbr(finelineNbr);
 		fineLinePackOptimizationResponseDTO.setCcId("34_2816_2_19_2_CHARCOAL GREY HEATHER                                                                ");
 		fineLinePackOptimizationResponseDTO.setFixtureTypeRollupName("ENDCAPS");
-		fineLinePackOptimizationResponseDTO.setMerchMethod("1");
+		fineLinePackOptimizationResponseDTO.setMerchMethod(1);
 		fineLinePackOptimizationResponseDTO.setAhsSizeDesc("small");
 		fineLinePackOptimizationResponseDTO.setStoreObj("{\"buyQuantities\":[{\"isUnits\":1234,\"storeList\":[1,2,3],\"sizeCluster\":1,\"volumeCluster\":1,\"bumpSets\":[{\"setNbr\":1,\"wmYearWeek\":1,\"weekDesc\":\"1\",\"bsUnits\":12345}]},{\"isUnits\":1234,\"storeList\":[4,5,6],\"sizeCluster\":1,\"volumeCluster\":1,\"bumpSets\":[{\"setNbr\":1,\"wmYearWeek\":1,\"weekDesc\":\"1\",\"bsUnits\":12345}]},{\"isUnits\":235,\"storeList\":[6,8,9],\"sizeCluster\":2,\"volumeCluster\":1,\"bumpSets\":[{\"setNbr\":1,\"wmYearWeek\":1,\"weekDesc\":\"1\",\"bsUnits\":4879}]},{\"isUnits\":1234,\"storeList\":[8,9,0],\"sizeCluster\":1,\"volumeCluster\":1,\"bumpSets\":[{\"setNbr\":1,\"wmYearWeek\":1,\"weekDesc\":\"1\",\"bsUnits\":12345}]}]}\r\n"
 				+ "");
