@@ -4,6 +4,7 @@ import java.util.stream.Stream;
 
 public enum FixtureTypeRollup {
 
+    ONLINE_FIXTURE(0, "ONLINE_FIXTURE"),
     WALLS(1, "WALLS"),
     ENDCAPS(2, "ENDCAPS"),
     RACKS(3, "RACKS"),
