@@ -21,6 +21,9 @@ public class BuyQuantityMapperTest {
     BuyQuantityMapper buyQunatityMapper;
     @Mock
     BuyQntyResponseDTO buyQntyResponseDTO;
+
+    @Mock
+    StrategyFetchService strategyFetchService;
     private static final Integer finelineNbr=3470;
     private static final Long planId=471l;
     @Test

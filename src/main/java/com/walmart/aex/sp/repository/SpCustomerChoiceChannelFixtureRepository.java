@@ -35,7 +35,8 @@ public interface SpCustomerChoiceChannelFixtureRepository extends JpaRepository<
             "sccf.initialSetQty as ccIsQty, " +
             "sccf.buyQty as ccBuyQty, " +
             "sccf.replnQty as ccReplnQty, " +
-            "sccf.adjReplnQty as ccAdjReplnQty " +
+            "sccf.adjReplnQty as ccAdjReplnQty, " +
+            "msp.merchCatPlanId.channelId as channelId " +
             ") " +
             "from MerchCatPlan msp " +
             "inner join " +
