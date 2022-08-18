@@ -7,6 +7,7 @@ import com.walmart.aex.sp.dto.packoptimization.DCInboundResponse;
 import com.walmart.aex.sp.dto.packoptimization.DCinboundReplenishment;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.repository.CcSpReplnPkConsRepository;
+import com.walmart.aex.sp.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.entity.ContentType;
 import org.springframework.stereotype.Service;
@@ -33,8 +34,9 @@ public class DCInboundSheetService {
         this.ccSpReplnPkConsRepository = ccSpReplnPkConsRepository;
     }
 
-    public List<DCInboundExcelResponse> getDCInboundExcelSheet(Long planId) {
-        List<DCInboundResponse> response = ccSpReplnPkConsRepository.getDCInboundsByPlanId(planId);
+    public List<DCInboundExcelResponse> getDCInboundExcelSheet(Long planId, String channelDesc) {
+        Integer channelId = CommonUtil.getChannelId(channelDesc);
+        List<DCInboundResponse> response = ccSpReplnPkConsRepository.getDCInboundsByPlanIdAndChannelId(planId,channelId);
         List<DCInboundExcelResponse> dcInboundExcelData = setDCInboundExcelSheetResponseDTO(response);
         return dcInboundExcelData;
     }
@@ -69,14 +71,14 @@ public class DCInboundSheetService {
         }
         return dcInboundExcelResponses;
     }
-    public List<DCInboundExcelResponse> getDcInboundExcelResponses(Long planId, HttpServletResponse response) {
+    public List<DCInboundExcelResponse> getDcInboundExcelResponses(Long planId,String channelDesc, HttpServletResponse response) {
         response.setContentType(String.valueOf(ContentType.APPLICATION_OCTET_STREAM));
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
         String currentDateTime = dateFormatter.format(new Date());
         String headerKey = DC_INBOUND_HEADER_KEY;
         String headerValue = "attachment; filename=" + DC_INBOUND_REPORT_NAME + currentDateTime + ".xlsx";
         response.setHeader(headerKey, headerValue);
-        List<DCInboundExcelResponse> sheetData = getDCInboundExcelSheet(planId);
+        List<DCInboundExcelResponse> sheetData = getDCInboundExcelSheet(planId,channelDesc);
         return sheetData;
     }
 

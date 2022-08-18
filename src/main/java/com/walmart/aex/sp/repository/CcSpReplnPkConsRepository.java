@@ -77,7 +77,7 @@ public interface CcSpReplnPkConsRepository extends JpaRepository<CcSpMmReplPack,
             "AND flp.finelinePlanId.subCatPlanId.merchCatPlanId.channelId=csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId " +
             "RIGHT JOIN ChannelText ct " +
             "ON ct.channelId=csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId " +
-            "WHERE scp.subCatPlanId.merchCatPlanId.planId=:planId GROUP BY " +
+            "WHERE scp.subCatPlanId.merchCatPlanId.planId=:planId AND csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId=:channelId GROUP BY " +
             "scp.subCatPlanId.merchCatPlanId.planId ,scp.subCatPlanId.merchCatPlanId.lvl0Nbr ,scp.lvl0Desc ,scp.subCatPlanId.merchCatPlanId.lvl1Nbr ,scp.lvl1Desc ,scp.subCatPlanId.merchCatPlanId.lvl2Nbr ,scp.lvl2Desc ," +
             "scp.subCatPlanId.merchCatPlanId.lvl3Nbr , scp.lvl3Desc, scp.subCatPlanId.lvl4Nbr ,scp.lvl4Desc, flp.finelinePlanId.finelineNbr ,flp.finelineDesc, csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.styleNbr , csmrp.sizeDesc, " +
             "csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.customerChoice, csmrp.merchMethodDesc , " +
@@ -86,5 +86,5 @@ public interface CcSpReplnPkConsRepository extends JpaRepository<CcSpMmReplPack,
             " csmrp.ccSpReplPackId.ahsSizeId , " +
             " csmrp.merchMethodDesc , " +
             " csmrp.replenObj")
-    List<DCInboundResponse> getDCInboundsByPlanId(@Param("planId") Long planId);
+    List<DCInboundResponse> getDCInboundsByPlanIdAndChannelId(@Param("planId") Long planId ,@Param("channelId") Integer channelId);
 }

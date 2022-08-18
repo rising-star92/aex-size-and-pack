@@ -67,4 +67,19 @@ public class CommonUtil {
         }
         throw new RuntimeException("Merch Method does not Match");
     }
+
+    public static Integer getChannelId(String channelDesc) {
+        switch (channelDesc.toUpperCase()){
+            case "STORE":{
+                return 1;
+            }
+            case "ONLINE":{
+                return 2;
+            }
+            case "OMNI":{
+                return 3;
+            }
+        }
+        throw new RuntimeException("Channel Type does not Match");
+    }
 }

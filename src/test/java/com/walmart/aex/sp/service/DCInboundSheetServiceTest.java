@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,17 +29,17 @@ public class DCInboundSheetServiceTest {
     @Mock
     private CcSpReplnPkConsRepository ccSpReplnPkConsRepository;
     private static final Long planId=471l;
-
+    private static final String channelDesc="Store";
     @Test
     void testGetDCInboundExcelSheet() throws JsonProcessingException {
         //Arrange
         DCInboundResponse dcInboundResponse = getDCInboundResponseDTO();
         List<DCInboundResponse> response = new ArrayList<>();
         response.add(dcInboundResponse);
-        when(ccSpReplnPkConsRepository.getDCInboundsByPlanId(planId)).thenReturn(response);
+        when(ccSpReplnPkConsRepository.getDCInboundsByPlanIdAndChannelId(planId, 1)).thenReturn(response);
 
         //Act
-        List<DCInboundExcelResponse> dcInboundExcelData = dcInboundSheetService.getDCInboundExcelSheet(planId);
+        List<DCInboundExcelResponse> dcInboundExcelData = dcInboundSheetService.getDCInboundExcelSheet(planId,channelDesc);
 
         // Assert
         assertNotNull(dcInboundExcelData);
@@ -68,10 +70,10 @@ public class DCInboundSheetServiceTest {
         dcInboundResponse.setSizeDesc("1X");
         List<DCInboundResponse> response = new ArrayList<>();
         response.add(dcInboundResponse);
-        when(ccSpReplnPkConsRepository.getDCInboundsByPlanId(planId)).thenReturn(response);
+        when(ccSpReplnPkConsRepository.getDCInboundsByPlanIdAndChannelId(planId,1)).thenReturn(response);
 
         //Act
-        List<DCInboundExcelResponse> dcInboundExcelData = dcInboundSheetService.getDCInboundExcelSheet(planId);
+        List<DCInboundExcelResponse> dcInboundExcelData = dcInboundSheetService.getDCInboundExcelSheet(planId,channelDesc);
 
         // Assert
         assertNotNull(dcInboundExcelData);
@@ -86,9 +88,9 @@ public class DCInboundSheetServiceTest {
         DCInboundResponse dcInboundResponse = getDCInboundResponseDTO();
         List<DCInboundResponse> response = new ArrayList<>();
         response.add(dcInboundResponse);
-        when(ccSpReplnPkConsRepository.getDCInboundsByPlanId(planId)).thenReturn(response);
+        when(ccSpReplnPkConsRepository.getDCInboundsByPlanIdAndChannelId(planId,1)).thenReturn(response);
         //Act
-        List<DCInboundExcelResponse> sheetData = dcInboundSheetService.getDcInboundExcelResponses(planId,httpServletResponse);
+        List<DCInboundExcelResponse> sheetData = dcInboundSheetService.getDcInboundExcelResponses(planId,channelDesc,httpServletResponse);
 
         // Assert
         assertNotNull(sheetData);
