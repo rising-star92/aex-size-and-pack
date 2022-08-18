@@ -24,7 +24,7 @@ public class DCInboundSheetController {
 
     @CrossOrigin
     @GetMapping("/dcInboundExportExcel/{planId}/{channelDesc}")
-    public void getDCInbountExcelSheet(@PathVariable("planId") Long planId, @PathVariable String channelDesc,HttpServletResponse response) throws IOException {
+    public void getDCInbountExcelSheet(@PathVariable("planId") Long planId, @PathVariable("channelDesc") String channelDesc,HttpServletResponse response) throws IOException {
         List<DCInboundExcelResponse> sheetData = dcInboundSheetService.getDcInboundExcelResponses(planId, channelDesc,response);
         DCInboundSheetExporter excelExporter = new DCInboundSheetExporter(sheetData);
         excelExporter.export(response);
