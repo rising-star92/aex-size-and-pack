@@ -94,7 +94,6 @@ public class BuyQuantityMapper {
                 .orElse(0)
                 : 0;
 
-        metricsDto.setBuyQty(buyQty + metricsDto.getBuyQty());
         int isQty = buyQntyResponseDTO.getInitialSetQty() != null
                 ? Optional.ofNullable(buyQntyResponseDTO.getInitialSetQty())
                 .orElse(0)
@@ -108,6 +107,7 @@ public class BuyQuantityMapper {
 
         metricsDto.setFinalReplenishmentQty(rplnQty + metricsDto.getFinalReplenishmentQty());
         metricsDto.setFinalBuyQty(buyQty + metricsDto.getBuyQty());
+        metricsDto.setBuyQty(buyQty + metricsDto.getBuyQty());
         finelineDto.setMetrics(metricsDto);
     }
 
@@ -243,7 +243,6 @@ public class BuyQuantityMapper {
                 .orElse(0)
                 : 0;
 
-        metricsDto.setBuyQty(buyQty + metricsDto.getBuyQty());
 
         int isQty = buyQntyResponseDTO.getCcIsQty() != null
                 ? Optional.ofNullable(buyQntyResponseDTO.getCcIsQty())
@@ -259,6 +258,7 @@ public class BuyQuantityMapper {
 
         metricsDto.setFinalReplenishmentQty(rplnQty + metricsDto.getFinalReplenishmentQty());
         metricsDto.setFinalBuyQty(buyQty + metricsDto.getBuyQty());
+        metricsDto.setBuyQty(buyQty + metricsDto.getBuyQty());
         customerChoiceDto.setMetrics(metricsDto);
     }
 
