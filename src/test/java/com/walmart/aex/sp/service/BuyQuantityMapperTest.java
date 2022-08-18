@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -55,7 +56,7 @@ public class BuyQuantityMapperTest {
         MetricsDto metricsDto = new MetricsDto();
         sizeDto.setMetrics(metricsDto);
         sizeDtos.add(sizeDto);
-        buyQunatityMapper.mapBuyQntySizeSp(buyQntyResponseDTO,sizeDtos);
+        buyQunatityMapper.mapBuyQntySizeSp(Arrays.asList(buyQntyResponseDTO),sizeDtos.get(0));
         assertEquals(100,sizeDto.getMetrics().getBuyQty());
 
     }

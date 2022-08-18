@@ -225,7 +225,7 @@ public class CalculateFinelineBuyQuantity {
                     storeQuantity.setFlowStrategyCode(volumeCluster.getFlowStrategy());
                 }
                 //Calculate IS Buy Quantity
-                double isCalculatedBq = rfaSizePackData.getStore_cnt() * volumeCluster.getInitialSet().getInitialSetUnitsPerFix() * rfaSizePackData.getFixture_group();
+                Float isCalculatedBq = rfaSizePackData.getStore_cnt() * volumeCluster.getInitialSet().getInitialSetUnitsPerFix() * rfaSizePackData.getFixture_group();
                 double isQty = (isCalculatedBq * getSizePct(sizeDto)) / 100;
                 double perStoreQty = isQty / rfaSizePackData.getStore_cnt();
 
@@ -369,7 +369,7 @@ public class CalculateFinelineBuyQuantity {
             //Calculate BS Buy Quantity
             double bumpQtyPerFixture = (bumpSet.getUnits() * volumeCluster.getInitialSet().getInitialSetUnitsPerFix()) / volumeCluster.getInitialSet().getTotalInitialSetUnits().doubleValue();
             double bsCalculatedBq = rfaSizePackData.getStore_cnt() * bumpQtyPerFixture * rfaSizePackData.getFixture_group();
-            double bsQty = bsCalculatedBq * getSizePct(sizeDto);
+            double bsQty = bsCalculatedBq * getSizePct(sizeDto)/ 100 ;
             double bsPerStoreQty = bsQty / rfaSizePackData.getStore_cnt();
             bumpSetQuantity.setTotalUnits(bsQty);
             bumpSetQuantity.setBsUnits( bsPerStoreQty);
