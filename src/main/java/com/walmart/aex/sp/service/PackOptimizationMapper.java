@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.walmart.aex.sp.enums.FlowStrategy;
+import com.walmart.aex.sp.util.CommonUtil;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -88,7 +89,7 @@ public class PackOptimizationMapper {
 
 		FixtureDto fixtureDto = new FixtureDto();
 		fixtureDto.setFixtureType(finelinePackOptimizationResponseDTO.getFixtureTypeRollupName());
-		fixtureDto.setMerchMethod(finelinePackOptimizationResponseDTO.getMerchMethod());
+		fixtureDto.setMerchMethod(CommonUtil.getMerchMethod( finelinePackOptimizationResponseDTO.getMerchMethod()));
 		fixtureDto.setSizes(mapSize(finelinePackOptimizationResponseDTO, fixtureDto));
 		merchMethodsDtoList.add(fixtureDto);
 
