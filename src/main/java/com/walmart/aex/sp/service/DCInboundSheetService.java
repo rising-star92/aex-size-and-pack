@@ -7,7 +7,6 @@ import com.walmart.aex.sp.dto.packoptimization.DCInboundResponse;
 import com.walmart.aex.sp.dto.packoptimization.DCinboundReplenishment;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.repository.CcSpReplnPkConsRepository;
-import com.walmart.aex.sp.repository.MerchCatPlanRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.entity.ContentType;
 import org.springframework.stereotype.Service;
@@ -53,7 +52,7 @@ public class DCInboundSheetService {
                 dcInboundExcelResponse.setCcId(r.getCustomerChoice());
                 dcInboundExcelResponse.setMerchMethodDesc(r.getMerchMethodDesc());
                 dcInboundExcelResponse.setSizeDesc(r.getSizeDesc());
-
+                dcInboundExcelResponse.setChannelDesc(r.getChannelDesc());
                 if (r.getReplenishment() != null) {
                     try {
                         replenishmentDTO = Arrays.asList(objectMapper.readValue(r.getReplenishment(), DCinboundReplenishment[].class));

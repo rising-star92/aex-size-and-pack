@@ -22,6 +22,8 @@ public class DCInboundResponse {
     private Integer finelineNbr;
     private String finelineDesc;
     private String styleNbr;
+    private Integer channelId;
+    private String channelDesc;
     private String sizeDesc;
     private String customerChoice;
     private Integer ahsSizeId;

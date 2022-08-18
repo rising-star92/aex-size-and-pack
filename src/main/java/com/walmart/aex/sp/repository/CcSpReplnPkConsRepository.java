@@ -50,6 +50,8 @@ public interface CcSpReplnPkConsRepository extends JpaRepository<CcSpMmReplPack,
             " flp.finelinePlanId.finelineNbr , " +
             " flp.finelineDesc, " +
             " csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.styleNbr , " +
+            " csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId , " +
+            " ct.channelDesc , " +
             " csmrp.sizeDesc , " +
             " csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.customerChoice , " +
             " csmrp.ccSpReplPackId.ahsSizeId , " +
@@ -73,10 +75,14 @@ public interface CcSpReplnPkConsRepository extends JpaRepository<CcSpMmReplPack,
             "AND flp.finelinePlanId.subCatPlanId.lvl4Nbr=csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.repTLvl4 " +
             "AND flp.finelinePlanId.finelineNbr=csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.finelineNbr " +
             "AND flp.finelinePlanId.subCatPlanId.merchCatPlanId.channelId=csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId " +
+            "RIGHT JOIN ChannelText ct " +
+            "ON ct.channelId=csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId " +
             "WHERE scp.subCatPlanId.merchCatPlanId.planId=:planId GROUP BY " +
             "scp.subCatPlanId.merchCatPlanId.planId ,scp.subCatPlanId.merchCatPlanId.lvl0Nbr ,scp.lvl0Desc ,scp.subCatPlanId.merchCatPlanId.lvl1Nbr ,scp.lvl1Desc ,scp.subCatPlanId.merchCatPlanId.lvl2Nbr ,scp.lvl2Desc ," +
             "scp.subCatPlanId.merchCatPlanId.lvl3Nbr , scp.lvl3Desc, scp.subCatPlanId.lvl4Nbr ,scp.lvl4Desc, flp.finelinePlanId.finelineNbr ,flp.finelineDesc, csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.styleNbr , csmrp.sizeDesc, " +
             "csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.customerChoice, csmrp.merchMethodDesc , " +
+            "csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId , " +
+            " ct.channelDesc , " +
             " csmrp.ccSpReplPackId.ahsSizeId , " +
             " csmrp.merchMethodDesc , " +
             " csmrp.replenObj")

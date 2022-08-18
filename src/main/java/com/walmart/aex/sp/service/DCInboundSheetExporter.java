@@ -4,6 +4,7 @@ import com.walmart.aex.sp.dto.packoptimization.DCInboundExcelResponse;
 import com.walmart.aex.sp.dto.packoptimization.DCinboundReplenishment;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -36,6 +37,7 @@ public class DCInboundSheetExporter {
         headerList.add(CUSTOMER_CHOICE);
         headerList.add(MERCH_METHOD);
         headerList.add(SIZE);
+        headerList.add(CHANNEL);
         for (DCInboundExcelResponse obj:listDCInboundData) {
             List<DCinboundReplenishment> rep = obj.getReplenishment();
             for(DCinboundReplenishment r: rep){
@@ -53,9 +55,7 @@ public class DCInboundSheetExporter {
 
     private void writeHeaderLine() {
         sheet = workbook.createSheet(DC_INBOUND_EXCEL_SHEET_NAME);
-
         Row row = sheet.createRow(ZERO);
-
         CellStyle style = workbook.createCellStyle();
         XSSFFont font = workbook.createFont();
         font.setBold(true);
@@ -63,9 +63,16 @@ public class DCInboundSheetExporter {
         style.setFont(font);
         int column_num = ZERO;
 
-        for(String colName : getHeaders()){
-            createCell(row,column_num ++ , colName, style);
+        for (String colName : getHeaders()) {
+            createCell(row, column_num++, colName, style);
         }
+        // Adding filter to the excel sheet
+        sheet.setAutoFilter(new CellRangeAddress(ZERO, ZERO, ZERO, column_num - 1));
+        sheet.createFreezePane(ZERO, 1);
+        // Adding color to the header
+        style.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        row.getCell(ZERO).setCellStyle(style);
     }
 
     private void createCell(Row row, int columnCount, Object value, CellStyle style) {
@@ -103,6 +110,7 @@ public class DCInboundSheetExporter {
             createCell(row, columnCount++, dcInboundData.getCcId(), style);
             createCell(row, columnCount++, dcInboundData.getMerchMethodDesc(), style);
             createCell(row, columnCount++, dcInboundData.getSizeDesc(), style);
+            createCell(row, columnCount++, dcInboundData.getChannelDesc(), style);
             while(columnCount < getHeaders().size()){
                 for(DCinboundReplenishment r: dcInboundData.getReplenishment()){
                     int currColCount = columnCount++;
@@ -119,9 +127,7 @@ public class DCInboundSheetExporter {
     {
         Row row = sheet.getRow(ZERO);
         Cell cell = row.getCell(columnCount);
-        log.info("column count is {}", columnCount);
         return cell.getStringCellValue();
-
     }
 
     public void export(HttpServletResponse response) throws IOException {

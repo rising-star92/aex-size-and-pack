@@ -9,6 +9,7 @@ public interface SizeAndPackConstants {
 	public static final String CUSTOMER_CHOICE = "Customer Choice";
 	public static final String MERCH_METHOD = "Merch Method";
 	public static final String SIZE = "Size";
+	public static final String  CHANNEL = "Channel";
 	public static final Integer HEADER_FONT_HEIGHT = 14;
 	public static final Integer ROW_FONT_HEIGHT = 14;
 	public static final Integer ZERO = 0;
