@@ -7,6 +7,6 @@ public class BumpSetQuantity {
     private Integer setNbr;
     private String wmYearWeek;
     private String weekDesc;
-    private Integer bsUnits;
-    private Integer totalUnits;
+    private Double bsUnits;
+    private Double totalUnits;
 }

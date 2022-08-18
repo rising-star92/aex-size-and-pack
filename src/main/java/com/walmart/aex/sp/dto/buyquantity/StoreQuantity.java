@@ -6,8 +6,8 @@ import java.util.List;
 
 @Data
 public class StoreQuantity {
-    private Integer isUnits;
-    private Integer totalUnits;
+    private Double isUnits;
+    private Double totalUnits;
     private List<Integer> storeList;
     private Integer sizeCluster;
     private Integer volumeCluster;
