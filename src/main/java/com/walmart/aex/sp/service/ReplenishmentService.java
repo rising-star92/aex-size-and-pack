@@ -42,12 +42,12 @@ public class ReplenishmentService  {
     private final SpCustomerChoiceReplenishmentRepository  spCustomerChoiceReplenishmentRepository;
     private final SizeListReplenishmentRepository sizeListReplenishmentRepository;
     private final CatgReplnPkConsRepository catgReplnPkConsRepository;
-	private final SubCatgReplnPkConsRepository subCatgReplnPkConsRepository;
-	private final FinelineReplnPkConsRepository finelineReplnPkConsRepository;
-	private final StyleReplnPkConsRepository styleReplnConsRepository;
-	private final CcReplnPkConsRepository ccReplnConsRepository;
-	private final CcMmReplnPkConsRepository ccMmReplnPkConsRepository;
-	private final CcSpReplnPkConsRepository ccSpReplnPkConsRepository;
+    private final SubCatgReplnPkConsRepository subCatgReplnPkConsRepository;
+    private final FinelineReplnPkConsRepository finelineReplnPkConsRepository;
+    private final StyleReplnPkConsRepository styleReplnConsRepository;
+    private final CcReplnPkConsRepository ccReplnConsRepository;
+    private final CcMmReplnPkConsRepository ccMmReplnPkConsRepository;
+    private final CcSpReplnPkConsRepository ccSpReplnPkConsRepository;
 
     private final ReplenishmentMapper replenishmentMapper;
     private final UpdateReplnConfigMapper updateReplnConfigMapper;
@@ -140,61 +140,61 @@ public class ReplenishmentService  {
         log.info("Fetch Replenishment MerchMethod response: {}", replenishmentResponse);
         return replenishmentResponse;
     }
-    
+
     public void updateVnpkWhpkForCatgReplnCons(UpdateVnPkWhPkReplnRequest updateVnPkWhPkReplnRequest)
-	{
-	   Long planId = updateVnPkWhPkReplnRequest.getPlanId();
-	   Integer channelId = getChannelId(updateVnPkWhPkReplnRequest.getChannel());
-	   Integer lvl3Nbr = updateVnPkWhPkReplnRequest.getLvl3Nbr();
-	   Integer vnpk = updateVnPkWhPkReplnRequest.getVnpk();
-	   Integer whpk = updateVnPkWhPkReplnRequest.getWhpk();
-       Integer replenishmentUnits = updateVnPkWhPkReplnRequest.getRepleshUnits();
-	   
-	   vnpkwhpkRatio = getVnpkWhpkRatio(vnpk, whpk);
-	   
-	   List<MerchCatgReplPack> catgReplnPkConsList = catgReplnPkConsRepository.getCatgReplnConsData(planId, channelId, lvl3Nbr);
-	   updateReplnConfigMapper.updateVnpkWhpkForCatgReplnConsMapper(catgReplnPkConsList, vnpk, whpk, vnpkwhpkRatio, getReplenishmentPackCount(replenishmentUnits, vnpk));
-
-	}
-
-
-	public void updateVnpkWhpkForSubCatgReplnCons(UpdateVnPkWhPkReplnRequest updateVnPkWhPkReplnRequest)
-	{
-	   Long planId = updateVnPkWhPkReplnRequest.getPlanId();
-	   Integer channelId = getChannelId(updateVnPkWhPkReplnRequest.getChannel());
-	   Integer lvl3Nbr = updateVnPkWhPkReplnRequest.getLvl3Nbr();
-	   Integer lvl4Nbr = updateVnPkWhPkReplnRequest.getLvl4Nbr();
-	   Integer vnpk = updateVnPkWhPkReplnRequest.getVnpk();
-	   Integer whpk = updateVnPkWhPkReplnRequest.getWhpk();
-       Integer replenishmentUnits = updateVnPkWhPkReplnRequest.getRepleshUnits();
-
-	   vnpkwhpkRatio = getVnpkWhpkRatio(vnpk, whpk);
-	   
-	   List<SubCatgReplPack> SubcatgReplnPkConsList = subCatgReplnPkConsRepository.getSubCatgReplnConsData(planId, channelId, lvl3Nbr,lvl4Nbr);
-	   updateReplnConfigMapper.updateVnpkWhpkForSubCatgReplnConsMapper(SubcatgReplnPkConsList, vnpk, whpk, vnpkwhpkRatio, getReplenishmentPackCount(replenishmentUnits, vnpk));
-
-	}
-	public void updateVnpkWhpkForFinelineReplnCons(UpdateVnPkWhPkReplnRequest updateVnPkWhPkReplnRequest)
-	{
-		Long planId = updateVnPkWhPkReplnRequest.getPlanId();
-		Integer channelId = getChannelId(updateVnPkWhPkReplnRequest.getChannel());
-		Integer lvl3Nbr = updateVnPkWhPkReplnRequest.getLvl3Nbr();
-		Integer lvl4Nbr = updateVnPkWhPkReplnRequest.getLvl4Nbr();
-		Integer fineline = updateVnPkWhPkReplnRequest.getFineline();
-		Integer vnpk = updateVnPkWhPkReplnRequest.getVnpk();
-		Integer whpk = updateVnPkWhPkReplnRequest.getWhpk();
+    {
+        Long planId = updateVnPkWhPkReplnRequest.getPlanId();
+        Integer channelId = getChannelId(updateVnPkWhPkReplnRequest.getChannel());
+        Integer lvl3Nbr = updateVnPkWhPkReplnRequest.getLvl3Nbr();
+        Integer vnpk = updateVnPkWhPkReplnRequest.getVnpk();
+        Integer whpk = updateVnPkWhPkReplnRequest.getWhpk();
         Integer replenishmentUnits = updateVnPkWhPkReplnRequest.getRepleshUnits();
-		
-		vnpkwhpkRatio = getVnpkWhpkRatio(vnpk, whpk);
-		
-		List<FinelineReplPack> ccReplnPkConsList = finelineReplnPkConsRepository.getFinelineReplnConsData(planId, channelId, lvl3Nbr, lvl4Nbr, fineline);
-		
-		updateReplnConfigMapper.updateVnpkWhpkForFinelineReplnConsMapper(ccReplnPkConsList, vnpk, whpk, vnpkwhpkRatio, getReplenishmentPackCount(replenishmentUnits, vnpk));
-		
-	}
 
-	
-	public void updateVnpkWhpkForStyleReplnCons(UpdateVnPkWhPkReplnRequest updateVnPkWhPkReplnRequest) {
+        vnpkwhpkRatio = getVnpkWhpkRatio(vnpk, whpk);
+
+        List<MerchCatgReplPack> catgReplnPkConsList = catgReplnPkConsRepository.getCatgReplnConsData(planId, channelId, lvl3Nbr);
+        updateReplnConfigMapper.updateVnpkWhpkForCatgReplnConsMapper(catgReplnPkConsList, vnpk, whpk, vnpkwhpkRatio, getReplenishmentPackCount(replenishmentUnits, vnpk));
+
+    }
+
+
+    public void updateVnpkWhpkForSubCatgReplnCons(UpdateVnPkWhPkReplnRequest updateVnPkWhPkReplnRequest)
+    {
+        Long planId = updateVnPkWhPkReplnRequest.getPlanId();
+        Integer channelId = getChannelId(updateVnPkWhPkReplnRequest.getChannel());
+        Integer lvl3Nbr = updateVnPkWhPkReplnRequest.getLvl3Nbr();
+        Integer lvl4Nbr = updateVnPkWhPkReplnRequest.getLvl4Nbr();
+        Integer vnpk = updateVnPkWhPkReplnRequest.getVnpk();
+        Integer whpk = updateVnPkWhPkReplnRequest.getWhpk();
+        Integer replenishmentUnits = updateVnPkWhPkReplnRequest.getRepleshUnits();
+
+        vnpkwhpkRatio = getVnpkWhpkRatio(vnpk, whpk);
+
+        List<SubCatgReplPack> SubcatgReplnPkConsList = subCatgReplnPkConsRepository.getSubCatgReplnConsData(planId, channelId, lvl3Nbr,lvl4Nbr);
+        updateReplnConfigMapper.updateVnpkWhpkForSubCatgReplnConsMapper(SubcatgReplnPkConsList, vnpk, whpk, vnpkwhpkRatio, getReplenishmentPackCount(replenishmentUnits, vnpk));
+
+    }
+    public void updateVnpkWhpkForFinelineReplnCons(UpdateVnPkWhPkReplnRequest updateVnPkWhPkReplnRequest)
+    {
+        Long planId = updateVnPkWhPkReplnRequest.getPlanId();
+        Integer channelId = getChannelId(updateVnPkWhPkReplnRequest.getChannel());
+        Integer lvl3Nbr = updateVnPkWhPkReplnRequest.getLvl3Nbr();
+        Integer lvl4Nbr = updateVnPkWhPkReplnRequest.getLvl4Nbr();
+        Integer fineline = updateVnPkWhPkReplnRequest.getFineline();
+        Integer vnpk = updateVnPkWhPkReplnRequest.getVnpk();
+        Integer whpk = updateVnPkWhPkReplnRequest.getWhpk();
+        Integer replenishmentUnits = updateVnPkWhPkReplnRequest.getRepleshUnits();
+
+        vnpkwhpkRatio = getVnpkWhpkRatio(vnpk, whpk);
+
+        List<FinelineReplPack> ccReplnPkConsList = finelineReplnPkConsRepository.getFinelineReplnConsData(planId, channelId, lvl3Nbr, lvl4Nbr, fineline);
+
+        updateReplnConfigMapper.updateVnpkWhpkForFinelineReplnConsMapper(ccReplnPkConsList, vnpk, whpk, vnpkwhpkRatio, getReplenishmentPackCount(replenishmentUnits, vnpk));
+
+    }
+
+
+    public void updateVnpkWhpkForStyleReplnCons(UpdateVnPkWhPkReplnRequest updateVnPkWhPkReplnRequest) {
 
         Long planId = updateVnPkWhPkReplnRequest.getPlanId();
         Integer channelId = getChannelId(updateVnPkWhPkReplnRequest.getChannel());
@@ -213,30 +213,30 @@ public class ReplenishmentService  {
 
         updateReplnConfigMapper.updateVnpkWhpkForStyleReplnConsMapper(styleReplnPkConsList, vnpk, whpk, vnpkwhpkRatio, getReplenishmentPackCount(replenishmentUnits, vnpk));
     }
-	
-	public void updateVnpkWhpkForCcReplnPkCons(UpdateVnPkWhPkReplnRequest updateVnPkWhPkReplnRequest)
-	{
-		Long planId = updateVnPkWhPkReplnRequest.getPlanId();
-		Integer channelId = getChannelId(updateVnPkWhPkReplnRequest.getChannel());
-		Integer lvl3Nbr = updateVnPkWhPkReplnRequest.getLvl3Nbr();
-		Integer lvl4Nbr = updateVnPkWhPkReplnRequest.getLvl4Nbr();
-		Integer fineline = updateVnPkWhPkReplnRequest.getFineline();
-		String style = updateVnPkWhPkReplnRequest.getStyle();
-		String customerChoice = updateVnPkWhPkReplnRequest.getCustomerChoice();
-		Integer vnpk = updateVnPkWhPkReplnRequest.getVnpk();
-		Integer whpk = updateVnPkWhPkReplnRequest.getWhpk();
+
+    public void updateVnpkWhpkForCcReplnPkCons(UpdateVnPkWhPkReplnRequest updateVnPkWhPkReplnRequest)
+    {
+        Long planId = updateVnPkWhPkReplnRequest.getPlanId();
+        Integer channelId = getChannelId(updateVnPkWhPkReplnRequest.getChannel());
+        Integer lvl3Nbr = updateVnPkWhPkReplnRequest.getLvl3Nbr();
+        Integer lvl4Nbr = updateVnPkWhPkReplnRequest.getLvl4Nbr();
+        Integer fineline = updateVnPkWhPkReplnRequest.getFineline();
+        String style = updateVnPkWhPkReplnRequest.getStyle();
+        String customerChoice = updateVnPkWhPkReplnRequest.getCustomerChoice();
+        Integer vnpk = updateVnPkWhPkReplnRequest.getVnpk();
+        Integer whpk = updateVnPkWhPkReplnRequest.getWhpk();
         Integer replenishmentUnits = updateVnPkWhPkReplnRequest.getRepleshUnits();
 
-		vnpkwhpkRatio = getVnpkWhpkRatio(vnpk, whpk);
-		
-		List<CcReplPack> ccReplnPkConsList = ccReplnConsRepository.getCcReplnConsData(planId, channelId, lvl3Nbr, lvl4Nbr, fineline, style, customerChoice);
-		
-		updateReplnConfigMapper.updateVnpkWhpkForCcReplnPkConsMapper(ccReplnPkConsList, vnpk, whpk, vnpkwhpkRatio, getReplenishmentPackCount(replenishmentUnits, vnpk));
-	}
-	
-	public void updateVnPkWhPkCcMerchMethodReplnCon(UpdateVnPkWhPkReplnRequest updateVnPkWhPkReplnRequest) {
+        vnpkwhpkRatio = getVnpkWhpkRatio(vnpk, whpk);
 
-		Integer channelId = getChannelId(updateVnPkWhPkReplnRequest.getChannel());
+        List<CcReplPack> ccReplnPkConsList = ccReplnConsRepository.getCcReplnConsData(planId, channelId, lvl3Nbr, lvl4Nbr, fineline, style, customerChoice);
+
+        updateReplnConfigMapper.updateVnpkWhpkForCcReplnPkConsMapper(ccReplnPkConsList, vnpk, whpk, vnpkwhpkRatio, getReplenishmentPackCount(replenishmentUnits, vnpk));
+    }
+
+    public void updateVnPkWhPkCcMerchMethodReplnCon(UpdateVnPkWhPkReplnRequest updateVnPkWhPkReplnRequest) {
+
+        Integer channelId = getChannelId(updateVnPkWhPkReplnRequest.getChannel());
         Long planId = updateVnPkWhPkReplnRequest.getPlanId();
         Integer lvl3nbr = updateVnPkWhPkReplnRequest.getLvl3Nbr();
         Integer lvl4nbr = updateVnPkWhPkReplnRequest.getLvl4Nbr();
@@ -252,12 +252,12 @@ public class ReplenishmentService  {
 
         List<CcMmReplPack> ccMmReplnPkConsList = ccMmReplnPkConsRepository.getCcMmReplnPkConsData(planId, channelId, lvl3nbr, lvl4nbr, finelineNbr, stylenbr,
                 customerChoice, merchmethodDesc);
-        
+
         updateReplnConfigMapper.updateVnpkWhpkForCcMmReplnPkConsMapper(ccMmReplnPkConsList, vnpk, whpk, vnpkwhpkRatio, getReplenishmentPackCount(replenishmentUnits, vnpk));
     }
-	
-	
-	public void updateVnPkWhPkCcSpSizeReplnCon(UpdateVnPkWhPkReplnRequest updateVnPkWhPkReplnRequest) {
+
+
+    public void updateVnPkWhPkCcSpSizeReplnCon(UpdateVnPkWhPkReplnRequest updateVnPkWhPkReplnRequest) {
 
         Integer channelId = getChannelId(updateVnPkWhPkReplnRequest.getChannel());
         Long planId = updateVnPkWhPkReplnRequest.getPlanId();
@@ -277,31 +277,31 @@ public class ReplenishmentService  {
         ccSpReplnPkConsRepository.updateSizeData(planId, channelId, lvl3nbr, lvl4nbr, finelineNbr, stylenbr,
                 customerChoice,ahsSizeId, vnpk, whpk, vnpkwhpkRatio, getReplenishmentPackCount(replenishmentUnits, vnpk), merchmethodDesc);
     }
-	
-	private Integer getChannelId(String channel)
-	{
-		Integer channelId = 0;
-		
-		if("Store".equalsIgnoreCase(channel))
-			channelId = 1;
-		else if("Online".equalsIgnoreCase(channel))
-			channelId = 2;
-		
-		return channelId;
-				
-	}
-	
-	private Double getVnpkWhpkRatio(Integer vnpk, Integer whpk)
-	{
-		Double vnwhpkRatio = null;
-		
-		if(vnpk!=0 && whpk!=0) {
-			vnwhpkRatio = ((double) vnpk / whpk);
-	  	   }
-		
-		return vnwhpkRatio;
-		
-	}
+
+    private Integer getChannelId(String channel)
+    {
+        Integer channelId = 0;
+
+        if("Store".equalsIgnoreCase(channel))
+            channelId = 1;
+        else if("Online".equalsIgnoreCase(channel))
+            channelId = 2;
+
+        return channelId;
+
+    }
+
+    private Double getVnpkWhpkRatio(Integer vnpk, Integer whpk)
+    {
+        Double vnwhpkRatio = null;
+
+        if(vnpk!=0 && whpk!=0) {
+            vnwhpkRatio = ((double) vnpk / whpk);
+        }
+
+        return vnwhpkRatio;
+
+    }
 
     private Integer getReplenishmentPackCount(Integer replenishmentUnits, Integer vnpk )
     {
@@ -311,7 +311,7 @@ public class ReplenishmentService  {
         }
         return  ReplenishmentPackCount;
     }
-	
+
 }
 
 
