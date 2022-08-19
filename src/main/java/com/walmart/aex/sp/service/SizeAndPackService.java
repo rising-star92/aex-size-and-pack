@@ -103,11 +103,12 @@ public class SizeAndPackService {
                 List<BuyQntyResponseDTO> buyQntyResponseDTOS = spCustomerChoiceChannelFixtureSizeRepository
                         .getSizeBuyQntyByPlanChannelCc(buyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(buyQtyRequest.getChannel()), buyQtyRequest.getCcId());
 
-                Optional.of(buyQntyResponseDTOS)
+                List<SizeDto> sizeDtos =  fetchSizes(buyQtyResponse);
+                Optional.of(sizeDtos)
                         .stream()
                         .flatMap(Collection::stream)
-                        .forEach(buyQntyResponseDTO -> buyQuantityMapper
-                                .mapBuyQntySizeSp(buyQntyResponseDTO, fetchSizes(buyQtyResponse)));
+                        .forEach(sizeDto -> buyQuantityMapper
+                                .mapBuyQntySizeSp(buyQntyResponseDTOS,sizeDto));
                 log.info("Fetch Buy Qty CC response: {}", buyQtyResponse);
             }
             return buyQtyResponse;

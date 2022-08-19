@@ -94,7 +94,6 @@ public class BuyQuantityMapper {
                 .orElse(0)
                 : 0;
 
-        metricsDto.setBuyQty(buyQty + metricsDto.getBuyQty());
         int isQty = buyQntyResponseDTO.getInitialSetQty() != null
                 ? Optional.ofNullable(buyQntyResponseDTO.getInitialSetQty())
                 .orElse(0)
@@ -108,6 +107,7 @@ public class BuyQuantityMapper {
 
         metricsDto.setFinalReplenishmentQty(rplnQty + metricsDto.getFinalReplenishmentQty());
         metricsDto.setFinalBuyQty(buyQty + metricsDto.getBuyQty());
+        metricsDto.setBuyQty(buyQty + metricsDto.getBuyQty());
         finelineDto.setMetrics(metricsDto);
     }
 
@@ -243,7 +243,6 @@ public class BuyQuantityMapper {
                 .orElse(0)
                 : 0;
 
-        metricsDto.setBuyQty(buyQty + metricsDto.getBuyQty());
 
         int isQty = buyQntyResponseDTO.getCcIsQty() != null
                 ? Optional.ofNullable(buyQntyResponseDTO.getCcIsQty())
@@ -259,6 +258,7 @@ public class BuyQuantityMapper {
 
         metricsDto.setFinalReplenishmentQty(rplnQty + metricsDto.getFinalReplenishmentQty());
         metricsDto.setFinalBuyQty(buyQty + metricsDto.getBuyQty());
+        metricsDto.setBuyQty(buyQty + metricsDto.getBuyQty());
         customerChoiceDto.setMetrics(metricsDto);
     }
 
@@ -328,18 +328,17 @@ public class BuyQuantityMapper {
         customerChoiceDtoList.add(customerChoiceDto);
     }
 
-    public void mapBuyQntySizeSp(BuyQntyResponseDTO buyQntyResponseDTO, List<SizeDto> sizeDtos) {
-        Optional.of(sizeDtos)
+    public void mapBuyQntySizeSp(List<BuyQntyResponseDTO> buyQntyResponseDTOs, SizeDto sizeDto) {
+        MetricsDto metricsDto = sizeDto.getMetrics();
+        Optional.of(buyQntyResponseDTOs)
                 .stream()
                 .flatMap(Collection::stream)
-                .filter(sizeDto -> sizeDto.getAhsSizeId().equals(buyQntyResponseDTO.getAhsSizeId()))
-                .findFirst()
-                .ifPresent(sizeDto -> {
-                    MetricsDto metricsDto = sizeDto.getMetrics();
-                    metricsDto.setBuyQty(buyQntyResponseDTO.getBuyQty());
-                    metricsDto.setFinalInitialSetQty(buyQntyResponseDTO.getInitialSetQty());
-                    metricsDto.setFinalReplenishmentQty(buyQntyResponseDTO.getReplnQty());
-                    metricsDto.setFinalBuyQty(buyQntyResponseDTO.getBuyQty());
+                .filter(buyQntyResponseDTO -> sizeDto.getAhsSizeId().equals(buyQntyResponseDTO.getAhsSizeId()))
+                        .forEach(buyQntyResponseDTO -> {
+                    metricsDto.setBuyQty(Optional.ofNullable(metricsDto.getBuyQty()).orElse(0) + Optional.ofNullable(buyQntyResponseDTO.getBuyQty()).orElse(0));
+                    metricsDto.setFinalInitialSetQty(Optional.ofNullable(metricsDto.getFinalInitialSetQty()).orElse(0) +Optional.ofNullable(buyQntyResponseDTO.getInitialSetQty()).orElse(0));
+                    metricsDto.setFinalReplenishmentQty(Optional.ofNullable(metricsDto.getFinalReplenishmentQty()).orElse(0) + Optional.ofNullable(buyQntyResponseDTO.getReplnQty()).orElse(0));
+                    metricsDto.setFinalBuyQty(Optional.ofNullable(metricsDto.getFinalBuyQty()).orElse(0) + Optional.ofNullable(buyQntyResponseDTO.getBuyQty()).orElse(0));
                 });
     }
 }
