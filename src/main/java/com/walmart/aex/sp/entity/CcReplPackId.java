@@ -3,6 +3,7 @@ package com.walmart.aex.sp.entity;
 import lombok.*;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import java.io.Serializable;
@@ -20,5 +21,6 @@ public class CcReplPackId implements Serializable
     private StyleReplPackId styleReplPackId;
 
     @Column(name="customer_choice",nullable = false)
+    @Convert( converter = CharConverter.class)
     private String customerChoice;
 }

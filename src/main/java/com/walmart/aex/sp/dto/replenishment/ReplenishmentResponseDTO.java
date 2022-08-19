@@ -63,6 +63,13 @@ public class ReplenishmentResponseDTO {
     private Double ccSpVnpkWhpkRatio;
     private Integer ccSpReplPack;
 
+    private Integer ccMmSpFinalBuyUnits;
+
+    private Integer ccMMSpReplQty;
+
+    private Integer ccMmSpReplPack;
+
+
     public ReplenishmentResponseDTO(Long planId, Integer lvl0Nbr, String lvl0Desc, Integer lvl1Nbr, String lvl1Desc,
                                     Integer lvl2Nbr, String lvl2Desc, Integer lvl3Nbr, String lvl3Desc, Integer lvl3ReplQty,Integer lvl3VenderPackCount ,
                                     Integer lvl3WhsePackCount ,Double lvl3vnpkWhpkRatio  ,Integer lvl4Nbr,
@@ -71,7 +78,7 @@ public class ReplenishmentResponseDTO {
                                     Integer finelineFinalBuyUnits,Integer finelineReplQty,
                                     Integer finelineVenderPackCount,Integer finelineWhsePackCount,
                                     Double finelineVnpkWhpkRatio,
-                                    Integer finelineReplPack ) {
+                                    Integer finelineReplPack) {
         this.planId = planId;
         this.lvl0Nbr = lvl0Nbr;
         this.lvl0Desc = lvl0Desc;
@@ -144,7 +151,7 @@ public class ReplenishmentResponseDTO {
                                     String lvl1Desc, Integer lvl2Nbr, String lvl2Desc, Integer lvl3Nbr, String lvl3Desc,
                                     Integer lvl4Nbr, String lvl4Desc, Integer finelineNbr, String finelineDesc, String finelineAltDesc  ,
                                     String styleNbr, String ccId, String colorName, Integer merchMethod, Integer ahsSizeId , String sizeDesc , Integer ccSpFinalBuyUnits, Integer ccSpReplQty ,Integer ccSpVenderPackCount,
-                                    Integer ccSpWhsePackCount, Double ccSpVnpkWhpkRatio, Integer ccSpReplPack) {
+                                    Integer ccSpWhsePackCount, Double ccSpVnpkWhpkRatio, Integer ccSpReplPack, Integer ccMmSpFinalBuyUnits   ,Integer ccMMSpReplQty, Integer ccMmSpReplPack) {
         this.planId = planId;
         this.lvl0Nbr = lvl0Nbr;
         this.lvl0Desc = lvl0Desc;
@@ -171,5 +178,9 @@ public class ReplenishmentResponseDTO {
         this.ccSpWhsePackCount = ccSpWhsePackCount;
         this.ccSpVnpkWhpkRatio = ccSpVnpkWhpkRatio;
         this.ccSpReplPack = ccSpReplPack;
+        this.ccMmSpFinalBuyUnits = ccMmSpFinalBuyUnits;
+        this.ccMMSpReplQty = ccMMSpReplQty;
+        this.ccMmSpReplPack = ccMmSpReplPack;
+
     }
 }

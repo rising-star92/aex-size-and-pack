@@ -80,7 +80,7 @@ public class BuyQntyResponseDTO {
                               String styleNbr, String ccId,Integer styleFlowStrategy, Integer styleMerchCode, String styleMerchDesc, Integer styleBumpQty,
                               Integer styleIsQty, Integer styleBuyQty, Integer styleReplnQty, Integer styleAdjReplnQty,
                               Integer ccFlowStrategy, Integer ccMerchCode, String ccMerchDesc, Integer ccBumpQty,
-                              Integer ccIsQty, Integer ccBuyQty, Integer ccReplnQty, Integer ccAdjReplnQty) {
+                              Integer ccIsQty, Integer ccBuyQty, Integer ccReplnQty, Integer ccAdjReplnQty, Integer channelId) {
         this.planId=planId;
         this.lvl0Nbr=lvl0Nbr;
         this.lvl1Nbr=lvl1Nbr;
@@ -106,6 +106,7 @@ public class BuyQntyResponseDTO {
         this.ccBuyQty=ccBuyQty;
         this.ccReplnQty=ccReplnQty;
         this.ccAdjReplnQty=ccAdjReplnQty;
+        this.channelId = channelId;
     }
 
     public BuyQntyResponseDTO(Long planId, Integer lvl0Nbr, Integer lvl1Nbr, Integer lvl2Nbr,

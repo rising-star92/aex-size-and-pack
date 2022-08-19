@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import com.walmart.aex.sp.enums.FlowStrategy;
+import com.walmart.aex.sp.util.CommonUtil;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -21,6 +23,7 @@ import com.walmart.aex.sp.dto.packoptimization.SizePackDto;
 import com.walmart.aex.sp.dto.packoptimization.StoreObjectDto;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
 
 
 @Service
@@ -86,8 +89,7 @@ public class PackOptimizationMapper {
 
 		FixtureDto fixtureDto = new FixtureDto();
 		fixtureDto.setFixtureType(finelinePackOptimizationResponseDTO.getFixtureTypeRollupName());
-		fixtureDto.setMerchMethod(finelinePackOptimizationResponseDTO.getMerchMethod());
-		fixtureDto.setFlowStrategyType(finelinePackOptimizationResponseDTO.getFpStrategyText());
+		fixtureDto.setMerchMethod(CommonUtil.getMerchMethod( finelinePackOptimizationResponseDTO.getMerchMethod()));
 		fixtureDto.setSizes(mapSize(finelinePackOptimizationResponseDTO, fixtureDto));
 		merchMethodsDtoList.add(fixtureDto);
 
@@ -136,6 +138,7 @@ public class PackOptimizationMapper {
 					metricsDto.setClusterId(stObj.getSizeCluster());
 					metricsDto.setStoreList(stObj.getStoreList());
 					metricsDto.setInitialSet(stObj.getIsUnits());
+					metricsDto.setFlowStrategyType(FlowStrategy.getFlowStrategyFromId(stObj.getFlowStrategyCode()));
 					if(stObj.getBumpSets().size()!=0) {
 						metricsDto.setBumpSet(stObj.getBumpSets().get(0).getBsUnits());	
 					}
@@ -144,7 +147,10 @@ public class PackOptimizationMapper {
 				else
 				{ 
 					metricsDtoList.stream()
-					.filter(metrics -> ((metrics.getClusterId().equals(stObj.getSizeCluster())) && (metrics.getInitialSet().equals(stObj.getIsUnits())) )).findFirst()
+					.filter(metrics -> ((metrics.getClusterId().equals(stObj.getSizeCluster())) && (metrics.getInitialSet().equals(stObj.getIsUnits()))
+							&& (stObj.getFlowStrategyCode() != null)
+							&& (metrics.getFlowStrategyType().equals(FlowStrategy.getFlowStrategyFromId(stObj.getFlowStrategyCode())))
+					)).findFirst()
 					.ifPresentOrElse(metrics ->metrics.getStoreList().addAll(stObj.getStoreList()),
 							()->setMetrics(metricsDtoList,stObj));
 				}	
@@ -165,6 +171,7 @@ public class PackOptimizationMapper {
 		metricsObj.setClusterId(stObj.getSizeCluster());
 		metricsObj.setStoreList(stObj.getStoreList());
 		metricsObj.setInitialSet(stObj.getIsUnits());
+		metricsObj.setFlowStrategyType(FlowStrategy.getFlowStrategyFromId(stObj.getFlowStrategyCode()));
 		if(stObj.getBumpSets().size()!=0) {
 			metricsObj.setBumpSet(stObj.getBumpSets().get(0).getBsUnits()); 
 		}

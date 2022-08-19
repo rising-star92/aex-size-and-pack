@@ -1,12 +1,8 @@
 package com.walmart.aex.sp.service;
 
-import com.walmart.aex.sp.dto.assortproduct.APRequest;
-import com.walmart.aex.sp.dto.assortproduct.APResponse;
 import com.walmart.aex.sp.dto.buyquantity.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.walmart.aex.sp.dto.gql.GraphQLResponse;
-import com.walmart.aex.sp.dto.gql.Payload;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl1;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl2;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
@@ -14,7 +10,6 @@ import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDTO;
 import com.walmart.aex.sp.dto.planhierarchy.SizeAndPackResponse;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.exception.CustomException;
-import com.walmart.aex.sp.exception.SizeAndPackException;
 import com.walmart.aex.sp.properties.GraphQLProperties;
 import com.walmart.aex.sp.repository.MerchCatPlanRepository;
 import com.walmart.aex.sp.repository.SpCustomerChoiceChannelFixtureRepository;
@@ -24,10 +19,8 @@ import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import java.util.*;
-import java.util.function.Function;
 
 @Service
 @Slf4j
@@ -45,7 +38,7 @@ public class SizeAndPackService {
 
     private final SizeAndPackObjectMapper sizeAndPackObjectMapper;
 
-    private final GraphQLService graphQLService;
+    private final StrategyFetchService strategyFetchService;
 
     @ManagedConfiguration
     GraphQLProperties graphQLProperties;
@@ -55,14 +48,14 @@ public class SizeAndPackService {
     public SizeAndPackService(SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository, BuyQuantityMapper buyQuantityMapper,
                               SpCustomerChoiceChannelFixtureRepository spCustomerChoiceChannelFixtureRepository,
                               SizeAndPackObjectMapper sizeAndPackObjectMapper,
-                              MerchCatPlanRepository merchCatPlanRepository, GraphQLService graphQLService,
+                              MerchCatPlanRepository merchCatPlanRepository, StrategyFetchService strategyFetchService,
                               SpCustomerChoiceChannelFixtureSizeRepository spCustomerChoiceChannelFixtureSizeRepository) {
         this.spFineLineChannelFixtureRepository = spFineLineChannelFixtureRepository;
         this.buyQuantityMapper = buyQuantityMapper;
         this.spCustomerChoiceChannelFixtureRepository = spCustomerChoiceChannelFixtureRepository;
         this.sizeAndPackObjectMapper = sizeAndPackObjectMapper;
         this.merchCatPlanRepository = merchCatPlanRepository;
-        this.graphQLService = graphQLService;
+        this.strategyFetchService = strategyFetchService;
         this.spCustomerChoiceChannelFixtureSizeRepository = spCustomerChoiceChannelFixtureSizeRepository;
     }
 
@@ -104,17 +97,18 @@ public class SizeAndPackService {
 
     public BuyQtyResponse fetchSizeBuyQnty(BuyQtyRequest buyQtyRequest) {
         try {
-            BuyQtyResponse buyQtyResponse = getBuyQtyResponseSizeProfile(buyQtyRequest);
+            BuyQtyResponse buyQtyResponse = strategyFetchService.getBuyQtyResponseSizeProfile(buyQtyRequest);
 
             if (buyQtyResponse != null) {
                 List<BuyQntyResponseDTO> buyQntyResponseDTOS = spCustomerChoiceChannelFixtureSizeRepository
                         .getSizeBuyQntyByPlanChannelCc(buyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(buyQtyRequest.getChannel()), buyQtyRequest.getCcId());
 
-                Optional.of(buyQntyResponseDTOS)
+                List<SizeDto> sizeDtos =  fetchSizes(buyQtyResponse);
+                Optional.of(sizeDtos)
                         .stream()
                         .flatMap(Collection::stream)
-                        .forEach(buyQntyResponseDTO -> buyQuantityMapper
-                                .mapBuyQntySizeSp(buyQntyResponseDTO, fetchSizes(buyQtyResponse)));
+                        .forEach(sizeDto -> buyQuantityMapper
+                                .mapBuyQntySizeSp(buyQntyResponseDTOS,sizeDto));
                 log.info("Fetch Buy Qty CC response: {}", buyQtyResponse);
             }
             return buyQtyResponse;
@@ -124,14 +118,6 @@ public class SizeAndPackService {
         }
     }
 
-    public APResponse fetchRunFixtureAllocationOutput(APRequest request) {
-        try {
-            return getAPRunFixtureAllocationOutput(request);
-        } catch (Exception e) {
-            log.error("Exception While fetching RFA output:", e);
-            throw new CustomException("Failed to fetch RFA output: " + e);
-        }
-    }
 
     private List<SizeDto> fetchSizes(BuyQtyResponse buyQtyResponse) {
         return Optional.of(buyQtyResponse.getLvl3List())
@@ -163,43 +149,9 @@ public class SizeAndPackService {
                 .orElse(new ArrayList<>());
     }
 
-    private APResponse getAPRunFixtureAllocationOutput(APRequest request) throws SizeAndPackException {
-        Map<String, String> headers = new HashMap<>();
-        headers.put("WM_CONSUMER.ID", graphQLProperties.getAssortProductConsumerId());
-        headers.put("WM_SVC.NAME", graphQLProperties.getAssortProductConsumerName());
-        headers.put("WM_SVC.ENV", graphQLProperties.getAssortProductConsumerEnv());
 
-        Map<String, Object> data = new HashMap<>();
-        data.put("request", request);
 
-        return (APResponse) post(graphQLProperties.getAssortProductUrl(), graphQLProperties.getAssortProductRFAQuery(), headers, data, Payload::getGetRFADataFromSizePack);
-    }
 
-    private BuyQtyResponse getBuyQtyResponseSizeProfile(BuyQtyRequest buyQtyRequest) throws SizeAndPackException {
-        Map<String, String> headers = new HashMap<>();
-        headers.put("WM_CONSUMER.ID", graphQLProperties.getSizeProfileConsumerId());
-        headers.put("WM_SVC.NAME", graphQLProperties.getSizeProfileConsumerName());
-        headers.put("WM_SVC.ENV", graphQLProperties.getSizeProfileConsumerEnv());
-
-        Map<String, Object> data = new HashMap<>();
-        data.put("sizeProfileRequest", buyQtyRequest);
-        return (BuyQtyResponse) post(graphQLProperties.getSizeProfileUrl(), graphQLProperties.getSizeProfileQuery(), headers, data, Payload::getGetCcSizeClus);
-    }
-
-    private Object post(String url, String query, Map<String, String> headers, Map<String, Object> data, Function<Payload, ?> responseFunc) throws SizeAndPackException {
-        GraphQLResponse graphQLResponse = graphQLService.post(url, query, headers,data);
-
-        if (CollectionUtils.isEmpty(graphQLResponse.getErrors()))
-            return Optional.ofNullable(graphQLResponse)
-              .stream()
-              .map(GraphQLResponse::getData)
-              .map(responseFunc)
-              .findFirst()
-              .orElse(null);
-
-        log.error("Error returned in GraphQL call: {}", graphQLResponse.getErrors());
-        return null;
-    }
 
 
     @Transactional
@@ -254,14 +206,5 @@ public class SizeAndPackService {
         return sizeAndPackResponse;
     }
 
-    public BuyQtyResponse getAllCcSizeProfiles(BuyQtyRequest buyQtyRequest) throws SizeAndPackException {
-        Map<String, String> headers = new HashMap<>();
-        headers.put("WM_CONSUMER.ID", graphQLProperties.getSizeProfileConsumerId());
-        headers.put("WM_SVC.NAME", graphQLProperties.getSizeProfileConsumerName());
-        headers.put("WM_SVC.ENV", graphQLProperties.getSizeProfileConsumerEnv());
 
-        Map<String, Object> data = new HashMap<>();
-        data.put("sizeProfileRequest", buyQtyRequest);
-        return (BuyQtyResponse) post(graphQLProperties.getSizeProfileUrl(), graphQLProperties.getAllCcSizeProfileQuery(), headers, data, Payload::getGetAllCcSizeClus);
-    }
 }
