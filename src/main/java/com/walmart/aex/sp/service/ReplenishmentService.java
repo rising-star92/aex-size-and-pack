@@ -12,6 +12,7 @@ import com.walmart.aex.sp.dto.replenishment.ReplenishmentResponseDTO;
 import com.walmart.aex.sp.dto.replenishment.UpdateVnPkWhPkReplnRequest;
 import com.walmart.aex.sp.entity.CcMmReplPack;
 import com.walmart.aex.sp.entity.CcReplPack;
+import com.walmart.aex.sp.entity.CcSpMmReplPack;
 import com.walmart.aex.sp.entity.FinelineReplPack;
 import com.walmart.aex.sp.entity.MerchCatgReplPack;
 import com.walmart.aex.sp.entity.StyleReplPack;
@@ -148,12 +149,11 @@ public class ReplenishmentService  {
         Integer lvl3Nbr = updateVnPkWhPkReplnRequest.getLvl3Nbr();
         Integer vnpk = updateVnPkWhPkReplnRequest.getVnpk();
         Integer whpk = updateVnPkWhPkReplnRequest.getWhpk();
-        Integer replenishmentUnits = updateVnPkWhPkReplnRequest.getRepleshUnits();
 
         vnpkwhpkRatio = getVnpkWhpkRatio(vnpk, whpk);
 
         List<MerchCatgReplPack> catgReplnPkConsList = catgReplnPkConsRepository.getCatgReplnConsData(planId, channelId, lvl3Nbr);
-        updateReplnConfigMapper.updateVnpkWhpkForCatgReplnConsMapper(catgReplnPkConsList, vnpk, whpk, vnpkwhpkRatio, getReplenishmentPackCount(replenishmentUnits, vnpk));
+        updateReplnConfigMapper.updateVnpkWhpkForCatgReplnConsMapper(catgReplnPkConsList, vnpk, whpk, vnpkwhpkRatio);
 
     }
 
@@ -166,12 +166,11 @@ public class ReplenishmentService  {
         Integer lvl4Nbr = updateVnPkWhPkReplnRequest.getLvl4Nbr();
         Integer vnpk = updateVnPkWhPkReplnRequest.getVnpk();
         Integer whpk = updateVnPkWhPkReplnRequest.getWhpk();
-        Integer replenishmentUnits = updateVnPkWhPkReplnRequest.getRepleshUnits();
 
         vnpkwhpkRatio = getVnpkWhpkRatio(vnpk, whpk);
 
         List<SubCatgReplPack> SubcatgReplnPkConsList = subCatgReplnPkConsRepository.getSubCatgReplnConsData(planId, channelId, lvl3Nbr,lvl4Nbr);
-        updateReplnConfigMapper.updateVnpkWhpkForSubCatgReplnConsMapper(SubcatgReplnPkConsList, vnpk, whpk, vnpkwhpkRatio, getReplenishmentPackCount(replenishmentUnits, vnpk));
+        updateReplnConfigMapper.updateVnpkWhpkForSubCatgReplnConsMapper(SubcatgReplnPkConsList, vnpk, whpk, vnpkwhpkRatio);
 
     }
     public void updateVnpkWhpkForFinelineReplnCons(UpdateVnPkWhPkReplnRequest updateVnPkWhPkReplnRequest)
@@ -183,13 +182,12 @@ public class ReplenishmentService  {
         Integer fineline = updateVnPkWhPkReplnRequest.getFineline();
         Integer vnpk = updateVnPkWhPkReplnRequest.getVnpk();
         Integer whpk = updateVnPkWhPkReplnRequest.getWhpk();
-        Integer replenishmentUnits = updateVnPkWhPkReplnRequest.getRepleshUnits();
 
         vnpkwhpkRatio = getVnpkWhpkRatio(vnpk, whpk);
 
         List<FinelineReplPack> ccReplnPkConsList = finelineReplnPkConsRepository.getFinelineReplnConsData(planId, channelId, lvl3Nbr, lvl4Nbr, fineline);
 
-        updateReplnConfigMapper.updateVnpkWhpkForFinelineReplnConsMapper(ccReplnPkConsList, vnpk, whpk, vnpkwhpkRatio, getReplenishmentPackCount(replenishmentUnits, vnpk));
+        updateReplnConfigMapper.updateVnpkWhpkForFinelineReplnConsMapper(ccReplnPkConsList, vnpk, whpk, vnpkwhpkRatio);
 
     }
 
@@ -204,14 +202,13 @@ public class ReplenishmentService  {
         String style = updateVnPkWhPkReplnRequest.getStyle();
         Integer vnpk = updateVnPkWhPkReplnRequest.getVnpk();
         Integer whpk = updateVnPkWhPkReplnRequest.getWhpk();
-        Integer replenishmentUnits = updateVnPkWhPkReplnRequest.getRepleshUnits();
 
         vnpkwhpkRatio = getVnpkWhpkRatio(vnpk, whpk);
 
         List<StyleReplPack> styleReplnPkConsList = styleReplnConsRepository.getStyleReplnConsData(planId,
                 channelId, lvl3Nbr, lvl4Nbr, fineline, style);
 
-        updateReplnConfigMapper.updateVnpkWhpkForStyleReplnConsMapper(styleReplnPkConsList, vnpk, whpk, vnpkwhpkRatio, getReplenishmentPackCount(replenishmentUnits, vnpk));
+        updateReplnConfigMapper.updateVnpkWhpkForStyleReplnConsMapper(styleReplnPkConsList, vnpk, whpk, vnpkwhpkRatio);
     }
 
     public void updateVnpkWhpkForCcReplnPkCons(UpdateVnPkWhPkReplnRequest updateVnPkWhPkReplnRequest)
@@ -225,13 +222,12 @@ public class ReplenishmentService  {
         String customerChoice = updateVnPkWhPkReplnRequest.getCustomerChoice();
         Integer vnpk = updateVnPkWhPkReplnRequest.getVnpk();
         Integer whpk = updateVnPkWhPkReplnRequest.getWhpk();
-        Integer replenishmentUnits = updateVnPkWhPkReplnRequest.getRepleshUnits();
 
         vnpkwhpkRatio = getVnpkWhpkRatio(vnpk, whpk);
 
         List<CcReplPack> ccReplnPkConsList = ccReplnConsRepository.getCcReplnConsData(planId, channelId, lvl3Nbr, lvl4Nbr, fineline, style, customerChoice);
 
-        updateReplnConfigMapper.updateVnpkWhpkForCcReplnPkConsMapper(ccReplnPkConsList, vnpk, whpk, vnpkwhpkRatio, getReplenishmentPackCount(replenishmentUnits, vnpk));
+        updateReplnConfigMapper.updateVnpkWhpkForCcReplnPkConsMapper(ccReplnPkConsList, vnpk, whpk, vnpkwhpkRatio);
     }
 
     public void updateVnPkWhPkCcMerchMethodReplnCon(UpdateVnPkWhPkReplnRequest updateVnPkWhPkReplnRequest) {
@@ -246,14 +242,13 @@ public class ReplenishmentService  {
         String merchmethodDesc = updateVnPkWhPkReplnRequest.getMerchMethodDesc();
         Integer vnpk = updateVnPkWhPkReplnRequest.getVnpk();
         Integer whpk = updateVnPkWhPkReplnRequest.getWhpk();
-        Integer replenishmentUnits = updateVnPkWhPkReplnRequest.getRepleshUnits();
 
         vnpkwhpkRatio = getVnpkWhpkRatio(vnpk, whpk);
 
         List<CcMmReplPack> ccMmReplnPkConsList = ccMmReplnPkConsRepository.getCcMmReplnPkConsData(planId, channelId, lvl3nbr, lvl4nbr, finelineNbr, stylenbr,
                 customerChoice, merchmethodDesc);
 
-        updateReplnConfigMapper.updateVnpkWhpkForCcMmReplnPkConsMapper(ccMmReplnPkConsList, vnpk, whpk, vnpkwhpkRatio, getReplenishmentPackCount(replenishmentUnits, vnpk));
+        updateReplnConfigMapper.updateVnpkWhpkForCcMmReplnPkConsMapper(ccMmReplnPkConsList, vnpk, whpk, vnpkwhpkRatio);
     }
 
 
@@ -270,12 +265,13 @@ public class ReplenishmentService  {
         String merchmethodDesc = updateVnPkWhPkReplnRequest.getMerchMethodDesc();
         Integer vnpk = updateVnPkWhPkReplnRequest.getVnpk();
         Integer whpk = updateVnPkWhPkReplnRequest.getWhpk();
-        Integer replenishmentUnits = updateVnPkWhPkReplnRequest.getRepleshUnits();
 
         vnpkwhpkRatio = getVnpkWhpkRatio(vnpk, whpk);
 
-        ccSpReplnPkConsRepository.updateSizeData(planId, channelId, lvl3nbr, lvl4nbr, finelineNbr, stylenbr,
-                customerChoice,ahsSizeId, vnpk, whpk, vnpkwhpkRatio, getReplenishmentPackCount(replenishmentUnits, vnpk), merchmethodDesc);
+        List<CcSpMmReplPack> ccSpReplnPkConsList = ccSpReplnPkConsRepository.getCcSpMmReplnPkConsData(planId, channelId, lvl3nbr, lvl4nbr, finelineNbr, 
+				stylenbr, customerChoice, merchmethodDesc, ahsSizeId);
+
+        updateReplnConfigMapper.updateVnpkWhpkForCcSpMmReplnPkConsMapper(ccSpReplnPkConsList, vnpk, whpk, vnpkwhpkRatio);
     }
 
     private Integer getChannelId(String channel)
@@ -301,15 +297,6 @@ public class ReplenishmentService  {
 
         return vnwhpkRatio;
 
-    }
-
-    private Integer getReplenishmentPackCount(Integer replenishmentUnits, Integer vnpk )
-    {
-        Integer ReplenishmentPackCount = null;
-        if(replenishmentUnits!= null && vnpk!= null){
-            ReplenishmentPackCount =  ((int) replenishmentUnits/vnpk);
-        }
-        return  ReplenishmentPackCount;
     }
 
 }

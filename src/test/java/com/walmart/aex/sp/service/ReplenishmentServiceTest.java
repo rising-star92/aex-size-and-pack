@@ -56,7 +56,6 @@ public class ReplenishmentServiceTest {
         request.setLvl3Nbr(3);
         request.setVnpk(1);
         request.setWhpk(1);
-        request.setRepleshUnits(2);
         replenishmentService.updateVnpkWhpkForCatgReplnCons(request);
         Mockito.verify(replenishmentService, Mockito.times(1)).updateVnpkWhpkForCatgReplnCons(request);
     }

@@ -36,7 +36,6 @@ input UpdateVnPkWhPkReplnRequest {
 	ahsSizeId: Int
 	vnpk: Int!
 	whpk: Int!
-	repleshUnits: Int!
 }
 
 input CalculateBuyQtyRequest {

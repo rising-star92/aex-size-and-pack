@@ -37,7 +37,6 @@ public class UpdateReplnConfigMapperTest {
 	private static final Integer vnpk=500;
 	private static final Integer whpk=500;
 	Double vnpkwhpkRatio=1d;
-	private static final Integer replUnits = 20;
 	
 	@InjectMocks
 	@Spy
@@ -144,10 +143,10 @@ public class UpdateReplnConfigMapperTest {
 		cc.setCcSpMmReplPack(ccSpMmReplPack);
 		ccMmReplnPkConsList.add(cc);
 					
-		replenishmentMapper.updateVnpkWhpkForCatgReplnConsMapper(catgReplnPkConsList, 500, 500, vnpkwhpkRatio, replUnits);
+		replenishmentMapper.updateVnpkWhpkForCatgReplnConsMapper(catgReplnPkConsList, 500, 500, vnpkwhpkRatio);
 		
 		//Assert
-    	Mockito.verify(replenishmentMapper,Mockito.times(1)).updateVnpkWhpkForCatgReplnConsMapper(catgReplnPkConsList, vnpk, whpk, vnpkwhpkRatio, replUnits);
+    	Mockito.verify(replenishmentMapper,Mockito.times(1)).updateVnpkWhpkForCatgReplnConsMapper(catgReplnPkConsList, vnpk, whpk, vnpkwhpkRatio);
     	
     	assertEquals(catgReplnPkConsList.get(0).getVendorPackCnt(), 500);    	
     	assertEquals(catgReplnPkConsList.get(0).getWhsePackCnt(), 500);
