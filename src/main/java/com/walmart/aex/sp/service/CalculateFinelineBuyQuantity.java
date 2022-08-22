@@ -250,7 +250,8 @@ public class CalculateFinelineBuyQuantity {
                 //Calculate IS Buy Quantity
                 Float isCalculatedBq = rfaSizePackData.getStore_cnt() * volumeCluster.getInitialSet().getInitialSetUnitsPerFix() * rfaSizePackData.getFixture_group();
                 double isQty = (isCalculatedBq * getSizePct(sizeDto)) / 100;
-                double perStoreQty = isQty / rfaSizePackData.getStore_cnt();
+                double perStoreQty = Math.round(isQty / rfaSizePackData.getStore_cnt());
+                isQty = perStoreQty * rfaSizePackData.getStore_cnt();
 
                 //get percentile
                 //remainder spread it across stores
@@ -283,8 +284,8 @@ public class CalculateFinelineBuyQuantity {
                     }
                 }
 
-                storeQuantity.setTotalUnits((double) Math.round(isQty));
-                storeQuantity.setIsUnits((double) Math.round(perStoreQty));
+                storeQuantity.setTotalUnits(isQty);
+                storeQuantity.setIsUnits(perStoreQty);
                 storeQuantity.setVolumeCluster(rfaSizePackData.getVolume_group_cluster_id());
                 storeQuantity.setSizeCluster(rfaSizePackData.getSize_cluster_id());
                 List<Integer> storeList = safeReadStoreList(rfaSizePackData.getStore_list());
