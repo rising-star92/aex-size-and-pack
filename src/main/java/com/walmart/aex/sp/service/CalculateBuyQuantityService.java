@@ -125,8 +125,23 @@ public class CalculateBuyQuantityService {
                     .map(CalculateBuyQtyResponse::getMerchCatgReplPacks)
                     .flatMap(Collection::stream)
                     .collect(Collectors.toSet());
+
+            //delete orphan repln catg and sub catg
+            deleteReplnOrphanRecords(merchCatgReplPacks1);
             merchCatgReplPackRepository.saveAll(merchCatgReplPacks1);
 
         } else throw new CustomException("Not All finelines complted successfully");
+    }
+
+    private void deleteReplnOrphanRecords(Set<MerchCatgReplPack> merchCatgReplPacks) {
+        if (!CollectionUtils.isEmpty(merchCatgReplPacks)) {
+            log.info("Deleting Replenishment Orphan records");
+            merchCatgReplPacks.forEach(merchCatgReplPack -> {
+                if (!CollectionUtils.isEmpty(merchCatgReplPack.getSubReplPack())) {
+                    merchCatgReplPack.getSubReplPack().removeIf(subCatgReplPack -> CollectionUtils.isEmpty(subCatgReplPack.getFinelineReplPack()));
+                }
+            });
+            merchCatgReplPacks.removeIf(merchCatgReplPack -> CollectionUtils.isEmpty(merchCatgReplPack.getSubReplPack()));
+        }
     }
 }
