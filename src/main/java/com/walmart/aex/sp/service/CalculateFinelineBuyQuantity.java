@@ -70,7 +70,7 @@ public class CalculateFinelineBuyQuantity {
         List<SpFineLineChannelFixture> spFineLineChannelFixtures = calculateBuyQtyResponse.getSpFineLineChannelFixtures();
         if (!CollectionUtils.isEmpty(spFineLineChannelFixtures)) {
             log.info("Deleteing IS BS Buy Qty data for Fineline: {}", calculateBuyQtyParallelRequest.getFinelineNbr());
-            spFineLineChannelFixtures.clear();
+            spFineLineChannelFixtures.removeIf(spFineLineChannelFixture -> spFineLineChannelFixture.getSpFineLineChannelFixtureId().getFineLineNbr().equals(calculateBuyQtyParallelRequest.getFinelineNbr()));
         }
 
         Set<FinelineReplPack> finelineReplPacks = Optional.ofNullable(calculateBuyQtyResponse.getMerchCatgReplPacks())
@@ -87,7 +87,7 @@ public class CalculateFinelineBuyQuantity {
                 .orElse(null);
         if (!CollectionUtils.isEmpty(finelineReplPacks)) {
             log.info("Delete replenishment buy qty for fineline: {}", calculateBuyQtyParallelRequest.getFinelineNbr());
-            finelineReplPacks.clear();
+            finelineReplPacks.removeIf(finelineReplPack -> finelineReplPack.getFinelineReplPackId().getFinelineNbr().equals(calculateBuyQtyParallelRequest.getFinelineNbr()));
         }
     }
 
@@ -252,6 +252,9 @@ public class CalculateFinelineBuyQuantity {
                 double isQty = (isCalculatedBq * getSizePct(sizeDto)) / 100;
                 double perStoreQty = isQty / rfaSizePackData.getStore_cnt();
 
+                //get percentile
+                //remainder spread it across stores
+
                 //TODO: move threshold to CCM
                 double initialSetThreshold = 2.0;
 
@@ -281,7 +284,7 @@ public class CalculateFinelineBuyQuantity {
                 }
 
                 storeQuantity.setTotalUnits(Math.ceil(isQty));
-                storeQuantity.setIsUnits( Math.ceil(perStoreQty));
+                storeQuantity.setIsUnits(Math.ceil(perStoreQty));
                 storeQuantity.setVolumeCluster(rfaSizePackData.getVolume_group_cluster_id());
                 storeQuantity.setSizeCluster(rfaSizePackData.getSize_cluster_id());
                 List<Integer> storeList = safeReadStoreList(rfaSizePackData.getStore_list());
