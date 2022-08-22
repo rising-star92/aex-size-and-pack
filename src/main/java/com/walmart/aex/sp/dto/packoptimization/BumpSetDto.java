@@ -11,16 +11,16 @@ public class BumpSetDto {
 	private Integer wmYearWeek;
 	private Integer weekDesc;
 	private Integer bsUnits;
-
+	private Integer totalUnits;
 
 	@Override
 	public String toString() {
-		return "{" +
-		"\"setNbr\":" + setNbr +
-    	", \"wmYearWeek\":\"" + wmYearWeek + '\"' +
-    	", \"weekDesc\":\"" + weekDesc + '\"' +
-    	", \"bsUnits\":\"" + bsUnits + '\"' +
-
-    	'}';
+		return "BumpSetDto{" +
+				"setNbr=" + setNbr +
+				", wmYearWeek=" + wmYearWeek +
+				", weekDesc=" + weekDesc +
+				", bsUnits=" + bsUnits +
+				", totalUnits=" + totalUnits +
+				'}';
 	}
 }
