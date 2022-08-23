@@ -243,57 +243,55 @@ public class CalculateFinelineBuyQuantity {
                 StoreQuantity storeQuantity = new StoreQuantity();
                 Cluster volumeCluster = getVolumeCluster(bqfpResponse, styleDto.getStyleNbr(), customerChoiceDto.getCcId(),
                         merchMethodsDto.getFixtureTypeRollupId(), rfaSizePackData.getVolume_group_cluster_id());
-
-                if (volumeCluster.getFlowStrategy() != null) {
-                    storeQuantity.setFlowStrategyCode(volumeCluster.getFlowStrategy());
-                }
-                //Calculate IS Buy Quantity
-                Float isCalculatedBq = rfaSizePackData.getStore_cnt() * volumeCluster.getInitialSet().getInitialSetUnitsPerFix() * rfaSizePackData.getFixture_group();
-                double isQty = (isCalculatedBq * getSizePct(sizeDto)) / 100;
-                double perStoreQty = Math.round(isQty / rfaSizePackData.getStore_cnt());
-                isQty = perStoreQty * rfaSizePackData.getStore_cnt();
-
-                //get percentile
-                //remainder spread it across stores
-
-                //TODO: move threshold to CCM
-                double initialSetThreshold = 2.0;
-
-                if ((perStoreQty < initialSetThreshold) && (!CollectionUtils.isEmpty(buyQtyObj.getReplenishments()))) {
-
-                    long totalReplenishment = buyQtyObj.getReplenishments()
-                            .stream()
-                            .filter(Objects::nonNull)
-                            .mapToLong(replenishment -> Optional.ofNullable(replenishment.getAdjReplnUnits()).orElse(0L))
-                            .sum();
-
-                    if (totalReplenishment > 0) {
-
-                        double unitsLessThanThreshold = initialSetThreshold - perStoreQty;
-                        double totalReducedReplenishment = unitsLessThanThreshold * rfaSizePackData.getStore_cnt();
-
-                        int replenishmentSize = buyQtyObj.getReplenishments().size();
-
-                        double perReplenishmentReduced =  (totalReducedReplenishment / replenishmentSize);
-                        double perReplenishmentReducedRemainder = (totalReducedReplenishment % replenishmentSize);
-
-                        buyQtyObj.getReplenishments().forEach(replenishment -> replenishment.setReplnUnits(Math.round(replenishment.getAdjReplnUnits() - perReplenishmentReduced)));
-                        buyQtyObj.getReplenishments().get(0).setReplnUnits(Math.round(buyQtyObj.getReplenishments().get(0).getAdjReplnUnits() - perReplenishmentReducedRemainder));
-
-                        perStoreQty = initialSetThreshold;
+                if (volumeCluster != null) {
+                    if (volumeCluster.getFlowStrategy() != null) {
+                        storeQuantity.setFlowStrategyCode(volumeCluster.getFlowStrategy());
                     }
+                    //Calculate IS Buy Quantity
+                    Float isCalculatedBq = rfaSizePackData.getStore_cnt() * volumeCluster.getInitialSet().getInitialSetUnitsPerFix() * rfaSizePackData.getFixture_group();
+                    double isQty = (isCalculatedBq * getSizePct(sizeDto)) / 100;
+                    double perStoreQty = Math.round(isQty / rfaSizePackData.getStore_cnt());
+                    isQty = perStoreQty * rfaSizePackData.getStore_cnt();
+
+                    //TODO: move threshold to CCM
+                    double initialSetThreshold = 2.0;
+
+                    if ((perStoreQty < initialSetThreshold) && (!CollectionUtils.isEmpty(buyQtyObj.getReplenishments()))) {
+
+                        long totalReplenishment = buyQtyObj.getReplenishments()
+                                .stream()
+                                .filter(Objects::nonNull)
+                                .mapToLong(replenishment -> Optional.ofNullable(replenishment.getAdjReplnUnits()).orElse(0L))
+                                .sum();
+
+                        if (totalReplenishment > 0) {
+
+                            double unitsLessThanThreshold = initialSetThreshold - perStoreQty;
+                            double totalReducedReplenishment = unitsLessThanThreshold * rfaSizePackData.getStore_cnt();
+
+                            int replenishmentSize = buyQtyObj.getReplenishments().size();
+
+                            double perReplenishmentReduced = (totalReducedReplenishment / replenishmentSize);
+                            double perReplenishmentReducedRemainder = (totalReducedReplenishment % replenishmentSize);
+
+                            buyQtyObj.getReplenishments().forEach(replenishment -> replenishment.setReplnUnits(Math.round(replenishment.getAdjReplnUnits() - perReplenishmentReduced)));
+                            buyQtyObj.getReplenishments().get(0).setReplnUnits(Math.round(buyQtyObj.getReplenishments().get(0).getAdjReplnUnits() - perReplenishmentReducedRemainder));
+
+                            perStoreQty = initialSetThreshold;
+                        }
+                    }
+
+                    storeQuantity.setTotalUnits(isQty);
+                    storeQuantity.setIsUnits(perStoreQty);
+                    storeQuantity.setVolumeCluster(rfaSizePackData.getVolume_group_cluster_id());
+                    storeQuantity.setSizeCluster(rfaSizePackData.getSize_cluster_id());
+                    List<Integer> storeList = safeReadStoreList(rfaSizePackData.getStore_list());
+                    storeQuantity.setStoreList(storeList);
+
+                    //Calculate Bump Qty
+                    storeQuantity.setBumpSets(calculateBumpPackQty(sizeDto, rfaSizePackData, volumeCluster));
+                    initialSetQuantities.add(storeQuantity);
                 }
-
-                storeQuantity.setTotalUnits(isQty);
-                storeQuantity.setIsUnits(perStoreQty);
-                storeQuantity.setVolumeCluster(rfaSizePackData.getVolume_group_cluster_id());
-                storeQuantity.setSizeCluster(rfaSizePackData.getSize_cluster_id());
-                List<Integer> storeList = safeReadStoreList(rfaSizePackData.getStore_list());
-                storeQuantity.setStoreList(storeList);
-
-                //Calculate Bump Qty
-                storeQuantity.setBumpSets(calculateBumpPackQty(sizeDto, rfaSizePackData, volumeCluster));
-                initialSetQuantities.add(storeQuantity);
             });
             buyQtyStoreObj.setBuyQuantities(initialSetQuantities);
             buyQtyObj.setBuyQtyStoreObj(buyQtyStoreObj);
@@ -319,7 +317,7 @@ public class CalculateFinelineBuyQuantity {
                 .getBuyQuantities()
                 .stream()
                 .filter(Objects::nonNull)
-                .mapToDouble(storeQuantity -> Optional.ofNullable(storeQuantity.getTotalUnits()).orElse((double)0))
+                .mapToDouble(storeQuantity -> Optional.ofNullable(storeQuantity.getTotalUnits()).orElse((double) 0))
                 .sum();
 
         double bsBuyQty = entry.getValue().getBuyQtyStoreObj().getBuyQuantities()
@@ -340,19 +338,19 @@ public class CalculateFinelineBuyQuantity {
                     .mapToLong(replenishment -> Optional.ofNullable(replenishment.getAdjReplnUnits()).orElse(0L))
                     .sum();
             if (totalReplenishment < replenishmentThreshold && totalReplenishment > 0) {
-                isBuyQty =  (isBuyQty + totalReplenishment);
+                isBuyQty = (isBuyQty + totalReplenishment);
                 totalReplenishment = 0L;
                 //TODO: Adjust IS BS Store Obj
             }
         }
 
-        double totalBuyQty = isBuyQty + bsBuyQty +  totalReplenishment;
-        spCustomerChoiceChannelFixtureSize.setInitialSetQty((int) Math.round( isBuyQty));
+        double totalBuyQty = isBuyQty + bsBuyQty + totalReplenishment;
+        spCustomerChoiceChannelFixtureSize.setInitialSetQty((int) Math.round(isBuyQty));
         spCustomerChoiceChannelFixtureSize.setBumpPackQty((int) Math.round(bsBuyQty));
         spCustomerChoiceChannelFixtureSize.setMerchMethodCode(merchMethodsDto.getMerchMethodCode());
         spCustomerChoiceChannelFixtureSize.setAhsSizeDesc(entry.getKey().getSizeDesc());
         spCustomerChoiceChannelFixtureSize.setReplnQty((int) totalReplenishment);
-        spCustomerChoiceChannelFixtureSize.setBuyQty((int) Math.round( totalBuyQty));
+        spCustomerChoiceChannelFixtureSize.setBuyQty((int) Math.round(totalBuyQty));
 
         //TODO: Adjust Flow Strategy
         try {
@@ -366,7 +364,7 @@ public class CalculateFinelineBuyQuantity {
 
         //Replenishment
         if (!CollectionUtils.isEmpty(replenishments) && totalReplenishment > 0) {
-            setCcMmSpReplenishment(ccSpMmReplPacks, entry, (int) totalReplenishment, (int) Math.round( totalBuyQty));
+            setCcMmSpReplenishment(ccSpMmReplPacks, entry, (int) totalReplenishment, (int) Math.round(totalBuyQty));
         }
     }
 
@@ -393,10 +391,10 @@ public class CalculateFinelineBuyQuantity {
             //Calculate BS Buy Quantity
             double bumpQtyPerFixture = (bumpSet.getUnits() * volumeCluster.getInitialSet().getInitialSetUnitsPerFix()) / volumeCluster.getInitialSet().getTotalInitialSetUnits().doubleValue();
             double bsCalculatedBq = rfaSizePackData.getStore_cnt() * bumpQtyPerFixture * rfaSizePackData.getFixture_group();
-            double bsQty = bsCalculatedBq * getSizePct(sizeDto)/ 100 ;
+            double bsQty = bsCalculatedBq * getSizePct(sizeDto) / 100;
             double bsPerStoreQty = bsQty / rfaSizePackData.getStore_cnt();
             bumpSetQuantity.setTotalUnits(bsQty);
-            bumpSetQuantity.setBsUnits( bsPerStoreQty);
+            bumpSetQuantity.setBsUnits(bsPerStoreQty);
             bumpPackQuantities.add(bumpSetQuantity);
         });
         return bumpPackQuantities;
