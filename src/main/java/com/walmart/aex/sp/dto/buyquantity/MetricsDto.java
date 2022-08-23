@@ -9,6 +9,7 @@ public class MetricsDto {
     private Double avgSizeProfilePct;
     private Double adjAvgSizeProfilePct;
     private Integer buyQty;
+    private Integer bumpPackQty;
     private Integer finalBuyQty;
     private Integer finalInitialSetQty;
     private Integer finalReplenishmentQty;

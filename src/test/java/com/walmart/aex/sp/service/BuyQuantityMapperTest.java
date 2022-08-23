@@ -35,6 +35,7 @@ public class BuyQuantityMapperTest {
         buyQntyResponseDTO.setChannelId(2);
         buyQntyResponseDTO.setPlanId(planId);
         buyQntyResponseDTO.setBuyQty(654);
+        buyQntyResponseDTO.setBumpPackQty(12);
         buyQntyResponseDTO.setAdjReplnQty(234);
         buyQntyResponseDTO.setBumpPackQty(654);
         buyQntyResponseDTO.setCcBumpQty(64);

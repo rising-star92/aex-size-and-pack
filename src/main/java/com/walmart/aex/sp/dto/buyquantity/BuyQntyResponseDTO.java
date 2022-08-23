@@ -104,6 +104,7 @@ public class BuyQntyResponseDTO {
         this.ccBumpQty=ccBumpQty;
         this.ccIsQty=ccIsQty;
         this.ccBuyQty=ccBuyQty;
+        this.bumpPackQty=this.ccBumpQty;
         this.ccReplnQty=ccReplnQty;
         this.ccAdjReplnQty=ccAdjReplnQty;
         this.channelId = channelId;
