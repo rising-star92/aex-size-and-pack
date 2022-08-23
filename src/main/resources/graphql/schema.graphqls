@@ -235,6 +235,7 @@ type MetricsDto {
     adjSizeProfilePct:Float
     avgSizeProfilePct:Float
     adjAvgSizeProfilePct:Float
+    bumpPackQty:Int
     buyQty:Int
     finalBuyQty:Int
     finalInitialSetQty:Int
