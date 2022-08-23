@@ -5,7 +5,6 @@ import com.walmart.aex.sp.dto.packoptimization.DCinboundReplenishment;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -13,6 +12,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
+import java.util.List;
 
 import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
 
@@ -57,10 +57,6 @@ public class DCInboundSheetExporter {
         sheet = workbook.createSheet(DC_INBOUND_EXCEL_SHEET_NAME);
         Row row = sheet.createRow(ZERO);
         CellStyle style = workbook.createCellStyle();
-        XSSFFont font = workbook.createFont();
-        font.setBold(true);
-        font.setFontHeight(HEADER_FONT_HEIGHT);
-        style.setFont(font);
         int column_num = ZERO;
 
         for (String colName : getHeaders()) {
@@ -95,9 +91,6 @@ public class DCInboundSheetExporter {
         int rowCount = 1;
 
         CellStyle style = workbook.createCellStyle();
-        XSSFFont font = workbook.createFont();
-        font.setFontHeight(ROW_FONT_HEIGHT);
-        style.setFont(font);
 
         for (DCInboundExcelResponse dcInboundData : listDCInboundData) {
             Row row = sheet.createRow(rowCount++);
