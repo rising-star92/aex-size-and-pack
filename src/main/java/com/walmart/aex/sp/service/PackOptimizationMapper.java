@@ -155,12 +155,9 @@ public class PackOptimizationMapper {
 							()->setMetrics(metricsDtoList,stObj));
 				}	
 			}
-		} catch (JsonMappingException e) {
-			log.error("Error while parsing the Json",e.getMessage());
 		} catch (JsonProcessingException e) {
-			log.error("Error while parsing the Json",e.getMessage());
+			log.error("Error while parsing the Json: {}",e.getMessage());
 		}
-
 
 		return metricsDtoList; 
 	}
