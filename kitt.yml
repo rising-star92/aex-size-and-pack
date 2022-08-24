@@ -9,6 +9,7 @@ build:
   buildType: maven-j11
   docker:
     app:
+      dockerFile: Dockerfile
       buildArgs:
         mavenVersion: 3-jdk-11
         openJDKVersion: 13-alpine
