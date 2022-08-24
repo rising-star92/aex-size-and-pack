@@ -57,23 +57,11 @@ public class DCInboundSheetExporter {
     private void writeHeaderLine() {
         sheet = workbook.createSheet(DC_INBOUND_EXCEL_SHEET_NAME);
         Row row = sheet.createRow(ZERO);
-        CellStyle style = workbook.createCellStyle();
-        XSSFFont font = workbook.createFont();
-        font.setBold(true);
-        font.setFontHeight(HEADER_FONT_HEIGHT);
-        style.setFont(font);
         int column_num = ZERO;
 
         for (String colName : getHeaders()) {
-            createCell(row, column_num++, colName, style);
+            createCell(row, column_num++, colName,null);
         }
-        // Adding filter to the excel sheet
-        sheet.setAutoFilter(new CellRangeAddress(ZERO, ZERO, ZERO, column_num - 1));
-        sheet.createFreezePane(ZERO, 1);
-        // Adding color to the header
-        style.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        row.getCell(ZERO).setCellStyle(style);
     }
 
     private void createCell(Row row, int columnCount, Object value, CellStyle style) {
@@ -95,31 +83,24 @@ public class DCInboundSheetExporter {
     private void writeDataLines() {
         int rowCount = 1;
 
-        CellStyle style = workbook.createCellStyle();
-        XSSFFont font = workbook.createFont();
-        font.setFontHeight(ROW_FONT_HEIGHT);
-        style.setFont(font);
-
         for (DCInboundExcelResponse dcInboundData : listDCInboundData) {
             Row row = sheet.createRow(rowCount++);
             int columnCount = ZERO;
 
-            createCell(row, columnCount++, dcInboundData.getLvl3Desc(), style);
-            createCell(row, columnCount++, dcInboundData.getLvl4Desc(), style);
-            createCell(row, columnCount++, dcInboundData.getFinelineDesc(), style);
-            createCell(row, columnCount++, dcInboundData.getStyleNbr(), style);
-            createCell(row, columnCount++, dcInboundData.getCcId(), style);
-            createCell(row, columnCount++, dcInboundData.getMerchMethodDesc(), style);
-            createCell(row, columnCount++, dcInboundData.getSizeDesc(), style);
-            createCell(row, columnCount++, dcInboundData.getChannelDesc(), style);
+            createCell(row, columnCount++, dcInboundData.getLvl3Desc(), null);
+            createCell(row, columnCount++, dcInboundData.getLvl4Desc(), null);
+            createCell(row, columnCount++, dcInboundData.getFinelineDesc(), null);
+            createCell(row, columnCount++, dcInboundData.getStyleNbr(), null);
+            createCell(row, columnCount++, dcInboundData.getCcId(), null);
+            createCell(row, columnCount++, dcInboundData.getMerchMethodDesc(), null);
+            createCell(row, columnCount++, dcInboundData.getSizeDesc(), null);
+            createCell(row, columnCount++, dcInboundData.getChannelDesc(), null);
             while(columnCount < getHeaders().size()){
                 for(DCinboundReplenishment r: dcInboundData.getReplenishment()){
                     int currColCount = columnCount++;
                     if(getHeaderName(currColCount).equalsIgnoreCase(r.getReplnWeekDesc()))
-                        createCell(row, currColCount, r.getAdjReplnUnits(), style);
+                        createCell(row, currColCount, r.getAdjReplnUnits(), null);
                 }
-
-
             }
         }
     }
