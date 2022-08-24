@@ -6,8 +6,6 @@ COPY target/*.jar /opt/app/app.jar
 
 EXPOSE 8080
 
-#RUN ls -ltrh /opt/app/
-
 RUN apk add --no-cache fontconfig
 
 RUN ln -sf /usr/lib/libfontconfig.so.1 /usr/lib/libfontconfig.so && \
