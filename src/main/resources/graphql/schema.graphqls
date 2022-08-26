@@ -160,7 +160,7 @@ type CustomerChoice {
 input BuyQtyRequest {
     planId: Int!
     planDesc: String
-    channel: String!
+    channel: String
     lvl3Nbr: Int
     lvl4Nbr: Int
     finelineNbr: Int
@@ -196,6 +196,7 @@ type Lvl4Dto {
 
 type FinelineDto {
     finelineNbr: Int
+    channelId: Int,
     finelineDesc: String
     finelineAltDesc: String
     metrics: MetricsDto

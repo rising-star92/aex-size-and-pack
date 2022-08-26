@@ -77,7 +77,8 @@ public class BuyQuantityMapper {
         List<FinelineDto> finelineDtoList = Optional.ofNullable(lvl4.getFinelines()).orElse(new ArrayList<>());
 
         finelineDtoList.stream()
-                .filter(finelineDto -> buyQntyResponseDTO.getFinelineNbr().equals(finelineDto.getFinelineNbr())).findFirst()
+                .filter(finelineDto -> buyQntyResponseDTO.getFinelineNbr().equals(finelineDto.getFinelineNbr()) && finelineDto.getChannelId() != null &&
+                        buyQntyResponseDTO.getChannelId().equals(finelineDto.getChannelId())).findFirst()
                 .ifPresentOrElse(finelineDto -> {
                             if (finelineNbr != null) {
                                 finelineDto.setStyles(mapBuyQntyStyleSp(buyQntyResponseDTO, finelineDto, finelineNbr));
@@ -115,6 +116,7 @@ public class BuyQuantityMapper {
     private void setFinelineSP(BuyQntyResponseDTO buyQntyResponseDTO, List<FinelineDto> finelineDtoList, Integer finelineNbr) {
         FinelineDto fineline = new FinelineDto();
         fineline.setFinelineNbr(buyQntyResponseDTO.getFinelineNbr());
+        fineline.setChannelId(buyQntyResponseDTO.getChannelId());
         if (finelineNbr == null) {
             fineline.setFinelineDesc(buyQntyResponseDTO.getFinelineDesc());
             MetricsDto metricsDto = new MetricsDto();

@@ -14,4 +14,5 @@ public class FinelineDto {
     private List<ClustersDto> clusters;
     private List<StyleDto> styles;
     private List<MerchMethodsDto> merchMethods;
+    private Integer channelId;
 }
