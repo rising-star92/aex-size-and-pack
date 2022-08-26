@@ -290,5 +290,5 @@ configOverrides:
         envProfile: "stage"
       value:
         properties:
-          "integrationhub.env": "stage"
+          "integrationhub.env": "stg"
           "integrationhub.sizeAndPackBaseUrl": "http://aex-size-and-pack.aex.stg.walmart.net"
