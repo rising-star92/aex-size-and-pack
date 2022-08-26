@@ -13,6 +13,7 @@ import java.util.Optional;
 public interface SpFineLineChannelFixtureRepository extends JpaRepository<SpFineLineChannelFixture, SpFineLineChannelFixtureId> {
 
     @Query(value="select new com.walmart.aex.sp.dto.buyquantity.BuyQntyResponseDTO(msp.merchCatPlanId.planId, " +
+            "fp.finelinePlanId.subCatPlanId.merchCatPlanId.channelId, " +
             "msp.merchCatPlanId.lvl0Nbr, " +
             "ssp.lvl0Desc, " +
             "msp.merchCatPlanId.lvl1Nbr, " +
@@ -64,8 +65,7 @@ public interface SpFineLineChannelFixtureRepository extends JpaRepository<SpFine
             "AND fp.finelinePlanId.subCatPlanId.lvl4Nbr = sfcf.spFineLineChannelFixtureId.lvl4Nbr " +
             "AND fp.finelinePlanId.finelineNbr = sfcf.spFineLineChannelFixtureId.fineLineNbr " +
             "AND fp.finelinePlanId.subCatPlanId.merchCatPlanId.channelId = sfcf.spFineLineChannelFixtureId.channelId " +
-            "where (fp.finelinePlanId.subCatPlanId.merchCatPlanId.channelId in (:channelId,3) and msp.merchCatPlanId.planId = :planId and (sfcf.spFineLineChannelFixtureId.channelId is NULL or sfcf.spFineLineChannelFixtureId.channelId = :channelId)) " +
-            " or :channelId is NULL")
+            "where ((fp.finelinePlanId.subCatPlanId.merchCatPlanId.channelId in (:channelId,3) or :channelId is NULL) and msp.merchCatPlanId.planId = :planId and (sfcf.spFineLineChannelFixtureId.channelId is NULL or sfcf.spFineLineChannelFixtureId.channelId = :channelId or :channelId is NULL)) ")
     List<BuyQntyResponseDTO> getBuyQntyByPlanChannel(@Param("planId") Long planId, @Param("channelId") Integer channelId);
 
     Optional<List<SpFineLineChannelFixture>> findSpFineLineChannelFixtureBySpFineLineChannelFixtureId_planIdAndSpFineLineChannelFixtureId_channelId(Long planId, Integer channelId);
