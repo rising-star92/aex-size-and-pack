@@ -196,7 +196,7 @@ type Lvl4Dto {
 
 type FinelineDto {
     finelineNbr: Int
-    channelId: Int,
+    channelId: Int
     finelineDesc: String
     finelineAltDesc: String
     metrics: MetricsDto
@@ -206,6 +206,7 @@ type FinelineDto {
 
 type StyleDto {
     styleNbr: String
+    channelId: Int
     metrics: MetricsDto
     clusters: [ClustersDto]
     customerChoices: [CustomerChoiceDto]
@@ -213,6 +214,7 @@ type StyleDto {
 
 type CustomerChoiceDto {
     ccId: String
+    channelId: Int
     colorName: String
     metrics: MetricsDto
     clusters: [ClustersDto]

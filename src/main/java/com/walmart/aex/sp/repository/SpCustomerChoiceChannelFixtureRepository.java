@@ -107,11 +107,11 @@ public interface SpCustomerChoiceChannelFixtureRepository extends JpaRepository<
             "AND ccp.custChoicePlanId.ccId = sccf.spCustomerChoiceChannelFixtureId.customerChoice " +
             "AND sscf.spStyleChannelFixtureId.spFineLineChannelFixtureId.channelId = sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.channelId " +
             "AND sscf.spStyleChannelFixtureId.spFineLineChannelFixtureId.fixtureTypeRollUpId.fixtureTypeRollupId = sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.fixtureTypeRollUpId.fixtureTypeRollupId " +
-            "where sp.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId in (:channelId,3) and " +
-            "ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId in (:channelId,3) and msp.merchCatPlanId.planId = :planId and " +
+            "where (sp.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId in (:channelId,3) or :channelId is NULL) and " +
+            "(ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId in (:channelId,3) or :channelId is NULL) and msp.merchCatPlanId.planId = :planId and " +
             "fp.finelinePlanId.finelineNbr = :finelineNbr and " +
-            "(sscf.spStyleChannelFixtureId.spFineLineChannelFixtureId.channelId is NULL or sscf.spStyleChannelFixtureId.spFineLineChannelFixtureId.channelId = :channelId) and " +
-            "(sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.channelId is NULL or sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.channelId = :channelId) ")
+            "(sscf.spStyleChannelFixtureId.spFineLineChannelFixtureId.channelId is NULL or sscf.spStyleChannelFixtureId.spFineLineChannelFixtureId.channelId = :channelId or :channelId is NULL) and " +
+            "(sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.channelId is NULL or sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.channelId = :channelId or :channelId is NULL) ")
     List<BuyQntyResponseDTO> getBuyQntyByPlanChannelFineline(@Param("planId") Long planId, @Param("channelId") Integer channelId,
                                                              @Param("finelineNbr") Integer finelineNbr);
 }
