@@ -84,8 +84,13 @@ public class SizeAndPackService {
     public BuyQtyResponse fetchCcBuyQnty(BuyQtyRequest buyQtyRequest, Integer finelineNbr) {
         BuyQtyResponse buyQtyResponse = new BuyQtyResponse();
         try {
-            List<BuyQntyResponseDTO> buyQntyResponseDTOS = spCustomerChoiceChannelFixtureRepository
-                    .getBuyQntyByPlanChannelFineline(buyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(buyQtyRequest.getChannel()), finelineNbr);
+
+            List<BuyQntyResponseDTO> buyQntyResponseDTOS;
+            if (buyQtyRequest.getChannel() != null) {
+                buyQntyResponseDTOS = spCustomerChoiceChannelFixtureRepository
+                        .getBuyQntyByPlanChannelFineline(buyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(buyQtyRequest.getChannel()), finelineNbr); }
+            else buyQntyResponseDTOS = spCustomerChoiceChannelFixtureRepository
+                    .getBuyQntyByPlanChannelFineline(buyQtyRequest.getPlanId(), null, finelineNbr);
             Optional.of(buyQntyResponseDTOS)
                     .stream()
                     .flatMap(Collection::stream)

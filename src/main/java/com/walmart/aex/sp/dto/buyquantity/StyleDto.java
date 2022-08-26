@@ -11,4 +11,5 @@ public class StyleDto {
     private MetricsDto metrics;
     private List<ClustersDto> clusters;
     private List<CustomerChoiceDto> customerChoices;
+    private Integer channelId;
 }

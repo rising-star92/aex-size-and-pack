@@ -152,7 +152,8 @@ public class BuyQuantityMapper {
         List<StyleDto> styleDtoList = Optional.ofNullable(fineline.getStyles()).orElse(new ArrayList<>());
 
         styleDtoList.stream()
-                .filter(styleDto -> buyQntyResponseDTO.getStyleNbr().equals(styleDto.getStyleNbr())).findFirst()
+                .filter(styleDto -> buyQntyResponseDTO.getStyleNbr().equals(styleDto.getStyleNbr()) && styleDto.getChannelId() != null &&
+                        buyQntyResponseDTO.getChannelId().equals(styleDto.getChannelId())).findFirst()
                 .ifPresentOrElse(styleDto -> styleDto.setCustomerChoices(mapBuyQntyCcSp(buyQntyResponseDTO, styleDto)),
                         () -> setStyleSP(buyQntyResponseDTO, styleDtoList));
         return styleDtoList;
@@ -161,7 +162,7 @@ public class BuyQuantityMapper {
     private void setStyleSP(BuyQntyResponseDTO buyQntyResponseDTO, List<StyleDto> styleDtoList) {
         StyleDto styleDto = new StyleDto();
         styleDto.setStyleNbr(buyQntyResponseDTO.getStyleNbr());
-
+        styleDto.setChannelId(buyQntyResponseDTO.getChannelId());
         MetricsDto metricsDto = new MetricsDto();
 
         int buyQty = buyQntyResponseDTO.getStyleBuyQty() != null
@@ -195,7 +196,8 @@ public class BuyQuantityMapper {
         List<CustomerChoiceDto> customerChoiceDtoList = Optional.ofNullable(styleDto.getCustomerChoices()).orElse(new ArrayList<>());
 
         customerChoiceDtoList.stream()
-                .filter(customerChoiceDto -> buyQntyResponseDTO.getCcId().equals(customerChoiceDto.getCcId())).findFirst()
+                .filter(customerChoiceDto -> buyQntyResponseDTO.getCcId().equals(customerChoiceDto.getCcId()) && customerChoiceDto.getChannelId() != null &&
+                        buyQntyResponseDTO.getChannelId().equals(customerChoiceDto.getChannelId())).findFirst()
                 .ifPresentOrElse(customerChoiceDto -> {
                             log.info("Size implementation");
                             updateCc(buyQntyResponseDTO, customerChoiceDto);
@@ -204,7 +206,6 @@ public class BuyQuantityMapper {
                         () -> setCcSP(buyQntyResponseDTO, customerChoiceDtoList));
 
         if (!CollectionUtils.isEmpty(customerChoiceDtoList)) {
-
             updateStyle(styleDto, customerChoiceDtoList);
         }
 
@@ -271,7 +272,7 @@ public class BuyQuantityMapper {
     private void setCcSP(BuyQntyResponseDTO buyQntyResponseDTO, List<CustomerChoiceDto> customerChoiceDtoList) {
         CustomerChoiceDto customerChoiceDto = new CustomerChoiceDto();
         customerChoiceDto.setCcId(buyQntyResponseDTO.getCcId());
-
+        customerChoiceDto.setChannelId(buyQntyResponseDTO.getChannelId());
         BuyQtyResponse sizeLevelData = null;
         try {
             BuyQtyRequest newBuyReq = new BuyQtyRequest();

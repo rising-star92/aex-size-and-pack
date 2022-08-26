@@ -13,6 +13,5 @@ public class CustomerChoiceDto {
     private MetricsDto metrics;
     private List<ClustersDto> clusters;
     private List<MerchMethodsDto> merchMethods;
-
-
+    private Integer channelId;
 }
