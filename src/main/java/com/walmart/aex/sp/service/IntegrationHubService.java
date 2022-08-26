@@ -123,6 +123,7 @@ public class IntegrationHubService {
         integrationHubRequestContextDTO.setUpdatePackOptFinelineStatus(sizeAndPackSvcUrl  + packOptFinelineStatusSuffix);
         integrationHubRequestContextDTO.setPlanId(request.getPlanId());
         integrationHubRequestContextDTO.setFinelineNbrs(finelinesList);
+        integrationHubRequestContextDTO.setEnv(integrationHubServiceProperties.getEnv());
         integrationHubRequestDTO.setContext(integrationHubRequestContextDTO);
         return integrationHubRequestDTO;
     }
