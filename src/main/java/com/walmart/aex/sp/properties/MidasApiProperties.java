@@ -24,6 +24,6 @@ public interface MidasApiProperties {
    @Property(propertyName = "midas.header.tenant")
    String getMidasHeaderTenant();
 
-   @Property(propertyName = "midas.historicalMetricsQuery")
+   @Property(propertyName = "midas.historicalSizeMetricsQuery")
    String getMidasHistoricalMetricsQuery();
 }
