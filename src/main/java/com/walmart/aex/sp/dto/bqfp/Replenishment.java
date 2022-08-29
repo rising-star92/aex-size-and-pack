@@ -9,4 +9,6 @@ public class Replenishment {
    private Long replnUnits;
    private Long adjReplnUnits;
    private Long remainingUnits;
+   private Long dcInboundUnits;
+   private Long dcInboundAdjUnits;
 }

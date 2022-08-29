@@ -261,7 +261,7 @@ public class CalculateFinelineBuyQuantity {
                         long totalReplenishment = buyQtyObj.getReplenishments()
                                 .stream()
                                 .filter(Objects::nonNull)
-                                .mapToLong(replenishment -> Optional.ofNullable(replenishment.getAdjReplnUnits()).orElse(0L))
+                                .mapToLong(Replenishment::getAdjReplnUnits)
                                 .sum();
 
                         if (totalReplenishment > 0) {
@@ -269,15 +269,19 @@ public class CalculateFinelineBuyQuantity {
                             double unitsLessThanThreshold = initialSetThreshold - perStoreQty;
                             double totalReducedReplenishment = unitsLessThanThreshold * rfaSizePackData.getStore_cnt();
 
-                            int replenishmentSize = buyQtyObj.getReplenishments().size();
+                            List<Replenishment> replnsWithUnits = buyQtyObj.getReplenishments().stream()
+                                  .filter(repln -> repln.getAdjReplnUnits() > 0).collect(Collectors.toList());
+
+                            long replenishmentSize = replnsWithUnits.size();
 
                             double perReplenishmentReduced = (totalReducedReplenishment / replenishmentSize);
                             double perReplenishmentReducedRemainder = (totalReducedReplenishment % replenishmentSize);
 
-                            buyQtyObj.getReplenishments().forEach(replenishment -> replenishment.setReplnUnits(Math.round(replenishment.getAdjReplnUnits() - perReplenishmentReduced)));
-                            buyQtyObj.getReplenishments().get(0).setReplnUnits(Math.round(buyQtyObj.getReplenishments().get(0).getAdjReplnUnits() - perReplenishmentReducedRemainder));
+                            replnsWithUnits.forEach(replenishment -> replenishment.setReplnUnits(Math.round(replenishment.getAdjReplnUnits() - perReplenishmentReduced)));
+                            replnsWithUnits.get(0).setReplnUnits(Math.round(replnsWithUnits.get(0).getAdjReplnUnits() - perReplenishmentReducedRemainder));
 
                             perStoreQty = initialSetThreshold;
+                            isQty = perStoreQty * rfaSizePackData.getStore_cnt();
                         }
                     }
 
@@ -335,7 +339,7 @@ public class CalculateFinelineBuyQuantity {
             totalReplenishment = entry.getValue().getReplenishments()
                     .stream()
                     .filter(Objects::nonNull)
-                    .mapToLong(replenishment -> Optional.ofNullable(replenishment.getAdjReplnUnits()).orElse(0L))
+                    .mapToLong(Replenishment::getAdjReplnUnits)
                     .sum();
             if (totalReplenishment < replenishmentThreshold && totalReplenishment > 0) {
                 isBuyQty = (isBuyQty + totalReplenishment);
@@ -605,7 +609,9 @@ public class CalculateFinelineBuyQuantity {
                 Replenishment replenishment1 = new Replenishment();
                 replenishment1.setReplnWeek(replenishment.getReplnWeek());
                 replenishment1.setReplnWeekDesc(replenishment.getReplnWeekDesc());
-                replenishment1.setAdjReplnUnits((long) (replenishment.getAdjReplnUnits() * getAvgSizePct(sizeDto)) / 100);
+                //Updating to use the dcInboundAdjUnits if set or dcInboundUnits from BQFP service
+                Long units = getReplenishmentUnits(replenishment);
+                replenishment1.setAdjReplnUnits((long) (units * getAvgSizePct(sizeDto)) / 100);
                 replObj.add(replenishment1);
             });
             buyQtyObj.setReplenishments(replObj);
@@ -631,5 +637,11 @@ public class CalculateFinelineBuyQuantity {
                 .findFirst()
                 .map(Fixture::getReplenishments)
                 .orElse(new ArrayList<>());
+    }
+
+    private Long getReplenishmentUnits(Replenishment replenishment) {
+        return Optional.ofNullable(replenishment.getDcInboundAdjUnits())
+              .orElse(Optional.ofNullable(replenishment.getDcInboundUnits())
+                    .orElse(0L));
     }
 }
