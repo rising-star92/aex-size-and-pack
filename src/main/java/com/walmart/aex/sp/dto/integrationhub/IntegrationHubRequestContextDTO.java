@@ -11,4 +11,5 @@ public class IntegrationHubRequestContextDTO {
     private String updatePackOptFinelineStatus;
     private Long planId;
     private List<Integer> finelineNbrs;
+    private String env;
 }

@@ -11,5 +11,8 @@ public interface IntegrationHubServiceProperties {
     @Property(propertyName = "integrationhub.sizeAndPackBaseUrl")
     String getSizeAndPackUrl();
 
+    @Property(propertyName = "integrationhub.env")
+    String getEnv();
+
 
 }
