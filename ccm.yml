@@ -284,7 +284,7 @@ configOverrides:
           "sqlServer.url": "jdbc:sqlserver://us-wm-aex-stg-spo-nonprod-62cd5875.database.windows.net:1433;database=us_wm_aex_spo;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;authentication=ActiveDirectoryPassword"
   integrationHubServiceConfig:
     - name: "stage"
-      description: "Override for stage"
+      description: "Override for STAGE profile"
       pathElements:
         envName: "stage"
         envProfile: "stage"
