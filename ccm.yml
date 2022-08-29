@@ -176,6 +176,11 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "http://aex-size-and-pack.aex.dev.walmart.net"
+      "integrationhub.env":
+        description: "Env we want to run the optimization for"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "dev"
 
   buyQtyConfig:
     description: "Buy Quantity Constants Config"
@@ -277,3 +282,13 @@ configOverrides:
       value:
         properties:
           "sqlServer.url": "jdbc:sqlserver://us-wm-aex-stg-spo-nonprod-62cd5875.database.windows.net:1433;database=us_wm_aex_spo;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;authentication=ActiveDirectoryPassword"
+  integrationHubServiceConfig:
+    - name: "stage"
+      description: "Override for stage"
+      pathElements:
+        envName: "stage"
+        envProfile: "stage"
+      value:
+        properties:
+          "integrationhub.env": "stg"
+          "integrationhub.sizeAndPackBaseUrl": "http://aex-size-and-pack.aex.stg.walmart.net"
