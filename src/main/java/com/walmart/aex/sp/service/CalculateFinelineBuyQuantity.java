@@ -261,7 +261,7 @@ public class CalculateFinelineBuyQuantity {
                         long totalReplenishment = buyQtyObj.getReplenishments()
                                 .stream()
                                 .filter(Objects::nonNull)
-                                .mapToLong(this::getReplenishmentUnits)
+                                .mapToLong(Replenishment::getAdjReplnUnits)
                                 .sum();
 
                         if (totalReplenishment > 0) {
@@ -273,7 +273,6 @@ public class CalculateFinelineBuyQuantity {
                                   .filter(repln -> repln.getAdjReplnUnits() > 0).collect(Collectors.toList());
 
                             long replenishmentSize = replnsWithUnits.size();
-
 
                             double perReplenishmentReduced = (totalReducedReplenishment / replenishmentSize);
                             double perReplenishmentReducedRemainder = (totalReducedReplenishment % replenishmentSize);
