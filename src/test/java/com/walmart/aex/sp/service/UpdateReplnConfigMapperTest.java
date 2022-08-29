@@ -143,10 +143,10 @@ public class UpdateReplnConfigMapperTest {
 		cc.setCcSpMmReplPack(ccSpMmReplPack);
 		ccMmReplnPkConsList.add(cc);
 					
-		replenishmentMapper.updateVnpkWhpkForCatgReplnConsMapper(catgReplnPkConsList, 500, 500, vnpkwhpkRatio);
+		replenishmentMapper.updateVnpkWhpkForCatgReplnConsMapper(catgReplnPkConsList, 500, 500);
 		
 		//Assert
-    	Mockito.verify(replenishmentMapper,Mockito.times(1)).updateVnpkWhpkForCatgReplnConsMapper(catgReplnPkConsList, vnpk, whpk, vnpkwhpkRatio);
+    	Mockito.verify(replenishmentMapper,Mockito.times(1)).updateVnpkWhpkForCatgReplnConsMapper(catgReplnPkConsList, vnpk, whpk);
     	
     	assertEquals(catgReplnPkConsList.get(0).getVendorPackCnt(), 500);    	
     	assertEquals(catgReplnPkConsList.get(0).getWhsePackCnt(), 500);
