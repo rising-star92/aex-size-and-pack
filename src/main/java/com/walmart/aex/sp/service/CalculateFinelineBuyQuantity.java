@@ -317,6 +317,53 @@ public class CalculateFinelineBuyQuantity {
             spCustomerChoiceChannelFixtureSize.setSpCustomerChoiceChannelFixtureSizeId(spCustomerChoiceChannelFixtureSizeId);
         }
 
+        long totalReplenishment = updateQtysWithReplenishmentConstraints(entry);
+        double bsBuyQty = getBsQty(entry);
+        double isBuyQty = getIsQty(entry);
+        double totalBuyQty = isBuyQty + bsBuyQty + totalReplenishment;
+        spCustomerChoiceChannelFixtureSize.setInitialSetQty((int) Math.round(isBuyQty));
+        spCustomerChoiceChannelFixtureSize.setBumpPackQty((int) Math.round(bsBuyQty));
+        spCustomerChoiceChannelFixtureSize.setMerchMethodCode(merchMethodsDto.getMerchMethodCode());
+        spCustomerChoiceChannelFixtureSize.setAhsSizeDesc(entry.getKey().getSizeDesc());
+        spCustomerChoiceChannelFixtureSize.setReplnQty((int) totalReplenishment);
+        spCustomerChoiceChannelFixtureSize.setBuyQty((int) Math.round(totalBuyQty));
+
+        //TODO: Adjust Flow Strategy
+        try {
+            log.info("Store Obj: {}", objectMapper.writeValueAsString(entry.getValue().getBuyQtyStoreObj()));
+            spCustomerChoiceChannelFixtureSize.setStoreObj(objectMapper.writeValueAsString(entry.getValue().getBuyQtyStoreObj()));
+        } catch (Exception e) {
+            log.error("Error parsing Json: ", e);
+            throw new CustomException("Error parsing Json: " + e);
+        }
+        spCustomerChoiceChannelFixtureSizes.add(spCustomerChoiceChannelFixtureSize);
+
+        //Replenishment
+        if (!CollectionUtils.isEmpty(replenishments) && totalReplenishment > 0) {
+            setCcMmSpReplenishment(ccSpMmReplPacks, entry, (int) totalReplenishment, (int) Math.round(totalBuyQty));
+        }
+    }
+
+    private double getIsQty(Map.Entry<SizeDto, BuyQtyObj> entry) {
+        return entry.getValue().getBuyQtyStoreObj()
+                .getBuyQuantities()
+                .stream()
+                .filter(Objects::nonNull)
+                .mapToDouble(storeQuantity -> Optional.ofNullable(storeQuantity.getTotalUnits()).orElse((double) 0))
+                .sum();
+    }
+
+    private double getBsQty(Map.Entry<SizeDto, BuyQtyObj> entry) {
+        return entry.getValue().getBuyQtyStoreObj().getBuyQuantities()
+                .stream()
+                .map(StoreQuantity::getBumpSets)
+                .flatMap(Collection::stream)
+                .filter(Objects::nonNull)
+                .mapToDouble(bumpSetQuantity -> Optional.ofNullable(bumpSetQuantity.getTotalUnits()).orElse((double) 0))
+                .sum();
+    }
+
+    private long updateQtysWithReplenishmentConstraints(Map.Entry<SizeDto, BuyQtyObj> entry) {
         //TODO: move threshold to CCM
         double replenishmentThreshold = 500.0;
         long totalReplenishment = 0L;
@@ -360,44 +407,7 @@ public class CalculateFinelineBuyQuantity {
                 entry.getValue().getBuyQtyStoreObj().setBuyQuantities(sortedStoreQty);
             }
         }
-
-        double bsBuyQty = entry.getValue().getBuyQtyStoreObj().getBuyQuantities()
-                .stream()
-                .map(StoreQuantity::getBumpSets)
-                .flatMap(Collection::stream)
-                .filter(Objects::nonNull)
-                .mapToDouble(bumpSetQuantity -> Optional.ofNullable(bumpSetQuantity.getTotalUnits()).orElse((double) 0))
-                .sum();
-
-        double isBuyQty = entry.getValue().getBuyQtyStoreObj()
-                .getBuyQuantities()
-                .stream()
-                .filter(Objects::nonNull)
-                .mapToDouble(storeQuantity -> Optional.ofNullable(storeQuantity.getTotalUnits()).orElse((double) 0))
-                .sum();
-
-        double totalBuyQty = isBuyQty + bsBuyQty + totalReplenishment;
-        spCustomerChoiceChannelFixtureSize.setInitialSetQty((int) Math.round(isBuyQty));
-        spCustomerChoiceChannelFixtureSize.setBumpPackQty((int) Math.round(bsBuyQty));
-        spCustomerChoiceChannelFixtureSize.setMerchMethodCode(merchMethodsDto.getMerchMethodCode());
-        spCustomerChoiceChannelFixtureSize.setAhsSizeDesc(entry.getKey().getSizeDesc());
-        spCustomerChoiceChannelFixtureSize.setReplnQty((int) totalReplenishment);
-        spCustomerChoiceChannelFixtureSize.setBuyQty((int) Math.round(totalBuyQty));
-
-        //TODO: Adjust Flow Strategy
-        try {
-            log.info("Store Obj: {}", objectMapper.writeValueAsString(entry.getValue().getBuyQtyStoreObj()));
-            spCustomerChoiceChannelFixtureSize.setStoreObj(objectMapper.writeValueAsString(entry.getValue().getBuyQtyStoreObj()));
-        } catch (Exception e) {
-            log.error("Error parsing Json: ", e);
-            throw new CustomException("Error parsing Json: " + e);
-        }
-        spCustomerChoiceChannelFixtureSizes.add(spCustomerChoiceChannelFixtureSize);
-
-        //Replenishment
-        if (!CollectionUtils.isEmpty(replenishments) && totalReplenishment > 0) {
-            setCcMmSpReplenishment(ccSpMmReplPacks, entry, (int) totalReplenishment, (int) Math.round(totalBuyQty));
-        }
+        return totalReplenishment;
     }
 
     private long updateStoreQuantity(long totalReplenishment, StoreQuantity storeQuantity) {
