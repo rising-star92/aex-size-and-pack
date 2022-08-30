@@ -34,8 +34,8 @@ input UpdateVnPkWhPkReplnRequest {
 	customerChoice: String
 	merchMethodDesc: String
 	ahsSizeId: Int
-	vnpk: Int!
-	whpk: Int!
+	vnpk: Int
+	whpk: Int
 	repleshUnits: Int
 }
 
