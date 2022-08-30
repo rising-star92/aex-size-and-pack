@@ -1,17 +1,14 @@
 package com.walmart.aex.sp.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.assortproduct.APResponse;
 import com.walmart.aex.sp.dto.bqfp.BQFPResponse;
-import com.walmart.aex.sp.dto.buyquantity.BuyQtyResponse;
-import com.walmart.aex.sp.dto.buyquantity.CalculateBuyQtyParallelRequest;
-import com.walmart.aex.sp.dto.buyquantity.CalculateBuyQtyRequest;
-import com.walmart.aex.sp.dto.buyquantity.CalculateBuyQtyResponse;
-import com.walmart.aex.sp.dto.buyquantity.FinelineDto;
-import com.walmart.aex.sp.dto.buyquantity.Lvl3Dto;
-import com.walmart.aex.sp.dto.buyquantity.Lvl4Dto;
+import com.walmart.aex.sp.dto.buyquantity.*;
+import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixture;
 import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixtureSize;
 import com.walmart.aex.sp.entity.SpFineLineChannelFixture;
+import com.walmart.aex.sp.entity.SpStyleChannelFixture;
 import com.walmart.aex.sp.exception.SizeAndPackException;
 import com.walmart.aex.sp.repository.SpFineLineChannelFixtureRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -25,16 +22,17 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.util.ReflectionUtils;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
-import java.util.function.Predicate;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -48,18 +46,18 @@ import static org.mockito.ArgumentMatchers.any;
 @Slf4j
 public class CalculateFinelineBuyQuantityTest {
     @InjectMocks
-    CalculateFinelineBuyQuantity calculateFinelineBuyQuantity;
+    private CalculateFinelineBuyQuantity calculateFinelineBuyQuantity;
 
     @Mock
-    SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository;
+    private SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository;
 
     @Mock
-    BQFPService bqfpService;
+    private BQFPService bqfpService;
 
     private CalculateOnlineFinelineBuyQuantity calculateOnlineFinelineBuyQuantity;
 
     @Mock
-    StrategyFetchService strategyFetchService;
+    private StrategyFetchService strategyFetchService;
 
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -107,12 +105,12 @@ public class CalculateFinelineBuyQuantityTest {
        int fix1xl = 13663;
        int fix1xxl = 7397;
        int expectedTotalFix1InitialSetQty = IntStream.of(fix1xs, fix1s, fix1m, fix1l, fix1xl, fix1xxl).sum();
-       assertSizeInitialSetValue(fixture1Sizes, "XS", fix1xs);
-       assertSizeInitialSetValue(fixture1Sizes, "S", fix1s);
-       assertSizeInitialSetValue(fixture1Sizes, "M", fix1m);
-       assertSizeInitialSetValue(fixture1Sizes, "L", fix1l);
-       assertSizeInitialSetValue(fixture1Sizes, "XL", fix1xl);
-       assertSizeInitialSetValue(fixture1Sizes, "XXL", fix1xxl);
+       assertUnitValueBySize(fixture1Sizes, "XS", fix1xs, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
+       assertUnitValueBySize(fixture1Sizes, "S", fix1s, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
+       assertUnitValueBySize(fixture1Sizes, "M", fix1m, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
+       assertUnitValueBySize(fixture1Sizes, "L", fix1l, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
+       assertUnitValueBySize(fixture1Sizes, "XL", fix1xl, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
+       assertUnitValueBySize(fixture1Sizes, "XXL", fix1xxl, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
        assertEquals("Fixture 1 Initial Set Qty rollup should be sum of all size values", expectedTotalFix1InitialSetQty, (int)fixture1.getInitialSetQty());
 
        assertEquals("Fixture 1 Should have 6 sizes present", 6, fixture1Sizes.size());
@@ -123,12 +121,12 @@ public class CalculateFinelineBuyQuantityTest {
        int fix3xl = 7420;
        int fix3xxl = 4499;
        int expectedTotalFix3InitialSetQty = IntStream.of(fix3xs, fix3s, fix3m, fix3l, fix3xl, fix3xxl).sum();
-       assertSizeInitialSetValue(fixture3Sizes, "XS", fix3xs);
-       assertSizeInitialSetValue(fixture3Sizes, "S", fix3s);
-       assertSizeInitialSetValue(fixture3Sizes, "M", fix3m);
-       assertSizeInitialSetValue(fixture3Sizes, "L", fix3l);
-       assertSizeInitialSetValue(fixture3Sizes, "XL", fix3xl);
-       assertSizeInitialSetValue(fixture3Sizes, "XXL", fix3xxl);
+       assertUnitValueBySize(fixture3Sizes, "XS", fix3xs, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
+       assertUnitValueBySize(fixture3Sizes, "S", fix3s, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
+       assertUnitValueBySize(fixture3Sizes, "M", fix3m, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
+       assertUnitValueBySize(fixture3Sizes, "L", fix3l, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
+       assertUnitValueBySize(fixture3Sizes, "XL", fix3xl, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
+       assertUnitValueBySize(fixture3Sizes, "XXL", fix3xxl, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
        assertEquals("Fixture 1 Initial Set Qty rollup should be sum of all size values", expectedTotalFix3InitialSetQty, (int) fixture3.getInitialSetQty());
     }
 
@@ -164,13 +162,93 @@ public class CalculateFinelineBuyQuantityTest {
       assertEquals("Sum of all replns at size level equals total repln", expectedTotalReplnUnits, actualReplUnitsBySize);
    }
 
-   private void assertSizeInitialSetValue(Set<SpCustomerChoiceChannelFixtureSize> sizes, String sizeDesc, int expectedISQty) {
-      sizes.stream().filter(spccFix -> spccFix.getAhsSizeDesc().equalsIgnoreCase(sizeDesc))
-            .findFirst().ifPresentOrElse(spccFix -> assertFixtureSizeInitialSetValues(spccFix, expectedISQty), () -> Assert.fail(sizeDesc));
+   @Test
+   public void bumpSetCalculationTest() throws IOException, SizeAndPackException {
+      final String path = "/plan72fineline4440";
+      BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponseWithBumpSet"));
+      APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
+      BuyQtyResponse buyQtyResponse = buyQtyResponseFromJson(path.concat("/BuyQtyResponse"));
+      Mockito.when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
+      Mockito.when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
+      Mockito.when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
+      CalculateBuyQtyRequest request = create("store", 50000, 34, 1488, 9074, 7207, 4440);
+      CalculateBuyQtyParallelRequest pRequest = createFromRequest(request);
+
+      CalculateBuyQtyResponse r = new CalculateBuyQtyResponse();
+      r.setMerchCatgReplPacks(new ArrayList<>());
+      r.setSpFineLineChannelFixtures(new ArrayList<>());
+
+      CalculateBuyQtyResponse response = calculateFinelineBuyQuantity.calculateFinelineBuyQty(request, pRequest, r);
+      SpFineLineChannelFixture spflChFix = response.getSpFineLineChannelFixtures().get(1);
+      int expectedTotalBumpPackQty = 17361;
+      assertEquals(expectedTotalBumpPackQty, (long) spflChFix.getBumpPackQty());
+
+      SpStyleChannelFixture spStlChFix = spflChFix.getSpStyleChannelFixtures().stream().findFirst().get();
+      assertEquals(expectedTotalBumpPackQty, (long) spStlChFix.getBumpPackQty());
+
+      SpCustomerChoiceChannelFixture spCCChFix = spStlChFix.getSpCustomerChoiceChannelFixture().stream().findFirst().get();
+      assertEquals(expectedTotalBumpPackQty, (long) spCCChFix.getBumpPackQty());
+
+      Set<SpCustomerChoiceChannelFixtureSize> spCCFixSizes = spCCChFix.getSpCustomerChoiceChannelFixtureSize();
+
+      assertEquals("Should have 7 sizes", 7, spCCFixSizes.size());
+      int fix1xs = 786;
+      int fix1s = 2004;
+      int fix1m = 3544;
+      int fix1l = 4659;
+      int fix1xl = 3249;
+      int fix1xxl = 2160;
+      int fix1xxxl = 959;
+      int expectedTotalBumpPackQtySize = IntStream.of(fix1xs, fix1s, fix1m, fix1l, fix1xl, fix1xxl, fix1xxxl).sum();
+      assertUnitValueBySize(spCCFixSizes, "XS", fix1xs, SpCustomerChoiceChannelFixtureSize::getBumpPackQty);
+      assertUnitValueBySize(spCCFixSizes, "S", fix1s, SpCustomerChoiceChannelFixtureSize::getBumpPackQty);
+      assertUnitValueBySize(spCCFixSizes, "M", fix1m, SpCustomerChoiceChannelFixtureSize::getBumpPackQty);
+      assertUnitValueBySize(spCCFixSizes, "L", fix1l, SpCustomerChoiceChannelFixtureSize::getBumpPackQty);
+      assertUnitValueBySize(spCCFixSizes, "XL", fix1xl, SpCustomerChoiceChannelFixtureSize::getBumpPackQty);
+      assertUnitValueBySize(spCCFixSizes, "XXL", fix1xxl, SpCustomerChoiceChannelFixtureSize::getBumpPackQty);
+      assertUnitValueBySize(spCCFixSizes, "XXXL", fix1xxxl, SpCustomerChoiceChannelFixtureSize::getBumpPackQty);
+
+      long actualTotalBumpPackQty = spCCFixSizes.stream().mapToLong(SpCustomerChoiceChannelFixtureSize::getBumpPackQty).sum();
+      assertEquals("Total of all size bump pack qtys should match", expectedTotalBumpPackQtySize, actualTotalBumpPackQty);
+      assertBumpSetStoreObject(spCCFixSizes, expectedTotalBumpPackQtySize);
    }
 
-   private void assertFixtureSizeInitialSetValues(SpCustomerChoiceChannelFixtureSize actual, int expectedISQty) {
-      assertEquals(String.format("Size %s should have correct value", actual.getAhsSizeDesc()), expectedISQty, (int) actual.getInitialSetQty());
+   public void assertBumpSetStoreObject(Set<SpCustomerChoiceChannelFixtureSize> spCCFixSizes, long expectedTotalBumpPackUnits) {
+      List<BumpSetQuantity> bumpSetQuantities = spCCFixSizes.stream()
+            .map(SpCustomerChoiceChannelFixtureSize::getStoreObj)
+            .map(this::deserialize).filter(Objects::nonNull)
+            .map(BuyQtyStoreObj::getBuyQuantities)
+            .flatMap(Collection::stream)
+            .map(StoreQuantity::getBumpSets)
+            .flatMap(Collection::stream)
+            .collect(Collectors.toList());
+
+      long totalBumpPackStoreObjUnits = bumpSetQuantities.stream()
+            .mapToDouble(BumpSetQuantity::getTotalUnits)
+            .mapToLong(value -> (long) value)
+            .sum();
+
+       assertEquals("All bump qtys in store object should total up to expected total",
+             expectedTotalBumpPackUnits, totalBumpPackStoreObjUnits);
+   }
+
+   private BuyQtyStoreObj deserialize(String json) {
+      try {
+         return mapper.readValue(json, BuyQtyStoreObj.class);
+      } catch (JsonProcessingException e) {
+         e.printStackTrace();
+         Assert.fail("Something happened deserializing store object");
+      }
+      return null;
+   }
+
+   private void assertUnitValueBySize(Set<SpCustomerChoiceChannelFixtureSize> sizes, String sizeDesc, int expectedISQty, Function<SpCustomerChoiceChannelFixtureSize, Integer> unitsFunc) {
+      sizes.stream().filter(spccFix -> spccFix.getAhsSizeDesc().equalsIgnoreCase(sizeDesc))
+            .findFirst().ifPresentOrElse(spccFix -> assertFixtureSizeInitialSetValues(spccFix, expectedISQty, unitsFunc), () -> Assert.fail(sizeDesc));
+   }
+
+   private void assertFixtureSizeInitialSetValues(SpCustomerChoiceChannelFixtureSize actual, int expectedISQty, Function<SpCustomerChoiceChannelFixtureSize, Integer> unitsFunc) {
+      assertEquals(String.format("Size %s should have correct value", actual.getAhsSizeDesc()), expectedISQty, (int) unitsFunc.apply(actual));
    }
 
    private BQFPResponse bqfpResponseFromJson(String path) throws IOException {
