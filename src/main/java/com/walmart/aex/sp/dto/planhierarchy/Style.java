@@ -9,6 +9,7 @@ import java.util.List;
 @Data
 public class Style {
     private String styleNbr;
+    private String altStyleDesc;
     private String channel;
     private Constraints constraints;
     private List<CustomerChoice> customerChoices;

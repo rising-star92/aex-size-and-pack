@@ -2,6 +2,7 @@ package com.walmart.aex.sp.controller;
 
 
 import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDTO;
+import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDeleteDTO;
 import com.walmart.aex.sp.dto.planhierarchy.SizeAndPackResponse;
 import com.walmart.aex.sp.service.SizeAndPackService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +53,23 @@ public class SizeAndPackController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
     }
 
+    @DeleteMapping(path = "/sizeAndPackService")
+    public @ResponseBody
+    ResponseEntity<SizeAndPackResponse> deleteLinePlan(@RequestBody PlanSizeAndPackDeleteDTO request) {
+        try {
+            if (request.getStrongKey() != null) {
+                if (request.getSizeAndPackPayloadDTO() != null) {
+                    SizeAndPackResponse response = new SizeAndPackResponse();
+                    // TODO add delete Fineline/Style/CC logic
+                    response.setStatus("Success");
+                    return ResponseEntity.status(HttpStatus.OK).body(response);
+                }
+            }
+        } catch (Exception exp) {
+            log.error("Exception occurred when updating a line plan : {}", exp.getMessage());
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+    }
 }
 
 
