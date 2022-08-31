@@ -106,7 +106,12 @@ public class BuyQuantityMapper {
                 .orElse(0)
                 : 0;
 
-        metricsDto.setBumpPackQty(Objects.nonNull(buyQntyResponseDTO.getBumpPackQty())? buyQntyResponseDTO.getBumpPackQty():0);
+        int bumpQty = buyQntyResponseDTO.getBumpPackQty() != null
+                ? Optional.ofNullable(buyQntyResponseDTO.getBumpPackQty())
+                .orElse(0)
+                : 0;
+
+        metricsDto.setBumpPackQty(bumpQty + metricsDto.getBumpPackQty());
         metricsDto.setFinalReplenishmentQty(rplnQty + metricsDto.getFinalReplenishmentQty());
         metricsDto.setFinalBuyQty(buyQty + metricsDto.getBuyQty());
         metricsDto.setBuyQty(buyQty + metricsDto.getBuyQty());
@@ -139,6 +144,14 @@ public class BuyQuantityMapper {
                     : 0;
 
             metricsDto.setFinalReplenishmentQty(rplnQty);
+
+            int bumpQty = buyQntyResponseDTO.getBumpPackQty() != null
+                    ? Optional.ofNullable(buyQntyResponseDTO.getBumpPackQty())
+                    .orElse(0)
+                    : 0;
+
+            metricsDto.setBumpPackQty(bumpQty);
+
             metricsDto.setFinalBuyQty(buyQty);
             fineline.setMetrics(metricsDto);
 
@@ -184,9 +197,15 @@ public class BuyQuantityMapper {
                 : 0;
 
         metricsDto.setFinalReplenishmentQty(rplnQty);
+
+        int bumpQty = buyQntyResponseDTO.getStyleBumpQty() != null
+                ? Optional.ofNullable(buyQntyResponseDTO.getStyleBumpQty())
+                .orElse(0)
+                : 0;
+
+        metricsDto.setBumpPackQty(bumpQty);
+
         metricsDto.setFinalBuyQty(buyQty);
-
-
         styleDto.setMetrics(metricsDto);
         styleDto.setCustomerChoices(mapBuyQntyCcSp(buyQntyResponseDTO, styleDto));
         styleDtoList.add(styleDto);
@@ -237,6 +256,11 @@ public class BuyQuantityMapper {
                 .map(CustomerChoiceDto::getMetrics)
                 .mapToInt(metricsDto1 -> Optional.ofNullable(metricsDto1.getFinalReplenishmentQty()).orElse(0))
                 .sum());
+        metricsDto.setBumpPackQty(customerChoiceDtoList.stream()
+                .filter(Objects::nonNull)
+                .map(CustomerChoiceDto::getMetrics)
+                .mapToInt(metricsDto1 -> Optional.ofNullable(metricsDto1.getBumpPackQty()).orElse(0))
+                .sum());
 
         styleDto.setMetrics(metricsDto);
     }
@@ -261,6 +285,13 @@ public class BuyQuantityMapper {
                 ? Optional.ofNullable(buyQntyResponseDTO.getCcReplnQty())
                 .orElse(0)
                 : 0;
+
+        int bumpQty = buyQntyResponseDTO.getCcBumpQty() != null
+                ? Optional.ofNullable(buyQntyResponseDTO.getCcBumpQty())
+                .orElse(0)
+                : 0;
+
+        metricsDto.setBumpPackQty(bumpQty + metricsDto.getBumpPackQty());
 
         metricsDto.setFinalReplenishmentQty(rplnQty + metricsDto.getFinalReplenishmentQty());
         metricsDto.setFinalBuyQty(buyQty + metricsDto.getBuyQty());
@@ -332,6 +363,12 @@ public class BuyQuantityMapper {
         metricsDto.setFinalReplenishmentQty(rplnQty);
         metricsDto.setFinalBuyQty(buyQty);
 
+        int bumpQty = buyQntyResponseDTO.getCcBumpQty() != null
+                ? Optional.ofNullable(buyQntyResponseDTO.getCcBumpQty())
+                .orElse(0)
+                : 0;
+
+        metricsDto.setBumpPackQty(bumpQty);
         customerChoiceDto.setMetrics(metricsDto);
         customerChoiceDtoList.add(customerChoiceDto);
     }
@@ -344,7 +381,7 @@ public class BuyQuantityMapper {
                 .filter(buyQntyResponseDTO -> sizeDto.getAhsSizeId().equals(buyQntyResponseDTO.getAhsSizeId()))
                         .forEach(buyQntyResponseDTO -> {
                     metricsDto.setBuyQty(Optional.ofNullable(metricsDto.getBuyQty()).orElse(0) + Optional.ofNullable(buyQntyResponseDTO.getBuyQty()).orElse(0));
-                    metricsDto.setBumpPackQty(Objects.nonNull(metricsDto.getBumpPackQty()) ? buyQntyResponseDTO.getBumpPackQty(): 0);
+                    metricsDto.setBumpPackQty(Optional.ofNullable(metricsDto.getBumpPackQty()).orElse(0) + Optional.ofNullable(buyQntyResponseDTO.getBumpPackQty()).orElse(0));
                     metricsDto.setFinalInitialSetQty(Optional.ofNullable(metricsDto.getFinalInitialSetQty()).orElse(0) +Optional.ofNullable(buyQntyResponseDTO.getInitialSetQty()).orElse(0));
                     metricsDto.setFinalReplenishmentQty(Optional.ofNullable(metricsDto.getFinalReplenishmentQty()).orElse(0) + Optional.ofNullable(buyQntyResponseDTO.getReplnQty()).orElse(0));
                     metricsDto.setFinalBuyQty(Optional.ofNullable(metricsDto.getFinalBuyQty()).orElse(0) + Optional.ofNullable(buyQntyResponseDTO.getBuyQty()).orElse(0));
