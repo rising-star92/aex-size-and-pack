@@ -33,7 +33,8 @@ public interface SpFineLineChannelFixtureRepository extends JpaRepository<SpFine
             "sfcf.initialSetQty, " +
             "sfcf.buyQty, " +
             "sfcf.replnQty, " +
-            "sfcf.adjReplnQty) " +
+            "sfcf.adjReplnQty, " +
+            "fp.altFinelineName) " +
             "from MerchCatPlan msp " +
             "inner join " +
             "SubCatPlan ssp " +

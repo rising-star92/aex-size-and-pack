@@ -48,11 +48,12 @@ public class BuyQntyResponseDTO {
     private Integer ccBuyQty;
     private Integer ccReplnQty;
     private Integer ccAdjReplnQty;
+    private String altFineLineDesc;
 
     public BuyQntyResponseDTO(Long planId, Integer channelId, Integer lvl0Nbr, String lvl0Desc, Integer lvl1Nbr, String lvl1Desc, Integer lvl2Nbr,
                               String lvl2Desc, Integer lvl3Nbr, String lvl3Desc, Integer lvl4Nbr, String lvl4Desc, Integer finelineNbr,
                               String finelineDesc, Integer flowStrategyCode, Integer merchMethodCode, String merchMethodShortDesc, Integer bumpPackQty,
-                              Integer initialSetQty, Integer buyQty, Integer replnQty, Integer adjReplnQty) {
+                              Integer initialSetQty, Integer buyQty, Integer replnQty, Integer adjReplnQty, String altFineLineDesc) {
         this.planId=planId;
         this.channelId=channelId;
         this.lvl0Nbr=lvl0Nbr;
@@ -75,6 +76,7 @@ public class BuyQntyResponseDTO {
         this.buyQty=buyQty;
         this.replnQty=replnQty;
         this.adjReplnQty=adjReplnQty;
+        this.altFineLineDesc=altFineLineDesc;
     }
 
     public BuyQntyResponseDTO(Long planId, Integer lvl0Nbr, Integer lvl1Nbr, Integer lvl2Nbr, Integer lvl3Nbr, Integer lvl4Nbr, Integer finelineNbr,

@@ -121,6 +121,7 @@ public class BuyQuantityMapper {
     private void setFinelineSP(BuyQntyResponseDTO buyQntyResponseDTO, List<FinelineDto> finelineDtoList, Integer finelineNbr) {
         FinelineDto fineline = new FinelineDto();
         fineline.setFinelineNbr(buyQntyResponseDTO.getFinelineNbr());
+        fineline.setFinelineAltDesc(buyQntyResponseDTO.getAltFineLineDesc());
         fineline.setChannelId(buyQntyResponseDTO.getChannelId());
         if (finelineNbr == null) {
             fineline.setFinelineDesc(buyQntyResponseDTO.getFinelineDesc());
