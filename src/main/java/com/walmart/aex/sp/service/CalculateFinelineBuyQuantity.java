@@ -270,7 +270,7 @@ public class CalculateFinelineBuyQuantity {
                             double totalReducedReplenishment = unitsLessThanThreshold * rfaSizePackData.getStore_cnt();
 
                             List<Replenishment> replnsWithUnits = buyQtyObj.getReplenishments().stream()
-                                  .filter(repln -> repln.getAdjReplnUnits() > 0).collect(Collectors.toList());
+                                    .filter(repln -> repln.getAdjReplnUnits() > 0).collect(Collectors.toList());
 
                             long replenishmentSize = replnsWithUnits.size();
 
@@ -376,21 +376,20 @@ public class CalculateFinelineBuyQuantity {
             if (totalReplenishment < replenishmentThreshold && totalReplenishment > 0) {
                 Comparator<StoreQuantity> sqc = Comparator.comparing(StoreQuantity::getVolumeCluster);
                 Comparator<StoreQuantity> sqc2 = Comparator.comparing(StoreQuantity::getSizeCluster);
-                List<StoreQuantity> sortedStoreQty  = entry.getValue().getBuyQtyStoreObj().getBuyQuantities().stream().sorted(sqc.thenComparing(sqc2)).collect(Collectors.toList());
+                List<StoreQuantity> sortedStoreQty = entry.getValue().getBuyQtyStoreObj().getBuyQuantities().stream().sorted(sqc.thenComparing(sqc2)).collect(Collectors.toList());
 
                 List<StoreQuantity> splitStoreQtys = new ArrayList<>();
 
-                for (StoreQuantity storeQuantity: sortedStoreQty) {
+                for (StoreQuantity storeQuantity : sortedStoreQty) {
                     if (totalReplenishment >= storeQuantity.getStoreList().size()) {
                         totalReplenishment = updateStoreQuantity(totalReplenishment, storeQuantity);
 
-                    }
-                    else {
+                    } else {
                         StoreQuantity storeQuantity1 = new StoreQuantity();
                         storeQuantity1.setIsUnits(storeQuantity.getIsUnits());
                         storeQuantity1.setVolumeCluster(storeQuantity.getVolumeCluster());
                         storeQuantity1.setSizeCluster(storeQuantity.getSizeCluster());
-                        storeQuantity1.setStoreList(storeQuantity.getStoreList().subList((int) totalReplenishment,storeQuantity.getStoreList().size() - 1));
+                        storeQuantity1.setStoreList(storeQuantity.getStoreList().subList((int) totalReplenishment, storeQuantity.getStoreList().size() - 1));
                         storeQuantity1.setTotalUnits(storeQuantity1.getIsUnits() * storeQuantity1.getStoreList().size());
                         storeQuantity1.setBumpSets(storeQuantity.getBumpSets());
                         storeQuantity1.setFlowStrategyCode(storeQuantity.getFlowStrategyCode());
@@ -415,7 +414,7 @@ public class CalculateFinelineBuyQuantity {
         storeQuantity.setTotalUnits(storeQuantity.getIsUnits() * storeQuantity.getStoreList().size());
         storeQuantity.getBumpSets().forEach(bumpSetQuantity -> bumpSetQuantity.setTotalUnits(bumpSetQuantity.getBsUnits() * storeQuantity.getStoreList().size()));
 
-        totalReplenishment = (long) (totalReplenishment - (storeQuantity.getIsUnits() * storeQuantity.getStoreList().size()));
+        totalReplenishment = totalReplenishment - storeQuantity.getStoreList().size();
         return totalReplenishment;
     }
 
@@ -689,8 +688,10 @@ public class CalculateFinelineBuyQuantity {
     }
 
     private Long getReplenishmentUnits(Replenishment replenishment) {
-        return Optional.ofNullable(replenishment.getDcInboundAdjUnits())
-              .orElse(Optional.ofNullable(replenishment.getDcInboundUnits())
-                    .orElse(0L));
+        if (replenishment.getDcInboundAdjUnits() != null && replenishment.getDcInboundAdjUnits() != 0) {
+            return replenishment.getDcInboundAdjUnits();
+        } else if (replenishment.getDcInboundUnits() != null) {
+            return replenishment.getDcInboundUnits();
+        } else return 0L;
     }
 }
