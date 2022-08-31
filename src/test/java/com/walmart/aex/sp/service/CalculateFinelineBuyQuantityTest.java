@@ -10,6 +10,7 @@ import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixtureSize;
 import com.walmart.aex.sp.entity.SpFineLineChannelFixture;
 import com.walmart.aex.sp.entity.SpStyleChannelFixture;
 import com.walmart.aex.sp.exception.SizeAndPackException;
+import com.walmart.aex.sp.repository.MerchCatgReplPackRepository;
 import com.walmart.aex.sp.repository.SpFineLineChannelFixtureRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
@@ -54,6 +55,9 @@ public class CalculateFinelineBuyQuantityTest {
     @Mock
     private BQFPService bqfpService;
 
+    @Mock
+    private MerchCatgReplPackRepository merchCatgReplPackRepository;
+
     private CalculateOnlineFinelineBuyQuantity calculateOnlineFinelineBuyQuantity;
 
     @Mock
@@ -64,7 +68,8 @@ public class CalculateFinelineBuyQuantityTest {
     @Before
     public void setUp() {
        MockitoAnnotations.openMocks(this);
-       calculateFinelineBuyQuantity = new CalculateFinelineBuyQuantity(bqfpService, mapper, new BuyQtyReplenishmentMapperService(), calculateOnlineFinelineBuyQuantity,strategyFetchService);
+       calculateFinelineBuyQuantity = new CalculateFinelineBuyQuantity(bqfpService, mapper, new BuyQtyReplenishmentMapperService(), calculateOnlineFinelineBuyQuantity,
+               strategyFetchService,spFineLineChannelFixtureRepository,merchCatgReplPackRepository);
     }
 
     @Test

@@ -14,6 +14,8 @@ import com.walmart.aex.sp.enums.FixtureTypeRollup;
 import com.walmart.aex.sp.enums.VdLevelCode;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.exception.SizeAndPackException;
+import com.walmart.aex.sp.repository.MerchCatgReplPackRepository;
+import com.walmart.aex.sp.repository.SpFineLineChannelFixtureRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -30,17 +32,23 @@ public class CalculateFinelineBuyQuantity {
     private final StrategyFetchService strategyFetchService;
     private final BuyQtyReplenishmentMapperService buyQtyReplenishmentMapperService;
     private final CalculateOnlineFinelineBuyQuantity calculateOnlineFinelineBuyQuantity;
+    private final SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository;
+    private final MerchCatgReplPackRepository merchCatgReplPackRepository;
 
     public CalculateFinelineBuyQuantity(BQFPService bqfpService,
                                         ObjectMapper objectMapper,
                                         BuyQtyReplenishmentMapperService buyQtyReplenishmentMapperService,
                                         CalculateOnlineFinelineBuyQuantity calculateOnlineFinelineBuyQuantity,
-                                        StrategyFetchService strategyFetchService) {
+                                        StrategyFetchService strategyFetchService,
+                                        SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository,
+                                        MerchCatgReplPackRepository merchCatgReplPackRepository) {
         this.bqfpService = bqfpService;
         this.objectMapper = objectMapper;
         this.strategyFetchService = strategyFetchService;
         this.buyQtyReplenishmentMapperService = buyQtyReplenishmentMapperService;
         this.calculateOnlineFinelineBuyQuantity = calculateOnlineFinelineBuyQuantity;
+        this.spFineLineChannelFixtureRepository = spFineLineChannelFixtureRepository;
+        this.merchCatgReplPackRepository = merchCatgReplPackRepository;
     }
 
     public CalculateBuyQtyResponse calculateFinelineBuyQty(CalculateBuyQtyRequest calculateBuyQtyRequest, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, CalculateBuyQtyResponse calculateBuyQtyResponse) throws SizeAndPackException {
@@ -71,24 +79,26 @@ public class CalculateFinelineBuyQuantity {
         if (!CollectionUtils.isEmpty(spFineLineChannelFixtures)) {
             log.info("Deleteing IS BS Buy Qty data for Fineline: {}", calculateBuyQtyParallelRequest.getFinelineNbr());
             spFineLineChannelFixtures.removeIf(spFineLineChannelFixture -> spFineLineChannelFixture.getSpFineLineChannelFixtureId().getFineLineNbr().equals(calculateBuyQtyParallelRequest.getFinelineNbr()));
+            spFineLineChannelFixtureRepository.flush();
         }
 
-        Set<FinelineReplPack> finelineReplPacks = Optional.ofNullable(calculateBuyQtyResponse.getMerchCatgReplPacks())
+        Set<SubCatgReplPack> subCatgReplPacks = Optional.ofNullable(calculateBuyQtyResponse.getMerchCatgReplPacks())
                 .stream()
                 .flatMap(Collection::stream)
                 .filter(merchCatgReplPack -> merchCatgReplPack.getMerchCatgReplPackId().getRepTLvl3().equals(calculateBuyQtyParallelRequest.getLvl3Nbr()))
-                .findFirst()
                 .map(MerchCatgReplPack::getSubReplPack)
-                .stream()
                 .flatMap(Collection::stream)
                 .filter(subCatgReplPack -> subCatgReplPack.getSubCatgReplPackId().getRepTLvl4().equals(calculateBuyQtyParallelRequest.getLvl4Nbr()))
-                .findFirst()
-                .map(SubCatgReplPack::getFinelineReplPack)
-                .orElse(null);
-        if (!CollectionUtils.isEmpty(finelineReplPacks)) {
+                .collect(Collectors.toSet());
+        if (!CollectionUtils.isEmpty(subCatgReplPacks)) {
             log.info("Delete replenishment buy qty for fineline: {}", calculateBuyQtyParallelRequest.getFinelineNbr());
-            finelineReplPacks.removeIf(finelineReplPack -> finelineReplPack.getFinelineReplPackId().getFinelineNbr().equals(calculateBuyQtyParallelRequest.getFinelineNbr()));
+            subCatgReplPacks.forEach(subCatgReplPack -> {
+                if (!CollectionUtils.isEmpty(subCatgReplPack.getFinelineReplPack())) {
+                    subCatgReplPack.getFinelineReplPack().removeIf(finelineReplPack -> finelineReplPack.getFinelineReplPackId().getFinelineNbr().equals(calculateBuyQtyParallelRequest.getFinelineNbr()));
+                }
+            });
         }
+        merchCatgReplPackRepository.flush();
     }
 
     private void getMerchMethod(CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, FinelineDto finelineDto, APResponse apResponse, BQFPResponse bqfpResponse,
@@ -265,23 +275,27 @@ public class CalculateFinelineBuyQuantity {
                                 .sum();
 
                         if (totalReplenishment > 0) {
-
                             double unitsLessThanThreshold = initialSetThreshold - perStoreQty;
                             double totalReducedReplenishment = unitsLessThanThreshold * rfaSizePackData.getStore_cnt();
 
-                            List<Replenishment> replnsWithUnits = buyQtyObj.getReplenishments().stream()
-                                    .filter(repln -> repln.getAdjReplnUnits() > 0).collect(Collectors.toList());
+                            if (totalReplenishment >= totalReducedReplenishment) {
 
-                            long replenishmentSize = replnsWithUnits.size();
+                                List<Replenishment> replnsWithUnits = buyQtyObj.getReplenishments().stream()
+                                        .filter(repln -> repln.getAdjReplnUnits() > 0).collect(Collectors.toList());
+                                List<Replenishment> replnsWithNoUnits = buyQtyObj.getReplenishments().stream()
+                                        .filter(repln -> repln.getAdjReplnUnits() == null || repln.getAdjReplnUnits() == 0).collect(Collectors.toList());
 
-                            double perReplenishmentReduced = (totalReducedReplenishment / replenishmentSize);
-                            double perReplenishmentReducedRemainder = (totalReducedReplenishment % replenishmentSize);
-
-                            replnsWithUnits.forEach(replenishment -> replenishment.setReplnUnits(Math.round(replenishment.getAdjReplnUnits() - perReplenishmentReduced)));
-                            replnsWithUnits.get(0).setReplnUnits(Math.round(replnsWithUnits.get(0).getAdjReplnUnits() - perReplenishmentReducedRemainder));
-
-                            perStoreQty = initialSetThreshold;
-                            isQty = perStoreQty * rfaSizePackData.getStore_cnt();
+                                long replenishmentSize = replnsWithUnits.size();
+                                double perReplenishmentReduced = (totalReducedReplenishment / replenishmentSize);
+                                double perReplenishmentReducedRemainder = (totalReducedReplenishment % replenishmentSize);
+                                replnsWithUnits.forEach(replenishment -> replenishment.setAdjReplnUnits(Math.round(replenishment.getAdjReplnUnits() - perReplenishmentReduced)));
+                                replnsWithUnits.get(0).setAdjReplnUnits(Math.round(replnsWithUnits.get(0).getAdjReplnUnits() - perReplenishmentReducedRemainder));
+                                replnsWithUnits.addAll(replnsWithNoUnits);
+                                buyQtyObj.setReplenishments(replnsWithUnits);
+                                perStoreQty = initialSetThreshold;
+                                isQty = perStoreQty * rfaSizePackData.getStore_cnt();
+                            }
+                            //:TODO Else condition to split stores and create new store list and new store qty
                         }
                     }
 
@@ -383,13 +397,12 @@ public class CalculateFinelineBuyQuantity {
                 for (StoreQuantity storeQuantity : sortedStoreQty) {
                     if (totalReplenishment >= storeQuantity.getStoreList().size()) {
                         totalReplenishment = updateStoreQuantity(totalReplenishment, storeQuantity);
-
-                    } else {
+                    } else if (totalReplenishment > 0) {
                         StoreQuantity storeQuantity1 = new StoreQuantity();
                         storeQuantity1.setIsUnits(storeQuantity.getIsUnits());
                         storeQuantity1.setVolumeCluster(storeQuantity.getVolumeCluster());
                         storeQuantity1.setSizeCluster(storeQuantity.getSizeCluster());
-                        storeQuantity1.setStoreList(storeQuantity.getStoreList().subList((int) totalReplenishment, storeQuantity.getStoreList().size() - 1));
+                        storeQuantity1.setStoreList(storeQuantity.getStoreList().subList((int) totalReplenishment, storeQuantity.getStoreList().size()));
                         storeQuantity1.setTotalUnits(storeQuantity1.getIsUnits() * storeQuantity1.getStoreList().size());
                         storeQuantity1.setBumpSets(storeQuantity.getBumpSets());
                         storeQuantity1.setFlowStrategyCode(storeQuantity.getFlowStrategyCode());
@@ -398,9 +411,10 @@ public class CalculateFinelineBuyQuantity {
 
                         splitStoreQtys.add(storeQuantity1);
 
-                        storeQuantity.setStoreList(storeQuantity.getStoreList().subList(0, (int) totalReplenishment - 1));
+                        storeQuantity.setStoreList(storeQuantity.getStoreList().subList(0, (int) totalReplenishment));
+                        log.info("test: {} : {}", totalReplenishment, storeQuantity.getStoreList().subList(0, (int) totalReplenishment));
                         totalReplenishment = updateStoreQuantity(totalReplenishment, storeQuantity);
-                    }
+                    } else break;
                 }
                 sortedStoreQty.addAll(splitStoreQtys);
                 entry.getValue().getBuyQtyStoreObj().setBuyQuantities(sortedStoreQty);
