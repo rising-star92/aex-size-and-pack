@@ -388,36 +388,38 @@ public class CalculateFinelineBuyQuantity {
                     .mapToLong(Replenishment::getAdjReplnUnits)
                     .sum();
             if (totalReplenishment < replenishmentThreshold && totalReplenishment > 0) {
-                Comparator<StoreQuantity> sqc = Comparator.comparing(StoreQuantity::getVolumeCluster);
-                Comparator<StoreQuantity> sqc2 = Comparator.comparing(StoreQuantity::getSizeCluster);
-                List<StoreQuantity> sortedStoreQty = entry.getValue().getBuyQtyStoreObj().getBuyQuantities().stream().sorted(sqc.thenComparing(sqc2)).collect(Collectors.toList());
+                while (totalReplenishment > 0) {
+                    Comparator<StoreQuantity> sqc = Comparator.comparing(StoreQuantity::getVolumeCluster);
+                    Comparator<StoreQuantity> sqc2 = Comparator.comparing(StoreQuantity::getSizeCluster);
+                    List<StoreQuantity> sortedStoreQty = entry.getValue().getBuyQtyStoreObj().getBuyQuantities().stream().sorted(sqc.thenComparing(sqc2)).collect(Collectors.toList());
 
-                List<StoreQuantity> splitStoreQtys = new ArrayList<>();
+                    List<StoreQuantity> splitStoreQtys = new ArrayList<>();
 
-                for (StoreQuantity storeQuantity : sortedStoreQty) {
-                    if (totalReplenishment >= storeQuantity.getStoreList().size()) {
-                        totalReplenishment = updateStoreQuantity(totalReplenishment, storeQuantity);
-                    } else if (totalReplenishment > 0) {
-                        StoreQuantity storeQuantity1 = new StoreQuantity();
-                        storeQuantity1.setIsUnits(storeQuantity.getIsUnits());
-                        storeQuantity1.setVolumeCluster(storeQuantity.getVolumeCluster());
-                        storeQuantity1.setSizeCluster(storeQuantity.getSizeCluster());
-                        storeQuantity1.setStoreList(storeQuantity.getStoreList().subList((int) totalReplenishment, storeQuantity.getStoreList().size()));
-                        storeQuantity1.setTotalUnits(storeQuantity1.getIsUnits() * storeQuantity1.getStoreList().size());
-                        storeQuantity1.setBumpSets(storeQuantity.getBumpSets());
-                        storeQuantity1.setFlowStrategyCode(storeQuantity.getFlowStrategyCode());
+                    for (StoreQuantity storeQuantity : sortedStoreQty) {
+                        if (totalReplenishment >= storeQuantity.getStoreList().size()) {
+                            totalReplenishment = updateStoreQuantity(totalReplenishment, storeQuantity);
+                        } else if (totalReplenishment > 0) {
+                            StoreQuantity storeQuantity1 = new StoreQuantity();
+                            storeQuantity1.setIsUnits(storeQuantity.getIsUnits());
+                            storeQuantity1.setVolumeCluster(storeQuantity.getVolumeCluster());
+                            storeQuantity1.setSizeCluster(storeQuantity.getSizeCluster());
+                            storeQuantity1.setStoreList(storeQuantity.getStoreList().subList((int) totalReplenishment, storeQuantity.getStoreList().size()));
+                            storeQuantity1.setTotalUnits(storeQuantity1.getIsUnits() * storeQuantity1.getStoreList().size());
+                            storeQuantity1.setBumpSets(storeQuantity.getBumpSets());
+                            storeQuantity1.setFlowStrategyCode(storeQuantity.getFlowStrategyCode());
 
-                        storeQuantity1.getBumpSets().forEach(bumpSetQuantity -> bumpSetQuantity.setTotalUnits(bumpSetQuantity.getBsUnits() * storeQuantity1.getStoreList().size()));
+                            storeQuantity1.getBumpSets().forEach(bumpSetQuantity -> bumpSetQuantity.setTotalUnits(bumpSetQuantity.getBsUnits() * storeQuantity1.getStoreList().size()));
 
-                        splitStoreQtys.add(storeQuantity1);
+                            splitStoreQtys.add(storeQuantity1);
 
-                        storeQuantity.setStoreList(storeQuantity.getStoreList().subList(0, (int) totalReplenishment));
-                        log.info("test: {} : {}", totalReplenishment, storeQuantity.getStoreList().subList(0, (int) totalReplenishment));
-                        totalReplenishment = updateStoreQuantity(totalReplenishment, storeQuantity);
-                    } else break;
+                            storeQuantity.setStoreList(storeQuantity.getStoreList().subList(0, (int) totalReplenishment));
+                            log.info("test: {} : {}", totalReplenishment, storeQuantity.getStoreList().subList(0, (int) totalReplenishment));
+                            totalReplenishment = updateStoreQuantity(totalReplenishment, storeQuantity);
+                        } else break;
+                    }
+                    sortedStoreQty.addAll(splitStoreQtys);
+                    entry.getValue().getBuyQtyStoreObj().setBuyQuantities(sortedStoreQty);
                 }
-                sortedStoreQty.addAll(splitStoreQtys);
-                entry.getValue().getBuyQtyStoreObj().setBuyQuantities(sortedStoreQty);
             }
         }
         return totalReplenishment;
