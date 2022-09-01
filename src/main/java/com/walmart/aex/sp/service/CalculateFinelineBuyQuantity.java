@@ -210,7 +210,6 @@ public class CalculateFinelineBuyQuantity {
 
                 List<RFASizePackData> rfaSizePackDataList = getSizeVolumeClustersFromRfa(apResponse, clustersDto.getClusterID(), styleDto.getStyleNbr(), customerChoiceDto.getCcId(),
                         FixtureTypeRollup.getFixtureTypeFromId(merchMethodsDto.getFixtureTypeRollupId()));
-                //log.info("RFA Size PackData: {}", rfaSizePackDataList);
                 //Set Initial Set and Bump Set for Size Map
                 getClusterSizes(styleDto, customerChoiceDto, clustersDto, merchMethodsDto, bqfpResponse, storeBuyQtyBySizeId, rfaSizePackDataList);
             }
@@ -233,7 +232,6 @@ public class CalculateFinelineBuyQuantity {
 
     private void getClusterSizes(StyleDto styleDto, CustomerChoiceDto customerChoiceDto, ClustersDto clustersDto, MerchMethodsDto merchMethodsDto,
                                  BQFPResponse bqfpResponse, Map<SizeDto, BuyQtyObj> storeBuyQtyBySizeId, List<RFASizePackData> rfaSizePackDataList) {
-        //TODO: Round Off Logic
         clustersDto.getSizes().forEach(sizeDto -> {
 
             BuyQtyObj buyQtyObj;
