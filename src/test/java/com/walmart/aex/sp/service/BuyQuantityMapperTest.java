@@ -43,6 +43,7 @@ public class BuyQuantityMapperTest {
         buyQunatityMapper.mapBuyQntyLvl2Sp(buyQntyResponseDTO,fetchFineLineResponse,finelineNbr);
         assertNotNull(fetchFineLineResponse);
         assertEquals(fetchFineLineResponse.getPlanId(),471l);
+
     }
 
     @Test
