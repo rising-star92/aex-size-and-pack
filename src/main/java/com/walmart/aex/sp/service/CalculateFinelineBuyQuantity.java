@@ -269,7 +269,7 @@ public class CalculateFinelineBuyQuantity {
             double isQty = (isCalculatedBq * getSizePct(sizeDto)) / 100;
             double perStoreQty = Math.round(isQty / rfaSizePackData.getStore_cnt());
             isQty = perStoreQty * rfaSizePackData.getStore_cnt();
-            List<Integer> storeList = safeReadStoreList(rfaSizePackData.getStore_list());
+            List<Integer> storeList = safeReadStoreList(rfaSizePackData.getStore_list()).stream().sorted().collect(Collectors.toList());
 
             log.debug("| IS before constraints | : {} | {} | {} | {} | {} | {}", customerChoiceDto.getCcId(), sizeDto.getSizeDesc(), merchMethodsDto.getFixtureTypeRollupId()
                     , isQty, perStoreQty, storeList.size());
@@ -377,7 +377,6 @@ public class CalculateFinelineBuyQuantity {
 
         //TODO: Adjust Flow Strategy
         try {
-            //log.info("Store Obj: {}", objectMapper.writeValueAsString(entry.getValue().getBuyQtyStoreObj()));
             spCustomerChoiceChannelFixtureSize.setStoreObj(objectMapper.writeValueAsString(entry.getValue().getBuyQtyStoreObj()));
         } catch (Exception e) {
             log.error("Error parsing Json: ", e);
