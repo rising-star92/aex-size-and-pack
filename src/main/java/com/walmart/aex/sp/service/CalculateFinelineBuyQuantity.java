@@ -58,13 +58,13 @@ public class CalculateFinelineBuyQuantity {
         if (ChannelType.STORE.getDescription().equalsIgnoreCase(calculateBuyQtyParallelRequest.getChannel())) {
             apResponse = getRfaSpResponse(calculateBuyQtyRequest, calculateBuyQtyParallelRequest.getFinelineNbr(), bqfpResponse);
         }
-        try {
+        /*try {
             log.info("Size Profiles: {}", objectMapper.writeValueAsString(buyQtyResponse));
             log.info("BQ FP Response: {}", objectMapper.writeValueAsString(bqfpResponse));
             log.info("RFA Response: {}", objectMapper.writeValueAsString(apResponse));
         } catch (JsonProcessingException jsonProcessingException) {
             jsonProcessingException.printStackTrace();
-        }
+        }*/
 
         FinelineDto finelineDto = getFineline(buyQtyResponse);
         if (finelineDto != null) {
@@ -271,13 +271,13 @@ public class CalculateFinelineBuyQuantity {
             isQty = perStoreQty * rfaSizePackData.getStore_cnt();
             List<Integer> storeList = safeReadStoreList(rfaSizePackData.getStore_list());
 
-            log.debug("IS before constraints | : {} | {} | {} | {} | {} | {}",customerChoiceDto.getCcId(), sizeDto.getSizeDesc(), merchMethodsDto.getFixtureTypeRollupId()
+            log.debug("| IS before constraints | : {} | {} | {} | {} | {} | {}", customerChoiceDto.getCcId(), sizeDto.getSizeDesc(), merchMethodsDto.getFixtureTypeRollupId()
                     , isQty, perStoreQty, storeList.size());
 
             //TODO: move threshold to CCM
             double initialSetThreshold = 2.0;
 
-            if ((perStoreQty < initialSetThreshold) && (!CollectionUtils.isEmpty(buyQtyObj.getReplenishments()))) {
+            if ((perStoreQty < initialSetThreshold && perStoreQty > 0) && (!CollectionUtils.isEmpty(buyQtyObj.getReplenishments()))) {
 
                 long totalReplenishment = buyQtyObj.getReplenishments()
                         .stream()
@@ -304,24 +304,32 @@ public class CalculateFinelineBuyQuantity {
                         buyQtyObj.setReplenishments(replnsWithUnits);
                         perStoreQty = initialSetThreshold;
                         isQty = perStoreQty * rfaSizePackData.getStore_cnt();
-                        log.debug("IS after IS constraints with more replenishment | : {} | {} | {} | {} | {} | {}",customerChoiceDto.getCcId(), sizeDto.getSizeDesc(), merchMethodsDto.getFixtureTypeRollupId(), isQty, perStoreQty, storeList.size());
+                        log.debug("| IS after IS constraints with more replenishment | : {} | {} | {} | {} | {} | {}", customerChoiceDto.getCcId(), sizeDto.getSizeDesc(), merchMethodsDto.getFixtureTypeRollupId(), isQty, perStoreQty, storeList.size());
                     } else {
                         StoreQuantity storeQuantity1 = new StoreQuantity();
-                        int storeCntWithNewQty = (int) (totalReplenishment/unitsLessThanThreshold);
-                        List<Integer> storeListWithOldQty = storeList.subList(storeCntWithNewQty,storeList.size());
+                        int storeCntWithNewQty = (int) (totalReplenishment / unitsLessThanThreshold);
+                        List<Integer> storeListWithOldQty = storeList.subList(storeCntWithNewQty, storeList.size());
                         setStoreQty(rfaSizePackData, perStoreQty, storeQuantity1, storeListWithOldQty, perStoreQty * storeListWithOldQty.size());
                         storeQuantity1.setBumpSets(calculateBumpPackQty(sizeDto, rfaSizePackData, volumeCluster, storeListWithOldQty.size()));
                         initialSetQuantities.add(storeQuantity1);
 
-                        log.debug("IS after IS constraints with less replenishment with old IS qty | : {} | {} | {} | {} | {} | {}",customerChoiceDto.getCcId(), sizeDto.getSizeDesc(), merchMethodsDto.getFixtureTypeRollupId(),
+                        log.debug("| IS after IS constraints with less replenishment with old IS qty | : {} | {} | {} | {} | {} | {}", customerChoiceDto.getCcId(), sizeDto.getSizeDesc(), merchMethodsDto.getFixtureTypeRollupId(),
                                 perStoreQty * storeListWithOldQty.size(), perStoreQty, storeListWithOldQty.size());
 
-                        storeList = storeList.subList(0,storeCntWithNewQty);
+                        List<Replenishment> replnsWithUnits = buyQtyObj.getReplenishments().stream()
+                                .filter(repln -> repln.getAdjReplnUnits() > 0).collect(Collectors.toList());
+                        List<Replenishment> replnsWithNoUnits = buyQtyObj.getReplenishments().stream()
+                                .filter(repln -> repln.getAdjReplnUnits() == null || repln.getAdjReplnUnits() == 0).collect(Collectors.toList());
+
+                        replnsWithUnits.forEach(replenishment -> replenishment.setAdjReplnUnits(0L));
+                        replnsWithUnits.addAll(replnsWithNoUnits);
+                        buyQtyObj.setReplenishments(replnsWithUnits);
+                        storeList = storeList.subList(0, storeCntWithNewQty);
                         perStoreQty = initialSetThreshold;
                         isQty = perStoreQty * storeList.size();
 
-                        log.debug("IS after IS constraints with less replenishment with new IS qty | : {} | {} | {} | {} | {} | {}",customerChoiceDto.getCcId(), sizeDto.getSizeDesc(), merchMethodsDto.getFixtureTypeRollupId()
-                                ,isQty, perStoreQty, storeList.size());
+                        log.debug("| IS after IS constraints with less replenishment with new IS qty | : {} | {} | {} | {} | {} | {}", customerChoiceDto.getCcId(), sizeDto.getSizeDesc(), merchMethodsDto.getFixtureTypeRollupId()
+                                , isQty, perStoreQty, storeList.size());
                     }
                 }
             }
@@ -355,6 +363,7 @@ public class CalculateFinelineBuyQuantity {
         }
 
         entry.getValue().setTotalReplenishment(0L);
+        //Update Store Qty
         updateQtysWithReplenishmentConstraints(entry);
         double bsBuyQty = getBsQty(entry);
         double isBuyQty = getIsQty(entry);
@@ -429,33 +438,35 @@ public class CalculateFinelineBuyQuantity {
 
         List<StoreQuantity> splitStoreQtys = new ArrayList<>();
         for (StoreQuantity storeQuantity : sortedStoreQty) {
-            if (entry.getValue().getTotalReplenishment() >= storeQuantity.getStoreList().size()) {
-                updateStoreQuantity(entry, storeQuantity);
-                log.debug("IS after Replenishment constraints with less replenishment with new IS qty | : {} | {} | {} | {} | {} | {}",storeQuantity.getIsUnits(), storeQuantity.getTotalUnits(),
-                        storeQuantity.getStoreList().size(), storeQuantity.getVolumeCluster(), storeQuantity.getSizeCluster(), entry.getValue().getTotalReplenishment());
-            } else if (entry.getValue().getTotalReplenishment() > 0) {
-                log.debug("Splitting store list for new qtys: {}", storeQuantity.getStoreList());
-                StoreQuantity storeQuantity1 = new StoreQuantity();
-                storeQuantity1.setIsUnits(storeQuantity.getIsUnits());
-                storeQuantity1.setVolumeCluster(storeQuantity.getVolumeCluster());
-                storeQuantity1.setSizeCluster(storeQuantity.getSizeCluster());
-                storeQuantity1.setStoreList(storeQuantity.getStoreList().subList((int) entry.getValue().getTotalReplenishment(), storeQuantity.getStoreList().size()));
-                storeQuantity1.setTotalUnits(storeQuantity1.getIsUnits() * storeQuantity1.getStoreList().size());
-                storeQuantity1.setBumpSets(storeQuantity.getBumpSets());
-                storeQuantity1.setFlowStrategyCode(storeQuantity.getFlowStrategyCode());
+            if (storeQuantity.getIsUnits() > 0) {
+                if (entry.getValue().getTotalReplenishment() >= storeQuantity.getStoreList().size()) {
+                    updateStoreQuantity(entry, storeQuantity);
+                    log.debug("| IS after Replenishment constraints with less replenishment with new IS qty | : {} | {} | {} | {} | {} | {}", storeQuantity.getIsUnits(), storeQuantity.getTotalUnits(),
+                            storeQuantity.getStoreList().size(), storeQuantity.getVolumeCluster(), storeQuantity.getSizeCluster(), entry.getValue().getTotalReplenishment());
+                } else if (entry.getValue().getTotalReplenishment() > 0) {
+                    log.debug("Splitting store list for new qtys: {}", storeQuantity.getStoreList());
+                    StoreQuantity storeQuantity1 = new StoreQuantity();
+                    storeQuantity1.setIsUnits(storeQuantity.getIsUnits());
+                    storeQuantity1.setVolumeCluster(storeQuantity.getVolumeCluster());
+                    storeQuantity1.setSizeCluster(storeQuantity.getSizeCluster());
+                    storeQuantity1.setStoreList(storeQuantity.getStoreList().subList((int) entry.getValue().getTotalReplenishment(), storeQuantity.getStoreList().size()));
+                    storeQuantity1.setTotalUnits(storeQuantity1.getIsUnits() * storeQuantity1.getStoreList().size());
+                    storeQuantity1.setBumpSets(storeQuantity.getBumpSets());
+                    storeQuantity1.setFlowStrategyCode(storeQuantity.getFlowStrategyCode());
 
-                storeQuantity1.getBumpSets().forEach(bumpSetQuantity -> bumpSetQuantity.setTotalUnits(bumpSetQuantity.getBsUnits() * storeQuantity1.getStoreList().size()));
+                    storeQuantity1.getBumpSets().forEach(bumpSetQuantity -> bumpSetQuantity.setTotalUnits(bumpSetQuantity.getBsUnits() * storeQuantity1.getStoreList().size()));
 
-                log.debug("IS after Replenishment constraints with less replenishment with old IS qty and split store list | : {} | {} | {} | {} | {} | {}",storeQuantity1.getIsUnits(), storeQuantity1.getTotalUnits(),
-                        storeQuantity1.getStoreList().size(), storeQuantity1.getVolumeCluster(), storeQuantity1.getSizeCluster(), entry.getValue().getTotalReplenishment());
+                    log.debug("| IS after Replenishment constraints with less replenishment with old IS qty and split store list | : {} | {} | {} | {} | {} | {}", storeQuantity1.getIsUnits(), storeQuantity1.getTotalUnits(),
+                            storeQuantity1.getStoreList().size(), storeQuantity1.getVolumeCluster(), storeQuantity1.getSizeCluster(), entry.getValue().getTotalReplenishment());
 
-                splitStoreQtys.add(storeQuantity1);
+                    splitStoreQtys.add(storeQuantity1);
 
-                storeQuantity.setStoreList(storeQuantity.getStoreList().subList(0, (int) entry.getValue().getTotalReplenishment()));
-                updateStoreQuantity(entry, storeQuantity);
-                log.debug("IS after Replenishment constraints with less replenishment with new IS qty and split store list | : {} | {} | {} | {} | {} | {}",storeQuantity.getIsUnits(), storeQuantity.getTotalUnits(),
-                        storeQuantity.getStoreList().size(), storeQuantity.getVolumeCluster(), storeQuantity.getSizeCluster(), entry.getValue().getTotalReplenishment());
-            } else break;
+                    storeQuantity.setStoreList(storeQuantity.getStoreList().subList(0, (int) entry.getValue().getTotalReplenishment()));
+                    updateStoreQuantity(entry, storeQuantity);
+                    log.debug("| IS after Replenishment constraints with less replenishment with new IS qty and split store list | : {} | {} | {} | {} | {} | {}", storeQuantity.getIsUnits(), storeQuantity.getTotalUnits(),
+                            storeQuantity.getStoreList().size(), storeQuantity.getVolumeCluster(), storeQuantity.getSizeCluster(), entry.getValue().getTotalReplenishment());
+                } else break;
+            }
         }
         sortedStoreQty.addAll(splitStoreQtys);
         entry.getValue().getBuyQtyStoreObj().setBuyQuantities(sortedStoreQty);
