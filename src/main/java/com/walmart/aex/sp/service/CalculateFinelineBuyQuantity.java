@@ -58,13 +58,13 @@ public class CalculateFinelineBuyQuantity {
         if (ChannelType.STORE.getDescription().equalsIgnoreCase(calculateBuyQtyParallelRequest.getChannel())) {
             apResponse = getRfaSpResponse(calculateBuyQtyRequest, calculateBuyQtyParallelRequest.getFinelineNbr(), bqfpResponse);
         }
-        /*try {
-            log.info("Size Profiles: {}", objectMapper.writeValueAsString(buyQtyResponse));
-            log.info("BQ FP Response: {}", objectMapper.writeValueAsString(bqfpResponse));
-            log.info("RFA Response: {}", objectMapper.writeValueAsString(apResponse));
+        try {
+            log.debug("Size Profiles: {}", objectMapper.writeValueAsString(buyQtyResponse));
+            log.debug("BQ FP Response: {}", objectMapper.writeValueAsString(bqfpResponse));
+            log.debug("RFA Response: {}", objectMapper.writeValueAsString(apResponse));
         } catch (JsonProcessingException jsonProcessingException) {
             jsonProcessingException.printStackTrace();
-        }*/
+        }
 
         FinelineDto finelineDto = getFineline(buyQtyResponse);
         if (finelineDto != null) {
@@ -248,7 +248,6 @@ public class CalculateFinelineBuyQuantity {
             List<StoreQuantity> initialSetQuantities = Optional.of(buyQtyStoreObj)
                     .map(BuyQtyStoreObj::getBuyQuantities)
                     .orElse(new ArrayList<>());
-            //log.info("Size Level Calculations: {}", sizeDto.getSizeDesc());
             rfaSizePackDataList.forEach(rfaSizePackData -> addStoreBuyQuantities(styleDto, customerChoiceDto, merchMethodsDto, bqfpResponse, sizeDto, buyQtyObj, initialSetQuantities, rfaSizePackData));
             buyQtyStoreObj.setBuyQuantities(initialSetQuantities);
             buyQtyObj.setBuyQtyStoreObj(buyQtyStoreObj);
