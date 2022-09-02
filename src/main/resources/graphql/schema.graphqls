@@ -131,6 +131,7 @@ type Lvl4 {
 type Fineline {
     finelineNbr: Int
     finelineName: String
+    altFinelineName: String
     optimizationDetails: [RunOptimization]
     packOptimizationStatus: String
     constraints:Constraints
