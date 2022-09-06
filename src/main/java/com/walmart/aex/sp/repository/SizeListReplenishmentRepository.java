@@ -35,7 +35,10 @@ public interface SizeListReplenishmentRepository extends JpaRepository<CcSpMmRep
             "csrp.replUnits as ccSpReplQty, " +
             "csrp.vendorPackCnt as ccSpVenderPackCount, " +
             "csrp.whsePackCnt as ccSpWhsePackCount, " +
+            "sccfs.vendorPackCnt as ccMmSpVenderPackCount, " +
+            "sccfs.whsePackCnt as ccMmSpWhsePackCount, " +
             "csrp.vnpkWhpkRatio as ccSpVnpkWhpkRatio, " +
+            "sccfs.vnpkWhpkRatio as ccMmSpVnpkWhpkRatio, " +
             "csrp.replPackCnt as ccSpReplPack, " +
             "sccfs.finalBuyUnits as ccMmSpFinalBuyUnits, " +
             "sccfs.replUnits as ccMMSpReplQty, " +
