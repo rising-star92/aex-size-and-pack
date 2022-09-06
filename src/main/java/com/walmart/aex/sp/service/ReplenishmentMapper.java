@@ -62,7 +62,8 @@ public class ReplenishmentMapper {
             metricsDto.setWarehousePack(replenishmentResponseDTO.getLvl3WhsePackCount());
             metricsDto.setPackRatio(replenishmentResponseDTO.getLvl3vnpkWhpkRatio());
             metricsDto.setFinalReplenishmentQty(replenishmentResponseDTO.getLvl3ReplQty());
-
+            metricsDto.setFinalBuyQty(replenishmentResponseDTO.getLvl3finalBuyQty());
+            metricsDto.setReplenishmentPacks(replenishmentResponseDTO.getLvl3ReplPack());
             lvl3.setMetrics(metricsDto);
             lvl3.setLvl4List(mapReplenishmentLvl4Sp(replenishmentResponseDTO, lvl3, finelineNbr, ccId));
         }
@@ -94,7 +95,8 @@ public class ReplenishmentMapper {
             metricsDto.setWarehousePack(replenishmentResponseDTO.getLvl4WhsePackCount());
             metricsDto.setPackRatio(replenishmentResponseDTO.getLvl4vnpkWhpkRatio());
             metricsDto.setFinalReplenishmentQty(replenishmentResponseDTO.getLvl4ReplQty());
-
+            metricsDto.setFinalBuyQty(replenishmentResponseDTO.getLvl4finalBuyQty());
+            metricsDto.setReplenishmentPacks(replenishmentResponseDTO.getLvl4ReplPack());
             lvl4.setMetrics(metricsDto);
             lvl4.setFinelines(mapReplenishmentFl(replenishmentResponseDTO, lvl4, finelineNbr, ccId));
         }
