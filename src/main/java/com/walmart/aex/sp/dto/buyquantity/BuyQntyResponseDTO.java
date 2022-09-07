@@ -136,4 +136,27 @@ public class BuyQntyResponseDTO {
         this.replnQty=replnQty;
         this.adjReplnQty=adjReplnQty;
     }
+
+    public BuyQntyResponseDTO(Long planId, Integer channelId, Integer lvl0Nbr, String lvl0Desc, Integer lvl1Nbr, String lvl1Desc, Integer lvl2Nbr,
+                              String lvl2Desc, Integer lvl3Nbr, String lvl3Desc, Integer lvl4Nbr, String lvl4Desc, Integer finelineNbr,
+                              String finelineDesc, Integer buyQty, Integer replnQty, Integer adjReplnQty, String altFineLineDesc) {
+        this.planId=planId;
+        this.channelId=channelId;
+        this.lvl0Nbr=lvl0Nbr;
+        this.lvl0Desc=lvl0Desc;
+        this.lvl1Nbr=lvl1Nbr;
+        this.lvl1Desc=lvl1Desc;
+        this.lvl2Nbr=lvl2Nbr;
+        this.lvl2Desc=lvl2Desc;
+        this.lvl3Nbr=lvl3Nbr;
+        this.lvl3Desc=lvl3Desc;
+        this.lvl4Nbr=lvl4Nbr;
+        this.lvl4Desc=lvl4Desc;
+        this.finelineNbr=finelineNbr;
+        this.finelineDesc=finelineDesc;
+        this.buyQty=buyQty;
+        this.replnQty=replnQty;
+        this.adjReplnQty=adjReplnQty;
+        this.altFineLineDesc=altFineLineDesc;
+    }
 }
