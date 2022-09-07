@@ -4,6 +4,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import com.walmart.aex.sp.dto.buyquantity.BuyQntyResponseDTO;
+import com.walmart.aex.sp.dto.buyquantity.BuyQtyRequest;
+import com.walmart.aex.sp.dto.buyquantity.BuyQtyResponse;
 import org.springframework.stereotype.Service;
 
 import com.walmart.aex.sp.dto.replenishment.ReplenishmentRequest;
@@ -49,6 +52,7 @@ public class ReplenishmentService  {
     private final CcReplnPkConsRepository ccReplnConsRepository;
     private final CcMmReplnPkConsRepository ccMmReplnPkConsRepository;
     private final CcSpReplnPkConsRepository ccSpReplnPkConsRepository;
+    private final BuyQuantityMapper buyQuantityMapper;
 
     private final ReplenishmentMapper replenishmentMapper;
     private final UpdateReplnConfigMapper updateReplnConfigMapper;
@@ -64,7 +68,8 @@ public class ReplenishmentService  {
                                 CcMmReplnPkConsRepository ccMmReplnPkConsRepository,
                                 CcSpReplnPkConsRepository ccSpReplnPkConsRepository,
                                 ReplenishmentMapper replenishmentMapper,
-                                UpdateReplnConfigMapper updateReplnConfigMapper) {
+                                UpdateReplnConfigMapper updateReplnConfigMapper,
+                                BuyQuantityMapper buyQuantityMapper) {
         this.fineLineReplenishmentRepository = fineLineReplenishmentRepository;
         this.spCustomerChoiceReplenishmentRepository=spCustomerChoiceReplenishmentRepository;
         this.sizeListReplenishmentRepository=sizeListReplenishmentRepository;
@@ -77,6 +82,7 @@ public class ReplenishmentService  {
         this.ccSpReplnPkConsRepository = ccSpReplnPkConsRepository;
         this.replenishmentMapper = replenishmentMapper;
         this.updateReplnConfigMapper = updateReplnConfigMapper;
+        this.buyQuantityMapper = buyQuantityMapper;
     }
 
     public ReplenishmentResponse fetchFinelineReplenishment(ReplenishmentRequest replenishmentRequest) {
@@ -97,6 +103,25 @@ public class ReplenishmentService  {
         }
         log.info("Fetch Replenishment Fineline response: {}", replenishmentResponse);
         return replenishmentResponse;
+    }
+
+    public BuyQtyResponse fetchOnlineFinelineBuyQnty(BuyQtyRequest buyQtyRequest) {
+        BuyQtyResponse buyQtyResponse = new BuyQtyResponse();
+        try {
+            List<BuyQntyResponseDTO> buyQntyResponseDTOS = fineLineReplenishmentRepository.getBuyQntyByPlanChannelOnline(buyQtyRequest.getPlanId(),
+                    ChannelType.getChannelIdFromName(buyQtyRequest.getChannel()));
+
+            Optional.of(buyQntyResponseDTOS)
+                    .stream()
+                    .flatMap(Collection::stream)
+                    .forEach(buyQntyResponseDTO -> buyQuantityMapper
+                            .mapBuyQntyLvl2Sp(buyQntyResponseDTO, buyQtyResponse, null));
+        } catch (Exception e) {
+            log.error("Exception While fetching Fineline Buy Qunatities :", e);
+            throw new CustomException("Failed to fetch Fineline Buy Qunatities, due to" + e);
+        }
+        log.info("Fetch Buy Qty Fineline response: {}", buyQtyRequest);
+        return buyQtyResponse;
     }
 
     public ReplenishmentResponse fetchCcReplenishment(ReplenishmentRequest replenishmentRequest) {
