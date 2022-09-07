@@ -3,22 +3,16 @@ package com.walmart.aex.sp.service;
 import com.walmart.aex.sp.dto.buyquantity.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.walmart.aex.sp.dto.planhierarchy.Lvl1;
-import com.walmart.aex.sp.dto.planhierarchy.Lvl2;
-import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
-import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDTO;
-import com.walmart.aex.sp.dto.planhierarchy.SizeAndPackResponse;
+import com.walmart.aex.sp.dto.planhierarchy.*;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.properties.GraphQLProperties;
-import com.walmart.aex.sp.repository.MerchCatPlanRepository;
-import com.walmart.aex.sp.repository.SpCustomerChoiceChannelFixtureRepository;
-import com.walmart.aex.sp.repository.SpCustomerChoiceChannelFixtureSizeRepository;
-import com.walmart.aex.sp.repository.SpFineLineChannelFixtureRepository;
+import com.walmart.aex.sp.repository.*;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 
@@ -40,6 +34,8 @@ public class SizeAndPackService {
 
     private final StrategyFetchService strategyFetchService;
 
+    private final SizeAndPackDeletePlanService sizeAndPackDeletePlanService;
+
     @ManagedConfiguration
     GraphQLProperties graphQLProperties;
 
@@ -49,7 +45,7 @@ public class SizeAndPackService {
                               SpCustomerChoiceChannelFixtureRepository spCustomerChoiceChannelFixtureRepository,
                               SizeAndPackObjectMapper sizeAndPackObjectMapper,
                               MerchCatPlanRepository merchCatPlanRepository, StrategyFetchService strategyFetchService,
-                              SpCustomerChoiceChannelFixtureSizeRepository spCustomerChoiceChannelFixtureSizeRepository) {
+                              SpCustomerChoiceChannelFixtureSizeRepository spCustomerChoiceChannelFixtureSizeRepository, SizeAndPackDeletePlanService sizeAndPackDeletePlanService) {
         this.spFineLineChannelFixtureRepository = spFineLineChannelFixtureRepository;
         this.buyQuantityMapper = buyQuantityMapper;
         this.spCustomerChoiceChannelFixtureRepository = spCustomerChoiceChannelFixtureRepository;
@@ -57,6 +53,8 @@ public class SizeAndPackService {
         this.merchCatPlanRepository = merchCatPlanRepository;
         this.strategyFetchService = strategyFetchService;
         this.spCustomerChoiceChannelFixtureSizeRepository = spCustomerChoiceChannelFixtureSizeRepository;
+
+        this.sizeAndPackDeletePlanService = sizeAndPackDeletePlanService;
     }
 
     public BuyQtyResponse fetchFinelineBuyQnty(BuyQtyRequest buyQtyRequest) {
@@ -215,5 +213,29 @@ public class SizeAndPackService {
         return sizeAndPackResponse;
     }
 
+    @Transactional
+    public SizeAndPackResponse deleteSizeAndPackData(PlanSizeAndPackDeleteDTO request) {
+        SizeAndPackResponse sizeAndPackResponse = new SizeAndPackResponse();
+        try {
+            StrongKey strongKey = Optional.ofNullable(request.getStrongKey()).orElse(null);
+            if (strongKey != null) {
+                if (strongKey.getFineline().getFinelineNbr() != null && CollectionUtils.isEmpty(strongKey.getFineline().getStyles())) {
+                    sizeAndPackDeletePlanService.deleteSizeAndPackDataAtFl(strongKey.getPlanId(), strongKey.getLvl3Nbr(), strongKey.getLvl4Nbr(),
+                            strongKey.getFineline().getFinelineNbr());
+                } else if (!CollectionUtils.isEmpty(strongKey.getFineline().getStyles())) {
+                    sizeAndPackDeletePlanService.deleteSizeAndPackDataAtStyleOrCC(strongKey.getFineline().getStyles(), strongKey.getPlanId(),
+                            strongKey.getLvl3Nbr(), strongKey.getLvl4Nbr(), strongKey.getFineline().getFinelineNbr());
+                }
+                sizeAndPackResponse.setStatus(SUCCESS_STATUS);
+            } else {
+                log.error("StrongKey not provided, please validate");
+                throw new CustomException("StrongKey not provided, please validate");
+            }
+        } catch (Exception ex) {
+            sizeAndPackResponse.setStatus(FAILED_STATUS);
+            log.error("Failed to save the line plan events to size and pack database. Error: {}", ex.toString());
+        }
+        return sizeAndPackResponse;
+    }
 
 }

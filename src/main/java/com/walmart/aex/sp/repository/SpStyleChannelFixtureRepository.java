@@ -1,0 +1,10 @@
+package com.walmart.aex.sp.repository;
+
+import com.walmart.aex.sp.entity.SpStyleChannelFixture;
+import com.walmart.aex.sp.entity.SpStyleChannelFixtureId;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface SpStyleChannelFixtureRepository extends JpaRepository<SpStyleChannelFixture, SpStyleChannelFixtureId> {
+    void deleteBySpStyleChannelFixtureId_SpFineLineChannelFixtureId_planIdAndSpStyleChannelFixtureId_SpFineLineChannelFixtureId_lvl3NbrAndSpStyleChannelFixtureId_SpFineLineChannelFixtureId_lvl4NbrAndSpStyleChannelFixtureId_SpFineLineChannelFixtureId_fineLineNbrAndSpStyleChannelFixtureId_styleNbr(Long planId, Integer lvl3Nbr, Integer lvl4Nbr,Integer finelineNbr, String styleNbr);
+
+}

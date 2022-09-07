@@ -90,4 +90,7 @@ public interface FineLineReplenishmentRepository extends JpaRepository<FinelineR
             "AND frp.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId = ssp.subCatPlanId.merchCatPlanId.channelId " +
             "where fp.finelinePlanId.subCatPlanId.merchCatPlanId.channelId =:channelId and msp.merchCatPlanId.planId = :planId  " )
     List<ReplenishmentResponseDTO> getByPlanChannel(@Param("planId") Long planId, @Param("channelId") Integer channelId);
+
+    void deleteByFinelineReplPackId_SubCatgReplPackId_MerchCatgReplPackId_planIdAndFinelineReplPackId_SubCatgReplPackId_MerchCatgReplPackId_repTLvl3AndFinelineReplPackId_SubCatgReplPackId_repTLvl4AndFinelineReplPackId_finelineNbr(Long planId, Integer lvl3Nbr, Integer lvl4Nbr,Integer finelineNbr);
+
 }
