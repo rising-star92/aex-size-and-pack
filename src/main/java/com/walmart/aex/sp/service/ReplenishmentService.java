@@ -144,6 +144,25 @@ public class ReplenishmentService  {
         return replenishmentResponse;
     }
 
+    public BuyQtyResponse fetchOnlineCcBuyQnty(BuyQtyRequest buyQtyRequest, Integer finelineNbr) {
+        BuyQtyResponse buyQtyResponse = new BuyQtyResponse();
+        try {
+
+            List<BuyQntyResponseDTO> buyQntyResponseDTOS = spCustomerChoiceReplenishmentRepository.getBuyQntyByPlanChannelOnlineFineline(buyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(buyQtyRequest.getChannel()),
+                    finelineNbr);
+            Optional.of(buyQntyResponseDTOS)
+                    .stream()
+                    .flatMap(Collection::stream)
+                    .forEach(buyQntyResponseDTO -> buyQuantityMapper
+                            .mapBuyQntyLvl2Sp(buyQntyResponseDTO, buyQtyResponse, finelineNbr));
+        } catch (Exception e) {
+            log.error("Exception While fetching CC Buy Qunatities :", e);
+            throw new CustomException("Failed to fetch CC Buy Qunatities, due to" + e);
+        }
+        log.info("Fetch Buy Qty CC response: {}", buyQtyResponse);
+        return buyQtyResponse;
+    }
+
 
     public ReplenishmentResponse fetchSizeListReplenishment(ReplenishmentRequest replenishmentRequest) {
         ReplenishmentResponse replenishmentResponse = new ReplenishmentResponse();
