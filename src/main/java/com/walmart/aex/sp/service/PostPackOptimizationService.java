@@ -91,9 +91,9 @@ public class PostPackOptimizationService {
                 if(replObjJson!= null && !replObjJson.isEmpty()){
                     try {
                         List<Replenishment> replObj = objectMapper.readValue(replObjJson, new TypeReference<>() {});
-                        Long value = (long) (updatedReplenishmentQty / replObj.size());
+                        Long total = replObj.stream().mapToLong(ru->ru.getReplnUnits()).sum();
                         List<Replenishment> updateReplObj = replObj.stream()
-                                .peek(replenishment -> replenishment.setReplnUnits(value))
+                                .peek(replenishment -> replenishment.setReplnUnits((updatedReplenishmentQty*(((replenishment.getReplnUnits()*100)/total))/100)))
                                 .collect(Collectors.toList());
                         ccSpMmReplPack.setReplenObj(objectMapper.writeValueAsString(updateReplObj));
                     } catch (JsonProcessingException e) {
