@@ -26,5 +26,4 @@ public interface FineLinePackOptimizationRepository  extends JpaRepository<SpCus
 			"where sccfs.spCustomerChoiceChannelFixtureSizeId.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.planId = :planId and "
 			+ "sccfs.spCustomerChoiceChannelFixtureSizeId.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.fineLineNbr =:finelineNbr")
 	List<FineLinePackOptimizationResponseDTO> getPackOptByFineline(@Param("planId") Long planId,@Param("finelineNbr") Integer finelineNbr);
-
 }

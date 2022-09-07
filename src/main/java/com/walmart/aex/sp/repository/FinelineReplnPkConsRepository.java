@@ -16,7 +16,7 @@ import com.walmart.aex.sp.entity.FinelineReplPackId;
 @Repository
 public interface FinelineReplnPkConsRepository extends JpaRepository <FinelineReplPack, FinelineReplPackId>{
 
-     @Transactional
+    @Transactional
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(value = "select * from dbo.rc_fl_replpk_fixtr_cons where plan_id = :planId and channel_id = :channelId and rpt_lvl_3_nbr = :lvl3Nbr \n" +
             "and rpt_lvl_4_nbr = :lvl4Nbr and fineline_nbr=:fineline ", nativeQuery = true)

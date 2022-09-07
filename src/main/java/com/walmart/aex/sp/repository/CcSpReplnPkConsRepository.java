@@ -96,5 +96,4 @@ public interface CcSpReplnPkConsRepository extends JpaRepository<CcSpMmReplPack,
             " csmrp.merchMethodDesc , " +
             " csmrp.replenObj")
     List<DCInboundResponse> getDCInboundsByPlanIdAndChannelId(@Param("planId") Long planId ,@Param("channelId") Integer channelId);
-
 }
