@@ -92,4 +92,22 @@ public class ReplenishmentServiceTest {
         Mockito.verify(buyQuantityMapper, Mockito.times(1)).mapBuyQntyLvl2Sp(buyQntyResponseDTO,new BuyQtyResponse(),null);
     }
 
+    @Test
+    public void fetchCcBuyQtyTest() {
+        BuyQntyResponseDTO buyQntyResponseDTO = new BuyQntyResponseDTO(88L, 50000, 34, 6420,
+                12238, 31526, 5471, "34_5471_3_24_001", "34_5471_3_24_001_CHINO TAN",
+                1125, 1125, 1125, 1125,1125,1125,2);
+        List<BuyQntyResponseDTO> buyQntyResponseDTOS = new ArrayList<>();
+        buyQntyResponseDTOS.add(buyQntyResponseDTO);
+        Mockito.when(spCustomerChoiceReplenishmentRepository.getBuyQntyByPlanChannelOnlineFineline(88L, 2,
+                5471)).thenReturn(buyQntyResponseDTOS);
+
+        BuyQtyRequest buyQtyRequest = new BuyQtyRequest();
+        buyQtyRequest.setPlanId(88L);
+        buyQtyRequest.setChannel("Online");
+        BuyQtyResponse buyQtyResponse = replenishmentService1.fetchOnlineCcBuyQnty(buyQtyRequest, 5471);
+
+        Mockito.verify(buyQuantityMapper, Mockito.times(1)).mapBuyQntyLvl2Sp(buyQntyResponseDTO,new BuyQtyResponse(),5471);
+    }
+
 }

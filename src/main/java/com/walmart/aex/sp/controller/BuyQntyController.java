@@ -45,7 +45,10 @@ public class BuyQntyController {
     @QueryMapping
     public BuyQtyResponse getCcBuyQtyDetails(@Argument BuyQtyRequest buyQtyRequest, @Argument Integer finelineNbr)
     {
-        return sizeAndPackService.fetchCcBuyQnty(buyQtyRequest, finelineNbr);
+        if (buyQtyRequest.getChannel() != null && buyQtyRequest.getChannel().equalsIgnoreCase(ChannelType.ONLINE.name())) {
+            return replenishmentService.fetchOnlineCcBuyQnty(buyQtyRequest, finelineNbr);
+        }
+        else return sizeAndPackService.fetchCcBuyQnty(buyQtyRequest, finelineNbr);
     }
 
     @QueryMapping
