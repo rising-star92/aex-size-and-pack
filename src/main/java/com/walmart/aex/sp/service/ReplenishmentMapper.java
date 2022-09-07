@@ -223,9 +223,9 @@ public class ReplenishmentMapper {
         MetricsDto metricsDto = new MetricsDto();
         metricsDto.setFinalBuyQty(replenishmentResponseDTO.getCcMmSpFinalBuyUnits());
         metricsDto.setFinalReplenishmentQty(replenishmentResponseDTO.getCcMMSpReplQty());
-        metricsDto.setVendorPack(replenishmentResponseDTO.getCcSpVenderPackCount());
-        metricsDto.setWarehousePack(replenishmentResponseDTO.getCcSpWhsePackCount());
-        metricsDto.setPackRatio(replenishmentResponseDTO.getCcSpVnpkWhpkRatio());
+        metricsDto.setVendorPack(replenishmentResponseDTO.getCcMmSpVenderPackCount());
+        metricsDto.setWarehousePack(replenishmentResponseDTO.getCcMmSpWhsePackCount());
+        metricsDto.setPackRatio(replenishmentResponseDTO.getCcMmSpVnpkWhpkRatio());
         metricsDto.setReplenishmentPacks(replenishmentResponseDTO.getCcMmSpReplPack());
         merchMethodsDto.setMetrics(metricsDto);
         merchMethodsDto.setSizes(mapSize(replenishmentResponseDTO, merchMethodsDto));

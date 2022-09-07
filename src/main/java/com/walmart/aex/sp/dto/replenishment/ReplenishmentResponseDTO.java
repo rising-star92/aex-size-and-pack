@@ -64,7 +64,10 @@ public class ReplenishmentResponseDTO {
     private Integer ccSpReplQty;
     private Integer ccSpVenderPackCount;
     private Integer ccSpWhsePackCount;
+    private Integer ccMmSpVenderPackCount;
+    private Integer ccMmSpWhsePackCount;
     private Double ccSpVnpkWhpkRatio;
+    private Double ccMmSpVnpkWhpkRatio;
     private Integer ccSpReplPack;
 
     private Integer ccMmSpFinalBuyUnits;
@@ -159,7 +162,7 @@ public class ReplenishmentResponseDTO {
                                     String lvl1Desc, Integer lvl2Nbr, String lvl2Desc, Integer lvl3Nbr, String lvl3Desc,
                                     Integer lvl4Nbr, String lvl4Desc, Integer finelineNbr, String finelineDesc, String finelineAltDesc  ,
                                     String styleNbr, String ccId, String colorName, Integer merchMethod, Integer ahsSizeId , String sizeDesc , Integer ccSpFinalBuyUnits, Integer ccSpReplQty ,Integer ccSpVenderPackCount,
-                                    Integer ccSpWhsePackCount, Double ccSpVnpkWhpkRatio, Integer ccSpReplPack, Integer ccMmSpFinalBuyUnits   ,Integer ccMMSpReplQty, Integer ccMmSpReplPack) {
+                                    Integer ccSpWhsePackCount, Integer ccMmSpVenderPackCount, Integer ccMmSpWhsePackCount, Double ccSpVnpkWhpkRatio, Double ccMmSpVnpkWhpkRatio, Integer ccSpReplPack, Integer ccMmSpFinalBuyUnits   ,Integer ccMMSpReplQty, Integer ccMmSpReplPack) {
         this.planId = planId;
         this.lvl0Nbr = lvl0Nbr;
         this.lvl0Desc = lvl0Desc;
@@ -184,7 +187,10 @@ public class ReplenishmentResponseDTO {
         this.ccSpReplQty=ccSpReplQty;
         this.ccSpVenderPackCount = ccSpVenderPackCount;
         this.ccSpWhsePackCount = ccSpWhsePackCount;
+        this.ccMmSpVenderPackCount = ccMmSpVenderPackCount;
+        this.ccMmSpWhsePackCount = ccMmSpWhsePackCount;
         this.ccSpVnpkWhpkRatio = ccSpVnpkWhpkRatio;
+        this.ccMmSpVnpkWhpkRatio = ccMmSpVnpkWhpkRatio;
         this.ccSpReplPack = ccSpReplPack;
         this.ccMmSpFinalBuyUnits = ccMmSpFinalBuyUnits;
         this.ccMMSpReplQty = ccMMSpReplQty;
