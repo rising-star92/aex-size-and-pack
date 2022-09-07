@@ -35,7 +35,10 @@ public interface SizeListReplenishmentRepository extends JpaRepository<CcSpMmRep
             "csrp.replUnits as ccSpReplQty, " +
             "csrp.vendorPackCnt as ccSpVenderPackCount, " +
             "csrp.whsePackCnt as ccSpWhsePackCount, " +
+            "sccfs.vendorPackCnt as ccMmSpVenderPackCount, " +
+            "sccfs.whsePackCnt as ccMmSpWhsePackCount, " +
             "csrp.vnpkWhpkRatio as ccSpVnpkWhpkRatio, " +
+            "sccfs.vnpkWhpkRatio as ccMmSpVnpkWhpkRatio, " +
             "csrp.replPackCnt as ccSpReplPack, " +
             "sccfs.finalBuyUnits as ccMmSpFinalBuyUnits, " +
             "sccfs.replUnits as ccMMSpReplQty, " +
@@ -83,7 +86,7 @@ public interface SizeListReplenishmentRepository extends JpaRepository<CcSpMmRep
             "AND sp.stylePlanId.finelinePlanId.finelineNbr = ccp.custChoicePlanId.stylePlanId.finelinePlanId.finelineNbr " +
             "AND sp.stylePlanId.styleNbr = ccp.custChoicePlanId.stylePlanId.styleNbr " +
             "AND sp.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId = ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId " +
-            "left join " +
+            "inner join " +
             "CcMmReplPack sccfs " +
             "ON " +
             "ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.planId = sccfs.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.planId " +
@@ -96,7 +99,7 @@ public interface SizeListReplenishmentRepository extends JpaRepository<CcSpMmRep
             "AND ccp.custChoicePlanId.stylePlanId.styleNbr = sccfs.ccMmReplPackId.ccReplPackId.styleReplPackId.styleNbr " +
             "AND ccp.custChoicePlanId.ccId = sccfs.ccMmReplPackId.ccReplPackId.customerChoice " +
             "AND ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId = sccfs.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId " +
-            "left join " +
+            "inner join " +
             "CcSpMmReplPack csrp " +
             "ON " +
             "sccfs.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.planId = csrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.planId " +
@@ -108,6 +111,7 @@ public interface SizeListReplenishmentRepository extends JpaRepository<CcSpMmRep
             "AND sccfs.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.finelineNbr = csrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.finelineNbr " +
             "AND sccfs.ccMmReplPackId.ccReplPackId.styleReplPackId.styleNbr = csrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.styleNbr " +
             "AND sccfs.ccMmReplPackId.ccReplPackId.customerChoice = csrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.customerChoice " +
+            "AND sccfs.ccMmReplPackId.merchMethodCode = csrp.ccSpReplPackId.ccMmReplPackId.merchMethodCode " +
             "where sp.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId = :channelId and ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId = :channelId and msp.merchCatPlanId.planId = :planId and " +
             "fp.finelinePlanId.finelineNbr = :finelineNbr and " +
             "sp.stylePlanId.styleNbr = :styleNbr and " +

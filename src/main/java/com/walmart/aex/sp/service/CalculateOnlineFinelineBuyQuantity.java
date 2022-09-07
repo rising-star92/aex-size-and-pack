@@ -146,12 +146,7 @@ public class CalculateOnlineFinelineBuyQuantity {
                 .flatMap(Collection::stream)
                 .filter(customerChoice -> customerChoice.getCcId().equalsIgnoreCase(customerChoiceDto.getCcId()))
                 .findFirst()
-                .map(CustomerChoice::getFixtures)
-                .stream()
-                .flatMap(Collection::stream)
-                .filter(fixture -> fixture.getFixtureTypeRollupId().equals(merchMethodsDto.getFixtureTypeRollupId()))
-                .findFirst()
-                .map(Fixture::getReplenishments)
+                .map(CustomerChoice::getReplenishments)
                 .orElse(new ArrayList<>());
     }
 
@@ -171,7 +166,7 @@ public class CalculateOnlineFinelineBuyQuantity {
                 Replenishment replenishment1 = new Replenishment();
                 replenishment1.setReplnWeek(replenishment.getReplnWeek());
                 replenishment1.setReplnWeekDesc(replenishment.getReplnWeekDesc());
-                replenishment1.setAdjReplnUnits((long) (replenishment.getAdjReplnUnits() * getAvgSizePct(sizeDto)) / 100);
+                replenishment1.setAdjReplnUnits((long) (getReplenishmentUnits(replenishment) * getAvgSizePct(sizeDto)) / 100);
                 replObj.add(replenishment1);
             });
             buyQtyObj.setReplenishments(replObj);
@@ -184,5 +179,13 @@ public class CalculateOnlineFinelineBuyQuantity {
                 ? Optional.ofNullable(sizeDto.getMetrics().getAdjAvgSizeProfilePct())
                 .orElse(Optional.ofNullable(sizeDto.getMetrics().getAvgSizeProfilePct()).orElse(ZERO))
                 : ZERO;
+    }
+
+    private Long getReplenishmentUnits(Replenishment replenishment) {
+        if (replenishment.getDcInboundAdjUnits() != null && replenishment.getDcInboundAdjUnits() != 0) {
+            return replenishment.getDcInboundAdjUnits();
+        } else if (replenishment.getDcInboundUnits() != null) {
+            return replenishment.getDcInboundUnits();
+        } else return 0L;
     }
 }
