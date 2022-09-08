@@ -54,7 +54,10 @@ public class BuyQntyController {
     @QueryMapping
     public BuyQtyResponse getSizeBuyQtyDetails(@Argument BuyQtyRequest buyQtyRequest)
     {
-        return sizeAndPackService.fetchSizeBuyQnty(buyQtyRequest);
+        if (buyQtyRequest.getChannel() != null && buyQtyRequest.getChannel().equalsIgnoreCase(ChannelType.ONLINE.name())) {
+            return replenishmentService.fetchOnlineSizeBuyQnty(buyQtyRequest);
+        }
+        else return sizeAndPackService.fetchSizeBuyQnty(buyQtyRequest);
     }
 
     @MutationMapping
