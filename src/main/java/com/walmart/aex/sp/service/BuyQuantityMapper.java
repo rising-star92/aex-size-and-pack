@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.DoubleStream;
 
 @Service
@@ -52,6 +53,53 @@ public class BuyQuantityMapper {
         lvl3List.add(lvl3);
         lvl3.setLvl4List(mapBuyQntyLvl4Sp(buyQntyResponseDTO, lvl3, finelineNbr));
     }
+    Function<Integer, Long> ifNullThenZero = i -> Objects.nonNull(i) ? i.longValue() : 0;
+
+    MetricsDto lvl3MetricsAggragateQtys(List<FinelineDto> finelineDtoList) {
+        MetricsDto metricsDto = new MetricsDto();
+        int totalFinalBuyQty = 0;
+        int totalReplQty = 0;
+        int buyQty = 0;
+        int totalBumpPackQty = 0;
+        int iniQty = 0;
+        for (FinelineDto buyQntyResponseDTO : finelineDtoList) {
+            buyQty += ifNullThenZero.apply(buyQntyResponseDTO.getMetrics().getBuyQty());
+            totalFinalBuyQty += ifNullThenZero.apply(buyQntyResponseDTO.getMetrics().getFinalBuyQty());
+            totalReplQty += ifNullThenZero.apply(buyQntyResponseDTO.getMetrics().getFinalReplenishmentQty());
+            totalBumpPackQty += ifNullThenZero.apply(buyQntyResponseDTO.getMetrics().getBumpPackQty());
+            iniQty += ifNullThenZero.apply(buyQntyResponseDTO.getMetrics().getFinalInitialSetQty());
+        }
+        metricsDto.setBuyQty(buyQty);
+        metricsDto.setFinalBuyQty(totalFinalBuyQty);
+        metricsDto.setFinalReplenishmentQty(totalReplQty);
+        metricsDto.setBumpPackQty(totalBumpPackQty);
+        metricsDto.setFinalInitialSetQty(iniQty);
+        return metricsDto;
+    }
+
+    MetricsDto lvl4MetricsAggragateQtys(List<Lvl4Dto> lvl4DtoList) {
+        MetricsDto metricsDto = new MetricsDto();
+        int totalFinalBuyQty = 0;
+        int buyQty = 0;
+        int totalReplQty = 0;
+        int totalBumpPackQty = 0;
+        int iniQty = 0;
+        for (Lvl4Dto lvl4Dto : lvl4DtoList) {
+            buyQty += ifNullThenZero.apply(lvl4Dto.getMetrics().getBuyQty());
+            totalFinalBuyQty += ifNullThenZero.apply(lvl4Dto.getMetrics().getFinalBuyQty());
+            totalReplQty += ifNullThenZero.apply(lvl4Dto.getMetrics().getFinalReplenishmentQty());
+            totalBumpPackQty += ifNullThenZero.apply(lvl4Dto.getMetrics().getBumpPackQty());
+            iniQty += ifNullThenZero.apply(lvl4Dto.getMetrics().getFinalInitialSetQty());
+        }
+
+        metricsDto.setBuyQty(buyQty);
+        metricsDto.setFinalBuyQty(totalFinalBuyQty);
+        metricsDto.setFinalReplenishmentQty(totalReplQty);
+        metricsDto.setBumpPackQty(totalBumpPackQty);
+        metricsDto.setFinalInitialSetQty(iniQty);
+        return metricsDto;
+    }
+
 
     private List<Lvl4Dto> mapBuyQntyLvl4Sp(BuyQntyResponseDTO buyQntyResponseDTO, Lvl3Dto lvl3, Integer finelineNbr) {
         List<Lvl4Dto> lvl4DtoList = Optional.ofNullable(lvl3.getLvl4List()).orElse(new ArrayList<>());
@@ -60,6 +108,7 @@ public class BuyQuantityMapper {
                 .filter(lvl4 -> buyQntyResponseDTO.getLvl4Nbr().equals(lvl4.getLvl4Nbr())).findFirst()
                 .ifPresentOrElse(lvl4 -> lvl4.setFinelines(mapBuyQntyFlSp(buyQntyResponseDTO, lvl4, finelineNbr)),
                         () -> setLvl4SP(buyQntyResponseDTO, lvl4DtoList, finelineNbr));
+        lvl3.setMetrics(lvl4MetricsAggragateQtys(lvl4DtoList));
         return lvl4DtoList;
     }
 
@@ -85,6 +134,7 @@ public class BuyQuantityMapper {
                             } else updateFineline(buyQntyResponseDTO, finelineDto);
                         },
                         () -> setFinelineSP(buyQntyResponseDTO, finelineDtoList, finelineNbr));
+        lvl4.setMetrics(lvl3MetricsAggragateQtys(finelineDtoList));
         return finelineDtoList;
     }
 
