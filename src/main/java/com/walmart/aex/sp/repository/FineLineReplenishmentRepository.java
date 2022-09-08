@@ -24,12 +24,14 @@ public interface FineLineReplenishmentRepository extends JpaRepository<FinelineR
             "mrp.vendorPackCnt as lvl3VenderPackCount, " +
             "mrp.whsePackCnt as lvl3WhsePackCount, " +
             "mrp.vnpkWhpkRatio as lvl3vnpkWhpkRatio, " +
+            "mrp.replPackCnt as lvl3ReplPack, " +
             "ssp.subCatPlanId.lvl4Nbr, " +
             "ssp.lvl4Desc, " +
             "srp.replUnits as lvl4ReplQty, " +
             "srp.vendorPackCnt as lvl4VenderPackCount, " +
             "srp.whsePackCnt as lvl4WhsePackCount, " +
-            "srp.vnpkWhpkRatio as lvl4vnpkWhpkRatio, " +
+            "srp.vnpkWhpkRatio as lvl4vnpkWhpkRatio, " + 
+            "srp.replPackCnt as lvl4ReplPack, " +
             "fp.finelinePlanId.finelineNbr, " +
             "fp.finelineDesc, " +
             "fp.altFinelineName as finelineAltDesc, " +
@@ -38,7 +40,9 @@ public interface FineLineReplenishmentRepository extends JpaRepository<FinelineR
             "frp.vendorPackCnt as finelineVenderPackCount, " +
             "frp.whsePackCnt as finelineWhsePackCount, " +
             "frp.vnpkWhpkRatio as finelineVnpkWhpkRatio, " +
-            "frp.replPackCnt as finelineReplPack) " +
+            "frp.replPackCnt as finelineReplPack, " +
+            "mrp.finalBuyUnits as lvl3finalBuyQty, " +
+            "srp.finalBuyUnits as lvl4finalBuyQty) " +
             "from FinelineReplPack frp " +
             "join " +
             "FinelinePlan fp " +
