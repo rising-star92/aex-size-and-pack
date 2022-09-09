@@ -40,11 +40,67 @@ public class BuyQuantityMapperTest {
         buyQntyResponseDTO.setBumpPackQty(654);
         buyQntyResponseDTO.setCcBumpQty(64);
         buyQntyResponseDTO.setCcFlowStrategy(765);
+        buyQntyResponseDTO.setLvl2Nbr(12);
+        buyQntyResponseDTO.setLvl3Nbr(13);
+        buyQntyResponseDTO.setLvl4Nbr(11);
+        buyQntyResponseDTO.setReplnQty(14);
+        buyQntyResponseDTO.setInitialSetQty(10);
         buyQunatityMapper.mapBuyQntyLvl2Sp(buyQntyResponseDTO,fetchFineLineResponse,finelineNbr);
         assertNotNull(fetchFineLineResponse);
         assertEquals(fetchFineLineResponse.getPlanId(),471l);
 
     }
+
+    @Test
+    public void testMapBuyQntyLvl2SpLvl4Metrics() {
+
+        BuyQtyResponse fetchFineLineResponse= new BuyQtyResponse();
+        buyQntyResponseDTO=new BuyQntyResponseDTO();
+        buyQntyResponseDTO.setChannelId(2);
+        buyQntyResponseDTO.setPlanId(planId);
+        buyQntyResponseDTO.setBuyQty(654);
+        buyQntyResponseDTO.setBumpPackQty(12);
+        buyQntyResponseDTO.setAdjReplnQty(234);
+        buyQntyResponseDTO.setBumpPackQty(654);
+        buyQntyResponseDTO.setCcBumpQty(64);
+        buyQntyResponseDTO.setCcFlowStrategy(765);
+        buyQntyResponseDTO.setLvl2Nbr(12);
+        buyQntyResponseDTO.setLvl3Nbr(13);
+        buyQntyResponseDTO.setLvl4Nbr(11);
+        buyQntyResponseDTO.setReplnQty(14);
+        buyQntyResponseDTO.setInitialSetQty(10);
+        buyQunatityMapper.mapBuyQntyLvl2Sp(buyQntyResponseDTO,fetchFineLineResponse,null);
+        assertNotNull(fetchFineLineResponse);
+        assertEquals(fetchFineLineResponse.getPlanId(),471l);
+        MetricsDto metricsDto = fetchFineLineResponse.getLvl3List().get(0).getLvl4List().get(0).getMetrics();
+        assertEquals(metricsDto.getBuyQty(),654);
+    }
+
+    @Test
+    public void testMapBuyQntyLvl2SpLvl3Metrics() {
+
+        BuyQtyResponse fetchFineLineResponse= new BuyQtyResponse();
+        buyQntyResponseDTO=new BuyQntyResponseDTO();
+        buyQntyResponseDTO.setChannelId(2);
+        buyQntyResponseDTO.setPlanId(planId);
+        buyQntyResponseDTO.setBuyQty(654);
+        buyQntyResponseDTO.setBumpPackQty(12);
+        buyQntyResponseDTO.setAdjReplnQty(234);
+        buyQntyResponseDTO.setBumpPackQty(654);
+        buyQntyResponseDTO.setCcBumpQty(64);
+        buyQntyResponseDTO.setCcFlowStrategy(765);
+        buyQntyResponseDTO.setLvl2Nbr(12);
+        buyQntyResponseDTO.setLvl3Nbr(13);
+        buyQntyResponseDTO.setLvl4Nbr(11);
+        buyQntyResponseDTO.setReplnQty(14);
+        buyQntyResponseDTO.setInitialSetQty(10);
+        buyQunatityMapper.mapBuyQntyLvl2Sp(buyQntyResponseDTO,fetchFineLineResponse,null);
+        assertNotNull(fetchFineLineResponse);
+        assertEquals(fetchFineLineResponse.getPlanId(),471l);
+        MetricsDto metricsDto = fetchFineLineResponse.getLvl3List().get(0).getMetrics();
+        assertEquals(metricsDto.getBuyQty(),654);
+    }
+
 
     @Test
     public void testMapBuyQntySizeSp() {
