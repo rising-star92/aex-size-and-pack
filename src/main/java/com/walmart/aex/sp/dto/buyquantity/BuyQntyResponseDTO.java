@@ -136,4 +136,67 @@ public class BuyQntyResponseDTO {
         this.replnQty=replnQty;
         this.adjReplnQty=adjReplnQty;
     }
+
+    public BuyQntyResponseDTO(Long planId, Integer channelId, Integer lvl0Nbr, String lvl0Desc, Integer lvl1Nbr, String lvl1Desc, Integer lvl2Nbr,
+                              String lvl2Desc, Integer lvl3Nbr, String lvl3Desc, Integer lvl4Nbr, String lvl4Desc, Integer finelineNbr,
+                              String finelineDesc, Integer buyQty, Integer replnQty, Integer adjReplnQty, String altFineLineDesc) {
+        this.planId=planId;
+        this.channelId=channelId;
+        this.lvl0Nbr=lvl0Nbr;
+        this.lvl0Desc=lvl0Desc;
+        this.lvl1Nbr=lvl1Nbr;
+        this.lvl1Desc=lvl1Desc;
+        this.lvl2Nbr=lvl2Nbr;
+        this.lvl2Desc=lvl2Desc;
+        this.lvl3Nbr=lvl3Nbr;
+        this.lvl3Desc=lvl3Desc;
+        this.lvl4Nbr=lvl4Nbr;
+        this.lvl4Desc=lvl4Desc;
+        this.finelineNbr=finelineNbr;
+        this.finelineDesc=finelineDesc;
+        this.buyQty=buyQty;
+        this.replnQty=replnQty;
+        this.adjReplnQty=adjReplnQty;
+        this.altFineLineDesc=altFineLineDesc;
+    }
+
+    public BuyQntyResponseDTO(Long planId, Integer lvl0Nbr, Integer lvl1Nbr, Integer lvl2Nbr, Integer lvl3Nbr, Integer lvl4Nbr, Integer finelineNbr,
+                              String styleNbr, String ccId,Integer styleBuyQty, Integer styleReplnQty, Integer styleAdjReplnQty,
+                              Integer ccBuyQty, Integer ccReplnQty, Integer ccAdjReplnQty, Integer channelId) {
+        this.planId=planId;
+        this.lvl0Nbr=lvl0Nbr;
+        this.lvl1Nbr=lvl1Nbr;
+        this.lvl2Nbr=lvl2Nbr;
+        this.lvl3Nbr=lvl3Nbr;
+        this.lvl4Nbr=lvl4Nbr;
+        this.finelineNbr=finelineNbr;
+        this.styleNbr=styleNbr;
+        this.ccId=ccId;
+        this.styleBuyQty=styleBuyQty;
+        this.styleReplnQty=styleReplnQty;
+        this.styleAdjReplnQty=styleAdjReplnQty;
+        this.ccBuyQty=ccBuyQty;
+        this.ccReplnQty=ccReplnQty;
+        this.ccAdjReplnQty=ccAdjReplnQty;
+        this.channelId = channelId;
+    }
+
+    public BuyQntyResponseDTO(Long planId, Integer lvl0Nbr, Integer lvl1Nbr, Integer lvl2Nbr,
+                              Integer lvl3Nbr, Integer lvl4Nbr, Integer finelineNbr, String styleNbr, String ccId, Integer ahsSizeId, String sizeDesc,
+                              Integer buyQty, Integer replnQty, Integer adjReplnQty) {
+        this.planId=planId;
+        this.lvl0Nbr=lvl0Nbr;
+        this.lvl1Nbr=lvl1Nbr;
+        this.lvl2Nbr=lvl2Nbr;
+        this.lvl3Nbr=lvl3Nbr;
+        this.lvl4Nbr=lvl4Nbr;
+        this.finelineNbr=finelineNbr;
+        this.styleNbr=styleNbr;
+        this.ccId=ccId;
+        this.ahsSizeId=ahsSizeId;
+        this.sizeDesc=sizeDesc;
+        this.buyQty=buyQty;
+        this.replnQty=replnQty;
+        this.adjReplnQty=adjReplnQty;
+    }
 }

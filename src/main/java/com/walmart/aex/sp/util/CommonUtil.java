@@ -28,6 +28,9 @@ public class CommonUtil {
 
     public static Integer getFixtureRollUpId(String fixtureType) {
         switch (fixtureType.toUpperCase()){
+            case "ONLINE_FIXTURE":{
+                return 0;
+            }
             case "WALLS":{
                 return 1;
             }
@@ -52,6 +55,9 @@ public class CommonUtil {
             case "HANGING":{
                 return 1;
             }
+            case "ONLINE_MERCH_METHOD": {
+                return 0;
+            }
         }
         throw new RuntimeException("Merch Method does not Match");
     }
@@ -63,6 +69,9 @@ public class CommonUtil {
             }
             case 1:{
                 return "HANGING";
+            }
+            case 0:{
+                return "ONLINE_MERCH_METHOD";
             }
         }
         throw new RuntimeException("Merch Method does not Match");
