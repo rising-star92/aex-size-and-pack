@@ -30,4 +30,17 @@ public class ReplenishmentMapperTest {
             assertNotNull(replenishmentResponse);
             assertEquals(replenishmentResponse.getPlanId(),471l);
         }
+        
+        @Test
+        public void testMapReplenishmentLvl4Sp() {
+
+            ReplenishmentResponse replenishmentResponse= new ReplenishmentResponse();
+            replenishmentResponseDTO=new ReplenishmentResponseDTO();
+            replenishmentResponseDTO.setChannelId(2);
+            replenishmentResponseDTO.setPlanId(planId);
+            replenishmentResponseDTO.setMerchMethod(1);
+            replenishmentMapper.mapReplenishmentLvl2Sp(replenishmentResponseDTO,replenishmentResponse,null,null);
+            assertNotNull(replenishmentResponse);
+            assertEquals(replenishmentResponse.getPlanId(),471l);
+        }    
 }
