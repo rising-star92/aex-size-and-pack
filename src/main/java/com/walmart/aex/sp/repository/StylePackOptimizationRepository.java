@@ -6,6 +6,4 @@ import com.walmart.aex.sp.entity.StylePackOptimizationID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface StylePackOptimizationRepository extends JpaRepository<StylePackOptimization, StylePackOptimizationID> {
-    void deleteStylePackOptimizationByStylepackoptimizationId_finelinePackOptimizationID_SubCatgPackOptimizationID_MerchantPackOptimizationID_planIdAndStylepackoptimizationId_finelinePackOptimizationID_SubCatgPackOptimizationID_MerchantPackOptimizationID_repTLvl3AndStylepackoptimizationId_finelinePackOptimizationID_SubCatgPackOptimizationID_repTLvl4AndStylepackoptimizationId_finelinePackOptimizationID_finelineNbrAndStylepackoptimizationId_styleNbr(
-            Long planId, Integer repTLvl3, Integer repTLvl4, Integer finelineNbr,String styleNbr);
 }

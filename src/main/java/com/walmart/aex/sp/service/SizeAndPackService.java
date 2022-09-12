@@ -3,6 +3,7 @@ package com.walmart.aex.sp.service;
 import com.walmart.aex.sp.dto.buyquantity.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.walmart.aex.sp.dto.packoptimization.Fineline;
 import com.walmart.aex.sp.dto.planhierarchy.*;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.exception.CustomException;
@@ -34,7 +35,10 @@ public class SizeAndPackService {
 
     private final StrategyFetchService strategyFetchService;
 
+    private final SizeAndPackDeleteService sizeAndPackDeleteService;
+
     private final SizeAndPackDeletePlanService sizeAndPackDeletePlanService;
+
 
     @ManagedConfiguration
     GraphQLProperties graphQLProperties;
@@ -45,7 +49,7 @@ public class SizeAndPackService {
                               SpCustomerChoiceChannelFixtureRepository spCustomerChoiceChannelFixtureRepository,
                               SizeAndPackObjectMapper sizeAndPackObjectMapper,
                               MerchCatPlanRepository merchCatPlanRepository, StrategyFetchService strategyFetchService,
-                              SpCustomerChoiceChannelFixtureSizeRepository spCustomerChoiceChannelFixtureSizeRepository, SizeAndPackDeletePlanService sizeAndPackDeletePlanService) {
+                              SpCustomerChoiceChannelFixtureSizeRepository spCustomerChoiceChannelFixtureSizeRepository, SizeAndPackDeleteService sizeAndPackDeleteService, SizeAndPackDeletePlanService sizeAndPackDeletePlanService) {
         this.spFineLineChannelFixtureRepository = spFineLineChannelFixtureRepository;
         this.buyQuantityMapper = buyQuantityMapper;
         this.spCustomerChoiceChannelFixtureRepository = spCustomerChoiceChannelFixtureRepository;
@@ -54,6 +58,7 @@ public class SizeAndPackService {
         this.strategyFetchService = strategyFetchService;
         this.spCustomerChoiceChannelFixtureSizeRepository = spCustomerChoiceChannelFixtureSizeRepository;
 
+        this.sizeAndPackDeleteService = sizeAndPackDeleteService;
         this.sizeAndPackDeletePlanService = sizeAndPackDeletePlanService;
     }
 
@@ -220,11 +225,14 @@ public class SizeAndPackService {
             StrongKey strongKey = Optional.ofNullable(request.getStrongKey()).orElse(null);
             if (strongKey != null) {
                 if (strongKey.getFineline().getFinelineNbr() != null && CollectionUtils.isEmpty(strongKey.getFineline().getStyles())) {
-                    sizeAndPackDeletePlanService.deleteSizeAndPackDataAtFl(strongKey.getPlanId(), strongKey.getLvl3Nbr(), strongKey.getLvl4Nbr(),
+                    sizeAndPackDeleteService.deleteSizeAndPackDataAtFl(strongKey.getPlanId(), strongKey.getLvl3Nbr(), strongKey.getLvl4Nbr(),
                             strongKey.getFineline().getFinelineNbr());
                 } else if (!CollectionUtils.isEmpty(strongKey.getFineline().getStyles())) {
-                    sizeAndPackDeletePlanService.deleteSizeAndPackDataAtStyleOrCC(strongKey.getFineline().getStyles(), strongKey.getPlanId(),
-                            strongKey.getLvl3Nbr(), strongKey.getLvl4Nbr(), strongKey.getFineline().getFinelineNbr());
+                    sizeAndPackDeleteService.deleteSizeAndPackDataAtStyleOrCC(strongKey.getFineline().getStyles(), strongKey.getPlanId(),
+                           strongKey.getLvl3Nbr(), strongKey.getLvl4Nbr(), strongKey.getFineline().getFinelineNbr());
+                }
+                if (request.getSizeAndPackPayloadDTO() != null) {
+                    updateSizeAndPackPlanData(request.getSizeAndPackPayloadDTO(),strongKey.getFineline());
                 }
                 sizeAndPackResponse.setStatus(SUCCESS_STATUS);
             } else {
@@ -236,6 +244,21 @@ public class SizeAndPackService {
             log.error("Failed to save the line plan events to size and pack database. Error: {}", ex.toString());
         }
         return sizeAndPackResponse;
+    }
+
+    private void updateSizeAndPackPlanData(PlanSizeAndPackDTO sizeAndPackPayloadDTO, Fineline fineline) {
+        try {
+            List<Lvl1> lvl1s = sizeAndPackPayloadDTO.getLvl1List();
+            for (Lvl1 lvl1 : lvl1s) {
+                for (Lvl2 lvl2 : lvl1.getLvl2List()) {
+                    for (Lvl3 lvl3 : lvl2.getLvl3List()) {
+                        merchCatPlanRepository.saveAll(sizeAndPackDeletePlanService.updateMerchCatPlan(sizeAndPackPayloadDTO, lvl1, lvl2, lvl3, fineline,merchCatPlanRepository));
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            log.error("Failed to save the line plan events to size and pack database. Error: {}", ex.toString());
+        }
     }
 
 }

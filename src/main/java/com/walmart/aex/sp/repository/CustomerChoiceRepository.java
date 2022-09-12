@@ -5,7 +5,4 @@ import com.walmart.aex.sp.entity.CustChoicePlanId;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CustomerChoiceRepository extends JpaRepository<CustChoicePlan, CustChoicePlanId> {
-
-    void deleteByCustChoicePlanId_StylePlanId_FinelinePlanId_SubCatPlanId_MerchCatPlanId_PlanIdAndCustChoicePlanId_StylePlanId_FinelinePlanId_SubCatPlanId_MerchCatPlanId_lvl3NbrAndCustChoicePlanId_StylePlanId_FinelinePlanId_SubCatPlanId_lvl4NbrAndCustChoicePlanId_StylePlanId_FinelinePlanId_FinelineNbrAndCustChoicePlanId_StylePlanId_styleNbrAndCustChoicePlanId_ccId(Long planId,Integer lvl3Nbr, Integer lvl4Nbr ,Integer finelineNbr, String styleNbr,String ccId );
-
 }
