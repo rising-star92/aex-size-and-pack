@@ -52,6 +52,18 @@ public interface FinelinePackOptRepository
             "AND subCatPlan.merchCatPlan.merchCatPlanId.channelId = fineplan.finelinePlanId.subCatPlanId.merchCatPlanId.channelId \n" +
             "AND subCatPlan.merchCatPlan.merchCatPlanId.planId = fineplan.finelinePlanId.subCatPlanId.merchCatPlanId.planId \n" +
 
+            "inner join " +
+            "SpFineLineChannelFixture sfcf " +
+            "ON " +
+            "fineplan.finelinePlanId.subCatPlanId.merchCatPlanId.planId = sfcf.spFineLineChannelFixtureId.planId " +
+            "AND fineplan.finelinePlanId.subCatPlanId.merchCatPlanId.lvl0Nbr = sfcf.spFineLineChannelFixtureId.lvl0Nbr " +
+            "AND fineplan.finelinePlanId.subCatPlanId.merchCatPlanId.lvl1Nbr = sfcf.spFineLineChannelFixtureId.lvl1Nbr " +
+            "AND fineplan.finelinePlanId.subCatPlanId.merchCatPlanId.lvl2Nbr = sfcf.spFineLineChannelFixtureId.lvl2Nbr " +
+            "AND fineplan.finelinePlanId.subCatPlanId.merchCatPlanId.lvl3Nbr = sfcf.spFineLineChannelFixtureId.lvl3Nbr " +
+            "AND fineplan.finelinePlanId.subCatPlanId.lvl4Nbr = sfcf.spFineLineChannelFixtureId.lvl4Nbr " +
+            "AND fineplan.finelinePlanId.finelineNbr = sfcf.spFineLineChannelFixtureId.fineLineNbr " +
+            "AND fineplan.finelinePlanId.subCatPlanId.merchCatPlanId.channelId = sfcf.spFineLineChannelFixtureId.channelId " +
+
             "left JOIN AnalyticsMlSend analytic " +
             " ON analytic.planId = fineplan.finelinePlanId.subCatPlanId.merchCatPlanId.planId \n" +
             " AND analytic.finelineNbr = fineplan.finelinePlanId.finelineNbr \n" +
