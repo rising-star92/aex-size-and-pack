@@ -8,6 +8,7 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.stereotype.Service;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -18,6 +19,7 @@ import java.util.*;
 import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
 
 @Slf4j
+@Service
 public class DCInboundSheetExporter {
     private XSSFWorkbook workbook;
     private XSSFSheet sheet;
@@ -28,7 +30,7 @@ public class DCInboundSheetExporter {
         workbook = new XSSFWorkbook();
     }
 
-    private List<String> getHeaders(){
+    List<String> getHeaders(){
         List<String> headerList = new ArrayList<>();
         Set<String> replWeekList = new HashSet<>();
         headerList.add(CATEGORY);
@@ -76,7 +78,7 @@ public class DCInboundSheetExporter {
         row.getCell(ZERO).setCellStyle(style);
     }
 
-    private void createCell(Row row, int columnCount, Object value, CellStyle style) {
+    void createCell(Row row, int columnCount, Object value, CellStyle style) {
         sheet.autoSizeColumn(columnCount);
         Cell cell = row.createCell(columnCount);
         if (value instanceof Integer) {
@@ -112,20 +114,24 @@ public class DCInboundSheetExporter {
             createCell(row, columnCount++, dcInboundData.getMerchMethodDesc(), style);
             createCell(row, columnCount++, dcInboundData.getSizeDesc(), style);
             createCell(row, columnCount++, dcInboundData.getChannelDesc(), style);
-            for (DCinboundReplenishment r : dcInboundData.getReplenishment()) {
-                int currColCount = columnCount;
-                while (currColCount < getHeaders().size()) {
-                    if (getHeaderName(currColCount).equalsIgnoreCase(r.getReplnWeekDesc())) {
-                        createCell(row, currColCount, r.getAdjReplnUnits(), style);
-                        break;
-                    }
-                    currColCount++;
+            addReplenishmentUnitsCell(style, dcInboundData, row, columnCount);
+        }
+    }
+
+    void addReplenishmentUnitsCell(CellStyle style, DCInboundExcelResponse dcInboundData, Row row, int columnCount) {
+        for (DCinboundReplenishment r : dcInboundData.getReplenishment()) {
+            int currColCount = columnCount;
+            while (currColCount < getHeaders().size()) {
+                if (getHeaderName(currColCount).equalsIgnoreCase(r.getReplnWeekDesc())) {
+                    createCell(row, currColCount, r.getAdjReplnUnits(), style);
+                    break;
                 }
+                currColCount++;
             }
         }
     }
 
-    private String getHeaderName(int columnCount)
+    String getHeaderName(int columnCount)
     {
         Row row = sheet.getRow(ZERO);
         Cell cell = row.getCell(columnCount);
