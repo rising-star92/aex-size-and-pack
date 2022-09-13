@@ -256,13 +256,9 @@ public class CalculateFinelineBuyQuantity {
     }
 
     private void addStoreBuyQuantities(StyleDto styleDto, CustomerChoiceDto customerChoiceDto, MerchMethodsDto merchMethodsDto, BQFPResponse bqfpResponse, SizeDto sizeDto, BuyQtyObj buyQtyObj, List<StoreQuantity> initialSetQuantities, RFASizePackData rfaSizePackData) {
-        StoreQuantity storeQuantity = new StoreQuantity();
         Cluster volumeCluster = getVolumeCluster(bqfpResponse, styleDto.getStyleNbr(), customerChoiceDto.getCcId(),
                 merchMethodsDto.getFixtureTypeRollupId(), rfaSizePackData.getVolume_group_cluster_id());
         if (volumeCluster != null) {
-            if (volumeCluster.getFlowStrategy() != null) {
-                storeQuantity.setFlowStrategyCode(volumeCluster.getFlowStrategy());
-            }
             //Calculate IS Buy Quantity
             Float isCalculatedBq = rfaSizePackData.getStore_cnt() * volumeCluster.getInitialSet().getInitialSetUnitsPerFix() * rfaSizePackData.getFixture_group();
             double isQty = (isCalculatedBq * getSizePct(sizeDto)) / 100;
@@ -305,12 +301,11 @@ public class CalculateFinelineBuyQuantity {
                         isQty = perStoreQty * rfaSizePackData.getStore_cnt();
                         log.debug("| IS after IS constraints with more replenishment | : {} | {} | {} | {} | {} | {}", customerChoiceDto.getCcId(), sizeDto.getSizeDesc(), merchMethodsDto.getFixtureTypeRollupId(), isQty, perStoreQty, storeList.size());
                     } else {
-                        StoreQuantity storeQuantity1 = new StoreQuantity();
                         int storeCntWithNewQty = (int) (totalReplenishment / unitsLessThanThreshold);
                         List<Integer> storeListWithOldQty = storeList.subList(storeCntWithNewQty, storeList.size());
-                        setStoreQty(rfaSizePackData, perStoreQty, storeQuantity1, storeListWithOldQty, perStoreQty * storeListWithOldQty.size());
-                        storeQuantity1.setBumpSets(calculateBumpPackQty(sizeDto, rfaSizePackData, volumeCluster, storeListWithOldQty.size()));
-                        initialSetQuantities.add(storeQuantity1);
+                        StoreQuantity storeQtyCopy = createStoreQuantity(rfaSizePackData, perStoreQty, storeListWithOldQty, perStoreQty * storeListWithOldQty.size(), volumeCluster);
+                        storeQtyCopy.setBumpSets(calculateBumpPackQty(sizeDto, rfaSizePackData, volumeCluster, storeListWithOldQty.size()));
+                        initialSetQuantities.add(storeQtyCopy);
 
                         log.debug("| IS after IS constraints with less replenishment with old IS qty | : {} | {} | {} | {} | {} | {}", customerChoiceDto.getCcId(), sizeDto.getSizeDesc(), merchMethodsDto.getFixtureTypeRollupId(),
                                 perStoreQty * storeListWithOldQty.size(), perStoreQty, storeListWithOldQty.size());
@@ -333,18 +328,23 @@ public class CalculateFinelineBuyQuantity {
                 }
             }
 
-            setStoreQty(rfaSizePackData, perStoreQty, storeQuantity, storeList, isQty);
+            StoreQuantity storeQuantity = createStoreQuantity(rfaSizePackData, perStoreQty, storeList, isQty, volumeCluster);
             storeQuantity.setBumpSets(calculateBumpPackQty(sizeDto, rfaSizePackData, volumeCluster, storeList.size()));
             initialSetQuantities.add(storeQuantity);
         }
     }
 
-    private void setStoreQty(RFASizePackData rfaSizePackData, double perStoreQty, StoreQuantity storeQuantity1, List<Integer> storeListWithOldQty, double totalUnits) {
-        storeQuantity1.setTotalUnits(totalUnits);
-        storeQuantity1.setIsUnits(perStoreQty);
-        storeQuantity1.setVolumeCluster(rfaSizePackData.getVolume_group_cluster_id());
-        storeQuantity1.setSizeCluster(rfaSizePackData.getSize_cluster_id());
-        storeQuantity1.setStoreList(storeListWithOldQty);
+    private StoreQuantity createStoreQuantity(RFASizePackData rfaSizePackData, double perStoreQty, List<Integer> storeListWithOldQty, double totalUnits, Cluster volumeCluster) {
+        StoreQuantity storeQuantity = new StoreQuantity();
+        storeQuantity.setTotalUnits(totalUnits);
+        storeQuantity.setIsUnits(perStoreQty);
+        storeQuantity.setVolumeCluster(rfaSizePackData.getVolume_group_cluster_id());
+        storeQuantity.setSizeCluster(rfaSizePackData.getSize_cluster_id());
+        storeQuantity.setStoreList(storeListWithOldQty);
+
+        if (volumeCluster.getFlowStrategy() != null)
+            storeQuantity.setFlowStrategyCode(volumeCluster.getFlowStrategy());
+        return storeQuantity;
     }
 
     private void setSizeChanFixtureBuyQty(MerchMethodsDto merchMethodsDto, SpCustomerChoiceChannelFixture spCustomerChoiceChannelFixture,
