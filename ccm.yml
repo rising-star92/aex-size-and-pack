@@ -69,7 +69,7 @@ configDefinitions:
         description: "BQFP SR Consumer ID"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "34f7ca77-3dfc-46df-a86b-1ba6e4908d0e"
+        defaultValue: "19ce2bf5-4c24-4bbf-bee9-84496dd07e3c"
       "bqfp.env":
         description: "BQFP SR Env"
         type: "STRING"
@@ -273,6 +273,8 @@ configOverrides:
       value:
         properties:
           "bqfp.url": "https://flow-plan.aex.stg.walmart.net/flow-plan/v1/getBuyQtyFromFlowPlan"
+          "bqfp.consumerId": "93c617a1-31ec-4333-a819-683ef7514cc0"
+          "bqfp.env": "stg"
   databaseConfig:
     - name: "stage"
       description: "DB override for STAGE profile"
