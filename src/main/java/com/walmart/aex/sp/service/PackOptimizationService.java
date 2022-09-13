@@ -177,6 +177,7 @@ public class PackOptimizationService {
         String status = Optional.ofNullable(fineLineMapperDto.getRunStatusDesc()).orElse("NOT SENT");
         fineline.setFinelineNbr(fineLineMapperDto.getFineLineNbr());
         fineline.setFinelineName(fineLineMapperDto.getFineLineDesc());
+        fineline.setAltFinelineName(fineLineMapperDto.getAltfineLineDesc());
         fineline.setFinelineNbr(fineLineMapperDto.getFineLineNbr());
         fineline.setPackOptimizationStatus(status);
         fineline.setOptimizationDetails(setOptimizationDetails(fineLineMapperDto));

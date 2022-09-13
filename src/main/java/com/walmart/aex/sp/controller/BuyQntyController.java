@@ -4,7 +4,9 @@ import com.walmart.aex.sp.dto.buyquantity.BuyQtyRequest;
 import com.walmart.aex.sp.dto.buyquantity.BuyQtyResponse;
 import com.walmart.aex.sp.dto.buyquantity.CalculateBuyQtyRequest;
 import com.walmart.aex.sp.dto.buyquantity.StatusResponse;
+import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.service.CalculateBuyQuantityService;
+import com.walmart.aex.sp.service.ReplenishmentService;
 import com.walmart.aex.sp.service.SizeAndPackService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -22,28 +24,40 @@ public class BuyQntyController {
 
     private final SizeAndPackService sizeAndPackService;
     private final CalculateBuyQuantityService calculateBuyQuantityService;
+    private final ReplenishmentService replenishmentService;
 
-    public BuyQntyController(SizeAndPackService sizeAndPackService, CalculateBuyQuantityService calculateBuyQuantityService) {
+    public BuyQntyController(SizeAndPackService sizeAndPackService, CalculateBuyQuantityService calculateBuyQuantityService,
+                             ReplenishmentService replenishmentService) {
         this.sizeAndPackService = sizeAndPackService;
         this.calculateBuyQuantityService = calculateBuyQuantityService;
+        this.replenishmentService = replenishmentService;
     }
 
     @QueryMapping
     public BuyQtyResponse getFinelineBuyQtyDetails(@Argument BuyQtyRequest buyQtyRequest)
     {
-        return sizeAndPackService.fetchFinelineBuyQnty(buyQtyRequest);
+        if (buyQtyRequest.getChannel() != null && buyQtyRequest.getChannel().equalsIgnoreCase(ChannelType.ONLINE.name())) {
+            return replenishmentService.fetchOnlineFinelineBuyQnty(buyQtyRequest);
+        }
+        else return sizeAndPackService.fetchFinelineBuyQnty(buyQtyRequest);
     }
 
     @QueryMapping
     public BuyQtyResponse getCcBuyQtyDetails(@Argument BuyQtyRequest buyQtyRequest, @Argument Integer finelineNbr)
     {
-        return sizeAndPackService.fetchCcBuyQnty(buyQtyRequest, finelineNbr);
+        if (buyQtyRequest.getChannel() != null && buyQtyRequest.getChannel().equalsIgnoreCase(ChannelType.ONLINE.name())) {
+            return replenishmentService.fetchOnlineCcBuyQnty(buyQtyRequest, finelineNbr);
+        }
+        else return sizeAndPackService.fetchCcBuyQnty(buyQtyRequest, finelineNbr);
     }
 
     @QueryMapping
     public BuyQtyResponse getSizeBuyQtyDetails(@Argument BuyQtyRequest buyQtyRequest)
     {
-        return sizeAndPackService.fetchSizeBuyQnty(buyQtyRequest);
+        if (buyQtyRequest.getChannel() != null && buyQtyRequest.getChannel().equalsIgnoreCase(ChannelType.ONLINE.name())) {
+            return replenishmentService.fetchOnlineSizeBuyQnty(buyQtyRequest);
+        }
+        else return sizeAndPackService.fetchSizeBuyQnty(buyQtyRequest);
     }
 
     @MutationMapping
