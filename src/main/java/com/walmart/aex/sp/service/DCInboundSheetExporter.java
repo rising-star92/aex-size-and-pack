@@ -112,14 +112,15 @@ public class DCInboundSheetExporter {
             createCell(row, columnCount++, dcInboundData.getMerchMethodDesc(), style);
             createCell(row, columnCount++, dcInboundData.getSizeDesc(), style);
             createCell(row, columnCount++, dcInboundData.getChannelDesc(), style);
-            while(columnCount < getHeaders().size()){
-                for(DCinboundReplenishment r: dcInboundData.getReplenishment()){
-                    int currColCount = columnCount++;
-                    if(getHeaderName(currColCount).equalsIgnoreCase(r.getReplnWeekDesc()))
+            for (DCinboundReplenishment r : dcInboundData.getReplenishment()) {
+                int currColCount = columnCount;
+                while (currColCount < getHeaders().size()) {
+                    if (getHeaderName(currColCount).equalsIgnoreCase(r.getReplnWeekDesc())) {
                         createCell(row, currColCount, r.getAdjReplnUnits(), style);
+                        break;
+                    }
+                    currColCount++;
                 }
-
-
             }
         }
     }
