@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.DoubleStream;
 
 @Service
@@ -57,7 +56,7 @@ public class BuyQuantityMapper {
         return Objects.nonNull(i) ? i.longValue() : 0;
     }
 
-    MetricsDto lvl3MetricsAggregateQtys(List<FinelineDto> finelineDtoList) {
+    MetricsDto fineLineMetricsAggregateQtys(List<FinelineDto> finelineDtoList) {
         MetricsDto metricsDto = new MetricsDto();
         int totalFinalBuyQty = 0;
         int totalReplQty = 0;
@@ -143,7 +142,7 @@ public class BuyQuantityMapper {
                             } else updateFineline(buyQntyResponseDTO, finelineDto);
                         },
                         () -> setFinelineSP(buyQntyResponseDTO, finelineDtoList, finelineNbr));
-        lvl4.setMetrics(lvl3MetricsAggregateQtys(finelineDtoList));
+        lvl4.setMetrics(fineLineMetricsAggregateQtys(finelineDtoList));
         return finelineDtoList;
     }
 
