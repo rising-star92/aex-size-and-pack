@@ -89,7 +89,6 @@ public class SizeAndPackDeletePlanService {
         });
     }
 
-
     private Set<MerchCatPlan> fetchMerchCatPlan(Set<MerchCatPlan> merchCatPlanSet, Integer lvl3Nbr) {
         return Optional.ofNullable(merchCatPlanSet)
                 .stream()
@@ -99,11 +98,8 @@ public class SizeAndPackDeletePlanService {
     }
 
     private Set<SubCatPlan> fetchMerchSubCatPlan(Set<MerchCatPlan> merchCatPlanSet, Integer lvl3Nbr, Integer lvl4Nbr) {
-        return Optional.ofNullable(merchCatPlanSet)
+        return fetchMerchCatPlan(merchCatPlanSet,lvl3Nbr)
                 .stream()
-                .flatMap(Collection::stream)
-                .filter(merchCatPlan -> merchCatPlan.getMerchCatPlanId().getLvl3Nbr().equals(lvl3Nbr)
-                )
                 .map(MerchCatPlan::getSubCatPlans)
                 .flatMap(Collection::stream)
                 .filter(merchSubCatPlan -> merchSubCatPlan.getSubCatPlanId().getLvl4Nbr().equals(lvl4Nbr))
@@ -111,14 +107,8 @@ public class SizeAndPackDeletePlanService {
     }
 
     private Set<FinelinePlan> fetchFinelinePlan(Set<MerchCatPlan> merchCatPlanSet, Integer lvl3Nbr, Integer lvl4Nbr, Integer finelineNbr) {
-        return Optional.ofNullable(merchCatPlanSet)
+        return fetchMerchSubCatPlan(merchCatPlanSet,lvl3Nbr,lvl4Nbr)
                 .stream()
-                .flatMap(Collection::stream)
-                .filter(merchCatPlan -> merchCatPlan.getMerchCatPlanId().getLvl3Nbr().equals(lvl3Nbr)
-                )
-                .map(MerchCatPlan::getSubCatPlans)
-                .flatMap(Collection::stream)
-                .filter(subCatPlan -> subCatPlan.getSubCatPlanId().getLvl4Nbr().equals(lvl4Nbr))
                 .map(SubCatPlan::getFinelinePlans)
                 .flatMap(Collection::stream)
                 .filter(finelinePlan -> finelinePlan.getFinelinePlanId().getFinelineNbr().equals(finelineNbr))
@@ -126,16 +116,8 @@ public class SizeAndPackDeletePlanService {
     }
 
     private Set<StylePlan> fetchStylePlan(Set<MerchCatPlan> merchCatPlanSet, Integer lvl3Nbr, Integer lvl4Nbr, Integer finelineNbr, String styleNum) {
-        return Optional.ofNullable(merchCatPlanSet)
+        return fetchFinelinePlan(merchCatPlanSet,lvl3Nbr,lvl4Nbr,finelineNbr)
                 .stream()
-                .flatMap(Collection::stream)
-                .filter(merchCatPlan -> merchCatPlan.getMerchCatPlanId().getLvl3Nbr().equals(lvl3Nbr))
-                .map(MerchCatPlan::getSubCatPlans)
-                .flatMap(Collection::stream)
-                .filter(subCatPlan -> subCatPlan.getSubCatPlanId().getLvl4Nbr().equals(lvl4Nbr))
-                .map(SubCatPlan::getFinelinePlans)
-                .flatMap(Collection::stream)
-                .filter(finelinePlan -> finelinePlan.getFinelinePlanId().getFinelineNbr().equals(finelineNbr))
                 .map(FinelinePlan::getStylePlans)
                 .flatMap(Collection::stream)
                 .filter(stylePlan -> stylePlan.getStylePlanId().getStyleNbr().equals(styleNum))
