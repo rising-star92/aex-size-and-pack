@@ -69,7 +69,7 @@ public class PostPackOptimizationServiceTest {
 		 List<CustomerChoices> customerChoices = new ArrayList<>();
 		 List<Fixtures> fixtures = new ArrayList<>();
 		 List<Size> sizes = new ArrayList<>();
-		 
+
 		 
 		 Size sz = new Size();
 		 sz.setSizeDesc("SMALL");
@@ -126,6 +126,10 @@ public class PostPackOptimizationServiceTest {
 		objectMapper = new ObjectMapper();
 		postPackOptimizationService = new PostPackOptimizationService(merchCatgReplPackRepository,finelineReplnPkConsRepository,subCatgReplnPkConsRepository,styleReplnPkConsRepository,ccReplnPkConsRepository,ccMmReplnPkConsRepository,ccSpReplnPkConsRepository,objectMapper);
 		postPackOptimizationService.updateInitialSetAndBumpPackAty(471l, 1021, isAndBPQtyDTO);
+
+		String resJson = "[{\"replnWeek\":12244,\"replnWeekDesc\":\"FYE2023WK44\",\"replnUnits\":3500,\"adjReplnUnits\":null,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null},{\"replnWeek\":12245,\"replnWeekDesc\":\"FYE2023WK45\",\"replnUnits\":3500,\"adjReplnUnits\":null,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null}]";
+		assertEquals(resJson,ccSpMmReplPack.getReplenObj());
+
 	}
 
 
