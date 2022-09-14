@@ -1,25 +1,13 @@
 package com.walmart.aex.sp.util;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.walmart.aex.sp.dto.packoptimization.Fineline;
 import com.walmart.aex.sp.entity.*;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-
-
-@ExtendWith(MockitoExtension.class)
 public class SizeAndPackTest {
 
     private static Integer lvl0Nbr = 50000;

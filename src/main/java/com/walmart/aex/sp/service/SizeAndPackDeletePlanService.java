@@ -21,7 +21,7 @@ public class SizeAndPackDeletePlanService {
                 request.getLvl0Nbr(), lvl1.getLvl1Nbr(), lvl2.getLvl2Nbr(), lvl3.getLvl3Nbr());
         Set<MerchCatPlan> merchCatPlanSet = merchCatPlans.stream().collect(Collectors.toSet());
         if (!CollectionUtils.isEmpty(merchCatPlanSet)) {
-            deleteMerchCatPlan(merchCatPlanSet, lvl3, StrongKeyFineline, merchCatPlanRepository);
+            deleteMerchCatPlan(merchCatPlanSet, lvl3, strongKeyFineline, merchCatPlanRepository);
         }
         return merchCatPlanSet;
     }
