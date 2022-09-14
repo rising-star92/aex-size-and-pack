@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class SizeAndPackDeletePlanService {
 
-    public Set<MerchCatPlan> updateMerchCatPlan(PlanSizeAndPackDTO request, Lvl1 lvl1, Lvl2 lvl2, Lvl3 lvl3, Fineline StrongKeyFineline, MerchCatPlanRepository merchCatPlanRepository) {
+    public Set<MerchCatPlan> updateMerchCatPlan(PlanSizeAndPackDTO request, Lvl1 lvl1, Lvl2 lvl2, Lvl3 lvl3, Fineline strongKeyFineline, MerchCatPlanRepository merchCatPlanRepository) {
 
         List<MerchCatPlan> merchCatPlans = merchCatPlanRepository.findMerchCatPlanByMerchCatPlanId_planIdAndMerchCatPlanId_lvl0NbrAndMerchCatPlanId_lvl1NbrAndMerchCatPlanId_lvl2NbrAndMerchCatPlanId_lvl3Nbr(request.getPlanId(),
                 request.getLvl0Nbr(), lvl1.getLvl1Nbr(), lvl2.getLvl2Nbr(), lvl3.getLvl3Nbr());
@@ -27,15 +27,15 @@ public class SizeAndPackDeletePlanService {
     }
 
 
-    private Set<MerchCatPlan> deleteMerchCatPlan(Set<MerchCatPlan> merchCatPlanSet, Lvl3 lvl3, Fineline StrongKeyFineline, MerchCatPlanRepository merchCatPlanRepository) {
-        deleteMerchSubCatPlan(merchCatPlanSet, lvl3, StrongKeyFineline);
+    private Set<MerchCatPlan> deleteMerchCatPlan(Set<MerchCatPlan> merchCatPlanSet, Lvl3 lvl3, Fineline strongKeyFineline, MerchCatPlanRepository merchCatPlanRepository) {
+        deleteMerchSubCatPlan(merchCatPlanSet, lvl3, strongKeyFineline);
         merchCatPlanSet.removeIf(merchCatPlan1 -> CollectionUtils.isEmpty(merchCatPlan1.getSubCatPlans()) && merchCatPlan1.getMerchCatPlanId().getLvl3Nbr().equals(lvl3.getLvl3Nbr()));
         return merchCatPlanSet;
     }
 
-    private void deleteMerchSubCatPlan(Set<MerchCatPlan> merchCatPlanSet, Lvl3 lvl3, Fineline StrongKeyFineline) {
+    private void deleteMerchSubCatPlan(Set<MerchCatPlan> merchCatPlanSet, Lvl3 lvl3, Fineline strongKeyFineline) {
         lvl3.getLvl4List().forEach(lvl4 -> {
-            deleteFinelinePlan(merchCatPlanSet, StrongKeyFineline, lvl3, lvl4);
+            deleteFinelinePlan(merchCatPlanSet, strongKeyFineline, lvl3, lvl4);
             Set<MerchCatPlan> merchCatPlanSet1 = fetchMerchCatPlan(merchCatPlanSet, lvl3.getLvl3Nbr());
             if (!CollectionUtils.isEmpty(merchCatPlanSet1)) {
                 merchCatPlanSet1.forEach(merchCatPlan -> merchCatPlan.getSubCatPlans().removeIf(subCatgPlan -> CollectionUtils.isEmpty(subCatgPlan.getFinelinePlans()) && subCatgPlan.getSubCatPlanId().getLvl4Nbr().equals(lvl4.getLvl4Nbr())));
@@ -44,17 +44,17 @@ public class SizeAndPackDeletePlanService {
 
     }
 
-    private void deleteFinelinePlan(Set<MerchCatPlan> merchCatPlanSet, Fineline StrongKeyFineline, Lvl3 lvl3, Lvl4 lvl4) {
+    private void deleteFinelinePlan(Set<MerchCatPlan> merchCatPlanSet, Fineline strongKeyFineline, Lvl3 lvl3, Lvl4 lvl4) {
         lvl4.getFinelines().forEach(fineline -> {
-            if (StrongKeyFineline.getStyles() != null) {
-                deleteStylePlan(merchCatPlanSet, lvl3, lvl4, StrongKeyFineline);
+            if (strongKeyFineline.getStyles() != null) {
+                deleteStylePlan(merchCatPlanSet, lvl3, lvl4, strongKeyFineline);
             }
             Set<SubCatPlan> subCatPlanSet = fetchMerchSubCatPlan(merchCatPlanSet, lvl3.getLvl3Nbr(), lvl4.getLvl4Nbr());
             if (!CollectionUtils.isEmpty(subCatPlanSet)) {
                 subCatPlanSet.forEach(subCatPlanPlan -> {
                     subCatPlanPlan.getFinelinePlans().removeIf(fineLinePlan -> CollectionUtils.isEmpty(fineLinePlan.getStylePlans()) && fineLinePlan.getFinelinePlanId().getFinelineNbr().equals(fineline.getFinelineNbr()));
                 });
-                if (StrongKeyFineline.getStyles() == null) {
+                if (strongKeyFineline.getStyles() == null) {
                     subCatPlanSet.forEach(subCatPlanPlan -> {
                         subCatPlanPlan.getFinelinePlans().removeIf(fineLinePlan -> fineLinePlan.getFinelinePlanId().getFinelineNbr().equals(fineline.getFinelineNbr()));
                     });
@@ -63,12 +63,12 @@ public class SizeAndPackDeletePlanService {
         });
     }
 
-    private void deleteStylePlan(Set<MerchCatPlan> merchCatPlanSet, Lvl3 lvl3, Lvl4 lvl4, Fineline StrongKeyFineline) {
-        StrongKeyFineline.getStyles().forEach(style -> {
+    private void deleteStylePlan(Set<MerchCatPlan> merchCatPlanSet, Lvl3 lvl3, Lvl4 lvl4, Fineline strongKeyFineline) {
+        strongKeyFineline.getStyles().forEach(style -> {
             if (style.getCustomerChoices().size() > 0) {
-                deleteCCPlan(merchCatPlanSet, lvl3, lvl4, StrongKeyFineline, style);
+                deleteCCPlan(merchCatPlanSet, lvl3, lvl4, strongKeyFineline, style);
             }
-            Set<FinelinePlan> finelinePlanSet = fetchFinelinePlan(merchCatPlanSet, lvl3.getLvl3Nbr(), lvl4.getLvl4Nbr(), StrongKeyFineline.getFinelineNbr());
+            Set<FinelinePlan> finelinePlanSet = fetchFinelinePlan(merchCatPlanSet, lvl3.getLvl3Nbr(), lvl4.getLvl4Nbr(), strongKeyFineline.getFinelineNbr());
             if (!CollectionUtils.isEmpty(finelinePlanSet)) {
                 finelinePlanSet.forEach(finelinePlan -> finelinePlan.getStylePlans().removeIf(stylePlan -> CollectionUtils.isEmpty(stylePlan.getCustChoicePlans()) && stylePlan.getStylePlanId().getStyleNbr().equalsIgnoreCase(style.getStyleNbr())
                 ));
