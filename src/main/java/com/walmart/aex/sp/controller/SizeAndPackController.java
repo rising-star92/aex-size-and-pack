@@ -57,19 +57,14 @@ public class SizeAndPackController {
     public @ResponseBody
     ResponseEntity<SizeAndPackResponse> deleteLinePlan(@RequestBody PlanSizeAndPackDeleteDTO request) {
         try {
-            if (request.getStrongKey() != null) {
-                if (request.getSizeAndPackPayloadDTO() != null) {
-                    SizeAndPackResponse response = new SizeAndPackResponse();
-                    // TODO add delete Fineline/Style/CC logic
-                    response.setStatus("Success");
-                    return ResponseEntity.status(HttpStatus.OK).body(response);
-                }
-            }
+            return ResponseEntity.status(HttpStatus.OK).body(sizeAndPackService.deleteSizeAndPackData(request));
         } catch (Exception exp) {
             log.error("Exception occurred when updating a line plan : {}", exp.getMessage());
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
     }
+
+
 }
 
 

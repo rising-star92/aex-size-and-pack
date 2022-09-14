@@ -31,4 +31,6 @@ public interface StyleReplnPkConsRepository extends JpaRepository <StyleReplPack
 			"and crp.ccReplPackId.customerChoice=:ccId" +
 			" and srp.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId=1")
     Optional<StyleReplPack> findByPlanIdAndCCId(@Param("planId")  Long planId, @Param("finelineNbr")  Integer finelineNbr,@Param("ccId")  String ccId);
+	void deleteByStyleReplPackId_FinelineReplPackId_SubCatgReplPackId_MerchCatgReplPackId_planIdAndStyleReplPackId_FinelineReplPackId_SubCatgReplPackId_MerchCatgReplPackId_repTLvl3AndStyleReplPackId_FinelineReplPackId_SubCatgReplPackId_repTLvl4AndStyleReplPackId_FinelineReplPackId_finelineNbrAndStyleReplPackId_styleNbr(Long planId, Integer lvl3Nbr, Integer lvl4Nbr,Integer finelineNbr,String styleNbr);
+
 }

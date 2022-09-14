@@ -96,6 +96,8 @@ public interface FineLineReplenishmentRepository extends JpaRepository<FinelineR
             "where fp.finelinePlanId.subCatPlanId.merchCatPlanId.channelId =:channelId and msp.merchCatPlanId.planId = :planId  " )
     List<ReplenishmentResponseDTO> getByPlanChannel(@Param("planId") Long planId, @Param("channelId") Integer channelId);
 
+    void deleteByFinelineReplPackId_SubCatgReplPackId_MerchCatgReplPackId_planIdAndFinelineReplPackId_SubCatgReplPackId_MerchCatgReplPackId_repTLvl3AndFinelineReplPackId_SubCatgReplPackId_repTLvl4AndFinelineReplPackId_finelineNbr(Long planId, Integer lvl3Nbr, Integer lvl4Nbr,Integer finelineNbr);
+
     @Query(value="select new com.walmart.aex.sp.dto.buyquantity.BuyQntyResponseDTO(msp.merchCatPlanId.planId, " +
             "fp.finelinePlanId.subCatPlanId.merchCatPlanId.channelId, " +
             "msp.merchCatPlanId.lvl0Nbr, " +
@@ -147,4 +149,5 @@ public interface FineLineReplenishmentRepository extends JpaRepository<FinelineR
             "AND fp.finelinePlanId.subCatPlanId.merchCatPlanId.channelId = frp.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId " +
             "where ((fp.finelinePlanId.subCatPlanId.merchCatPlanId.channelId in (:channelId,3) or :channelId is NULL) and msp.merchCatPlanId.planId = :planId and (frp.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId is NULL or frp.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId = :channelId or :channelId is NULL)) ")
     List<BuyQntyResponseDTO> getBuyQntyByPlanChannelOnline(@Param("planId") Long planId, @Param("channelId") Integer channelId);
+
 }
