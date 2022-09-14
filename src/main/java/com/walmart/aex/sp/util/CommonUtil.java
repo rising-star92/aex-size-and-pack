@@ -1,17 +1,30 @@
 package com.walmart.aex.sp.util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.packoptimization.Fineline;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
+import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDTO;
+import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDeleteDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.apache.commons.lang.StringEscapeUtils;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Optional;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
 
 @Component
 @Slf4j
 public class CommonUtil {
+    private final ObjectMapper objectMapper;
+
+    public CommonUtil(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
+
     public static String getRequestedFlChannel(Lvl3 lvl3) {
         return Optional.ofNullable(lvl3.getLvl4List())
                 .stream()
@@ -90,5 +103,15 @@ public class CommonUtil {
             }
         }
         throw new RuntimeException("Channel Type does not Match");
+    }
+
+    public PlanSizeAndPackDeleteDTO cleanSPDeleteRequest(PlanSizeAndPackDeleteDTO arg0) throws IOException {
+        return objectMapper.readValue(Jsoup.clean(StringEscapeUtils.escapeHtml(StringEscapeUtils.escapeSql(objectMapper.writeValueAsString(arg0))),
+                Whitelist.basic()), PlanSizeAndPackDeleteDTO.class);
+    }
+
+    public PlanSizeAndPackDTO cleanSPRequest(PlanSizeAndPackDTO arg0) throws IOException {
+        return objectMapper.readValue(Jsoup.clean(StringEscapeUtils.escapeHtml(StringEscapeUtils.escapeSql(objectMapper.writeValueAsString(arg0))),
+                Whitelist.basic()), PlanSizeAndPackDTO.class);
     }
 }

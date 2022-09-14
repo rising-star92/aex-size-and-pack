@@ -5,6 +5,7 @@ import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDTO;
 import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDeleteDTO;
 import com.walmart.aex.sp.dto.planhierarchy.SizeAndPackResponse;
 import com.walmart.aex.sp.service.SizeAndPackService;
+import com.walmart.aex.sp.util.CommonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,8 +23,13 @@ import lombok.extern.slf4j.Slf4j;
 @Api(consumes = MediaType.APPLICATION_JSON_VALUE)
 public class SizeAndPackController {
 
+    private final CommonUtil commonUtil;
     @Autowired
     SizeAndPackService sizeAndPackService;
+
+    public SizeAndPackController(CommonUtil commonUtil) {
+        this.commonUtil = commonUtil;
+    }
 
 
     @GetMapping("/health")
@@ -35,7 +41,7 @@ public class SizeAndPackController {
     public @ResponseBody
     ResponseEntity<SizeAndPackResponse> createLinePlan(@RequestBody PlanSizeAndPackDTO request) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(sizeAndPackService.saveSizeAndPackData(request));
+            return ResponseEntity.status(HttpStatus.OK).body(sizeAndPackService.saveSizeAndPackData(commonUtil.cleanSPRequest(request)));
         } catch (Exception exp) {
             log.error("Exception occurred when creating a line plan: {}", exp.getMessage());
         }
@@ -46,7 +52,7 @@ public class SizeAndPackController {
     public @ResponseBody
     ResponseEntity<SizeAndPackResponse> updateLinePlan(@RequestBody PlanSizeAndPackDTO request) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(sizeAndPackService.updateSizeAndPackData(request));
+            return ResponseEntity.status(HttpStatus.OK).body(sizeAndPackService.updateSizeAndPackData(commonUtil.cleanSPRequest(request)));
         } catch (Exception exp) {
             log.error("Exception occurred when updating a line plan : {}", exp.getMessage());
         }
@@ -57,7 +63,7 @@ public class SizeAndPackController {
     public @ResponseBody
     ResponseEntity<SizeAndPackResponse> deleteLinePlan(@RequestBody PlanSizeAndPackDeleteDTO request) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(sizeAndPackService.deleteSizeAndPackData(request));
+            return ResponseEntity.status(HttpStatus.OK).body(sizeAndPackService.deleteSizeAndPackData(commonUtil.cleanSPDeleteRequest(request)));
         } catch (Exception exp) {
             log.error("Exception occurred when updating a line plan : {}", exp.getMessage());
         }
