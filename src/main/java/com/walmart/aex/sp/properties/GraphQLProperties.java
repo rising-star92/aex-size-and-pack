@@ -38,4 +38,10 @@ public interface GraphQLProperties {
     @Property(propertyName = "size.profile.all.cc.query")
     String getAllCcSizeProfileQuery();
 
+    @Property(propertyName = "buyQty.finelines.size.query")
+    String getBuyQtyFinelinesSizeQuery();
+
+    @Property(propertyName = "buyQty.style.cc.size.query")
+    String getBuyQtyStyleCcSizeQuery();
+
 }
