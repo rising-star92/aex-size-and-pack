@@ -2,21 +2,27 @@ package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.bqfp.Replenishment;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Component
-@NoArgsConstructor
+@Service
+@Slf4j
+
 public class ReplenishmentsOptimizationService {
+
+    public ReplenishmentsOptimizationService() {
+    }
 
     public List<Replenishment> getUpdatedReplenishmentsPack(List<Replenishment> replenishments) {
 
         //get non-zero weeks which are supposed to be adjusted.
         List<Replenishment> nonZeroReplenishmentList = replenishments.stream().filter(replenishment -> replenishment.getAdjReplnUnits() > 0).collect(Collectors.toList());
 
-        //sum of all adjReplnUnits
+        //sum of all adjReplnUnits including starting index
         long futureWeekAdjReplnUnitsSum = nonZeroReplenishmentList.stream().map(replenishment -> replenishment.getAdjReplnUnits()).mapToLong(Long::longValue).sum();
 
 
@@ -25,7 +31,7 @@ public class ReplenishmentsOptimizationService {
             return replenishments;
         }
 
-        //adjust the adjReplnUnits using.
+        //adjust the adjReplnUnits
         for (int i = 0; i < nonZeroReplenishmentList.size(); i++) {
             //if current adjReplnUnits is less than 500 only then it need adjustment and if nonZeroReplenishmentList is last and is less 500
             if (nonZeroReplenishmentList.get(i).getAdjReplnUnits() < 500) {
@@ -35,25 +41,31 @@ public class ReplenishmentsOptimizationService {
 
                 long required = Math.abs(500 - nonZeroReplenishmentList.get(i).getAdjReplnUnits());
 
-                if (required > futureWeekAdjReplnUnitsSum) {
+                // if future weeks sum is less than 500 then add to current week and make rest to 0;
+                if (futureWeekAdjReplnUnitsSum < 500) {
 
-                    int k = i - 1;
+                    //add all of them and make future weeks to 0
+                    nonZeroReplenishmentList.get(i).setAdjReplnUnits(nonZeroReplenishmentList.get(i).getAdjReplnUnits() + futureWeekAdjReplnUnitsSum);
 
-                    //add all future week and myself to previous.
-                    nonZeroReplenishmentList.get(k).setAdjReplnUnits(nonZeroReplenishmentList.get(k).getAdjReplnUnits() + nonZeroReplenishmentList.get(i).getAdjReplnUnits() + futureWeekAdjReplnUnitsSum);
-                    futureWeekAdjReplnUnitsSum = 0;
+                    // make rest of the weeks to 0
+                    for (int j = i + 1; j < nonZeroReplenishmentList.size(); j++) {
+                        nonZeroReplenishmentList.get(j).setAdjReplnUnits(0L);
+                    }
+                    // break out of loop and return
 
-                    //set current to 0
-                    nonZeroReplenishmentList.get(i).setAdjReplnUnits(0L);
+                    if(i>0 && nonZeroReplenishmentList.get(i).getAdjReplnUnits()<500 ){
+                        int k = i-1;
+                        nonZeroReplenishmentList.get(k).setAdjReplnUnits(nonZeroReplenishmentList.get(k).getAdjReplnUnits()+nonZeroReplenishmentList.get(i).getAdjReplnUnits());
+                        nonZeroReplenishmentList.get(i).setAdjReplnUnits(0L);
+                    }
 
-                    //set future week to 0
-                    required = 0;
+                    break;
                 }
 
                 //for every week [i], we need to iterate future weeks [j] to get required, if we get required then break or else loop exits itself
                 for (int j = i + 1; j < nonZeroReplenishmentList.size(); j++) {
-                    if (required == 0) {
-                        nonZeroReplenishmentList.get(j).setAdjReplnUnits(0L);
+                    if (required == 0 || nonZeroReplenishmentList.get(j).getAdjReplnUnits() == 0 ) {
+                        break;
                     }
 
                     if (required > nonZeroReplenishmentList.get(j).getAdjReplnUnits()) {

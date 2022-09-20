@@ -57,9 +57,6 @@ public class CalculateFinelineBuyQuantityTest {
 
     private CalculateOnlineFinelineBuyQuantity calculateOnlineFinelineBuyQuantity;
 
-    @Autowired
-    private ReplenishmentsOptimizationService replenishmentsOptimizationService;
-
     @Mock
     private StrategyFetchService strategyFetchService;
 
@@ -236,80 +233,6 @@ public class CalculateFinelineBuyQuantityTest {
        assertEquals("All bump qtys in store object should total up to expected total",
              expectedTotalBumpPackUnits, totalBumpPackStoreObjUnits);
    }
-
-   @Test
-   public void assertUpdatedReplenishmentWithDcInboundQtyRulesWithScenario1() {
-      List<Replenishment> updatedReplenishmentWithDcInboundQtyRules = replenishmentsOptimizationService.getUpdatedReplenishmentsPack(getReplenishmentsObj(List.of(175L, 240L, 180L)));
-      Assert.assertEquals(getReplenishmentsObj(List.of(595L,0L,0L)), updatedReplenishmentWithDcInboundQtyRules);
-   }
-
-   @Test
-   public void assertUpdatedReplenishmentWithDcInboundQtyRulesWithScenario2() {
-      List<Replenishment> updatedReplenishmentWithDcInboundQtyRules = replenishmentsOptimizationService.getUpdatedReplenishmentsPack(getReplenishmentsObj(List.of(450L, 580L, 375L,1L)));
-      Assert.assertEquals(getReplenishmentsObj(List.of(500L,906L,0L,0L)), updatedReplenishmentWithDcInboundQtyRules);
-   }
-
-   @Test
-   public void assertUpdatedReplenishmentWithDcInboundQtyRulesWithScenario3() {
-      List<Replenishment> updatedReplenishmentWithDcInboundQtyRules = replenishmentsOptimizationService.getUpdatedReplenishmentsPack(getReplenishmentsObj(List.of(1L)));
-      Assert.assertEquals(getReplenishmentsObj(List.of(1L)), updatedReplenishmentWithDcInboundQtyRules);
-   }
-   @Test
-   public void assertUpdatedReplenishmentWithDcInboundQtyRulesWithScenario4() {
-      List<Replenishment> updatedReplenishmentWithDcInboundQtyRules = replenishmentsOptimizationService.getUpdatedReplenishmentsPack(getReplenishmentsObj(List.of(500L, 500L, 500L)));
-      Assert.assertEquals(getReplenishmentsObj(List.of(500L, 500L, 500L)), updatedReplenishmentWithDcInboundQtyRules);
-   }
-
-   @Test
-   public void assertUpdatedReplenishmentWithDcInboundQtyRulesWithScenario5() {
-      List<Replenishment> updatedReplenishmentWithDcInboundQtyRules = replenishmentsOptimizationService.getUpdatedReplenishmentsPack(getReplenishmentsObj(List.of(1L, 950L, 950L)));
-      assertEquals(getReplenishmentsObj(List.of(500L, 500L, 901L)), updatedReplenishmentWithDcInboundQtyRules);
-   }
-
-   @Test
-   public void assertUpdatedReplenishmentWithDcInboundQtyRulesWithScenario6() {
-      List<Replenishment> updatedReplenishmentWithDcInboundQtyRules = replenishmentsOptimizationService.getUpdatedReplenishmentsPack(getReplenishmentsObj(List.of(1000L, 950L, 950L)));
-      Assert.assertEquals(getReplenishmentsObj(List.of(1000L, 950L, 950L)), updatedReplenishmentWithDcInboundQtyRules);
-   }
-
-   @Test
-   public void assertUpdatedReplenishmentWithDcInboundQtyRulesWithScenario7() {
-      List<Replenishment> updatedReplenishmentWithDcInboundQtyRules = replenishmentsOptimizationService.getUpdatedReplenishmentsPack(getReplenishmentsObj(List.of(1L, 1000L, 1000L)));
-      Assert.assertEquals(getReplenishmentsObj(List.of(500L,501L,1000L)), updatedReplenishmentWithDcInboundQtyRules);
-   }
-
-   @Test
-   public void assertUpdatedReplenishmentWithDcInboundQtyRulesWithScenario8() {
-      List<Replenishment> updatedReplenishmentWithDcInboundQtyRules = replenishmentsOptimizationService.getUpdatedReplenishmentsPack(getReplenishmentsObj(List.of(1L, 1L, 1L)));
-      Assert.assertEquals(getReplenishmentsObj(List.of(3L,0L,0L)), updatedReplenishmentWithDcInboundQtyRules);
-   }
-
-   @Test
-   public void assertUpdatedReplenishmentWithDcInboundQtyRulesWithScenario9() {
-      List<Replenishment> updatedReplenishmentWithDcInboundQtyRules = replenishmentsOptimizationService.getUpdatedReplenishmentsPack(getReplenishmentsObj(List.of(1000L, 1000L, 1L)));
-      Assert.assertEquals(getReplenishmentsObj(List.of(1000L,1001L,0L)), updatedReplenishmentWithDcInboundQtyRules);
-   }
-   @Test
-   public void assertPostion4() {
-      List<Replenishment> updatedReplenishmentWithDcInboundQtyRules = replenishmentsOptimizationService.getUpdatedReplenishmentsPack(getReplenishmentsObj(List.of(499L, 499L, 499L)));
-      Assert.assertEquals(getReplenishmentsObj(List.of(500L,500L,497L)), updatedReplenishmentWithDcInboundQtyRules);
-   }
-
-
-
-   private List<Replenishment> getReplenishmentsObj(List<Long> longs){
-      List<Replenishment> replenishments = new ArrayList<>();
-      longs.forEach(l -> {
-         Replenishment replenishment = new Replenishment();
-         replenishment.setAdjReplnUnits(l);
-         replenishments.add(replenishment);
-      });
-     return replenishments;
-   }
-
-
-
-
 
    private BuyQtyStoreObj deserialize(String json) {
       try {
