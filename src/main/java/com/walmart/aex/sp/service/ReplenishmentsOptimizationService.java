@@ -3,7 +3,6 @@ package com.walmart.aex.sp.service;
 import com.walmart.aex.sp.dto.bqfp.Replenishment;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,10 +10,10 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@NoArgsConstructor
 public class ReplenishmentsOptimizationService {
 
-    public ReplenishmentsOptimizationService() {
-    }
+    public static final Integer MINIMUM_REPLENISHMENT_QUANTITY = 500;
 
     public List<Replenishment> getUpdatedReplenishmentsPack(List<Replenishment> replenishments) {
 
@@ -32,16 +31,16 @@ public class ReplenishmentsOptimizationService {
 
         //adjust the adjReplnUnits
         for (int i = 0; i < nonZeroReplenishmentList.size(); i++) {
-            //if current adjReplnUnits is less than 500 only then it need adjustment and if nonZeroReplenishmentList is last and is less 500
-            if (nonZeroReplenishmentList.get(i).getAdjReplnUnits() < 500) {
+            //if current adjReplnUnits is less than Minimum_Replenishment_Quantity only then it need adjustment and if nonZeroReplenishmentList is last and is less Minimum_Replenishment_Quantity
+            if (nonZeroReplenishmentList.get(i).getAdjReplnUnits() < MINIMUM_REPLENISHMENT_QUANTITY) {
 
                 //get available future adjReplnUnits exclude current
                 futureWeekAdjReplnUnitsSum = Math.abs(futureWeekAdjReplnUnitsSum - nonZeroReplenishmentList.get(i).getAdjReplnUnits());
 
-                long required = Math.abs(500 - nonZeroReplenishmentList.get(i).getAdjReplnUnits());
+                long required = Math.abs(MINIMUM_REPLENISHMENT_QUANTITY - nonZeroReplenishmentList.get(i).getAdjReplnUnits());
 
-                // if future weeks sum is less than 500 then add to current week and make rest to 0;
-                if (futureWeekAdjReplnUnitsSum < 500) {
+                // if future weeks sum is less than Minimum_Replenishment_Quantity then add to current week and make rest to 0;
+                if (futureWeekAdjReplnUnitsSum < MINIMUM_REPLENISHMENT_QUANTITY) {
 
                     //add all of them and make future weeks to 0
                     nonZeroReplenishmentList.get(i).setAdjReplnUnits(nonZeroReplenishmentList.get(i).getAdjReplnUnits() + futureWeekAdjReplnUnitsSum);
@@ -52,7 +51,7 @@ public class ReplenishmentsOptimizationService {
                     }
                     // break out of loop and return
 
-                    if(i>0 && nonZeroReplenishmentList.get(i).getAdjReplnUnits()<500 ){
+                    if(i>0 && nonZeroReplenishmentList.get(i).getAdjReplnUnits()< MINIMUM_REPLENISHMENT_QUANTITY){
                         int k = i-1;
                         nonZeroReplenishmentList.get(k).setAdjReplnUnits(nonZeroReplenishmentList.get(k).getAdjReplnUnits()+nonZeroReplenishmentList.get(i).getAdjReplnUnits());
                         nonZeroReplenishmentList.get(i).setAdjReplnUnits(0L);
