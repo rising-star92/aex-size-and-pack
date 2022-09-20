@@ -1,7 +1,9 @@
 package com.walmart.aex.sp.dto.planhierarchy;
 
 import com.walmart.aex.sp.dto.packoptimization.Fineline;
+import lombok.Data;
 
+@Data
 public class StrongKey {
     private Long planId;
     private String planDesc;

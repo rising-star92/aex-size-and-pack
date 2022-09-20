@@ -114,4 +114,7 @@ public interface SpCustomerChoiceChannelFixtureRepository extends JpaRepository<
             "(sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.channelId is NULL or sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.channelId = :channelId or :channelId is NULL) ")
     List<BuyQntyResponseDTO> getBuyQntyByPlanChannelFineline(@Param("planId") Long planId, @Param("channelId") Integer channelId,
                                                              @Param("finelineNbr") Integer finelineNbr);
+
+    void deleteBySpCustomerChoiceChannelFixtureId_SpStyleChannelFixtureId_SpFineLineChannelFixtureId_planIdAndSpCustomerChoiceChannelFixtureId_SpStyleChannelFixtureId_SpFineLineChannelFixtureId_lvl3NbrAndSpCustomerChoiceChannelFixtureId_SpStyleChannelFixtureId_SpFineLineChannelFixtureId_lvl4NbrAndSpCustomerChoiceChannelFixtureId_SpStyleChannelFixtureId_SpFineLineChannelFixtureId_fineLineNbrAndSpCustomerChoiceChannelFixtureId_SpStyleChannelFixtureId_styleNbrAndSpCustomerChoiceChannelFixtureId_customerChoice(Long planId, Integer lvl3Nbr, Integer lvl4Nbr,Integer fineLineNbr, String styleNbr, String customerChoice);
+
 }

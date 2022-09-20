@@ -70,4 +70,7 @@ public interface SpFineLineChannelFixtureRepository extends JpaRepository<SpFine
     List<BuyQntyResponseDTO> getBuyQntyByPlanChannel(@Param("planId") Long planId, @Param("channelId") Integer channelId);
 
     Optional<List<SpFineLineChannelFixture>> findSpFineLineChannelFixtureBySpFineLineChannelFixtureId_planIdAndSpFineLineChannelFixtureId_channelId(Long planId, Integer channelId);
+
+    void deleteBySpFineLineChannelFixtureId_planIdAndSpFineLineChannelFixtureId_lvl3NbrAndSpFineLineChannelFixtureId_lvl4NbrAndSpFineLineChannelFixtureId_fineLineNbr(Long planId, Integer lvl3Nbr, Integer lvl4Nbr,Integer fineLineNbr);
+
 }

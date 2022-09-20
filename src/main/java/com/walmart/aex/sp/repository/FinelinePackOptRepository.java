@@ -52,6 +52,15 @@ public interface FinelinePackOptRepository
             "AND subCatPlan.merchCatPlan.merchCatPlanId.channelId = fineplan.finelinePlanId.subCatPlanId.merchCatPlanId.channelId \n" +
             "AND subCatPlan.merchCatPlan.merchCatPlanId.planId = fineplan.finelinePlanId.subCatPlanId.merchCatPlanId.planId \n" +
 
+            "inner JOIN SpFineLineChannelFixture spFlChFix ON fineplan.finelinePlanId.finelineNbr = spFlChFix.spFineLineChannelFixtureId.fineLineNbr \n" +
+            "AND fineplan.finelinePlanId.subCatPlanId.lvl4Nbr = spFlChFix.spFineLineChannelFixtureId.lvl4Nbr \n" +
+            "AND fineplan.lvl3Nbr = spFlChFix.spFineLineChannelFixtureId.lvl3Nbr \n" +
+            "AND fineplan.finelinePlanId.subCatPlanId.merchCatPlanId.lvl2Nbr = spFlChFix.spFineLineChannelFixtureId.lvl2Nbr \n" +
+            "AND fineplan.finelinePlanId.subCatPlanId.merchCatPlanId.lvl1Nbr = spFlChFix.spFineLineChannelFixtureId.lvl1Nbr \n" +
+            "AND fineplan.finelinePlanId.subCatPlanId.merchCatPlanId.lvl0Nbr = spFlChFix.spFineLineChannelFixtureId.lvl0Nbr \n" +
+            "AND fineplan.finelinePlanId.subCatPlanId.merchCatPlanId.planId = spFlChFix.spFineLineChannelFixtureId.planId \n" +
+            "AND (spFlChFix.bumpPackQty + spFlChFix.initialSetQty > 0 OR spFlChFix.buyQty > 0) \n" +
+
             "left JOIN AnalyticsMlSend analytic " +
             " ON analytic.planId = fineplan.finelinePlanId.subCatPlanId.merchCatPlanId.planId \n" +
             " AND analytic.finelineNbr = fineplan.finelinePlanId.finelineNbr \n" +
