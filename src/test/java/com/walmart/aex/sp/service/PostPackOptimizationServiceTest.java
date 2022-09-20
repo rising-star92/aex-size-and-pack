@@ -24,6 +24,7 @@ import com.walmart.aex.sp.dto.packoptimization.isbpqty.CustomerChoices;
 import com.walmart.aex.sp.dto.packoptimization.isbpqty.Fixtures;
 import com.walmart.aex.sp.dto.packoptimization.isbpqty.ISAndBPQtyDTO;
 import com.walmart.aex.sp.dto.packoptimization.isbpqty.Size;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.util.ReflectionUtils;
 
@@ -54,6 +55,9 @@ public class PostPackOptimizationServiceTest {
 	CcMmReplnPkConsRepository ccMmReplnPkConsRepository;
 	@Mock
 	CcSpReplnPkConsRepository ccSpReplnPkConsRepository;
+
+	@Autowired
+	ReplenishmentsOptimizationService replenishmentsOptimizationService;
 	
 	Optional<FinelineReplPack> optional;
 	Optional<MerchCatgReplPack> optional1;
@@ -124,7 +128,7 @@ public class PostPackOptimizationServiceTest {
 		Mockito.when(ccMmReplnPkConsRepository.findCcMmReplnPkConsData(471l, 1021,"34_1021_2_21_2_AURA ORANGE STENCIL",1,2)).thenReturn(optional5);
 		Mockito.when(ccSpReplnPkConsRepository.findCcSpMmReplnPkConsData(471l, 1021,"34_1021_2_21_2_AURA ORANGE STENCIL",1,2,"SMALL")).thenReturn(optional6);
 		objectMapper = new ObjectMapper();
-		postPackOptimizationService = new PostPackOptimizationService(merchCatgReplPackRepository,finelineReplnPkConsRepository,subCatgReplnPkConsRepository,styleReplnPkConsRepository,ccReplnPkConsRepository,ccMmReplnPkConsRepository,ccSpReplnPkConsRepository,objectMapper);
+		postPackOptimizationService = new PostPackOptimizationService(merchCatgReplPackRepository,finelineReplnPkConsRepository,subCatgReplnPkConsRepository,styleReplnPkConsRepository,ccReplnPkConsRepository,ccMmReplnPkConsRepository,ccSpReplnPkConsRepository,objectMapper,replenishmentsOptimizationService);
 		postPackOptimizationService.updateInitialSetAndBumpPackAty(471l, 1021, isAndBPQtyDTO);
 
 		String resJson = "[{\"replnWeek\":12244,\"replnWeekDesc\":\"FYE2023WK44\",\"replnUnits\":null,\"adjReplnUnits\":3500,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null},{\"replnWeek\":12245,\"replnWeekDesc\":\"FYE2023WK45\",\"replnUnits\":null,\"adjReplnUnits\":3500,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null}]";
