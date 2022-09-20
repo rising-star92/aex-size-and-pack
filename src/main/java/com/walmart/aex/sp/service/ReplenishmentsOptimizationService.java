@@ -86,6 +86,6 @@ public class ReplenishmentsOptimizationService {
                 futureWeekAdjReplnUnitsSum = Math.abs(futureWeekAdjReplnUnitsSum - nonZeroReplenishmentList.get(i).getAdjReplnUnits());
             }
         }
-        return nonZeroReplenishmentList;
+        return replenishments;
     }
 }
