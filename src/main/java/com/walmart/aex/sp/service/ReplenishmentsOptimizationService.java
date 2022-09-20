@@ -68,9 +68,9 @@ public class ReplenishmentsOptimizationService {
                         break;
                     }
 
-                    if (required > nonZeroReplenishmentList.get(j).getAdjReplnUnits()) {
+                    if (required >= nonZeroReplenishmentList.get(j).getAdjReplnUnits()) {
                         long temp = nonZeroReplenishmentList.get(j).getAdjReplnUnits();
-                        nonZeroReplenishmentList.get(j).setAdjReplnUnits(0L);
+                        nonZeroReplenishmentList.get(j).setAdjReplnUnits(required - temp);
                         nonZeroReplenishmentList.get(i).setAdjReplnUnits(nonZeroReplenishmentList.get(i).getAdjReplnUnits() + temp);
                         required = required - temp;
                         futureWeekAdjReplnUnitsSum = futureWeekAdjReplnUnitsSum - temp;
