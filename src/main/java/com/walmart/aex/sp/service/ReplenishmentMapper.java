@@ -7,6 +7,8 @@ import java.util.Optional;
 
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
 import com.walmart.aex.sp.util.CommonUtil;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.walmart.aex.sp.dto.buyquantity.CustomerChoiceDto;
 import com.walmart.aex.sp.dto.buyquantity.FinelineDto;
@@ -22,6 +24,9 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class ReplenishmentMapper {
+	
+	@Autowired
+	BuyQuantityMapper buyQuantityMapper;
 
     public void mapReplenishmentLvl2Sp(ReplenishmentResponseDTO replenishmentResponseDTO, ReplenishmentResponse response, Integer finelineNbr, String ccId) {
         if (response.getPlanId() == null) {
@@ -57,15 +62,10 @@ public class ReplenishmentMapper {
         lvl3.setLvl3Nbr(replenishmentResponseDTO.getLvl3Nbr());
         lvl3.setLvl3Desc(replenishmentResponseDTO.getLvl3Desc());
         if (finelineNbr == null && ccId == null) {
-            MetricsDto metricsDto = new MetricsDto();
-            metricsDto.setVendorPack(replenishmentResponseDTO.getLvl3VenderPackCount());
-            metricsDto.setWarehousePack(replenishmentResponseDTO.getLvl3WhsePackCount());
-            metricsDto.setPackRatio(replenishmentResponseDTO.getLvl3vnpkWhpkRatio());
-            metricsDto.setFinalReplenishmentQty(replenishmentResponseDTO.getLvl3ReplQty());
-            metricsDto.setFinalBuyQty(replenishmentResponseDTO.getLvl3finalBuyQty());
-            metricsDto.setReplenishmentPacks(replenishmentResponseDTO.getLvl3ReplPack());
-            lvl3.setMetrics(metricsDto);
-            lvl3.setLvl4List(mapReplenishmentLvl4Sp(replenishmentResponseDTO, lvl3, finelineNbr, ccId));
+        	List<Lvl4Dto> lvl4DtoList = mapReplenishmentLvl4Sp(replenishmentResponseDTO, lvl3, finelineNbr, ccId);
+			MetricsDto metricsDto = buyQuantityMapper.lvl4MetricsAggregateQtys(lvl4DtoList);
+			lvl3.setMetrics(metricsDto);
+			lvl3.setLvl4List(lvl4DtoList);
         } else {
             lvl3.setLvl4List(mapReplenishmentLvl4Sp(replenishmentResponseDTO, lvl3, finelineNbr, ccId));
         }
@@ -89,15 +89,10 @@ public class ReplenishmentMapper {
         lvl4.setLvl4Desc(replenishmentResponseDTO.getLvl4Desc());
 
         if (finelineNbr == null && ccId == null) {
-            MetricsDto metricsDto = new MetricsDto();
-            metricsDto.setVendorPack(replenishmentResponseDTO.getLvl4VenderPackCount());
-            metricsDto.setWarehousePack(replenishmentResponseDTO.getLvl4WhsePackCount());
-            metricsDto.setPackRatio(replenishmentResponseDTO.getLvl4vnpkWhpkRatio());
-            metricsDto.setFinalReplenishmentQty(replenishmentResponseDTO.getLvl4ReplQty());
-            metricsDto.setFinalBuyQty(replenishmentResponseDTO.getLvl4finalBuyQty());
-            metricsDto.setReplenishmentPacks(replenishmentResponseDTO.getLvl4ReplPack());
-            lvl4.setMetrics(metricsDto);
-            lvl4.setFinelines(mapReplenishmentFl(replenishmentResponseDTO, lvl4, finelineNbr, ccId));
+        	List<FinelineDto> finelineDtoList = mapReplenishmentFl(replenishmentResponseDTO, lvl4, finelineNbr, ccId);
+			MetricsDto metricsDto = buyQuantityMapper.fineLineMetricsAggregateQtys(finelineDtoList);
+			lvl4.setMetrics(metricsDto);
+			lvl4.setFinelines(finelineDtoList);
         } else {
             lvl4.setFinelines(mapReplenishmentFl(replenishmentResponseDTO, lvl4, finelineNbr, ccId));
         }
