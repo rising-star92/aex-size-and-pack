@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -21,10 +22,13 @@ public class CalculateOnlineFinelineBuyQuantity {
     private final ObjectMapper objectMapper;
     private final BuyQtyReplenishmentMapperService buyQtyReplenishmentMapperService;
 
+    private final ReplenishmentsOptimizationService replenishmentsOptimizationServices;
+
     public CalculateOnlineFinelineBuyQuantity (ObjectMapper objectMapper,
-                                               BuyQtyReplenishmentMapperService buyQtyReplenishmentMapperService) {
+                                               BuyQtyReplenishmentMapperService buyQtyReplenishmentMapperService, ReplenishmentsOptimizationService replenishmentsOptimizationServices) {
         this.objectMapper = objectMapper;
         this.buyQtyReplenishmentMapperService = buyQtyReplenishmentMapperService;
+        this.replenishmentsOptimizationServices = replenishmentsOptimizationServices;
     }
 
 
@@ -169,7 +173,7 @@ public class CalculateOnlineFinelineBuyQuantity {
                 replenishment1.setAdjReplnUnits((long) (getReplenishmentUnits(replenishment) * getAvgSizePct(sizeDto)) / 100);
                 replObj.add(replenishment1);
             });
-            buyQtyObj.setReplenishments(replObj);
+            buyQtyObj.setReplenishments(replenishmentsOptimizationServices.getUpdatedReplenishmentsPack(replObj));
         });
     }
 

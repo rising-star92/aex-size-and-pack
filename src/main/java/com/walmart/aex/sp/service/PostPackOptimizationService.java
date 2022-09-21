@@ -4,15 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.bqfp.Replenishment;
-import com.walmart.aex.sp.dto.mapper.FineLineMapperDto;
-import com.walmart.aex.sp.dto.packoptimization.*;
 import com.walmart.aex.sp.dto.packoptimization.isbpqty.ISAndBPQtyDTO;
 import com.walmart.aex.sp.dto.packoptimization.isbpqty.Size;
-import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
-import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
-import com.walmart.aex.sp.dto.planhierarchy.Style;
-import com.walmart.aex.sp.entity.*;
-import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.repository.*;
 import com.walmart.aex.sp.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,6 +39,8 @@ public class PostPackOptimizationService {
 
     private final ObjectMapper objectMapper;
 
+    private final ReplenishmentsOptimizationService replenishmentsOptimizationServices;
+
 
     public PostPackOptimizationService(MerchCatgReplPackRepository merchCatgReplPackRepository,
                                        FinelineReplnPkConsRepository finelineReplnPkConsRepository,
@@ -55,7 +49,7 @@ public class PostPackOptimizationService {
                                        CcReplnPkConsRepository ccReplnPkConsRepository,
                                        CcMmReplnPkConsRepository ccMmReplnPkConsRepository,
                                        CcSpReplnPkConsRepository ccSpReplnPkConsRepository,
-                                       ObjectMapper objectMapper) {
+                                       ObjectMapper objectMapper, ReplenishmentsOptimizationService replenishmentsOptimizationServices) {
         this.merchCatgReplPackRepository = merchCatgReplPackRepository;
         this.finelineReplnPkConsRepository = finelineReplnPkConsRepository;
         this.subCatgReplnPkConsRepository = subCatgReplnPkConsRepository;
@@ -64,6 +58,7 @@ public class PostPackOptimizationService {
         this.ccMmReplnPkConsRepository = ccMmReplnPkConsRepository;
         this.ccSpReplnPkConsRepository = ccSpReplnPkConsRepository;
         this.objectMapper = objectMapper;
+        this.replenishmentsOptimizationServices = replenishmentsOptimizationServices;
     }
 
 
@@ -95,6 +90,7 @@ public class PostPackOptimizationService {
                         List<Replenishment> updateReplObj = replObj.stream()
                                 .peek(replenishment -> replenishment.setAdjReplnUnits((updatedReplenishmentQty*(((replenishment.getAdjReplnUnits()*100)/total))/100)))
                                 .collect(Collectors.toList());
+                        List<Replenishment> updatedReplenishmentsPack = replenishmentsOptimizationServices.getUpdatedReplenishmentsPack(updateReplObj);
                         ccSpMmReplPack.setReplenObj(objectMapper.writeValueAsString(updateReplObj));
                     } catch (JsonProcessingException e) {
                        log.error("Could not convert Replenishment Object Json for week disaggregation ",e );
