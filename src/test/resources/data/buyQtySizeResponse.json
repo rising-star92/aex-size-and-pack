@@ -1,0 +1,61 @@
+{
+            "planId": 471,
+            "lvl0Nbr": 50000,
+            "lvl1Nbr": 34,
+            "lvl2Nbr": 6419,
+            "lvl3List": [
+                {
+                    "lvl3Nbr": 12228,
+                    "lvl4List": [
+                        {
+                            "lvl4Nbr": 31507,
+                            "finelines": [
+                                {
+                                    "finelineNbr": 2855,
+                                    "styles": [
+                                        {
+                                            "styleNbr": "34_2855_4_19_8",
+                                            "customerChoices": [
+                                                {
+                                                    "ccId": "34_2855_4_19_8_BLACK SOOT"
+                                                },
+                                                {
+                                                    "ccId": "34_2855_4_19_8_BLUE"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "lvl3Nbr": 12229,
+                    "lvl4List": [
+                        {
+                            "lvl4Nbr": 31508,
+                            "finelines": [
+                                {
+                                    "finelineNbr": 2855,
+                                    "styles": [
+                                        {
+                                            "styleNbr": "34_2855_4_20_8",
+                                            "customerChoices": [
+                                                {
+                                                    "ccId": "34_2855_4_20_8_BLACK SOOT"
+                                                },
+                                                {
+                                                    "ccId": "34_2855_4_20_8_BLUE"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+}
+

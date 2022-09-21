@@ -41,6 +41,33 @@ public class StrategyFetchService {
         return (BuyQtyResponse) post(graphQLProperties.getSizeProfileUrl(), graphQLProperties.getSizeProfileQuery(), headers, data, Payload::getGetCcSizeClus);
     }
 
+    public BuyQtyResponse getBuyQtyDetailsForFinelines(BuyQtyRequest buyQtyRequest) throws SizeAndPackException {
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put("WM_CONSUMER.ID", graphQLProperties.getSizeProfileConsumerId());
+        headers.put("WM_SVC.NAME", graphQLProperties.getSizeProfileConsumerName());
+        headers.put("WM_SVC.ENV", graphQLProperties.getSizeProfileConsumerEnv());
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("planId", buyQtyRequest.getPlanId());
+        data.put("channel",buyQtyRequest.getChannel());
+        return (BuyQtyResponse) post(graphQLProperties.getSizeProfileUrl(), graphQLProperties.getBuyQtyFinelinesSizeQuery(), headers, data, Payload::getGetFinelinesWithSizes);
+    }
+
+    public BuyQtyResponse getBuyQtyDetailsForStylesCc(BuyQtyRequest buyQtyRequest,Integer finelineNbr) throws SizeAndPackException {
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put("WM_CONSUMER.ID", graphQLProperties.getSizeProfileConsumerId());
+        headers.put("WM_SVC.NAME", graphQLProperties.getSizeProfileConsumerName());
+        headers.put("WM_SVC.ENV", graphQLProperties.getSizeProfileConsumerEnv());
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("planId", buyQtyRequest.getPlanId());
+        data.put("channel",buyQtyRequest.getChannel());
+        data.put("finelineNbr",finelineNbr);
+        return (BuyQtyResponse) post(graphQLProperties.getSizeProfileUrl(), graphQLProperties.getBuyQtyStyleCcSizeQuery(), headers, data, Payload::getGetStylesCcWithSizes);
+    }
+
     private Object post(String url, String query, Map<String, String> headers, Map<String, Object> data, Function<Payload, ?> responseFunc) throws SizeAndPackException {
         GraphQLResponse graphQLResponse = graphQLService.post(url, query, headers,data);
 

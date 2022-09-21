@@ -65,46 +65,82 @@ public class SizeAndPackService {
     public BuyQtyResponse fetchFinelineBuyQnty(BuyQtyRequest buyQtyRequest) {
         BuyQtyResponse buyQtyResponse = new BuyQtyResponse();
         try {
-            List<BuyQntyResponseDTO> buyQntyResponseDTOS;
-            if (buyQtyRequest.getChannel() != null) {
-                buyQntyResponseDTOS = spFineLineChannelFixtureRepository
-                        .getBuyQntyByPlanChannel(buyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(buyQtyRequest.getChannel())); }
-            else buyQntyResponseDTOS = spFineLineChannelFixtureRepository
-                    .getBuyQntyByPlanChannel(buyQtyRequest.getPlanId(), null);
-            Optional.of(buyQntyResponseDTOS)
-                    .stream()
-                    .flatMap(Collection::stream)
-                    .forEach(buyQntyResponseDTO -> buyQuantityMapper
-                            .mapBuyQntyLvl2Sp(buyQntyResponseDTO, buyQtyResponse, null));
+            BuyQtyResponse buyQtyResponseDTO = strategyFetchService.getBuyQtyDetailsForFinelines(buyQtyRequest);
+
+            if (buyQtyResponseDTO != null) {
+                List<BuyQntyResponseDTO> buyQntyResponseDTOS;
+                if (buyQtyRequest.getChannel() != null) {
+                    buyQntyResponseDTOS = spFineLineChannelFixtureRepository
+                            .getBuyQntyByPlanChannel(buyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(buyQtyRequest.getChannel()));
+                } else {
+                    buyQntyResponseDTOS = spFineLineChannelFixtureRepository
+                            .getBuyQntyByPlanChannel(buyQtyRequest.getPlanId(), null);
+                }
+
+                buyQntyResponseDTOS.forEach(buyQntyResponseDTO -> {
+                    Optional.of(buyQtyResponseDTO.getLvl3List())
+                            .stream()
+                            .flatMap(Collection::stream)
+                            .filter(lvl3Dto -> lvl3Dto.getLvl3Nbr().equals(buyQntyResponseDTO.getLvl3Nbr()))
+                            .map(Lvl3Dto::getLvl4List)
+                            .flatMap(Collection::stream)
+                            .filter(lvl4Dto -> lvl4Dto.getLvl4Nbr().equals(buyQntyResponseDTO.getLvl4Nbr()))
+                            .map(Lvl4Dto::getFinelines)
+                            .flatMap(Collection::stream)
+                            .filter(finelineDto -> finelineDto.getFinelineNbr().equals(buyQntyResponseDTO.getFinelineNbr()))
+                            .forEach(finelineNbr->{
+                                buyQuantityMapper.mapBuyQntyLvl2Sp(buyQntyResponseDTO,buyQtyResponse,null);
+                            });});
+
+            }
+            return buyQtyResponse;
+
         } catch (Exception e) {
-            log.error("Exception While fetching Fineline Buy Qunatities :", e);
-            throw new CustomException("Failed to fetch Fineline Buy Qunatities, due to" + e);
+            log.error("Exception While fetching Fineline Buy Qunatities with Sizes :", e);
+            throw new CustomException("Failed to fetch Fineline Buy Qunatities with Sizes, due to" + e);
         }
-        log.info("Fetch Buy Qty Fineline response: {}", buyQtyRequest);
-        return buyQtyResponse;
     }
 
     public BuyQtyResponse fetchCcBuyQnty(BuyQtyRequest buyQtyRequest, Integer finelineNbr) {
         BuyQtyResponse buyQtyResponse = new BuyQtyResponse();
         try {
+            BuyQtyResponse buyQtyResponseDTO = strategyFetchService.getBuyQtyDetailsForStylesCc(buyQtyRequest,finelineNbr);
 
-            List<BuyQntyResponseDTO> buyQntyResponseDTOS;
-            if (buyQtyRequest.getChannel() != null) {
-                buyQntyResponseDTOS = spCustomerChoiceChannelFixtureRepository
-                        .getBuyQntyByPlanChannelFineline(buyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(buyQtyRequest.getChannel()), finelineNbr); }
-            else buyQntyResponseDTOS = spCustomerChoiceChannelFixtureRepository
-                    .getBuyQntyByPlanChannelFineline(buyQtyRequest.getPlanId(), null, finelineNbr);
-            Optional.of(buyQntyResponseDTOS)
-                    .stream()
-                    .flatMap(Collection::stream)
-                    .forEach(buyQntyResponseDTO -> buyQuantityMapper
-                            .mapBuyQntyLvl2Sp(buyQntyResponseDTO, buyQtyResponse, finelineNbr));
+            if (buyQtyResponseDTO != null) {
+                List<BuyQntyResponseDTO> buyQntyResponseDTOS;
+                if (buyQtyRequest.getChannel() != null) {
+                    buyQntyResponseDTOS = spCustomerChoiceChannelFixtureRepository
+                            .getBuyQntyByPlanChannelFineline(buyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(buyQtyRequest.getChannel()), finelineNbr);
+                } else buyQntyResponseDTOS = spCustomerChoiceChannelFixtureRepository
+                        .getBuyQntyByPlanChannelFineline(buyQtyRequest.getPlanId(), null, finelineNbr);
+
+                buyQntyResponseDTOS.forEach(buyQntyResponseDTO -> {
+                    Optional.of(buyQtyResponseDTO.getLvl3List())
+                            .stream()
+                            .flatMap(Collection::stream)
+                            .filter(lvl3Dto -> lvl3Dto.getLvl3Nbr().equals(buyQntyResponseDTO.getLvl3Nbr()))
+                            .map(Lvl3Dto::getLvl4List)
+                            .flatMap(Collection::stream)
+                            .filter(lvl4Dto -> lvl4Dto.getLvl4Nbr().equals(buyQntyResponseDTO.getLvl4Nbr()))
+                            .map(Lvl4Dto::getFinelines)
+                            .flatMap(Collection::stream)
+                            .filter(finelineDto -> finelineDto.getFinelineNbr().equals(buyQntyResponseDTO.getFinelineNbr()))
+                            .map(FinelineDto::getStyles)
+                            .flatMap(Collection::stream)
+                            .filter(styleDto -> styleDto.getStyleNbr().equals(buyQntyResponseDTO.getStyleNbr()))
+                            .map(StyleDto::getCustomerChoices)
+                            .flatMap(Collection::stream)
+                            .filter(customerChoiceDto -> customerChoiceDto.getCcId().equals(buyQntyResponseDTO.getCcId()))
+                            .forEach(ccId->{
+                                buyQuantityMapper.mapBuyQntyLvl2Sp(buyQntyResponseDTO,buyQtyResponse,finelineNbr);
+                            });});
+            }
+            return buyQtyResponse;
+
         } catch (Exception e) {
-            log.error("Exception While fetching CC Buy Qunatities :", e);
-            throw new CustomException("Failed to fetch CC Buy Qunatities, due to" + e);
+            log.error("Exception While fetching CC Buy Qunatities with Sizes:", e);
+            throw new CustomException("Failed to fetch CC Buy Qunatities with Sizes, due to" + e);
         }
-        log.info("Fetch Buy Qty CC response: {}", buyQtyResponse);
-        return buyQtyResponse;
     }
 
     public BuyQtyResponse fetchSizeBuyQnty(BuyQtyRequest buyQtyRequest) {
