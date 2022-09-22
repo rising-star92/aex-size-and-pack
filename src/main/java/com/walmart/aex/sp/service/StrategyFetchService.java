@@ -32,7 +32,7 @@ public class StrategyFetchService {
 
     public BuyQtyResponse getBuyQtyResponseSizeProfile(BuyQtyRequest buyQtyRequest) throws SizeAndPackException
     {
-        Map<String, String> headers = getHeaderForStratrgy();
+        Map<String, String> headers = getHeaderForStrategy();
         Map<String, Object> data = new HashMap<>();
         data.put("sizeProfileRequest", buyQtyRequest);
         return (BuyQtyResponse) post(graphQLProperties.getSizeProfileUrl(), graphQLProperties.getSizeProfileQuery(), headers, data, Payload::getGetCcSizeClus);
@@ -40,14 +40,14 @@ public class StrategyFetchService {
 
     public BuyQtyResponse getBuyQtyDetailsForFinelines(BuyQtyRequest buyQtyRequest) throws SizeAndPackException {
 
-        Map<String, String> headers = getHeaderForStratrgy();
+        Map<String, String> headers = getHeaderForStrategy();
         Map<String, Object> data = getBuyQtyRequest(buyQtyRequest);
         return (BuyQtyResponse) post(graphQLProperties.getSizeProfileUrl(), graphQLProperties.getBuyQtyFinelinesSizeQuery(), headers, data, Payload::getGetFinelinesWithSizes);
     }
 
     public BuyQtyResponse getBuyQtyDetailsForStylesCc(BuyQtyRequest buyQtyRequest, Integer finelineNbr) throws SizeAndPackException {
 
-        Map<String, String> headers = getHeaderForStratrgy();
+        Map<String, String> headers = getHeaderForStrategy();
         Map<String, Object> data = getBuyQtyRequest(buyQtyRequest);
         data.put("finelineNbr", finelineNbr);
 
@@ -83,13 +83,13 @@ public class StrategyFetchService {
 
     public BuyQtyResponse getAllCcSizeProfiles(BuyQtyRequest buyQtyRequest) throws SizeAndPackException
     {
-        Map<String, String> headers = getHeaderForStratrgy();
+        Map<String, String> headers = getHeaderForStrategy();
         Map<String, Object> data = new HashMap<>();
         data.put("sizeProfileRequest", buyQtyRequest);
         return (BuyQtyResponse) post(graphQLProperties.getSizeProfileUrl(), graphQLProperties.getAllCcSizeProfileQuery(), headers, data, Payload::getGetAllCcSizeClus);
     }
 
-    public Map<String, String> getHeaderForStratrgy() {
+    public Map<String, String> getHeaderForStrategy() {
         Map<String, String> headers = new HashMap<>();
         headers.put("WM_CONSUMER.ID", graphQLProperties.getSizeProfileConsumerId());
         headers.put("WM_SVC.NAME", graphQLProperties.getSizeProfileConsumerName());
