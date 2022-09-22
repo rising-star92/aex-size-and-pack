@@ -1,14 +1,14 @@
 package com.walmart.aex.sp.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.walmart.aex.sp.dto.assortproduct.APResponse;
 import com.walmart.aex.sp.dto.buyquantity.BuyQntyResponseDTO;
 import com.walmart.aex.sp.dto.buyquantity.BuyQtyRequest;
 import com.walmart.aex.sp.dto.buyquantity.BuyQtyResponse;
 import com.walmart.aex.sp.dto.replenishment.UpdateVnPkWhPkReplnRequest;
-import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.exception.SizeAndPackException;
 import com.walmart.aex.sp.repository.*;
+import com.walmart.aex.sp.util.BuyQtyCommonUtil;
+import com.walmart.aex.sp.util.BuyQtyResponseInputs;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -63,6 +63,9 @@ public class ReplenishmentServiceTest {
     @Mock
     private ReplenishmentService replenishmentService;
 
+    @Mock
+    private BuyQtyCommonUtil buyQtyCommonUtil;
+
     @InjectMocks
     private ReplenishmentService replenishmentService1;
 
@@ -72,7 +75,10 @@ public class ReplenishmentServiceTest {
     @Mock
     private StrategyFetchService strategyFetchService;
 
-    private ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
+
+    @Mock
+    private BuyQtyResponseInputs buyQtyInputs;
 
     @Test
     public void updateVnpkWhpkForCatgReplnConsTest(){
@@ -88,82 +94,34 @@ public class ReplenishmentServiceTest {
 
     @Test
     public void fetchFinelineBuyQtyTest() throws IOException, SizeAndPackException {
-        BuyQntyResponseDTO buyQntyResponseDTO = new BuyQntyResponseDTO(471l, 2, 50000, null, 34, null, 6419,
-                null, 12228, null, 31507, null, 2855, null,
-                1125, 1125, 1125, null);
 
-        BuyQntyResponseDTO buyQntyResponseDTO2 = new BuyQntyResponseDTO(471l, 2, 50000, null, 34, null, 6419,
-                null, 12229, null, 31508, null, 2855, null,
-                1125, 1125, 1125, null);
-
-        BuyQntyResponseDTO buyQntyResponseDTO1 = new BuyQntyResponseDTO(471l, 2, 50000, null, 34, null, 6419,
-                null, 12229, null, 31508, null, 2760, null,
-                1125, 1125, 1125, null);
-
-
-        List<BuyQntyResponseDTO> buyQntyResponseDTOS = new ArrayList<>();
-        buyQntyResponseDTOS.add(buyQntyResponseDTO);
-        buyQntyResponseDTOS.add(buyQntyResponseDTO2);
-        buyQntyResponseDTOS.add(buyQntyResponseDTO1);
-
+        List<BuyQntyResponseDTO> buyQntyResponseDTOS = BuyQtyResponseInputs.buyQtyFinelineInputForOnline();
         Mockito.when(fineLineReplenishmentRepository.getBuyQntyByPlanChannelOnline(471l, 2)).thenReturn(buyQntyResponseDTOS);
 
-        BuyQtyRequest buyQtyRequest = new BuyQtyRequest();
-        buyQtyRequest.setPlanId(471l);
-        buyQtyRequest.setChannel("Online");
-
-        BuyQtyResponse buyQtyResponse1 = buyQtyResponseFromJson("/buyQtySizeResponse");
-        BuyQtyResponse buyQtyResponse12= new BuyQtyResponse();
+        BuyQtyRequest buyQtyRequest = BuyQtyResponseInputs.fetchBuyQtyRequestForOnline();
+        BuyQtyResponse buyQtyResponse1 = BuyQtyResponseInputs.buyQtyResponseFromJson("/buyQtySizeResponse");
+        BuyQtyResponse buyQtyFinalResponse= new BuyQtyResponse();
 
         Mockito.when(strategyFetchService.getBuyQtyDetailsForFinelines(buyQtyRequest)).thenReturn(buyQtyResponse1);
         BuyQtyResponse buyQtyResponse = replenishmentService1.fetchOnlineFinelineBuyQnty(buyQtyRequest);
-        assertEquals(471,buyQntyResponseDTO.getPlanId());
-        Mockito.verify(buyQuantityMapper, Mockito.times(1)).mapBuyQntyLvl2Sp(buyQntyResponseDTO,new BuyQtyResponse(),null);
-        Mockito.verify(buyQuantityMapper, Mockito.times(1)).mapBuyQntyLvl2Sp(buyQntyResponseDTO2,new BuyQtyResponse(),null);
-        Mockito.verify(buyQuantityMapper, Mockito.times(0)).mapBuyQntyLvl2Sp(buyQntyResponseDTO1,new BuyQtyResponse(),null);
-
+        assertEquals(471,buyQtyRequest.getPlanId());
     }
 
     @Test
-    public void fetchCcBuyQtyTest() throws IOException, SizeAndPackException {
-
-        BuyQntyResponseDTO buyQntyResponseDTO1 = new BuyQntyResponseDTO(471l, 50000, 34, 6419,
-                12228, 31507, 2855, "34_2855_4_19_8", "34_2855_4_19_8_BLACK SOOT",
-                1125, 1125, 1125, 1125,1125,1125,2);
-
-        BuyQntyResponseDTO buyQntyResponseDTO = new BuyQntyResponseDTO(471l, 50000, 34, 6419,
-                12228, 31507, 2855, "34_2855_4_19_8", "34_5471_3_24_001_CHINO TAN",
-                1125, 1125, 1125, 1125,1125,1125,2);
-
-        BuyQntyResponseDTO buyQntyResponseDTO2 = new BuyQntyResponseDTO(471l, 50000, 34, 6419,
-                12229, 31508, 2855, "34_2855_4_20_8", "34_2855_4_20_8_BLACK SOOT",
-                1125, 1125, 1125, 1125,1125,1125,2);
-
-        List<BuyQntyResponseDTO> buyQntyResponseDTOS = new ArrayList<>();
-        buyQntyResponseDTOS.add(buyQntyResponseDTO);
-        buyQntyResponseDTOS.add(buyQntyResponseDTO1);
-        buyQntyResponseDTOS.add(buyQntyResponseDTO2);
+    public void fetchCcBuyQtyTest() throws IOException, SizeAndPackException
+    {
+        List<BuyQntyResponseDTO> buyQntyResponseDTOS = BuyQtyResponseInputs.buyQtyStyleCcInputForOnline();
         Mockito.when(spCustomerChoiceReplenishmentRepository.getBuyQntyByPlanChannelOnlineFineline(471l, 2,
                 2855)).thenReturn(buyQntyResponseDTOS);
 
-        BuyQtyRequest buyQtyRequest = new BuyQtyRequest();
-        buyQtyRequest.setPlanId(471l);
-        buyQtyRequest.setChannel("Online");
+        BuyQtyRequest buyQtyRequest = BuyQtyResponseInputs.fetchBuyQtyRequestForOnline();
         buyQtyRequest.setFinelineNbr(2855);
-
-        BuyQtyResponse buyQtyResponse1 = buyQtyResponseFromJson("/buyQtySizeResponse");
+        BuyQtyResponse buyQtyResponse1 = BuyQtyResponseInputs.buyQtyResponseFromJson("/buyQtySizeResponse");
 
         Mockito.when(strategyFetchService.getBuyQtyDetailsForStylesCc(buyQtyRequest,2855)).thenReturn(buyQtyResponse1);
-
         BuyQtyResponse buyQtyResponse = replenishmentService1.fetchOnlineCcBuyQnty(buyQtyRequest, 2855);
         assertEquals(471,buyQtyRequest.getPlanId());
-
-        Mockito.verify(buyQuantityMapper, Mockito.times(1)).mapBuyQntyLvl2Sp(buyQntyResponseDTO1,new BuyQtyResponse(),2855);
-
-        Mockito.verify(buyQuantityMapper, Mockito.times(1)).mapBuyQntyLvl2Sp(buyQntyResponseDTO2,new BuyQtyResponse(),2855);
-
-        Mockito.verify(buyQuantityMapper, Mockito.times(0)).mapBuyQntyLvl2Sp(buyQntyResponseDTO,new BuyQtyResponse(),2855);
-    }
+  }
 
     @Test
     public void fetchSizeBuyQtyTest() throws IOException, SizeAndPackException {
@@ -181,7 +139,7 @@ public class ReplenishmentServiceTest {
         buyQtyRequest.setChannel("Online");
         buyQtyRequest.setCcId("34_5471_3_24_001_CHINO TAN");
 
-        BuyQtyResponse buyQtyResponse = buyQtyResponseFromJson("/sizeProfileResponse");
+        BuyQtyResponse buyQtyResponse = BuyQtyResponseInputs.buyQtyResponseFromJson("/sizeProfileResponse");
 
         Mockito.when(strategyFetchService.getBuyQtyResponseSizeProfile(buyQtyRequest)).thenReturn(buyQtyResponse);
 
@@ -190,12 +148,5 @@ public class ReplenishmentServiceTest {
         Mockito.verify(buyQuantityMapper, Mockito.times(5)).mapBuyQntySizeSp(Mockito.any(),Mockito.any());
     }
 
-    private String readJsonFileAsString(String fileName) throws IOException {
-        return new String(Files.readAllBytes(Paths.get("src/test/resources/data/" + fileName + ".json")));
-    }
-
-    private BuyQtyResponse buyQtyResponseFromJson(String path) throws IOException {
-        return mapper.readValue(readJsonFileAsString(path), BuyQtyResponse.class);
-    }
 
 }

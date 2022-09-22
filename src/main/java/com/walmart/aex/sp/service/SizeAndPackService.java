@@ -9,6 +9,7 @@ import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.properties.GraphQLProperties;
 import com.walmart.aex.sp.repository.*;
+import com.walmart.aex.sp.util.BuyQtyCommonUtil;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,8 @@ public class SizeAndPackService {
 
     private final SizeAndPackDeletePlanService sizeAndPackDeletePlanService;
 
+    private final BuyQtyCommonUtil buyQtyCommonUtil;
+
 
     @ManagedConfiguration
     GraphQLProperties graphQLProperties;
@@ -49,7 +52,9 @@ public class SizeAndPackService {
                               SpCustomerChoiceChannelFixtureRepository spCustomerChoiceChannelFixtureRepository,
                               SizeAndPackObjectMapper sizeAndPackObjectMapper,
                               MerchCatPlanRepository merchCatPlanRepository, StrategyFetchService strategyFetchService,
-                              SpCustomerChoiceChannelFixtureSizeRepository spCustomerChoiceChannelFixtureSizeRepository, SizeAndPackDeleteService sizeAndPackDeleteService, SizeAndPackDeletePlanService sizeAndPackDeletePlanService) {
+                              SpCustomerChoiceChannelFixtureSizeRepository spCustomerChoiceChannelFixtureSizeRepository,
+                              SizeAndPackDeleteService sizeAndPackDeleteService, SizeAndPackDeletePlanService sizeAndPackDeletePlanService
+                              ,BuyQtyCommonUtil buyQtyCommonUtil) {
         this.spFineLineChannelFixtureRepository = spFineLineChannelFixtureRepository;
         this.buyQuantityMapper = buyQuantityMapper;
         this.spCustomerChoiceChannelFixtureRepository = spCustomerChoiceChannelFixtureRepository;
@@ -60,14 +65,15 @@ public class SizeAndPackService {
 
         this.sizeAndPackDeleteService = sizeAndPackDeleteService;
         this.sizeAndPackDeletePlanService = sizeAndPackDeletePlanService;
+        this.buyQtyCommonUtil = buyQtyCommonUtil;
     }
 
     public BuyQtyResponse fetchFinelineBuyQnty(BuyQtyRequest buyQtyRequest) {
         BuyQtyResponse buyQtyResponse = new BuyQtyResponse();
         try {
-            BuyQtyResponse buyQtyResponseDTO = strategyFetchService.getBuyQtyDetailsForFinelines(buyQtyRequest);
+            BuyQtyResponse finelinesWithSizesFromStrategy = strategyFetchService.getBuyQtyDetailsForFinelines(buyQtyRequest);
 
-            if (buyQtyResponseDTO != null) {
+            if (finelinesWithSizesFromStrategy != null) {
                 List<BuyQntyResponseDTO> buyQntyResponseDTOS;
                 if (buyQtyRequest.getChannel() != null) {
                     buyQntyResponseDTOS = spFineLineChannelFixtureRepository
@@ -77,20 +83,7 @@ public class SizeAndPackService {
                             .getBuyQntyByPlanChannel(buyQtyRequest.getPlanId(), null);
                 }
 
-                buyQntyResponseDTOS.forEach(buyQntyResponseDTO -> {
-                    Optional.of(buyQtyResponseDTO.getLvl3List())
-                            .stream()
-                            .flatMap(Collection::stream)
-                            .filter(lvl3Dto -> lvl3Dto.getLvl3Nbr().equals(buyQntyResponseDTO.getLvl3Nbr()))
-                            .map(Lvl3Dto::getLvl4List)
-                            .flatMap(Collection::stream)
-                            .filter(lvl4Dto -> lvl4Dto.getLvl4Nbr().equals(buyQntyResponseDTO.getLvl4Nbr()))
-                            .map(Lvl4Dto::getFinelines)
-                            .flatMap(Collection::stream)
-                            .filter(finelineDto -> finelineDto.getFinelineNbr().equals(buyQntyResponseDTO.getFinelineNbr()))
-                            .forEach(finelineNbr->{
-                                buyQuantityMapper.mapBuyQntyLvl2Sp(buyQntyResponseDTO,buyQtyResponse,null);
-                            });});
+                buyQtyResponse= buyQtyCommonUtil.filterFinelinesWithSizes(buyQntyResponseDTOS,finelinesWithSizesFromStrategy);
 
             }
             return buyQtyResponse;
@@ -104,9 +97,9 @@ public class SizeAndPackService {
     public BuyQtyResponse fetchCcBuyQnty(BuyQtyRequest buyQtyRequest, Integer finelineNbr) {
         BuyQtyResponse buyQtyResponse = new BuyQtyResponse();
         try {
-            BuyQtyResponse buyQtyResponseDTO = strategyFetchService.getBuyQtyDetailsForStylesCc(buyQtyRequest,finelineNbr);
+            BuyQtyResponse stylesCcWithSizesFromStrategy = strategyFetchService.getBuyQtyDetailsForStylesCc(buyQtyRequest,finelineNbr);
 
-            if (buyQtyResponseDTO != null) {
+            if (stylesCcWithSizesFromStrategy != null) {
                 List<BuyQntyResponseDTO> buyQntyResponseDTOS;
                 if (buyQtyRequest.getChannel() != null) {
                     buyQntyResponseDTOS = spCustomerChoiceChannelFixtureRepository
@@ -114,26 +107,7 @@ public class SizeAndPackService {
                 } else buyQntyResponseDTOS = spCustomerChoiceChannelFixtureRepository
                         .getBuyQntyByPlanChannelFineline(buyQtyRequest.getPlanId(), null, finelineNbr);
 
-                buyQntyResponseDTOS.forEach(buyQntyResponseDTO -> {
-                    Optional.of(buyQtyResponseDTO.getLvl3List())
-                            .stream()
-                            .flatMap(Collection::stream)
-                            .filter(lvl3Dto -> lvl3Dto.getLvl3Nbr().equals(buyQntyResponseDTO.getLvl3Nbr()))
-                            .map(Lvl3Dto::getLvl4List)
-                            .flatMap(Collection::stream)
-                            .filter(lvl4Dto -> lvl4Dto.getLvl4Nbr().equals(buyQntyResponseDTO.getLvl4Nbr()))
-                            .map(Lvl4Dto::getFinelines)
-                            .flatMap(Collection::stream)
-                            .filter(finelineDto -> finelineDto.getFinelineNbr().equals(buyQntyResponseDTO.getFinelineNbr()))
-                            .map(FinelineDto::getStyles)
-                            .flatMap(Collection::stream)
-                            .filter(styleDto -> styleDto.getStyleNbr().equals(buyQntyResponseDTO.getStyleNbr()))
-                            .map(StyleDto::getCustomerChoices)
-                            .flatMap(Collection::stream)
-                            .filter(customerChoiceDto -> customerChoiceDto.getCcId().equals(buyQntyResponseDTO.getCcId()))
-                            .forEach(ccId->{
-                                buyQuantityMapper.mapBuyQntyLvl2Sp(buyQntyResponseDTO,buyQtyResponse,finelineNbr);
-                            });});
+                buyQtyResponse= buyQtyCommonUtil.filterStylesCcWithSizes(buyQntyResponseDTOS,stylesCcWithSizesFromStrategy,finelineNbr);
             }
             return buyQtyResponse;
 

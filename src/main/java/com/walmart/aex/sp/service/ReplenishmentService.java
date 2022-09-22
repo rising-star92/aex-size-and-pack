@@ -61,6 +61,7 @@ public class ReplenishmentService  {
 
     private final ReplenishmentMapper replenishmentMapper;
     private final UpdateReplnConfigMapper updateReplnConfigMapper;
+    private final BuyQtyCommonUtil buyQtyCommonUtil;
 
     public ReplenishmentService(FineLineReplenishmentRepository fineLineReplenishmentRepository,
                                 SpCustomerChoiceReplenishmentRepository  spCustomerChoiceReplenishmentRepository,
@@ -75,7 +76,7 @@ public class ReplenishmentService  {
                                 ReplenishmentMapper replenishmentMapper,
                                 UpdateReplnConfigMapper updateReplnConfigMapper,
                                 BuyQuantityMapper buyQuantityMapper,
-                                StrategyFetchService strategyFetchService) {
+                                StrategyFetchService strategyFetchService,BuyQtyCommonUtil buyQtyCommonUtil) {
         this.fineLineReplenishmentRepository = fineLineReplenishmentRepository;
         this.spCustomerChoiceReplenishmentRepository=spCustomerChoiceReplenishmentRepository;
         this.sizeListReplenishmentRepository=sizeListReplenishmentRepository;
@@ -90,6 +91,7 @@ public class ReplenishmentService  {
         this.updateReplnConfigMapper = updateReplnConfigMapper;
         this.buyQuantityMapper = buyQuantityMapper;
         this.strategyFetchService = strategyFetchService;
+        this.buyQtyCommonUtil = buyQtyCommonUtil;
     }
 
     public ReplenishmentResponse fetchFinelineReplenishment(ReplenishmentRequest replenishmentRequest) {
@@ -115,24 +117,13 @@ public class ReplenishmentService  {
     public BuyQtyResponse fetchOnlineFinelineBuyQnty(BuyQtyRequest buyQtyRequest)  {
         BuyQtyResponse buyQtyResponse= new BuyQtyResponse();
         try {
-            BuyQtyResponse buyQtyResponseDTO = strategyFetchService.getBuyQtyDetailsForFinelines(buyQtyRequest);
-            if (buyQtyResponseDTO != null) {
+            BuyQtyResponse finelinesWithSizesFromStrategy = strategyFetchService.getBuyQtyDetailsForFinelines(buyQtyRequest);
+            if (finelinesWithSizesFromStrategy != null) {
                 List<BuyQntyResponseDTO> buyQntyResponseDTOS = fineLineReplenishmentRepository.getBuyQntyByPlanChannelOnline(buyQtyRequest.getPlanId(),
                         ChannelType.getChannelIdFromName(buyQtyRequest.getChannel()));
-                buyQntyResponseDTOS.forEach(buyQntyResponseDTO -> {
-                    Optional.of(buyQtyResponseDTO.getLvl3List())
-                            .stream()
-                            .flatMap(Collection::stream)
-                            .filter(lvl3Dto -> lvl3Dto.getLvl3Nbr().equals(buyQntyResponseDTO.getLvl3Nbr()))
-                            .map(Lvl3Dto::getLvl4List)
-                            .flatMap(Collection::stream)
-                            .filter(lvl4Dto -> lvl4Dto.getLvl4Nbr().equals(buyQntyResponseDTO.getLvl4Nbr()))
-                            .map(Lvl4Dto::getFinelines)
-                            .flatMap(Collection::stream)
-                            .filter(finelineDto -> finelineDto.getFinelineNbr().equals(buyQntyResponseDTO.getFinelineNbr()))
-                            .forEach(finelineNbr->{
-                                buyQuantityMapper.mapBuyQntyLvl2Sp(buyQntyResponseDTO,buyQtyResponse,null);
-                            });});
+
+                buyQtyResponse= buyQtyCommonUtil.filterFinelinesWithSizes(buyQntyResponseDTOS,finelinesWithSizesFromStrategy);
+
             }
             return buyQtyResponse;
 
@@ -166,32 +157,14 @@ public class ReplenishmentService  {
     public BuyQtyResponse fetchOnlineCcBuyQnty(BuyQtyRequest buyQtyRequest, Integer finelineNbr) {
         BuyQtyResponse buyQtyResponse = new BuyQtyResponse();
             try {
-                BuyQtyResponse buyQtyResponseDTO = strategyFetchService.getBuyQtyDetailsForStylesCc(buyQtyRequest,finelineNbr);
+                BuyQtyResponse stylesCcWithSizesFromStrategy = strategyFetchService.getBuyQtyDetailsForStylesCc(buyQtyRequest,finelineNbr);
 
-                if (buyQtyResponseDTO != null) {
+                if (stylesCcWithSizesFromStrategy != null) {
                      List<BuyQntyResponseDTO> buyQntyResponseDTOS = spCustomerChoiceReplenishmentRepository.getBuyQntyByPlanChannelOnlineFineline(buyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(buyQtyRequest.getChannel()),
                         finelineNbr);
 
-                     buyQntyResponseDTOS.forEach(buyQntyResponseDTO -> {
-                         Optional.of(buyQtyResponseDTO.getLvl3List())
-                            .stream()
-                            .flatMap(Collection::stream)
-                            .filter(lvl3Dto -> lvl3Dto.getLvl3Nbr().equals(buyQntyResponseDTO.getLvl3Nbr()))
-                            .map(Lvl3Dto::getLvl4List)
-                            .flatMap(Collection::stream)
-                            .filter(lvl4Dto -> lvl4Dto.getLvl4Nbr().equals(buyQntyResponseDTO.getLvl4Nbr()))
-                            .map(Lvl4Dto::getFinelines)
-                            .flatMap(Collection::stream)
-                            .filter(finelineDto -> finelineDto.getFinelineNbr().equals(buyQntyResponseDTO.getFinelineNbr()))
-                            .map(FinelineDto::getStyles)
-                            .flatMap(Collection::stream)
-                            .filter(styleDto -> styleDto.getStyleNbr().equals(buyQntyResponseDTO.getStyleNbr()))
-                            .map(StyleDto::getCustomerChoices)
-                            .flatMap(Collection::stream)
-                            .filter(customerChoiceDto -> customerChoiceDto.getCcId().equals(buyQntyResponseDTO.getCcId()))
-                            .forEach(ccId->{
-                                buyQuantityMapper.mapBuyQntyLvl2Sp(buyQntyResponseDTO,buyQtyResponse,finelineNbr);
-                            });});
+                    buyQtyResponse= buyQtyCommonUtil.filterStylesCcWithSizes(buyQntyResponseDTOS,stylesCcWithSizesFromStrategy,finelineNbr);
+
                     }
 
             return buyQtyResponse;
