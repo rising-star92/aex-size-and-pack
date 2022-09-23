@@ -64,6 +64,9 @@ public class ReplenishmentMapper {
         if (finelineNbr == null && ccId == null) {
         	List<Lvl4Dto> lvl4DtoList = mapReplenishmentLvl4Sp(replenishmentResponseDTO, lvl3, finelineNbr, ccId);
 			MetricsDto metricsDto = buyQuantityMapper.lvl4MetricsAggregateQtys(lvl4DtoList);
+			metricsDto.setVendorPack(replenishmentResponseDTO.getLvl3VenderPackCount());
+			metricsDto.setWarehousePack(replenishmentResponseDTO.getLvl3WhsePackCount());
+			metricsDto.setPackRatio(replenishmentResponseDTO.getLvl3vnpkWhpkRatio());;
 			lvl3.setMetrics(metricsDto);
 			lvl3.setLvl4List(lvl4DtoList);
         } else {
@@ -91,6 +94,9 @@ public class ReplenishmentMapper {
         if (finelineNbr == null && ccId == null) {
         	List<FinelineDto> finelineDtoList = mapReplenishmentFl(replenishmentResponseDTO, lvl4, finelineNbr, ccId);
 			MetricsDto metricsDto = buyQuantityMapper.fineLineMetricsAggregateQtys(finelineDtoList);
+        	metricsDto.setVendorPack(replenishmentResponseDTO.getLvl4VenderPackCount());
+			metricsDto.setWarehousePack(replenishmentResponseDTO.getLvl4WhsePackCount());
+			metricsDto.setPackRatio(replenishmentResponseDTO.getLvl4vnpkWhpkRatio());
 			lvl4.setMetrics(metricsDto);
 			lvl4.setFinelines(finelineDtoList);
         } else {
