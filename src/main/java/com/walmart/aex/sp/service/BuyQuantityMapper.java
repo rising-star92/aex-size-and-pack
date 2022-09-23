@@ -55,6 +55,7 @@ public class BuyQuantityMapper {
     private Long ifNullThenZero(Integer i) {
         return Objects.nonNull(i) ? i.longValue() : 0;
     }
+    
 
     MetricsDto fineLineMetricsAggregateQtys(List<FinelineDto> finelineDtoList) {
         MetricsDto metricsDto = new MetricsDto();
@@ -63,6 +64,7 @@ public class BuyQuantityMapper {
         int buyQty = 0;
         int totalBumpPackQty = 0;
         int iniQty = 0;
+		int replenishmentPacks = 0;
         for (FinelineDto finelineDto : finelineDtoList) {
             MetricsDto finelineMetrics = finelineDto.getMetrics();
             if(Objects.nonNull(finelineDto.getMetrics())) {
@@ -71,6 +73,7 @@ public class BuyQuantityMapper {
                 totalReplQty += ifNullThenZero(finelineMetrics.getFinalReplenishmentQty());
                 totalBumpPackQty += ifNullThenZero(finelineMetrics.getBumpPackQty());
                 iniQty += ifNullThenZero(finelineMetrics.getFinalInitialSetQty());
+				replenishmentPacks += ifNullThenZero(finelineMetrics.getReplenishmentPacks());
             }
         }
         metricsDto.setBuyQty(buyQty);
@@ -78,6 +81,7 @@ public class BuyQuantityMapper {
         metricsDto.setFinalReplenishmentQty(totalReplQty);
         metricsDto.setBumpPackQty(totalBumpPackQty);
         metricsDto.setFinalInitialSetQty(iniQty);
+		metricsDto.setReplenishmentPacks(replenishmentPacks);
         return metricsDto;
     }
 
@@ -88,6 +92,7 @@ public class BuyQuantityMapper {
         int totalReplQty = 0;
         int totalBumpPackQty = 0;
         int iniQty = 0;
+        int replenishmentPacs = 0;
 
         for (Lvl4Dto lvl4Dto : lvl4DtoList) {
             MetricsDto lvl4DtoMetrics= lvl4Dto.getMetrics();
@@ -97,6 +102,7 @@ public class BuyQuantityMapper {
                 totalReplQty += ifNullThenZero(lvl4DtoMetrics.getFinalReplenishmentQty());
                 totalBumpPackQty += ifNullThenZero(lvl4DtoMetrics.getBumpPackQty());
                 iniQty += ifNullThenZero(lvl4DtoMetrics.getFinalInitialSetQty());
+                replenishmentPacs += ifNullThenZero(lvl4DtoMetrics.getReplenishmentPacks());
             }
         }
 
@@ -105,6 +111,7 @@ public class BuyQuantityMapper {
         metricsDto.setFinalReplenishmentQty(totalReplQty);
         metricsDto.setBumpPackQty(totalBumpPackQty);
         metricsDto.setFinalInitialSetQty(iniQty);
+		metricsDto.setReplenishmentPacks(replenishmentPacs);
         return metricsDto;
     }
 
