@@ -16,11 +16,9 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 
+import static com.walmart.aex.sp.util.BuyQtyResponseInputs.convertChannelToStore;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
@@ -53,8 +51,8 @@ public class SizeAndPackServiceTest {
     @Test
     public void fetchFinelineBuyQntyTest() throws IOException, SizeAndPackException
     {
-
-        List<BuyQntyResponseDTO> buyQntyResponseDTOS = BuyQtyResponseInputs.buyQtyFinelineInputForStore();
+        List<BuyQntyResponseDTO> buyQntyResponseDTOS = BuyQtyResponseInputs.buyQtyFinelineInput();
+        convertChannelToStore(buyQntyResponseDTOS);
         Mockito.when(spFineLineChannelFixtureRepository.getBuyQntyByPlanChannel(471l, 1)).thenReturn(buyQntyResponseDTOS);
         BuyQtyRequest buyQtyRequest = BuyQtyResponseInputs.fetchBuyQtyRequestForStore();
         BuyQtyResponse buyQtyResponse1 = BuyQtyResponseInputs.buyQtyResponseFromJson("/buyQtySizeResponse");
@@ -67,7 +65,8 @@ public class SizeAndPackServiceTest {
     @Test
     public void fetchCcBuyQtyTest() throws IOException, SizeAndPackException
     {
-        List<BuyQntyResponseDTO> buyQntyResponseDTOS = BuyQtyResponseInputs.buyQtyStyleCcInputForStore();
+        List<BuyQntyResponseDTO> buyQntyResponseDTOS = BuyQtyResponseInputs.buyQtyStyleCcInput();
+        convertChannelToStore(buyQntyResponseDTOS);
         Mockito.when(spCustomerChoiceChannelFixtureRepository.getBuyQntyByPlanChannelFineline(471l, 1,
                 2855)).thenReturn(buyQntyResponseDTOS);
 

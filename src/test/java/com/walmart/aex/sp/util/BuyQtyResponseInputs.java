@@ -15,7 +15,7 @@ public class  BuyQtyResponseInputs {
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    public static List<BuyQntyResponseDTO> buyQtyFinelineInputForOnline(){
+    public static List<BuyQntyResponseDTO> buyQtyFinelineInput(){
         BuyQntyResponseDTO buyQntyResponseDTO = new BuyQntyResponseDTO(471l, 2, 50000, null, 34, null, 6419,
                 null, 12228, null, 31507, null, 2855, null,
                 1125, 1125, 1125, null);
@@ -37,29 +37,7 @@ public class  BuyQtyResponseInputs {
         return buyQntyResponseDTOS;
     }
 
-    public static List<BuyQntyResponseDTO> buyQtyFinelineInputForStore(){
-        BuyQntyResponseDTO buyQntyResponseDTO = new BuyQntyResponseDTO(471l, 2, 50000, null, 34, null, 6419,
-                null, 12228, null, 31507, null, 2855, null,
-                1125, 1125, 1125, null);
-
-        BuyQntyResponseDTO buyQntyResponseDTO2 = new BuyQntyResponseDTO(471l, 2, 50000, null, 34, null, 6419,
-                null, 12229, null, 31508, null, 2855, null,
-                1125, 1125, 1125, null);
-
-        BuyQntyResponseDTO buyQntyResponseDTO1 = new BuyQntyResponseDTO(471l, 2, 50000, null, 34, null, 6419,
-                null, 12229, null, 31508, null, 2760, null,
-                1125, 1125, 1125, null);
-
-
-        List<BuyQntyResponseDTO> buyQntyResponseDTOS = new ArrayList<>();
-        buyQntyResponseDTOS.add(buyQntyResponseDTO);
-        buyQntyResponseDTOS.add(buyQntyResponseDTO2);
-        buyQntyResponseDTOS.add(buyQntyResponseDTO1);
-
-        return buyQntyResponseDTOS;
-    }
-
-    public static List<BuyQntyResponseDTO> buyQtyStyleCcInputForOnline()
+    public static List<BuyQntyResponseDTO> buyQtyStyleCcInput()
     {
         BuyQntyResponseDTO buyQntyResponseDTO1 = new BuyQntyResponseDTO(471l, 50000, 34, 6419,
                 12228, 31507, 2855, "34_2855_4_19_8", "34_2855_4_19_8_BLACK SOOT",
@@ -80,25 +58,11 @@ public class  BuyQtyResponseInputs {
         return buyQntyResponseDTOS;
     }
 
-    public static List<BuyQntyResponseDTO> buyQtyStyleCcInputForStore()
+    public static void convertChannelToStore(List<BuyQntyResponseDTO> buyQntyResponseDTOS)
     {
-        BuyQntyResponseDTO buyQntyResponseDTO1 = new BuyQntyResponseDTO(471l, 50000, 34, 6419,
-                12228, 31507, 2855, "34_2855_4_19_8", "34_2855_4_19_8_BLACK SOOT",
-                1125, 1125, 1125, 1125,1125,1125,2);
-
-        BuyQntyResponseDTO buyQntyResponseDTO = new BuyQntyResponseDTO(471l, 50000, 34, 6419,
-                12228, 31507, 2855, "34_2855_4_19_8", "34_5471_3_24_001_CHINO TAN",
-                1125, 1125, 1125, 1125,1125,1125,2);
-
-        BuyQntyResponseDTO buyQntyResponseDTO2 = new BuyQntyResponseDTO(471l, 50000, 34, 6419,
-                12229, 31508, 2855, "34_2855_4_20_8", "34_2855_4_20_8_BLACK SOOT",
-                1125, 1125, 1125, 1125,1125,1125,2);
-
-        List<BuyQntyResponseDTO> buyQntyResponseDTOS = new ArrayList<>();
-        buyQntyResponseDTOS.add(buyQntyResponseDTO1);
-        buyQntyResponseDTOS.add(buyQntyResponseDTO2);
-        buyQntyResponseDTOS.add(buyQntyResponseDTO);
-        return buyQntyResponseDTOS;
+        for(BuyQntyResponseDTO buyQntyResponseDTO:buyQntyResponseDTOS ){
+            buyQntyResponseDTO.setChannelId(1);
+        }
     }
 
     public static String readJsonFileAsString(String fileName) throws IOException {

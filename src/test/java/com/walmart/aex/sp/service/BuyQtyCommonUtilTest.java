@@ -14,9 +14,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
+
 
 @ExtendWith(MockitoExtension.class)
 public class BuyQtyCommonUtilTest {
@@ -33,9 +32,9 @@ public class BuyQtyCommonUtilTest {
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Test
-    public void filterFinelinesWithSizesTest() throws IOException {
-        List<BuyQntyResponseDTO> buyQntyResponseDTOS = BuyQtyResponseInputs.buyQtyFinelineInputForOnline();
-
+    public void filterFinelinesWithSizesTest() throws IOException
+    {
+        List<BuyQntyResponseDTO> buyQntyResponseDTOS = BuyQtyResponseInputs.buyQtyFinelineInput();
         BuyQtyResponse buyQtyResponseFromStrategy = BuyQtyResponseInputs.buyQtyResponseFromJson("/buyQtySizeResponse");
         BuyQtyResponse buyQtyResponse = buyQtyCommonUtil.filterFinelinesWithSizes(buyQntyResponseDTOS,buyQtyResponseFromStrategy);
 
@@ -46,9 +45,9 @@ public class BuyQtyCommonUtilTest {
     }
 
     @Test
-    public void filterStylesCcWithSizesTest() throws IOException {
-        List<BuyQntyResponseDTO> buyQntyResponseDTOS = BuyQtyResponseInputs.buyQtyStyleCcInputForStore();
-
+    public void filterStylesCcWithSizesTest() throws IOException
+    {
+        List<BuyQntyResponseDTO> buyQntyResponseDTOS = BuyQtyResponseInputs.buyQtyStyleCcInput();
         BuyQtyResponse buyQtyResponseFromStrategy = BuyQtyResponseInputs.buyQtyResponseFromJson("/buyQtySizeResponse");
         BuyQtyResponse buyQtyResponse = buyQtyCommonUtil.filterStylesCcWithSizes(buyQntyResponseDTOS,buyQtyResponseFromStrategy,2855);
 
