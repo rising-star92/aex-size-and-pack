@@ -54,7 +54,7 @@ public class SizeAndPackService {
                               MerchCatPlanRepository merchCatPlanRepository, StrategyFetchService strategyFetchService,
                               SpCustomerChoiceChannelFixtureSizeRepository spCustomerChoiceChannelFixtureSizeRepository,
                               SizeAndPackDeleteService sizeAndPackDeleteService, SizeAndPackDeletePlanService sizeAndPackDeletePlanService
-                              ,BuyQtyCommonUtil buyQtyCommonUtil) {
+            , BuyQtyCommonUtil buyQtyCommonUtil) {
         this.spFineLineChannelFixtureRepository = spFineLineChannelFixtureRepository;
         this.buyQuantityMapper = buyQuantityMapper;
         this.spCustomerChoiceChannelFixtureRepository = spCustomerChoiceChannelFixtureRepository;
@@ -71,20 +71,24 @@ public class SizeAndPackService {
     public BuyQtyResponse fetchFinelineBuyQnty(BuyQtyRequest buyQtyRequest) {
         BuyQtyResponse buyQtyResponse = new BuyQtyResponse();
         try {
-            BuyQtyResponse finelinesWithSizesFromStrategy = strategyFetchService.getBuyQtyDetailsForFinelines(buyQtyRequest);
-
-            if (finelinesWithSizesFromStrategy != null) {
-                List<BuyQntyResponseDTO> buyQntyResponseDTOS;
-                if (buyQtyRequest.getChannel() != null) {
+            List<BuyQntyResponseDTO> buyQntyResponseDTOS;
+            if (buyQtyRequest.getChannel() != null) {
+                BuyQtyResponse finelinesWithSizesFromStrategy = strategyFetchService.getBuyQtyDetailsForFinelines(buyQtyRequest);
+                if (finelinesWithSizesFromStrategy != null) {
                     buyQntyResponseDTOS = spFineLineChannelFixtureRepository
                             .getBuyQntyByPlanChannel(buyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(buyQtyRequest.getChannel()));
-                } else {
-                    buyQntyResponseDTOS = spFineLineChannelFixtureRepository
-                            .getBuyQntyByPlanChannel(buyQtyRequest.getPlanId(), null);
+                    buyQtyResponse = buyQtyCommonUtil.filterFinelinesWithSizes(buyQntyResponseDTOS, finelinesWithSizesFromStrategy);
                 }
-
-                buyQtyResponse= buyQtyCommonUtil.filterFinelinesWithSizes(buyQntyResponseDTOS,finelinesWithSizesFromStrategy);
-
+            } else {
+                BuyQtyResponse buyQtyResponseAllChannels = new BuyQtyResponse();
+                buyQntyResponseDTOS = spFineLineChannelFixtureRepository
+                        .getBuyQntyByPlanChannel(buyQtyRequest.getPlanId(), null);
+                Optional.of(buyQntyResponseDTOS)
+                        .stream()
+                        .flatMap(Collection::stream)
+                        .forEach(buyQntyResponseDTO -> buyQuantityMapper
+                                .mapBuyQntyLvl2Sp(buyQntyResponseDTO, buyQtyResponseAllChannels, null));
+                return buyQtyResponseAllChannels;
             }
             return buyQtyResponse;
 
@@ -97,20 +101,26 @@ public class SizeAndPackService {
     public BuyQtyResponse fetchCcBuyQnty(BuyQtyRequest buyQtyRequest, Integer finelineNbr) {
         BuyQtyResponse buyQtyResponse = new BuyQtyResponse();
         try {
-            BuyQtyResponse stylesCcWithSizesFromStrategy = strategyFetchService.getBuyQtyDetailsForStylesCc(buyQtyRequest,finelineNbr);
-
-            if (stylesCcWithSizesFromStrategy != null) {
-                List<BuyQntyResponseDTO> buyQntyResponseDTOS;
-                if (buyQtyRequest.getChannel() != null) {
+            List<BuyQntyResponseDTO> buyQntyResponseDTOS;
+            if (buyQtyRequest.getChannel() != null) {
+                BuyQtyResponse stylesCcWithSizesFromStrategy = strategyFetchService.getBuyQtyDetailsForStylesCc(buyQtyRequest, finelineNbr);
+                if (stylesCcWithSizesFromStrategy != null) {
                     buyQntyResponseDTOS = spCustomerChoiceChannelFixtureRepository
                             .getBuyQntyByPlanChannelFineline(buyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(buyQtyRequest.getChannel()), finelineNbr);
-                } else buyQntyResponseDTOS = spCustomerChoiceChannelFixtureRepository
+                    buyQtyResponse = buyQtyCommonUtil.filterStylesCcWithSizes(buyQntyResponseDTOS, stylesCcWithSizesFromStrategy, finelineNbr);
+                }
+            } else {
+                BuyQtyResponse buyQtyResponseAllChannels = new BuyQtyResponse();
+                buyQntyResponseDTOS = spCustomerChoiceChannelFixtureRepository
                         .getBuyQntyByPlanChannelFineline(buyQtyRequest.getPlanId(), null, finelineNbr);
-
-                buyQtyResponse= buyQtyCommonUtil.filterStylesCcWithSizes(buyQntyResponseDTOS,stylesCcWithSizesFromStrategy,finelineNbr);
+                Optional.of(buyQntyResponseDTOS)
+                        .stream()
+                        .flatMap(Collection::stream)
+                        .forEach(buyQntyResponseDTO -> buyQuantityMapper
+                                .mapBuyQntyLvl2Sp(buyQntyResponseDTO, buyQtyResponseAllChannels, finelineNbr));
+                return buyQtyResponseAllChannels;
             }
             return buyQtyResponse;
-
         } catch (Exception e) {
             log.error("Exception While fetching CC Buy Qunatities with Sizes:", e);
             throw new CustomException("Failed to fetch CC Buy Qunatities with Sizes, due to" + e);
@@ -125,12 +135,12 @@ public class SizeAndPackService {
                 List<BuyQntyResponseDTO> buyQntyResponseDTOS = spCustomerChoiceChannelFixtureSizeRepository
                         .getSizeBuyQntyByPlanChannelCc(buyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(buyQtyRequest.getChannel()), buyQtyRequest.getCcId());
 
-                List<SizeDto> sizeDtos =  fetchSizes(buyQtyResponse);
+                List<SizeDto> sizeDtos = fetchSizes(buyQtyResponse);
                 Optional.of(sizeDtos)
                         .stream()
                         .flatMap(Collection::stream)
                         .forEach(sizeDto -> buyQuantityMapper
-                                .mapBuyQntySizeSp(buyQntyResponseDTOS,sizeDto));
+                                .mapBuyQntySizeSp(buyQntyResponseDTOS, sizeDto));
                 log.info("Fetch Buy Qty CC response: {}", buyQtyResponse);
             }
             return buyQtyResponse;
@@ -172,10 +182,6 @@ public class SizeAndPackService {
     }
 
 
-
-
-
-
     @Transactional
     public SizeAndPackResponse saveSizeAndPackData(PlanSizeAndPackDTO planSizeAndPackDTO) {
         SizeAndPackResponse sizeAndPackResponse = new SizeAndPackResponse();
@@ -189,7 +195,7 @@ public class SizeAndPackService {
             for (Lvl1 lvl1 : planSizeAndPackDTO.getLvl1List()) {
                 for (Lvl2 lvl2 : lvl1.getLvl2List()) {
                     for (Lvl3 lvl3 : lvl2.getLvl3List()) {
-                        merchCatPlanRepository.saveAll(sizeAndPackObjectMapper.setMerchCatPlan(planSizeAndPackDTO, lvl1, lvl2, lvl3,merchCatPlanRepository));
+                        merchCatPlanRepository.saveAll(sizeAndPackObjectMapper.setMerchCatPlan(planSizeAndPackDTO, lvl1, lvl2, lvl3, merchCatPlanRepository));
                     }
                 }
             }
@@ -199,7 +205,7 @@ public class SizeAndPackService {
             log.error("Failed to save the line plan events to size and pack database. Error: {}", ex.toString());
         }
         return sizeAndPackResponse;
-  }
+    }
 
 
     @Transactional
@@ -239,10 +245,10 @@ public class SizeAndPackService {
                             strongKey.getFineline().getFinelineNbr());
                 } else if (!CollectionUtils.isEmpty(strongKey.getFineline().getStyles())) {
                     sizeAndPackDeleteService.deleteSizeAndPackDataAtStyleOrCC(strongKey.getFineline().getStyles(), strongKey.getPlanId(),
-                           strongKey.getLvl3Nbr(), strongKey.getLvl4Nbr(), strongKey.getFineline().getFinelineNbr());
+                            strongKey.getLvl3Nbr(), strongKey.getLvl4Nbr(), strongKey.getFineline().getFinelineNbr());
                 }
                 if (request.getSizeAndPackPayloadDTO() != null) {
-                    updateSizeAndPackPlanData(request.getSizeAndPackPayloadDTO(),strongKey.getFineline());
+                    updateSizeAndPackPlanData(request.getSizeAndPackPayloadDTO(), strongKey.getFineline());
                 }
                 sizeAndPackResponse.setStatus(SUCCESS_STATUS);
             } else {
@@ -262,7 +268,7 @@ public class SizeAndPackService {
             for (Lvl1 lvl1 : lvl1s) {
                 for (Lvl2 lvl2 : lvl1.getLvl2List()) {
                     for (Lvl3 lvl3 : lvl2.getLvl3List()) {
-                        merchCatPlanRepository.saveAll(sizeAndPackDeletePlanService.updateMerchCatPlan(sizeAndPackPayloadDTO, lvl1, lvl2, lvl3, fineline,merchCatPlanRepository));
+                        merchCatPlanRepository.saveAll(sizeAndPackDeletePlanService.updateMerchCatPlan(sizeAndPackPayloadDTO, lvl1, lvl2, lvl3, fineline, merchCatPlanRepository));
                     }
                 }
             }
