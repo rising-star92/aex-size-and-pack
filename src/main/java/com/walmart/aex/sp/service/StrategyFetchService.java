@@ -42,7 +42,7 @@ public class StrategyFetchService {
 
         Map<String, String> headers = getHeaderForStrategy();
         Map<String, Object> data = getBuyQtyRequest(buyQtyRequest);
-        return (BuyQtyResponse) post(graphQLProperties.getSizeProfileUrl(), graphQLProperties.getBuyQtyFinelinesSizeQuery(), headers, data, Payload::getGetFinelinesWithSizes);
+        return (BuyQtyResponse) post(graphQLProperties.getSizeProfileUrl(), graphQLProperties.getBuyQtyFinelinesSizeQuery(), headers, data, Payload::getGetFinelinesWithSizeAssociation);
     }
 
     public BuyQtyResponse getBuyQtyDetailsForStylesCc(BuyQtyRequest buyQtyRequest, Integer finelineNbr) throws SizeAndPackException {
@@ -51,7 +51,7 @@ public class StrategyFetchService {
         Map<String, Object> data = getBuyQtyRequest(buyQtyRequest);
         data.put("finelineNbr", finelineNbr);
 
-        return (BuyQtyResponse) post(graphQLProperties.getSizeProfileUrl(), graphQLProperties.getBuyQtyStyleCcSizeQuery(), headers, data, Payload::getGetStylesCcWithSizes);
+        return (BuyQtyResponse) post(graphQLProperties.getSizeProfileUrl(), graphQLProperties.getBuyQtyStyleCcSizeQuery(), headers, data, Payload::getGetStylesCCsWithSizeAssociation);
     }
 
     private Object post(String url, String query, Map<String, String> headers, Map<String, Object> data, Function<Payload, ?> responseFunc) throws SizeAndPackException {
