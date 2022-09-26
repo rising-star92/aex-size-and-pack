@@ -1,14 +1,14 @@
 package com.walmart.aex.sp.service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.walmart.aex.sp.dto.buyquantity.BuyQntyResponseDTO;
-import com.walmart.aex.sp.dto.buyquantity.BuyQtyRequest;
-import com.walmart.aex.sp.dto.buyquantity.BuyQtyResponse;
-import com.walmart.aex.sp.dto.buyquantity.SizeDto;
+import com.walmart.aex.sp.dto.buyquantity.*;
+import com.walmart.aex.sp.exception.SizeAndPackException;
 import com.walmart.aex.sp.util.BuyQtyCommonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -61,6 +61,7 @@ public class ReplenishmentService  {
 
     private final ReplenishmentMapper replenishmentMapper;
     private final UpdateReplnConfigMapper updateReplnConfigMapper;
+    private final BuyQtyCommonUtil buyQtyCommonUtil;
 
     public ReplenishmentService(FineLineReplenishmentRepository fineLineReplenishmentRepository,
                                 SpCustomerChoiceReplenishmentRepository  spCustomerChoiceReplenishmentRepository,
@@ -75,7 +76,7 @@ public class ReplenishmentService  {
                                 ReplenishmentMapper replenishmentMapper,
                                 UpdateReplnConfigMapper updateReplnConfigMapper,
                                 BuyQuantityMapper buyQuantityMapper,
-                                StrategyFetchService strategyFetchService) {
+                                StrategyFetchService strategyFetchService,BuyQtyCommonUtil buyQtyCommonUtil) {
         this.fineLineReplenishmentRepository = fineLineReplenishmentRepository;
         this.spCustomerChoiceReplenishmentRepository=spCustomerChoiceReplenishmentRepository;
         this.sizeListReplenishmentRepository=sizeListReplenishmentRepository;
@@ -90,6 +91,7 @@ public class ReplenishmentService  {
         this.updateReplnConfigMapper = updateReplnConfigMapper;
         this.buyQuantityMapper = buyQuantityMapper;
         this.strategyFetchService = strategyFetchService;
+        this.buyQtyCommonUtil = buyQtyCommonUtil;
     }
 
     public ReplenishmentResponse fetchFinelineReplenishment(ReplenishmentRequest replenishmentRequest) {
@@ -112,23 +114,23 @@ public class ReplenishmentService  {
         return replenishmentResponse;
     }
 
-    public BuyQtyResponse fetchOnlineFinelineBuyQnty(BuyQtyRequest buyQtyRequest) {
-        BuyQtyResponse buyQtyResponse = new BuyQtyResponse();
+    public BuyQtyResponse fetchOnlineFinelineBuyQnty(BuyQtyRequest buyQtyRequest)  {
+        BuyQtyResponse buyQtyResponse= new BuyQtyResponse();
         try {
-            List<BuyQntyResponseDTO> buyQntyResponseDTOS = fineLineReplenishmentRepository.getBuyQntyByPlanChannelOnline(buyQtyRequest.getPlanId(),
-                    ChannelType.getChannelIdFromName(buyQtyRequest.getChannel()));
+            BuyQtyResponse finelinesWithSizesFromStrategy = strategyFetchService.getBuyQtyDetailsForFinelines(buyQtyRequest);
+            if (finelinesWithSizesFromStrategy != null) {
+                List<BuyQntyResponseDTO> buyQntyResponseDTOS = fineLineReplenishmentRepository.getBuyQntyByPlanChannelOnline(buyQtyRequest.getPlanId(),
+                        ChannelType.getChannelIdFromName(buyQtyRequest.getChannel()));
 
-            Optional.of(buyQntyResponseDTOS)
-                    .stream()
-                    .flatMap(Collection::stream)
-                    .forEach(buyQntyResponseDTO -> buyQuantityMapper
-                            .mapBuyQntyLvl2Sp(buyQntyResponseDTO, buyQtyResponse, null));
+                buyQtyResponse= buyQtyCommonUtil.filterFinelinesWithSizes(buyQntyResponseDTOS,finelinesWithSizesFromStrategy);
+
+            }
+            return buyQtyResponse;
+
         } catch (Exception e) {
-            log.error("Exception While fetching Fineline Buy Qunatities :", e);
-            throw new CustomException("Failed to fetch Fineline Buy Qunatities, due to" + e);
+            log.error("Exception While fetching Fineline Buy Qunatities with Sizes :", e);
+            throw new CustomException("Failed to fetch Fineline Buy Qunatities with Sizes, due to" + e);
         }
-        log.info("Fetch Buy Qty Fineline response: {}", buyQtyRequest);
-        return buyQtyResponse;
     }
 
     public ReplenishmentResponse fetchCcReplenishment(ReplenishmentRequest replenishmentRequest) {
@@ -151,23 +153,26 @@ public class ReplenishmentService  {
         return replenishmentResponse;
     }
 
+
     public BuyQtyResponse fetchOnlineCcBuyQnty(BuyQtyRequest buyQtyRequest, Integer finelineNbr) {
         BuyQtyResponse buyQtyResponse = new BuyQtyResponse();
-        try {
+            try {
+                BuyQtyResponse stylesCcWithSizesFromStrategy = strategyFetchService.getBuyQtyDetailsForStylesCc(buyQtyRequest,finelineNbr);
 
-            List<BuyQntyResponseDTO> buyQntyResponseDTOS = spCustomerChoiceReplenishmentRepository.getBuyQntyByPlanChannelOnlineFineline(buyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(buyQtyRequest.getChannel()),
-                    finelineNbr);
-            Optional.of(buyQntyResponseDTOS)
-                    .stream()
-                    .flatMap(Collection::stream)
-                    .forEach(buyQntyResponseDTO -> buyQuantityMapper
-                            .mapBuyQntyLvl2Sp(buyQntyResponseDTO, buyQtyResponse, finelineNbr));
+                if (stylesCcWithSizesFromStrategy != null) {
+                     List<BuyQntyResponseDTO> buyQntyResponseDTOS = spCustomerChoiceReplenishmentRepository.getBuyQntyByPlanChannelOnlineFineline(buyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(buyQtyRequest.getChannel()),
+                        finelineNbr);
+
+                    buyQtyResponse= buyQtyCommonUtil.filterStylesCcWithSizes(buyQntyResponseDTOS,stylesCcWithSizesFromStrategy,finelineNbr);
+
+                    }
+
+            return buyQtyResponse;
+
         } catch (Exception e) {
-            log.error("Exception While fetching CC Buy Qunatities :", e);
-            throw new CustomException("Failed to fetch CC Buy Qunatities, due to" + e);
+                log.error("Exception While fetching CC Buy Qunatities with Sizes:", e);
+                throw new CustomException("Failed to fetch CC Buy Qunatities with Sizes, due to" + e);
         }
-        log.info("Fetch Buy Qty CC response: {}", buyQtyResponse);
-        return buyQtyResponse;
     }
 
 

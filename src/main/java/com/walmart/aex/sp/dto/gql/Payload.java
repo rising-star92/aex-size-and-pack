@@ -9,4 +9,6 @@ public class Payload {
     private BuyQtyResponse getCcSizeClus;
     private APResponse getRFADataFromSizePack;
     private BuyQtyResponse getAllCcSizeClus;
+    private BuyQtyResponse getFinelinesWithSizeAssociation;
+    private BuyQtyResponse getStylesCCsWithSizeAssociation;
 }

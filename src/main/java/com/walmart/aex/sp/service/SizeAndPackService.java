@@ -9,6 +9,7 @@ import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.properties.GraphQLProperties;
 import com.walmart.aex.sp.repository.*;
+import com.walmart.aex.sp.util.BuyQtyCommonUtil;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,8 @@ public class SizeAndPackService {
 
     private final SizeAndPackDeletePlanService sizeAndPackDeletePlanService;
 
+    private final BuyQtyCommonUtil buyQtyCommonUtil;
+
 
     @ManagedConfiguration
     GraphQLProperties graphQLProperties;
@@ -49,7 +52,9 @@ public class SizeAndPackService {
                               SpCustomerChoiceChannelFixtureRepository spCustomerChoiceChannelFixtureRepository,
                               SizeAndPackObjectMapper sizeAndPackObjectMapper,
                               MerchCatPlanRepository merchCatPlanRepository, StrategyFetchService strategyFetchService,
-                              SpCustomerChoiceChannelFixtureSizeRepository spCustomerChoiceChannelFixtureSizeRepository, SizeAndPackDeleteService sizeAndPackDeleteService, SizeAndPackDeletePlanService sizeAndPackDeletePlanService) {
+                              SpCustomerChoiceChannelFixtureSizeRepository spCustomerChoiceChannelFixtureSizeRepository,
+                              SizeAndPackDeleteService sizeAndPackDeleteService, SizeAndPackDeletePlanService sizeAndPackDeletePlanService
+                              ,BuyQtyCommonUtil buyQtyCommonUtil) {
         this.spFineLineChannelFixtureRepository = spFineLineChannelFixtureRepository;
         this.buyQuantityMapper = buyQuantityMapper;
         this.spCustomerChoiceChannelFixtureRepository = spCustomerChoiceChannelFixtureRepository;
@@ -60,51 +65,56 @@ public class SizeAndPackService {
 
         this.sizeAndPackDeleteService = sizeAndPackDeleteService;
         this.sizeAndPackDeletePlanService = sizeAndPackDeletePlanService;
+        this.buyQtyCommonUtil = buyQtyCommonUtil;
     }
 
     public BuyQtyResponse fetchFinelineBuyQnty(BuyQtyRequest buyQtyRequest) {
         BuyQtyResponse buyQtyResponse = new BuyQtyResponse();
         try {
-            List<BuyQntyResponseDTO> buyQntyResponseDTOS;
-            if (buyQtyRequest.getChannel() != null) {
-                buyQntyResponseDTOS = spFineLineChannelFixtureRepository
-                        .getBuyQntyByPlanChannel(buyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(buyQtyRequest.getChannel())); }
-            else buyQntyResponseDTOS = spFineLineChannelFixtureRepository
-                    .getBuyQntyByPlanChannel(buyQtyRequest.getPlanId(), null);
-            Optional.of(buyQntyResponseDTOS)
-                    .stream()
-                    .flatMap(Collection::stream)
-                    .forEach(buyQntyResponseDTO -> buyQuantityMapper
-                            .mapBuyQntyLvl2Sp(buyQntyResponseDTO, buyQtyResponse, null));
+            BuyQtyResponse finelinesWithSizesFromStrategy = strategyFetchService.getBuyQtyDetailsForFinelines(buyQtyRequest);
+
+            if (finelinesWithSizesFromStrategy != null) {
+                List<BuyQntyResponseDTO> buyQntyResponseDTOS;
+                if (buyQtyRequest.getChannel() != null) {
+                    buyQntyResponseDTOS = spFineLineChannelFixtureRepository
+                            .getBuyQntyByPlanChannel(buyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(buyQtyRequest.getChannel()));
+                } else {
+                    buyQntyResponseDTOS = spFineLineChannelFixtureRepository
+                            .getBuyQntyByPlanChannel(buyQtyRequest.getPlanId(), null);
+                }
+
+                buyQtyResponse= buyQtyCommonUtil.filterFinelinesWithSizes(buyQntyResponseDTOS,finelinesWithSizesFromStrategy);
+
+            }
+            return buyQtyResponse;
+
         } catch (Exception e) {
-            log.error("Exception While fetching Fineline Buy Qunatities :", e);
-            throw new CustomException("Failed to fetch Fineline Buy Qunatities, due to" + e);
+            log.error("Exception While fetching Fineline Buy Qunatities with Sizes :", e);
+            throw new CustomException("Failed to fetch Fineline Buy Qunatities with Sizes, due to" + e);
         }
-        log.info("Fetch Buy Qty Fineline response: {}", buyQtyRequest);
-        return buyQtyResponse;
     }
 
     public BuyQtyResponse fetchCcBuyQnty(BuyQtyRequest buyQtyRequest, Integer finelineNbr) {
         BuyQtyResponse buyQtyResponse = new BuyQtyResponse();
         try {
+            BuyQtyResponse stylesCcWithSizesFromStrategy = strategyFetchService.getBuyQtyDetailsForStylesCc(buyQtyRequest,finelineNbr);
 
-            List<BuyQntyResponseDTO> buyQntyResponseDTOS;
-            if (buyQtyRequest.getChannel() != null) {
-                buyQntyResponseDTOS = spCustomerChoiceChannelFixtureRepository
-                        .getBuyQntyByPlanChannelFineline(buyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(buyQtyRequest.getChannel()), finelineNbr); }
-            else buyQntyResponseDTOS = spCustomerChoiceChannelFixtureRepository
-                    .getBuyQntyByPlanChannelFineline(buyQtyRequest.getPlanId(), null, finelineNbr);
-            Optional.of(buyQntyResponseDTOS)
-                    .stream()
-                    .flatMap(Collection::stream)
-                    .forEach(buyQntyResponseDTO -> buyQuantityMapper
-                            .mapBuyQntyLvl2Sp(buyQntyResponseDTO, buyQtyResponse, finelineNbr));
+            if (stylesCcWithSizesFromStrategy != null) {
+                List<BuyQntyResponseDTO> buyQntyResponseDTOS;
+                if (buyQtyRequest.getChannel() != null) {
+                    buyQntyResponseDTOS = spCustomerChoiceChannelFixtureRepository
+                            .getBuyQntyByPlanChannelFineline(buyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(buyQtyRequest.getChannel()), finelineNbr);
+                } else buyQntyResponseDTOS = spCustomerChoiceChannelFixtureRepository
+                        .getBuyQntyByPlanChannelFineline(buyQtyRequest.getPlanId(), null, finelineNbr);
+
+                buyQtyResponse= buyQtyCommonUtil.filterStylesCcWithSizes(buyQntyResponseDTOS,stylesCcWithSizesFromStrategy,finelineNbr);
+            }
+            return buyQtyResponse;
+
         } catch (Exception e) {
-            log.error("Exception While fetching CC Buy Qunatities :", e);
-            throw new CustomException("Failed to fetch CC Buy Qunatities, due to" + e);
+            log.error("Exception While fetching CC Buy Qunatities with Sizes:", e);
+            throw new CustomException("Failed to fetch CC Buy Qunatities with Sizes, due to" + e);
         }
-        log.info("Fetch Buy Qty CC response: {}", buyQtyResponse);
-        return buyQtyResponse;
     }
 
     public BuyQtyResponse fetchSizeBuyQnty(BuyQtyRequest buyQtyRequest) {
