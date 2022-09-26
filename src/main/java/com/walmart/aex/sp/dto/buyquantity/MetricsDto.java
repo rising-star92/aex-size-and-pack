@@ -17,5 +17,4 @@ public class MetricsDto {
     private Integer warehousePack;
     private Double packRatio;
     private Integer replenishmentPacks;
-
 }
