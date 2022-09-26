@@ -123,37 +123,15 @@ public class PackOptimizationMapper {
 		String storeDetails=finelinePackOptimizationResponseDTO.getStoreObj();
 		List<BuyQuantitiesDto> storeObjectList=new ArrayList<>();
 
-		StoreObjectDto storeObj = new StoreObjectDto() ;
-		MetricsPackDto metricsDto = new MetricsPackDto();
 		try {
 			if(storeDetails!=null) {
-				storeObj = (objectMapper.readValue(storeDetails, StoreObjectDto.class));
+				StoreObjectDto storeObj = (objectMapper.readValue(storeDetails, StoreObjectDto.class));
 				storeObjectList=storeObj.getBuyQuantities();
 			}
 
 			for(BuyQuantitiesDto stObj: storeObjectList)
 			{
-				if(metricsDtoList.size() == 0)
-				{
-					metricsDto.setClusterId(stObj.getSizeCluster());
-					metricsDto.setStoreList(stObj.getStoreList());
-					metricsDto.setInitialSet(stObj.getIsUnits());
-					metricsDto.setFlowStrategyType(FlowStrategy.getFlowStrategyFromId(stObj.getFlowStrategyCode()));
-					if(stObj.getBumpSets().size()!=0) {
-						metricsDto.setBumpSet(stObj.getBumpSets().get(0).getBsUnits());	
-					}
-					metricsDtoList.add(metricsDto);
-				}
-				else
-				{ 
-					metricsDtoList.stream()
-					.filter(metrics -> ((metrics.getClusterId().equals(stObj.getSizeCluster())) && (metrics.getInitialSet().equals(stObj.getIsUnits()))
-							&& (stObj.getFlowStrategyCode() != null)
-							&& (metrics.getFlowStrategyType().equals(FlowStrategy.getFlowStrategyFromId(stObj.getFlowStrategyCode())))
-					)).findFirst()
-					.ifPresentOrElse(metrics ->metrics.getStoreList().addAll(stObj.getStoreList()),
-							()->setMetrics(metricsDtoList,stObj));
-				}	
+				setMetrics(metricsDtoList,stObj);
 			}
 		} catch (JsonProcessingException e) {
 			log.error("Error while parsing the Json: {}",e.getMessage());
@@ -172,10 +150,7 @@ public class PackOptimizationMapper {
 		if(stObj.getBumpSets().size()!=0) {
 			metricsObj.setBumpSet(stObj.getBumpSets().get(0).getBsUnits()); 
 		}
-		metricsDtoList.add(metricsObj); 
-
-
-
+		metricsDtoList.add(metricsObj);
 	}
 
 
