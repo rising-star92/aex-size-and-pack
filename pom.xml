@@ -173,7 +173,7 @@
         <dependency>
             <groupId>com.walmart.aex</groupId>
             <artifactId>aex-security-common</artifactId>
-            <version>1.0.34</version>
+            <version>1.0.35</version>
         </dependency>
     </dependencies>
 
