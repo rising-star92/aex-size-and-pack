@@ -73,6 +73,7 @@ deploy:
           - eus2-dev-a2
       helm:
         values:
+          DYNATRACE_ENABLED: true
           min:
             cpu: 800m
             memory: 600Mi
@@ -85,15 +86,10 @@ deploy:
             max: 1
           metadata:
             labels:
-              wm.app: AEX_SIZE_AND_PACK
-              strati.appkey: AEX_SIZE_AND_PACK
-              strati.env: dev
               ccm.serviceId: AEX_SIZE_AND_PACK
               ccm.serviceConfigVersion: "1.2"
           env:
             JAVA_OPTS: "-Dspring.profiles.active=dev
-                        -Dio.strati.RuntimeContext=io.strati.impl.runtime.context.RuntimeContextEnv
-                        -Druntime.context.appName=AEX_SIZE_AND_PACK
                         -Dccm.configs.dir=/etc/config
                         -Djava.awt.headless=true
                         -Dcom.walmart.platform.config.appName={{$.kitt.build.artifact}}
@@ -112,6 +108,7 @@ deploy:
           - scus-stage-a4
       helm:
         values:
+          DYNATRACE_ENABLED: true
           min:
             cpu: 800m
             memory: 600Mi
@@ -124,15 +121,10 @@ deploy:
             max: 1
           metadata:
             labels:
-              wm.app: AEX_SIZE_AND_PACK
-              strati.appkey: AEX_SIZE_AND_PACK
-              strati.env: stg
               ccm.serviceId: AEX_SIZE_AND_PACK
               ccm.serviceConfigVersion: "1.2"
           env:
             JAVA_OPTS: "-Dspring.profiles.active=stg
-                          -Dio.strati.RuntimeContext=io.strati.impl.runtime.context.RuntimeContextEnv
-                          -Druntime.context.appName=AEX_SIZE_AND_PACK
                           -Dccm.configs.dir=/etc/config
                           -Djava.awt.headless=true
                           -Dcom.walmart.platform.config.appName={{$.kitt.build.artifact}}
@@ -151,6 +143,7 @@ deploy:
           - wus-prod-a91
       helm:
         values:
+          DYNATRACE_ENABLED: true
           min:
             cpu: 800m
             memory: 600Mi
@@ -163,15 +156,10 @@ deploy:
             max: 5
           metadata:
             labels:
-              wm.app: AEX_SIZE_AND_PACK
-              strati.appkey: AEX_SIZE_AND_PACK
-              strati.env: prod
               ccm.serviceId: AEX_SIZE_AND_PACK
               ccm.serviceConfigVersion: "1.0-prod"
           env:
             JAVA_OPTS: "-Dspring.profiles.active=prod
-                          -Dio.strati.RuntimeContext=io.strati.impl.runtime.context.RuntimeContextEnv
-                          -Druntime.context.appName=AEX_SIZE_AND_PACK
                           -Dccm.configs.dir=/etc/config
                           -Djava.awt.headless=true
                           -Dcom.walmart.platform.config.appName={{$.kitt.build.artifact}}
