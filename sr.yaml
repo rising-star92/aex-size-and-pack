@@ -23,6 +23,8 @@ applications:
         consumers:
           - applicationKey: AEX-Hub-Capability-Size-And-Pack
             environment: dev
+          - applicationKey: AEX-SIZEANDPACK-LISTENER
+            environment: dev
         consumerIdInfos:
         - consumerId: 19ce2bf5-4c24-4bbf-bee9-84496dd07e3c
           publicKey: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxAhkvFUW65whMUsTbtlKDRBFZrsvSUW8mpA0a1EQ9BN7YoXtwydU6zHNlRZYeSLdgZpFtWmd44Om2t7Q9Kk1sBtQjLshUhgh1dpZGHVPLJD8Y1F8/rCFdWzqiwnDukKznl1gZfswSTuIKHh7cSm66799IYBeRf+gtrggbkc8My8Oa7Zd1sHgtTRzaHHZbu08T0JjyrViyTllFgDZGSqB/I7jkqEAzpQU8uRiXMFzK9KNNNK9TUqo/QhF3B6Adzq/FNNELPrkXdQJ/C3D+Ok2fVLqDyhFdyihLdf54U6g/+cVCGscj+dmpDfvbhGzX1Vk26dgg3ZGm8Z1muRQl76gUwIDAQAB
@@ -35,6 +37,8 @@ applications:
         consumers:
           - applicationKey: AEX-Hub-Capability-Size-And-Pack
             environment: stage
+          - applicationKey: AEX-SIZEANDPACK-LISTENER
+            environment: stg
         consumerIdInfos:
         - consumerId: 93c617a1-31ec-4333-a819-683ef7514cc0
           publicKey: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2BfPidV+Tpn/tz8iY4xK/gAV7mcA6wK/PwnVMC+FtycgfMiohvnesAVhc3O35HpZo8id9MecwigItXAgFgPv+vxRcBjn+M5mRsmYBxXTHVuGsYP0e9XV6MJSTQ5vJYnzf5BJjDat7y7jLVIHWz32FXwIKa23E1dTIgVpQtoCiIuOGB6Y7RPG2KYXZSuONJMCpkW1iFYoC8GpvRni1UiTRtnhOKESQ7wkfj3nuiK0Hc8a7db53abqngW6SikB8Crp5tIdmlTgJ2dR0CWm0WdBdEvsz5K1dLGSsJQFSlbsPNQnc146CnTHkl+yQQA7xSpvPuPxHQX4aoqFwTWI/M56LQIDAQAB
@@ -46,6 +50,8 @@ applications:
         wcnpProximity: true
         consumers:
           - applicationKey: AEX-Hub-Capability-Size-And-Pack
+            environment: prod
+          - applicationKey: AEX-SIZEANDPACK-LISTENER
             environment: prod
         consumerIdInfos:
         - consumerId: 80eac37e-62ff-4d41-a106-c5bff13827e9
