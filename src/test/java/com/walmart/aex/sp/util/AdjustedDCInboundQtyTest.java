@@ -31,17 +31,20 @@ public class AdjustedDCInboundQtyTest {
 	    @Test
 	    void testUpdatedAdjustedDcInboundQty(){    	
 
-	    	String replenishment="[{\"replnWeek\":null,\"replnWeekDesc\":\"FYE2024WK01\",\"replnUnits\":null,\"adjReplnUnits\":null,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":500}]";
-	    	Double VnpkWhpkRatio=2.0;
-	    	List<Replenishment> replobjectDTO = new ArrayList<>();
+	    	String replenishment="[{\"replnWeek\":null,\"replnWeekDesc\":\"FYE2024WK01\",\"replnUnits\":null,\"adjReplnUnits\":500,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":500}]";
+	    	Double VnpkWhpkRatio=5.0;
 
-	    	adjustedDCInboundQty.updatedAdjustedDcInboundQty(replenishment, VnpkWhpkRatio);
-	    	objectMapper = new ObjectMapper();	
+	    	List<Replenishment> replobjectDTO = new ArrayList<>();
 			try {
+				objectMapper = new ObjectMapper();
 				replobjectDTO = Arrays.asList(objectMapper.readValue(replenishment, Replenishment[].class));
 
 			} catch (JsonProcessingException e) {
 				log.error("Error parsing replenishment object", e);
 			}
+
+	    	adjustedDCInboundQty.updatedAdjustedDcInboundQty(replobjectDTO, VnpkWhpkRatio);
+
+
 	    	assertEquals(500,replobjectDTO.get(0).getDcInboundAdjUnits());
 	    }}

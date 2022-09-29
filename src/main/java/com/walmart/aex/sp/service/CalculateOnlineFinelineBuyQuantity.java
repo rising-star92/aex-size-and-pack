@@ -89,7 +89,7 @@ public class CalculateOnlineFinelineBuyQuantity {
                     .stream()
                     .flatMap(Collection::stream)
                     .filter(clustersDto1 -> clustersDto1.getClusterID().equals(0))
-                    .findFirst().ifPresent(clustersDto -> setReplenishmentSizes(clustersDto, replenishments, storeBuyQtyBySizeId));
+                    .findFirst().ifPresent(clustersDto -> setReplenishmentSizes(clustersDto, replenishments, storeBuyQtyBySizeId,merchMethodsDto));
         }
 
         Set<CcSpMmReplPack> ccSpMmReplPacks = new HashSet<>();
@@ -154,7 +154,7 @@ public class CalculateOnlineFinelineBuyQuantity {
                 .orElse(new ArrayList<>());
     }
 
-    private void setReplenishmentSizes(ClustersDto clustersDto, List<Replenishment> replenishments, Map<SizeDto, BuyQtyObj> storeBuyQtyBySizeId) {
+    private void setReplenishmentSizes(ClustersDto clustersDto, List<Replenishment> replenishments, Map<SizeDto, BuyQtyObj> storeBuyQtyBySizeId,MerchMethodsDto merchMethodsDto) {
         clustersDto.getSizes().forEach(sizeDto -> {
             BuyQtyObj buyQtyObj;
             if (storeBuyQtyBySizeId.containsKey(sizeDto)) {
@@ -173,7 +173,7 @@ public class CalculateOnlineFinelineBuyQuantity {
                 replenishment1.setAdjReplnUnits((long) (getReplenishmentUnits(replenishment) * getAvgSizePct(sizeDto)) / 100);
                 replObj.add(replenishment1);
             });
-            buyQtyObj.setReplenishments(replenishmentsOptimizationServices.getUpdatedReplenishmentsPack(replObj));
+            buyQtyObj.setReplenishments(replenishmentsOptimizationServices.getUpdatedReplenishmentsPack(replObj,merchMethodsDto.getMetrics().getPackRatio()));
         });
     }
 

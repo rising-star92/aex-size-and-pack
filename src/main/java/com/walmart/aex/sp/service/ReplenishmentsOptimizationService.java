@@ -1,8 +1,10 @@
 package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.bqfp.Replenishment;
+import com.walmart.aex.sp.util.AdjustedDCInboundQty;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,12 +12,18 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-@NoArgsConstructor
 public class ReplenishmentsOptimizationService {
 
     public static final Integer MINIMUM_REPLENISHMENT_QUANTITY = 500;
 
-    public List<Replenishment> getUpdatedReplenishmentsPack(List<Replenishment> replenishments) {
+    private final AdjustedDCInboundQty adjustedDCInboundQtyUtil;
+
+    public ReplenishmentsOptimizationService(AdjustedDCInboundQty adjustedDCInboundQtyUtil)
+    {
+        this.adjustedDCInboundQtyUtil = adjustedDCInboundQtyUtil;
+    }
+
+    public List<Replenishment> getUpdatedReplenishmentsPack(List<Replenishment> replenishments, Double vnpkWhpkRatio) {
 
         //get non-zero weeks which are supposed to be adjusted.
         List<Replenishment> nonZeroReplenishmentList = replenishments.stream().filter(replenishment -> replenishment.getAdjReplnUnits() > 0).collect(Collectors.toList());
@@ -26,6 +34,7 @@ public class ReplenishmentsOptimizationService {
 
         //if only 1 week or empty , no operation can be performed.
         if (nonZeroReplenishmentList == null || nonZeroReplenishmentList.isEmpty()|| nonZeroReplenishmentList.size()==1) {
+            replenishments = adjustedDCInboundQtyUtil.updatedAdjustedDcInboundQty(replenishments,vnpkWhpkRatio);
             return replenishments;
         }
 
@@ -86,6 +95,7 @@ public class ReplenishmentsOptimizationService {
                 futureWeekAdjReplnUnitsSum = Math.abs(futureWeekAdjReplnUnitsSum - nonZeroReplenishmentList.get(i).getAdjReplnUnits());
             }
         }
+        replenishments = adjustedDCInboundQtyUtil.updatedAdjustedDcInboundQty(replenishments,vnpkWhpkRatio);
         return replenishments;
     }
 }
