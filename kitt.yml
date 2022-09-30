@@ -61,6 +61,9 @@ deploy:
       stage:
         cnames:
           - aex-size-and-pack.aex.stg.walmart.net
+      prod:
+        cnames:
+          - aex-size-and-pack.aex.prod.walmart.net
   stages:
     - name: dev
       refs:
@@ -70,6 +73,7 @@ deploy:
           - eus2-dev-a2
       helm:
         values:
+          DYNATRACE_ENABLED: true
           min:
             cpu: 800m
             memory: 600Mi
@@ -83,7 +87,7 @@ deploy:
           metadata:
             labels:
               ccm.serviceId: AEX_SIZE_AND_PACK
-              ccm.serviceConfigVersion: "1.1"
+              ccm.serviceConfigVersion: "1.2"
           env:
             JAVA_OPTS: "-Dspring.profiles.active=dev
                         -Dccm.configs.dir=/etc/config
@@ -104,6 +108,7 @@ deploy:
           - scus-stage-a4
       helm:
         values:
+          DYNATRACE_ENABLED: true
           min:
             cpu: 800m
             memory: 600Mi
@@ -117,7 +122,7 @@ deploy:
           metadata:
             labels:
               ccm.serviceId: AEX_SIZE_AND_PACK
-              ccm.serviceConfigVersion: "1.1"
+              ccm.serviceConfigVersion: "1.2"
           env:
             JAVA_OPTS: "-Dspring.profiles.active=stg
                           -Dccm.configs.dir=/etc/config
@@ -135,9 +140,10 @@ deploy:
       target:
         cluster_id:
           - eus2-prod-a10
-          - scus-prod-a19
+          - wus-prod-a91
       helm:
         values:
+          DYNATRACE_ENABLED: true
           min:
             cpu: 800m
             memory: 600Mi
@@ -146,12 +152,12 @@ deploy:
             memory: 800Mi
           scaling:
             cpuPercent: 70
-            min: 1
-            max: 1
+            min: 2
+            max: 5
           metadata:
             labels:
               ccm.serviceId: AEX_SIZE_AND_PACK
-              ccm.serviceConfigVersion: "1.0"
+              ccm.serviceConfigVersion: "1.0-PROD"
           env:
             JAVA_OPTS: "-Dspring.profiles.active=prod
                           -Dccm.configs.dir=/etc/config

@@ -169,6 +169,12 @@
             <artifactId>commons-lang</artifactId>
             <version>2.6</version>
         </dependency>
+        <!-- Security Commons-->
+        <dependency>
+            <groupId>com.walmart.aex</groupId>
+            <artifactId>aex-security-common</artifactId>
+            <version>1.0.35</version>
+        </dependency>
     </dependencies>
 
     <build>
