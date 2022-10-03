@@ -408,7 +408,7 @@ public class CalculateFinelineBuyQuantity {
                 .sum();
     }
 
-    private void updateQtysWithReplenishmentConstraints(Map.Entry<SizeDto, BuyQtyObj> entry) {
+    public void updateQtysWithReplenishmentConstraints(Map.Entry<SizeDto, BuyQtyObj> entry) {
         //TODO: move threshold to CCM
         double replenishmentThreshold = 500.0;
         if ((!CollectionUtils.isEmpty(entry.getValue().getReplenishments()))) {
@@ -430,13 +430,15 @@ public class CalculateFinelineBuyQuantity {
     }
 
     private void moveReplnToInitialSet(Map.Entry<SizeDto, BuyQtyObj> entry) {
+        List<StoreQuantity> splitStoreQtys = new ArrayList<>();
         Comparator<StoreQuantity> sqc = Comparator.comparing(StoreQuantity::getVolumeCluster);
         Comparator<StoreQuantity> sqc2 = Comparator.comparing(StoreQuantity::getSizeCluster);
+        /* If some store clusters have initial set qtys, then only add replenishment to those store clusters.
+           If no store clusters have initial set qty, then populate store clusters until replenishment is depleted */
         List<StoreQuantity> sortedStoreQty = entry.getValue().getBuyQtyStoreObj().getBuyQuantities().stream().sorted(sqc.thenComparing(sqc2)).collect(Collectors.toList());
-
-        List<StoreQuantity> splitStoreQtys = new ArrayList<>();
-        for (StoreQuantity storeQuantity : sortedStoreQty) {
-            if (storeQuantity.getIsUnits() > 0) {
+        List<StoreQuantity> populatedStoreQtys = sortedStoreQty.stream().filter(storeQty -> storeQty.getIsUnits() > 0).collect(Collectors.toList());
+        List<StoreQuantity> storeQtysToUpdate = populatedStoreQtys.isEmpty() ? sortedStoreQty : populatedStoreQtys;
+        for (StoreQuantity storeQuantity : storeQtysToUpdate) {
                 if (entry.getValue().getTotalReplenishment() >= storeQuantity.getStoreList().size()) {
                     updateStoreQuantity(entry, storeQuantity);
                     log.debug("| IS after Replenishment constraints with less replenishment with new IS qty | : {} | {} | {} | {} | {} | {}", storeQuantity.getIsUnits(), storeQuantity.getTotalUnits(),
@@ -465,7 +467,6 @@ public class CalculateFinelineBuyQuantity {
                             storeQuantity.getStoreList().size(), storeQuantity.getVolumeCluster(), storeQuantity.getSizeCluster(), entry.getValue().getTotalReplenishment());
                 } else break;
             }
-        }
         sortedStoreQty.addAll(splitStoreQtys);
         entry.getValue().getBuyQtyStoreObj().setBuyQuantities(sortedStoreQty);
     }
