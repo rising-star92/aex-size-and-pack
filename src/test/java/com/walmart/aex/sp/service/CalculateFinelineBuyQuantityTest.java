@@ -27,10 +27,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
@@ -218,6 +220,49 @@ public class CalculateFinelineBuyQuantityTest {
       assertBumpSetStoreObject(spCCFixSizes, expectedTotalBumpPackQtySize);
    }
 
+   @Test
+   public void moveReplnToInitialSetWhenNoInitialSet()  {
+      SizeDto size48 = size48();
+      String bqoJson = "{\"buyQtyStoreObj\":{\"buyQuantities\":[{\"isUnits\":0,\"totalUnits\":0,\"storeList\":[1,2,3],\"sizeCluster\":1,\"volumeCluster\":1,\"bumpSets\":[],\"flowStrategyCode\":3},{\"isUnits\":0,\"totalUnits\":0,\"storeList\":[4,5],\"sizeCluster\":1,\"volumeCluster\":2,\"bumpSets\":[],\"flowStrategyCode\":3},{\"isUnits\":0,\"totalUnits\":0,\"storeList\":[6,7,8,9,10],\"sizeCluster\":1,\"volumeCluster\":3,\"bumpSets\":[],\"flowStrategyCode\":3}]},\"replenishments\":[{\"replnWeek\":12301,\"replnWeekDesc\":\"FYE2024WK01\",\"replnUnits\":null,\"adjReplnUnits\":5,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null},{\"replnWeek\":12305,\"replnWeekDesc\":\"FYE2024WK05\",\"replnUnits\":null,\"adjReplnUnits\":6,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null},{\"replnWeek\":12309,\"replnWeekDesc\":\"FYE2024WK09\",\"replnUnits\":null,\"adjReplnUnits\":6,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null},{\"replnWeek\":12313,\"replnWeekDesc\":\"FYE2024WK13\",\"replnUnits\":null,\"adjReplnUnits\":6,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null}],\"totalReplenishment\":23}";
+      BuyQtyObj bqo = deserializeBuyQtyObj(bqoJson);
+      Map.Entry<SizeDto, BuyQtyObj> entry = new AbstractMap.SimpleEntry<>(size48, bqo);
+      calculateFinelineBuyQuantity.updateQtysWithReplenishmentConstraints(entry);
+      assertEquals("Entry BuyQtyObj totalReplenishment should be 0", 0, entry.getValue().getTotalReplenishment());
+      assertEquals("Total Units of StoreQuantity IS Units should equal 23", 23.0, entry.getValue()
+            .getBuyQtyStoreObj().getBuyQuantities().stream()
+            .mapToDouble(StoreQuantity::getTotalUnits).sum(), 0.0);
+   }
+
+   @Test
+   public void moveReplnToInitialSetWhenInitialSet() {
+      SizeDto size48 = size48();
+      String bqoJson = "{\"buyQtyStoreObj\":{\"buyQuantities\":[{\"isUnits\":1,\"totalUnits\":3,\"storeList\":[1,2,3],\"sizeCluster\":1,\"volumeCluster\":1,\"bumpSets\":[],\"flowStrategyCode\":3},{\"isUnits\":2,\"totalUnits\":4,\"storeList\":[4,5],\"sizeCluster\":1,\"volumeCluster\":2,\"bumpSets\":[],\"flowStrategyCode\":3},{\"isUnits\":0,\"totalUnits\":0,\"storeList\":[6,7,8,9,10],\"sizeCluster\":1,\"volumeCluster\":3,\"bumpSets\":[],\"flowStrategyCode\":3}]},\"replenishments\":[{\"replnWeek\":12301,\"replnWeekDesc\":\"FYE2024WK01\",\"replnUnits\":null,\"adjReplnUnits\":5,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null},{\"replnWeek\":12305,\"replnWeekDesc\":\"FYE2024WK05\",\"replnUnits\":null,\"adjReplnUnits\":6,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null},{\"replnWeek\":12309,\"replnWeekDesc\":\"FYE2024WK09\",\"replnUnits\":null,\"adjReplnUnits\":6,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null},{\"replnWeek\":12313,\"replnWeekDesc\":\"FYE2024WK13\",\"replnUnits\":null,\"adjReplnUnits\":6,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null}],\"totalReplenishment\":23}";
+      BuyQtyObj bqo = deserializeBuyQtyObj(bqoJson);
+      Map.Entry<SizeDto, BuyQtyObj> entry = new AbstractMap.SimpleEntry<>(size48, bqo);
+      calculateFinelineBuyQuantity.updateQtysWithReplenishmentConstraints(entry);
+      assertEquals("There should be only one StoreQuantity with 0 TotalUnits", 1, entry.getValue().getBuyQtyStoreObj().getBuyQuantities().stream().filter(sq -> sq.getTotalUnits() == 0).count());
+      assertEquals("There should be 2 StoreQuantity with > 0 TotalUnits", 2, entry.getValue().getBuyQtyStoreObj().getBuyQuantities().stream().filter(sq -> sq.getTotalUnits() > 0).count());
+      assertEquals("Total Units of StoreQuantity IS Units should equal 30", 30.0, entry.getValue()
+            .getBuyQtyStoreObj().getBuyQuantities().stream()
+            .mapToDouble(StoreQuantity::getTotalUnits).sum(), 0.0);
+   }
+
+   private SizeDto size48() {
+       return createSize(4042, "48", 0.0, 0.024999);
+   }
+
+   private SizeDto createSize(Integer sizeId, String sizeDesc, Double sizeProfilePct, Double adjSizeProfilePct) {
+      SizeDto size = new SizeDto();
+      size.setSizeId(sizeId);
+      size.setSizeDesc(sizeDesc);
+      size.setMetrics(new MetricsDto());
+      size.getMetrics().setAdjSizeProfilePct(adjSizeProfilePct);
+      size.getMetrics().setSizeProfilePct(sizeProfilePct);
+      return size;
+   }
+
+
+
    public void assertBumpSetStoreObject(Set<SpCustomerChoiceChannelFixtureSize> spCCFixSizes, long expectedTotalBumpPackUnits) {
       List<BumpSetQuantity> bumpSetQuantities = spCCFixSizes.stream()
             .map(SpCustomerChoiceChannelFixtureSize::getStoreObj)
@@ -240,6 +285,16 @@ public class CalculateFinelineBuyQuantityTest {
    private BuyQtyStoreObj deserialize(String json) {
       try {
          return mapper.readValue(json, BuyQtyStoreObj.class);
+      } catch (JsonProcessingException e) {
+         e.printStackTrace();
+         Assert.fail("Something happened deserializing store object");
+      }
+      return null;
+   }
+
+   private BuyQtyObj deserializeBuyQtyObj(String json) {
+      try {
+         return mapper.readValue(json, BuyQtyObj.class);
       } catch (JsonProcessingException e) {
          e.printStackTrace();
          Assert.fail("Something happened deserializing store object");
