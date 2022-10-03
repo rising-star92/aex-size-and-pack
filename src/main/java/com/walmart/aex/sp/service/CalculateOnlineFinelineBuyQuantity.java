@@ -13,7 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
-import java.util.stream.Collectors;
+
+import static com.walmart.aex.sp.util.SizeAndPackConstants.VP_WP_RATIO_DEFAULT;
 
 @Service
 @Slf4j
@@ -89,7 +90,7 @@ public class CalculateOnlineFinelineBuyQuantity {
                     .stream()
                     .flatMap(Collection::stream)
                     .filter(clustersDto1 -> clustersDto1.getClusterID().equals(0))
-                    .findFirst().ifPresent(clustersDto -> setReplenishmentSizes(clustersDto, replenishments, storeBuyQtyBySizeId,merchMethodsDto));
+                    .findFirst().ifPresent(clustersDto -> setReplenishmentSizes(clustersDto, replenishments, storeBuyQtyBySizeId));
         }
 
         Set<CcSpMmReplPack> ccSpMmReplPacks = new HashSet<>();
@@ -154,7 +155,7 @@ public class CalculateOnlineFinelineBuyQuantity {
                 .orElse(new ArrayList<>());
     }
 
-    private void setReplenishmentSizes(ClustersDto clustersDto, List<Replenishment> replenishments, Map<SizeDto, BuyQtyObj> storeBuyQtyBySizeId,MerchMethodsDto merchMethodsDto) {
+    private void setReplenishmentSizes(ClustersDto clustersDto, List<Replenishment> replenishments, Map<SizeDto, BuyQtyObj> storeBuyQtyBySizeId) {
         clustersDto.getSizes().forEach(sizeDto -> {
             BuyQtyObj buyQtyObj;
             if (storeBuyQtyBySizeId.containsKey(sizeDto)) {
@@ -173,7 +174,7 @@ public class CalculateOnlineFinelineBuyQuantity {
                 replenishment1.setAdjReplnUnits((long) (getReplenishmentUnits(replenishment) * getAvgSizePct(sizeDto)) / 100);
                 replObj.add(replenishment1);
             });
-            buyQtyObj.setReplenishments(replenishmentsOptimizationServices.getUpdatedReplenishmentsPack(replObj,merchMethodsDto.getMetrics().getPackRatio()));
+            buyQtyObj.setReplenishments(replenishmentsOptimizationServices.getUpdatedReplenishmentsPack(replObj,VP_WP_RATIO_DEFAULT));
         });
     }
 
