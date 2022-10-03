@@ -13,7 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
-import java.util.stream.Collectors;
+
+import static com.walmart.aex.sp.util.SizeAndPackConstants.VP_WP_RATIO_DEFAULT;
 
 @Service
 @Slf4j
@@ -173,7 +174,7 @@ public class CalculateOnlineFinelineBuyQuantity {
                 replenishment1.setAdjReplnUnits((long) (getReplenishmentUnits(replenishment) * getAvgSizePct(sizeDto)) / 100);
                 replObj.add(replenishment1);
             });
-            buyQtyObj.setReplenishments(replenishmentsOptimizationServices.getUpdatedReplenishmentsPack(replObj));
+            buyQtyObj.setReplenishments(replenishmentsOptimizationServices.getUpdatedReplenishmentsPack(replObj,VP_WP_RATIO_DEFAULT));
         });
     }
 
