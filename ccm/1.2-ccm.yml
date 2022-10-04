@@ -68,16 +68,16 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "13705f9d-3eb8-46b5-b2c1-63a1b569af4c"
-      "midas.header.signatureKeyVersion":
-        description: "Midas api header signature Key Version"
-        type: "STRING"
-        kind: "SINGLE"
-        defaultValue: "1"
       "midas.header.signatureAuthFlag":
         description: "Midas api header signature Auth Flag"
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "true"
+      "midas.header.signatureKeyVersion":
+        description: "Midas api header signature Key Version"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "1"
       "midas.header.signatureTS":
         description: "Midas api header signature TS"
         type: "STRING"
@@ -93,16 +93,11 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "http://midas-data-api.stg.midas-api.catdev.prod.us.walmart.net/api/workflow/v1/execute"
-      "midas.clickhouse.table":
-        description: "midas clickhouse table"
+      "midas.historicalSizeMetricsQuery":
+        description: "JSON query for historical size metrics"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "omni_item_channel_sales_wkly_v4_dist"
-      "midas.header.contentType":
-        description: "Midas api header content type"
-        type: "STRING"
-        kind: "SINGLE"
-        defaultValue: "application/json"
+        defaultValue: '{"query":{"select":[{"field":"*"}],"from":"get_historical_size_metrics_fineline_cc","params":{"finelineNbr":%d,"lyCompWeekStart":%d,"lyCompWeekEnd":%d,"lvl0Nbr":%d,"lvl1Nbr":%d,"lvl2Nbr":%d,"lvl3Nbr":%d,"lvl4Nbr":%d,"channel":"%s"}}}'
   httpConfig:
     description: "HTTP Configurations"
     resolutionPaths:

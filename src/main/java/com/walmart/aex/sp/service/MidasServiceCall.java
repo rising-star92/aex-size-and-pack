@@ -29,6 +29,8 @@ import java.util.Optional;
 @Slf4j
 public class MidasServiceCall {
 
+   private static final String DEFAULT_HISTORICAL_METRICS_QUERY = "{\"query\":{\"select\":[{\"field\":\"*\"}],\"from\":\"get_historical_size_metrics_fineline_cc\",\"params\":{\"finelineNbr\":%d,\"lyCompWeekStart\":%d,\"lyCompWeekEnd\":%d,\"lvl0Nbr\":%d,\"lvl1Nbr\":%d,\"lvl2Nbr\":%d,\"lvl3Nbr\":%d,\"lvl4Nbr\":%d,\"channel\":\"%s\"}}}";
+
    @Autowired
    private RestTemplate restTemplate;
 
@@ -41,7 +43,8 @@ public class MidasServiceCall {
    public HistoricalMetricsResponse fetchHistoricalMetrics(HistoricalMetricsRequest request) {
       HistoricalMetricsResponse response = createDefaultResponse();
       try {
-         final String query = midasProperties.getMidasHistoricalMetricsQuery();
+         final String query = midasProperties.getMidasHistoricalMetricsQuery() == null
+               ? DEFAULT_HISTORICAL_METRICS_QUERY : midasProperties.getMidasHistoricalMetricsQuery();
          final String midasRequest = formatMidasQuery(query, request);
          String url = midasProperties.getMidasApiBaseURL();
          log.info("Invoking Midas API for Create event with URL : {} and query : {}", url, midasRequest);
@@ -62,7 +65,7 @@ public class MidasServiceCall {
                   .findFirst().orElse(new ArrayList<>()));
          }
       } catch (Exception e) {
-         log.error("Exception in Getting Midas Data for the given Input: {}", e.toString());
+         log.error("Exception in fetching historical metrics : {}", e.toString());
       }
       return response;
    }
