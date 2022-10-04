@@ -241,6 +241,7 @@
                         <exclude>com/walmart/aex/sp/Application.class</exclude>
                         <exclude>com/walmart/aex/sp/config/*</exclude>
                         <exclude>com/walmart/aex/sp/dto/*</exclude>
+                        <exclude>com/walmart/aex/sp/dto/**/*</exclude>
                         <exclude>com/walmart/aex/sp/entity/*</exclude>
                         <exclude>com/walmart/aex/sp/exception/*</exclude>
                         <exclude>com/walmart/aex/sp/properties/*</exclude>
