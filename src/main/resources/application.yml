@@ -19,11 +19,11 @@ logging:
   level:
     ROOT: INFO
     org.springframework: INFO
-    com.walmart.aex.line.plan: info
+    com.walmart.aex.sp: info
     org.hibernate.SQL: DEBUG
     #org.hibernate.type: TRACE
   pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} AEX_FLOW_PLAN [%thread] %-5level %logger{36} - %msg%n"
+    console: "%d{yyyy-MM-dd HH:mm:ss} AEX_SIZE_PACK [%thread] %-5level %logger{36} - %msg%n"
 runtime:
   context:
     appVersion: 1.0.0-SNAPSHOT
@@ -58,10 +58,10 @@ logging:
   level:
     ROOT: INFO
     org.springframework: INFO
-    com.walmart.aex.line.plan: info
+    com.walmart.aex.sp: info
     org.hibernate.SQL: DEBUG
   pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} AEX_FLOW_PLAN [%thread] %-5level %logger{36} - %msg%n"
+    console: "%d{yyyy-MM-dd HH:mm:ss} AEX_SIZE_PACK [%thread] %-5level %logger{36} - %msg%n"
 
 
 runtime:
@@ -98,10 +98,10 @@ logging:
   level:
     ROOT: INFO
     org.springframework: INFO
-    com.walmart.aex.line.plan: info
+    com.walmart.aex.sp: info
     org.hibernate.SQL: DEBUG
   pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} AEX_FLOW_PLAN [%thread] %-5level %logger{36} - %msg%n"
+    console: "%d{yyyy-MM-dd HH:mm:ss} AEX_SIZE_PACK [%thread] %-5level %logger{36} - %msg%n"
 
 runtime:
   context:
@@ -137,10 +137,10 @@ logging:
   level:
     ROOT: INFO
     org.springframework: INFO
-    com.walmart.aex.line.plan: info
+    com.walmart.aex.sp: info
     org.hibernate.SQL: DEBUG
   pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} AEX_FLOW_PLAN [%thread] %-5level %logger{36} - %msg%n"
+    console: "%d{yyyy-MM-dd HH:mm:ss} AEX_SIZE_PACK [%thread] %-5level %logger{36} - %msg%n"
 
 
 runtime:
