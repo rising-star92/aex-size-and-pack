@@ -31,12 +31,12 @@
         <sonar.coverage.exclusions>
             **/Application.java,
             **/config/*.java,
+            **/dto/*.java,
             **/dto/**/*.java,
             **/entity/*.java,
-            **/interceptor/*.java,
-            **/midas/model/*.java,
             **/exception/*.java,
-            **/properties/*.java
+            **/properties/*.java,
+            **/repository/*.java
         </sonar.coverage.exclusions>
     </properties>
 
@@ -238,11 +238,14 @@
                 <version>${jacoco.version}</version>
                 <configuration>
                     <excludes>
-                        <exclude>com/walmart/aex/line/plan/Application.class</exclude>
-                        <exclude>com/walmart/aex/line/plan/config/*</exclude>
-                        <exclude>com/walmart/aex/line/plan/dto/*</exclude>
-                        <exclude>com/walmart/aex/line/plan/entity/*</exclude>
-                        <exclude>com/walmart/aex/line/plan/properties/*</exclude>
+                        <exclude>com/walmart/aex/sp/Application.class</exclude>
+                        <exclude>com/walmart/aex/sp/config/*</exclude>
+                        <exclude>com/walmart/aex/sp/dto/*</exclude>
+                        <exclude>com/walmart/aex/sp/dto/**/*</exclude>
+                        <exclude>com/walmart/aex/sp/entity/*</exclude>
+                        <exclude>com/walmart/aex/sp/exception/*</exclude>
+                        <exclude>com/walmart/aex/sp/properties/*</exclude>
+                        <exclude>com/walmart/aex/sp/repository/*</exclude>
                     </excludes>
                 </configuration>
                 <executions>
