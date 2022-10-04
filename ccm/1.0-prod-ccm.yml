@@ -85,8 +85,7 @@ configDefinitions:
   midasConfig:
     description: "Midas Data API Service to Service Authentication"
     resolutionPaths:
-      -
-        default: "/envProfile/envName"
+      - default: "/envProfile/envName"
     properties:
       midas.header.consumer:
         description: "Midas api header consumer Id"
@@ -118,16 +117,11 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "http://midas-data-api.prod.midas-api.catdev.prod.us.walmart.net/api/workflow/v1/execute"
-      "midas.clickhouse.table":
-        description: "midas clickhouse table"
+      "midas.historicalSizeMetricsQuery":
+        description: "JSON query for historical size metrics"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "omni_item_channel_sales_wkly_dist"
-      "midas.header.contentType":
-        description: "Midas api header content type"
-        type: "STRING"
-        kind: "SINGLE"
-        defaultValue: "application/json"
+        defaultValue: '{"query":{"select":[{"field":"*"}],"from":"get_historical_size_metrics_fineline_cc","params":{"finelineNbr":%d,"lyCompWeekStart":%d,"lyCompWeekEnd":%d,"lvl0Nbr":%d,"lvl1Nbr":%d,"lvl2Nbr":%d,"lvl3Nbr":%d,"lvl4Nbr":%d,"channel":"%s"}}}'
   buyQtyConfig:
     description: "Buy Quantity Constants Config"
     resolutionPaths:
