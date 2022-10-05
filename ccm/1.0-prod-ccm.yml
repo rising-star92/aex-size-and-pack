@@ -60,7 +60,7 @@ configDefinitions:
         description: "SP SQL Server DB URL"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "jdbc:sqlserver://us-wm-aex-prod-spo-prod-632b6149-failover-group.database.windows.net:1433;database=us_aex_bq_fp;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;authentication=ActiveDirectoryPassword"
+        defaultValue: "jdbc:sqlserver://us-wm-aex-prod-spo-prod-632b6149-failover-group.database.windows.net:1433;database=us_wm_aex_spo;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;authentication=ActiveDirectoryPassword"
   httpConfig:
     description: "HTTP Configurations"
     resolutionPaths:
