@@ -247,6 +247,15 @@ public class CalculateFinelineBuyQuantityTest {
             .mapToDouble(StoreQuantity::getTotalUnits).sum(), 0.0);
    }
 
+   @Test
+   public void emptyBuyQtyStoreObjProperlyHandled() {
+      String bqoJson = "{\"buyQtyStoreObj\":{\"buyQuantities\":[]},\"replenishments\":[{\"replnWeek\":12301,\"replnWeekDesc\":\"FYE2024WK01\",\"replnUnits\":null,\"adjReplnUnits\":100,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null},{\"replnWeek\":12305,\"replnWeekDesc\":\"FYE2024WK05\",\"replnUnits\":null,\"adjReplnUnits\":100,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null}],\"totalReplenishment\":null}";
+      BuyQtyObj bqo = deserializeBuyQtyObj(bqoJson);
+      Map.Entry<SizeDto, BuyQtyObj> entry = new AbstractMap.SimpleEntry<>(size48(), bqo);
+      calculateFinelineBuyQuantity.updateQtysWithReplenishmentConstraints(entry);
+      assertEquals("Total replenishments should remain 0 because replenishment wasn't distributed", 0, entry.getValue().getTotalReplenishment());
+   }
+
    private SizeDto size48() {
        return createSize(4042, "48", 0.0, 0.024999);
    }

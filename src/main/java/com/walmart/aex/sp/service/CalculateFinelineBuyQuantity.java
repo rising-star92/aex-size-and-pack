@@ -411,12 +411,12 @@ public class CalculateFinelineBuyQuantity {
     public void updateQtysWithReplenishmentConstraints(Map.Entry<SizeDto, BuyQtyObj> entry) {
         //TODO: move threshold to CCM
         double replenishmentThreshold = 500.0;
-        if ((!CollectionUtils.isEmpty(entry.getValue().getReplenishments()))) {
-            entry.getValue().setTotalReplenishment(getTotalReplenishment(entry.getValue().getReplenishments()));
-            if (entry.getValue().getTotalReplenishment() < replenishmentThreshold && entry.getValue().getTotalReplenishment() > 0) {
-                while (entry.getValue().getTotalReplenishment() > 0) {
+        final BuyQtyObj allStoresBuyQty = entry.getValue();
+        if (!CollectionUtils.isEmpty(allStoresBuyQty.getReplenishments()) && !CollectionUtils.isEmpty(allStoresBuyQty.getBuyQtyStoreObj().getBuyQuantities())) {
+            allStoresBuyQty.setTotalReplenishment(getTotalReplenishment(allStoresBuyQty.getReplenishments()));
+            if (allStoresBuyQty.getTotalReplenishment() < replenishmentThreshold && allStoresBuyQty.getTotalReplenishment() > 0) {
+                while (allStoresBuyQty.getTotalReplenishment() > 0)
                     moveReplnToInitialSet(entry);
-                }
             }
         }
     }
