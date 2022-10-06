@@ -13,7 +13,7 @@ public interface FinelinePackOptRepository
         extends JpaRepository<FinelinePlan, FinelinePlanId> {
 
     @Query(value = "SELECT \n" +
-            "new com.walmart.aex.sp.dto.mapper.FineLineMapperDto ( "+
+            "distinct new com.walmart.aex.sp.dto.mapper.FineLineMapperDto ( "+
             "merchCatPlan.merchCatPlanId.planId,\n" +
             "merchCatPlan.merchCatPlanId.channelId ,\n" +
             "merchCatPlan.merchCatPlanId.lvl0Nbr ,\n" +
