@@ -25,6 +25,8 @@ applications:
             environment: dev
           - applicationKey: AEX-SIZEANDPACK-LISTENER
             environment: dev
+          - applicationKey: AEX-COMMITMENT-REPORT-SERVICE
+            environment: dev
         consumerIdInfos:
         - consumerId: 19ce2bf5-4c24-4bbf-bee9-84496dd07e3c
           publicKey: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxAhkvFUW65whMUsTbtlKDRBFZrsvSUW8mpA0a1EQ9BN7YoXtwydU6zHNlRZYeSLdgZpFtWmd44Om2t7Q9Kk1sBtQjLshUhgh1dpZGHVPLJD8Y1F8/rCFdWzqiwnDukKznl1gZfswSTuIKHh7cSm66799IYBeRf+gtrggbkc8My8Oa7Zd1sHgtTRzaHHZbu08T0JjyrViyTllFgDZGSqB/I7jkqEAzpQU8uRiXMFzK9KNNNK9TUqo/QhF3B6Adzq/FNNELPrkXdQJ/C3D+Ok2fVLqDyhFdyihLdf54U6g/+cVCGscj+dmpDfvbhGzX1Vk26dgg3ZGm8Z1muRQl76gUwIDAQAB
@@ -38,6 +40,8 @@ applications:
           - applicationKey: AEX-Hub-Capability-Size-And-Pack
             environment: stage
           - applicationKey: AEX-SIZEANDPACK-LISTENER
+            environment: stg
+          - applicationKey: AEX-COMMITMENT-REPORT-SERVICE
             environment: stg
         consumerIdInfos:
         - consumerId: 93c617a1-31ec-4333-a819-683ef7514cc0
