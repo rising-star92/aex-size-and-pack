@@ -2,7 +2,10 @@ package com.walmart.aex.sp.dto.buyquantity;
 
 import lombok.Data;
 
+import java.util.List;
 import java.util.Objects;
+
+import com.walmart.aex.sp.dto.bqfp.Replenishment;
 
 @Data
 public class SizeDto {
@@ -10,6 +13,7 @@ public class SizeDto {
     private Integer sizeId;
     private String sizeDesc;
     private MetricsDto metrics;
+    private List<Replenishment> replenishments;
 
     @Override
     public boolean equals(Object o) {
