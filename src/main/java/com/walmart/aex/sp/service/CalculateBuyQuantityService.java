@@ -31,7 +31,7 @@ public class CalculateBuyQuantityService {
         this.merchCatgReplPackRepository = merchCatgReplPackRepository;
     }
 
-
+    @Transactional
     public void calculateBuyQuantity(CalculateBuyQtyRequest calculateBuyQtyRequest) {
         List<CalculateBuyQtyParallelRequest> calculateBuyQtyParallelRequests = new ArrayList<>();
         try {
