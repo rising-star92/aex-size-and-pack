@@ -92,7 +92,21 @@ public class CalculateBuyQuantityService {
                     calculateBuyQtyResponse.setMerchCatgReplPacks(merchCatgReplPacks1);
 
                     try {
-                        return calculateFinelineBuyQuantity.calculateFinelineBuyQty(calculateBuyQtyRequest, calculateBuyQtyParallelRequest, calculateBuyQtyResponse);
+
+                        calculateBuyQtyResponse =  calculateFinelineBuyQuantity.calculateFinelineBuyQty(calculateBuyQtyRequest, calculateBuyQtyParallelRequest, calculateBuyQtyResponse);
+
+                        List<SpFineLineChannelFixture> spFineLineChannelFixtures2_ = calculateBuyQtyResponse.getSpFineLineChannelFixtures();
+                        for(SpFineLineChannelFixture s :spFineLineChannelFixtures2_ ){
+                            spFineLineChannelFixtureRepository.save(s);
+                        }
+                        spFineLineChannelFixtureRepository.saveAll(spFineLineChannelFixtures2_);
+                        List<MerchCatgReplPack> merchCatgReplPacks1_ = calculateBuyQtyResponse
+                                .getMerchCatgReplPacks();
+                        //delete orphan repln catg and sub catg
+                        deleteReplnOrphanRecords(merchCatgReplPacks1_);
+                        merchCatgReplPackRepository.saveAll(merchCatgReplPacks1_);
+                        return calculateBuyQtyResponse ;
+
                     } catch (Exception e) {
                         log.error("Failed to get Size profiles: ", e);
                         throw new CustomException("Failed to calculate buy quantity: " + e);
@@ -100,7 +114,7 @@ public class CalculateBuyQuantityService {
                 })
         ).collect(Collectors.toList());
         CompletableFuture.allOf(completableFutures.toArray(new CompletableFuture[calculateBuyQtyParallelRequests.size()]));
-        List<CalculateBuyQtyResponse> calculateBuyQtyResponses = completableFutures
+        completableFutures
                 .stream()
                 .filter(completableFuture1 -> !completableFuture1.isCompletedExceptionally())
                 .map(completableFuture1 -> {
@@ -111,29 +125,12 @@ public class CalculateBuyQuantityService {
                     }
                 })
                 .collect(Collectors.toList());
-        if (completableFutures.size() == calculateBuyQtyParallelRequests.size()) {
-            Set<SpFineLineChannelFixture> spFineLineChannelFixtures2 = calculateBuyQtyResponses
-                    .stream()
-                    .map(CalculateBuyQtyResponse::getSpFineLineChannelFixtures)
-                    .flatMap(Collection::stream)
-                    .collect(Collectors.toSet());
-            spFineLineChannelFixtureRepository.saveAll(spFineLineChannelFixtures2);
-
-            //Save Replenishment
-            Set<MerchCatgReplPack> merchCatgReplPacks1 = calculateBuyQtyResponses
-                    .stream()
-                    .map(CalculateBuyQtyResponse::getMerchCatgReplPacks)
-                    .flatMap(Collection::stream)
-                    .collect(Collectors.toSet());
-
-            //delete orphan repln catg and sub catg
-            deleteReplnOrphanRecords(merchCatgReplPacks1);
-            merchCatgReplPackRepository.saveAll(merchCatgReplPacks1);
-
-        } else throw new CustomException("Not All finelines complted successfully");
+        if (completableFutures.size() != calculateBuyQtyParallelRequests.size()) {
+            throw new CustomException("Not All finelines complted successfully");
+        }
     }
 
-    private void deleteReplnOrphanRecords(Set<MerchCatgReplPack> merchCatgReplPacks) {
+    private void deleteReplnOrphanRecords(List<MerchCatgReplPack> merchCatgReplPacks) {
         if (!CollectionUtils.isEmpty(merchCatgReplPacks)) {
             log.info("Deleting Replenishment Orphan records");
             merchCatgReplPacks.forEach(merchCatgReplPack -> {
