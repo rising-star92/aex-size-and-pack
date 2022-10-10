@@ -31,7 +31,7 @@ public class CalculateBuyQuantityService {
         this.merchCatgReplPackRepository = merchCatgReplPackRepository;
     }
 
-    @Transactional
+
     public void calculateBuyQuantity(CalculateBuyQtyRequest calculateBuyQtyRequest) {
         List<CalculateBuyQtyParallelRequest> calculateBuyQtyParallelRequests = new ArrayList<>();
         try {
@@ -95,16 +95,13 @@ public class CalculateBuyQuantityService {
 
                         calculateBuyQtyResponse =  calculateFinelineBuyQuantity.calculateFinelineBuyQty(calculateBuyQtyRequest, calculateBuyQtyParallelRequest, calculateBuyQtyResponse);
 
-                        List<SpFineLineChannelFixture> spFineLineChannelFixtures2_ = calculateBuyQtyResponse.getSpFineLineChannelFixtures();
-                        for(SpFineLineChannelFixture s :spFineLineChannelFixtures2_ ){
-                            spFineLineChannelFixtureRepository.save(s);
-                        }
-                        spFineLineChannelFixtureRepository.saveAll(spFineLineChannelFixtures2_);
-                        List<MerchCatgReplPack> merchCatgReplPacks1_ = calculateBuyQtyResponse
-                                .getMerchCatgReplPacks();
+                        Set<SpFineLineChannelFixture> spFineLineChannelFixturesSet = calculateBuyQtyResponse.getSpFineLineChannelFixtures().stream().collect(Collectors.toSet());
+                        spFineLineChannelFixtureRepository.saveAll(spFineLineChannelFixturesSet);
+
+                        Set<MerchCatgReplPack> merchCatgReplPacksSet =  calculateBuyQtyResponse.getMerchCatgReplPacks().stream().collect(Collectors.toSet());
                         //delete orphan repln catg and sub catg
-                        deleteReplnOrphanRecords(merchCatgReplPacks1_);
-                        merchCatgReplPackRepository.saveAll(merchCatgReplPacks1_);
+                        deleteReplnOrphanRecords(merchCatgReplPacksSet);
+                        merchCatgReplPackRepository.saveAll(merchCatgReplPacksSet);
                         return calculateBuyQtyResponse ;
 
                     } catch (Exception e) {
@@ -130,7 +127,7 @@ public class CalculateBuyQuantityService {
         }
     }
 
-    private void deleteReplnOrphanRecords(List<MerchCatgReplPack> merchCatgReplPacks) {
+    private void deleteReplnOrphanRecords(Set<MerchCatgReplPack> merchCatgReplPacks) {
         if (!CollectionUtils.isEmpty(merchCatgReplPacks)) {
             log.info("Deleting Replenishment Orphan records");
             merchCatgReplPacks.forEach(merchCatgReplPack -> {

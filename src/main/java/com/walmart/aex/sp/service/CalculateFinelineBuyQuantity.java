@@ -55,7 +55,7 @@ public class CalculateFinelineBuyQuantity {
         BuyQtyResponse buyQtyResponse = getSizeProfiles(calculateBuyQtyRequest, calculateBuyQtyParallelRequest);
         BQFPResponse bqfpResponse = getBqfpResponse(calculateBuyQtyRequest, calculateBuyQtyParallelRequest.getFinelineNbr());
         APResponse apResponse = null;
-        if (ChannelType.STORE.getDescription().equalsIgnoreCase(calculateBuyQtyParallelRequest.getChannel()) && null != bqfpResponse.getVolumeDeviationStrategyLevelSelection()) {
+        if (ChannelType.STORE.getDescription().equalsIgnoreCase(calculateBuyQtyParallelRequest.getChannel()) ) {
             apResponse = getRfaSpResponse(calculateBuyQtyRequest, calculateBuyQtyParallelRequest.getFinelineNbr(), bqfpResponse);
         }
         try {
@@ -526,7 +526,9 @@ public class CalculateFinelineBuyQuantity {
         APRequest apRequest = new APRequest();
         apRequest.setPlanId(calculateBuyQtyRequest.getPlanId());
         apRequest.setFinelineNbr(finelineNbr);
-        apRequest.setVolumeDeviationLevel(VdLevelCode.getVdLevelCodeFromId(bqfpResponse.getVolumeDeviationStrategyLevelSelection().intValue()));
+        if(null != bqfpResponse.getVolumeDeviationStrategyLevelSelection()){
+            apRequest.setVolumeDeviationLevel(VdLevelCode.getVdLevelCodeFromId(bqfpResponse.getVolumeDeviationStrategyLevelSelection().intValue()));
+        }
 
         try {
             return strategyFetchService.getAPRunFixtureAllocationOutput(apRequest);
