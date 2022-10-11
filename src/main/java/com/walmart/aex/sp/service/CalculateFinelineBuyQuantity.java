@@ -526,7 +526,9 @@ public class CalculateFinelineBuyQuantity {
         APRequest apRequest = new APRequest();
         apRequest.setPlanId(calculateBuyQtyRequest.getPlanId());
         apRequest.setFinelineNbr(finelineNbr);
-        apRequest.setVolumeDeviationLevel(VdLevelCode.getVdLevelCodeFromId(bqfpResponse.getVolumeDeviationStrategyLevelSelection().intValue()));
+        if(null != bqfpResponse.getVolumeDeviationStrategyLevelSelection()){
+            apRequest.setVolumeDeviationLevel(VdLevelCode.getVdLevelCodeFromId(bqfpResponse.getVolumeDeviationStrategyLevelSelection().intValue()));
+        }
 
         try {
             return strategyFetchService.getAPRunFixtureAllocationOutput(apRequest);
