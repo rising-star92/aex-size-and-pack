@@ -33,7 +33,7 @@ deploy:
   helm:
     values:
       env:
-        GOOGLE_APPLICATION_CREDENTIALS: /etc/secrets/assortproduct_creds.json
+        GOOGLE_APPLICATION_CREDENTIALS: /etc/secrets/gcp_creds.json
       secrets:
         files:
           - destination: /sql.username.txt
@@ -42,8 +42,8 @@ deploy:
             content: aex-size-and-pack/{{ $.kittExec.currentCluster.profile }}#sqlServer.password
           - destination: /midasApi.authorization.txt
             content: aex-size-and-pack/{{ $.kittExec.currentCluster.profile }}#midasApi.authorization
-          - destination: /assortproduct_creds.json
-            content: aex-assortproduct-service/{{ $.kittExec.currentCluster.profile }}#assortproduct_creds
+          - destination: /gcp_creds.json
+            content: aex-size-and-pack/{{ $.kittExec.currentCluster.profile }}#gcp_creds
       livenessProbe:
         wait: 120
         path: "/actuator/health"
