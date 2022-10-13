@@ -175,26 +175,6 @@ public class IntegrationHubService {
         return analyticsMlSendSet;
     }
 
-    private  String getFirstName(String fullName) {
-        if (fullName != null) {
-            int index = fullName.lastIndexOf(" ");
-            if (index > -1) {
-                return fullName.substring(0, index);
-            }
-        }
-        return fullName;
-    }
-
-    private  String getLastName(String fullName) {
-        if (fullName != null) {
-            int index = fullName.lastIndexOf(" ");
-            if (index > -1) {
-                return fullName.substring(index + 1, fullName.length());
-            }
-        }
-        return fullName;
-    }
-
     private Date getStartDate(String startDateStr) {
         Date date = null;
         if (startDateStr != null && !startDateStr.isEmpty()) {
