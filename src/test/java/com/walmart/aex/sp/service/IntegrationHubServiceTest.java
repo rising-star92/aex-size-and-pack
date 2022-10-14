@@ -9,9 +9,11 @@ import com.walmart.aex.sp.dto.packoptimization.RunPackOptRequest;
 import com.walmart.aex.sp.dto.packoptimization.RunPackOptResponse;
 import com.walmart.aex.sp.properties.IntegrationHubServiceProperties;
 import com.walmart.aex.sp.repository.AnalyticsMlSendRepository;
+
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -37,6 +39,7 @@ public class IntegrationHubServiceTest {
     @Mock
     private IntegrationHubServiceProperties properties;
 
+    @InjectMocks
     private IntegrationHubService integrationHubService;
 
     @Mock
@@ -50,6 +53,7 @@ public class IntegrationHubServiceTest {
 
     @Test
     public void successResponseReturnsFromIntegrationHub() {
+        MockitoAnnotations.openMocks(this);
         ResponseEntity<IntegrationHubResponseDTO> response = ResponseEntity.status(HttpStatus.OK).body(successResponse());
         when(properties.getUrl()).thenReturn("http://10.22.137.216/api/packopt?scenario=pack_optimization_dataproc");
         when(properties.getSizeAndPackUrl()).thenReturn("http://aex-size-and-pack.aex.dev.walmart.net");
@@ -61,6 +65,7 @@ public class IntegrationHubServiceTest {
     private IntegrationHubResponseDTO successResponse() {
         IntegrationHubResponseDTO integrationHubResponseDTO = new IntegrationHubResponseDTO();
         integrationHubResponseDTO.setWf_running_id("433d3b");
+        integrationHubResponseDTO.setStarted_time("2022-08-04T14:24:17.000Z");
         return integrationHubResponseDTO;
     }
 
