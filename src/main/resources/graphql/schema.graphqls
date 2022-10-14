@@ -329,15 +329,6 @@ type HistoricalMetric {
   lyActualReceiptUnitsPct: Float
 }
 
-input RFAInitialSetQtyRequest{
-	planId: Int!
-	channel: String
-	planDesc: String
-	finelineNbr: Int!
-	styleNbr: String
-	ccId: String
-}
-
 type RFAInitialSetData{
 	rfaInitialSetQtyData: [RFAInitialSetDTO]
 }
