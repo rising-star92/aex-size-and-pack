@@ -8,6 +8,7 @@ type Query {
      getSizeBuyQtyDetails(buyQtyRequest: BuyQtyRequest!): BuyQtyResponse!
      fetchHistoricalMetricsFineline(request: HistoricalMetricsRequest!) : HistoricalMetricsResponse!
      fetchHistoricalMetricsCC(request: HistoricalMetricsRequest!) : HistoricalMetricsResponse!
+     fetchInitialSetByPlanFineline(request: BuyQtyRequest!): BuyQtyResponse!
 }
 
 
@@ -328,3 +329,24 @@ type HistoricalMetric {
   lyActualReceiptUnitsPct: Float
 }
 
+input RFAInitialSetQtyRequest{
+	planId: Int!
+	channel: String
+	planDesc: String
+	finelineNbr: Int!
+	styleNbr: String
+	ccId: String
+}
+
+type RFAInitialSetData{
+	rfaInitialSetQtyData: [RFAInitialSetDTO]
+}
+
+type RFAInitialSetDTO{
+	planAndFineline: String
+	styleNbr: String
+	customerChoice: String
+	merchMethodDesc: String
+	size: String
+	finalInitialSetQty: Int
+}
