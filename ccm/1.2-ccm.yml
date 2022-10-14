@@ -248,6 +248,26 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "dev"
+  bigQueryConfig:
+    description: "Big Query Config to connect with GCP tables"
+    resolutionPaths:
+      - default: "/envProfile/envName"
+    properties:
+      "rfa.projectId":
+        description: "RFA Project ID"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "wmt-e12743607538928aa17e0e22f9"
+      "rfa.datasetName":
+        description: "RFA OUTPUT"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "rfa_output_dev"
+      "rfa.table.sp.packoptimization.output":
+        description: "RFA Output for SP Pack Optimization"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "sp_packoptimization_output"
 configOverrides:
   graphQlConfig:
     - name: "dev"
@@ -333,4 +353,15 @@ configOverrides:
         properties:
           "integrationhub.env": "stage"
           "integrationhub.sizeAndPackBaseUrl": "http://aex-size-and-pack.aex.stg.walmart.net"
-          
+  bigQueryConfig:
+    - name: "stage"
+      description: "Big Query config override for STAGE profile"
+      pathElements:
+        envProfile: "stage"
+        envName: "stage"
+      value:
+        properties:
+          "rfa.projectId": "wmt-e12743607538928aa17e0e22f9"
+          "rfa.datasetName": "rfa_output_dev"
+          "rfa.table.sp.packoptimization.output": "sp_packoptimization_output"
+        
