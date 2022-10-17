@@ -8,6 +8,7 @@ type Query {
      getSizeBuyQtyDetails(buyQtyRequest: BuyQtyRequest!): BuyQtyResponse!
      fetchHistoricalMetricsFineline(request: HistoricalMetricsRequest!) : HistoricalMetricsResponse!
      fetchHistoricalMetricsCC(request: HistoricalMetricsRequest!) : HistoricalMetricsResponse!
+     getInitialAndBumpSetDetails(request: InitialSetPackRequest): InitialSetResponse!
 }
 
 
@@ -67,6 +68,11 @@ input FinelineRequest {
     styles:[StyleRequest]
 }
 
+input InitialSetPackRequest{
+	planId: Int
+	finelineNbr: Int
+}
+
 input StyleRequest {
     styleNbr: String
     customerChoices:[CustomerChoiceRequest]
@@ -74,6 +80,34 @@ input StyleRequest {
 
 input CustomerChoiceRequest {
     ccId: String
+}
+
+type InitialSetResponse{
+	intialSetResponseOne: InitialSetResponseOne
+}
+
+type InitialSetResponseOne{
+	finelineNbr: Int
+	styleId: String
+	initialSetPlan: [InitialSetPlan]
+}
+
+type InitialSetPlan{
+	inStoreWeek: String
+	packDetails: [PackDetails]
+}
+
+type PackDetails{
+	packId: String
+	metrics: [Metrics]
+}
+
+type Metrics{
+	size: String
+	ratio: Int
+	quantity: Int
+	ccId: String
+	merchMethod: String
 }
 
 type StatusResponse {

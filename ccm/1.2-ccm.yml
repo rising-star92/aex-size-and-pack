@@ -263,11 +263,21 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "rfa_output_dev"
+      "rfa.datasetName.stage":
+        description: "RFA OUTPUT"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "rfa_output_stage"
       "rfa.table.sp.packoptimization.output":
         description: "RFA Output for SP Pack Optimization"
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "sp_packoptimization_output"
+      "rfa.table.sp.cc.output":
+        description: "RFA Output for SP Pack Optimization"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "rfa_cc_out_parquet"
 configOverrides:
   graphQlConfig:
     - name: "dev"
@@ -364,4 +374,6 @@ configOverrides:
           "rfa.projectId": "wmt-e12743607538928aa17e0e22f9"
           "rfa.datasetName": "rfa_output_dev"
           "rfa.table.sp.packoptimization.output": "sp_packoptimization_output"
+          "rfa.datasetName.stage": "rfa_output_stage"
+          "rfa.table.sp.cc.output": "rfa_cc_out_parquet"
         

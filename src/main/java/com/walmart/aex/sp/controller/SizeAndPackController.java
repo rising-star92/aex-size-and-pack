@@ -1,12 +1,16 @@
 package com.walmart.aex.sp.controller;
 
 
+import com.walmart.aex.sp.dto.commitmentreport.InitialSetPackRequest;
+import com.walmart.aex.sp.dto.commitmentreport.InitialSetResponse;
 import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDTO;
 import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDeleteDTO;
 import com.walmart.aex.sp.dto.planhierarchy.SizeAndPackResponse;
 import com.walmart.aex.sp.service.SizeAndPackService;
 import com.walmart.aex.sp.util.CommonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -70,6 +74,10 @@ public class SizeAndPackController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
     }
 
+    @QueryMapping
+    public InitialSetResponse getInitialAndBumpSetDetails(@Argument InitialSetPackRequest request) {
+        return sizeAndPackService.getInitialAndBumpSetDetails(request);
+    }
 
 }
 

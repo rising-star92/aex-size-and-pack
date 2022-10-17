@@ -1,12 +1,17 @@
 package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.buyquantity.*;
+import com.walmart.aex.sp.dto.commitmentreport.InitialSetPackRequest;
+import com.walmart.aex.sp.dto.commitmentreport.InitialSetResponse;
+import com.walmart.aex.sp.dto.commitmentreport.InitialSetResponseOne;
+import com.walmart.aex.sp.dto.commitmentreport.RFASizePackDataForCom;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.packoptimization.Fineline;
 import com.walmart.aex.sp.dto.planhierarchy.*;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.exception.CustomException;
+import com.walmart.aex.sp.properties.BigQueryConnectionProperties;
 import com.walmart.aex.sp.properties.GraphQLProperties;
 import com.walmart.aex.sp.repository.*;
 import com.walmart.aex.sp.util.BuyQtyCommonUtil;
@@ -41,7 +46,13 @@ public class SizeAndPackService {
     private final SizeAndPackDeletePlanService sizeAndPackDeletePlanService;
 
     private final BuyQtyCommonUtil buyQtyCommonUtil;
+    
+    private final BigQueryInitialSetPlanService bigQueryInitialSetPlanService;
+    
+    private final InitialSetPlanMapper initialSetPlanMapper;
 
+    @ManagedConfiguration
+	BigQueryConnectionProperties bigQueryConnectionProperties;
 
     @ManagedConfiguration
     GraphQLProperties graphQLProperties;
@@ -54,7 +65,7 @@ public class SizeAndPackService {
                               MerchCatPlanRepository merchCatPlanRepository, StrategyFetchService strategyFetchService,
                               SpCustomerChoiceChannelFixtureSizeRepository spCustomerChoiceChannelFixtureSizeRepository,
                               SizeAndPackDeleteService sizeAndPackDeleteService, SizeAndPackDeletePlanService sizeAndPackDeletePlanService
-            , BuyQtyCommonUtil buyQtyCommonUtil) {
+            , BuyQtyCommonUtil buyQtyCommonUtil, BigQueryInitialSetPlanService bigQueryInitialSetPlanService,InitialSetPlanMapper initialSetPlanMapper) {
         this.spFineLineChannelFixtureRepository = spFineLineChannelFixtureRepository;
         this.buyQuantityMapper = buyQuantityMapper;
         this.spCustomerChoiceChannelFixtureRepository = spCustomerChoiceChannelFixtureRepository;
@@ -66,6 +77,8 @@ public class SizeAndPackService {
         this.sizeAndPackDeleteService = sizeAndPackDeleteService;
         this.sizeAndPackDeletePlanService = sizeAndPackDeletePlanService;
         this.buyQtyCommonUtil = buyQtyCommonUtil;
+        this.bigQueryInitialSetPlanService = bigQueryInitialSetPlanService;
+        this.initialSetPlanMapper = initialSetPlanMapper;
     }
 
     public BuyQtyResponse fetchFinelineBuyQnty(BuyQtyRequest buyQtyRequest) {
@@ -276,5 +289,23 @@ public class SizeAndPackService {
             log.error("Failed to save the line plan events to size and pack database. Error: {}", ex.toString());
         }
     }
+    
+    public InitialSetResponse getInitialAndBumpSetDetails(InitialSetPackRequest request) {
+    	InitialSetResponse initialSetResponse = new InitialSetResponse();
+    	InitialSetResponseOne response = new InitialSetResponseOne();
+		List<RFASizePackDataForCom> rfaSizePackDataForComs = new ArrayList<>();
+		try {
+			if (request.getPlanId() != null && request.getFinelineNbr() != null) {
+				rfaSizePackDataForComs = bigQueryInitialSetPlanService.getInitialAndBumpSetDetails(request);
+			}
+			
+			Optional.of(rfaSizePackDataForComs).stream().flatMap(Collection::stream).forEach(
+					intialSetResponseOne -> initialSetPlanMapper.mapInitialSetPlan(intialSetResponseOne, response,request.getFinelineNbr()));
+			initialSetResponse.setIntialSetResponseOne(response);
+		} catch (Exception e) {
+			log.error("Exception While fetching Initial Set Pack Qunatities :", e);
+		}
 
+		return initialSetResponse;
+	}
 }
