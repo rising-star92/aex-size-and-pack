@@ -1,0 +1,628 @@
+{
+      "planId": 12,
+      "lvl0Nbr": 50000,
+      "lvl1Nbr": 34,
+      "lvl2Nbr": 6419,
+      "lvl3List": [
+        {
+          "lvl3Nbr": 12228,
+          "lvl4List": [
+            {
+              "lvl4Nbr": 31507,
+              "finelines": [
+                {
+                  "finelineNbr": 2818,
+                  "styles": [
+                    {
+                      "styleNbr": "34_2818_4_17_12",
+                      "customerChoices": [
+                        {
+                          "ccId": "34_2818_4_17_12_ARCTC WHT/ARCTC WHT",
+                          "clusters": [
+                            {
+                              "clusterID": 0,
+                              "sizes": [
+                                {
+                                  "ahsSizeId": 230,
+                                  "sizeDesc": "L/XL",
+                                  "metrics": {
+                                    "sizeProfilePct": 0.0,
+                                    "adjSizeProfilePct": 0.0,
+                                    "avgSizeProfilePct": 0.0,
+                                    "adjAvgSizeProfilePct": 0.0
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 231,
+                                  "sizeDesc": "XL",
+                                  "metrics": {
+                                    "sizeProfilePct": 0.0,
+                                    "adjSizeProfilePct": 1.0,
+                                    "avgSizeProfilePct": 0.0,
+                                    "adjAvgSizeProfilePct": 1.0
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 234,
+                                  "sizeDesc": "0X",
+                                  "metrics": {
+                                    "sizeProfilePct": 0.0,
+                                    "adjSizeProfilePct": 0.0,
+                                    "avgSizeProfilePct": 19.49,
+                                    "adjAvgSizeProfilePct": 19.625
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 235,
+                                  "sizeDesc": "1X",
+                                  "metrics": {
+                                    "sizeProfilePct": 0.0,
+                                    "adjSizeProfilePct": 0.0,
+                                    "avgSizeProfilePct": 25.583333333333332,
+                                    "adjAvgSizeProfilePct": 25.583333333333332
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 236,
+                                  "sizeDesc": "2X",
+                                  "metrics": {
+                                    "sizeProfilePct": 0.0,
+                                    "adjSizeProfilePct": 0.0,
+                                    "avgSizeProfilePct": 25.396666666666665,
+                                    "adjAvgSizeProfilePct": 25.396666666666665
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 237,
+                                  "sizeDesc": "3X",
+                                  "metrics": {
+                                    "sizeProfilePct": 0.0,
+                                    "adjSizeProfilePct": 0.0,
+                                    "avgSizeProfilePct": 17.36,
+                                    "adjAvgSizeProfilePct": 17.36
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 238,
+                                  "sizeDesc": "4X",
+                                  "metrics": {
+                                    "sizeProfilePct": 0.0,
+                                    "adjSizeProfilePct": 0.0,
+                                    "avgSizeProfilePct": 8.471666666666666,
+                                    "adjAvgSizeProfilePct": 8.471666666666666
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 239,
+                                  "sizeDesc": "5X",
+                                  "metrics": {
+                                    "sizeProfilePct": 0.0,
+                                    "adjSizeProfilePct": 0.0,
+                                    "avgSizeProfilePct": 3.703333333333333,
+                                    "adjAvgSizeProfilePct": 3.703333333333333
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "clusterID": 1,
+                              "sizes": [
+                                {
+                                  "ahsSizeId": 230,
+                                  "sizeDesc": "L/XL",
+                                  "metrics": {
+                                    "sizeProfilePct": 0.0,
+                                    "adjSizeProfilePct": 0.0,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 231,
+                                  "sizeDesc": "XL",
+                                  "metrics": {
+                                    "sizeProfilePct": 0.0,
+                                    "adjSizeProfilePct": 1.0,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 234,
+                                  "sizeDesc": "0X",
+                                  "metrics": {
+                                    "sizeProfilePct": 19.26,
+                                    "adjSizeProfilePct": 20.07,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 235,
+                                  "sizeDesc": "1X",
+                                  "metrics": {
+                                    "sizeProfilePct": 22.15,
+                                    "adjSizeProfilePct": 22.15,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 236,
+                                  "sizeDesc": "2X",
+                                  "metrics": {
+                                    "sizeProfilePct": 23.19,
+                                    "adjSizeProfilePct": 23.19,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 237,
+                                  "sizeDesc": "3X",
+                                  "metrics": {
+                                    "sizeProfilePct": 17.69,
+                                    "adjSizeProfilePct": 17.69,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 238,
+                                  "sizeDesc": "4X",
+                                  "metrics": {
+                                    "sizeProfilePct": 10.89,
+                                    "adjSizeProfilePct": 10.89,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 239,
+                                  "sizeDesc": "5X",
+                                  "metrics": {
+                                    "sizeProfilePct": 6.82,
+                                    "adjSizeProfilePct": 6.82,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "clusterID": 2,
+                              "sizes": [
+                                {
+                                  "ahsSizeId": 230,
+                                  "sizeDesc": "L/XL",
+                                  "metrics": {
+                                    "sizeProfilePct": 0.0,
+                                    "adjSizeProfilePct": 0.0,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 231,
+                                  "sizeDesc": "XL",
+                                  "metrics": {
+                                    "sizeProfilePct": 0.0,
+                                    "adjSizeProfilePct": 1.0,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 234,
+                                  "sizeDesc": "0X",
+                                  "metrics": {
+                                    "sizeProfilePct": 18.9,
+                                    "adjSizeProfilePct": 18.9,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 235,
+                                  "sizeDesc": "1X",
+                                  "metrics": {
+                                    "sizeProfilePct": 21.45,
+                                    "adjSizeProfilePct": 21.45,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 236,
+                                  "sizeDesc": "2X",
+                                  "metrics": {
+                                    "sizeProfilePct": 22.16,
+                                    "adjSizeProfilePct": 22.16,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 237,
+                                  "sizeDesc": "3X",
+                                  "metrics": {
+                                    "sizeProfilePct": 17.88,
+                                    "adjSizeProfilePct": 17.88,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 238,
+                                  "sizeDesc": "4X",
+                                  "metrics": {
+                                    "sizeProfilePct": 19.46,
+                                    "adjSizeProfilePct": 19.46,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 239,
+                                  "sizeDesc": "5X",
+                                  "metrics": {
+                                    "sizeProfilePct": 0.17,
+                                    "adjSizeProfilePct": 0.17,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "clusterID": 3,
+                              "sizes": [
+                                {
+                                  "ahsSizeId": 230,
+                                  "sizeDesc": "L/XL",
+                                  "metrics": {
+                                    "sizeProfilePct": 0.0,
+                                    "adjSizeProfilePct": 0.0,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 231,
+                                  "sizeDesc": "XL",
+                                  "metrics": {
+                                    "sizeProfilePct": 0.0,
+                                    "adjSizeProfilePct": 1.0,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 234,
+                                  "sizeDesc": "0X",
+                                  "metrics": {
+                                    "sizeProfilePct": 6.4,
+                                    "adjSizeProfilePct": 6.4,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 235,
+                                  "sizeDesc": "1X",
+                                  "metrics": {
+                                    "sizeProfilePct": 23.9,
+                                    "adjSizeProfilePct": 23.9,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 236,
+                                  "sizeDesc": "2X",
+                                  "metrics": {
+                                    "sizeProfilePct": 35.62,
+                                    "adjSizeProfilePct": 35.62,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 237,
+                                  "sizeDesc": "3X",
+                                  "metrics": {
+                                    "sizeProfilePct": 27.05,
+                                    "adjSizeProfilePct": 27.05,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 238,
+                                  "sizeDesc": "4X",
+                                  "metrics": {
+                                    "sizeProfilePct": 4.2,
+                                    "adjSizeProfilePct": 4.2,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 239,
+                                  "sizeDesc": "5X",
+                                  "metrics": {
+                                    "sizeProfilePct": 2.83,
+                                    "adjSizeProfilePct": 2.83,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "clusterID": 4,
+                              "sizes": [
+                                {
+                                  "ahsSizeId": 230,
+                                  "sizeDesc": "L/XL",
+                                  "metrics": {
+                                    "sizeProfilePct": 0.0,
+                                    "adjSizeProfilePct": 0.0,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 231,
+                                  "sizeDesc": "XL",
+                                  "metrics": {
+                                    "sizeProfilePct": 0.0,
+                                    "adjSizeProfilePct": 1.0,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 234,
+                                  "sizeDesc": "0X",
+                                  "metrics": {
+                                    "sizeProfilePct": 28.53,
+                                    "adjSizeProfilePct": 28.53,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 235,
+                                  "sizeDesc": "1X",
+                                  "metrics": {
+                                    "sizeProfilePct": 22.42,
+                                    "adjSizeProfilePct": 22.42,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 236,
+                                  "sizeDesc": "2X",
+                                  "metrics": {
+                                    "sizeProfilePct": 23.47,
+                                    "adjSizeProfilePct": 23.47,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 237,
+                                  "sizeDesc": "3X",
+                                  "metrics": {
+                                    "sizeProfilePct": 21.5,
+                                    "adjSizeProfilePct": 21.5,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 238,
+                                  "sizeDesc": "4X",
+                                  "metrics": {
+                                    "sizeProfilePct": 2.83,
+                                    "adjSizeProfilePct": 2.83,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 239,
+                                  "sizeDesc": "5X",
+                                  "metrics": {
+                                    "sizeProfilePct": 1.26,
+                                    "adjSizeProfilePct": 1.26,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "clusterID": 5,
+                              "sizes": [
+                                {
+                                  "ahsSizeId": 230,
+                                  "sizeDesc": "L/XL",
+                                  "metrics": {
+                                    "sizeProfilePct": 0.0,
+                                    "adjSizeProfilePct": 0.0,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 231,
+                                  "sizeDesc": "XL",
+                                  "metrics": {
+                                    "sizeProfilePct": 0.0,
+                                    "adjSizeProfilePct": 1.0,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 234,
+                                  "sizeDesc": "0X",
+                                  "metrics": {
+                                    "sizeProfilePct": 25.8,
+                                    "adjSizeProfilePct": 25.8,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 235,
+                                  "sizeDesc": "1X",
+                                  "metrics": {
+                                    "sizeProfilePct": 42.73,
+                                    "adjSizeProfilePct": 42.73,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 236,
+                                  "sizeDesc": "2X",
+                                  "metrics": {
+                                    "sizeProfilePct": 25.67,
+                                    "adjSizeProfilePct": 25.67,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 237,
+                                  "sizeDesc": "3X",
+                                  "metrics": {
+                                    "sizeProfilePct": 2.77,
+                                    "adjSizeProfilePct": 2.77,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 238,
+                                  "sizeDesc": "4X",
+                                  "metrics": {
+                                    "sizeProfilePct": 2.08,
+                                    "adjSizeProfilePct": 2.08,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 239,
+                                  "sizeDesc": "5X",
+                                  "metrics": {
+                                    "sizeProfilePct": 0.95,
+                                    "adjSizeProfilePct": 0.95,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "clusterID": 6,
+                              "sizes": [
+                                {
+                                  "ahsSizeId": 230,
+                                  "sizeDesc": "L/XL",
+                                  "metrics": {
+                                    "sizeProfilePct": 0.0,
+                                    "adjSizeProfilePct": 0.0,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 231,
+                                  "sizeDesc": "XL",
+                                  "metrics": {
+                                    "sizeProfilePct": 0.0,
+                                    "adjSizeProfilePct": 1.0,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 234,
+                                  "sizeDesc": "0X",
+                                  "metrics": {
+                                    "sizeProfilePct": 18.05,
+                                    "adjSizeProfilePct": 18.05,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 235,
+                                  "sizeDesc": "1X",
+                                  "metrics": {
+                                    "sizeProfilePct": 20.85,
+                                    "adjSizeProfilePct": 20.85,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 236,
+                                  "sizeDesc": "2X",
+                                  "metrics": {
+                                    "sizeProfilePct": 22.27,
+                                    "adjSizeProfilePct": 22.27,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 237,
+                                  "sizeDesc": "3X",
+                                  "metrics": {
+                                    "sizeProfilePct": 17.27,
+                                    "adjSizeProfilePct": 17.27,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 238,
+                                  "sizeDesc": "4X",
+                                  "metrics": {
+                                    "sizeProfilePct": 11.37,
+                                    "adjSizeProfilePct": 11.37,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                },
+                                {
+                                  "ahsSizeId": 239,
+                                  "sizeDesc": "5X",
+                                  "metrics": {
+                                    "sizeProfilePct": 10.19,
+                                    "adjSizeProfilePct": 10.19,
+                                    "avgSizeProfilePct": null,
+                                    "adjAvgSizeProfilePct": null
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+}
