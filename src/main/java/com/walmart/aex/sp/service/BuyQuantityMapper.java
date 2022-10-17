@@ -145,7 +145,7 @@ public class BuyQuantityMapper {
                         buyQntyResponseDTO.getChannelId().equals(finelineDto.getChannelId())).findFirst()
                 .ifPresentOrElse(finelineDto -> {
                             if (finelineNbr != null) {
-                                finelineDto.setStyles(mapBuyQntyStyleSp(buyQntyResponseDTO, finelineDto, finelineNbr));
+                                finelineDto.setStyles(mapBuyQntyStyleSp(buyQntyResponseDTO, finelineDto));
                             } else updateFineline(buyQntyResponseDTO, finelineDto);
                         },
                         () -> setFinelineSP(buyQntyResponseDTO, finelineDtoList, finelineNbr));
@@ -222,12 +222,12 @@ public class BuyQuantityMapper {
             fineline.setMetrics(metricsDto);
 
         } else {
-            fineline.setStyles(mapBuyQntyStyleSp(buyQntyResponseDTO, fineline, finelineNbr));
+            fineline.setStyles(mapBuyQntyStyleSp(buyQntyResponseDTO, fineline));
         }
         finelineDtoList.add(fineline);
     }
 
-    private List<StyleDto> mapBuyQntyStyleSp(BuyQntyResponseDTO buyQntyResponseDTO, FinelineDto fineline, Integer finelineNbr) {
+    private List<StyleDto> mapBuyQntyStyleSp(BuyQntyResponseDTO buyQntyResponseDTO, FinelineDto fineline) {
         List<StyleDto> styleDtoList = Optional.ofNullable(fineline.getStyles()).orElse(new ArrayList<>());
 
         styleDtoList.stream()
