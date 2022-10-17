@@ -192,6 +192,12 @@
             <artifactId>aex-security-common</artifactId>
             <version>1.0.35</version>
         </dependency>
+
+        <!-- Spring Retry Dependency -->
+        <dependency>
+            <groupId>org.springframework.retry</groupId>
+            <artifactId>spring-retry</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
