@@ -143,6 +143,16 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "https://flow-plan.aex.dev.walmart.net/flow-plan/v1/getBuyQtyFromFlowPlan"
+      "flow.plan.url":
+        description: "URL to get data from Flow Plan"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "https://flow-plan.aex.stg.walmart.net/graphql"
+      "flow.plan.finelineMetricsWeek.query":
+        description: "Query to retrieve bump set in store week"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "query($request:FPMetricsRequest!) { getFPFinelineMetrics(request:$request) {  lvl3List{  lvl4List {  finelines { finelineId finelineName lvl0Nbr lvl1Nbr lvl2Nbr lvl3Nbr lvl4Nbr planId bumpList{ wmYearWeek } } } } } }"
       "bqfp.consumerId":
         description: "BQFP SR Consumer ID"
         type: "STRING"
