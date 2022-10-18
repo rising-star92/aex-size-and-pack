@@ -31,9 +31,6 @@ public class SizeLevelReplenishmentMapperTest {
 	@Mock
 	ReplenishmentResponse replenishmentResponse;
 	
-	@Mock
-	MetricsDto metricsDto;
-	
 	private static final Long planId = 471l;
 	private static final Double PackRation = 3.0;
 
@@ -68,7 +65,7 @@ public class SizeLevelReplenishmentMapperTest {
 	   replenishmentResponseDTO.setFinelineVenderPackCount(12);
 	   replenishmentResponseDTO.setFinelineVnpkWhpkRatio(PackRation);
 	   replenishmentResponseDTO.setFinelineWhsePackCount(2);
-	    MetricsDto metricsDto = new MetricsDto();
+	   MetricsDto metricsDto = new MetricsDto();
 	   metricsDto.setPackRatio(PackRation);
 	   metricsDto.setVendorPack(12);
 	   metricsDto.setWarehousePack(2);
