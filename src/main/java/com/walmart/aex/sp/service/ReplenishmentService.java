@@ -32,6 +32,7 @@ import com.walmart.aex.sp.repository.CcReplnPkConsRepository;
 import com.walmart.aex.sp.repository.CcSpReplnPkConsRepository;
 import com.walmart.aex.sp.repository.FineLineReplenishmentRepository;
 import com.walmart.aex.sp.repository.FinelineReplnPkConsRepository;
+import com.walmart.aex.sp.repository.SizeLevelReplenishmentRepository;
 import com.walmart.aex.sp.repository.SizeListReplenishmentRepository;
 import com.walmart.aex.sp.repository.SpCustomerChoiceReplenishmentRepository;
 import com.walmart.aex.sp.repository.StyleReplnPkConsRepository;
@@ -62,6 +63,8 @@ public class ReplenishmentService  {
     private final ReplenishmentMapper replenishmentMapper;
     private final UpdateReplnConfigMapper updateReplnConfigMapper;
     private final BuyQtyCommonUtil buyQtyCommonUtil;
+    private final SizeLevelReplenishmentMapper sizeLevelReplenishmentMapper;
+    private final SizeLevelReplenishmentRepository sizeLevelReplenishmentRepository;
 
     public ReplenishmentService(FineLineReplenishmentRepository fineLineReplenishmentRepository,
                                 SpCustomerChoiceReplenishmentRepository  spCustomerChoiceReplenishmentRepository,
@@ -76,7 +79,9 @@ public class ReplenishmentService  {
                                 ReplenishmentMapper replenishmentMapper,
                                 UpdateReplnConfigMapper updateReplnConfigMapper,
                                 BuyQuantityMapper buyQuantityMapper,
-                                StrategyFetchService strategyFetchService,BuyQtyCommonUtil buyQtyCommonUtil) {
+                                StrategyFetchService strategyFetchService,BuyQtyCommonUtil buyQtyCommonUtil,
+                                SizeLevelReplenishmentRepository sizeLevelReplenishmentRepository,
+                                SizeLevelReplenishmentMapper sizeLevelReplenishmentMapper) {
         this.fineLineReplenishmentRepository = fineLineReplenishmentRepository;
         this.spCustomerChoiceReplenishmentRepository=spCustomerChoiceReplenishmentRepository;
         this.sizeListReplenishmentRepository=sizeListReplenishmentRepository;
@@ -92,6 +97,8 @@ public class ReplenishmentService  {
         this.buyQuantityMapper = buyQuantityMapper;
         this.strategyFetchService = strategyFetchService;
         this.buyQtyCommonUtil = buyQtyCommonUtil;
+        this.sizeLevelReplenishmentRepository=sizeLevelReplenishmentRepository;
+        this.sizeLevelReplenishmentMapper =sizeLevelReplenishmentMapper;
     }
 
     public ReplenishmentResponse fetchFinelineReplenishment(ReplenishmentRequest replenishmentRequest) {
@@ -175,7 +182,23 @@ public class ReplenishmentService  {
         }
     }
 
-
+	public ReplenishmentResponse fetchSizeListReplenishmentFullHierarchy(ReplenishmentRequest replenishmentRequest) {
+		ReplenishmentResponse replenishmentResponse = new ReplenishmentResponse();
+		Integer finelineNbr = replenishmentRequest.getFinelineNbr();
+		try {
+			List<ReplenishmentResponseDTO> replenishmentResponseDTOS = sizeLevelReplenishmentRepository
+					.getReplnFullHierarchyByPlanFineline(replenishmentRequest.getPlanId(),
+							ChannelType.getChannelIdFromName(replenishmentRequest.getChannel()), finelineNbr);
+			Optional.of(replenishmentResponseDTOS).stream().flatMap(Collection::stream)
+					.forEach(ReplenishmentResponseDTO -> sizeLevelReplenishmentMapper
+							.mapReplenishmentLvl2Sp(ReplenishmentResponseDTO, replenishmentResponse, finelineNbr));
+		} catch (Exception e) {
+			log.error("Exception While fetching size list replenishment full hierarchy :", e);
+			throw new CustomException("Failed to fetch size list replenishment full hierarchy, due to" + e);
+		}
+		log.info("Fetch size list replenishment full hierarchy response: {}", replenishmentResponse);
+		return replenishmentResponse;
+	}
     public ReplenishmentResponse fetchSizeListReplenishment(ReplenishmentRequest replenishmentRequest) {
         ReplenishmentResponse replenishmentResponse = new ReplenishmentResponse();
         String ccId=replenishmentRequest.getCcId();
