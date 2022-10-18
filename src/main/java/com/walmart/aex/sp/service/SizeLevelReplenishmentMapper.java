@@ -78,17 +78,14 @@ public class SizeLevelReplenishmentMapper {
 		if (finelineNbr == null) {
 			List<Lvl4Dto> lvl4DtoList = mapReplenishmentLvl4Sp(replenishmentResponseDTO, lvl3, finelineNbr);
 			MetricsDto metricsDto = buyQuantityMapper.lvl4MetricsAggregateQtys(lvl4DtoList);
-			metricsMethodDtoVnpkWhpkVnpkWhpkRatio(replenishmentResponseDTO,
-					replenishmentResponseDTO.getLvl3VenderPackCount(), replenishmentResponseDTO.getLvl3WhsePackCount(),
-					replenishmentResponseDTO.getLvl3vnpkWhpkRatio());
+			metricsMethodReplenishmentResponseDTO(replenishmentResponseDTO);
 			lvl3.setMetrics(metricsDto);
 			lvl3.setLvl4List(lvl4DtoList);
 		} else {
 			lvl3.setLvl4List(mapReplenishmentLvl4Sp(replenishmentResponseDTO, lvl3, finelineNbr));
 		}
 		lvl3List.add(lvl3);
-
-	}
+	} 
 
 	private List<Lvl4Dto> mapReplenishmentLvl4Sp(ReplenishmentResponseDTO replenishmentResponseDTO, Lvl3Dto lvl3,
 			Integer finelineNbr) {
@@ -106,20 +103,17 @@ public class SizeLevelReplenishmentMapper {
 		Lvl4Dto lvl4 = new Lvl4Dto();
 		lvl4.setLvl4Nbr(replenishmentResponseDTO.getLvl4Nbr());
 		lvl4.setLvl4Desc(replenishmentResponseDTO.getLvl4Desc());
-
+ 
 		if (finelineNbr == null) {
 			List<FinelineDto> finelineDtoList = mapReplenishmentFl(replenishmentResponseDTO, lvl4, finelineNbr);
-			MetricsDto metricsDto = buyQuantityMapper.fineLineMetricsAggregateQtys(finelineDtoList);
-			metricsMethodDtoVnpkWhpkVnpkWhpkRatio(replenishmentResponseDTO,
-					replenishmentResponseDTO.getLvl4VenderPackCount(), replenishmentResponseDTO.getLvl4WhsePackCount(),
-					replenishmentResponseDTO.getLvl4vnpkWhpkRatio());
+		    MetricsDto metricsDto = buyQuantityMapper.fineLineMetricsAggregateQtys(finelineDtoList);
+			metricsMethodReplenishmentResponseDTO(replenishmentResponseDTO);
 			lvl4.setMetrics(metricsDto);
 			lvl4.setFinelines(finelineDtoList);
 		} else {
 			lvl4.setFinelines(mapReplenishmentFl(replenishmentResponseDTO, lvl4, finelineNbr));
 		}
 		lvl4DtoList.add(lvl4);
-
 	}
 
 	private List<FinelineDto> mapReplenishmentFl(ReplenishmentResponseDTO replenishmentResponseDTO, Lvl4Dto lvl4,
@@ -143,10 +137,8 @@ public class SizeLevelReplenishmentMapper {
 		fineline.setFinelineNbr(replenishmentResponseDTO.getFinelineNbr());
 		fineline.setFinelineDesc(replenishmentResponseDTO.getFinelineDesc());
 		fineline.setFinelineAltDesc(replenishmentResponseDTO.getFinelineAltDesc());
-		if (finelineNbr == null) {
-			MetricsDto metricsDto = new MetricsDto();
-			metricsMethodDto(replenishmentResponseDTO, metricsDto);
-			fineline.setMetrics(metricsDto);
+		if (finelineNbr == null) {		
+			fineline.setMetrics(metricsMethodDto(replenishmentResponseDTO));
 		} else {
 			fineline.setStyles(mapReplenishmentStyles(replenishmentResponseDTO, fineline, finelineNbr));
 		}
@@ -171,10 +163,9 @@ public class SizeLevelReplenishmentMapper {
 		StyleDto styleDto = new StyleDto();
 		styleDto.setStyleNbr(replenishmentResponseDTO.getStyleNbr());
 		if (finelineNbr == null) {
-			MetricsDto metricsDto = new MetricsDto();
-			metricsMethodDto(replenishmentResponseDTO, metricsDto);
+			
 			styleDto.setCustomerChoices(mapReplenishmentCc(replenishmentResponseDTO, styleDto, finelineNbr));
-			styleDto.setMetrics(metricsDto);
+			styleDto.setMetrics(metricsMethodDto(replenishmentResponseDTO));
 
 		} else {
 			styleDto.setCustomerChoices(mapReplenishmentCc(replenishmentResponseDTO, styleDto, finelineNbr));
@@ -203,17 +194,13 @@ public class SizeLevelReplenishmentMapper {
 
 		CustomerChoiceDto customerChoiceDto = new CustomerChoiceDto();
 		customerChoiceDto.setCcId(replenishmentResponseDTO.getCcId());
-		if (finelineNbr == null) {
-			MetricsDto metricsDto = new MetricsDto();
-			metricsMethodDto(replenishmentResponseDTO, metricsDto);
-			customerChoiceDto.setMetrics(metricsDto);
-
+		if (finelineNbr == null) {			
+			customerChoiceDto.setMetrics(metricsMethodDto(replenishmentResponseDTO));
 		} else {
 			customerChoiceDto.setMerchMethods(mapMerchMethod(replenishmentResponseDTO, customerChoiceDto));
 		}
 		customerChoiceDtoList.add(customerChoiceDto);
 	}
-
 	private List<MerchMethodsDto> mapMerchMethod(ReplenishmentResponseDTO replenishmentResponseDTO,
 			CustomerChoiceDto customerChoiceDto) {
 		List<MerchMethodsDto> merchMethodsDtoList = Optional.ofNullable(customerChoiceDto.getMerchMethods())
@@ -226,22 +213,15 @@ public class SizeLevelReplenishmentMapper {
 						merchMethodsDto -> merchMethodsDto.setSizes(mapSize(replenishmentResponseDTO, merchMethodsDto)),
 						() -> setMerch(replenishmentResponseDTO, merchMethodsDtoList));
 		return merchMethodsDtoList;
-
 	}
-
 	private void setMerch(ReplenishmentResponseDTO replenishmentResponseDTO,
 			List<MerchMethodsDto> merchMethodsDtoList) {
-
 		MerchMethodsDto merchMethodsDto = new MerchMethodsDto();
 		merchMethodsDto.setMerchMethod(CommonUtil.getMerchMethod(replenishmentResponseDTO.getMerchMethod()));
-		MetricsDto metricsDto = new MetricsDto();
-		metricsMethodDto(replenishmentResponseDTO, metricsDto);
-		merchMethodsDto.setMetrics(metricsDto);
+		merchMethodsDto.setMetrics(metricsMethodDto(replenishmentResponseDTO));
 		merchMethodsDto.setSizes(mapSize(replenishmentResponseDTO, merchMethodsDto));
 		merchMethodsDtoList.add(merchMethodsDto);
-
 	}
-
 	private List<SizeDto> mapSize(ReplenishmentResponseDTO replenishmentResponseDTO, MerchMethodsDto merchMethodsDto) {
 		List<SizeDto> sizeDtoList = Optional.ofNullable(merchMethodsDto.getSizes()).orElse(new ArrayList<>());
 
@@ -256,9 +236,8 @@ public class SizeLevelReplenishmentMapper {
 		SizeDto sizeDto = new SizeDto();
 		sizeDto.setAhsSizeId(replenishmentResponseDTO.getAhsSizeId());
 		sizeDto.setSizeDesc(replenishmentResponseDTO.getSizeDesc());
-		MetricsDto metricsDto = new MetricsDto();
-		metricsMethodDto(replenishmentResponseDTO, metricsDto);
-		sizeDto.setMetrics(metricsDto);
+		
+		sizeDto.setMetrics(metricsMethodDto(replenishmentResponseDTO));
 
 		List<Replenishment> replenishmentList = new ArrayList<>();
 		try {
@@ -273,8 +252,8 @@ public class SizeLevelReplenishmentMapper {
 		sizeDto.setReplenishments(replenishmentList);
 		sizeDtoList.add(sizeDto);
 	}
-
-	public MetricsDto metricsMethodDto(ReplenishmentResponseDTO replenishmentResponseDTO, MetricsDto metricsDto) {
+	public MetricsDto metricsMethodDto(ReplenishmentResponseDTO replenishmentResponseDTO) {
+		MetricsDto metricsDto = new MetricsDto();
 		metricsDto.setFinalBuyQty(replenishmentResponseDTO.getCcSpFinalBuyUnits());
 		metricsDto.setFinalReplenishmentQty(replenishmentResponseDTO.getCcSpReplQty());
 		metricsDto.setVendorPack(replenishmentResponseDTO.getCcSpVenderPackCount());
@@ -282,14 +261,11 @@ public class SizeLevelReplenishmentMapper {
 		metricsDto.setPackRatio(replenishmentResponseDTO.getCcSpVnpkWhpkRatio());
 		metricsDto.setReplenishmentPacks(replenishmentResponseDTO.getCcSpReplPack());
 		return metricsDto;
-	}
-
-	public MetricsDto metricsMethodDtoVnpkWhpkVnpkWhpkRatio(ReplenishmentResponseDTO replenishmentResponseDTO,
-			int VenderPackCount, int WhsePackCount, Double VnpkWhpkRatio) {
-		MetricsDto metricsDto = new MetricsDto();
+	} 
+	public void metricsMethodReplenishmentResponseDTO(ReplenishmentResponseDTO replenishmentResponseDTO) {
+		MetricsDto metricsDto = new MetricsDto(); 
 		metricsDto.setVendorPack(replenishmentResponseDTO.getCcSpVenderPackCount());
 		metricsDto.setWarehousePack(replenishmentResponseDTO.getCcSpWhsePackCount());
 		metricsDto.setPackRatio(replenishmentResponseDTO.getCcSpVnpkWhpkRatio());
-		return metricsDto;
 	}
 }

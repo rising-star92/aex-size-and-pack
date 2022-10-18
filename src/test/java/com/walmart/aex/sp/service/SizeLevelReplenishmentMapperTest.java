@@ -10,9 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import com.walmart.aex.sp.dto.buyquantity.FinelineDto;
 import com.walmart.aex.sp.dto.buyquantity.Lvl3Dto;
 import com.walmart.aex.sp.dto.buyquantity.Lvl4Dto;
@@ -28,14 +26,17 @@ public class SizeLevelReplenishmentMapperTest {
 
 	@Mock
 	ReplenishmentResponseDTO replenishmentResponseDTO;
-	
+
 	@Mock
 	BuyQuantityMapper buyQuantityMapper;
-	
+
 	@Mock
 	ReplenishmentResponse replenishmentResponse;
-		
-	private static final Integer finelineNbr = 3470;
+	
+	@Mock
+	MetricsDto metricsDto;
+	
+	//private static final Integer finelineNbr = 2818;
 	private static final Long planId = 471l;
 
 	private static final Integer replPack = 4701;
@@ -50,7 +51,7 @@ public class SizeLevelReplenishmentMapperTest {
 		replenishmentResponseDTO.setChannelId(2);
 		replenishmentResponseDTO.setPlanId(planId);
 		replenishmentResponseDTO.setMerchMethod(1);
-		sizeLevelReplenishmentMapper.mapReplenishmentLvl2Sp(replenishmentResponseDTO, replenishmentResponse, finelineNbr);
+		sizeLevelReplenishmentMapper.mapReplenishmentLvl2Sp(replenishmentResponseDTO, replenishmentResponse, 2818);
 		assertNotNull(replenishmentResponse);
 		assertEquals(replenishmentResponse.getPlanId(), 471l);
 	}
@@ -69,11 +70,11 @@ public class SizeLevelReplenishmentMapperTest {
 	   replenishmentResponseDTO.setLvl4VenderPackCount(12);
 	   replenishmentResponseDTO.setLvl4WhsePackCount(2);
 	   replenishmentResponseDTO.setLvl4vnpkWhpkRatio(PackRation);
-	   replenishmentResponseDTO.setFinelineNbr(finelineNbr);
+	   replenishmentResponseDTO.setFinelineNbr(2818);
 	   replenishmentResponseDTO.setFinelineVenderPackCount(12);
 	   replenishmentResponseDTO.setFinelineVnpkWhpkRatio(PackRation);
 	   replenishmentResponseDTO.setFinelineWhsePackCount(2);
-	   MetricsDto metricsDto = new MetricsDto();
+	    MetricsDto metricsDto = new MetricsDto();
 	   metricsDto.setPackRatio(PackRation);
 	   metricsDto.setVendorPack(12);
 	   metricsDto.setWarehousePack(2);
@@ -82,18 +83,18 @@ public class SizeLevelReplenishmentMapperTest {
 	   Lvl4Dto lvl4List = new Lvl4Dto();
 	   List<FinelineDto> finelineDtoList= new ArrayList<>();
 	   FinelineDto fineLineDto = new FinelineDto();
-	   fineLineDto.setFinelineNbr(finelineNbr);
+	   fineLineDto.setFinelineNbr(null);
 	   fineLineDto.setMetrics(metricsDto);
 	   finelineDtoList.add(fineLineDto);
 	   lvl4List.setLvl4Nbr(31514);
 	   lvl4List.setFinelines(finelineDtoList);
-	   lvl4List.setMetrics(metricsDto);
+	   lvl4List.setMetrics(metricsDto); 
 	   lvl4DtoList.add(lvl4List);
 	   Lvl3Dto lvl3 = new Lvl3Dto();
 	   lvl3.setLvl3Nbr(3074);
 	   lvl3.setMetrics(metricsDto);
 	   lvl3.setLvl4List(lvl4DtoList);
-	   lvl3List.add(lvl3); 
+	   lvl3List.add(lvl3);  
 	   sizeLevelReplenishmentMapper.mapReplenishmentLvl2Sp(replenishmentResponseDTO, replenishmentResponse, null);
 	   assertNotNull(replenishmentResponse);
 	   assertEquals(replenishmentResponse.getPlanId(), 471l);
