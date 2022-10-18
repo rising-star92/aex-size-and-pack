@@ -5,6 +5,7 @@ import com.walmart.aex.sp.dto.historicalmetrics.HistoricalMetricsResponse;
 import com.walmart.aex.sp.dto.midas.MidasResponse;
 import com.walmart.aex.sp.dto.midas.Payload;
 import com.walmart.aex.sp.dto.midas.Result;
+import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.properties.MidasApiProperties;
 import com.walmart.aex.sp.properties.SecretsProperties;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
@@ -15,6 +16,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
@@ -40,6 +44,7 @@ public class MidasServiceCall {
    @Autowired
    SecretsProperties secretsProperties;
 
+   @Retryable(backoff = @Backoff(delay = 1000))
    public HistoricalMetricsResponse fetchHistoricalMetrics(HistoricalMetricsRequest request) {
       HistoricalMetricsResponse response = createDefaultResponse();
       try {
@@ -65,8 +70,15 @@ public class MidasServiceCall {
                   .findFirst().orElse(new ArrayList<>()));
          }
       } catch (Exception e) {
-         log.error("Exception in fetching historical metrics : {}", e.toString());
+         throw new CustomException("Exception in fetching historical metrics: " + e);
       }
+      return response;
+   }
+
+   @Recover
+   public HistoricalMetricsResponse recover(Exception e, HistoricalMetricsRequest request) {
+      HistoricalMetricsResponse response = createDefaultResponse();
+      log.error("Failed midas call after 3 retries for historical metrics : ", e);
       return response;
    }
 
