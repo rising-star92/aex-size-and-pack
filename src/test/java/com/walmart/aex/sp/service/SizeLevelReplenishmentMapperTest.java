@@ -2,10 +2,8 @@ package com.walmart.aex.sp.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -36,11 +34,7 @@ public class SizeLevelReplenishmentMapperTest {
 	@Mock
 	MetricsDto metricsDto;
 	
-	//private static final Integer finelineNbr = 2818;
 	private static final Long planId = 471l;
-
-	private static final Integer replPack = 4701;
-	private static final Integer finalBQY = 76064;
 	private static final Double PackRation = 3.0;
 
 	@Test

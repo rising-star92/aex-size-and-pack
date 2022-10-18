@@ -78,10 +78,9 @@ public class SizeLevelReplenishmentMapper {
 		if (finelineNbr == null) {
 			List<Lvl4Dto> lvl4DtoList = mapReplenishmentLvl4Sp(replenishmentResponseDTO, lvl3, finelineNbr);
 			MetricsDto metricsDto = buyQuantityMapper.lvl4MetricsAggregateQtys(lvl4DtoList);
-			metricsMethodReplenishmentResponseDTO(replenishmentResponseDTO);
 			lvl3.setMetrics(metricsDto);
 			lvl3.setLvl4List(lvl4DtoList);
-		} else {
+		} else { 
 			lvl3.setLvl4List(mapReplenishmentLvl4Sp(replenishmentResponseDTO, lvl3, finelineNbr));
 		}
 		lvl3List.add(lvl3);
@@ -107,7 +106,6 @@ public class SizeLevelReplenishmentMapper {
 		if (finelineNbr == null) {
 			List<FinelineDto> finelineDtoList = mapReplenishmentFl(replenishmentResponseDTO, lvl4, finelineNbr);
 		    MetricsDto metricsDto = buyQuantityMapper.fineLineMetricsAggregateQtys(finelineDtoList);
-			metricsMethodReplenishmentResponseDTO(replenishmentResponseDTO);
 			lvl4.setMetrics(metricsDto);
 			lvl4.setFinelines(finelineDtoList);
 		} else {
@@ -262,10 +260,4 @@ public class SizeLevelReplenishmentMapper {
 		metricsDto.setReplenishmentPacks(replenishmentResponseDTO.getCcSpReplPack());
 		return metricsDto;
 	} 
-	public void metricsMethodReplenishmentResponseDTO(ReplenishmentResponseDTO replenishmentResponseDTO) {
-		MetricsDto metricsDto = new MetricsDto(); 
-		metricsDto.setVendorPack(replenishmentResponseDTO.getCcSpVenderPackCount());
-		metricsDto.setWarehousePack(replenishmentResponseDTO.getCcSpWhsePackCount());
-		metricsDto.setPackRatio(replenishmentResponseDTO.getCcSpVnpkWhpkRatio());
-	}
-}
+} 
