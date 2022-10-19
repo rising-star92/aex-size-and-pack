@@ -8,7 +8,7 @@ type Query {
      getSizeBuyQtyDetails(buyQtyRequest: BuyQtyRequest!): BuyQtyResponse!
      fetchHistoricalMetricsFineline(request: HistoricalMetricsRequest!) : HistoricalMetricsResponse!
      fetchHistoricalMetricsCC(request: HistoricalMetricsRequest!) : HistoricalMetricsResponse!
-     getInitialAndBumpSetDetails(request: InitialSetPackRequest): InitialSetResponse!
+     getInitialAndBumpSetDetails(request: InitialSetPackRequest): InitialSetResponseOne!
 }
 
 

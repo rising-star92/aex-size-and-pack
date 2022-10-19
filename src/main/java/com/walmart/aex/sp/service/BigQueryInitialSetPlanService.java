@@ -13,7 +13,7 @@ import com.google.cloud.bigquery.BigQueryOptions;
 import com.google.cloud.bigquery.QueryJobConfiguration;
 import com.google.cloud.bigquery.TableResult;
 import com.walmart.aex.sp.dto.commitmentreport.InitialSetPackRequest;
-import com.walmart.aex.sp.dto.commitmentreport.RFASizePackDataForCom;
+import com.walmart.aex.sp.dto.commitmentreport.RFAInitialSetBumpSetResponse;
 import com.walmart.aex.sp.properties.BigQueryConnectionProperties;
 
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
@@ -28,8 +28,8 @@ public class BigQueryInitialSetPlanService {
 	@ManagedConfiguration
 	BigQueryConnectionProperties bigQueryConnectionProperties;
 
-	public List<RFASizePackDataForCom> getInitialAndBumpSetDetails(InitialSetPackRequest rfaSizePackRequest) {
-		List<RFASizePackDataForCom> rfaSizePackDataForComs = new ArrayList<>();
+	public List<RFAInitialSetBumpSetResponse> getInitialAndBumpSetDetails(InitialSetPackRequest rfaSizePackRequest) {
+		List<RFAInitialSetBumpSetResponse> rfaInitialSetBumpSetResponses = new ArrayList<>();
 	     try {
 	         String projectId = bigQueryConnectionProperties.getRFAProjectId();
 	         String datasetName = bigQueryConnectionProperties.getRFADataSetNameStage();
@@ -43,25 +43,23 @@ public class BigQueryInitialSetPlanService {
 	         TableResult results = bigQuery.query(queryConfig);
 	         results.iterateAll().forEach(rows -> rows.forEach(row ->{
 	        	 	try {
-						RFASizePackDataForCom rfaSizePackDataForCom = objectMapper.readValue(row.getValue().toString(), RFASizePackDataForCom.class);
-						rfaSizePackDataForComs.add(rfaSizePackDataForCom);
+						RFAInitialSetBumpSetResponse rfaInitialSetBumpSetResponse = objectMapper.readValue(row.getValue().toString(), RFAInitialSetBumpSetResponse.class);
+						rfaInitialSetBumpSetResponses.add(rfaInitialSetBumpSetResponse);
 					} catch (JsonMappingException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						log.error("JsonMappingException \n" + e.getMessage());
 					} catch (JsonProcessingException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						log.error("JsonProcessingException \n" + e.getMessage());
 					}
 	             
 	         }));
 	                
 	         log.info("Query performed successfully.");
 	     }catch (Exception e) {
-	         log.error("Query not performed \n" + e);
+	         log.error("Query not performed \n" + e.getMessage());
 	     }
-	     log.info("results: {}",rfaSizePackDataForComs);
+	     log.info("results: {}",rfaInitialSetBumpSetResponses);
 	   
-	     return rfaSizePackDataForComs;
+	     return rfaInitialSetBumpSetResponses;
 	 }
  
 	  private String getSizePackOptQueryString(String ccTableName, String spTableName,Integer planId,Integer finelineNbr){

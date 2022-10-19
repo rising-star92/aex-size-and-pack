@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class RFASizePackDataForCom {
+public class RFAInitialSetBumpSetResponse {
 	private String style_id;
 	private String in_store_week;
 	private String cc;

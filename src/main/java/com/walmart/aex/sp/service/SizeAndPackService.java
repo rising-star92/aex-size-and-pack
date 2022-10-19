@@ -4,7 +4,7 @@ import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.dto.commitmentreport.InitialSetPackRequest;
 import com.walmart.aex.sp.dto.commitmentreport.InitialSetResponse;
 import com.walmart.aex.sp.dto.commitmentreport.InitialSetResponseOne;
-import com.walmart.aex.sp.dto.commitmentreport.RFASizePackDataForCom;
+import com.walmart.aex.sp.dto.commitmentreport.RFAInitialSetBumpSetResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.packoptimization.Fineline;
@@ -290,22 +290,22 @@ public class SizeAndPackService {
         }
     }
     
-    public InitialSetResponse getInitialAndBumpSetDetails(InitialSetPackRequest request) {
-    	InitialSetResponse initialSetResponse = new InitialSetResponse();
+    public InitialSetResponseOne getInitialAndBumpSetDetails(InitialSetPackRequest request) {
+    	//InitialSetResponse initialSetResponseOne = new InitialSetResponse();
     	InitialSetResponseOne response = new InitialSetResponseOne();
-		List<RFASizePackDataForCom> rfaSizePackDataForComs = new ArrayList<>();
+		List<RFAInitialSetBumpSetResponse> rfaInitialSetBumpSetResponses = new ArrayList<>();
 		try {
 			if (request.getPlanId() != null && request.getFinelineNbr() != null) {
-				rfaSizePackDataForComs = bigQueryInitialSetPlanService.getInitialAndBumpSetDetails(request);
+				rfaInitialSetBumpSetResponses = bigQueryInitialSetPlanService.getInitialAndBumpSetDetails(request);
 			}
 			
-			Optional.of(rfaSizePackDataForComs).stream().flatMap(Collection::stream).forEach(
+			Optional.of(rfaInitialSetBumpSetResponses).stream().flatMap(Collection::stream).forEach(
 					intialSetResponseOne -> initialSetPlanMapper.mapInitialSetPlan(intialSetResponseOne, response,request.getFinelineNbr()));
-			initialSetResponse.setIntialSetResponseOne(response);
+			//initialSetResponseOne.setIntialSetResponseOne(response);
 		} catch (Exception e) {
-			log.error("Exception While fetching Initial Set Pack Qunatities :", e);
+			log.error("Exception While fetching Initial Set Pack Qunatities {}:", e);
 		}
 
-		return initialSetResponse;
+		return response;
 	}
 }
