@@ -147,7 +147,7 @@ configDefinitions:
         description: "URL to get data from Flow Plan"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "https://flow-plan.aex.stg.walmart.net/graphql"
+        defaultValue: "https://flow-plan.aex.dev.walmart.net/graphql"
       "flow.plan.finelineMetricsWeek.query":
         description: "Query to retrieve bump set in store week"
         type: "STRING"
@@ -314,6 +314,7 @@ configOverrides:
         envProfile: "dev"
       value:
         properties:
+          "flow.plan.url": "https://flow-plan.aex.dev.walmart.net/graphql"
           "bqfp.url": "https://flow-plan.aex.dev.walmart.net/flow-plan/v1/getBuyQtyFromFlowPlan"
           "bqfp.consumerId": "19ce2bf5-4c24-4bbf-bee9-84496dd07e3c"
           "bqfp.env": "dev"
@@ -324,6 +325,7 @@ configOverrides:
         envProfile: "stage"
       value:
         properties:
+          "flow.plan.url": "https://flow-plan.aex.stg.walmart.net/graphql"
           "bqfp.url": "https://flow-plan.aex.stg.walmart.net/flow-plan/v1/getBuyQtyFromFlowPlan"
           "bqfp.consumerId": "93c617a1-31ec-4333-a819-683ef7514cc0"
           "bqfp.env": "stg"
