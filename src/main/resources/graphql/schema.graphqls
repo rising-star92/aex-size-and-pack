@@ -8,7 +8,7 @@ type Query {
      getSizeBuyQtyDetails(buyQtyRequest: BuyQtyRequest!): BuyQtyResponse!
      fetchHistoricalMetricsFineline(request: HistoricalMetricsRequest!) : HistoricalMetricsResponse!
      fetchHistoricalMetricsCC(request: HistoricalMetricsRequest!) : HistoricalMetricsResponse!
-     fetchInitialSetByPlanFineline(request: BuyQtyRequest!): BuyQtyResponse!
+     fetchInitialSetBumpPackByPlanFineline(request: BuyQtyRequest!): BuyQtyResponse!
      fetchReplnFullHierarchyByPlanFineline(replenishmentRequest: ReplenishmentRequest!): ReplenishmentResponse!
 }
 
@@ -338,17 +338,4 @@ type HistoricalMetric {
   lyActualSalesUnitsPct: Float
   lyActualReceiptUnits: Int
   lyActualReceiptUnitsPct: Float
-}
-
-type RFAInitialSetData{
-	rfaInitialSetQtyData: [RFAInitialSetDTO]
-}
-
-type RFAInitialSetDTO{
-	planAndFineline: String
-	styleNbr: String
-	customerChoice: String
-	merchMethodDesc: String
-	size: String
-	finalInitialSetQty: Int
 }

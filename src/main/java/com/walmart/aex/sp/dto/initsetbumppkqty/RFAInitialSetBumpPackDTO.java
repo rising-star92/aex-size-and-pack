@@ -1,14 +1,14 @@
-package com.walmart.aex.sp.dto.initialsetqty;
+package com.walmart.aex.sp.dto.initsetbumppkqty;
 
 import lombok.Data;
 
 @Data
-public class RFAInitialSetDTO {
-
+public class RFAInitialSetBumpPackDTO {
 	private String planAndFineline;
 	private String styleNbr;
 	private String customerChoice;
 	private String merchMethodDesc;
 	private String size;
 	private Integer finalInitialSetQty;
+	private Integer bumpPackQty;
 }

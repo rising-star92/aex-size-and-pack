@@ -1,9 +1,9 @@
-package com.walmart.aex.sp.dto.initialsetqty;
+package com.walmart.aex.sp.dto.initsetbumppkqty;
 
 import lombok.Data;
 
 @Data
-public class InitialSetQtyData {
+public class InitialSetBumpPackQtyData {
 	private Long planId;
     private String planDesc;
     private Integer lvl0Nbr;

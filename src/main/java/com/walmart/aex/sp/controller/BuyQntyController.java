@@ -6,7 +6,7 @@ import com.walmart.aex.sp.dto.buyquantity.CalculateBuyQtyRequest;
 import com.walmart.aex.sp.dto.buyquantity.StatusResponse;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.service.CalculateBuyQuantityService;
-import com.walmart.aex.sp.service.InitialSetQtyService;
+import com.walmart.aex.sp.service.InitialSetBumpPackQtyService;
 import com.walmart.aex.sp.service.ReplenishmentService;
 import com.walmart.aex.sp.service.SizeAndPackService;
 import lombok.extern.slf4j.Slf4j;
@@ -26,15 +26,15 @@ public class BuyQntyController {
     private final SizeAndPackService sizeAndPackService;
     private final CalculateBuyQuantityService calculateBuyQuantityService;
     private final ReplenishmentService replenishmentService;
-    private final InitialSetQtyService initialSetQtyService;
+    private final InitialSetBumpPackQtyService initSetBpPkQtyService;
 
 	public BuyQntyController(SizeAndPackService sizeAndPackService,
 			CalculateBuyQuantityService calculateBuyQuantityService, ReplenishmentService replenishmentService,
-			InitialSetQtyService initialSetQtyService) {
+			InitialSetBumpPackQtyService initSetBpPkQtyService) {
 		this.sizeAndPackService = sizeAndPackService;
 		this.calculateBuyQuantityService = calculateBuyQuantityService;
 		this.replenishmentService = replenishmentService;
-		this.initialSetQtyService = initialSetQtyService;
+		this.initSetBpPkQtyService = initSetBpPkQtyService;
 	}
 
     @QueryMapping
@@ -82,7 +82,7 @@ public class BuyQntyController {
     }
     
 	@QueryMapping
-	public BuyQtyResponse fetchInitialSetByPlanFineline(@Argument BuyQtyRequest request) {
-		return initialSetQtyService.getInitialSetByPlanFineline(request);
+	public BuyQtyResponse fetchInitialSetBumpPackByPlanFineline(@Argument BuyQtyRequest request) {
+		return initSetBpPkQtyService.getInitSetBpPkByPlanFineline(request);
 	}
 }
