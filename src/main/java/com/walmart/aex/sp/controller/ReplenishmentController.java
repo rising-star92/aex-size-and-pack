@@ -38,7 +38,11 @@ public class ReplenishmentController {
     {
         return replenishmentService.fetchCcReplenishment(replenishmentRequest);
     }
-
+	@QueryMapping
+	public ReplenishmentResponse fetchReplnFullHierarchyByPlanFineline(
+			@Argument ReplenishmentRequest replenishmentRequest) {
+		return replenishmentService.fetchSizeListReplenishmentFullHierarchy(replenishmentRequest);
+	}
     @QueryMapping
     public ReplenishmentResponse fetchReplnByPlanFinelineStyleCc(@Argument ReplenishmentRequest replenishmentRequest)
     {
