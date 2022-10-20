@@ -52,7 +52,6 @@ public class PostPackOptimizationServiceTest {
 	CcSpReplnPkConsRepository ccSpReplnPkConsRepository;
 
 	@InjectMocks
-	@Spy
 	ReplenishmentsOptimizationService replenishmentsOptimizationService;
 
 	
@@ -65,7 +64,7 @@ public class PostPackOptimizationServiceTest {
 	Optional<CcSpMmReplPack> optional6;
 	
 	@Test
-	public void testUpdateInitialSetAndBumpPackAty() throws JsonProcessingException {
+	public void testUpdateInitialSetAndBumpPackAty() {
 		
 		 List<CustomerChoices> customerChoices = new ArrayList<>();
 		 List<Fixtures> fixtures = new ArrayList<>();
@@ -115,11 +114,9 @@ public class PostPackOptimizationServiceTest {
 		optional5 = Optional.of(ccMmReplPack);
 		CcSpMmReplPack ccSpMmReplPack = new CcSpMmReplPack();
 		ccSpMmReplPack.setFinalBuyUnits(12000);
-		ccSpMmReplPack.setVnpkWhpkRatio(10.0);
-		ccSpMmReplPack.setReplenObj("[{\"replnWeek\":12244,\"replnWeekDesc\":\"FYE2023WK44\",\"replnUnits\":null,\"adjReplnUnits\":3500,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null},{\"replnWeek\":12245,\"replnWeekDesc\":\"FYE2023WK45\",\"replnUnits\":null,\"adjReplnUnits\":3500,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null}]");
+		ccSpMmReplPack.setReplenObj("[{\"replnWeek\":12244,\"replnWeekDesc\":\"FYE2023WK44\",\"replnUnits\":null,\"adjReplnUnits\":4000,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null},{\"replnWeek\":12245,\"replnWeekDesc\":\"FYE2023WK45\",\"replnUnits\":null,\"adjReplnUnits\":4000,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null}]");
+		ccSpMmReplPack.setVnpkWhpkRatio(2.0);
 		optional6 = Optional.of(ccSpMmReplPack);
-
-		objectMapper = new ObjectMapper();
 		Mockito.when(finelineReplnPkConsRepository.findByPlanIdAndFinelineNbr(471l, 1021)).thenReturn(optional);
 		Mockito.when(merchCatgReplPackRepository.findByPlanIdAndFinelineNbr(471l, 1021)).thenReturn(optional1);
 		Mockito.when(subCatgReplnPkConsRepository.findByPlanIdAndFinelineNbr(471l, 1021)).thenReturn(optional2);
@@ -127,6 +124,7 @@ public class PostPackOptimizationServiceTest {
 		Mockito.when(styleReplnPkConsRepository.findByPlanIdAndCCId(471l, 1021,"34_1021_2_21_2_AURA ORANGE STENCIL")).thenReturn(optional4);
 		Mockito.when(ccMmReplnPkConsRepository.findCcMmReplnPkConsData(471l, 1021,"34_1021_2_21_2_AURA ORANGE STENCIL",1,2)).thenReturn(optional5);
 		Mockito.when(ccSpReplnPkConsRepository.findCcSpMmReplnPkConsData(471l, 1021,"34_1021_2_21_2_AURA ORANGE STENCIL",1,2,"SMALL")).thenReturn(optional6);
+		objectMapper = new ObjectMapper();
 		postPackOptimizationService = new PostPackOptimizationService(merchCatgReplPackRepository,finelineReplnPkConsRepository,subCatgReplnPkConsRepository,styleReplnPkConsRepository,ccReplnPkConsRepository,ccMmReplnPkConsRepository,ccSpReplnPkConsRepository,objectMapper,replenishmentsOptimizationService);
 		postPackOptimizationService.updateInitialSetAndBumpPackAty(471l, 1021, isAndBPQtyDTO);
 
