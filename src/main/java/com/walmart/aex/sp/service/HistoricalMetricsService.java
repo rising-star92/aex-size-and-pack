@@ -35,10 +35,8 @@ public class HistoricalMetricsService {
    public HistoricalMetricsResponse fetchHistoricalMetricsFineline(HistoricalMetricsRequest request) {
       try {
          Integer channelId = ChannelType.getChannelIdFromName(request.getChannel());
-         RfaWeeksResponse rfaWeeksResponse = weeksService.getWeeks(channelId, request.getFinelineNbr(),
-                 request.getPlanId(),
-                 request.getLvl3Nbr(),
-                 request.getLvl4Nbr());
+         RfaWeeksResponse rfaWeeksResponse = weeksService.getWeeks(channelId, request.getFinelineNbr(), request.getPlanId(), request.getLvl3Nbr(), request.getLvl4Nbr());
+
          if(Objects.nonNull(rfaWeeksResponse)){
             WeeksDTO inStoreWeek = rfaWeeksResponse.getInStoreWeek();
             WeeksDTO markDownWeek = rfaWeeksResponse.getMarkDownWeek();
