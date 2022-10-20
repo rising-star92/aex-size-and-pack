@@ -6,13 +6,21 @@ import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.properties.BQFPServiceProperties;
 import com.walmart.aex.sp.service.BQFPService;
 import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +29,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 
+@ExtendWith(MockitoExtension.class)
 public class BQFPServiceTest {
 
    @Mock
@@ -29,9 +38,10 @@ public class BQFPServiceTest {
    @Mock
    private BQFPServiceProperties properties;
 
+   @InjectMocks
    private BQFPService bqfpService;
 
-   @Before
+   @BeforeEach
    public void init() {
       MockitoAnnotations.openMocks(this);
       bqfpService = new BQFPService(restTemplate, properties);
@@ -47,16 +57,53 @@ public class BQFPServiceTest {
       assertNotNull(result);
    }
 
-   @Test(expected = CustomException.class)
+   @Test
    public void exceptionThrownWithInvalidURI() {
-      bqfpService.getBuyQuantityUnits(new BQFPRequest(485L, "1", 572));
+
+      Exception exception = assertThrows(CustomException.class, () -> {
+         bqfpService.getBuyQuantityUnits(new BQFPRequest(485L, "1", 572));
+      });
+      String expectedMessage = "Unable to construct BQFP Service endpoint";
+      String actualMessage = exception.getMessage();
+
+      assertTrue(actualMessage.contains(expectedMessage));
    }
 
-   @Test(expected = CustomException.class)
+   @Test
    public void exceptionThrownWhenNonSuccessResponseFromBQFP() {
+      when(properties.getUrl()).thenReturn("https://bqfp.dev/flow-plan/v1/getBuyQuantityFromFlowPlan");
       when(restTemplate.exchange(any(URI.class), eq(HttpMethod.GET), any(), eq(BQFPResponse.class))).thenThrow(new RestClientException("Bad Request"));
-      bqfpService.getBuyQuantityUnits(new BQFPRequest(485L, "1", 572));
+      Exception exception = assertThrows(CustomException.class, () -> {
+         bqfpService.getBuyQuantityUnits(new BQFPRequest(485L, "1", 572));
+      });
+      String expectedMessage = "Unable to reach BQFP Service";
+      String actualMessage = exception.getMessage();
+
+      assertTrue(actualMessage.contains(expectedMessage));
    }
+
+   @Test
+   public void createDefaultConstructorTest() {
+      bqfpService = new BQFPService();
+      assertNotNull(bqfpService);
+   }
+
+   @Test
+   public void createBQFPServiceWithRestTemplateConstructor() {
+      bqfpService = new BQFPService(restTemplate);
+      assertNotNull(bqfpService);
+   }
+
+   @Test
+   public void handleReturnNullTest() {
+      ResponseEntity<BQFPResponse> response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+      when(properties.getUrl()).thenReturn("https://bqfp.dev/flow-plan/v1/getBuyQuantityFromFlowPlan");
+      when(restTemplate.exchange(any(URI.class), eq(HttpMethod.GET), any(), eq(BQFPResponse.class))).thenReturn(response);
+      BQFPResponse result = bqfpService.getBuyQuantityUnits(new BQFPRequest(485L, "1", 572));
+      assertNull(result);
+   }
+
+
 
    private BQFPResponse successResponse() {
       BQFPResponse response = new BQFPResponse();
