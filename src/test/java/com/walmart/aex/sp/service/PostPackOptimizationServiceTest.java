@@ -39,10 +39,6 @@ public class PostPackOptimizationServiceTest {
 
 	@Mock
 	private ObjectMapper objectMapper;
-
-	@Mock
-	ReplenishmentService replenishmentService;
-
 	@Mock
 	FinelineReplnPkConsRepository finelineReplnPkConsRepository;
 	@Mock
