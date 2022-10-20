@@ -82,24 +82,21 @@ public class BQFPServiceTest {
       assertTrue(actualMessage.contains(expectedMessage));
    }
 
-   //This test is added to increase the code coverage
    @Test
    public void createDefaultConstructorTest() {
       bqfpService = new BQFPService();
       assertNotNull(bqfpService);
    }
 
-   //This test is added to increase the code coverage
    @Test
    public void createBQFPServiceWithRestTemplateConstructor() {
       bqfpService = new BQFPService(restTemplate);
       assertNotNull(bqfpService);
    }
 
-   //This test is added to increase the code coverage
    @Test
    public void handleReturnNullTest() {
-      ResponseEntity<BQFPResponse> response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(successResponse());
+      ResponseEntity<BQFPResponse> response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
       when(properties.getUrl()).thenReturn("https://bqfp.dev/flow-plan/v1/getBuyQuantityFromFlowPlan");
       when(restTemplate.exchange(any(URI.class), eq(HttpMethod.GET), any(), eq(BQFPResponse.class))).thenReturn(response);
       BQFPResponse result = bqfpService.getBuyQuantityUnits(new BQFPRequest(485L, "1", 572));
