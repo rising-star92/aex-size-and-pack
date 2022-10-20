@@ -8,6 +8,7 @@ type Query {
      getSizeBuyQtyDetails(buyQtyRequest: BuyQtyRequest!): BuyQtyResponse!
      fetchHistoricalMetricsFineline(request: HistoricalMetricsRequest!) : HistoricalMetricsResponse!
      fetchHistoricalMetricsCC(request: HistoricalMetricsRequest!) : HistoricalMetricsResponse!
+     fetchInitialSetBumpPackByPlanFineline(request: BuyQtyRequest!): BuyQtyResponse!
      fetchReplnFullHierarchyByPlanFineline(replenishmentRequest: ReplenishmentRequest!): ReplenishmentResponse!
 }
 
@@ -338,4 +339,3 @@ type HistoricalMetric {
   lyActualReceiptUnits: Int
   lyActualReceiptUnitsPct: Float
 }
-
