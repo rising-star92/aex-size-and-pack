@@ -2,33 +2,31 @@ package com.walmart.aex.sp.service;
 
 import static org.junit.Assert.*;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.bqfp.Replenishment;
 import com.walmart.aex.sp.entity.*;
 import com.walmart.aex.sp.repository.*;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import com.walmart.aex.sp.dto.packoptimization.isbpqty.CustomerChoices;
 import com.walmart.aex.sp.dto.packoptimization.isbpqty.Fixtures;
 import com.walmart.aex.sp.dto.packoptimization.isbpqty.ISAndBPQtyDTO;
 import com.walmart.aex.sp.dto.packoptimization.isbpqty.Size;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.util.ReflectionUtils;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class PostPackOptimizationServiceTest {
 
 
@@ -41,6 +39,10 @@ public class PostPackOptimizationServiceTest {
 
 	@Mock
 	private ObjectMapper objectMapper;
+
+	@Mock
+	ReplenishmentService replenishmentService;
+
 	@Mock
 	FinelineReplnPkConsRepository finelineReplnPkConsRepository;
 	@Mock
@@ -56,7 +58,7 @@ public class PostPackOptimizationServiceTest {
 	@Mock
 	CcSpReplnPkConsRepository ccSpReplnPkConsRepository;
 
-	@Autowired
+	@Mock
 	ReplenishmentsOptimizationService replenishmentsOptimizationService;
 	
 	Optional<FinelineReplPack> optional;
@@ -68,7 +70,7 @@ public class PostPackOptimizationServiceTest {
 	Optional<CcSpMmReplPack> optional6;
 	
 	@Test
-	public void testUpdateInitialSetAndBumpPackAty() {
+	public void testUpdateInitialSetAndBumpPackAty() throws JsonProcessingException {
 		
 		 List<CustomerChoices> customerChoices = new ArrayList<>();
 		 List<Fixtures> fixtures = new ArrayList<>();
@@ -120,6 +122,16 @@ public class PostPackOptimizationServiceTest {
 		ccSpMmReplPack.setFinalBuyUnits(12000);
 		ccSpMmReplPack.setReplenObj("[{\"replnWeek\":12244,\"replnWeekDesc\":\"FYE2023WK44\",\"replnUnits\":null,\"adjReplnUnits\":4000,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null},{\"replnWeek\":12245,\"replnWeekDesc\":\"FYE2023WK45\",\"replnUnits\":null,\"adjReplnUnits\":4000,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null}]");
 		optional6 = Optional.of(ccSpMmReplPack);
+
+		objectMapper = new ObjectMapper();
+		Integer updatedReplenishmentQty = 7000;
+		List<Replenishment> replObj = objectMapper.readValue(ccSpMmReplPack.getReplenObj(), new TypeReference<>() {});
+		Long total = 8000l;
+		List<Replenishment> updateReplObj = replObj.stream()
+				.peek(replenishment -> replenishment.setAdjReplnUnits((updatedReplenishmentQty*(((replenishment.getAdjReplnUnits()*100)/total))/100)))
+				.collect(Collectors.toList());
+
+		Mockito.when(replenishmentsOptimizationService.getUpdatedReplenishmentsPack(updateReplObj,ccMmReplPack.getVnpkWhpkRatio())).thenReturn(updateReplObj);
 		Mockito.when(finelineReplnPkConsRepository.findByPlanIdAndFinelineNbr(471l, 1021)).thenReturn(optional);
 		Mockito.when(merchCatgReplPackRepository.findByPlanIdAndFinelineNbr(471l, 1021)).thenReturn(optional1);
 		Mockito.when(subCatgReplnPkConsRepository.findByPlanIdAndFinelineNbr(471l, 1021)).thenReturn(optional2);
@@ -127,7 +139,6 @@ public class PostPackOptimizationServiceTest {
 		Mockito.when(styleReplnPkConsRepository.findByPlanIdAndCCId(471l, 1021,"34_1021_2_21_2_AURA ORANGE STENCIL")).thenReturn(optional4);
 		Mockito.when(ccMmReplnPkConsRepository.findCcMmReplnPkConsData(471l, 1021,"34_1021_2_21_2_AURA ORANGE STENCIL",1,2)).thenReturn(optional5);
 		Mockito.when(ccSpReplnPkConsRepository.findCcSpMmReplnPkConsData(471l, 1021,"34_1021_2_21_2_AURA ORANGE STENCIL",1,2,"SMALL")).thenReturn(optional6);
-		objectMapper = new ObjectMapper();
 		postPackOptimizationService = new PostPackOptimizationService(merchCatgReplPackRepository,finelineReplnPkConsRepository,subCatgReplnPkConsRepository,styleReplnPkConsRepository,ccReplnPkConsRepository,ccMmReplnPkConsRepository,ccSpReplnPkConsRepository,objectMapper,replenishmentsOptimizationService);
 		postPackOptimizationService.updateInitialSetAndBumpPackAty(471l, 1021, isAndBPQtyDTO);
 
