@@ -15,12 +15,15 @@ import com.walmart.aex.sp.repository.SpFineLineChannelFixtureRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -44,7 +47,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(MockitoExtension.class)
 @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
 @Slf4j
 public class CalculateFinelineBuyQuantityTest {
@@ -67,7 +70,7 @@ public class CalculateFinelineBuyQuantityTest {
 
     private ObjectMapper mapper = new ObjectMapper();
 
-    @Before
+    @BeforeEach
     public void setUp() {
        MockitoAnnotations.openMocks(this);
        calculateFinelineBuyQuantity = new CalculateFinelineBuyQuantity(bqfpService, mapper, new BuyQtyReplenishmentMapperService(), calculateOnlineFinelineBuyQuantity,
