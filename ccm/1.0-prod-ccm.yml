@@ -151,7 +151,7 @@ configDefinitions:
         description: "URL to get data from Flow Plan"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "https://flow-plan.aex.dev.walmart.net/graphql"
+        defaultValue: "https://flow-plan.aex.prod.walmart.net/graphql"
       "flow.plan.finelineMetricsWeek.query":
         description: "Query to retrieve bump set in store week"
         type: "STRING"
