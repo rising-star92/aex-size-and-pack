@@ -3,7 +3,7 @@ package com.walmart.aex.sp.dto.initsetbumppkqty;
 import lombok.Data;
 
 @Data
-public class RFAInitialSetBumpPackDTO {
+public class InitSetBumpPackDTO {
 	private String planAndFineline;
 	private String styleNbr;
 	private String customerChoice;

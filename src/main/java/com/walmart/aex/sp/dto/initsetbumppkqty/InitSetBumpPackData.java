@@ -5,6 +5,6 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class RFAInitialSetBumpPackData {
-	List<RFAInitialSetBumpPackDTO> rfaInitSetBpPkQtyDataList;
+public class InitSetBumpPackData {
+	List<InitSetBumpPackDTO> initSetBpPkQtyDTOList;
 }

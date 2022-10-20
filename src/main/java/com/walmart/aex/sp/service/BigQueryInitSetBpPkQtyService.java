@@ -12,8 +12,8 @@ import com.google.cloud.bigquery.BigQueryOptions;
 import com.google.cloud.bigquery.QueryJobConfiguration;
 import com.google.cloud.bigquery.TableResult;
 import com.walmart.aex.sp.dto.buyquantity.BuyQtyRequest;
-import com.walmart.aex.sp.dto.initsetbumppkqty.RFAInitialSetBumpPackDTO;
-import com.walmart.aex.sp.dto.initsetbumppkqty.RFAInitialSetBumpPackData;
+import com.walmart.aex.sp.dto.initsetbumppkqty.InitSetBumpPackDTO;
+import com.walmart.aex.sp.dto.initsetbumppkqty.InitSetBumpPackData;
 import com.walmart.aex.sp.properties.BigQueryConnectionProperties;
 
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
@@ -28,9 +28,9 @@ public class BigQueryInitSetBpPkQtyService {
 	@ManagedConfiguration
 	BigQueryConnectionProperties bigQueryConnectionProperties;
 
-	public RFAInitialSetBumpPackData fetchInitialSetBumpPackDataFromGCP(BuyQtyRequest request) {
-		RFAInitialSetBumpPackData rfaInitSetBpPkData = new RFAInitialSetBumpPackData();
-		List<RFAInitialSetBumpPackDTO> rfaInitSetBpPkDTOList = new ArrayList<>();
+	public InitSetBumpPackData fetchInitialSetBumpPackDataFromGCP(BuyQtyRequest request) {
+		InitSetBumpPackData initSetBpPkData = new InitSetBumpPackData();
+		List<InitSetBumpPackDTO> initSetBpPkDTOList = new ArrayList<>();
 
 		try {
 			String projectId = bigQueryConnectionProperties.getRFAProjectId();
@@ -46,22 +46,20 @@ public class BigQueryInitSetBpPkQtyService {
 			TableResult results = bigQuery.query(queryConfig);
 			results.iterateAll().forEach(rows -> rows.forEach(row -> {
 				try {
-					RFAInitialSetBumpPackDTO rfaInitSetBpPkDto = objectMapper.readValue(row.getValue().toString(),
-							RFAInitialSetBumpPackDTO.class);
-					rfaInitSetBpPkDTOList.add(rfaInitSetBpPkDto);
-					rfaInitSetBpPkData.setRfaInitSetBpPkQtyDataList(rfaInitSetBpPkDTOList);
+					InitSetBumpPackDTO initSetBpPkDto = objectMapper.readValue(row.getValue().toString(),
+							InitSetBumpPackDTO.class);
+					initSetBpPkDTOList.add(initSetBpPkDto);
+					initSetBpPkData.setInitSetBpPkQtyDTOList(initSetBpPkDTOList);
 				} catch (JsonProcessingException e) {
-					e.printStackTrace();
-					log.error("Error while mapping rfa data \n" + e.toString());
+					log.error("Error while mapping the gcp table response data \n", e);
 				}
 			}));
 			log.info("Query performed successfully.");
 		} catch (Exception e) {
-			e.printStackTrace();
 			log.error("Exception details are ", e);
 		}
-		log.info("results: {}", rfaInitSetBpPkData);
-		return rfaInitSetBpPkData;
+		log.info("results: {}", initSetBpPkData);
+		return initSetBpPkData;
 	}
 
 	private String getInitSetBpPkGCPQuery(String projectIdDatasetNameTableName, String planAndFineline) {
@@ -70,7 +68,7 @@ public class BigQueryInitSetBpPkQtyService {
 				+ projectIdDatasetNameTableName + "`"
 				+ " group by planAndFineline, styleNbr, customerChoice, merchMethodDesc, size "
 				+ "order by planAndFineline, styleNbr, customerChoice, merchMethodDesc, size) "
-				+ "SELECT TO_JSON_STRING(rfaTable) AS json FROM MyTable AS rfaTable where rfaTable.planAndFineline = '"
+				+ "SELECT TO_JSON_STRING(gcpTable) AS json FROM MyTable AS gcpTable where gcpTable.planAndFineline = '"
 				+ planAndFineline + "'";
 	}
 }
