@@ -18,4 +18,10 @@ public interface BQFPServiceProperties {
    @Property(propertyName = "bqfp.svcName")
    String getSvcName();
 
+   @Property(propertyName = "flow.plan.url")
+   String getFlowPlanUrl();
+
+   @Property(propertyName = "flow.plan.finelineMetricsWeek.query")
+   String getFlowPlanFinelineWeeks();
+
 }
