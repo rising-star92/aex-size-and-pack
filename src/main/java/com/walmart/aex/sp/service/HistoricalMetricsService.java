@@ -1,5 +1,9 @@
 package com.walmart.aex.sp.service;
 
+import com.walmart.aex.sp.dto.bqfp.RfaWeeksResponse;
+import com.walmart.aex.sp.dto.bqfp.WeeksDTO;
+import com.walmart.aex.sp.dto.gql.GraphQLRfaResponse;
+import com.walmart.aex.sp.dto.gql.Payload;
 import com.walmart.aex.sp.dto.historicalmetrics.HistoricalMetricsRequest;
 import com.walmart.aex.sp.dto.historicalmetrics.HistoricalMetricsResponse;
 import com.walmart.aex.sp.entity.FinelinePlan;
@@ -12,7 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Optional;
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -25,13 +29,25 @@ public class HistoricalMetricsService {
    @Autowired
    FinelinePlanRepository finelinePlanRepository;
 
-   public HistoricalMetricsResponse fetchHistoricalMetricsFineline(HistoricalMetricsRequest request) {
-      request.setLyCompWeekStart(Integer.valueOf(String.valueOf(getLastYear()).concat(WEEK_START)));
-      request.setLyCompWeekEnd(Integer.valueOf(String.valueOf(getCurrentYear()).concat(WEEK_START)));
+   @Autowired
+   IWeeksService weeksService;
 
+   public HistoricalMetricsResponse fetchHistoricalMetricsFineline(HistoricalMetricsRequest request) {
       try {
          Integer channelId = ChannelType.getChannelIdFromName(request.getChannel());
-         FinelinePlan fineline = finelinePlanRepository.findByFinelinePlanId_SubCatPlanId_MerchCatPlanId_PlanIdAndFinelinePlanId_FinelineNbrAndFinelinePlanId_SubCatPlanId_MerchCatPlanId_ChannelId((long)request.getPlanId(), request.getFinelineNbr(), channelId)
+         RfaWeeksResponse rfaWeeksResponse = weeksService.getWeeks(channelId, request.getFinelineNbr(),
+                 request.getPlanId(),
+                 request.getLvl3Nbr(),
+                 request.getLvl4Nbr());
+         if(Objects.nonNull(rfaWeeksResponse)){
+            WeeksDTO inStoreWeek = rfaWeeksResponse.getInStoreWeek();
+            WeeksDTO markDownWeek = rfaWeeksResponse.getMarkDownWeek();
+            request.setLyCompWeekStart(inStoreWeek.getWmYearWkLy());
+            request.setLyCompWeekEnd(markDownWeek.getWmYearWkLy());
+         }
+         FinelinePlan fineline = finelinePlanRepository.findByFinelinePlanId_SubCatPlanId_MerchCatPlanId_PlanIdAndFinelinePlanId_FinelineNbrAndFinelinePlanId_SubCatPlanId_MerchCatPlanId_ChannelId((long)request.getPlanId(),
+                         request.getFinelineNbr(),
+                         channelId)
                .orElse(null);
 
          if (fineline == null) {

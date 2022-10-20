@@ -23,15 +23,15 @@ public class GraphQLService {
     @Autowired
     RestTemplate restTemplate;
 
-    public GraphQLResponse post(String url, String query, Map<String, String> headers, Map<String, Object> data) throws SizeAndPackException {
+    public <T> T post(String url, String query, Map<String, String> headers, Map<String, Object> data, Class<T> responseClass) throws SizeAndPackException {
         log.info("Calling GET URL {} data {}", url, data);
         long startTime = System.currentTimeMillis();
         HttpHeaders httpHeaders = getHttpHeaders(headers);
-        ResponseEntity<GraphQLResponse> response;
+        ResponseEntity<T> response;
         try {
             GraphQLRequest graphQLReq = new GraphQLRequest(query, data);
             HttpEntity<GraphQLRequest> request = new HttpEntity<>(graphQLReq, httpHeaders);
-            response = restTemplate.exchange(url, HttpMethod.POST, request, GraphQLResponse.class);
+            response = restTemplate.exchange(url, HttpMethod.POST, request, responseClass);
             log.info(RESPONSE_URL, url, response.getStatusCode(), (System.currentTimeMillis() - startTime));
 
             log.info("Response: {}", response.getBody());

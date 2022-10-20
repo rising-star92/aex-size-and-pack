@@ -44,4 +44,10 @@ public interface GraphQLProperties {
     @Property(propertyName = "buyQty.style.cc.size.query")
     String getBuyQtyStyleCcSizeQuery();
 
+    @Property(propertyName = "buy.quantification.weeks.url")
+    String getRfaWeeksUrl();
+
+    @Property(propertyName = "buy.quantification.weeks.query")
+    String getRfaWeeksQuery();
+
 }

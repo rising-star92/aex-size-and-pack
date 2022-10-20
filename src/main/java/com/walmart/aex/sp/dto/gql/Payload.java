@@ -1,6 +1,7 @@
 package com.walmart.aex.sp.dto.gql;
 
 import com.walmart.aex.sp.dto.assortproduct.APResponse;
+import com.walmart.aex.sp.dto.bqfp.RfaWeeksResponse;
 import com.walmart.aex.sp.dto.buyquantity.BuyQtyResponse;
 import lombok.Data;
 
@@ -11,4 +12,6 @@ public class Payload {
     private BuyQtyResponse getAllCcSizeClus;
     private BuyQtyResponse getFinelinesWithSizeAssociation;
     private BuyQtyResponse getStylesCCsWithSizeAssociation;
+    private RfaWeeksResponse getRFAWeeksByFineline;
+
 }
