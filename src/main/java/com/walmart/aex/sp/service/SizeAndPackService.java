@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -290,22 +291,23 @@ public class SizeAndPackService {
         }
     }
     
-    public InitialSetResponseOne getInitialAndBumpSetDetails(InitialSetPackRequest request) {
-    	//InitialSetResponse initialSetResponseOne = new InitialSetResponse();
+    public List<InitialSetResponseOne> getInitialAndBumpSetDetails(InitialSetPackRequest request) {
     	InitialSetResponseOne response = new InitialSetResponseOne();
+    	List<InitialSetResponseOne> responseL = new ArrayList<>();
 		List<RFAInitialSetBumpSetResponse> rfaInitialSetBumpSetResponses = new ArrayList<>();
 		try {
 			if (request.getPlanId() != null && request.getFinelineNbr() != null) {
 				rfaInitialSetBumpSetResponses = bigQueryInitialSetPlanService.getInitialAndBumpSetDetails(request);
 			}
-			
 			Optional.of(rfaInitialSetBumpSetResponses).stream().flatMap(Collection::stream).forEach(
-					intialSetResponseOne -> initialSetPlanMapper.mapInitialSetPlan(intialSetResponseOne, response,request.getFinelineNbr()));
-			//initialSetResponseOne.setIntialSetResponseOne(response);
+					intialSetResponseOne -> initialSetPlanMapper.mapInitialSetPlan(intialSetResponseOne, response, request.getFinelineNbr()));
+			responseL.add(response);
 		} catch (Exception e) {
 			log.error("Exception While fetching Initial Set Pack Qunatities {}:", e);
 		}
 
-		return response;
+		return responseL;
 	}
+    
+    
 }

@@ -9,6 +9,9 @@ import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDeleteDTO;
 import com.walmart.aex.sp.dto.planhierarchy.SizeAndPackResponse;
 import com.walmart.aex.sp.service.SizeAndPackService;
 import com.walmart.aex.sp.util.CommonUtil;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
@@ -76,7 +79,7 @@ public class SizeAndPackController {
     }
 
     @QueryMapping
-    public InitialSetResponseOne getInitialAndBumpSetDetails(@Argument InitialSetPackRequest request) {
+    public List<InitialSetResponseOne> getInitialAndBumpSetDetails(@Argument InitialSetPackRequest request) {
         return sizeAndPackService.getInitialAndBumpSetDetails(request);
     }
 

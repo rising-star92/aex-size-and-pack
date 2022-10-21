@@ -9,5 +9,5 @@ import lombok.Data;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class InitialSetResponse {
-	private InitialSetResponseOne intialSetResponseOne;
+	private List<InitialSetResponseOne> intialSetResponse;
 }
