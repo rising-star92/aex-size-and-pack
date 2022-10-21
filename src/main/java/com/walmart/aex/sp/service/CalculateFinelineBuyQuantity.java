@@ -21,6 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,31 +53,63 @@ public class CalculateFinelineBuyQuantity {
         this.merchCatgReplPackRepository = merchCatgReplPackRepository;
     }
 
-    public CalculateBuyQtyResponse calculateFinelineBuyQty(CalculateBuyQtyRequest calculateBuyQtyRequest, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, CalculateBuyQtyResponse calculateBuyQtyResponse) throws SizeAndPackException {
-        BuyQtyResponse buyQtyResponse = getSizeProfiles(calculateBuyQtyRequest, calculateBuyQtyParallelRequest);
-        BQFPResponse bqfpResponse = getBqfpResponse(calculateBuyQtyRequest, calculateBuyQtyParallelRequest.getFinelineNbr());
-        APResponse apResponse = null;
-        if (ChannelType.STORE.getDescription().equalsIgnoreCase(calculateBuyQtyParallelRequest.getChannel())) {
-            apResponse = getRfaSpResponse(calculateBuyQtyRequest, calculateBuyQtyParallelRequest.getFinelineNbr(), bqfpResponse);
-        }
-        try {
-            log.debug("Size Profiles: {}", objectMapper.writeValueAsString(buyQtyResponse));
-            log.debug("BQ FP Response: {}", objectMapper.writeValueAsString(bqfpResponse));
-            log.debug("RFA Response: {}", objectMapper.writeValueAsString(apResponse));
-        } catch (JsonProcessingException jsonProcessingException) {
-            jsonProcessingException.printStackTrace();
-        }
+    public CalculateBuyQtyResponse calculateFinelineBuyQty(CalculateBuyQtyRequest calculateBuyQtyRequest, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, CalculateBuyQtyResponse calculateBuyQtyResponse) throws CustomException {
+        CompletableFuture<BuyQtyResponse> buyQtyResponseCompletableFuture = getBuyQtyResponseCompletableFuture(calculateBuyQtyRequest, calculateBuyQtyParallelRequest);
+        CompletableFuture<BQFPResponse> bqfpResponseCompletableFuture = getBqfpResponseCompletableFuture(calculateBuyQtyRequest, calculateBuyQtyParallelRequest);
+        //wrapper future completes when all futures have completed
+        CompletableFuture<Void> combinedFuture = CompletableFuture.allOf(buyQtyResponseCompletableFuture, bqfpResponseCompletableFuture);
+          try {
+              combinedFuture.join();
+              final BuyQtyResponse buyQtyResponse = buyQtyResponseCompletableFuture.get();
+              final BQFPResponse bqfpResponse = bqfpResponseCompletableFuture.get();
+              APResponse apResponse = null;
+              if (ChannelType.STORE.getDescription().equalsIgnoreCase(calculateBuyQtyParallelRequest.getChannel()))
+                  apResponse = getRfaSpResponse(calculateBuyQtyRequest, calculateBuyQtyParallelRequest.getFinelineNbr(), bqfpResponse);
 
-        FinelineDto finelineDto = getFineline(buyQtyResponse);
-        if (finelineDto != null) {
-            deleteExistingFinelineIsBsBuyQty(calculateBuyQtyParallelRequest, calculateBuyQtyResponse);
-            if (!CollectionUtils.isEmpty(finelineDto.getMerchMethods()) && ChannelType.STORE.getDescription().equalsIgnoreCase(calculateBuyQtyParallelRequest.getChannel())) {
-                getMerchMethod(calculateBuyQtyParallelRequest, finelineDto, apResponse, bqfpResponse, calculateBuyQtyResponse, calculateBuyQtyRequest);
-            } else if (ChannelType.ONLINE.getDescription().equalsIgnoreCase(calculateBuyQtyParallelRequest.getChannel())) {
-                calculateBuyQtyResponse = calculateOnlineFinelineBuyQuantity.calculateOnlineBuyQty(calculateBuyQtyParallelRequest, finelineDto, bqfpResponse, calculateBuyQtyResponse);
-            } else log.info("Merchmethods or channel is empty: {}", buyQtyResponse);
-        } else log.info("Size Profile Fineline is null: {}", buyQtyResponse);
-        return calculateBuyQtyResponse;
+              if (log.isDebugEnabled()) {
+                  logExtResponse("Size Profiles", buyQtyResponse);
+                  logExtResponse("BQFP", bqfpResponse);
+                  logExtResponse("RFA", apResponse);
+              }
+
+              FinelineDto finelineDto = getFineline(buyQtyResponse);
+              if (finelineDto != null) {
+                  deleteExistingFinelineIsBsBuyQty(calculateBuyQtyParallelRequest, calculateBuyQtyResponse);
+                  if (!CollectionUtils.isEmpty(finelineDto.getMerchMethods()) && ChannelType.STORE.getDescription().equalsIgnoreCase(calculateBuyQtyParallelRequest.getChannel())) {
+                      getMerchMethod(calculateBuyQtyParallelRequest, finelineDto, apResponse, bqfpResponseCompletableFuture.get(), calculateBuyQtyResponse, calculateBuyQtyRequest);
+                  } else if (ChannelType.ONLINE.getDescription().equalsIgnoreCase(calculateBuyQtyParallelRequest.getChannel())) {
+                      calculateBuyQtyResponse = calculateOnlineFinelineBuyQuantity.calculateOnlineBuyQty(calculateBuyQtyParallelRequest, finelineDto, bqfpResponseCompletableFuture.get(), calculateBuyQtyResponse);
+                  } else log.info("Merchmethods or channel is empty: {}", buyQtyResponseCompletableFuture);
+              } else log.info("Size Profile Fineline is null: {}", bqfpResponseCompletableFuture);
+              return calculateBuyQtyResponse;
+          } catch (InterruptedException ie) {
+              log.error("CalculateBuyQty failed due to interruption. plan: {}, finelineNbr: {}",
+                    calculateBuyQtyRequest.getPlanId(), calculateBuyQtyParallelRequest.getFinelineNbr());
+              Thread.currentThread().interrupt();
+              return calculateBuyQtyResponse;
+          } catch (ExecutionException e) {
+              log.error("CalculateBuyQty failed due to external dependency failure.  plan: {}, finelineNbr: {}",
+                    calculateBuyQtyRequest.getPlanId(), calculateBuyQtyParallelRequest.getFinelineNbr(), e.getCause());
+              return calculateBuyQtyResponse;
+          } catch (Exception e) {
+              log.error("CalculateBuyQty failed.  plan: {}, finelineNbr: {}",
+                    calculateBuyQtyRequest.getPlanId(), calculateBuyQtyParallelRequest.getFinelineNbr(), e);
+              throw new CustomException("CalculateBuyQty failed");
+          }
+    }
+
+    private CompletableFuture<BQFPResponse> getBqfpResponseCompletableFuture(CalculateBuyQtyRequest calculateBuyQtyRequest, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest) {
+        return CompletableFuture.supplyAsync(() -> getBqfpResponse(calculateBuyQtyRequest, calculateBuyQtyParallelRequest.getFinelineNbr()));
+    }
+
+    private CompletableFuture<BuyQtyResponse> getBuyQtyResponseCompletableFuture(CalculateBuyQtyRequest calculateBuyQtyRequest, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return getSizeProfiles(calculateBuyQtyRequest, calculateBuyQtyParallelRequest);
+            } catch (SizeAndPackException e) {
+                throw new CustomException("Failed to fetch buyQtyResponse");
+            }
+        });
     }
 
     private void deleteExistingFinelineIsBsBuyQty(CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, CalculateBuyQtyResponse calculateBuyQtyResponse) {
@@ -755,5 +789,15 @@ public class CalculateFinelineBuyQuantity {
         } else if (replenishment.getDcInboundUnits() != null) {
             return replenishment.getDcInboundUnits();
         } else return 0L;
+    }
+
+    private void logExtResponse(String title, Object response) {
+        final String key = title == null ? "Response" : title;
+        try {
+            log.debug("{}: {}", key, objectMapper.writeValueAsString(response));
+        } catch (JsonProcessingException e) {
+            log.error("Unable to serialize response: {}", key, e);
+        }
+
     }
 }
