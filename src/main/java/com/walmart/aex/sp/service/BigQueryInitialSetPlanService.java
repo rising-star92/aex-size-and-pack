@@ -65,19 +65,19 @@ public class BigQueryInitialSetPlanService {
 						log.error("JsonProcessingException \n" + e.getMessage());
 					}	             
 	         }));
-	         for (RFAInitialSetBumpSetResponse rfaInitialSetBumpSetResponse : rfaInitialSetBumpSetResponses) {
-				for (RFAInitialSetBumpSetResponse rfaInitialSetBumpSetResponse2 : rfaInitialSetBumpSetResponseBs) {
-					if(rfaInitialSetBumpSetResponse2.getPack_id().equalsIgnoreCase(rfaInitialSetBumpSetResponse.getPack_id())) {
+	         for (RFAInitialSetBumpSetResponse rfaInitialSetResponse : rfaInitialSetBumpSetResponses) {
+				for (RFAInitialSetBumpSetResponse rfaBumpSetResponse : rfaInitialSetBumpSetResponseBs) {
+					if(rfaBumpSetResponse.getPack_id().equalsIgnoreCase(rfaInitialSetResponse.getPack_id())) {
 						RFAInitialSetBumpSetResponse rfaRes = new RFAInitialSetBumpSetResponse();
-						rfaRes.setIn_store_week(rfaInitialSetBumpSetResponse.getIn_store_week());
-						rfaRes.setStyle_id(rfaInitialSetBumpSetResponse2.getStyle_id());
-						rfaRes.setCc(rfaInitialSetBumpSetResponse.getCc());
-						rfaRes.setMerch_method(rfaInitialSetBumpSetResponse2.getMerch_method());
-						rfaRes.setPack_id(rfaInitialSetBumpSetResponse2.getPack_id());
-						rfaRes.setSize(rfaInitialSetBumpSetResponse.getStyle_id());
-						rfaRes.setBumppack_ratio(rfaInitialSetBumpSetResponse2.getBumppack_ratio());
-						rfaRes.setIs_quantity(rfaInitialSetBumpSetResponse2.getIs_quantity());
-						rfaRes.setInitialpack_ratio(rfaInitialSetBumpSetResponse.getInitialpack_ratio());
+						rfaRes.setIn_store_week(rfaInitialSetResponse.getIn_store_week());
+						rfaRes.setStyle_id(rfaBumpSetResponse.getStyle_id());
+						rfaRes.setCc(rfaInitialSetResponse.getCc());
+						rfaRes.setMerch_method(rfaBumpSetResponse.getMerch_method());
+						rfaRes.setPack_id(rfaBumpSetResponse.getPack_id());
+						rfaRes.setSize(rfaInitialSetResponse.getStyle_id());
+						rfaRes.setBumppack_ratio(rfaBumpSetResponse.getBumppack_ratio());
+						rfaRes.setIs_quantity(rfaBumpSetResponse.getIs_quantity());
+						rfaRes.setInitialpack_ratio(rfaInitialSetResponse.getInitialpack_ratio());
 						rfaInitialSetBumpSetResponses.add(rfaRes);
 					}
 				}
