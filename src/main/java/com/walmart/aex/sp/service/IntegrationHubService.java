@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.buyquantity.FinelineDto;
 import com.walmart.aex.sp.dto.buyquantity.Lvl3Dto;
 import com.walmart.aex.sp.dto.buyquantity.Lvl4Dto;
+import com.walmart.aex.sp.dto.gql.GraphQLResponse;
 import com.walmart.aex.sp.dto.integrationhub.IntegrationHubRequestDTO;
 import com.walmart.aex.sp.dto.integrationhub.IntegrationHubResponseDTO;
 import com.walmart.aex.sp.dto.integrationhub.IntegrationHubRequestContextDTO;
@@ -25,6 +26,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -35,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Slf4j
@@ -64,6 +69,7 @@ public class IntegrationHubService {
         this.analyticsMlSendRepository = analyticsMlSendRepository;
     }
 
+    @Retryable(backoff = @Backoff(delay = 3000))
     public RunPackOptResponse callIntegrationHubForPackOpt(RunPackOptRequest request) {
         RunPackOptResponse runPackOptResponse = null;
         try {
@@ -188,6 +194,17 @@ public class IntegrationHubService {
             }
         }
         return date;
+    }
+
+    @Recover
+    public RunPackOptResponse recover(Exception e, RunPackOptRequest request) {
+        RunPackOptResponse response = createDefaultResponse();
+        log.error("IntegrationHub service call failed after 3 retries for url : " + request, e);
+        return response;
+    }
+
+    private RunPackOptResponse createDefaultResponse() {
+        return new RunPackOptResponse();
     }
 
 
