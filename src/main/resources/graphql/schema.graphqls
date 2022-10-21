@@ -9,6 +9,8 @@ type Query {
      fetchHistoricalMetricsFineline(request: HistoricalMetricsRequest!) : HistoricalMetricsResponse!
      fetchHistoricalMetricsCC(request: HistoricalMetricsRequest!) : HistoricalMetricsResponse!
      getInitialAndBumpSetDetails(request: InitialSetPackRequest): [InitialSetResponseOne]!
+     fetchInitialSetBumpPackByPlanFineline(request: BuyQtyRequest!): BuyQtyResponse!
+     fetchReplnFullHierarchyByPlanFineline(replenishmentRequest: ReplenishmentRequest!): ReplenishmentResponse!
 }
 
 
@@ -302,6 +304,16 @@ type SizeDto {
      ahsSizeId: Int
      sizeDesc: String
      metrics: MetricsDto
+     replenishments:[Replenishment]
+}
+type Replenishment{
+   replnWeek: Int
+   replnWeekDesc: String
+   replnUnits: Int
+   adjReplnUnits: Int
+   remainingUnits: Int
+   dcInboundUnits: Int
+   dcInboundAdjUnits: Int
 }
 
 input ReplenishmentRequest {
@@ -357,4 +369,3 @@ type HistoricalMetric {
   lyActualReceiptUnits: Int
   lyActualReceiptUnitsPct: Float
 }
-
