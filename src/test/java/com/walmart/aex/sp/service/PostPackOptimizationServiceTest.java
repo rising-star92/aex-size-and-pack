@@ -6,12 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.entity.*;
 import com.walmart.aex.sp.repository.*;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
