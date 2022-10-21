@@ -28,7 +28,7 @@ public class GraphQLService {
     @Autowired
     RestTemplate restTemplate;
 
-    @Retryable(backoff = @Backoff(delay = 1000))
+    @Retryable(backoff = @Backoff(delay = 3000))
     public GraphQLResponse post(String url, String query, Map<String, String> headers, Map<String, Object> data) throws SizeAndPackException {
         log.info("Calling GET URL {} data {}", url, data);
         long startTime = System.currentTimeMillis();

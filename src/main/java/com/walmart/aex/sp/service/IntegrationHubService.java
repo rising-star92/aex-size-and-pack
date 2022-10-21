@@ -69,7 +69,7 @@ public class IntegrationHubService {
         this.analyticsMlSendRepository = analyticsMlSendRepository;
     }
 
-    @Retryable(backoff = @Backoff(delay = 1000))
+    @Retryable(backoff = @Backoff(delay = 3000))
     public RunPackOptResponse callIntegrationHubForPackOpt(RunPackOptRequest request) {
         RunPackOptResponse runPackOptResponse = null;
         try {

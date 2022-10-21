@@ -47,7 +47,7 @@ public class BQFPService {
       this.restTemplate = restTemplate;
    }
 
-   @Retryable(backoff = @Backoff(delay = 1000))
+   @Retryable(backoff = @Backoff(delay = 3000))
    public BQFPResponse getBuyQuantityUnits(BQFPRequest request) {
       try {
          final URI uri = createURIWithParams(bqfpServiceProperties.getUrl(), request);
