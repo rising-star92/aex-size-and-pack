@@ -56,23 +56,22 @@ public class CalculateFinelineBuyQuantity {
         CompletableFuture<BuyQtyResponse> buyQtyResponseCompletableFuture = getBuyQtyResponseCompletableFuture(calculateBuyQtyRequest, calculateBuyQtyParallelRequest);
         CompletableFuture<BQFPResponse> bqfpResponseCompletableFuture = getBqfpResponseCompletableFuture(calculateBuyQtyRequest, calculateBuyQtyParallelRequest);
         //wrapper future completes when all futures have completed
-        CompletableFuture<Void> combinedFuture = CompletableFuture.allOf (buyQtyResponseCompletableFuture, bqfpResponseCompletableFuture);
-        combinedFuture.join();
-        if (combinedFuture.isDone ()) {
+        CompletableFuture<Void> combinedFuture = CompletableFuture.allOf(buyQtyResponseCompletableFuture, bqfpResponseCompletableFuture);
           try {
+              combinedFuture.join();
+              final BuyQtyResponse buyQtyResponse = buyQtyResponseCompletableFuture.get();
+              final BQFPResponse bqfpResponse = bqfpResponseCompletableFuture.get();
               APResponse apResponse = null;
-              if (ChannelType.STORE.getDescription().equalsIgnoreCase(calculateBuyQtyParallelRequest.getChannel())) {
-                  apResponse = getRfaSpResponse(calculateBuyQtyRequest, calculateBuyQtyParallelRequest.getFinelineNbr(), bqfpResponseCompletableFuture.get());
-              }
-              try {
-                  log.debug("Size Profiles: {}", objectMapper.writeValueAsString(buyQtyResponseCompletableFuture));
-                  log.debug("BQ FP Response: {}", objectMapper.writeValueAsString(bqfpResponseCompletableFuture));
-                  log.debug("RFA Response: {}", objectMapper.writeValueAsString(apResponse));
-              } catch (JsonProcessingException jsonProcessingException) {
-                  jsonProcessingException.printStackTrace();
+              if (ChannelType.STORE.getDescription().equalsIgnoreCase(calculateBuyQtyParallelRequest.getChannel()))
+                  apResponse = getRfaSpResponse(calculateBuyQtyRequest, calculateBuyQtyParallelRequest.getFinelineNbr(), bqfpResponse);
+
+              if (log.isDebugEnabled()) {
+                  logExtResponse("Size Profiles", buyQtyResponse);
+                  logExtResponse("BQFP", bqfpResponse);
+                  logExtResponse("RFA", apResponse);
               }
 
-              FinelineDto finelineDto = getFineline(buyQtyResponseCompletableFuture.get());
+              FinelineDto finelineDto = getFineline(buyQtyResponse);
               if (finelineDto != null) {
                   deleteExistingFinelineIsBsBuyQty(calculateBuyQtyParallelRequest, calculateBuyQtyResponse);
                   if (!CollectionUtils.isEmpty(finelineDto.getMerchMethods()) && ChannelType.STORE.getDescription().equalsIgnoreCase(calculateBuyQtyParallelRequest.getChannel())) {
@@ -82,16 +81,16 @@ public class CalculateFinelineBuyQuantity {
                   } else log.info("Merchmethods or channel is empty: {}", buyQtyResponseCompletableFuture);
               } else log.info("Size Profile Fineline is null: {}", bqfpResponseCompletableFuture);
               return calculateBuyQtyResponse;
+          } catch (InterruptedException ie) {
+              log.error("CalculateBuyQty failed due to interruption. plan: {}, finelineNbr: {}",
+                    calculateBuyQtyRequest.getPlanId(), calculateBuyQtyParallelRequest.getFinelineNbr());
+              Thread.currentThread().interrupt();
+              return calculateBuyQtyResponse;
           } catch (Exception e) {
-              throw new CustomException("Failed to Execute calculate buy quantity response with exception " + e);
+              log.error("CalculateBuyQty failed due to external dependency failure.  plan: {}, finelineNbr: {}",
+                    calculateBuyQtyRequest.getPlanId(), calculateBuyQtyParallelRequest.getFinelineNbr(), e.getCause());
+              throw new CustomException("Unable to calculate buy quantity");
           }
-      }
-      else {
-            if(combinedFuture.isCompletedExceptionally()){
-                throw new CustomException("Not All calculateFinelineBuyQty futures completed normally");
-            }
-            throw new CustomException("Not All calculateFinelineBuyQty futures completed yet");
-        }
     }
 
     private CompletableFuture<BQFPResponse> getBqfpResponseCompletableFuture(CalculateBuyQtyRequest calculateBuyQtyRequest, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest) {
@@ -785,5 +784,15 @@ public class CalculateFinelineBuyQuantity {
         } else if (replenishment.getDcInboundUnits() != null) {
             return replenishment.getDcInboundUnits();
         } else return 0L;
+    }
+
+    private void logExtResponse(String title, Object response) {
+        final String key = title == null ? "Response" : title;
+        try {
+            log.debug("{}: {}", key, objectMapper.writeValueAsString(response));
+        } catch (JsonProcessingException e) {
+            log.error("Unable to serialize response: {}", key, e);
+        }
+
     }
 }
