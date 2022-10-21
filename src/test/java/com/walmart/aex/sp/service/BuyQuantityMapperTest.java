@@ -109,6 +109,8 @@ public class BuyQuantityMapperTest {
         buyQunatityMapper.mapBuyQntyLvl2Sp(buyQntyResponseDTO,fetchFineLineResponse,null);
         assertNotNull(fetchFineLineResponse);
         assertEquals(471l,fetchFineLineResponse.getPlanId());
+        MetricsDto metricsDto = fetchFineLineResponse.getLvl3List().get(0).getLvl4List().get(0).getMetrics();
+        assertEquals(metricsDto.getBuyQty(),(654+234));
     }
 
     @Test
@@ -240,6 +242,8 @@ public class BuyQuantityMapperTest {
         BuyQtyResponse fetchFineLineResponse= getBuyQtyResponse(buyQntyResponseDTO,styleDtoList);
         buyQunatityMapper.mapBuyQntyLvl2Sp(buyQntyResponseDTO,fetchFineLineResponse,2816);
         assertEquals(12,fetchFineLineResponse.getPlanId());
+        MetricsDto metricsDto = fetchFineLineResponse.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getMetrics();
+        assertEquals(metricsDto.getBuyQty(),(700+234));
     }
 
     private BuyQtyResponse sizeProfileResponseFromJson(String filename) throws IOException {
