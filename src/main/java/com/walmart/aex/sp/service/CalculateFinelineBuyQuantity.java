@@ -22,6 +22,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @Service
@@ -86,10 +87,14 @@ public class CalculateFinelineBuyQuantity {
                     calculateBuyQtyRequest.getPlanId(), calculateBuyQtyParallelRequest.getFinelineNbr());
               Thread.currentThread().interrupt();
               return calculateBuyQtyResponse;
-          } catch (Exception e) {
+          } catch (ExecutionException e) {
               log.error("CalculateBuyQty failed due to external dependency failure.  plan: {}, finelineNbr: {}",
                     calculateBuyQtyRequest.getPlanId(), calculateBuyQtyParallelRequest.getFinelineNbr(), e.getCause());
-              throw new CustomException("Unable to calculate buy quantity");
+              return calculateBuyQtyResponse;
+          } catch (Exception e) {
+              log.error("CalculateBuyQty failed.  plan: {}, finelineNbr: {}",
+                    calculateBuyQtyRequest.getPlanId(), calculateBuyQtyParallelRequest.getFinelineNbr(), e);
+              throw new CustomException("CalculateBuyQty failed");
           }
     }
 
