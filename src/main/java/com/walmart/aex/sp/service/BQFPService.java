@@ -2,6 +2,7 @@ package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.bqfp.BQFPRequest;
 import com.walmart.aex.sp.dto.bqfp.BQFPResponse;
+import com.walmart.aex.sp.dto.gql.GraphQLResponse;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.properties.BQFPServiceProperties;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
@@ -13,12 +14,16 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -42,6 +47,7 @@ public class BQFPService {
       this.restTemplate = restTemplate;
    }
 
+   @Retryable(backoff = @Backoff(delay = 1000))
    public BQFPResponse getBuyQuantityUnits(BQFPRequest request) {
       try {
          final URI uri = createURIWithParams(bqfpServiceProperties.getUrl(), request);
@@ -79,5 +85,16 @@ public class BQFPService {
             .addParameter(CHANNEL, request.getChannel())
             .addParameter(FINELINE_NBR, String.valueOf(request.getFinelineNbr()))
             .build();
+   }
+
+   @Recover
+   public BQFPResponse recover(Exception e, BQFPRequest request) {
+      BQFPResponse response = createDefaultResponse();
+      log.error("BQFP service call failed after 3 retries for request : " + request, e);
+      return response;
+   }
+
+   private BQFPResponse createDefaultResponse() {
+      return new BQFPResponse();
    }
 }

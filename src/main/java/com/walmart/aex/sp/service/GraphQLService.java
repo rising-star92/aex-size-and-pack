@@ -2,10 +2,15 @@ package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.gql.GraphQLRequest;
 import com.walmart.aex.sp.dto.gql.GraphQLResponse;
+import com.walmart.aex.sp.dto.historicalmetrics.HistoricalMetricsRequest;
+import com.walmart.aex.sp.dto.historicalmetrics.HistoricalMetricsResponse;
 import com.walmart.aex.sp.exception.SizeAndPackException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -23,6 +28,7 @@ public class GraphQLService {
     @Autowired
     RestTemplate restTemplate;
 
+    @Retryable(backoff = @Backoff(delay = 1000))
     public GraphQLResponse post(String url, String query, Map<String, String> headers, Map<String, Object> data) throws SizeAndPackException {
         log.info("Calling GET URL {} data {}", url, data);
         long startTime = System.currentTimeMillis();
@@ -51,5 +57,16 @@ public class GraphQLService {
             headers.forEach(httpHeaders::add);
         }
         return httpHeaders;
+    }
+
+    @Recover
+    public GraphQLResponse recover(Exception e, String url, String query, Map<String, String> headers, Map<String, Object> data) {
+        GraphQLResponse response = createDefaultResponse();
+        log.error("GraphQL service call failed after 3 retries for url : " + url, e);
+        return response;
+    }
+
+    private GraphQLResponse createDefaultResponse() {
+        return new GraphQLResponse();
     }
 }
