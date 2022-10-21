@@ -41,47 +41,47 @@ public class PackOptimizationService {
         this.analyticsMlSendRepository = analyticsMlSendRepository;
     }
 
-    private FineLineMapperDto prepareFineLineMapperDto(Object[] object) {
-        FineLineMapperDto fineLineMapperDto = new FineLineMapperDto();
-        fineLineMapperDto.setPlanId(Long.valueOf(ifNullThenEmpty.apply(object[0])));
-        fineLineMapperDto.setChannelId(Integer.valueOf(ifNullThenEmpty.apply(object[1])));
-        fineLineMapperDto.setLvl0Nbr(Integer.valueOf(ifNullThenEmpty.apply(object[2])));
-        fineLineMapperDto.setLvl1Nbr(Integer.valueOf(ifNullThenEmpty.apply(object[3])));
-        fineLineMapperDto.setLvl2Nbr(Integer.valueOf(ifNullThenEmpty.apply(object[4])));
-        fineLineMapperDto.setLvl3Nbr(Integer.valueOf(ifNullThenEmpty.apply(object[5])));
-        fineLineMapperDto.setLvl4Nbr(Integer.valueOf(ifNullThenEmpty.apply(object[6])));
-        fineLineMapperDto.setFineLineNbr(Integer.valueOf(object[7].toString()));
-        fineLineMapperDto.setAltfineLineDesc(ifNullThenEmpty.apply(object[8]));
-
-        fineLineMapperDto.setLvl0Desc(ifNullThenEmpty.apply(object[9]));
-        fineLineMapperDto.setLvl1Desc(ifNullThenEmpty.apply(object[10]));
-        fineLineMapperDto.setLvl2Desc(ifNullThenEmpty.apply(object[11]));
-        fineLineMapperDto.setLvl3Desc(ifNullThenEmpty.apply(object[12]));
-        fineLineMapperDto.setLvl4Desc(ifNullThenEmpty.apply(object[13]));
-        fineLineMapperDto.setFirstName(ifNullThenEmpty.apply(object[15]));
-        fineLineMapperDto.setLastName(ifNullThenEmpty.apply(object[16]));
-        fineLineMapperDto.setStartTs((Date) object[17]);
-        fineLineMapperDto.setReturnMessage(ifNullThenEmpty.apply(object[19]));
-        return fineLineMapperDto;
-    }
-
-    private void prepareCcPackOptimizationID() {
-        CcPackOptimizationID ccPackOptimizationID = new CcPackOptimizationID();
-        StylePackOptimizationID stylePackOptimizationID = new StylePackOptimizationID();
-        stylePackOptimizationID.setStyleNbr("");
-        fineLinePackOptimizationID fineLinePackOptimizationID = new fineLinePackOptimizationID();
-        fineLinePackOptimizationID.setFinelineNbr(0);
-        SubCatgPackOptimizationID subCatgPackOptimizationID = new SubCatgPackOptimizationID();
-        MerchantPackOptimizationID merchantPackOptimizationID = new MerchantPackOptimizationID();
-        merchantPackOptimizationID.setRepTLvl1(0);
-        merchantPackOptimizationID.setRepTLvl2(0);
-        merchantPackOptimizationID.setRepTLvl3(0);
-        subCatgPackOptimizationID.setMerchantPackOptimizationID(merchantPackOptimizationID);
-        fineLinePackOptimizationID.setSubCatgPackOptimizationID(subCatgPackOptimizationID);
-        stylePackOptimizationID.setFinelinePackOptimizationID(fineLinePackOptimizationID);
-        ccPackOptimizationID.setStylePackOptimizationID(stylePackOptimizationID);
-    }
-
+//    private FineLineMapperDto prepareFineLineMapperDto(Object[] object) {
+//        FineLineMapperDto fineLineMapperDto = new FineLineMapperDto();
+//        fineLineMapperDto.setPlanId(Long.valueOf(ifNullThenEmpty.apply(object[0])));
+//        fineLineMapperDto.setChannelId(Integer.valueOf(ifNullThenEmpty.apply(object[1])));
+//        fineLineMapperDto.setLvl0Nbr(Integer.valueOf(ifNullThenEmpty.apply(object[2])));
+//        fineLineMapperDto.setLvl1Nbr(Integer.valueOf(ifNullThenEmpty.apply(object[3])));
+//        fineLineMapperDto.setLvl2Nbr(Integer.valueOf(ifNullThenEmpty.apply(object[4])));
+//        fineLineMapperDto.setLvl3Nbr(Integer.valueOf(ifNullThenEmpty.apply(object[5])));
+//        fineLineMapperDto.setLvl4Nbr(Integer.valueOf(ifNullThenEmpty.apply(object[6])));
+//        fineLineMapperDto.setFineLineNbr(Integer.valueOf(object[7].toString()));
+//        fineLineMapperDto.setAltfineLineDesc(ifNullThenEmpty.apply(object[8]));
+//
+//        fineLineMapperDto.setLvl0Desc(ifNullThenEmpty.apply(object[9]));
+//        fineLineMapperDto.setLvl1Desc(ifNullThenEmpty.apply(object[10]));
+//        fineLineMapperDto.setLvl2Desc(ifNullThenEmpty.apply(object[11]));
+//        fineLineMapperDto.setLvl3Desc(ifNullThenEmpty.apply(object[12]));
+//        fineLineMapperDto.setLvl4Desc(ifNullThenEmpty.apply(object[13]));
+//        fineLineMapperDto.setFirstName(ifNullThenEmpty.apply(object[15]));
+//        fineLineMapperDto.setLastName(ifNullThenEmpty.apply(object[16]));
+//        fineLineMapperDto.setStartTs((Date) object[17]);
+//        fineLineMapperDto.setReturnMessage(ifNullThenEmpty.apply(object[19]));
+//        return fineLineMapperDto;
+//    }
+//
+//    private void prepareCcPackOptimizationID() {
+//        CcPackOptimizationID ccPackOptimizationID = new CcPackOptimizationID();
+//        StylePackOptimizationID stylePackOptimizationID = new StylePackOptimizationID();
+//        stylePackOptimizationID.setStyleNbr("");
+//        fineLinePackOptimizationID fineLinePackOptimizationID = new fineLinePackOptimizationID();
+//        fineLinePackOptimizationID.setFinelineNbr(0);
+//        SubCatgPackOptimizationID subCatgPackOptimizationID = new SubCatgPackOptimizationID();
+//        MerchantPackOptimizationID merchantPackOptimizationID = new MerchantPackOptimizationID();
+//        merchantPackOptimizationID.setRepTLvl1(0);
+//        merchantPackOptimizationID.setRepTLvl2(0);
+//        merchantPackOptimizationID.setRepTLvl3(0);
+//        subCatgPackOptimizationID.setMerchantPackOptimizationID(merchantPackOptimizationID);
+//        fineLinePackOptimizationID.setSubCatgPackOptimizationID(subCatgPackOptimizationID);
+//        stylePackOptimizationID.setFinelinePackOptimizationID(fineLinePackOptimizationID);
+//        ccPackOptimizationID.setStylePackOptimizationID(stylePackOptimizationID);
+//    }
+//
 
     public PackOptimizationResponse getPackOptDetails(Long planId, Integer channelid) {
         try {

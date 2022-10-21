@@ -1,13 +1,15 @@
 package com.walmart.aex.sp.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.lenient;
+
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.walmart.aex.sp.dto.mapper.FineLineMapperDto;
-import com.walmart.aex.sp.repository.FinelinePackOptRepository;
-import com.walmart.aex.sp.repository.AnalyticsMlSendRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,10 +18,16 @@ import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.walmart.aex.sp.dto.mapper.FineLineMapperDto;
+import com.walmart.aex.sp.dto.packoptimization.Constraints;
+import com.walmart.aex.sp.dto.packoptimization.FineLinePackOptimizationResponse;
+import com.walmart.aex.sp.dto.packoptimization.FineLinePackOptimizationResponseDTO;
 import com.walmart.aex.sp.dto.packoptimization.PackOptimizationResponse;
+import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
 import com.walmart.aex.sp.entity.CcPackOptimization;
 import com.walmart.aex.sp.entity.CcPackOptimizationID;
 import com.walmart.aex.sp.entity.ChannelText;
+import com.walmart.aex.sp.entity.MerchantPackOptimization;
 import com.walmart.aex.sp.entity.MerchantPackOptimizationID;
 import com.walmart.aex.sp.entity.StylePackOptimization;
 import com.walmart.aex.sp.entity.StylePackOptimizationID;
@@ -27,8 +35,9 @@ import com.walmart.aex.sp.entity.SubCatgPackOptimization;
 import com.walmart.aex.sp.entity.SubCatgPackOptimizationID;
 import com.walmart.aex.sp.entity.fineLinePackOptimization;
 import com.walmart.aex.sp.entity.fineLinePackOptimizationID;
-
-import static org.junit.jupiter.api.Assertions.*;
+import com.walmart.aex.sp.repository.AnalyticsMlSendRepository;
+import com.walmart.aex.sp.repository.FineLinePackOptimizationRepository;
+import com.walmart.aex.sp.repository.FinelinePackOptRepository;
 
 @ExtendWith(MockitoExtension.class)
 public class PackOptimizationServiceTest {
@@ -46,6 +55,29 @@ public class PackOptimizationServiceTest {
 
 	@Mock
 	FinelinePackOptRepository packOptfineplanRepo;
+	
+	@Mock
+	Set<SubCatgPackOptimization> subCatgList;
+	
+	@Mock
+	Set<fineLinePackOptimization> finelineList;
+	
+	@Mock
+	Set<StylePackOptimization> stylePkOptList;
+	
+	@Mock
+	Set<CcPackOptimization> ccPkOptList;
+	
+	@Mock
+	FineLinePackOptimizationRepository finelinePackOptimizationRepository;
+	@Mock
+	PackOptimizationMapper packOptimizationMapper;
+	
+	@Mock
+	FineLinePackOptimizationResponse finelinePackOptimizationResponse;
+	
+	@Mock
+	List<FineLinePackOptimizationResponseDTO> finelinePackOptimizationResponseList;
 
 	@Test
 	public void testGetPackOptDetails()
@@ -131,5 +163,96 @@ public class PackOptimizationServiceTest {
 		packOptimizationService.UpdatePkOptServiceStatus(planId, finelineNbr, status);
 		Mockito.verify(packOptimizationService,Mockito.times(1)).UpdatePkOptServiceStatus(planId, finelineNbr, status);
 		assertEquals(finelineNbr,46);
+	}	
+	
+	@Test
+	public void testSubCategoryResponseList() {
+		subCatgList = new HashSet<SubCatgPackOptimization>();
+		SubCatgPackOptimization subCtgPkopt = new SubCatgPackOptimization();
+		subCtgPkopt.setVendorName("walmart");
+		subCtgPkopt.setMaxNbrOfPacks(3);
+		subCtgPkopt.setMaxUnitsPerPack(1);
+		subCtgPkopt.setFactoryId("123");
+		subCtgPkopt.setPortOfOriginName("cc");
+		subCatgList.add(subCtgPkopt);
+
+		finelineList = new HashSet<fineLinePackOptimization>();
+		fineLinePackOptimization finelinePackOptObj = new fineLinePackOptimization();
+		fineLinePackOptimizationID fineLinePackOptimizationID = new fineLinePackOptimizationID();
+		finelinePackOptObj.setFinelinePackOptId(fineLinePackOptimizationID);
+		fineLinePackOptimizationID.setFinelineNbr(5147);
+		finelinePackOptObj.setVendorName("walmart");
+		finelinePackOptObj.setMaxNbrOfPacks(1);
+		finelinePackOptObj.setMaxUnitsPerPack(1);
+		finelinePackOptObj.setFactoryId("123");
+		finelinePackOptObj.setPortOfOriginName("cc");
+		finelineList.add(finelinePackOptObj);
+
+		stylePkOptList = new HashSet<StylePackOptimization>();
+		StylePackOptimization stylePackOptObj = new StylePackOptimization();
+		StylePackOptimizationID stylePackOptimizationID = new StylePackOptimizationID();
+		stylePackOptObj.setStylepackoptimizationId(stylePackOptimizationID);
+		stylePackOptimizationID.setStyleNbr("34_2968_3_18_2");
+		stylePackOptObj.setVendorName("walmart");
+		stylePackOptObj.setMaxNbrOfPacks(3);
+		stylePackOptObj.setMaxUnitsPerPack(1);
+		stylePackOptObj.setFactoryId("123");
+		stylePackOptObj.setPortOfOriginName("cc");
+		stylePkOptList.add(stylePackOptObj);
+
+		ccPkOptList = new HashSet<CcPackOptimization>();
+		CcPackOptimization ccPackOptObj = new CcPackOptimization();
+		CcPackOptimizationID ccPackOptimizationID = new CcPackOptimizationID();
+		ccPackOptObj.setCcPackOptimizationId(ccPackOptimizationID);
+		ccPackOptimizationID.setCustomerChoice("34_2968_3_18_2_BLACK SOOT");
+		ccPackOptObj.setVendorName("walmart");
+		ccPackOptObj.setMaxNbrOfPacks(1);
+		ccPackOptObj.setMaxUnitsPerPack(1);
+		ccPackOptObj.setFactoryId("123");
+		ccPackOptObj.setPortOfOriginName("cc");
+		ccPkOptList.add(ccPackOptObj);
+		List<Lvl4> lvl4s = packOptimizationService.subCategoryResponseList(subCatgList, finelineList, stylePkOptList,
+				ccPkOptList);
+		assertEquals(5147, lvl4s.get(0).getFinelines().get(0).getFinelineNbr());
+		assertEquals("34_2968_3_18_2", lvl4s.get(0).getFinelines().get(0).getStyles().get(0).getStyleNbr());
+		assertEquals("34_2968_3_18_2_BLACK SOOT",
+				lvl4s.get(0).getFinelines().get(0).getStyles().get(0).getCustomerChoices().get(0).getCcId());
+
 	}
+
+	@Test
+	public void testGetPackOptFinelineDetails() {
+		finelinePackOptimizationResponseList = new ArrayList<FineLinePackOptimizationResponseDTO>();
+		FineLinePackOptimizationResponseDTO fineLinePackOptimizationResponse = new FineLinePackOptimizationResponseDTO();
+		fineLinePackOptimizationResponse.setPlanId(483l);
+		fineLinePackOptimizationResponse.setAhsSizeDesc("XL");
+		fineLinePackOptimizationResponse.setCcId("34_5147_3_21_4_SEA TURTLE/DARK NAVY");
+		fineLinePackOptimizationResponse.setFinelineNbr(5147);
+		fineLinePackOptimizationResponse.setFixtureTypeRollupName("Walls");
+		fineLinePackOptimizationResponse.setMerchMethod(1);
+		fineLinePackOptimizationResponse.setPlanDesc("Black");
+		finelinePackOptimizationResponseList.add(fineLinePackOptimizationResponse);
+		lenient().doNothing().when(packOptimizationMapper).mapPackOptimizationFineline(fineLinePackOptimizationResponse,
+				finelinePackOptimizationResponse, 483l);
+		Mockito.when(finelinePackOptimizationRepository.getPackOptByFineline(483l, 5147))
+				.thenReturn(finelinePackOptimizationResponseList);
+		finelinePackOptimizationResponse = packOptimizationService.getPackOptFinelineDetails(483l, 5147);
+		Mockito.verify(packOptimizationMapper, Mockito.times(1)).mapPackOptimizationFineline(Mockito.any(),
+				Mockito.any(), Mockito.any());
+		assertNotNull(fineLinePackOptimizationResponse);
+	}	
+	
+	@Test
+	public void testGetMerchantPkOptConstraintDetails() {
+		MerchantPackOptimization merchPackOptObj = new MerchantPackOptimization();
+		merchPackOptObj.setVendorName("walmart");
+		merchPackOptObj.setMaxNbrOfPacks(3);
+		merchPackOptObj.setMaxUnitsPerPack(1);
+		merchPackOptObj.setFactoryId("123");
+		merchPackOptObj.setPortOfOriginName("cc");
+		Constraints constraints = packOptimizationService.getMerchantPkOptConstraintDetails(merchPackOptObj);
+		assertEquals("123", constraints.getCcLevelConstraints().get(0).getFactoryIds());
+		assertEquals(3, constraints.getSupplierConstraints().getMaxPacks());
+		assertEquals(1, constraints.getSupplierConstraints().getMaxUnitsPerPack());
+	}	
 }
