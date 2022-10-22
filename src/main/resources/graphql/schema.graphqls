@@ -86,6 +86,10 @@ input CustomerChoiceRequest {
 
 type InitialSetResponseOne{
 	finelineNbr: Int
+	intialSetStyles: [IntialSetStyle]
+}
+
+type IntialSetStyle{
 	styleId: String
 	initialSetPlan: [InitialSetPlan]
 }

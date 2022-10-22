@@ -11,6 +11,7 @@ import com.walmart.aex.sp.dto.commitmentreport.InitialSetResponseOne;
 import com.walmart.aex.sp.dto.commitmentreport.Metrics;
 import com.walmart.aex.sp.dto.commitmentreport.PackDetails;
 import com.walmart.aex.sp.dto.commitmentreport.RFAInitialSetBumpSetResponse;
+import com.walmart.aex.sp.dto.commitmentreport.IntialSetStyle;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,24 +20,29 @@ import lombok.extern.slf4j.Slf4j;
 public class InitialSetPlanMapper {
 	
 	public void mapInitialSetPlan(RFAInitialSetBumpSetResponse rfaInitialSetBumpSetResponse, InitialSetResponseOne response, Integer fineline) {
-		if(response.getStyleId()==null) {
-			setInitialSetStyle(rfaInitialSetBumpSetResponse,response,fineline);	
-		}else if(rfaInitialSetBumpSetResponse.getStyle_id().equalsIgnoreCase(response.getStyleId()) && response.getFinelineNbr().equals(fineline)) {
-			response.setInitialSetPlan(mapInitialSet(rfaInitialSetBumpSetResponse, response));	
-		}else {
-			setInitialSetStyle(rfaInitialSetBumpSetResponse,response,fineline);
-		}
-	}
-	
-	private void setInitialSetStyle(RFAInitialSetBumpSetResponse rfaInitialSetBumpSetResponse, InitialSetResponseOne response, Integer fineline) {
 		response.setFinelineNbr(fineline);
-		response.setStyleId(rfaInitialSetBumpSetResponse.getStyle_id());
-		response.setInitialSetPlan(mapInitialSet(rfaInitialSetBumpSetResponse, response));
+		response.setIntialSetStyles(mapInitialSetStyle(rfaInitialSetBumpSetResponse, response));
 		
 	}
+	
+	private List<IntialSetStyle> mapInitialSetStyle(RFAInitialSetBumpSetResponse rfaInitialSetBumpSetResponse, InitialSetResponseOne response) {
+		List<IntialSetStyle> styles = Optional.ofNullable(response.getIntialSetStyles()).orElse(new ArrayList<>());
 
-	private List<InitialSetPlan> mapInitialSet(RFAInitialSetBumpSetResponse rfaInitialSetBumpSetResponse, InitialSetResponseOne response) {
-		List<InitialSetPlan> initialSetPlans = Optional.ofNullable(response.getInitialSetPlan()).orElse(new ArrayList<>());
+		styles.stream().filter(styleObj -> rfaInitialSetBumpSetResponse.getStyle_id().equals(styleObj.getStyleId())).findFirst()
+				.ifPresentOrElse(styleObj -> styleObj.setInitialSetPlan(mapInitialSet(rfaInitialSetBumpSetResponse, styleObj)),
+						() -> setInitialSetStyle(rfaInitialSetBumpSetResponse, styles));
+		return styles;
+	}
+	
+	private void setInitialSetStyle(RFAInitialSetBumpSetResponse rfaInitialSetBumpSetResponse, List<IntialSetStyle> styles) {
+		IntialSetStyle style = new IntialSetStyle();
+		style.setStyleId(rfaInitialSetBumpSetResponse.getStyle_id());
+		style.setInitialSetPlan(mapInitialSet(rfaInitialSetBumpSetResponse, style));
+		styles.add(style);
+	}
+	
+	private List<InitialSetPlan> mapInitialSet(RFAInitialSetBumpSetResponse rfaInitialSetBumpSetResponse, IntialSetStyle style) {
+		List<InitialSetPlan> initialSetPlans = Optional.ofNullable(style.getInitialSetPlan()).orElse(new ArrayList<>());
 
 		initialSetPlans.stream().filter(initialSetPlan -> rfaInitialSetBumpSetResponse.getIn_store_week().equals(initialSetPlan.getInStoreWeek())).findFirst()
 				.ifPresentOrElse(initialSetPlan -> initialSetPlan.setPackDetails(mapInitialSetPack(rfaInitialSetBumpSetResponse, initialSetPlan)),

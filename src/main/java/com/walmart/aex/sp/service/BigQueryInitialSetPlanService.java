@@ -65,6 +65,7 @@ public class BigQueryInitialSetPlanService {
 						log.error("JsonProcessingException \n" + e.getMessage());
 					}	             
 	         }));
+	         List<RFAInitialSetBumpSetResponse> rfaBsRes = new ArrayList<>();
 	         for (RFAInitialSetBumpSetResponse rfaInitialSetResponse : rfaInitialSetBumpSetResponses) {
 				for (RFAInitialSetBumpSetResponse rfaBumpSetResponse : rfaInitialSetBumpSetResponseBs) {
 					if(rfaBumpSetResponse.getPack_id().equalsIgnoreCase(rfaInitialSetResponse.getPack_id())) {
@@ -78,11 +79,11 @@ public class BigQueryInitialSetPlanService {
 						rfaRes.setBumppack_ratio(rfaBumpSetResponse.getBumppack_ratio());
 						rfaRes.setIs_quantity(rfaBumpSetResponse.getIs_quantity());
 						rfaRes.setInitialpack_ratio(rfaInitialSetResponse.getInitialpack_ratio());
-						rfaInitialSetBumpSetResponses.add(rfaRes);
+						rfaBsRes.add(rfaRes);
 					}
 				}
 			}
-	         
+	         rfaInitialSetBumpSetResponses.addAll(rfaBsRes);
 	         log.info("Query performed successfully.");
 	     }catch (Exception e) {
 	         log.error("Query not performed \n" + e.getMessage());
