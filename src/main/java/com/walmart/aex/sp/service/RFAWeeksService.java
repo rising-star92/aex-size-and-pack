@@ -32,7 +32,6 @@ public class RFAWeeksService {
         headers.put("WM_CONSUMER.ID", graphQLProperties.getAssortProductConsumerId());
         headers.put("WM_SVC.NAME", graphQLProperties.getAssortProductConsumerName());
         headers.put("WM_SVC.ENV", graphQLProperties.getAssortProductConsumerEnv());
-        headers.put("wm_consumer.id", bqfpServiceProperties.getConsumerId());
         Map<String, Object> data = new HashMap<>();
         Map<String, Object> variablevalues = new HashMap<>();
         variablevalues.put("planId", planId);
