@@ -4,7 +4,6 @@ package com.walmart.aex.sp.entity;
 import lombok.*;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.Set;
 
 @Getter
@@ -28,7 +27,7 @@ public class FixtureTypeRollUp  {
 
 
     @OneToMany(mappedBy = "fixtureTypeRollUp", fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL, orphanRemoval = true)
+            cascade = CascadeType.ALL)
     private Set<SpFineLineChannelFixture> spFineLineChannelFixtures;
 
 }
