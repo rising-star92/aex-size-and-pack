@@ -12,9 +12,5 @@ public class SupplierConstraints {
 	private String portOfOrigin;
 
 	private String supplierName;
-	
-	private Integer maxUnitsPerPack;
-	
-	private Integer maxPacks;
 
 }
