@@ -55,7 +55,7 @@ public class StrategyFetchService {
     }
 
     private Object post(String url, String query, Map<String, String> headers, Map<String, Object> data, Function<Payload, ?> responseFunc) throws SizeAndPackException {
-        GraphQLResponse graphQLResponse = graphQLService.post(url, query, headers, data, GraphQLResponse.class);
+        GraphQLResponse graphQLResponse = graphQLService.post(url, query, headers, data);
 
         if (CollectionUtils.isEmpty(graphQLResponse.getErrors()))
             return Optional.ofNullable(graphQLResponse)

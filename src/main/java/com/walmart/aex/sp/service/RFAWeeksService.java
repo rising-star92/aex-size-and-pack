@@ -1,6 +1,6 @@
 package com.walmart.aex.sp.service;
 
-import com.walmart.aex.sp.dto.gql.GraphQLRfaResponse;
+import com.walmart.aex.sp.dto.gql.GraphQLResponse;
 import com.walmart.aex.sp.exception.SizeAndPackException;
 import com.walmart.aex.sp.properties.BQFPServiceProperties;
 import com.walmart.aex.sp.properties.GraphQLProperties;
@@ -24,7 +24,7 @@ public class RFAWeeksService {
     @ManagedConfiguration
     private BQFPServiceProperties bqfpServiceProperties;
 
-    public GraphQLRfaResponse getRFAWeeksByFineline(Integer fineLineNbr,
+    public GraphQLResponse getRFAWeeksByFineline(Integer fineLineNbr,
                                                    Integer planId,
                                                    Integer lvl3Nbr,
                                                    Integer lvl4Nbr) {
@@ -40,14 +40,14 @@ public class RFAWeeksService {
         variablevalues.put("lvl3Nbr", lvl3Nbr);
         variablevalues.put("lvl4Nbr", lvl4Nbr);
         data.put("rfaWeekRequest", variablevalues);
-        GraphQLRfaResponse graphQLRfaResponse = null;
+        GraphQLResponse graphQLResponse = null;
         try {
-            graphQLRfaResponse = graphQLService.post(graphQLProperties.getRfaWeeksUrl(),
+            graphQLResponse = graphQLService.post(graphQLProperties.getRfaWeeksUrl(),
                     graphQLProperties.getRfaWeeksQuery(),
-                     headers, data, GraphQLRfaResponse.class);
+                     headers, data);
         } catch (SizeAndPackException e) {
             log.error("An Exception occured while fetching the result from RFA {}", e.getMessage());
         }
-        return graphQLRfaResponse;
+        return graphQLResponse;
     }
 }
