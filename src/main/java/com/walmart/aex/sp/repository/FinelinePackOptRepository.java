@@ -61,27 +61,12 @@ public interface FinelinePackOptRepository
             "analytic.lastName,\n" +
             "analytic.returnMessage ) \n"+
             "FROM MerchCatPlan  merchCatPlan \n" +
-            "inner JOIN MerchantPackOptimization merchPackOpt ON merchCatPlan.merchCatPlanId.lvl3Nbr = merchPackOpt.merchantPackOptimizationID.repTLvl3 \n" +
-            "AND merchCatPlan.merchCatPlanId.lvl2Nbr = merchPackOpt.merchantPackOptimizationID.repTLvl2 \n" +
-            "AND merchCatPlan.merchCatPlanId.lvl1Nbr = merchPackOpt.merchantPackOptimizationID.repTLvl1 \n" +
-            "AND merchCatPlan.merchCatPlanId.lvl0Nbr = merchPackOpt.merchantPackOptimizationID.repTLvl0 \n" +
-            "AND merchCatPlan.merchCatPlanId.channelId = merchPackOpt.channelText.channelId \n" +
-            "AND merchCatPlan.merchCatPlanId.planId = merchPackOpt.merchantPackOptimizationID.planId \n" +
-
             "inner JOIN SubCatPlan subCatPlan ON merchCatPlan.merchCatPlanId.lvl3Nbr = subCatPlan.merchCatPlan.merchCatPlanId.lvl3Nbr \n" +
             "AND merchCatPlan.merchCatPlanId.lvl2Nbr = subCatPlan.merchCatPlan.merchCatPlanId.lvl2Nbr \n" +
             "AND merchCatPlan.merchCatPlanId.lvl1Nbr = subCatPlan.merchCatPlan.merchCatPlanId.lvl1Nbr \n" +
             "AND merchCatPlan.merchCatPlanId.lvl0Nbr = subCatPlan.merchCatPlan.merchCatPlanId.lvl0Nbr \n" +
             "AND merchCatPlan.merchCatPlanId.channelId = subCatPlan.merchCatPlan.merchCatPlanId.channelId \n" +
             "AND merchCatPlan.merchCatPlanId.planId = subCatPlan.merchCatPlan.merchCatPlanId.planId \n" +
-
-            "inner JOIN SubCatgPackOptimization subCatPackOpt ON subCatPlan.lvl4Nbr = subCatPackOpt.subCatgPackOptimizationID.repTLvl4 \n" +
-            "AND subCatPlan.merchCatPlan.merchCatPlanId.lvl3Nbr = subCatPackOpt.subCatgPackOptimizationID.merchantPackOptimizationID.repTLvl3 \n" +
-            "AND subCatPlan.merchCatPlan.merchCatPlanId.lvl2Nbr = subCatPackOpt.subCatgPackOptimizationID.merchantPackOptimizationID.repTLvl2 \n" +
-            "AND subCatPlan.merchCatPlan.merchCatPlanId.lvl1Nbr = subCatPackOpt.subCatgPackOptimizationID.merchantPackOptimizationID.repTLvl1 \n" +
-            "AND subCatPlan.merchCatPlan.merchCatPlanId.lvl0Nbr = subCatPackOpt.subCatgPackOptimizationID.merchantPackOptimizationID.repTLvl0 \n" +
-            "AND subCatPlan.merchCatPlan.merchCatPlanId.channelId = subCatPackOpt.channelText.channelId \n" +
-            "AND subCatPlan.merchCatPlan.merchCatPlanId.planId = subCatPackOpt.subCatgPackOptimizationID.merchantPackOptimizationID.planId\n" +
 
             "inner JOIN  FinelinePlan  finePlan ON finePlan.lvl3Nbr = subCatPlan.merchCatPlan.merchCatPlanId.lvl3Nbr \n" +
             "AND subCatPlan.lvl4Nbr = finePlan.finelinePlanId.subCatPlanId.lvl4Nbr \n" +
@@ -91,15 +76,6 @@ public interface FinelinePackOptRepository
             "AND subCatPlan.merchCatPlan.merchCatPlanId.channelId = finePlan.finelinePlanId.subCatPlanId.merchCatPlanId.channelId \n" +
             "AND subCatPlan.merchCatPlan.merchCatPlanId.planId = finePlan.finelinePlanId.subCatPlanId.merchCatPlanId.planId \n" +
 
-            "inner JOIN  FineLinePackOptimization  fineLinePackOpt ON finePlan.finelinePlanId.finelineNbr = fineLinePackOpt.finelinePackOptId.finelineNbr \n" +
-            "AND finePlan.finelinePlanId.subCatPlanId.lvl4Nbr =  fineLinePackOpt.finelinePackOptId.subCatgPackOptimizationID.repTLvl4\n" +
-            "AND subCatPlan.merchCatPlan.merchCatPlanId.lvl3Nbr = fineLinePackOpt.finelinePackOptId.subCatgPackOptimizationID.merchantPackOptimizationID.repTLvl3 \n" +
-            "AND finePlan.finelinePlanId.subCatPlanId.merchCatPlanId.lvl2Nbr = fineLinePackOpt.finelinePackOptId.subCatgPackOptimizationID.merchantPackOptimizationID.repTLvl2 \n" +
-            "AND finePlan.finelinePlanId.subCatPlanId.merchCatPlanId.lvl1Nbr = fineLinePackOpt.finelinePackOptId.subCatgPackOptimizationID.merchantPackOptimizationID.repTLvl1 \n" +
-            "AND finePlan.finelinePlanId.subCatPlanId.merchCatPlanId.lvl0Nbr = fineLinePackOpt.finelinePackOptId.subCatgPackOptimizationID.merchantPackOptimizationID.repTLvl0 \n" +
-            "AND finePlan.finelinePlanId.subCatPlanId.merchCatPlanId.channelId = fineLinePackOpt.channelText.channelId \n" +
-            "AND finePlan.finelinePlanId.subCatPlanId.merchCatPlanId.planId = fineLinePackOpt.finelinePackOptId.subCatgPackOptimizationID.merchantPackOptimizationID.planId \n" +
-
             "inner JOIN SpFineLineChannelFixture spFlChFix ON finePlan.finelinePlanId.finelineNbr = spFlChFix.spFineLineChannelFixtureId.fineLineNbr \n" +
             "AND finePlan.finelinePlanId.subCatPlanId.lvl4Nbr = spFlChFix.spFineLineChannelFixtureId.lvl4Nbr \n" +
             "AND finePlan.lvl3Nbr = spFlChFix.spFineLineChannelFixtureId.lvl3Nbr \n" +
@@ -108,6 +84,30 @@ public interface FinelinePackOptRepository
             "AND finePlan.finelinePlanId.subCatPlanId.merchCatPlanId.lvl0Nbr = spFlChFix.spFineLineChannelFixtureId.lvl0Nbr \n" +
             "AND finePlan.finelinePlanId.subCatPlanId.merchCatPlanId.planId = spFlChFix.spFineLineChannelFixtureId.planId \n" +
             "AND (spFlChFix.bumpPackQty + spFlChFix.initialSetQty > 0 OR spFlChFix.buyQty > 0) \n" +
+
+            "left JOIN MerchantPackOptimization merchPackOpt ON merchCatPlan.merchCatPlanId.lvl3Nbr = merchPackOpt.merchantPackOptimizationID.repTLvl3 \n" +
+            "AND merchCatPlan.merchCatPlanId.lvl2Nbr = merchPackOpt.merchantPackOptimizationID.repTLvl2 \n" +
+            "AND merchCatPlan.merchCatPlanId.lvl1Nbr = merchPackOpt.merchantPackOptimizationID.repTLvl1 \n" +
+            "AND merchCatPlan.merchCatPlanId.lvl0Nbr = merchPackOpt.merchantPackOptimizationID.repTLvl0 \n" +
+            "AND merchCatPlan.merchCatPlanId.channelId = merchPackOpt.channelText.channelId \n" +
+            "AND merchCatPlan.merchCatPlanId.planId = merchPackOpt.merchantPackOptimizationID.planId \n" +
+
+            "left JOIN SubCatgPackOptimization subCatPackOpt ON subCatPlan.lvl4Nbr = subCatPackOpt.subCatgPackOptimizationID.repTLvl4 \n" +
+            "AND subCatPlan.merchCatPlan.merchCatPlanId.lvl3Nbr = subCatPackOpt.subCatgPackOptimizationID.merchantPackOptimizationID.repTLvl3 \n" +
+            "AND subCatPlan.merchCatPlan.merchCatPlanId.lvl2Nbr = subCatPackOpt.subCatgPackOptimizationID.merchantPackOptimizationID.repTLvl2 \n" +
+            "AND subCatPlan.merchCatPlan.merchCatPlanId.lvl1Nbr = subCatPackOpt.subCatgPackOptimizationID.merchantPackOptimizationID.repTLvl1 \n" +
+            "AND subCatPlan.merchCatPlan.merchCatPlanId.lvl0Nbr = subCatPackOpt.subCatgPackOptimizationID.merchantPackOptimizationID.repTLvl0 \n" +
+            "AND subCatPlan.merchCatPlan.merchCatPlanId.channelId = subCatPackOpt.channelText.channelId \n" +
+            "AND subCatPlan.merchCatPlan.merchCatPlanId.planId = subCatPackOpt.subCatgPackOptimizationID.merchantPackOptimizationID.planId\n" +
+
+            "left JOIN  FineLinePackOptimization  fineLinePackOpt ON finePlan.finelinePlanId.finelineNbr = fineLinePackOpt.finelinePackOptId.finelineNbr \n" +
+            "AND finePlan.finelinePlanId.subCatPlanId.lvl4Nbr =  fineLinePackOpt.finelinePackOptId.subCatgPackOptimizationID.repTLvl4\n" +
+            "AND subCatPlan.merchCatPlan.merchCatPlanId.lvl3Nbr = fineLinePackOpt.finelinePackOptId.subCatgPackOptimizationID.merchantPackOptimizationID.repTLvl3 \n" +
+            "AND finePlan.finelinePlanId.subCatPlanId.merchCatPlanId.lvl2Nbr = fineLinePackOpt.finelinePackOptId.subCatgPackOptimizationID.merchantPackOptimizationID.repTLvl2 \n" +
+            "AND finePlan.finelinePlanId.subCatPlanId.merchCatPlanId.lvl1Nbr = fineLinePackOpt.finelinePackOptId.subCatgPackOptimizationID.merchantPackOptimizationID.repTLvl1 \n" +
+            "AND finePlan.finelinePlanId.subCatPlanId.merchCatPlanId.lvl0Nbr = fineLinePackOpt.finelinePackOptId.subCatgPackOptimizationID.merchantPackOptimizationID.repTLvl0 \n" +
+            "AND finePlan.finelinePlanId.subCatPlanId.merchCatPlanId.channelId = fineLinePackOpt.channelText.channelId \n" +
+            "AND finePlan.finelinePlanId.subCatPlanId.merchCatPlanId.planId = fineLinePackOpt.finelinePackOptId.subCatgPackOptimizationID.merchantPackOptimizationID.planId \n" +
 
             "left JOIN AnalyticsMlSend analytic " +
             " ON analytic.planId = finePlan.finelinePlanId.subCatPlanId.merchCatPlanId.planId \n" +
