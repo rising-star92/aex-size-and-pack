@@ -76,7 +76,7 @@ public class PackOptimizationServiceTest {
 	public void testGetPackOptDetails()
 	{
 		Long planId = 362L;
-		Integer channelid = 1;
+		Integer channelId = 1;
 		ChannelText channeltext = new ChannelText();
 		channeltext.setChannelId(1);
 		channeltext.setChannelDesc("Store");
@@ -92,13 +92,13 @@ public class PackOptimizationServiceTest {
 		supplierConstraints.setFactoryIds("120, 121");
 		supplierConstraints.setCountryOfOrigin("USA");
 		supplierConstraints.setPortOfOrigin("Texas");
-		supplierConstraints.setSupplierName("VendorName");
+		supplierConstraints.setSupplierName("Vendor Name");
 
 		CcLevelConstraints ccLevelConstraints = new CcLevelConstraints();
 		ccLevelConstraints.setMaxPacks(50);
 		ccLevelConstraints.setMaxUnitsPerPack(10);
 		ccLevelConstraints.setSinglePackIndicator(1);
-		ccLevelConstraints.setColorCombination("Color Combination");
+		ccLevelConstraints.setColorCombination("Merch Color Combination");
 
 		merchpackOptObj.setPlanId(362L);
 		merchpackOptObj.setLvl0Nbr(0);
@@ -111,11 +111,27 @@ public class PackOptimizationServiceTest {
 		merchpackOptObj.setMerchFactoryId("120, 121");
 		merchpackOptObj.setMerchMaxNbrOfPacks(50);
 		merchpackOptObj.setMerchMaxUnitsPerPack(10);
-		merchpackOptObj.setMerchColorCombination("Color Combination");
+		merchpackOptObj.setMerchColorCombination("Merch Color Combination");
 		merchpackOptObj.setMerchSinglePackInd(1);
-		merchpackOptObj.setMerchSupplierName("VendorName");
+		merchpackOptObj.setMerchSupplierName("Vendor Name");
 		merchpackOptObj.setMerchOriginCountryName("USA");
 		merchpackOptObj.setMerchPortOfOriginName("Texas");
+		merchpackOptObj.setSubCatFactoryId("120");
+		merchpackOptObj.setSubCatMaxNbrOfPacks(20);
+		merchpackOptObj.setSubCatMaxUnitsPerPack(10);
+		merchpackOptObj.setSubCatColorCombination("Sub Category Color Combination");
+		merchpackOptObj.setSubCatSinglePackInd(1);
+		merchpackOptObj.setSubCatSupplierName("Supplier Vendor Name");
+		merchpackOptObj.setSubCatOriginCountryName("USA");
+		merchpackOptObj.setSubCatPortOfOriginName("Texas");
+		merchpackOptObj.setFineLineFactoryId("120");
+		merchpackOptObj.setFineLineMaxNbrOfPacks(5);
+		merchpackOptObj.setFineLineMaxUnitsPerPack(2);
+		merchpackOptObj.setFineLineColorCombination("FineLine Color Combination");
+		merchpackOptObj.setFineLineSinglePackInd(1);
+		merchpackOptObj.setFineLineSupplierName("FineLine Vendor Name");
+		merchpackOptObj.setFineLineOriginCountryName("USA");
+		merchpackOptObj.setFineLinePortOfOriginName("Texas");
 
 		SubCatgPackOptimization subctgOptObj = new SubCatgPackOptimization();
 		SubCatgPackOptimizationID subctgOptID = new SubCatgPackOptimizationID();
@@ -157,10 +173,9 @@ public class PackOptimizationServiceTest {
 
 		merchantPackOptimizationlist.add(merchpackOptObj);
 
-		Mockito.when(packOptfineplanRepo.findByFinePlanPackOptimizationIDPlanIdAndChannelTextChannelId(planId, channelid)).thenReturn(merchantPackOptimizationlist);
+		Mockito.when(packOptfineplanRepo.findByFinePlanPackOptimizationIDPlanIdAndChannelTextChannelId(planId, channelId)).thenReturn(merchantPackOptimizationlist);
 		packOptResponse = packOptimizationService.getPackOptDetails(362L, 1);
-		String expectedResult = "PackOptimizationResponse(planId=362, channel=1, lvl3List=[Lvl3(lvl0Nbr=0, lvl1Nbr=0, lvl2Nbr=0, lvl3Nbr=25, lvl3Name=null, constraints=Constraints(supplierConstraints=SupplierConstraints(factoryIds=120, 121, countryOfOrigin=USA, portOfOrigin=Texas, supplierName=VendorName), ccLevelConstraints=[CcLevelConstraints(maxUnitsPerPack=10, maxPacks=50, singlePackIndicator=1, colorCombination=Color Combination)]), lvl4List=[Lvl4(lvl4Nbr=252, lvl4Name=null, constraints=Constraints(supplierConstraints=SupplierConstraints(factoryIds=null, countryOfOrigin=null, portOfOrigin=null, supplierName=null), ccLevelConstraints=[CcLevelConstraints(maxUnitsPerPack=null, maxPacks=null, singlePackIndicator=null, colorCombination=null)]), finelines=[Fineline(finelineNbr=2542, finelineName=null, altFinelineName=null, channel=null, packOptimizationStatus=NOT SENT, constraints=Constraints(supplierConstraints=SupplierConstraints(factoryIds=null, countryOfOrigin=null, portOfOrigin=null, supplierName=null), ccLevelConstraints=[CcLevelConstraints(maxUnitsPerPack=null, maxPacks=null, singlePackIndicator=null, colorCombination=null)]), styles=null, optimizationDetails=[RunOptimization(name=null, returnMessage=null, startTs=null, endTs=null, runStatusCode=null)])])])])";
-
+		String expectedResult = "PackOptimizationResponse(planId=362, channel=1, lvl3List=[Lvl3(lvl0Nbr=0, lvl1Nbr=0, lvl2Nbr=0, lvl3Nbr=25, lvl3Name=null, constraints=Constraints(supplierConstraints=SupplierConstraints(factoryIds=120, 121, countryOfOrigin=USA, portOfOrigin=Texas, supplierName=Vendor Name), ccLevelConstraints=[CcLevelConstraints(maxUnitsPerPack=10, maxPacks=50, singlePackIndicator=1, colorCombination=Merch Color Combination)]), lvl4List=[Lvl4(lvl4Nbr=252, lvl4Name=null, constraints=Constraints(supplierConstraints=SupplierConstraints(factoryIds=120, countryOfOrigin=USA, portOfOrigin=Texas, supplierName=Supplier Vendor Name), ccLevelConstraints=[CcLevelConstraints(maxUnitsPerPack=10, maxPacks=20, singlePackIndicator=1, colorCombination=Sub Category Color Combination)]), finelines=[Fineline(finelineNbr=2542, finelineName=null, altFinelineName=null, channel=null, packOptimizationStatus=NOT SENT, constraints=Constraints(supplierConstraints=SupplierConstraints(factoryIds=120, countryOfOrigin=USA, portOfOrigin=Texas, supplierName=FineLine Vendor Name), ccLevelConstraints=[CcLevelConstraints(maxUnitsPerPack=2, maxPacks=5, singlePackIndicator=1, colorCombination=FineLine Color Combination)]), styles=null, optimizationDetails=[RunOptimization(name=null, returnMessage=null, startTs=null, endTs=null, runStatusCode=null)])])])])";
 
 		assertNotNull(packOptResponse);
 		assertEquals(packOptResponse.getPlanId(), 362L);
@@ -275,7 +290,7 @@ public class PackOptimizationServiceTest {
 		merchPackOptObj.setPortOfOriginName("cc");
 		Constraints constraints = packOptimizationService.getMerchantPkOptConstraintDetails(merchPackOptObj);
 		assertEquals("123", constraints.getSupplierConstraints().getFactoryIds());
-		assertEquals(3, constraints.getSupplierConstraints().getMaxPacks());
-		assertEquals(1, constraints.getSupplierConstraints().getMaxUnitsPerPack());
+		assertEquals(3, constraints.getCcLevelConstraints().getMaxPacks());
+		assertEquals(1, constraints.getCcLevelConstraints().getMaxUnitsPerPack());
 	}	
 }
