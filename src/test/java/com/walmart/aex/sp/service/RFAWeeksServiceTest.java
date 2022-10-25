@@ -52,7 +52,6 @@ public class RFAWeeksServiceTest {
         headers.put("WM_CONSUMER.ID", graphQLProperties.getAssortProductConsumerId());
         headers.put("WM_SVC.NAME", graphQLProperties.getAssortProductConsumerName());
         headers.put("WM_SVC.ENV", graphQLProperties.getAssortProductConsumerEnv());
-
         Map<String, Object> data = new HashMap<>();
         Map<String, Object> variablevalues = new HashMap<>();
         variablevalues.put("planId", 1);
@@ -62,7 +61,6 @@ public class RFAWeeksServiceTest {
         data.put("rfaWeekRequest", variablevalues);
         Mockito.when(graphQLProperties.getRfaWeeksUrl()).thenReturn("");
         Mockito.when(graphQLProperties.getRfaWeeksQuery()).thenReturn("");
-
         Mockito.when(graphQLService.post("","", headers,data))
                 .thenReturn(graphQLRfaResponseMock);
         GraphQLResponse graphQLRfaResponse = rfaWeeksService.getRFAWeeksByFineline(1, 1, 1, 1);
