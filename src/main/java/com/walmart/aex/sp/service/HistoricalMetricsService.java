@@ -2,8 +2,6 @@ package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.bqfp.RfaWeeksResponse;
 import com.walmart.aex.sp.dto.bqfp.WeeksDTO;
-import com.walmart.aex.sp.dto.gql.GraphQLRfaResponse;
-import com.walmart.aex.sp.dto.gql.Payload;
 import com.walmart.aex.sp.dto.historicalmetrics.HistoricalMetricsRequest;
 import com.walmart.aex.sp.dto.historicalmetrics.HistoricalMetricsResponse;
 import com.walmart.aex.sp.entity.FinelinePlan;
