@@ -1,0 +1,276 @@
+---
+metadata:
+  serviceId: "AEX_SIZE_AND_PACK"
+  serviceConfigVersion: "1.0-PROD"
+  authzPolicies:
+    adminUI:
+      adminGroups:
+        - "apparel-precision-kitt"
+    git:
+      org: "ApparelPrecision"
+      repo: "aex-size-and-pack"
+      branch: "main"
+  externallyReferencedServiceConfig:
+    -
+      serviceId: "AEX_SECURITY_COMMON"
+      serviceConfigVersion: "1.3"
+  notifications:
+    slack:
+      channel: "apparel-precision-ops"
+  deliveryEnvironment: "PROD"
+  locked: false
+configDefinitions:
+  databaseConfig:
+    description: ""
+    resolutionPaths:
+      -
+        default: "/envProfile/envName"
+    properties:
+      sqlServer.connection.idle.timeout.ms:
+        description: "Idle connection timeout in milliseconds"
+        type: "INTEGER"
+        kind: "SINGLE"
+        defaultValue: 30000
+      sqlServer.connection.max.active:
+        description: "Max Active Connections"
+        type: "INTEGER"
+        kind: "SINGLE"
+        defaultValue: 5
+      sqlServer.connection.max.life.time.ms:
+        description: "Max connection lifetime in milliseconds"
+        type: "INTEGER"
+        kind: "SINGLE"
+        defaultValue: 180000
+      sqlServer.connection.pool.initial.size:
+        description: "Connection Pool Initial Size"
+        type: "INTEGER"
+        kind: "SINGLE"
+        defaultValue: 3
+      sqlServer.connection.timeout.ms:
+        description: "Connection Timeout in milliseconds"
+        type: "INTEGER"
+        kind: "SINGLE"
+        defaultValue: 30000
+      sqlServer.driverClassName:
+        description: "SQL Server Driver Class Name"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "com.microsoft.sqlserver.jdbc.SQLServerDriver"
+      sqlServer.url:
+        description: "SP SQL Server DB URL"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "jdbc:sqlserver://us-wm-aex-prod-spo-prod-632b6149-failover-group.database.windows.net:1433;database=us_wm_aex_spo;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;authentication=ActiveDirectoryPassword"
+  httpConfig:
+    description: "HTTP Configurations"
+    resolutionPaths:
+      -
+        default: "/envProfile/envName"
+    properties:
+      http.connectTimeout:
+        description: "Connection Timeout for HTTP Calls"
+        type: "INTEGER"
+        kind: "SINGLE"
+        defaultValue: 18000
+      http.connectionRequestTimeout:
+        description: "Connection Request Timeout for HTTP Calls"
+        type: "INTEGER"
+        kind: "SINGLE"
+        defaultValue: 18000
+      http.readTimeout:
+        description: "Read Timeout for HTTP calls"
+        type: "INTEGER"
+        kind: "SINGLE"
+        defaultValue: 18000
+  midasConfig:
+    description: "Midas Data API Service to Service Authentication"
+    resolutionPaths:
+      - default: "/envProfile/envName"
+    properties:
+      midas.header.consumer:
+        description: "Midas api header consumer Id"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "c8c76594-5e94-49fd-b485-0589fc284f95"
+      midas.header.signatureAuthFlag:
+        description: "Midas api header signature Auth Flag"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "true"
+      midas.header.signatureKeyVersion:
+        description: "Midas api header signature Key Version"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "1"
+      midas.header.signatureTS:
+        description: "Midas header signature TS"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "1646847828093"
+      midas.header.tenant:
+        description: "Midas header tenant"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "aex"
+      "midas.baseURL":
+        description: "Midas api base url"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "http://midas-data-api.prod.midas-api.catdev.prod.us.walmart.net/api/workflow/v1/execute"
+      "midas.historicalSizeMetricsQuery":
+        description: "JSON query for historical size metrics"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: '{"query":{"select":[{"field":"*"}],"from":"get_historical_size_metrics_fineline_cc","params":{"finelineNbr":%d,"lyCompWeekStart":%d,"lyCompWeekEnd":%d,"lvl0Nbr":%d,"lvl1Nbr":%d,"lvl2Nbr":%d,"lvl3Nbr":%d,"lvl4Nbr":%d,"channel":"%s"}}}'
+  buyQtyConfig:
+    description: "Buy Quantity Constants Config"
+    resolutionPaths:
+      - default: "/envProfile/envName"
+    properties:
+      "initialSet.constraint":
+        description: "Initial set threshold"
+        type: "INTEGER"
+        kind: "SINGLE"
+        defaultValue: 2
+      "replenishment.constraint":
+        description: "Replenishment threshold"
+        type: "INTEGER"
+        kind: "SINGLE"
+        defaultValue: 500
+  bqfpServiceConfig:
+    description: ""
+    resolutionPaths:
+      - default: "/envProfile/envName"
+    properties:
+      "bqfp.url":
+        description: "BQFP Service URL"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "https://flow-plan.aex.prod.walmart.net/flow-plan/v1/getBuyQtyFromFlowPlan"
+      "flow.plan.url":
+        description: "URL to get data from Flow Plan"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "https://flow-plan.aex.prod.walmart.net/graphql"
+      "flow.plan.finelineMetricsWeek.query":
+        description: "Query to retrieve bump set in store week"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "query($request:FPMetricsRequest!) { getFPFinelineMetrics(request:$request) {  lvl3List{  lvl4List {  finelines { finelineId finelineName lvl0Nbr lvl1Nbr lvl2Nbr lvl3Nbr lvl4Nbr planId bumpList{ wmYearWeek } } } } } }"
+      "bqfp.consumerId":
+        description: "BQFP SR Consumer ID"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "80eac37e-62ff-4d41-a106-c5bff13827e9"
+      "bqfp.env":
+        description: "BQFP SR Env"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "prod"
+      "bqfp.svcName":
+        description: "BQFP SR Service Name"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "AEX_FLOW_PLAN"
+  integrationHubServiceConfig:
+    description: "IntegrationHub Config"
+    resolutionPaths:
+      - default: "/envProfile/envName"
+    properties:
+      "integrationhub.url":
+        description: "IntegrationHub Service URL"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "http://analytics-api.prod.us-central1.walmart.net/api/packopt?scenario=pack_optimization_dataproc"
+      "integrationhub.sizeAndPackBaseUrl":
+        description: "SizeAndPack Base URL"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "http://aex-size-and-pack.aex.prod.walmart.net"
+      "integrationhub.env":
+        description: "Env we want to run the optimization for"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "prod"
+  graphQlConfig:
+    description: "GraphQL Config"
+    resolutionPaths:
+      - default: "/envProfile/envName"
+    properties:
+      "size.profile.url":
+        description: "Get Size Profile URL from strategy Service"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "https://strategy.aex.prod.walmart.net/graphql"
+      "size.profile.query":
+        description: "Size Profile Query for GraphQL Call"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "query ($sizeProfileRequest:SizeProfileRequest!)\n {\n getCcSizeClus(sizeProfileRequest:  $sizeProfileRequest)\n {\n planId\n lvl0Nbr\n lvl1Nbr\n lvl2Nbr\n lvl3List{\n lvl3Nbr\n lvl4List{\n lvl4Nbr\n finelines{\n finelineNbr\n styles{\n styleNbr\n customerChoices{\n ccId\n clusters{\n clusterID\n sizes{\n ahsSizeId\n sizeDesc\n metrics{\n sizeProfilePct\n adjSizeProfilePct\n avgSizeProfilePct\n adjAvgSizeProfilePct\n }}}}}}}}}}"
+      "size.profile.all.cc.query":
+        description: "Get All CC's Size Profile Query for GraphQL Call"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "query ($sizeProfileRequest:SizeProfileRequest!)\n {\n getAllCcSizeClus(sizeProfileRequest:  $sizeProfileRequest)\n {\n planId\n lvl0Nbr\n lvl1Nbr\n lvl2Nbr\n lvl3List{\n lvl3Nbr\n lvl4List{\n lvl4Nbr\n finelines{\n finelineNbr\n merchMethods{\n fixtureTypeRollupId\n merchMethod\n merchMethodCode\n }\n metrics{\n sizeProfilePct\n adjSizeProfilePct\n avgSizeProfilePct\n adjAvgSizeProfilePct\n }\n clusters{\n clusterID\n sizes{\n ahsSizeId\n sizeDesc\n metrics{\n sizeProfilePct\n adjSizeProfilePct\n avgSizeProfilePct\n adjAvgSizeProfilePct\n }\n }\n }\n styles{\n styleNbr\n metrics{\n sizeProfilePct\n adjSizeProfilePct\n avgSizeProfilePct\n adjAvgSizeProfilePct\n }\n clusters{\n clusterID\n sizes{\n ahsSizeId\n sizeDesc\n metrics{\n sizeProfilePct\n adjSizeProfilePct\n avgSizeProfilePct\n adjAvgSizeProfilePct\n }\n }\n }\n customerChoices{\n ccId\n metrics{\n sizeProfilePct\n adjSizeProfilePct\n avgSizeProfilePct\n adjAvgSizeProfilePct\n }\n clusters{\n clusterID\n sizes{\n ahsSizeId\n sizeDesc\n metrics{\n sizeProfilePct\n adjSizeProfilePct\n avgSizeProfilePct\n adjAvgSizeProfilePct\n }}}}}}}}}}"
+      "buyQty.finelines.size.query":
+        description: "Buy Qty with Sizes for Finelines Query for GraphQL Call"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "query ($planId:Int!,$channel:String!)\n {\n getFinelinesWithSizeAssociation(planId : $planId, channel : $channel)\n {\n planId\n lvl0Nbr\n lvl1Nbr\n lvl2Nbr\n lvl3List{\n lvl3Nbr\n lvl4List{\n lvl4Nbr\n finelines{\n finelineNbr\n }}}}}"
+      "buyQty.style.cc.size.query":
+        description: "Buy Qty with Sizes for Styles and Cc Query for GraphQL Call"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "query ($planId:Int!,$channel:String!,$finelineNbr:Int!)\n {\n getStylesCCsWithSizeAssociation(planId : $planId, channel : $channel, finelineNbr: $finelineNbr)\n {\n planId\n lvl0Nbr\n lvl1Nbr\n lvl2Nbr\n lvl3List{\n lvl3Nbr\n lvl4List{\n lvl4Nbr\n finelines{\n finelineNbr\n styles{\n styleNbr\n customerChoices{\n ccId\n }}}}}}}"
+      "size.profile.consumer.id":
+        description: "Consumer ID to call Strategy Service"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "80eac37e-62ff-4d41-a106-c5bff13827e9"
+      "size.profile.consumer.name":
+        description: "Consumer service name"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "AEX_STRATEGY_SERVICE"
+      "size.profile.consumer.env":
+        description: "Consumer Environment"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "prod"
+      "size.profile.assortproduct.url":
+        description: "Get RFA output from Assort Product Service"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "https://assortproduct.aex.prod.walmart.net/graphql"
+      "size.profile.assortproduct.query":
+        description: "Query to retrieve RFA output"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "query($request:RFASizePackRequest!){getRFADataFromSizePack(rfaSizePackRequest:$request){rfaSizePackData{rpt_lvl_0_nbr rpt_lvl_1_nbr rpt_lvl_2_nbr rpt_lvl_3_nbr rpt_lvl_4_nbr fineline_nbr style_nbr customer_choice fixture_type fixture_group color_family size_cluster_id volume_group_cluster_id store_list store_cnt plan_id_partition}}}"
+      "size.profile.assortproduct.consumer.id":
+        description: "Consumer ID to call Assort Product"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "80eac37e-62ff-4d41-a106-c5bff13827e9"
+      "size.profile.assortproduct.consumer.name":
+        description: "Consumer service name"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "AEX_ASSORTPRODUCT_SERVICE"
+      "size.profile.assortproduct.consumer.env":
+        description: "Consumer Environment"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "prod"
+      "buy.quantification.weeks.query":
+        description: "markDownWeek and inStoreWeek Query for GraphQL Call"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "query ($rfaWeekRequest:RfaWeekRequest!){getRFAWeeksByFineline(rfaWeekRequest:$rfaWeekRequest){planId lvl0Nbr lvl1Nbr lvl2Nbr lvl3Nbr lvl4Nbr finelineNbr inStoreWeek { yearWkNbr wmYearWk wmYearWkLy wmYearWkLly fiscalWeekDesc } markDownWeek { yearWkNbr wmYearWk wmYearWkLy wmYearWkLly fiscalWeekDesc } }}",
+      "buy.quantification.weeks.url":
+        description: "Get buy quantity rfaweek URL from buy quantity Service"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "http://buy-quantification.aex.dev.walmart.net"
+apiVersion: "2.0"
+kind: "ServiceConfig"
