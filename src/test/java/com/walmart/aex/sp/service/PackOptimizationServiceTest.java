@@ -1,12 +1,12 @@
 package com.walmart.aex.sp.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.lenient;
-
-import java.util.*;
-
+import com.walmart.aex.sp.dto.mapper.FineLineMapperDto;
 import com.walmart.aex.sp.dto.packoptimization.*;
+import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
+import com.walmart.aex.sp.entity.*;
+import com.walmart.aex.sp.repository.AnalyticsMlSendRepository;
+import com.walmart.aex.sp.repository.FineLinePackOptimizationRepository;
+import com.walmart.aex.sp.repository.FinelinePackOptRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,22 +15,11 @@ import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.walmart.aex.sp.dto.mapper.FineLineMapperDto;
-import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
-import com.walmart.aex.sp.entity.CcPackOptimization;
-import com.walmart.aex.sp.entity.CcPackOptimizationID;
-import com.walmart.aex.sp.entity.ChannelText;
-import com.walmart.aex.sp.entity.MerchantPackOptimization;
-import com.walmart.aex.sp.entity.MerchantPackOptimizationID;
-import com.walmart.aex.sp.entity.StylePackOptimization;
-import com.walmart.aex.sp.entity.StylePackOptimizationID;
-import com.walmart.aex.sp.entity.SubCatgPackOptimization;
-import com.walmart.aex.sp.entity.SubCatgPackOptimizationID;
-import com.walmart.aex.sp.entity.FineLinePackOptimization;
-import com.walmart.aex.sp.entity.FineLinePackOptimizationID;
-import com.walmart.aex.sp.repository.AnalyticsMlSendRepository;
-import com.walmart.aex.sp.repository.FineLinePackOptimizationRepository;
-import com.walmart.aex.sp.repository.FinelinePackOptRepository;
+import java.util.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.lenient;
 
 @ExtendWith(MockitoExtension.class)
 public class PackOptimizationServiceTest {
@@ -292,5 +281,5 @@ public class PackOptimizationServiceTest {
 		assertEquals("123", constraints.getSupplierConstraints().getFactoryIds());
 		assertEquals(3, constraints.getCcLevelConstraints().getMaxPacks());
 		assertEquals(1, constraints.getCcLevelConstraints().getMaxUnitsPerPack());
-	}	
+	}
 }
