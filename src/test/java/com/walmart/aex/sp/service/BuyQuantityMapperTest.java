@@ -105,12 +105,16 @@ public class BuyQuantityMapperTest {
         buyQntyResponseDTO.setLvl4Nbr(11);
         buyQntyResponseDTO.setReplnQty(14);
         buyQntyResponseDTO.setInitialSetQty(10);
+        buyQntyResponseDTO.setLvl0Nbr(23);
         BuyQtyResponse fetchFineLineResponse= getBuyQtyResponse(buyQntyResponseDTO,null);
         buyQunatityMapper.mapBuyQntyLvl2Sp(buyQntyResponseDTO,fetchFineLineResponse,null);
         assertNotNull(fetchFineLineResponse);
         assertEquals(471l,fetchFineLineResponse.getPlanId());
         MetricsDto metricsDto = fetchFineLineResponse.getLvl3List().get(0).getLvl4List().get(0).getMetrics();
-        assertEquals(metricsDto.getBuyQty(),(654+234));
+        assertEquals(metricsDto.getBuyQty(),(888));
+        assertEquals(23,fetchFineLineResponse.getLvl0Nbr());
+        assertEquals(11, fetchFineLineResponse.getLvl3List().get(0).getLvl4List().get(0).getLvl4Nbr());
+        assertEquals(123, fetchFineLineResponse.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getFinelineNbr());
     }
 
     @Test
@@ -225,7 +229,6 @@ public class BuyQuantityMapperTest {
         buyQntyResponseDTO.setCcReplnQty(234);
         buyQntyResponseDTO.setChannelId(1);
 
-
         List<StyleDto> styleDtoList= new ArrayList<>();
         StyleDto styleDto = new StyleDto();
         List<CustomerChoiceDto> customerChoiceDtoList = new ArrayList<>();
@@ -243,7 +246,12 @@ public class BuyQuantityMapperTest {
         buyQunatityMapper.mapBuyQntyLvl2Sp(buyQntyResponseDTO,fetchFineLineResponse,2816);
         assertEquals(12,fetchFineLineResponse.getPlanId());
         MetricsDto metricsDto = fetchFineLineResponse.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getMetrics();
-        assertEquals(metricsDto.getBuyQty(),(700+234));
+        assertEquals(metricsDto.getBuyQty(),(934));
+        assertEquals(12,fetchFineLineResponse.getLvl2Nbr());
+        assertEquals(11, fetchFineLineResponse.getLvl3List().get(0).getLvl4List().get(0).getLvl4Nbr());
+        assertEquals(2816, fetchFineLineResponse.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getFinelineNbr());
+        assertEquals("34_2816_2_19_2", fetchFineLineResponse.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getStyleNbr());
+        assertEquals("34_2816_2_19_2_CHARCOAL GREY HEATHER", fetchFineLineResponse.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getCustomerChoices().get(0).getCcId());
     }
 
     private BuyQtyResponse sizeProfileResponseFromJson(String filename) throws IOException {
