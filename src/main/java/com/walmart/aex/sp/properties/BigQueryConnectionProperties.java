@@ -12,12 +12,15 @@ public interface BigQueryConnectionProperties {
 	@Property(propertyName = "rfa.datasetName")
 	String getRFADataSetName();
 	
-	@Property(propertyName = "rfa.datasetName.stage")
-	String getRFADataSetNameStage();
-
 	@Property(propertyName = "rfa.table.sp.packoptimization.output")
 	String getRFASPPackOptTableName();
 	
 	@Property(propertyName = "rfa.table.sp.cc.output")
 	String getRFACCStageTable();
+	
+	@Property(propertyName = "ml.projectId")
+	String getMLProjectId();
+
+	@Property(propertyName = "ml.datasetName")
+	String getMLDataSetName();
 }

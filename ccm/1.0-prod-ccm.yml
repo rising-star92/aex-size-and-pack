@@ -262,5 +262,40 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "prod"
+  bigQueryConfig:
+    description: "Big Query Config to connect with GCP tables"
+    resolutionPaths:
+      - default: "/envProfile/envName"
+    properties:
+      "rfa.projectId":
+        description: "RFA Project ID"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "wmt-e12743607538928aa17e0e22f9"
+      "ml.projectId":
+        description: "ML Project ID"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "wmt-mtech-assortment-ml-prod"
+      "rfa.datasetName":
+        description: "RFA OUTPUT"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "commitment_report_rfa_output"
+      "ml.datasetName":
+        description: "ML OUTPUT"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "aex_pack_opt_prod"
+      "rfa.table.sp.packoptimization.output":
+        description: "RFA Output for SP Pack Optimization for Prod"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "output_prod"
+      "rfa.table.sp.cc.output":
+        description: "RFA Output for SP Pack Optimization"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "rfa_cc_out_parquet"
 apiVersion: "2.0"
 kind: "ServiceConfig"

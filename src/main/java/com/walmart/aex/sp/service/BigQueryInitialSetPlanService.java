@@ -32,12 +32,14 @@ public class BigQueryInitialSetPlanService {
 		List<RFAInitialSetBumpSetResponse> rfaInitialSetBumpSetResponses = new ArrayList<>();
 		List<RFAInitialSetBumpSetResponse> rfaInitialSetBumpSetResponseBs = new ArrayList<>();
 	     try {
-	         String projectId = bigQueryConnectionProperties.getRFAProjectId();
-	         String datasetName = bigQueryConnectionProperties.getRFADataSetName();
+	         String projectId = bigQueryConnectionProperties.getMLProjectId();
+	         String datasetName = bigQueryConnectionProperties.getMLDataSetName();
 	         String tableNameSp = bigQueryConnectionProperties.getRFASPPackOptTableName();
+	         String rfaProjectId = bigQueryConnectionProperties.getRFAProjectId();
+	         String rfaDatasetName = bigQueryConnectionProperties.getRFADataSetName();
 	         String tableNameCc = bigQueryConnectionProperties.getRFACCStageTable();
 	         String projectIdDatasetNameTableNameSp = projectId + "." + datasetName + "." + tableNameSp;
-	         String projectIdDatasetNameTableNameCc = projectId + "." + datasetName + "." + tableNameCc;
+	         String projectIdDatasetNameTableNameCc = rfaProjectId + "." + rfaDatasetName + "." + tableNameCc;
 	         String spQueryStringIs=getSizePackIntialSetQueryString(projectIdDatasetNameTableNameCc, projectIdDatasetNameTableNameSp, rfaSizePackRequest.getPlanId(),rfaSizePackRequest.getFinelineNbr());
 	         String spQueryStringBs=getSizePackBumpSetQueryString(projectIdDatasetNameTableNameSp, rfaSizePackRequest.getPlanId(),rfaSizePackRequest.getFinelineNbr());
 	         BigQuery bigQuery = BigQueryOptions.getDefaultInstance().getService();
