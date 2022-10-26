@@ -8,7 +8,7 @@ type Query {
      getSizeBuyQtyDetails(buyQtyRequest: BuyQtyRequest!): BuyQtyResponse!
      fetchHistoricalMetricsFineline(request: HistoricalMetricsRequest!) : HistoricalMetricsResponse!
      fetchHistoricalMetricsCC(request: HistoricalMetricsRequest!) : HistoricalMetricsResponse!
-     getInitialAndBumpSetDetails(request: InitialSetPackRequest): [InitialSetResponseOne]!
+     getInitialAndBumpSetDetails(request: InitialSetPackRequest): InitialBumpSetResponse!
      fetchInitialSetBumpPackByPlanFineline(request: BuyQtyRequest!): BuyQtyResponse!
      fetchReplnFullHierarchyByPlanFineline(replenishmentRequest: ReplenishmentRequest!): ReplenishmentResponse!
 }
@@ -84,7 +84,7 @@ input CustomerChoiceRequest {
     ccId: String
 }
 
-type InitialSetResponseOne{
+type InitialBumpSetResponse{
 	finelineNbr: Int
 	intialSetStyles: [IntialSetStyle]
 }

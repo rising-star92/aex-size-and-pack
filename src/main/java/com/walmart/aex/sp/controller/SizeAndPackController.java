@@ -3,7 +3,7 @@ package com.walmart.aex.sp.controller;
 
 import com.walmart.aex.sp.dto.commitmentreport.InitialSetPackRequest;
 import com.walmart.aex.sp.dto.commitmentreport.InitialSetResponse;
-import com.walmart.aex.sp.dto.commitmentreport.InitialSetResponseOne;
+import com.walmart.aex.sp.dto.commitmentreport.InitialBumpSetResponse;
 import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDTO;
 import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDeleteDTO;
 import com.walmart.aex.sp.dto.planhierarchy.SizeAndPackResponse;
@@ -79,7 +79,7 @@ public class SizeAndPackController {
     }
 
     @QueryMapping
-    public List<InitialSetResponseOne> getInitialAndBumpSetDetails(@Argument InitialSetPackRequest request) {
+    public InitialBumpSetResponse getInitialAndBumpSetDetails(@Argument InitialSetPackRequest request) {
         return sizeAndPackService.getInitialAndBumpSetDetails(request);
     }
 

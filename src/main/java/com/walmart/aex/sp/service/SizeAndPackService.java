@@ -1,9 +1,8 @@
 package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.buyquantity.*;
+import com.walmart.aex.sp.dto.commitmentreport.InitialBumpSetResponse;
 import com.walmart.aex.sp.dto.commitmentreport.InitialSetPackRequest;
-import com.walmart.aex.sp.dto.commitmentreport.InitialSetResponse;
-import com.walmart.aex.sp.dto.commitmentreport.InitialSetResponseOne;
 import com.walmart.aex.sp.dto.commitmentreport.RFAInitialSetBumpSetResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -291,9 +290,8 @@ public class SizeAndPackService {
         }
     }
     
-    public List<InitialSetResponseOne> getInitialAndBumpSetDetails(InitialSetPackRequest request) {
-    	InitialSetResponseOne response = new InitialSetResponseOne();
-    	List<InitialSetResponseOne> responseL = new ArrayList<>();
+    public InitialBumpSetResponse getInitialAndBumpSetDetails(InitialSetPackRequest request) {
+    	InitialBumpSetResponse response = new InitialBumpSetResponse();
 		List<RFAInitialSetBumpSetResponse> rfaInitialSetBumpSetResponses = new ArrayList<>();
 		try {
 			if (request.getPlanId() != null && request.getFinelineNbr() != null) {
@@ -301,12 +299,11 @@ public class SizeAndPackService {
 			}
 			Optional.of(rfaInitialSetBumpSetResponses).stream().flatMap(Collection::stream).forEach(
 					intialSetResponseOne -> initialSetPlanMapper.mapInitialSetPlan(intialSetResponseOne, response, request.getFinelineNbr()));
-			responseL.add(response);
 		} catch (Exception e) {
 			log.error("Exception While fetching Initial Set Pack Qunatities {}:", e);
 		}
 
-		return responseL;
+		return response;
 	}
     
     

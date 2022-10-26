@@ -7,7 +7,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.walmart.aex.sp.dto.commitmentreport.InitialSetPlan;
-import com.walmart.aex.sp.dto.commitmentreport.InitialSetResponseOne;
+import com.walmart.aex.sp.dto.commitmentreport.InitialBumpSetResponse;
 import com.walmart.aex.sp.dto.commitmentreport.Metrics;
 import com.walmart.aex.sp.dto.commitmentreport.PackDetails;
 import com.walmart.aex.sp.dto.commitmentreport.RFAInitialSetBumpSetResponse;
@@ -19,13 +19,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class InitialSetPlanMapper {
 	
-	public void mapInitialSetPlan(RFAInitialSetBumpSetResponse rfaInitialSetBumpSetResponse, InitialSetResponseOne response, Integer fineline) {
+	public void mapInitialSetPlan(RFAInitialSetBumpSetResponse rfaInitialSetBumpSetResponse, InitialBumpSetResponse response, Integer fineline) {
 		response.setFinelineNbr(fineline);
 		response.setIntialSetStyles(mapInitialSetStyle(rfaInitialSetBumpSetResponse, response));
 		
 	}
 	
-	private List<IntialSetStyle> mapInitialSetStyle(RFAInitialSetBumpSetResponse rfaInitialSetBumpSetResponse, InitialSetResponseOne response) {
+	private List<IntialSetStyle> mapInitialSetStyle(RFAInitialSetBumpSetResponse rfaInitialSetBumpSetResponse, InitialBumpSetResponse response) {
 		List<IntialSetStyle> styles = Optional.ofNullable(response.getIntialSetStyles()).orElse(new ArrayList<>());
 
 		styles.stream().filter(styleObj -> rfaInitialSetBumpSetResponse.getStyle_id().equals(styleObj.getStyleId())).findFirst()
