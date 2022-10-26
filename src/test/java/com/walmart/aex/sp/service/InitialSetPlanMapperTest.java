@@ -43,7 +43,6 @@ public class InitialSetPlanMapperTest {
 		Optional.of(rfaInitialSetBumpSetResponses.getRfaInitialSetBumpSetResponses()).stream().flatMap(Collection::stream).forEach(
 				intialSetResponseOne -> initialSetPlanMapper.mapInitialSetPlan(intialSetResponseOne, initialBumpSetResponse, 5141));
 		
-		System.out.println("REsp:::"+initialBumpSetResponse);
 		assertNotNull(initialBumpSetResponse);
 
 		Integer fineline = initialBumpSetResponse.getFinelineNbr();
