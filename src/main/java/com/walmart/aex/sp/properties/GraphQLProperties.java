@@ -44,4 +44,28 @@ public interface GraphQLProperties {
     @Property(propertyName = "buyQty.style.cc.size.query")
     String getBuyQtyStyleCcSizeQuery();
 
+    @Property(propertyName = "buy.qty.rfa.consumer.id")
+    String getBuyQtyRfaConsumerId();
+
+    @Property(propertyName = "buy.qty.rfa.consumer.name")
+    String getBuyQtyRfaConsumerName();
+
+    @Property(propertyName = "buy.qty.rfa.consumer.env")
+    String getBuyQtyRfaConsumerEnv();
+
+    @Property(propertyName = "buy.qty.line.plan.consumer.id")
+    String getBuyQtyLinePlanConsumerId();
+
+    @Property(propertyName = "buy.qty.line.plan.consumer.name")
+    String getBuyQtyLinePlanConsumerName();
+
+    @Property(propertyName = "buy.qty.line.plan.consumer.env")
+    String getBuyQtyLinePlanConsumerEnv();
+
+    @Property(propertyName = "buy.qty.rfa.weeks.url")
+    String getRfaWeeksUrl();
+
+    @Property(propertyName = "buy.qty.rfa.weeks.query")
+    String getRfaWeeksQuery();
+
 }

@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class HistoricalMetricsRequest {
-   private Integer planId;
+   private Long planId;
    private Integer lvl0Nbr;
    private Integer lvl1Nbr;
    private Integer lvl2Nbr;

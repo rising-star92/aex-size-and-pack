@@ -20,5 +20,9 @@ public interface SizeAndPackConstants {
 	public  final Integer WP_DEFAULT = 2;
 	public  final Integer VP_DEFAULT = 12;
 	public  final double VP_WP_RATIO_DEFAULT = 6.0;
+	public static final String WM_CONSUMER_ID = "WM_CONSUMER.ID";
+	public static final String WM_SVC_NAME = "WM_SVC.NAME";
+	public static final String WM_SVC_ENV = "WM_SVC.ENV";
+
 
 }
