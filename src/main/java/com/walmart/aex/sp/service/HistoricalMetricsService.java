@@ -1,9 +1,8 @@
 package com.walmart.aex.sp.service;
 
-import com.walmart.aex.sp.dto.bqfp.RfaWeeksResponse;
-import com.walmart.aex.sp.dto.bqfp.WeeksDTO;
 import com.walmart.aex.sp.dto.historicalmetrics.HistoricalMetricsRequest;
 import com.walmart.aex.sp.dto.historicalmetrics.HistoricalMetricsResponse;
+import com.walmart.aex.sp.dto.historicalmetrics.WeeksResponse;
 import com.walmart.aex.sp.entity.FinelinePlan;
 import com.walmart.aex.sp.entity.MerchCatPlanId;
 import com.walmart.aex.sp.enums.ChannelType;
@@ -28,20 +27,18 @@ public class HistoricalMetricsService {
    FinelinePlanRepository finelinePlanRepository;
 
    @Autowired
-   IWeeksService weeksService;
+   WeeksService weeksService;
 
    public HistoricalMetricsResponse fetchHistoricalMetricsFineline(HistoricalMetricsRequest request) {
       try {
          Integer channelId = ChannelType.getChannelIdFromName(request.getChannel());
-         RfaWeeksResponse rfaWeeksResponse = weeksService.getWeeks(channelId, request.getFinelineNbr(), request.getPlanId(), request.getLvl3Nbr(), request.getLvl4Nbr());
+         WeeksResponse weeksResponse = weeksService.getWeeks(channelId, request.getFinelineNbr(), request.getPlanId(), request.getLvl3Nbr(), request.getLvl4Nbr());
 
-         if(Objects.nonNull(rfaWeeksResponse)){
-            WeeksDTO inStoreWeek = rfaWeeksResponse.getInStoreWeek();
-            WeeksDTO markDownWeek = rfaWeeksResponse.getMarkDownWeek();
-            request.setLyCompWeekStart(inStoreWeek.getWmYearWkLy());
-            request.setLyCompWeekEnd(markDownWeek.getWmYearWkLy());
+         if(Objects.nonNull(weeksResponse)){
+            request.setLyCompWeekStart(weeksResponse.getStartWeek().getWmYearWkLy());
+            request.setLyCompWeekEnd(weeksResponse.getEndWeek().getWmYearWkLy());
          }
-         FinelinePlan fineline = finelinePlanRepository.findByFinelinePlanId_SubCatPlanId_MerchCatPlanId_PlanIdAndFinelinePlanId_FinelineNbrAndFinelinePlanId_SubCatPlanId_MerchCatPlanId_ChannelId((long)request.getPlanId(),
+         FinelinePlan fineline = finelinePlanRepository.findByFinelinePlanId_SubCatPlanId_MerchCatPlanId_PlanIdAndFinelinePlanId_FinelineNbrAndFinelinePlanId_SubCatPlanId_MerchCatPlanId_ChannelId(request.getPlanId(),
                          request.getFinelineNbr(),
                          channelId)
                .orElse(null);

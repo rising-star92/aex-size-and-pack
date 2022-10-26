@@ -1,4 +1,4 @@
-package com.walmart.aex.sp.service;
+package com.walmart.aex.sp.service.impl;
 
 import com.walmart.aex.sp.dto.bqfp.RfaWeeksResponse;
 import com.walmart.aex.sp.dto.bqfp.WeeksDTO;
@@ -7,6 +7,7 @@ import com.walmart.aex.sp.dto.gql.Payload;
 import com.walmart.aex.sp.exception.SizeAndPackException;
 import com.walmart.aex.sp.properties.BQFPServiceProperties;
 import com.walmart.aex.sp.properties.GraphQLProperties;
+import com.walmart.aex.sp.service.GraphQLService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,10 +20,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 @ExtendWith(MockitoExtension.class)
-public class RFAWeeksServiceTest {
+public class RFAWeeksServiceImplTest {
 
     @InjectMocks
-    private RFAWeeksService rfaWeeksService;
+    private RFAWeeksServiceImpl rfaWeeksServiceImpl;
 
     @Mock
     private GraphQLService graphQLService;
@@ -54,19 +55,19 @@ public class RFAWeeksServiceTest {
         headers.put("WM_SVC.ENV", graphQLProperties.getAssortProductConsumerEnv());
         Map<String, Object> data = new HashMap<>();
         Map<String, Object> variablevalues = new HashMap<>();
-        variablevalues.put("planId", 1);
+        variablevalues.put("planId", 1L);
         variablevalues.put("finelineNbr", 1);
         variablevalues.put("lvl3Nbr", 1);
         variablevalues.put("lvl4Nbr", 1);
         data.put("rfaWeekRequest", variablevalues);
         Mockito.when(graphQLProperties.getRfaWeeksUrl()).thenReturn("");
         Mockito.when(graphQLProperties.getRfaWeeksQuery()).thenReturn("");
-        Mockito.when(graphQLService.post("","", headers,data))
+        Mockito.when(graphQLService.post("", "", headers, data))
                 .thenReturn(graphQLRfaResponseMock);
-        GraphQLResponse graphQLRfaResponse = rfaWeeksService.getRFAWeeksByFineline(1, 1, 1, 1);
+        GraphQLResponse graphQLRfaResponse = rfaWeeksServiceImpl.getWeeksByFineline(1, Long.valueOf(1), 1, 1);
         Assertions.assertNotNull(graphQLRfaResponse);
         RfaWeeksResponse rfaWeeksResp = graphQLRfaResponse.getData().getGetRFAWeeksByFineline();
         Assertions.assertNotNull(rfaWeeksResp);
-        Assertions.assertEquals(rfaWeeksResp.getInStoreWeek().getWmYearWk(),1);
+        Assertions.assertEquals(rfaWeeksResp.getInStoreWeek().getWmYearWk(), 1);
     }
 }

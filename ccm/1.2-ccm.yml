@@ -258,6 +258,46 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "dev"
+      "buy.qty.rfa.weeks.query":
+        description: "markDownWeek and inStoreWeek Query for GraphQL Call"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "query ($rfaWeekRequest:RfaWeekRequest!){getRFAWeeksByFineline(rfaWeekRequest:$rfaWeekRequest){planId lvl0Nbr lvl1Nbr lvl2Nbr lvl3Nbr lvl4Nbr finelineNbr inStoreWeek { yearWkNbr wmYearWk wmYearWkLy wmYearWkLly fiscalWeekDesc } markDownWeek { yearWkNbr wmYearWk wmYearWkLy wmYearWkLly fiscalWeekDesc } }}",
+      "buy.qty.rfa.weeks.url":
+        description: "Get buy quantity rfaweek URL from buy quantity Service"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "http://buy-quantification.aex.dev.walmart.net/graphql"
+      "buy.qty.rfa.consumer.id":
+        description: "Consumer ID to call Assort Product"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "19ce2bf5-4c24-4bbf-bee9-84496dd07e3c"
+      "buy.qty.rfa.consumer.name":
+        description: "Consumer service name"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "AEX_BUY_QUANTIFICATION"
+      "buy.qty.rfa.consumer.env":
+        description: "Consumer Environment"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "dev"
+      "buy.qty.line.plan.consumer.id":
+        description: "Consumer ID to call Assort Product"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "19ce2bf5-4c24-4bbf-bee9-84496dd07e3c"
+      "buy.qty.line.plan.consumer.name":
+        description: "Consumer service name"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "AEX_CURRENT_LINE_PLAN"
+      "buy.qty.line.plan.consumer.env":
+        description: "Consumer Environment"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "dev"
   bigQueryConfig:
     description: "Big Query Config to connect with GCP tables"
     resolutionPaths:
