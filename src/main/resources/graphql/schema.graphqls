@@ -100,8 +100,11 @@ type PackOptimizationResponse{
     channel:Int!
     planDesc: String
     lvl0Nbr: Int
+    lvl0Desc: String
     lvl1Nbr: Int
+    lvl1Desc: String
     lvl2Nbr: Int
+    lvl2Desc: String
     lvl3List: [Lvl3]
 }
 
