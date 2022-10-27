@@ -394,8 +394,7 @@ configOverrides:
       value:
         properties:
           "rfa.projectId": "wmt-e12743607538928aa17e0e22f9"
-          "rfa.datasetName": "commitment_report_rfa_output"
-          "rfa.datasetName.stage": "rfa_output_stage"
+          "rfa.datasetName": "commitment_report_rfa_output_stg"
           "rfa.table.sp.cc.output": "rfa_cc_out_parquet"
           "ml.projectId": "wmt-mtech-assortment-ml-prod"
           "ml.datasetName": "aex_pack_opt_non_prod"
