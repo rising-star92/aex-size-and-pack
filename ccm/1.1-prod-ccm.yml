@@ -281,7 +281,7 @@ configDefinitions:
         description: "RFA OUTPUT"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "commitment_report_rfa_output"
+        defaultValue: "commitment_report_rfa_output_prod"
       "ml.datasetName":
         description: "ML OUTPUT"
         type: "STRING"
