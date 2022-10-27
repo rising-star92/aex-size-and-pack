@@ -120,7 +120,7 @@ type Lvl3 {
 
 type Constraints{
  supplierConstraints:SupplierConstraints
- ccLevelConstraints:[CcLevelConstraints]
+ ccLevelConstraints:CcLevelConstraints
 }
 
 type SupplierConstraints{

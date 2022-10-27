@@ -56,7 +56,5 @@ public class PackOptConstraintMapperTest {
         assertEquals(packOptimizationResponse.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getCustomerChoices().get(0).getCcId(),ccId);
         assertEquals(packOptimizationResponse.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getConstraints().getSupplierConstraints().getSupplierName(),vendorName);
         assertEquals(packOptimizationResponse.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getCustomerChoices().get(0).getConstraints().getSupplierConstraints().getFactoryIds(),factoryId);
-        assertEquals(packOptimizationResponse.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getCustomerChoices().get(0).getConstraints().getCcLevelConstraints().get(0).getColorCombination(),colorCombination);
-
     }
 }

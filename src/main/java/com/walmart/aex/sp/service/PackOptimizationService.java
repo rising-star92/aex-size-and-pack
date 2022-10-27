@@ -165,16 +165,16 @@ public class PackOptimizationService {
         spList.setMaxPacks(subCtgPkopt.getMaxNbrOfPacks());
         spList.setMaxUnitsPerPack(subCtgPkopt.getMaxUnitsPerPack());
 
-        List<CcLevelConstraints> ccLevelList = new ArrayList<>();
+
         CcLevelConstraints ccLevel = new CcLevelConstraints();
         ccLevel.setFactoryIds(subCtgPkopt.getFactoryId());
         ccLevel.setCountryOfOrigin(subCtgPkopt.getOriginCountryName());
         ccLevel.setPortOfOrigin(subCtgPkopt.getPortOfOriginName());
         ccLevel.setSinglePackIndicator(subCtgPkopt.getSinglePackInd());
         ccLevel.setColorCombination(subCtgPkopt.getColorCombination());
-        ccLevelList.add(ccLevel);
+
         cList.setSupplierConstraints(spList);
-        cList.setCcLevelConstraints(ccLevelList);
+        cList.setCcLevelConstraints(ccLevel);
         return cList;
 
     }
@@ -196,7 +196,7 @@ public class PackOptimizationService {
         ccLevel.setColorCombination(merchPackOptObj.getColorCombination());
         ccLevelList.add(ccLevel);
         cList.setSupplierConstraints(spList);
-        cList.setCcLevelConstraints(ccLevelList);
+        cList.setCcLevelConstraints(ccLevel);
         return cList;
 
     }
@@ -218,7 +218,7 @@ public class PackOptimizationService {
         ccLevel.setColorCombination(finelinePackOptObj.getColorCombination());
         ccLevelList.add(ccLevel);
         cList.setSupplierConstraints(spList);
-        cList.setCcLevelConstraints(ccLevelList);
+        cList.setCcLevelConstraints(ccLevel);
         return cList;
 
     }
@@ -240,7 +240,7 @@ public class PackOptimizationService {
         ccLevel.setColorCombination(stylePackOptObj.getColorCombination());
         ccLevelList.add(ccLevel);
         cList.setSupplierConstraints(spList);
-        cList.setCcLevelConstraints(ccLevelList);
+        cList.setCcLevelConstraints(ccLevel);
         return cList;
 
     }
@@ -262,7 +262,7 @@ public class PackOptimizationService {
         ccLevel.setColorCombination(ccPackOptObj.getColorCombination());
         ccLevelList.add(ccLevel);
         cList.setSupplierConstraints(spList);
-        cList.setCcLevelConstraints(ccLevelList);
+        cList.setCcLevelConstraints(ccLevel);
         return cList;
 
     }

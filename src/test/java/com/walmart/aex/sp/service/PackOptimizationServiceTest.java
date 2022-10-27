@@ -251,7 +251,7 @@ public class PackOptimizationServiceTest {
 		merchPackOptObj.setFactoryId("123");
 		merchPackOptObj.setPortOfOriginName("cc");
 		Constraints constraints = packOptimizationService.getMerchantPkOptConstraintDetails(merchPackOptObj);
-		assertEquals("123", constraints.getCcLevelConstraints().get(0).getFactoryIds());
+		assertEquals("123", constraints.getCcLevelConstraints().getFactoryIds());
 		assertEquals(3, constraints.getSupplierConstraints().getMaxPacks());
 		assertEquals(1, constraints.getSupplierConstraints().getMaxUnitsPerPack());
 	}	

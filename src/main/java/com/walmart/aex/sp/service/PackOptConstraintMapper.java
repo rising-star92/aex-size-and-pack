@@ -114,12 +114,11 @@ public class PackOptConstraintMapper {
 
         Style styleDto = new Style();
         styleDto.setStyleNbr(packOptConstraintResponseDTO.getStyleNbr());
-        Constraints constraints = new Constraints();
-        constraints.setSupplierConstraints(setSupplierConstraints(packOptConstraintResponseDTO.getStyleSupplierName(),
+        styleDto.setConstraints(setConstraints(packOptConstraintResponseDTO.getStyleSupplierName(),
                 packOptConstraintResponseDTO.getStyleFactoryIds(), packOptConstraintResponseDTO.getStyleCountryOfOrigin(),
-                packOptConstraintResponseDTO.getStylePortOfOrigin()));
-        constraints.setCcLevelConstraints(mapStyleConstraints(packOptConstraintResponseDTO,constraints));
-        styleDto.setConstraints(constraints);
+                packOptConstraintResponseDTO.getStylePortOfOrigin(),packOptConstraintResponseDTO.getStyleMaxPacks(),
+                packOptConstraintResponseDTO.getStyleMaxUnitsPerPack(),packOptConstraintResponseDTO.getStyleSinglePackIndicator(),
+                packOptConstraintResponseDTO.getStyleColorCombination()));
         styleDto.setCustomerChoices(mapPackOptCc(packOptConstraintResponseDTO, styleDto));
         styleDtoList.add(styleDto);
     }
@@ -140,55 +139,31 @@ public class PackOptConstraintMapper {
         CustomerChoice customerChoiceDto = new CustomerChoice();
         customerChoiceDto.setCcId(packOptConstraintResponseDTO.getCcId());
         Constraints constraints = new Constraints();
-        constraints.setSupplierConstraints(setSupplierConstraints(packOptConstraintResponseDTO.getCcSupplierName(),packOptConstraintResponseDTO.getCcFactoryIds(),
-                packOptConstraintResponseDTO.getCcCountryOfOrigin(), packOptConstraintResponseDTO.getCcPortOfOrigin()));
-        customerChoiceDto.setConstraints(constraints);
-        constraints.setCcLevelConstraints(mapCcConstraints(packOptConstraintResponseDTO,customerChoiceDto.getConstraints()));
+        customerChoiceDto.setConstraints(setConstraints(packOptConstraintResponseDTO.getCcSupplierName(),packOptConstraintResponseDTO.getCcFactoryIds(),
+                packOptConstraintResponseDTO.getCcCountryOfOrigin(), packOptConstraintResponseDTO.getCcPortOfOrigin(),packOptConstraintResponseDTO.getCcMaxPacks(),
+                packOptConstraintResponseDTO.getCcMaxUnitsPerPack(),packOptConstraintResponseDTO.getCcSinglePackIndicator(),
+                packOptConstraintResponseDTO.getCcColorCombination()));
         customerChoiceDtoList.add(customerChoiceDto);
     }
 
-    private SupplierConstraints setSupplierConstraints(String vendorName,String factoryId,String originCountryName,
-                                              String portOfOriginName) {
-
+    private Constraints setConstraints(String vendorName,String factoryId,String originCountryName,
+                                       String portOfOriginName,Integer maxNbrOfPacks,Integer maxUnitsPerPack,
+                                       Integer singlePackInd,String colorCombination)
+    {
+        Constraints constraints = new Constraints();
         SupplierConstraints supplierConstraints = new SupplierConstraints();
         supplierConstraints.setSupplierName(vendorName);
         supplierConstraints.setFactoryIds(factoryId);
         supplierConstraints.setCountryOfOrigin(originCountryName);
         supplierConstraints.setPortOfOrigin(portOfOriginName);
-        return supplierConstraints;
-
-    }
-    private void setCcLevelConstraints(Integer maxNbrOfPacks,Integer maxUnitsPerPack,
-                                                       Integer singlePackInd,String colorCombination,
-                                                        List<CcLevelConstraints> ccLevelConstraintList) {
-
-
         CcLevelConstraints ccLevelConstraints = new CcLevelConstraints();
         ccLevelConstraints.setMaxPacks(maxNbrOfPacks);
         ccLevelConstraints.setMaxUnitsPerPack(maxUnitsPerPack);
         ccLevelConstraints.setSinglePackIndicator(singlePackInd);
         ccLevelConstraints.setColorCombination(colorCombination);
-        ccLevelConstraintList.add(ccLevelConstraints);
-
+        constraints.setSupplierConstraints(supplierConstraints);
+        constraints.setCcLevelConstraints(ccLevelConstraints);
+        return constraints;
     }
 
-    private List<CcLevelConstraints> mapStyleConstraints(PackOptConstraintResponseDTO packOptConstraintResponseDTO,Constraints constraints) {
-        List<CcLevelConstraints> ccLevelConstraints = Optional.ofNullable(constraints.getCcLevelConstraints()).orElse(new ArrayList<>());
-
-            ccLevelConstraints.stream()
-                    .filter(x->packOptConstraintResponseDTO.getStyleColorCombination().equals(x.getColorCombination())).findFirst()
-                    .ifPresentOrElse(CcLevelConstraints ->{},
-                    () -> setCcLevelConstraints(packOptConstraintResponseDTO.getStyleMaxPacks(),packOptConstraintResponseDTO.getStyleMaxUnitsPerPack(),packOptConstraintResponseDTO.getStyleSinglePackIndicator(),packOptConstraintResponseDTO.getStyleColorCombination(),ccLevelConstraints ));
-            return ccLevelConstraints;
-    }
-
-    private List<CcLevelConstraints> mapCcConstraints(PackOptConstraintResponseDTO packOptConstraintResponseDTO,Constraints constraints) {
-        List<CcLevelConstraints> ccLevelConstraints = Optional.ofNullable(constraints.getCcLevelConstraints()).orElse(new ArrayList<>());
-
-        ccLevelConstraints.stream()
-                .filter(x->packOptConstraintResponseDTO.getCcColorCombination().equals(x.getColorCombination())).findFirst()
-                .ifPresentOrElse(CcLevelConstraints ->{},
-                        () -> setCcLevelConstraints(packOptConstraintResponseDTO.getCcMaxPacks(),packOptConstraintResponseDTO.getCcMaxUnitsPerPack(),packOptConstraintResponseDTO.getCcSinglePackIndicator(),packOptConstraintResponseDTO.getCcColorCombination(),ccLevelConstraints));
-            return ccLevelConstraints;
-    }
 }
