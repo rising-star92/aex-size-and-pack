@@ -55,4 +55,10 @@ public enum ChannelType {
                 .filter(e -> e.description.equalsIgnoreCase(channelDesc))
                 .findFirst().map(ChannelType::getId).orElse(null);
     }
+
+    public static String getChannelNameFromName(String channelDesc) {
+        return Stream.of(values())
+                .filter(e -> e.description.equalsIgnoreCase(channelDesc))
+                .findFirst().map(ChannelType::getDescription).orElse(null);
+    }
 }

@@ -32,7 +32,7 @@ public class HistoricalMetricsService {
    public HistoricalMetricsResponse fetchHistoricalMetricsFineline(HistoricalMetricsRequest request) {
       try {
          Integer channelId = ChannelType.getChannelIdFromName(request.getChannel());
-         WeeksResponse weeksResponse = weeksService.getWeeks(channelId, request.getFinelineNbr(), request.getPlanId(), request.getLvl3Nbr(), request.getLvl4Nbr());
+         WeeksResponse weeksResponse = weeksService.getWeeks(request.getChannel(), request.getFinelineNbr(), request.getPlanId(), request.getLvl3Nbr(), request.getLvl4Nbr());
 
          if(Objects.nonNull(weeksResponse)){
             request.setLyCompWeekStart(weeksResponse.getStartWeek().getWmYearWkLy());

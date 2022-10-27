@@ -4,10 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.bqfp.RfaWeekRequest;
 import com.walmart.aex.sp.dto.gql.GraphQLResponse;
 import com.walmart.aex.sp.exception.SizeAndPackException;
-import com.walmart.aex.sp.properties.BQFPServiceProperties;
 import com.walmart.aex.sp.properties.GraphQLProperties;
-import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
-
 import com.walmart.aex.sp.service.ChannelWeeksService;
 import com.walmart.aex.sp.service.GraphQLService;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
@@ -19,6 +16,8 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
+
 @Service
 @Slf4j
 @Qualifier("rfaWeekService")
@@ -28,9 +27,6 @@ public class RFAWeeksServiceImpl implements ChannelWeeksService {
     private GraphQLService graphQLService;
     @ManagedConfiguration
     private GraphQLProperties graphQLProperties;
-
-    @ManagedConfiguration
-    private BQFPServiceProperties bqfpServiceProperties;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 

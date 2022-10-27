@@ -5,7 +5,6 @@ import com.walmart.aex.sp.dto.bqfp.WeeksDTO;
 import com.walmart.aex.sp.dto.gql.GraphQLResponse;
 import com.walmart.aex.sp.dto.gql.Payload;
 import com.walmart.aex.sp.exception.SizeAndPackException;
-import com.walmart.aex.sp.properties.BQFPServiceProperties;
 import com.walmart.aex.sp.properties.GraphQLProperties;
 import com.walmart.aex.sp.service.GraphQLService;
 import org.junit.jupiter.api.Assertions;
@@ -30,9 +29,6 @@ public class RFAWeeksServiceImplTest {
 
     @Mock
     private GraphQLProperties graphQLProperties;
-
-    @Mock
-    private BQFPServiceProperties bqfpServiceProperties;
 
     @Test
     public void getRFAWeeksByFinelineTest() throws SizeAndPackException {

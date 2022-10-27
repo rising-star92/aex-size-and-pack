@@ -38,10 +38,10 @@ public interface GraphQLProperties {
     @Property(propertyName = "size.profile.all.cc.query")
     String getAllCcSizeProfileQuery();
 
-    @Property(propertyName = "buyQty.finelines.size.query")
+    @Property(propertyName = "buy.qty.finelines.size.query")
     String getBuyQtyFinelinesSizeQuery();
 
-    @Property(propertyName = "buyQty.style.cc.size.query")
+    @Property(propertyName = "buy.qty.style.cc.size.query")
     String getBuyQtyStyleCcSizeQuery();
 
     @Property(propertyName = "buy.qty.rfa.consumer.id")
@@ -67,5 +67,11 @@ public interface GraphQLProperties {
 
     @Property(propertyName = "buy.qty.rfa.weeks.query")
     String getRfaWeeksQuery();
+
+    @Property(propertyName = "buy.qty.line.plan.weeks.query")
+    String getLinePlanWeeksQuery();
+
+    @Property(propertyName = "buy.qty.line.plan.weeks.url")
+    String getLinePlanWeeksUrl();
 
 }
