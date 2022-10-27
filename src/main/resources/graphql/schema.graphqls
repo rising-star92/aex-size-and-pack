@@ -10,7 +10,7 @@ type Query {
      fetchHistoricalMetricsCC(request: HistoricalMetricsRequest!) : HistoricalMetricsResponse!
      fetchInitialSetBumpPackByPlanFineline(request: BuyQtyRequest!): BuyQtyResponse!
      fetchReplnFullHierarchyByPlanFineline(replenishmentRequest: ReplenishmentRequest!): ReplenishmentResponse!
-    fetchPackOptconstraintsByFineline(request: PackOptConstraintRequest!): PackOptimizationResponse!
+     fetchPackOptConstraintsByFineline(request: PackOptConstraintRequest!): PackOptimizationResponse!
 }
 
 

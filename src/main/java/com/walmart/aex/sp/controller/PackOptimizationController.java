@@ -107,7 +107,7 @@ public class PackOptimizationController {
 	}
 
 	@QueryMapping
-	public PackOptimizationResponse fetchPackOptconstraintsByFineline(@Argument PackOptConstraintRequest request)
+	public PackOptimizationResponse fetchPackOptConstraintsByFineline(@Argument PackOptConstraintRequest request)
 	{
 		return packOptService.getPackOptConstraintDetails(request);
 	}
