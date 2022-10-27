@@ -33,8 +33,8 @@ import com.walmart.aex.sp.entity.StylePackOptimization;
 import com.walmart.aex.sp.entity.StylePackOptimizationID;
 import com.walmart.aex.sp.entity.SubCatgPackOptimization;
 import com.walmart.aex.sp.entity.SubCatgPackOptimizationID;
-import com.walmart.aex.sp.entity.fineLinePackOptimization;
-import com.walmart.aex.sp.entity.fineLinePackOptimizationID;
+import com.walmart.aex.sp.entity.FineLinePackOptimization;
+import com.walmart.aex.sp.entity.FineLinePackOptimizationID;
 import com.walmart.aex.sp.repository.AnalyticsMlSendRepository;
 import com.walmart.aex.sp.repository.FineLinePackOptimizationRepository;
 import com.walmart.aex.sp.repository.FinelinePackOptRepository;
@@ -60,7 +60,7 @@ public class PackOptimizationServiceTest {
 	Set<SubCatgPackOptimization> subCatgList;
 	
 	@Mock
-	Set<fineLinePackOptimization> finelineList;
+	Set<FineLinePackOptimization> finelineList;
 	
 	@Mock
 	Set<StylePackOptimization> stylePkOptList;
@@ -112,16 +112,16 @@ public class PackOptimizationServiceTest {
 		Set<SubCatgPackOptimization> subcatgpkoptlist = new LinkedHashSet<>();
 
 
-		fineLinePackOptimizationID finelinepkOptID = new fineLinePackOptimizationID();
+		FineLinePackOptimizationID finelinepkOptID = new FineLinePackOptimizationID();
 		finelinepkOptID.setSubCatgPackOptimizationID(subctgOptID);
-		fineLinePackOptimization finelinepkOptObj = new fineLinePackOptimization();
+		FineLinePackOptimization finelinepkOptObj = new FineLinePackOptimization();
 		finelinepkOptObj.setFinelinePackOptId(finelinepkOptID);
 
-		Set<fineLinePackOptimization> finelinepkoptlist = new LinkedHashSet<>();
+		Set<FineLinePackOptimization> finelinepkoptlist = new LinkedHashSet<>();
 		StylePackOptimizationID stylepkOptID = new StylePackOptimizationID();
 		stylepkOptID.setFinelinePackOptimizationID(finelinepkOptID);
 		StylePackOptimization stylepkOptObj= new StylePackOptimization();
-		stylepkOptObj.setStylepackoptimizationId(stylepkOptID);
+		stylepkOptObj.setStylePackoptimizationId(stylepkOptID);
 
 		Set<StylePackOptimization> stylepkoptlist = new LinkedHashSet<>();
 		finelinepkOptObj.setStylePackOptimization(stylepkoptlist);
@@ -176,9 +176,9 @@ public class PackOptimizationServiceTest {
 		subCtgPkopt.setPortOfOriginName("cc");
 		subCatgList.add(subCtgPkopt);
 
-		finelineList = new HashSet<fineLinePackOptimization>();
-		fineLinePackOptimization finelinePackOptObj = new fineLinePackOptimization();
-		fineLinePackOptimizationID fineLinePackOptimizationID = new fineLinePackOptimizationID();
+		finelineList = new HashSet<FineLinePackOptimization>();
+		FineLinePackOptimization finelinePackOptObj = new FineLinePackOptimization();
+		FineLinePackOptimizationID fineLinePackOptimizationID = new FineLinePackOptimizationID();
 		finelinePackOptObj.setFinelinePackOptId(fineLinePackOptimizationID);
 		fineLinePackOptimizationID.setFinelineNbr(5147);
 		finelinePackOptObj.setVendorName("walmart");
@@ -191,7 +191,7 @@ public class PackOptimizationServiceTest {
 		stylePkOptList = new HashSet<StylePackOptimization>();
 		StylePackOptimization stylePackOptObj = new StylePackOptimization();
 		StylePackOptimizationID stylePackOptimizationID = new StylePackOptimizationID();
-		stylePackOptObj.setStylepackoptimizationId(stylePackOptimizationID);
+		stylePackOptObj.setStylePackoptimizationId(stylePackOptimizationID);
 		stylePackOptimizationID.setStyleNbr("34_2968_3_18_2");
 		stylePackOptObj.setVendorName("walmart");
 		stylePackOptObj.setMaxNbrOfPacks(3);
