@@ -97,6 +97,7 @@ public interface StyleCcPackOptConsRepository extends JpaRepository<CcPackOptimi
             "AND sp.stylePlanId.finelinePlanId.subCatPlanId.lvl4Nbr = spk.stylePackoptimizationId.finelinePackOptimizationID.subCatgPackOptimizationID.repTLvl4 " +
             "AND sp.stylePlanId.finelinePlanId.finelineNbr = spk.stylePackoptimizationId.finelinePackOptimizationID.finelineNbr " +
             "AND sp.stylePlanId.styleNbr =spk.stylePackoptimizationId.styleNbr " +
+            "AND sp.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId = spk.channelText.channelId " +
 
             "left join " +
             "CcPackOptimization cpk " +
@@ -110,6 +111,7 @@ public interface StyleCcPackOptConsRepository extends JpaRepository<CcPackOptimi
             "AND ccp.custChoicePlanId.stylePlanId.finelinePlanId.finelineNbr = cpk.ccPackOptimizationId.stylePackOptimizationID.finelinePackOptimizationID.finelineNbr " +
             "AND ccp.custChoicePlanId.stylePlanId.styleNbr = cpk.ccPackOptimizationId.stylePackOptimizationID.styleNbr " +
             "AND ccp.custChoicePlanId.ccId = cpk.ccPackOptimizationId.customerChoice " +
+            "AND ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId = cpk.channelText.channelId " +
 
             " WHERE  merchCatPlan.merchCatPlanId.channelId = :channelId and merchCatPlan.merchCatPlanId.planId = :planId and fp.finelinePlanId.finelineNbr = :finelineNbr")
     List<PackOptConstraintResponseDTO> findByFinePlanPackOptimizationIDPlanIdAndChannelTextChannelId(Long planId, Integer channelId, Integer finelineNbr);
