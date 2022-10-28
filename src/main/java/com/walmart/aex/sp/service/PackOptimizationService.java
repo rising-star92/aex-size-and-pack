@@ -100,6 +100,7 @@ public class PackOptimizationService {
         lvl3.setLvl2Nbr(fineLineMapperDto.getLvl2Nbr());
         lvl3.setLvl3Nbr(fineLineMapperDto.getLvl3Nbr());
         lvl3.setLvl3Name(fineLineMapperDto.getLvl3Desc());
+        lvl3.setConstraints(getConstraints(fineLineMapperDto, CategoryType.MERCHANT));
         lvl3List.add(lvl3);
         lvl3.setLvl4List(maplvl4PackOp(fineLineMapperDto, lvl3, fineLineMapperDto.getFineLineNbr()));
     }
@@ -118,6 +119,7 @@ public class PackOptimizationService {
         Lvl4 lvl4 = new Lvl4();
         lvl4.setLvl4Nbr(fineLineMapperDto.getLvl4Nbr());
         lvl4.setLvl4Name(fineLineMapperDto.getLvl4Desc());
+        lvl4.setConstraints(getConstraints(fineLineMapperDto, CategoryType.SUB_CATEGORY));
         lvl4DtoList.add(lvl4);
         lvl4.setFinelines(mapFLPackOp(fineLineMapperDto, lvl4, finelineNbr));
     }
@@ -194,7 +196,6 @@ public class PackOptimizationService {
     private Constraints setSupplierAndCCConstraints(String supplierName, String factoryId, String originCountryName, String portOfOriginName, Integer maxNbrOfPacks, Integer maxUnitsPerPack, Integer singlePackInd, String colorCombination) {
         Constraints constraints = new Constraints();
         SupplierConstraints supplierConstraints = new SupplierConstraints();
-        List<CcLevelConstraints> ccLevelConstraintsList = new ArrayList<>();
         CcLevelConstraints ccLevelConstraints = new CcLevelConstraints();
 
         supplierConstraints.setSupplierName(supplierName);
@@ -206,10 +207,9 @@ public class PackOptimizationService {
         ccLevelConstraints.setMaxUnitsPerPack(maxUnitsPerPack);
         ccLevelConstraints.setSinglePackIndicator(singlePackInd);
         ccLevelConstraints.setColorCombination(colorCombination);
-        ccLevelConstraintsList.add(ccLevelConstraints);
 
         constraints.setSupplierConstraints(supplierConstraints);
-        constraints.setCcLevelConstraints(ccLevelConstraintsList);
+        constraints.setCcLevelConstraints(ccLevelConstraints);
         return constraints;
     }
 
@@ -222,16 +222,14 @@ public class PackOptimizationService {
         supplierConstraints.setCountryOfOrigin(subCatPackOpt.getOriginCountryName());
         supplierConstraints.setPortOfOrigin(subCatPackOpt.getPortOfOriginName());
 
-        List<CcLevelConstraints> ccLevelConstraintsList = new ArrayList<>();
         CcLevelConstraints ccLevelConstraints = new CcLevelConstraints();
         ccLevelConstraints.setMaxPacks(subCatPackOpt.getMaxNbrOfPacks());
         ccLevelConstraints.setMaxUnitsPerPack(subCatPackOpt.getMaxUnitsPerPack());
         ccLevelConstraints.setSinglePackIndicator(subCatPackOpt.getSinglePackInd());
         ccLevelConstraints.setColorCombination(subCatPackOpt.getColorCombination());
-        ccLevelConstraintsList.add(ccLevelConstraints);
 
         constraints.setSupplierConstraints(supplierConstraints);
-        constraints.setCcLevelConstraints(ccLevelConstraintsList);
+        constraints.setCcLevelConstraints(ccLevelConstraints);
         return constraints;
 
     }
@@ -245,16 +243,14 @@ public class PackOptimizationService {
         supplierConstraints.setCountryOfOrigin(merchPackOpt.getOriginCountryName());
         supplierConstraints.setPortOfOrigin(merchPackOpt.getPortOfOriginName());
 
-        List<CcLevelConstraints> ccLevelConstraintsList = new ArrayList<>();
         CcLevelConstraints ccLevelConstraints = new CcLevelConstraints();
         ccLevelConstraints.setMaxPacks(merchPackOpt.getMaxNbrOfPacks());
         ccLevelConstraints.setMaxUnitsPerPack(merchPackOpt.getMaxUnitsPerPack());
         ccLevelConstraints.setSinglePackIndicator(merchPackOpt.getSinglePackInd());
         ccLevelConstraints.setColorCombination(merchPackOpt.getColorCombination());
-        ccLevelConstraintsList.add(ccLevelConstraints);
 
         constraints.setSupplierConstraints(supplierConstraints);
-        constraints.setCcLevelConstraints(ccLevelConstraintsList);
+        constraints.setCcLevelConstraints(ccLevelConstraints);
         return constraints;
 
     }
@@ -268,16 +264,14 @@ public class PackOptimizationService {
         supplierConstraints.setCountryOfOrigin(fineLinePackOpt.getOriginCountryName());
         supplierConstraints.setPortOfOrigin(fineLinePackOpt.getPortOfOriginName());
 
-        List<CcLevelConstraints> ccLevelConstraintsList = new ArrayList<>();
         CcLevelConstraints ccLevelConstraints = new CcLevelConstraints();
         ccLevelConstraints.setMaxPacks(fineLinePackOpt.getMaxNbrOfPacks());
         ccLevelConstraints.setMaxUnitsPerPack(fineLinePackOpt.getMaxUnitsPerPack());
         ccLevelConstraints.setSinglePackIndicator(fineLinePackOpt.getSinglePackInd());
         ccLevelConstraints.setColorCombination(fineLinePackOpt.getColorCombination());
-        ccLevelConstraintsList.add(ccLevelConstraints);
 
         constraints.setSupplierConstraints(supplierConstraints);
-        constraints.setCcLevelConstraints(ccLevelConstraintsList);
+        constraints.setCcLevelConstraints(ccLevelConstraints);
         return constraints;
 
     }
@@ -291,16 +285,14 @@ public class PackOptimizationService {
         supplierConstraints.setCountryOfOrigin(stylePackOpt.getOriginCountryName());
         supplierConstraints.setPortOfOrigin(stylePackOpt.getPortOfOriginName());
 
-        List<CcLevelConstraints> ccLevelConstraintsList = new ArrayList<>();
         CcLevelConstraints ccLevelConstraints = new CcLevelConstraints();
         ccLevelConstraints.setMaxPacks(stylePackOpt.getMaxNbrOfPacks());
         ccLevelConstraints.setMaxUnitsPerPack(stylePackOpt.getMaxUnitsPerPack());
         ccLevelConstraints.setSinglePackIndicator(stylePackOpt.getSinglePackInd());
         ccLevelConstraints.setColorCombination(stylePackOpt.getColorCombination());
-        ccLevelConstraintsList.add(ccLevelConstraints);
 
         constraints.setSupplierConstraints(supplierConstraints);
-        constraints.setCcLevelConstraints(ccLevelConstraintsList);
+        constraints.setCcLevelConstraints(ccLevelConstraints);
         return constraints;
 
     }
@@ -314,16 +306,14 @@ public class PackOptimizationService {
         supplierConstraints.setCountryOfOrigin(ccPackOpt.getOriginCountryName());
         supplierConstraints.setPortOfOrigin(ccPackOpt.getPortOfOriginName());
 
-        List<CcLevelConstraints> ccLevelConstraintsList = new ArrayList<>();
         CcLevelConstraints ccLevelConstraints = new CcLevelConstraints();
         ccLevelConstraints.setMaxPacks(ccPackOpt.getMaxNbrOfPacks());
         ccLevelConstraints.setMaxUnitsPerPack(ccPackOpt.getMaxUnitsPerPack());
         ccLevelConstraints.setSinglePackIndicator(ccPackOpt.getSinglePackInd());
         ccLevelConstraints.setColorCombination(ccPackOpt.getColorCombination());
-        ccLevelConstraintsList.add(ccLevelConstraints);
 
         constraints.setSupplierConstraints(supplierConstraints);
-        constraints.setCcLevelConstraints(ccLevelConstraintsList);
+        constraints.setCcLevelConstraints(ccLevelConstraints);
         return constraints;
 
     }
