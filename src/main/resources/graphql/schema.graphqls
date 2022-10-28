@@ -158,22 +158,17 @@ type Constraints{
 }
 
 type SupplierConstraints{
+   supplierName:String
    factoryIds:String
    countryOfOrigin:String
    portOfOrigin:String
-   supplierName:String
-   maxUnitsPerPack:Int
-   maxPacks:Int
 }
 
 type CcLevelConstraints{
- factoryIds:String
- countryOfOrigin:String 
- portOfOrigin:String
- singlePackIndicator:Int	
- colorCombination:String
- maxUnitsPerPack:Int
- maxPacks:Int
+    maxUnitsPerPack:Int
+    maxPacks:Int
+    singlePackIndicator:Int
+    colorCombination:String
 }
 
 type Lvl4 {

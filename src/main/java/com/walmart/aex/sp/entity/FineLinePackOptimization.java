@@ -24,7 +24,7 @@ public class FineLinePackOptimization {
 
     @EmbeddedId
     @EqualsAndHashCode.Include
-    FineLinePackOptimizationID finelinePackOptId;
+    private FineLinePackOptimizationID finelinePackOptId;
     
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "plan_id", referencedColumnName = "plan_id", nullable = false, insertable = false, updatable = false)

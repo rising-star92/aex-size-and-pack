@@ -19,7 +19,7 @@ public class MerchantPackOptimization {
 	
 	@EmbeddedId
 	@EqualsAndHashCode.Include
-	MerchantPackOptimizationID merchantPackOptimizationID;
+	private MerchantPackOptimizationID merchantPackOptimizationID;
 	
 	@OneToMany(mappedBy = "merchantPackOptimization", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL, orphanRemoval = true)
