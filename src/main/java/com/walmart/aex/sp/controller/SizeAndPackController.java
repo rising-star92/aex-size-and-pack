@@ -1,6 +1,8 @@
 package com.walmart.aex.sp.controller;
 
 
+import com.walmart.aex.sp.dto.commitmentreport.InitialSetPackRequest;
+import com.walmart.aex.sp.dto.commitmentreport.InitialBumpSetResponse;
 import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDTO;
 import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDeleteDTO;
 import com.walmart.aex.sp.dto.planhierarchy.SizeAndPackResponse;
@@ -9,6 +11,8 @@ import com.walmart.aex.sp.dto.storedistribution.StoreDistributionResponse;
 import com.walmart.aex.sp.service.SizeAndPackService;
 import com.walmart.aex.sp.service.StoreDistributionService;
 import com.walmart.aex.sp.util.CommonUtil;
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
@@ -77,9 +81,14 @@ public class SizeAndPackController {
             log.error("Exception occurred when updating a line plan : {}", exp.getMessage());
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-    }
+    }	
 
-	@QueryMapping
+    @QueryMapping
+    public InitialBumpSetResponse getInitialAndBumpSetDetails(@Argument InitialSetPackRequest request) {
+        return sizeAndPackService.getInitialAndBumpSetDetails(request);
+    }
+    
+    @QueryMapping
 	public StoreDistributionResponse getStoreDistributionByPlan(@Argument PackInfoRequest request) {
 		return storeDistributionService.fetchStoreDistributionResponse(request);
 	}
