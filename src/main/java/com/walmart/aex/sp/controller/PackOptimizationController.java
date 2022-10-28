@@ -106,4 +106,9 @@ public class PackOptimizationController {
 		return ResponseEntity.ok("Success");
 	}
 
-}
+	@MutationMapping
+	public UpdatePkOptResponse updatePackOptConst(@Argument PackOptConstraintUpdateRequestDTO request) {
+		return packOptService.updatePackOptConstraints(request);
+	}
+
+	}

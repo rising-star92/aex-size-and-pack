@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.function.Function;
 
+import static com.walmart.aex.sp.service.SizeAndPackService.FAILED_STATUS;
+
 @Service
 @Slf4j
 public class PackOptimizationService {
@@ -26,12 +28,16 @@ public class PackOptimizationService {
     private final CcPackOptimizationRepository ccPackOptimizationRepository;
     private final StylePackOptimizationRepository stylePackOptimizationRepository;
     private final AnalyticsMlSendRepository analyticsMlSendRepository;
+    private final MerchPackOptimizationRepository merchPackOptimizationRepository;
+
+    private final PackOptimizationUpdateMapper packOptimizationUpdateMapper;
+
     Function<Object, String> ifNullThenEmpty = o -> Objects.nonNull(o) ? o.toString() : "";
 
     public PackOptimizationService(PackOptimizationRepository packOptRepo,
                                    FineLinePackOptimizationRepository finelinePackOptimizationRepository,
                                    FinelinePackOptRepository packOptfineplanRepo, CcPackOptimizationRepository ccPackOptimizationRepository,
-                                   StylePackOptimizationRepository stylePackOptimizationRepository, AnalyticsMlSendRepository analyticsMlSendRepository, PackOptimizationMapper packOptimizationMapper) {
+                                   StylePackOptimizationRepository stylePackOptimizationRepository, AnalyticsMlSendRepository analyticsMlSendRepository, PackOptimizationMapper packOptimizationMapper, MerchPackOptimizationRepository merchPackOptimizationRepository, PackOptimizationUpdateMapper packOptimizationUpdateMapper) {
         this.packOptRepo = packOptRepo;
         this.finelinePackOptimizationRepository = finelinePackOptimizationRepository;
         this.packOptfineplanRepo = packOptfineplanRepo;
@@ -39,6 +45,8 @@ public class PackOptimizationService {
         this.stylePackOptimizationRepository = stylePackOptimizationRepository;
         this.packOptimizationMapper = packOptimizationMapper;
         this.analyticsMlSendRepository = analyticsMlSendRepository;
+        this.merchPackOptimizationRepository = merchPackOptimizationRepository;
+        this.packOptimizationUpdateMapper = packOptimizationUpdateMapper;
     }
 
     public PackOptimizationResponse getPackOptDetails(Long planId, Integer channelid) {
@@ -341,7 +349,7 @@ public class PackOptimizationService {
                     .stream()
                     .flatMap(Collection::stream)
                     .forEach(FinelinePackOptimizationResponseDTO -> packOptimizationMapper.
-                            mapPackOptimizationFineline(FinelinePackOptimizationResponseDTO, finelinePackOptimizationResponse,planId));
+                            mapPackOptimizationFineline(FinelinePackOptimizationResponseDTO, finelinePackOptimizationResponse, planId));
 
 
         } catch (Exception e) {
@@ -355,4 +363,24 @@ public class PackOptimizationService {
     public void UpdatePkOptServiceStatus(Long planId, Integer finelineNbr, Integer status) {
         analyticsMlSendRepository.updateStatus(planId, finelineNbr, status);
     }
+
+    public UpdatePkOptResponse updatePackOptConstraints(PackOptConstraintUpdateRequestDTO request) {
+        UpdatePkOptResponse response = new UpdatePkOptResponse();
+        if(request.getLvl3Nbr()!=null){
+            MerchantPackOptimizationID merchantPackOptimizationID = new MerchantPackOptimizationID(request.getPlanId(),request.getLvl0Nbr(),request.getLvl1Nbr(),request.getLvl2Nbr(),request.getLvl3Nbr());
+            log.info("Check if a MerchCatPackOptimization for merchantPackOptimizationID : {} already exists or not", merchantPackOptimizationID.toString());
+            Optional<MerchantPackOptimization> merchantPackOptimization = merchPackOptimizationRepository.findById(merchantPackOptimizationID);
+            if (merchantPackOptimization.isPresent()) {
+                merchantPackOptimization = packOptimizationUpdateMapper.mapPackOptimizationLvl3UpdatedValue(request ,merchantPackOptimization,merchantPackOptimizationID);
+                assert merchantPackOptimization != null;
+                merchantPackOptimization.ifPresent(merchPackOptimizationRepository::save);
+            }
+        }else{
+            log.info("Check if a MerchCatPackOptimization for merchantPackOptimizationID : {} already exists or not", merchantPackOptimizationID.toString());
+            response.setStatus(FAILED_STATUS);
+        }
+       return response;
+
+    }
+
 }
