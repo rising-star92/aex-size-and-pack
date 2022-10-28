@@ -9,7 +9,7 @@ public class Constraints {
 	
 	private SupplierConstraints supplierConstraints;
 	
-	private List<CcLevelConstraints> ccLevelConstraints;
+	private CcLevelConstraints ccLevelConstraints;
 	
 	
 
