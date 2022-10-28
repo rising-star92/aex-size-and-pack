@@ -299,3 +299,4 @@ configDefinitions:
         defaultValue: "rfa_cc_out_parquet"
 apiVersion: "2.0"
 kind: "ServiceConfig"
+
