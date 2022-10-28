@@ -318,16 +318,36 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "wmt-e12743607538928aa17e0e22f9"
+      "ml.projectId":
+        description: "ML Project ID"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "wmt-mtech-assortment-ml-prod"
       "rfa.datasetName":
         description: "RFA OUTPUT"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "rfa_output_dev"
+        defaultValue: "commitment_report_rfa_output"
+      "ml.datasetName":
+        description: "ML OUTPUT"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "aex_pack_opt_non_prod"
+      "rfa.datasetName.stage":
+        description: "RFA OUTPUT"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "rfa_output_stage"
       "rfa.table.sp.packoptimization.output":
+        description: "RFA Output for SP Pack Optimization for DEV"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "output_dev"
+      "rfa.table.sp.cc.output":
         description: "RFA Output for SP Pack Optimization"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "sp_packoptimization_output"
+        defaultValue: "rfa_cc_out_parquet"
 configOverrides:
   graphQlConfig:
     - name: "dev"
@@ -424,6 +444,9 @@ configOverrides:
       value:
         properties:
           "rfa.projectId": "wmt-e12743607538928aa17e0e22f9"
-          "rfa.datasetName": "rfa_output_dev"
-          "rfa.table.sp.packoptimization.output": "sp_packoptimization_output"
+          "rfa.datasetName": "commitment_report_rfa_output_stg" 
+          "rfa.table.sp.cc.output": "rfa_cc_out_parquet"
+          "ml.projectId": "wmt-mtech-assortment-ml-prod"
+          "ml.datasetName": "aex_pack_opt_non_prod"
+          "rfa.table.sp.packoptimization.output": "output_stage"
         

@@ -20,7 +20,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Embeddable
 @EqualsAndHashCode
-public class fineLinePackOptimizationID implements Serializable{
+public class FineLinePackOptimizationID implements Serializable{
 	
 	@Embedded
 	private SubCatgPackOptimizationID subCatgPackOptimizationID;

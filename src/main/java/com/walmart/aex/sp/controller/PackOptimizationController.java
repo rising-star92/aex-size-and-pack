@@ -106,4 +106,11 @@ public class PackOptimizationController {
 		return ResponseEntity.ok("Success");
 	}
 
+	@QueryMapping
+	public PackOptimizationResponse fetchPackOptConstraintsByFineline(@Argument PackOptConstraintRequest request)
+	{
+		return packOptService.getPackOptConstraintDetails(request);
+	}
+
+
 }
