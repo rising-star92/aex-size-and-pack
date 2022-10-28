@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @ExtendWith(MockitoExtension.class)
-public class RFAWeeksServiceImplTest {
+class RFAWeeksServiceImplTest {
 
     @InjectMocks
     private RFAWeeksServiceImpl rfaWeeksServiceImpl;
@@ -31,7 +31,7 @@ public class RFAWeeksServiceImplTest {
     private GraphQLProperties graphQLProperties;
 
     @Test
-    public void getRFAWeeksByFinelineTest() throws SizeAndPackException {
+    void getRFAWeeksByFinelineTest() throws SizeAndPackException {
         GraphQLResponse graphQLRfaResponseMock = new GraphQLResponse();
         Payload payload = new Payload();
         RfaWeeksResponse rfaWeeksResponse = new RfaWeeksResponse();
@@ -60,10 +60,10 @@ public class RFAWeeksServiceImplTest {
         Mockito.when(graphQLProperties.getRfaWeeksQuery()).thenReturn("");
         Mockito.when(graphQLService.post("", "", headers, data))
                 .thenReturn(graphQLRfaResponseMock);
-        GraphQLResponse graphQLRfaResponse = rfaWeeksServiceImpl.getWeeksByFineline(1, Long.valueOf(1), 1, 1);
+        GraphQLResponse graphQLRfaResponse = rfaWeeksServiceImpl.getWeeksByFineline(1, 1L, 1, 1);
         Assertions.assertNotNull(graphQLRfaResponse);
         RfaWeeksResponse rfaWeeksResp = graphQLRfaResponse.getData().getGetRFAWeeksByFineline();
         Assertions.assertNotNull(rfaWeeksResp);
-        Assertions.assertEquals(rfaWeeksResp.getInStoreWeek().getWmYearWk(), 1);
+        Assertions.assertEquals(1, rfaWeeksResp.getInStoreWeek().getWmYearWk());
     }
 }
