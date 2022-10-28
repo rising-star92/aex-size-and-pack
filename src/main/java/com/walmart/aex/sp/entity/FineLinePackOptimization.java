@@ -20,11 +20,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @NoArgsConstructor
 @Table(name = "fineline_pkopt_cons", schema = "dbo")
 @Embeddable
-public class fineLinePackOptimization {
+public class FineLinePackOptimization {
 
     @EmbeddedId
     @EqualsAndHashCode.Include
-    fineLinePackOptimizationID finelinePackOptId;
+    FineLinePackOptimizationID finelinePackOptId;
     
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "plan_id", referencedColumnName = "plan_id", nullable = false, insertable = false, updatable = false)

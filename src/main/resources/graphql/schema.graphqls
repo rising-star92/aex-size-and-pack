@@ -10,6 +10,7 @@ type Query {
      fetchHistoricalMetricsCC(request: HistoricalMetricsRequest!) : HistoricalMetricsResponse!
      fetchInitialSetBumpPackByPlanFineline(request: BuyQtyRequest!): BuyQtyResponse!
      fetchReplnFullHierarchyByPlanFineline(replenishmentRequest: ReplenishmentRequest!): ReplenishmentResponse!
+     fetchPackOptConstraintsByFineline(request: PackOptConstraintRequest!): PackOptimizationResponse!
      getStoreDistributionByPlan(request: PackInfoRequest!): StoreDistributionResponse!
 }
 
@@ -79,6 +80,12 @@ input CustomerChoiceRequest {
     ccId: String
 }
 
+input PackOptConstraintRequest {
+    planId: Int!
+    channel: String!
+    finelineNbr: Int
+}
+
 type StatusResponse {
     status: String!
 }
@@ -92,6 +99,13 @@ type UpdateVnPkWhPkResponse {
 type PackOptimizationResponse{
     planId: Int!
     channel:Int!
+    planDesc: String
+    lvl0Nbr: Int
+    lvl0Desc: String
+    lvl1Nbr: Int
+    lvl1Desc: String
+    lvl2Nbr: Int
+    lvl2Desc: String
     lvl3List: [Lvl3]
 }
 
@@ -107,10 +121,13 @@ type Lvl3 {
 
 type Constraints{
  supplierConstraints:SupplierConstraints
- ccLevelConstraints:[CcLevelConstraints]
+ ccLevelConstraints:CcLevelConstraints
 }
 
 type SupplierConstraints{
+   factoryIds:String
+   countryOfOrigin:String
+   portOfOrigin:String
    supplierName:String
    maxUnitsPerPack:Int
    maxPacks:Int
@@ -121,7 +138,9 @@ type CcLevelConstraints{
  countryOfOrigin:String 
  portOfOrigin:String
  singlePackIndicator:Int	
- colorCombination:String 
+ colorCombination:String
+ maxUnitsPerPack:Int
+ maxPacks:Int
 }
 
 type Lvl4 {
