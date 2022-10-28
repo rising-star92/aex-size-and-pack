@@ -33,8 +33,8 @@ public class BigQueryInitSetBpPkQtyService {
 		List<InitSetBumpPackDTO> initSetBpPkDTOList = new ArrayList<>();
 
 		try {
-			String projectId = bigQueryConnectionProperties.getRFAProjectId();
-			String datasetName = bigQueryConnectionProperties.getRFADataSetName();
+			String projectId = bigQueryConnectionProperties.getMLProjectId();
+			String datasetName = bigQueryConnectionProperties.getMLDataSetName();
 			String tableName = bigQueryConnectionProperties.getRFASPPackOptTableName();
 			String projectIdDatasetNameTableName = projectId + "." + datasetName + "." + tableName;
 			Long planId = request.getPlanId();
