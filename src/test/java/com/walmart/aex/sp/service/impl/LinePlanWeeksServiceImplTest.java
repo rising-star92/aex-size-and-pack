@@ -3,7 +3,7 @@ package com.walmart.aex.sp.service.impl;
 import com.walmart.aex.sp.dto.bqfp.WeeksDTO;
 import com.walmart.aex.sp.dto.gql.GraphQLResponse;
 import com.walmart.aex.sp.dto.gql.Payload;
-import com.walmart.aex.sp.dto.lineplanner.*;
+import com.walmart.aex.sp.dto.currentlineplan.*;
 import com.walmart.aex.sp.exception.SizeAndPackException;
 import com.walmart.aex.sp.properties.GraphQLProperties;
 import com.walmart.aex.sp.service.GraphQLService;

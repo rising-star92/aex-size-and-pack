@@ -1,4 +1,4 @@
-package com.walmart.aex.sp.dto.lineplanner;
+package com.walmart.aex.sp.dto.currentlineplan;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
@@ -7,17 +7,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Fineline  implements Serializable {
-   private Integer finelineId;
-   private String finelineName;
-   private String altFinelineName;
-   private String channel;
-   private String eCommChannel;
-   private Metrics metrics;
+public class Lvl3 implements Serializable {
+   private Integer lvl3Nbr;
+   private List<Lvl4> lvl4List;
 }

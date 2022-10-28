@@ -1,4 +1,4 @@
-package com.walmart.aex.sp.dto.lineplanner;
+package com.walmart.aex.sp.dto.currentlineplan;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.walmart.aex.sp.dto.bqfp.WeeksDTO;

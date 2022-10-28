@@ -5,7 +5,7 @@ import com.walmart.aex.sp.dto.bqfp.WeeksDTO;
 import com.walmart.aex.sp.dto.gql.GraphQLResponse;
 import com.walmart.aex.sp.dto.gql.Payload;
 import com.walmart.aex.sp.dto.historicalmetrics.WeeksResponse;
-import com.walmart.aex.sp.dto.lineplanner.*;
+import com.walmart.aex.sp.dto.currentlineplan.*;
 import com.walmart.aex.sp.service.ChannelWeeksService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,4 +1,4 @@
-package com.walmart.aex.sp.dto.lineplanner;
+package com.walmart.aex.sp.dto.currentlineplan;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
@@ -13,6 +13,6 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class PlanAttributes implements Serializable {
-   private Attributes online = new Attributes();
+public class Metrics implements Serializable {
+   private PlanAttributes current = new PlanAttributes();
 }
