@@ -24,7 +24,7 @@ public class StylePackOptimization {
 
     @EmbeddedId
     @EqualsAndHashCode.Include
-    StylePackOptimizationID stylepackoptimizationId;
+    StylePackOptimizationID stylePackoptimizationId;
     
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "plan_id", referencedColumnName = "plan_id", nullable = false, insertable = false, updatable = false)
@@ -35,7 +35,7 @@ public class StylePackOptimization {
     @JoinColumn(name = "rpt_lvl_4_nbr", referencedColumnName = "rpt_lvl_4_nbr", nullable = false, insertable = false, updatable = false)
     @JoinColumn(name = "fineline_nbr", referencedColumnName = "fineline_nbr", nullable = false, insertable = false, updatable = false)
     @JsonIgnore
-    private fineLinePackOptimization finelinePackOpitmization;
+    private FineLinePackOptimization finelinePackOpitmization;
     
     @OneToMany(mappedBy = "stylePackOptimization", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL, orphanRemoval = true)

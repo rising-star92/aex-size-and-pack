@@ -14,4 +14,8 @@ public class CcLevelConstraints {
 	private Integer singlePackIndicator;
 	
 	private String colorCombination;
+
+	private Integer maxUnitsPerPack;
+
+	private Integer maxPacks;
 }
