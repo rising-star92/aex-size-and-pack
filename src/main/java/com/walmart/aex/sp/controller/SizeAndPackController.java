@@ -4,9 +4,14 @@ package com.walmart.aex.sp.controller;
 import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDTO;
 import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDeleteDTO;
 import com.walmart.aex.sp.dto.planhierarchy.SizeAndPackResponse;
+import com.walmart.aex.sp.dto.storedistribution.PackInfoRequest;
+import com.walmart.aex.sp.dto.storedistribution.StoreDistributionResponse;
 import com.walmart.aex.sp.service.SizeAndPackService;
+import com.walmart.aex.sp.service.StoreDistributionService;
 import com.walmart.aex.sp.util.CommonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,13 +28,17 @@ import lombok.extern.slf4j.Slf4j;
 @Api(consumes = MediaType.APPLICATION_JSON_VALUE)
 public class SizeAndPackController {
 
-    private final CommonUtil commonUtil;
-    @Autowired
-    SizeAndPackService sizeAndPackService;
+	private final CommonUtil commonUtil;
 
-    public SizeAndPackController(CommonUtil commonUtil) {
-        this.commonUtil = commonUtil;
-    }
+	@Autowired
+	SizeAndPackService sizeAndPackService;
+
+	private final StoreDistributionService storeDistributionService;
+
+	public SizeAndPackController(CommonUtil commonUtil, StoreDistributionService storeDistributionService) {
+		this.commonUtil = commonUtil;
+		this.storeDistributionService = storeDistributionService;
+	}
 
 
     @GetMapping("/health")
@@ -70,6 +79,10 @@ public class SizeAndPackController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
     }
 
+	@QueryMapping
+	public StoreDistributionResponse getStoreDistributionByPlan(@Argument PackInfoRequest request) {
+		return storeDistributionService.fetchStoreDistributionResponse(request);
+	}
 
 }
 
