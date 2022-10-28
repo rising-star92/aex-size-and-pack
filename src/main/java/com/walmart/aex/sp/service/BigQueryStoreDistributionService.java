@@ -63,7 +63,6 @@ public class BigQueryStoreDistributionService {
 			}));
 			log.info("Query performed successfully.");
 		} catch (Exception e) {
-			e.printStackTrace();
 			log.error("Exception details are ", e);
 		}
 
