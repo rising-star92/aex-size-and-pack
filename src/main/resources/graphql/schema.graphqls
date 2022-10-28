@@ -10,6 +10,7 @@ type Query {
      fetchHistoricalMetricsCC(request: HistoricalMetricsRequest!) : HistoricalMetricsResponse!
      fetchInitialSetBumpPackByPlanFineline(request: BuyQtyRequest!): BuyQtyResponse!
      fetchReplnFullHierarchyByPlanFineline(replenishmentRequest: ReplenishmentRequest!): ReplenishmentResponse!
+     getStoreDistributionByPlan(request: PackInfoRequest!): StoreDistributionResponse!
 }
 
 
@@ -338,4 +339,45 @@ type HistoricalMetric {
   lyActualSalesUnitsPct: Float
   lyActualReceiptUnits: Int
   lyActualReceiptUnitsPct: Float
+}
+
+input PackInfoRequest {
+  packInfoList:[PackInfo]
+}
+
+input PackInfo {
+  planId: Int!
+  channel: String!
+  finelineDataList:[FinelineData]
+}
+
+input FinelineData {
+  finelineNbr: Int!
+  packId: String!
+  inStoreWeek: Int!
+}
+
+type StoreDistributionResponse {
+  storeDistributions:[StoreDistribution]
+}
+
+type StoreDistribution {
+  finelineNbr: Int
+  styleNbr: String
+  initialSetPlanDataList:[InitialSetPlanData]
+}
+
+type InitialSetPlanData {
+  inStoreWeek: Int
+  packDistributionList:[PackDistribution]
+}
+
+type PackDistribution {
+  packId: String
+  distributionMetricList:[DistributionMetric]
+}
+
+type DistributionMetric {
+  store: Int
+  multiplier: Int
 }
