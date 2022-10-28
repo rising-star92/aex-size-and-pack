@@ -297,8 +297,6 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "rfa_cc_out_parquet"
-apiVersion: "2.0"
-kind: "ServiceConfig"
       "buy.qty.rfa.weeks.query":
         description: "markDownWeek and inStoreWeek Query for GraphQL Call"
         type: "STRING"

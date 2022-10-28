@@ -376,6 +376,12 @@ configOverrides:
           "size.profile.consumer.env": "stg"
           "size.profile.assortproduct.consumer.id": "93c617a1-31ec-4333-a819-683ef7514cc0"
           "size.profile.assortproduct.consumer.env": "stg"
+          "buy.qty.rfa.weeks.url": "http://buy-quantification.aex.stg.walmart.net/graphql"
+          "buy.qty.rfa.consumer.id": "93c617a1-31ec-4333-a819-683ef7514cc0"
+          "buy.qty.rfa.consumer.env": "stg"
+          "buy.qty.line.plan.weeks.url": "http://current-line-plan.aex.stg.walmart.net/graphql"
+          "buy.qty.line.plan.consumer.env": "stg"
+          "buy.qty.line.plan.consumer.id": "93c617a1-31ec-4333-a819-683ef7514cc0"
   bqfpServiceConfig:
     - name: "dev"
       description: "Flow Plan override for DEV profile"
