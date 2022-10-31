@@ -6,6 +6,7 @@ import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
 import com.walmart.aex.sp.dto.planhierarchy.Style;
 import com.walmart.aex.sp.entity.*;
+import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.repository.*;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,7 @@ import java.util.*;
 import java.util.function.Function;
 
 import static com.walmart.aex.sp.service.SizeAndPackService.FAILED_STATUS;
+import static com.walmart.aex.sp.service.SizeAndPackService.SUCCESS_STATUS;
 
 @Service
 @Slf4j
@@ -366,20 +368,19 @@ public class PackOptimizationService {
 
     public UpdatePkOptResponse updatePackOptConstraints(PackOptConstraintUpdateRequestDTO request) {
         UpdatePkOptResponse response = new UpdatePkOptResponse();
-        if(request.getLvl3Nbr()!=null){
-            MerchantPackOptimizationID merchantPackOptimizationID = new MerchantPackOptimizationID(request.getPlanId(),request.getLvl0Nbr(),request.getLvl1Nbr(),request.getLvl2Nbr(),request.getLvl3Nbr());
-            log.info("Check if a MerchCatPackOptimization for merchantPackOptimizationID : {} already exists or not", merchantPackOptimizationID.toString());
-            Optional<MerchantPackOptimization> merchantPackOptimization = merchPackOptimizationRepository.findById(merchantPackOptimizationID);
-            if (merchantPackOptimization.isPresent()) {
-                merchantPackOptimization = packOptimizationUpdateMapper.mapPackOptimizationLvl3UpdatedValue(request ,merchantPackOptimization,merchantPackOptimizationID);
-                assert merchantPackOptimization != null;
-                merchantPackOptimization.ifPresent(merchPackOptimizationRepository::save);
-            }
-        }else{
-            log.info("Check if a MerchCatPackOptimization for merchantPackOptimizationID : {} already exists or not", merchantPackOptimizationID.toString());
+        if (request != null) {
+
+            Integer channelId = ChannelType.getChannelIdFromName(request.getChannel());
+//            MerchantPackOptimizationID merchantPackOptimizationID = new MerchantPackOptimizationID(request.getPlanId(), request.getLvl0Nbr(), request.getLvl1Nbr(), request.getLvl2Nbr(), request.getLvl3Nbr());
+            List<MerchantPackOptimization> merchantPackOptimizationList = merchPackOptimizationRepository.findMerchantPackOptimizationByMerchantPackOptimizationID_planIdAndMerchantPackOptimizationID_repTLvl3(request.getPlanId(), request.getLvl3Nbr());
+            packOptimizationUpdateMapper.updateCategoryPackOptCons(channelId, request, merchantPackOptimizationList);
+
+//            merchPackOptimizationRepository.save(merchantPackOptimization);
+            response.setStatus(SUCCESS_STATUS);
+        } else {
             response.setStatus(FAILED_STATUS);
         }
-       return response;
+        return response;
 
     }
 
