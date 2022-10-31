@@ -1,15 +1,12 @@
 package com.walmart.aex.sp.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.lenient;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
+import com.walmart.aex.sp.dto.mapper.FineLineMapperDto;
+import com.walmart.aex.sp.dto.packoptimization.*;
+import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
+import com.walmart.aex.sp.entity.*;
+import com.walmart.aex.sp.repository.AnalyticsMlSendRepository;
+import com.walmart.aex.sp.repository.FineLinePackOptimizationRepository;
+import com.walmart.aex.sp.repository.FinelinePackOptRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -18,26 +15,11 @@ import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.walmart.aex.sp.dto.mapper.FineLineMapperDto;
-import com.walmart.aex.sp.dto.packoptimization.Constraints;
-import com.walmart.aex.sp.dto.packoptimization.FineLinePackOptimizationResponse;
-import com.walmart.aex.sp.dto.packoptimization.FineLinePackOptimizationResponseDTO;
-import com.walmart.aex.sp.dto.packoptimization.PackOptimizationResponse;
-import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
-import com.walmart.aex.sp.entity.CcPackOptimization;
-import com.walmart.aex.sp.entity.CcPackOptimizationID;
-import com.walmart.aex.sp.entity.ChannelText;
-import com.walmart.aex.sp.entity.MerchantPackOptimization;
-import com.walmart.aex.sp.entity.MerchantPackOptimizationID;
-import com.walmart.aex.sp.entity.StylePackOptimization;
-import com.walmart.aex.sp.entity.StylePackOptimizationID;
-import com.walmart.aex.sp.entity.SubCatgPackOptimization;
-import com.walmart.aex.sp.entity.SubCatgPackOptimizationID;
-import com.walmart.aex.sp.entity.fineLinePackOptimization;
-import com.walmart.aex.sp.entity.fineLinePackOptimizationID;
-import com.walmart.aex.sp.repository.AnalyticsMlSendRepository;
-import com.walmart.aex.sp.repository.FineLinePackOptimizationRepository;
-import com.walmart.aex.sp.repository.FinelinePackOptRepository;
+import java.util.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.lenient;
 
 @ExtendWith(MockitoExtension.class)
 public class PackOptimizationServiceTest {
@@ -60,7 +42,7 @@ public class PackOptimizationServiceTest {
 	Set<SubCatgPackOptimization> subCatgList;
 	
 	@Mock
-	Set<fineLinePackOptimization> finelineList;
+	Set<FineLinePackOptimization> finelineList;
 	
 	@Mock
 	Set<StylePackOptimization> stylePkOptList;
@@ -83,7 +65,7 @@ public class PackOptimizationServiceTest {
 	public void testGetPackOptDetails()
 	{
 		Long planId = 362L;
-		Integer channelid = 1;
+		Integer channelId = 1;
 		ChannelText channeltext = new ChannelText();
 		channeltext.setChannelId(1);
 		channeltext.setChannelDesc("Store");
@@ -95,6 +77,18 @@ public class PackOptimizationServiceTest {
 
 		MerchantPackOptimizationID merchpackOptID = new MerchantPackOptimizationID();
 
+		SupplierConstraints supplierConstraints = new SupplierConstraints();
+		supplierConstraints.setFactoryIds("120, 121");
+		supplierConstraints.setCountryOfOrigin("USA");
+		supplierConstraints.setPortOfOrigin("Texas");
+		supplierConstraints.setSupplierName("Vendor Name");
+
+		CcLevelConstraints ccLevelConstraints = new CcLevelConstraints();
+		ccLevelConstraints.setMaxPacks(50);
+		ccLevelConstraints.setMaxUnitsPerPack(10);
+		ccLevelConstraints.setSinglePackIndicator(1);
+		ccLevelConstraints.setColorCombination("Merch Color Combination");
+
 		merchpackOptObj.setPlanId(362L);
 		merchpackOptObj.setLvl0Nbr(0);
 		merchpackOptObj.setLvl1Nbr(0);
@@ -103,6 +97,30 @@ public class PackOptimizationServiceTest {
 		merchpackOptObj.setLvl4Nbr(252);
 		merchpackOptObj.setFineLineNbr(2542);
 		merchpackOptObj.setChannelId(1);
+		merchpackOptObj.setMerchFactoryId("120, 121");
+		merchpackOptObj.setMerchMaxNbrOfPacks(50);
+		merchpackOptObj.setMerchMaxUnitsPerPack(10);
+		merchpackOptObj.setMerchColorCombination("Merch Color Combination");
+		merchpackOptObj.setMerchSinglePackInd(1);
+		merchpackOptObj.setMerchSupplierName("Vendor Name");
+		merchpackOptObj.setMerchOriginCountryName("USA");
+		merchpackOptObj.setMerchPortOfOriginName("Texas");
+		merchpackOptObj.setSubCatFactoryId("120");
+		merchpackOptObj.setSubCatMaxNbrOfPacks(20);
+		merchpackOptObj.setSubCatMaxUnitsPerPack(10);
+		merchpackOptObj.setSubCatColorCombination("Sub Category Color Combination");
+		merchpackOptObj.setSubCatSinglePackInd(1);
+		merchpackOptObj.setSubCatSupplierName("Supplier Vendor Name");
+		merchpackOptObj.setSubCatOriginCountryName("USA");
+		merchpackOptObj.setSubCatPortOfOriginName("Texas");
+		merchpackOptObj.setFineLineFactoryId("120");
+		merchpackOptObj.setFineLineMaxNbrOfPacks(5);
+		merchpackOptObj.setFineLineMaxUnitsPerPack(2);
+		merchpackOptObj.setFineLineColorCombination("FineLine Color Combination");
+		merchpackOptObj.setFineLineSinglePackInd(1);
+		merchpackOptObj.setFineLineSupplierName("FineLine Vendor Name");
+		merchpackOptObj.setFineLineOriginCountryName("USA");
+		merchpackOptObj.setFineLinePortOfOriginName("Texas");
 
 		SubCatgPackOptimization subctgOptObj = new SubCatgPackOptimization();
 		SubCatgPackOptimizationID subctgOptID = new SubCatgPackOptimizationID();
@@ -112,16 +130,16 @@ public class PackOptimizationServiceTest {
 		Set<SubCatgPackOptimization> subcatgpkoptlist = new LinkedHashSet<>();
 
 
-		fineLinePackOptimizationID finelinepkOptID = new fineLinePackOptimizationID();
+		FineLinePackOptimizationID finelinepkOptID = new FineLinePackOptimizationID();
 		finelinepkOptID.setSubCatgPackOptimizationID(subctgOptID);
-		fineLinePackOptimization finelinepkOptObj = new fineLinePackOptimization();
+		FineLinePackOptimization finelinepkOptObj = new FineLinePackOptimization();
 		finelinepkOptObj.setFinelinePackOptId(finelinepkOptID);
 
-		Set<fineLinePackOptimization> finelinepkoptlist = new LinkedHashSet<>();
+		Set<FineLinePackOptimization> finelinepkoptlist = new LinkedHashSet<>();
 		StylePackOptimizationID stylepkOptID = new StylePackOptimizationID();
 		stylepkOptID.setFinelinePackOptimizationID(finelinepkOptID);
 		StylePackOptimization stylepkOptObj= new StylePackOptimization();
-		stylepkOptObj.setStylepackoptimizationId(stylepkOptID);
+		stylepkOptObj.setStylePackoptimizationId(stylepkOptID);
 
 		Set<StylePackOptimization> stylepkoptlist = new LinkedHashSet<>();
 		finelinepkOptObj.setStylePackOptimization(stylepkoptlist);
@@ -144,13 +162,22 @@ public class PackOptimizationServiceTest {
 
 		merchantPackOptimizationlist.add(merchpackOptObj);
 
-		Mockito.when(packOptfineplanRepo.findByFinePlanPackOptimizationIDPlanIdAndChannelTextChannelId(planId, channelid)).thenReturn(merchantPackOptimizationlist);
+		Mockito.when(packOptfineplanRepo.findByFinePlanPackOptimizationIDPlanIdAndChannelTextChannelId(planId, channelId)).thenReturn(merchantPackOptimizationlist);
 		packOptResponse = packOptimizationService.getPackOptDetails(362L, 1);
-
+		String expectedResult = "PackOptimizationResponse(planId=362, channel=1, lvl0Nbr=null, lvl0Desc=null, lvl1Nbr=null, lvl1Desc=null, lvl2Nbr=null, lvl2Desc=null, lvl3List=[Lvl3(lvl0Nbr=0, lvl1Nbr=0, lvl2Nbr=0, lvl3Nbr=25, lvl3Name=null, constraints=Constraints(supplierConstraints=SupplierConstraints(factoryIds=120, 121, countryOfOrigin=USA, portOfOrigin=Texas, supplierName=Vendor Name), ccLevelConstraints=CcLevelConstraints(maxUnitsPerPack=10, maxPacks=50, singlePackIndicator=1, colorCombination=Merch Color Combination)), lvl4List=[Lvl4(lvl4Nbr=252, lvl4Name=null, constraints=Constraints(supplierConstraints=SupplierConstraints(factoryIds=120, countryOfOrigin=USA, portOfOrigin=Texas, supplierName=Supplier Vendor Name), ccLevelConstraints=CcLevelConstraints(maxUnitsPerPack=10, maxPacks=20, singlePackIndicator=1, colorCombination=Sub Category Color Combination)), finelines=[Fineline(finelineNbr=2542, finelineName=null, altFinelineName=null, channel=null, packOptimizationStatus=NOT SENT, constraints=Constraints(supplierConstraints=SupplierConstraints(factoryIds=120, countryOfOrigin=USA, portOfOrigin=Texas, supplierName=FineLine Vendor Name), ccLevelConstraints=CcLevelConstraints(maxUnitsPerPack=2, maxPacks=5, singlePackIndicator=1, colorCombination=FineLine Color Combination)), styles=null, optimizationDetails=[RunOptimization(name=null, returnMessage=null, startTs=null, endTs=null, runStatusCode=null)])])])])";
 
 		assertNotNull(packOptResponse);
 		assertEquals(packOptResponse.getPlanId(), 362L);
+		assertEquals(expectedResult, packOptResponse.toString());
 
+		assertEquals(supplierConstraints.getFactoryIds(), packOptResponse.getLvl3List().get(0).getConstraints().getSupplierConstraints().getFactoryIds());
+		assertEquals(supplierConstraints.getSupplierName(), packOptResponse.getLvl3List().get(0).getConstraints().getSupplierConstraints().getSupplierName());
+		assertEquals(supplierConstraints.getPortOfOrigin(), packOptResponse.getLvl3List().get(0).getConstraints().getSupplierConstraints().getPortOfOrigin());
+		assertEquals(supplierConstraints.getCountryOfOrigin(), packOptResponse.getLvl3List().get(0).getConstraints().getSupplierConstraints().getCountryOfOrigin());
+		assertEquals(ccLevelConstraints.getMaxPacks(), packOptResponse.getLvl3List().get(0).getConstraints().getCcLevelConstraints().getMaxPacks());
+		assertEquals(ccLevelConstraints.getSinglePackIndicator(), packOptResponse.getLvl3List().get(0).getConstraints().getCcLevelConstraints().getSinglePackIndicator());
+		assertEquals(ccLevelConstraints.getMaxUnitsPerPack(), packOptResponse.getLvl3List().get(0).getConstraints().getCcLevelConstraints().getMaxUnitsPerPack());
+		assertEquals(ccLevelConstraints.getColorCombination(), packOptResponse.getLvl3List().get(0).getConstraints().getCcLevelConstraints().getColorCombination());
 
 	}
 
@@ -176,9 +203,9 @@ public class PackOptimizationServiceTest {
 		subCtgPkopt.setPortOfOriginName("cc");
 		subCatgList.add(subCtgPkopt);
 
-		finelineList = new HashSet<fineLinePackOptimization>();
-		fineLinePackOptimization finelinePackOptObj = new fineLinePackOptimization();
-		fineLinePackOptimizationID fineLinePackOptimizationID = new fineLinePackOptimizationID();
+		finelineList = new HashSet<FineLinePackOptimization>();
+		FineLinePackOptimization finelinePackOptObj = new FineLinePackOptimization();
+		FineLinePackOptimizationID fineLinePackOptimizationID = new FineLinePackOptimizationID();
 		finelinePackOptObj.setFinelinePackOptId(fineLinePackOptimizationID);
 		fineLinePackOptimizationID.setFinelineNbr(5147);
 		finelinePackOptObj.setVendorName("walmart");
@@ -191,7 +218,7 @@ public class PackOptimizationServiceTest {
 		stylePkOptList = new HashSet<StylePackOptimization>();
 		StylePackOptimization stylePackOptObj = new StylePackOptimization();
 		StylePackOptimizationID stylePackOptimizationID = new StylePackOptimizationID();
-		stylePackOptObj.setStylepackoptimizationId(stylePackOptimizationID);
+		stylePackOptObj.setStylePackoptimizationId(stylePackOptimizationID);
 		stylePackOptimizationID.setStyleNbr("34_2968_3_18_2");
 		stylePackOptObj.setVendorName("walmart");
 		stylePackOptObj.setMaxNbrOfPacks(3);
@@ -251,8 +278,8 @@ public class PackOptimizationServiceTest {
 		merchPackOptObj.setFactoryId("123");
 		merchPackOptObj.setPortOfOriginName("cc");
 		Constraints constraints = packOptimizationService.getMerchantPkOptConstraintDetails(merchPackOptObj);
-		assertEquals("123", constraints.getCcLevelConstraints().get(0).getFactoryIds());
-		assertEquals(3, constraints.getSupplierConstraints().getMaxPacks());
-		assertEquals(1, constraints.getSupplierConstraints().getMaxUnitsPerPack());
-	}	
+		assertEquals("123", constraints.getSupplierConstraints().getFactoryIds());
+		assertEquals(3, constraints.getCcLevelConstraints().getMaxPacks());
+		assertEquals(1, constraints.getCcLevelConstraints().getMaxUnitsPerPack());
+	}
 }

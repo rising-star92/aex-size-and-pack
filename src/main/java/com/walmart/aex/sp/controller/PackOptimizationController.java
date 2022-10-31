@@ -111,4 +111,12 @@ public class PackOptimizationController {
 		return packOptService.updatePackOptConstraints(request);
 	}
 
+	@QueryMapping
+	public PackOptimizationResponse fetchPackOptConstraintsByFineline(@Argument PackOptConstraintRequest request)
+	{
+		return packOptService.getPackOptConstraintDetails(request);
 	}
+
+
+}
+

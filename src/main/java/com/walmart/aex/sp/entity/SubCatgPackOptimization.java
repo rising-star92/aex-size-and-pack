@@ -37,7 +37,7 @@ public class SubCatgPackOptimization {
     
     @OneToMany(mappedBy = "subCatgPackOptimization", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<fineLinePackOptimization> finelinepackOptimization;
+    private Set<FineLinePackOptimization> finelinepackOptimization;
     
     @Column(name="vendor_nbr_6")
     private Integer vendorNbr6;

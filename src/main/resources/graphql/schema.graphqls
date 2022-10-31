@@ -8,8 +8,10 @@ type Query {
      getSizeBuyQtyDetails(buyQtyRequest: BuyQtyRequest!): BuyQtyResponse!
      fetchHistoricalMetricsFineline(request: HistoricalMetricsRequest!) : HistoricalMetricsResponse!
      fetchHistoricalMetricsCC(request: HistoricalMetricsRequest!) : HistoricalMetricsResponse!
+     getInitialAndBumpSetDetails(request: InitialSetPackRequest): InitialBumpSetResponse!
      fetchInitialSetBumpPackByPlanFineline(request: BuyQtyRequest!): BuyQtyResponse!
      fetchReplnFullHierarchyByPlanFineline(replenishmentRequest: ReplenishmentRequest!): ReplenishmentResponse!
+     fetchPackOptConstraintsByFineline(request: PackOptConstraintRequest!): PackOptimizationResponse!
 }
 
 
@@ -21,9 +23,9 @@ type Mutation {
 	updateReplnConfigByFineline(request: UpdateVnPkWhPkReplnRequest!):UpdateVnPkWhPkResponse!
 	updateReplnConfigByCcMerchMethod(request: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse
 	updateReplnConfigByCcSpMmSize(request: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse
-    calculateBuyQty(calculateBuyQtyRequest: CalculateBuyQtyRequest!): StatusResponse!
-    createRunPackOptExecution(request: RunPackOptRequest!): RunPackOptResponse
-    updatePackOptConst(request:UpdatePackOptConstraintRequestDTO!):UpdatePkOptResponse
+  calculateBuyQty(calculateBuyQtyRequest: CalculateBuyQtyRequest!): StatusResponse!
+  createRunPackOptExecution(request: RunPackOptRequest!): RunPackOptResponse
+  updatePackOptConst(request:UpdatePackOptConstraintRequestDTO!):UpdatePkOptResponse
 }
 
 input UpdatePackOptConstraintRequestDTO {
@@ -94,6 +96,11 @@ input FinelineRequest {
     styles:[StyleRequest]
 }
 
+input InitialSetPackRequest{
+	planId: Int
+	finelineNbr: Int
+}
+
 input StyleRequest {
     styleNbr: String
     customerChoices:[CustomerChoiceRequest]
@@ -103,9 +110,42 @@ input CustomerChoiceRequest {
     ccId: String
 }
 
+type InitialBumpSetResponse{
+	finelineNbr: Int
+	intialSetStyles: [IntialSetStyle]
+}
+
+type IntialSetStyle{
+	styleId: String
+	initialSetPlan: [InitialSetPlan]
+}
+
+type InitialSetPlan{
+	inStoreWeek: String
+	packDetails: [PackDetails]
+}
+
+type PackDetails{
+	packId: String
+	metrics: [Metrics]
+}
+
+type Metrics{
+	size: String
+	ratio: Int
+	quantity: Int
+	ccId: String
+	merchMethod: String
+  }
+
+input PackOptConstraintRequest {
+    planId: Int!
+    channel: String!
+    finelineNbr: Int
+}
+
 type UpdatePkOptResponse {
     status: String!
-
 }
 
 type StatusResponse {
@@ -119,6 +159,13 @@ type UpdateVnPkWhPkResponse {
 type PackOptimizationResponse{
     planId: Int!
     channel:Int!
+    planDesc: String
+    lvl0Nbr: Int
+    lvl0Desc: String
+    lvl1Nbr: Int
+    lvl1Desc: String
+    lvl2Nbr: Int
+    lvl2Desc: String
     lvl3List: [Lvl3]
 }
 
@@ -134,21 +181,21 @@ type Lvl3 {
 
 type Constraints{
  supplierConstraints:SupplierConstraints
- ccLevelConstraints:[CcLevelConstraints]
+ ccLevelConstraints:CcLevelConstraints
 }
 
 type SupplierConstraints{
    supplierName:String
-   maxUnitsPerPack:Int
-   maxPacks:Int
+   factoryIds:String
+   countryOfOrigin:String
+   portOfOrigin:String
 }
 
 type CcLevelConstraints{
- factoryIds:String
- countryOfOrigin:String 
- portOfOrigin:String
- singlePackIndicator:Int	
- colorCombination:String 
+    maxUnitsPerPack:Int
+    maxPacks:Int
+    singlePackIndicator:Int
+    colorCombination:String
 }
 
 type Lvl4 {
