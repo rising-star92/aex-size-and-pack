@@ -23,6 +23,31 @@ type Mutation {
 	updateReplnConfigByCcSpMmSize(request: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse
     calculateBuyQty(calculateBuyQtyRequest: CalculateBuyQtyRequest!): StatusResponse!
     createRunPackOptExecution(request: RunPackOptRequest!): RunPackOptResponse
+    updatePackOptConst(request:UpdatePackOptConstraintRequestDTO!):UpdatePkOptResponse
+}
+
+input UpdatePackOptConstraintRequestDTO {
+	planId: Int!
+	planDesc: String
+	channel: String!
+	lvl3Nbr: Int!
+	lvl4Nbr: Int
+	finelineNbr: Int
+	styleNbr: String
+	ccId: String
+	vendorNbr6: Int
+	vendorNbr9: Int
+	vendorName: String
+	originCountryCode: String
+	originCountryName: String
+	factoryId: String
+	factoryName: String
+	singlePackInd: Int
+	portOfOriginId: Int
+	portOfOriginName: String
+	maxUnitsPerPack: Int
+	maxNbrOfPacks: Int
+	colorCombination: String
 }
 
 input UpdateVnPkWhPkReplnRequest {
@@ -78,11 +103,14 @@ input CustomerChoiceRequest {
     ccId: String
 }
 
+type UpdatePkOptResponse {
+    status: String!
+
+}
+
 type StatusResponse {
     status: String!
 }
-
-
 
 type UpdateVnPkWhPkResponse {
 	status: String!

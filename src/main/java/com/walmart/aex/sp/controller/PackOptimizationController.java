@@ -107,7 +107,7 @@ public class PackOptimizationController {
 	}
 
 	@MutationMapping
-	public UpdatePkOptResponse updatePackOptConst(@Argument PackOptConstraintUpdateRequestDTO request) {
+	public UpdatePkOptResponse updatePackOptConst(@Argument UpdatePackOptConstraintRequestDTO request) {
 		return packOptService.updatePackOptConstraints(request);
 	}
 

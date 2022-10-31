@@ -1,39 +1,37 @@
 package com.walmart.aex.sp.service;
 
-import com.walmart.aex.sp.dto.packoptimization.PackOptConstraintUpdateRequestDTO;
+import com.walmart.aex.sp.dto.packoptimization.UpdatePackOptConstraintRequestDTO;
 import com.walmart.aex.sp.entity.*;
-import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.repository.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class PackOptimizationUpdateMapper {
+public class UpdatePackOptimizationMapper {
 
     private final MerchPackOptimizationRepository merchPackOptimizationRepository;
     private final SubCatgPackOptimizationRepository subCatgPackOptimizationRepository;
     private final CcPackOptimizationRepository ccPackOptimizationRepository;
     private final StylePackOptimizationRepository stylePackOptimizationRepository;
+    private final FinelinePackOptConsRepository finelinePackOptConsRepository;
 
-    private final FinelinePackOptRepository finelinePackOptRepository;
-
-    public PackOptimizationUpdateMapper(MerchPackOptimizationRepository merchPackOptimizationRepository, SubCatgPackOptimizationRepository subCatgPackOptimizationRepository, StylePackOptimizationRepository stylePackOptimizationRepository,
-                                        CcPackOptimizationRepository ccPackOptimizationRepository, FinelinePackOptRepository finelinePackOptRepository) {
+    public UpdatePackOptimizationMapper(MerchPackOptimizationRepository merchPackOptimizationRepository, SubCatgPackOptimizationRepository subCatgPackOptimizationRepository, StylePackOptimizationRepository stylePackOptimizationRepository,
+                                        CcPackOptimizationRepository ccPackOptimizationRepository, FinelinePackOptConsRepository finelinePackOptConsRepository) {
         this.merchPackOptimizationRepository = merchPackOptimizationRepository;
         this.subCatgPackOptimizationRepository = subCatgPackOptimizationRepository;
         this.ccPackOptimizationRepository = ccPackOptimizationRepository;
         this.stylePackOptimizationRepository = stylePackOptimizationRepository;
-        this.finelinePackOptRepository = finelinePackOptRepository;
+        this.finelinePackOptConsRepository = finelinePackOptConsRepository;
     }
 
-    public void updateCategoryPackOptCons(Integer channelId, PackOptConstraintUpdateRequestDTO request, List<MerchantPackOptimization> merchantPackOptimizationList) {
-        log.info("Check if a MerchCatPackOptimization for merchantPackOptimizationID : {} already exists or not", request.getPlanId().toString());
-
-        if (request.getLvl4Nbr() == null) {
+    public void updateCategoryPackOptCons(Integer channelId, UpdatePackOptConstraintRequestDTO request, List<MerchantPackOptimization> merchantPackOptimizationList) {
+        log.info("Updating Category pack optimization constraint for lvl3Nbr {} ", request.getLvl3Nbr().toString());
+        if (request.getLvl3Nbr()!=null && request.getLvl4Nbr() == null) {
             merchantPackOptimizationList.forEach(merchantPackOpt -> {
                 updateMerchCatgPackOptConstFields(request, merchantPackOpt);
             });
@@ -42,11 +40,16 @@ public class PackOptimizationUpdateMapper {
         List<SubCatgPackOptimization> subCatgPkOptPkConsList = merchantPackOptimizationList
                 .stream()
                 .flatMap(catgPackOptCons -> catgPackOptCons.getSubCatgPackOptimization().stream()).filter(subCatgPkOpt -> Objects.equals(subCatgPkOpt.getChannelText().getChannelId(), channelId)).collect(Collectors.toList());
-        updateSubCategoryPackOptCons(request, subCatgPkOptPkConsList, channelId);
+        if(!CollectionUtils.isEmpty(subCatgPkOptPkConsList)){
+            updateSubCategoryPackOptCons(request, subCatgPkOptPkConsList, channelId);
+        }
     }
 
-    private void updateSubCategoryPackOptCons(PackOptConstraintUpdateRequestDTO request, List<SubCatgPackOptimization> subCatgReplnPkConsList, Integer channelId) {
-
+    private void updateSubCategoryPackOptCons(UpdatePackOptConstraintRequestDTO request, List<SubCatgPackOptimization> subCatgReplnPkConsList, Integer channelId) {
+        log.info("Updating Sub Category pack optimization constraint for planId {} ", request.getPlanId().toString());
+        if(request.getLvl4Nbr()!=null){
+            subCatgReplnPkConsList = subCatgReplnPkConsList.stream().filter(subCatg-> subCatg.getSubCatgPackOptimizationID().getRepTLvl4().equals(request.getLvl4Nbr())).collect(Collectors.toList());
+        }
         if (request.getFinelineNbr() == null) {
             for (SubCatgPackOptimization lvl4PackOptCons : subCatgReplnPkConsList) {
                 updateSubCatgPackOptConstFields(request, lvl4PackOptCons);
@@ -56,44 +59,61 @@ public class PackOptimizationUpdateMapper {
         List<fineLinePackOptimization> fineLinePkOptPkConsList = subCatgReplnPkConsList
                 .stream()
                 .flatMap(subCatgPackOptCons -> subCatgPackOptCons.getFinelinepackOptimization().stream()).filter(fineLinePkOpt -> Objects.equals(fineLinePkOpt.getChannelText().getChannelId(), channelId)).collect(Collectors.toList());
-        updateFinelinePackOptCons(request, fineLinePkOptPkConsList, channelId);
+        if(!CollectionUtils.isEmpty(fineLinePkOptPkConsList)){
+            updateFinelinePackOptCons(request, fineLinePkOptPkConsList, channelId);
+        }
     }
 
-    private void updateFinelinePackOptCons(PackOptConstraintUpdateRequestDTO request, List<fineLinePackOptimization> fineLinePackOptimizationList, Integer channelId) {
+    private void updateFinelinePackOptCons(UpdatePackOptConstraintRequestDTO request, List<fineLinePackOptimization> fineLinePackOptimizationList, Integer channelId) {
+        log.info("Updating Fine Line pack optimization constraint for planId {} ", request.getPlanId().toString());
+        if(request.getFinelineNbr()!=null){
+            fineLinePackOptimizationList=fineLinePackOptimizationList.stream().filter(flPkOpt-> flPkOpt.getFinelinePackOptId().getFinelineNbr().equals(request.getFinelineNbr())).collect(Collectors.toList());
+        }
         if (request.getStyleNbr() == null) {
             for (fineLinePackOptimization fl : fineLinePackOptimizationList) {
-                updateFlPackOptConstWithNewInputFields(request, fl);
+                updateFlPackOptConstFields(request, fl);
             }
-            finelinePackOptRepository.saveAll(fineLinePackOptimizationList);
+            finelinePackOptConsRepository.saveAll(fineLinePackOptimizationList);
         }
         List<StylePackOptimization> stylePackOptimizationList = fineLinePackOptimizationList
                 .stream()
                 .flatMap(fineLinePackOptCons -> fineLinePackOptCons.getStylePackOptimization().stream()).filter(stylePkOpt -> Objects.equals(stylePkOpt.getChannelText().getChannelId(), channelId)).collect(Collectors.toList());
-        updateStylePackOptCons(request, stylePackOptimizationList, channelId);
-
+        if(!CollectionUtils.isEmpty(stylePackOptimizationList)){
+            updateStylePackOptCons(request, stylePackOptimizationList, channelId);
+        }
     }
 
-    private void updateStylePackOptCons(PackOptConstraintUpdateRequestDTO request, List<StylePackOptimization> stylePackOptimizationList, Integer channelId) {
+    private void updateStylePackOptCons(UpdatePackOptConstraintRequestDTO request, List<StylePackOptimization> stylePackOptimizationList, Integer channelId) {
+        log.info("Updating Style pack optimization constraint for planId {} ", request.getPlanId().toString());
+        if(request.getStyleNbr()!=null && !request.getStyleNbr().isEmpty()){
+            stylePackOptimizationList=stylePackOptimizationList.stream().filter(stPkOpt-> stPkOpt.getStylepackoptimizationId().getStyleNbr().trim().equalsIgnoreCase(request.getStyleNbr().trim())).collect(Collectors.toList());
+        }
         if (request.getCcId() == null) {
             for (StylePackOptimization st : stylePackOptimizationList) {
-                updateStPackOptConstWithNewInputFields(request, st);
+                updateStPackOptConstFields(request, st);
             }
             stylePackOptimizationRepository.saveAll(stylePackOptimizationList);
         }
         List<CcPackOptimization> ccPackOptimizationList = stylePackOptimizationList
                 .stream()
                 .flatMap(stylePackOptCons -> stylePackOptCons.getCcPackOptimization().stream()).filter(ccPkOpt -> Objects.equals(ccPkOpt.getChannelText().getChannelId(), channelId)).collect(Collectors.toList());
-        updateCcPackOptCons(request, ccPackOptimizationList);
-    }
-
-
-    private void updateCcPackOptCons(PackOptConstraintUpdateRequestDTO request, List<CcPackOptimization> ccPackOptimizationList) {
-        for (CcPackOptimization cc : ccPackOptimizationList) {
-            updateCcPackOptConstWithNewInputFields(request, cc);
+        if(!CollectionUtils.isEmpty(ccPackOptimizationList)){
+            updateCcPackOptCons(request, ccPackOptimizationList);
         }
     }
 
-    private void updateMerchCatgPackOptConstFields(PackOptConstraintUpdateRequestDTO request, MerchantPackOptimization merchantPackOpt) {
+    private void updateCcPackOptCons(UpdatePackOptConstraintRequestDTO request, List<CcPackOptimization> ccPackOptimizationList) {
+        log.info("Updating Customer choice pack optimization constraint for planId {} ", request.getPlanId().toString());
+        if(request.getCcId()!=null && !request.getCcId().isEmpty()){
+            ccPackOptimizationList=ccPackOptimizationList.stream().filter(stPkOpt-> stPkOpt.getCcPackOptimizationId().getCustomerChoice().trim().equalsIgnoreCase(request.getCcId().trim())).collect(Collectors.toList());
+        }
+        for (CcPackOptimization cc : ccPackOptimizationList) {
+            updateCcPackOptConstFields(request, cc);
+        }
+        ccPackOptimizationRepository.saveAll(ccPackOptimizationList);
+    }
+
+    private void updateMerchCatgPackOptConstFields(UpdatePackOptConstraintRequestDTO request, MerchantPackOptimization merchantPackOpt) {
         if (request.getColorCombination() != null && !request.getColorCombination().isEmpty())
             merchantPackOpt.setColorCombination(request.getColorCombination());
         else if (request.getMaxNbrOfPacks() != null)
@@ -122,7 +142,7 @@ public class PackOptimizationUpdateMapper {
             merchantPackOpt.setVendorNbr9(request.getVendorNbr9());
     }
 
-    private void updateSubCatgPackOptConstFields(PackOptConstraintUpdateRequestDTO request, SubCatgPackOptimization subCatgPackOpt) {
+    private void updateSubCatgPackOptConstFields(UpdatePackOptConstraintRequestDTO request, SubCatgPackOptimization subCatgPackOpt) {
         if (request.getColorCombination() != null && !request.getColorCombination().isEmpty())
             subCatgPackOpt.setColorCombination(request.getColorCombination());
         else if (request.getMaxNbrOfPacks() != null)
@@ -152,7 +172,7 @@ public class PackOptimizationUpdateMapper {
 
     }
 
-    private void updateFlPackOptConstWithNewInputFields(PackOptConstraintUpdateRequestDTO request, fineLinePackOptimization fineLinePackOpt) {
+    private void updateFlPackOptConstFields(UpdatePackOptConstraintRequestDTO request, fineLinePackOptimization fineLinePackOpt) {
         if (request.getColorCombination() != null && !request.getColorCombination().isEmpty())
             fineLinePackOpt.setColorCombination(request.getColorCombination());
         else if (request.getMaxNbrOfPacks() != null)
@@ -181,7 +201,7 @@ public class PackOptimizationUpdateMapper {
             fineLinePackOpt.setVendorNbr9(request.getVendorNbr9());
     }
 
-    private void updateStPackOptConstWithNewInputFields(PackOptConstraintUpdateRequestDTO request, StylePackOptimization stylePackOpt) {
+    private void updateStPackOptConstFields(UpdatePackOptConstraintRequestDTO request, StylePackOptimization stylePackOpt) {
         if (request.getColorCombination() != null && !request.getColorCombination().isEmpty())
             stylePackOpt.setColorCombination(request.getColorCombination());
         else if (request.getMaxNbrOfPacks() != null)
@@ -210,7 +230,7 @@ public class PackOptimizationUpdateMapper {
             stylePackOpt.setVendorNbr9(request.getVendorNbr9());
     }
 
-    private void updateCcPackOptConstWithNewInputFields(PackOptConstraintUpdateRequestDTO request, CcPackOptimization ccPackOpt) {
+    private void updateCcPackOptConstFields(UpdatePackOptConstraintRequestDTO request, CcPackOptimization ccPackOpt) {
         if (request.getColorCombination() != null && !request.getColorCombination().isEmpty())
             ccPackOpt.setColorCombination(request.getColorCombination());
         else if (request.getMaxNbrOfPacks() != null)

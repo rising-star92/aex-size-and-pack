@@ -9,5 +9,5 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface MerchPackOptimizationRepository extends JpaRepository<MerchantPackOptimization, MerchantPackOptimizationID> {
-    List<MerchantPackOptimization> findMerchantPackOptimizationByMerchantPackOptimizationID_planIdAndMerchantPackOptimizationID_repTLvl3(Long planId, Integer lvl3Nbr);
+    List<MerchantPackOptimization> findMerchantPackOptimizationByMerchantPackOptimizationID_planIdAndMerchantPackOptimizationID_repTLvl3AndChannelText_channelId(Long planId, Integer lvl3Nbr, Integer channel);
 }

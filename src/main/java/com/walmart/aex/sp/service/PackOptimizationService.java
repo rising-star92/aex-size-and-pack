@@ -11,6 +11,7 @@ import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.repository.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.function.Function;
@@ -32,14 +33,14 @@ public class PackOptimizationService {
     private final AnalyticsMlSendRepository analyticsMlSendRepository;
     private final MerchPackOptimizationRepository merchPackOptimizationRepository;
 
-    private final PackOptimizationUpdateMapper packOptimizationUpdateMapper;
+    private final UpdatePackOptimizationMapper updatePackOptimizationMapper;
 
     Function<Object, String> ifNullThenEmpty = o -> Objects.nonNull(o) ? o.toString() : "";
 
     public PackOptimizationService(PackOptimizationRepository packOptRepo,
                                    FineLinePackOptimizationRepository finelinePackOptimizationRepository,
                                    FinelinePackOptRepository packOptfineplanRepo, CcPackOptimizationRepository ccPackOptimizationRepository,
-                                   StylePackOptimizationRepository stylePackOptimizationRepository, AnalyticsMlSendRepository analyticsMlSendRepository, PackOptimizationMapper packOptimizationMapper, MerchPackOptimizationRepository merchPackOptimizationRepository, PackOptimizationUpdateMapper packOptimizationUpdateMapper) {
+                                   StylePackOptimizationRepository stylePackOptimizationRepository, AnalyticsMlSendRepository analyticsMlSendRepository, PackOptimizationMapper packOptimizationMapper, MerchPackOptimizationRepository merchPackOptimizationRepository, UpdatePackOptimizationMapper updatePackOptimizationMapper) {
         this.packOptRepo = packOptRepo;
         this.finelinePackOptimizationRepository = finelinePackOptimizationRepository;
         this.packOptfineplanRepo = packOptfineplanRepo;
@@ -48,7 +49,7 @@ public class PackOptimizationService {
         this.packOptimizationMapper = packOptimizationMapper;
         this.analyticsMlSendRepository = analyticsMlSendRepository;
         this.merchPackOptimizationRepository = merchPackOptimizationRepository;
-        this.packOptimizationUpdateMapper = packOptimizationUpdateMapper;
+        this.updatePackOptimizationMapper = updatePackOptimizationMapper;
     }
 
     public PackOptimizationResponse getPackOptDetails(Long planId, Integer channelid) {
@@ -366,22 +367,43 @@ public class PackOptimizationService {
         analyticsMlSendRepository.updateStatus(planId, finelineNbr, status);
     }
 
-    public UpdatePkOptResponse updatePackOptConstraints(PackOptConstraintUpdateRequestDTO request) {
+    public UpdatePkOptResponse updatePackOptConstraints(UpdatePackOptConstraintRequestDTO request) {
         UpdatePkOptResponse response = new UpdatePkOptResponse();
-        if (request != null) {
-
+        if (isRequestValid(request)) {
             Integer channelId = ChannelType.getChannelIdFromName(request.getChannel());
-//            MerchantPackOptimizationID merchantPackOptimizationID = new MerchantPackOptimizationID(request.getPlanId(), request.getLvl0Nbr(), request.getLvl1Nbr(), request.getLvl2Nbr(), request.getLvl3Nbr());
-            List<MerchantPackOptimization> merchantPackOptimizationList = merchPackOptimizationRepository.findMerchantPackOptimizationByMerchantPackOptimizationID_planIdAndMerchantPackOptimizationID_repTLvl3(request.getPlanId(), request.getLvl3Nbr());
-            packOptimizationUpdateMapper.updateCategoryPackOptCons(channelId, request, merchantPackOptimizationList);
-
-//            merchPackOptimizationRepository.save(merchantPackOptimization);
-            response.setStatus(SUCCESS_STATUS);
+            log.info("Check if a MerchCatPackOptimization for planID : {} already exists or not", request.getPlanId().toString());
+            List<MerchantPackOptimization> merchantPackOptimizationList = merchPackOptimizationRepository.findMerchantPackOptimizationByMerchantPackOptimizationID_planIdAndMerchantPackOptimizationID_repTLvl3AndChannelText_channelId(request.getPlanId(), request.getLvl3Nbr(),channelId);
+            if (!CollectionUtils.isEmpty(merchantPackOptimizationList)) {
+                updatePackOptimizationMapper.updateCategoryPackOptCons(channelId, request, merchantPackOptimizationList);
+                response.setStatus(SUCCESS_STATUS);
+            } else {
+                log.info("MerchCatPackOptimization for planID : {} doesn't exists and therefore cannot update", request.getPlanId().toString());
+                response.setStatus(FAILED_STATUS);
+            }
         } else {
             response.setStatus(FAILED_STATUS);
         }
         return response;
+    }
 
+    private boolean isRequestValid(UpdatePackOptConstraintRequestDTO request) {
+        if(request.getLvl3Nbr()==null){
+            log.error("Invalid Request: Lvl3Nbr cannot be NULL in the request {}", request.toString());
+            return false;
+        }else if(request.getLvl4Nbr()!=null && request.getLvl3Nbr()==null){
+            log.error("Invalid Request: Lvl3Nbr cannot be NULL when lvl4Nbr is not NULL in the request {}", request.toString());
+            return false;
+        }else if(request.getLvl4Nbr()==null && request.getFinelineNbr()!=null){
+            log.error("Invalid Request: Lvl4Nbr cannot be NULL when finelineNbr is not NULL in the request {}", request.toString());
+            return false;
+        }else if(request.getFinelineNbr()==null && request.getStyleNbr()!=null){
+            log.error("Invalid Request: finelineNbr cannot be NULL when styleNbr is not NULL in the request {}", request.toString());
+            return false;
+        }else if(request.getStyleNbr()==null && request.getCcId()!=null){
+            log.error("Invalid Request: styleNbr cannot be NULL when ccId is not NULL in the request {}", request.toString());
+            return false;
+        }
+        return true;
     }
 
 }
