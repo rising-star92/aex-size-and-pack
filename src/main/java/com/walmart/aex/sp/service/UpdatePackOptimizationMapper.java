@@ -56,7 +56,7 @@ public class UpdatePackOptimizationMapper {
             }
             subCatgPackOptimizationRepository.saveAll(subCatgReplnPkConsList);
         }
-        List<fineLinePackOptimization> fineLinePkOptPkConsList = subCatgReplnPkConsList
+        List<FineLinePackOptimization> fineLinePkOptPkConsList = subCatgReplnPkConsList
                 .stream()
                 .flatMap(subCatgPackOptCons -> subCatgPackOptCons.getFinelinepackOptimization().stream()).filter(fineLinePkOpt -> Objects.equals(fineLinePkOpt.getChannelText().getChannelId(), channelId)).collect(Collectors.toList());
         if(!CollectionUtils.isEmpty(fineLinePkOptPkConsList)){
@@ -64,13 +64,13 @@ public class UpdatePackOptimizationMapper {
         }
     }
 
-    private void updateFinelinePackOptCons(UpdatePackOptConstraintRequestDTO request, List<fineLinePackOptimization> fineLinePackOptimizationList, Integer channelId) {
+    private void updateFinelinePackOptCons(UpdatePackOptConstraintRequestDTO request, List<FineLinePackOptimization> fineLinePackOptimizationList, Integer channelId) {
         log.info("Updating Fine Line pack optimization constraint for planId {} ", request.getPlanId().toString());
         if(request.getFinelineNbr()!=null){
-            fineLinePackOptimizationList=fineLinePackOptimizationList.stream().filter(flPkOpt-> flPkOpt.getFinelinePackOptId().getFinelineNbr().equals(request.getFinelineNbr())).collect(Collectors.toList());
+            fineLinePackOptimizationList = fineLinePackOptimizationList.stream().filter(flPkOpt-> flPkOpt.getFinelinePackOptId().getFinelineNbr().equals(request.getFinelineNbr())).collect(Collectors.toList());
         }
         if (request.getStyleNbr() == null) {
-            for (fineLinePackOptimization fl : fineLinePackOptimizationList) {
+            for (FineLinePackOptimization fl : fineLinePackOptimizationList) {
                 updateFlPackOptConstFields(request, fl);
             }
             finelinePackOptConsRepository.saveAll(fineLinePackOptimizationList);
@@ -86,7 +86,7 @@ public class UpdatePackOptimizationMapper {
     private void updateStylePackOptCons(UpdatePackOptConstraintRequestDTO request, List<StylePackOptimization> stylePackOptimizationList, Integer channelId) {
         log.info("Updating Style pack optimization constraint for planId {} ", request.getPlanId().toString());
         if(request.getStyleNbr()!=null && !request.getStyleNbr().isEmpty()){
-            stylePackOptimizationList=stylePackOptimizationList.stream().filter(stPkOpt-> stPkOpt.getStylepackoptimizationId().getStyleNbr().trim().equalsIgnoreCase(request.getStyleNbr().trim())).collect(Collectors.toList());
+            stylePackOptimizationList=stylePackOptimizationList.stream().filter(stPkOpt-> stPkOpt.getStylePackoptimizationId().getStyleNbr().trim().equalsIgnoreCase(request.getStyleNbr().trim())).collect(Collectors.toList());
         }
         if (request.getCcId() == null) {
             for (StylePackOptimization st : stylePackOptimizationList) {
@@ -172,7 +172,7 @@ public class UpdatePackOptimizationMapper {
 
     }
 
-    private void updateFlPackOptConstFields(UpdatePackOptConstraintRequestDTO request, fineLinePackOptimization fineLinePackOpt) {
+    private void updateFlPackOptConstFields(UpdatePackOptConstraintRequestDTO request, FineLinePackOptimization fineLinePackOpt) {
         if (request.getColorCombination() != null && !request.getColorCombination().isEmpty())
             fineLinePackOpt.setColorCombination(request.getColorCombination());
         else if (request.getMaxNbrOfPacks() != null)

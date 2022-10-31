@@ -66,9 +66,9 @@ public class UpdatePackOptimizationMapperTest {
         subCatgPackOptimization.setSubCatgPackOptimizationID(subCatgPackOptimizationID);
         subCatgPackOptimization.setChannelText(channelText);
 
-        Set<fineLinePackOptimization> fineLinePackOptimizationList = new HashSet<>();
-        fineLinePackOptimization fineLinePackOptimization = new fineLinePackOptimization();
-        fineLinePackOptimizationID fineLinePackOptimizationID = new fineLinePackOptimizationID();
+        Set<FineLinePackOptimization> fineLinePackOptimizationList = new HashSet<>();
+        FineLinePackOptimization fineLinePackOptimization = new FineLinePackOptimization();
+        FineLinePackOptimizationID fineLinePackOptimizationID = new FineLinePackOptimizationID();
         fineLinePackOptimizationID.setSubCatgPackOptimizationID(subCatgPackOptimizationID);
         fineLinePackOptimizationID.setFinelineNbr(2702);
         fineLinePackOptimization.setFinelinePackOptId(fineLinePackOptimizationID);
@@ -79,7 +79,7 @@ public class UpdatePackOptimizationMapperTest {
         StylePackOptimizationID stylePackOptimizationID = new StylePackOptimizationID();
         stylePackOptimizationID.setFinelinePackOptimizationID(fineLinePackOptimizationID);
         stylePackOptimizationID.setStyleNbr("34_2839_2_22_6");
-        stylePackOptimization.setStylepackoptimizationId(stylePackOptimizationID);
+        stylePackOptimization.setStylePackoptimizationId(stylePackOptimizationID);
         stylePackOptimization.setChannelText(channelText);
 
         Set<CcPackOptimization> ccPackOptimizationList = new HashSet<>();
@@ -107,7 +107,7 @@ public class UpdatePackOptimizationMapperTest {
         assertEquals(merchantPackOptimizationList.get(0).getOriginCountryCode(), "US");
         for (SubCatgPackOptimization subcatgOptCons :merchantPackOptimizationList.get(0).getSubCatgPackOptimization()){
             assertEquals(subcatgOptCons.getOriginCountryCode(), "US");
-            for (fineLinePackOptimization flPackOptimization :subcatgOptCons.getFinelinepackOptimization()){
+            for (FineLinePackOptimization flPackOptimization :subcatgOptCons.getFinelinepackOptimization()){
                 assertEquals(flPackOptimization.getOriginCountryCode(), "US");
                 for (StylePackOptimization stPackOptimization :flPackOptimization.getStylePackOptimization()){
                     assertEquals(stPackOptimization.getOriginCountryCode(), "US");
