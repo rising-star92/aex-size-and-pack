@@ -3,15 +3,12 @@ package com.walmart.aex.sp.service;
 import com.walmart.aex.sp.dto.packoptimization.UpdatePackOptConstraintRequestDTO;
 import com.walmart.aex.sp.entity.*;
 import com.walmart.aex.sp.repository.*;
-import com.walmart.aex.sp.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static com.walmart.aex.sp.util.CommonUtil.setIfNotNull;
 
 @Service
 @Slf4j
@@ -37,7 +34,7 @@ public class UpdatePackOptimizationMapper {
         if (request.getLvl3Nbr()!=null && request.getLvl4Nbr() == null) {
             for (MerchantPackOptimization merchantPackOpt : merchantPackOptimizationList) {
                 updateMerchCatgPackOptConstFields(request, merchantPackOpt);
-            };
+            }
             merchPackOptimizationRepository.saveAll(merchantPackOptimizationList);
         }
         List<SubCatgPackOptimization> subCatgPkOptPkConsList = merchantPackOptimizationList
@@ -46,6 +43,7 @@ public class UpdatePackOptimizationMapper {
         if(!CollectionUtils.isEmpty(subCatgPkOptPkConsList)){
             updateSubCategoryPackOptCons(request, subCatgPkOptPkConsList);
         }
+
     }
 
     private void updateSubCategoryPackOptCons(UpdatePackOptConstraintRequestDTO request, List<SubCatgPackOptimization> subCatgReplnPkConsList) {
@@ -197,5 +195,14 @@ public class UpdatePackOptimizationMapper {
         setIfNotNull(request.getVendorNbr9(), () -> ccPackOpt.setVendorNbr9(request.getVendorNbr9()));
     }
 
+    public static void setIfNotNull(Object value, Action action) {
+        if (value != null)
+            action.execute();
+    }
 
 }
+
+ @FunctionalInterface
+ interface Action {
+    void execute();
+ }

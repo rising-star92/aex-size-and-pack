@@ -25,7 +25,7 @@ type Mutation {
 	updateReplnConfigByCcSpMmSize(request: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse
   calculateBuyQty(calculateBuyQtyRequest: CalculateBuyQtyRequest!): StatusResponse!
   createRunPackOptExecution(request: RunPackOptRequest!): RunPackOptResponse
-  updatePackOptConst(request:UpdatePackOptConstraintRequestDTO!):UpdatePkOptResponse
+  updatePackOptConst(request:UpdatePackOptConstraintRequestDTO!):StatusResponse
 }
 
 input UpdatePackOptConstraintRequestDTO {
@@ -142,10 +142,6 @@ input PackOptConstraintRequest {
     planId: Int!
     channel: String!
     finelineNbr: Int
-}
-
-type UpdatePkOptResponse {
-    status: String!
 }
 
 type StatusResponse {

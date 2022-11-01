@@ -1,5 +1,6 @@
 package com.walmart.aex.sp.service;
 
+import com.walmart.aex.sp.dto.StatusResponse;
 import com.walmart.aex.sp.dto.mapper.FineLineMapperDto;
 import com.walmart.aex.sp.dto.packoptimization.*;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
@@ -17,8 +18,8 @@ import org.springframework.util.CollectionUtils;
 import java.util.*;
 import java.util.function.Function;
 
-import static com.walmart.aex.sp.service.SizeAndPackService.FAILED_STATUS;
-import static com.walmart.aex.sp.service.SizeAndPackService.SUCCESS_STATUS;
+import static com.walmart.aex.sp.util.SizeAndPackConstants.FAILED_STATUS;
+import static com.walmart.aex.sp.util.SizeAndPackConstants.SUCCESS_STATUS;
 
 @Service
 @Slf4j
@@ -407,8 +408,8 @@ public class PackOptimizationService {
         analyticsMlSendRepository.updateStatus(planId, finelineNbr, status);
     }
 
-    public UpdatePkOptResponse updatePackOptConstraints(UpdatePackOptConstraintRequestDTO request) {
-        UpdatePkOptResponse response = new UpdatePkOptResponse();
+    public StatusResponse updatePackOptConstraints(UpdatePackOptConstraintRequestDTO request) {
+        StatusResponse response = new StatusResponse();
         if (isRequestValid(request)) {
             Integer channelId = ChannelType.getChannelIdFromName(request.getChannel());
             log.info("Check if a MerchCatPackOptimization for planID : {} already exists or not", request.getPlanId().toString());
