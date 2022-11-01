@@ -6,6 +6,7 @@ import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
 import com.walmart.aex.sp.dto.planhierarchy.Style;
 import com.walmart.aex.sp.entity.*;
+import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.repository.*;
 import lombok.extern.slf4j.Slf4j;
@@ -26,12 +27,14 @@ public class PackOptimizationService {
     private final CcPackOptimizationRepository ccPackOptimizationRepository;
     private final StylePackOptimizationRepository stylePackOptimizationRepository;
     private final AnalyticsMlSendRepository analyticsMlSendRepository;
+    private final StyleCcPackOptConsRepository styleCcPackOptConsRepository;
+    private final PackOptConstraintMapper packOptConstraintMapper;
     Function<Object, String> ifNullThenEmpty = o -> Objects.nonNull(o) ? o.toString() : "";
 
     public PackOptimizationService(PackOptimizationRepository packOptRepo,
                                    FineLinePackOptimizationRepository finelinePackOptimizationRepository,
                                    FinelinePackOptRepository packOptfineplanRepo, CcPackOptimizationRepository ccPackOptimizationRepository,
-                                   StylePackOptimizationRepository stylePackOptimizationRepository, AnalyticsMlSendRepository analyticsMlSendRepository, PackOptimizationMapper packOptimizationMapper) {
+                                   StylePackOptimizationRepository stylePackOptimizationRepository, AnalyticsMlSendRepository analyticsMlSendRepository, PackOptimizationMapper packOptimizationMapper, StyleCcPackOptConsRepository styleCcPackOptConsRepository, PackOptConstraintMapper packOptConstraintMapper) {
         this.packOptRepo = packOptRepo;
         this.finelinePackOptimizationRepository = finelinePackOptimizationRepository;
         this.packOptfineplanRepo = packOptfineplanRepo;
@@ -39,6 +42,8 @@ public class PackOptimizationService {
         this.stylePackOptimizationRepository = stylePackOptimizationRepository;
         this.packOptimizationMapper = packOptimizationMapper;
         this.analyticsMlSendRepository = analyticsMlSendRepository;
+        this.styleCcPackOptConsRepository = styleCcPackOptConsRepository;
+        this.packOptConstraintMapper = packOptConstraintMapper;
     }
 
     public PackOptimizationResponse getPackOptDetails(Long planId, Integer channelid) {
@@ -160,16 +165,16 @@ public class PackOptimizationService {
         spList.setMaxPacks(subCtgPkopt.getMaxNbrOfPacks());
         spList.setMaxUnitsPerPack(subCtgPkopt.getMaxUnitsPerPack());
 
-        List<CcLevelConstraints> ccLevelList = new ArrayList<>();
+
         CcLevelConstraints ccLevel = new CcLevelConstraints();
         ccLevel.setFactoryIds(subCtgPkopt.getFactoryId());
         ccLevel.setCountryOfOrigin(subCtgPkopt.getOriginCountryName());
         ccLevel.setPortOfOrigin(subCtgPkopt.getPortOfOriginName());
         ccLevel.setSinglePackIndicator(subCtgPkopt.getSinglePackInd());
         ccLevel.setColorCombination(subCtgPkopt.getColorCombination());
-        ccLevelList.add(ccLevel);
+
         cList.setSupplierConstraints(spList);
-        cList.setCcLevelConstraints(ccLevelList);
+        cList.setCcLevelConstraints(ccLevel);
         return cList;
 
     }
@@ -191,12 +196,12 @@ public class PackOptimizationService {
         ccLevel.setColorCombination(merchPackOptObj.getColorCombination());
         ccLevelList.add(ccLevel);
         cList.setSupplierConstraints(spList);
-        cList.setCcLevelConstraints(ccLevelList);
+        cList.setCcLevelConstraints(ccLevel);
         return cList;
 
     }
 
-    public Constraints getFinelinePkOptConstraintDetails(fineLinePackOptimization finelinePackOptObj) {
+    public Constraints getFinelinePkOptConstraintDetails(FineLinePackOptimization finelinePackOptObj) {
 
         Constraints cList = new Constraints();
         SupplierConstraints spList = new SupplierConstraints();
@@ -213,7 +218,7 @@ public class PackOptimizationService {
         ccLevel.setColorCombination(finelinePackOptObj.getColorCombination());
         ccLevelList.add(ccLevel);
         cList.setSupplierConstraints(spList);
-        cList.setCcLevelConstraints(ccLevelList);
+        cList.setCcLevelConstraints(ccLevel);
         return cList;
 
     }
@@ -235,7 +240,7 @@ public class PackOptimizationService {
         ccLevel.setColorCombination(stylePackOptObj.getColorCombination());
         ccLevelList.add(ccLevel);
         cList.setSupplierConstraints(spList);
-        cList.setCcLevelConstraints(ccLevelList);
+        cList.setCcLevelConstraints(ccLevel);
         return cList;
 
     }
@@ -257,12 +262,12 @@ public class PackOptimizationService {
         ccLevel.setColorCombination(ccPackOptObj.getColorCombination());
         ccLevelList.add(ccLevel);
         cList.setSupplierConstraints(spList);
-        cList.setCcLevelConstraints(ccLevelList);
+        cList.setCcLevelConstraints(ccLevel);
         return cList;
 
     }
 
-    public List<Lvl4> subCategoryResponseList(Set<SubCatgPackOptimization> subCatgList, Set<fineLinePackOptimization> finelineList,
+    public List<Lvl4> subCategoryResponseList(Set<SubCatgPackOptimization> subCatgList, Set<FineLinePackOptimization> finelineList,
                                               Set<StylePackOptimization> stylePkOptList, Set<CcPackOptimization> ccPkOptList) {
         List<Lvl4> lvl4list = new ArrayList<>();
 
@@ -279,11 +284,11 @@ public class PackOptimizationService {
         return lvl4list;
     }
 
-    public List<Fineline> finelineResponseList(Set<fineLinePackOptimization> finelinePkOptList,
+    public List<Fineline> finelineResponseList(Set<FineLinePackOptimization> finelinePkOptList,
                                                Set<StylePackOptimization> stylePkOptList, Set<CcPackOptimization> ccPkOptList) {
         List<Fineline> finelineList = new ArrayList<>();
 
-        for (fineLinePackOptimization fineLinePkOpt : finelinePkOptList) {
+        for (FineLinePackOptimization fineLinePkOpt : finelinePkOptList) {
             Fineline fineListObj = new Fineline();
             fineListObj.setFinelineNbr(fineLinePkOpt.getFinelinePackOptId().getFinelineNbr());
 
@@ -306,7 +311,7 @@ public class PackOptimizationService {
             List<CustomerChoice> customerChoiceList = new ArrayList();
             customerChoiceList = customerChoiceResponseList(ccPkOptList);
 
-            style.setStyleNbr(stylePkOptObj.getStylepackoptimizationId().getStyleNbr());
+            style.setStyleNbr(stylePkOptObj.getStylePackoptimizationId().getStyleNbr());
             style.setConstraints(getStylePkOptConstraintDetails(stylePkOptObj));
             style.setCustomerChoices(customerChoiceList);
             styleList.add(style);
@@ -354,5 +359,25 @@ public class PackOptimizationService {
 
     public void UpdatePkOptServiceStatus(Long planId, Integer finelineNbr, Integer status) {
         analyticsMlSendRepository.updateStatus(planId, finelineNbr, status);
+    }
+
+    public PackOptimizationResponse getPackOptConstraintDetails(PackOptConstraintRequest request)
+    {
+        PackOptimizationResponse packOptimizationResponse = new PackOptimizationResponse();
+        try {
+            List<PackOptConstraintResponseDTO> packOptConstraintResponseDTO = styleCcPackOptConsRepository
+                    .findByFinePlanPackOptimizationIDPlanIdAndChannelTextChannelId(request.getPlanId(), ChannelType.getChannelIdFromName(request.getChannel()),request.getFinelineNbr());
+            Optional.of(packOptConstraintResponseDTO)
+                    .stream()
+                    .flatMap(Collection::stream)
+                    .forEach(constraintResponseDTO -> packOptConstraintMapper
+                            .mapPackOptLvl2(constraintResponseDTO, packOptimizationResponse, request.getFinelineNbr()));
+        } catch (Exception e) {
+            log.error("Exception While fetching Fineline PackOpt :", e);
+            throw new CustomException("Failed to fetch Fineline PackOpt, due to" + e);
+        }
+        log.info("Fetch PackOpt Fineline response: {}", packOptimizationResponse);
+        return packOptimizationResponse;
+
     }
 }
