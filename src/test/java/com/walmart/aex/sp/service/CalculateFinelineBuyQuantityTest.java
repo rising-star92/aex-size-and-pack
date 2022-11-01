@@ -12,20 +12,19 @@ import com.walmart.aex.sp.entity.SpStyleChannelFixture;
 import com.walmart.aex.sp.exception.SizeAndPackException;
 import com.walmart.aex.sp.repository.MerchCatgReplPackRepository;
 import com.walmart.aex.sp.repository.SpFineLineChannelFixtureRepository;
+import com.walmart.aex.sp.util.AdjustedDCInboundQty;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -51,28 +50,37 @@ import static org.mockito.ArgumentMatchers.any;
 @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
 @Slf4j
 public class CalculateFinelineBuyQuantityTest {
+
     @InjectMocks
-    private CalculateFinelineBuyQuantity calculateFinelineBuyQuantity;
+    public CalculateFinelineBuyQuantity calculateFinelineBuyQuantity;
 
     @Mock
     private SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository;
 
     @Mock
-    private BQFPService bqfpService;
+    BQFPService bqfpService;
 
     @Mock
     private MerchCatgReplPackRepository merchCatgReplPackRepository;
 
-    private CalculateOnlineFinelineBuyQuantity calculateOnlineFinelineBuyQuantity;
+   @InjectMocks
+    public CalculateOnlineFinelineBuyQuantity calculateOnlineFinelineBuyQuantity;
 
-    @Mock
-    private StrategyFetchService strategyFetchService;
+   @Mock
+   StrategyFetchService strategyFetchService;
 
-    private ObjectMapper mapper = new ObjectMapper();
+   ReplenishmentsOptimizationService replenishmentsOptimizationServices;
+
+   AdjustedDCInboundQty adjustedDCInboundQty;
+
+    ObjectMapper mapper = new ObjectMapper();
 
     @BeforeEach
     public void setUp() {
        MockitoAnnotations.openMocks(this);
+       adjustedDCInboundQty=new AdjustedDCInboundQty();
+       replenishmentsOptimizationServices=new ReplenishmentsOptimizationService(adjustedDCInboundQty);
+       calculateOnlineFinelineBuyQuantity = new  CalculateOnlineFinelineBuyQuantity (mapper, new BuyQtyReplenishmentMapperService(),replenishmentsOptimizationServices );
        calculateFinelineBuyQuantity = new CalculateFinelineBuyQuantity(bqfpService, mapper, new BuyQtyReplenishmentMapperService(), calculateOnlineFinelineBuyQuantity,
                strategyFetchService,spFineLineChannelFixtureRepository,merchCatgReplPackRepository);
     }
@@ -323,15 +331,15 @@ public class CalculateFinelineBuyQuantityTest {
       assertEquals(String.format("Size %s should have correct value", actual.getAhsSizeDesc()), expectedISQty, (int) unitsFunc.apply(actual));
    }
 
-   private BQFPResponse bqfpResponseFromJson(String path) throws IOException {
+   BQFPResponse bqfpResponseFromJson(String path) throws IOException {
       return mapper.readValue(readJsonFileAsString(path), BQFPResponse.class);
    }
 
-   private APResponse apResponseFromJson(String path) throws IOException {
+   APResponse apResponseFromJson(String path) throws IOException {
       return mapper.readValue(readJsonFileAsString(path), APResponse.class);
    }
 
-   private BuyQtyResponse buyQtyResponseFromJson(String path) throws IOException {
+   BuyQtyResponse buyQtyResponseFromJson(String path) throws IOException {
       return mapper.readValue(readJsonFileAsString(path), BuyQtyResponse.class);
    }
 
@@ -339,11 +347,11 @@ public class CalculateFinelineBuyQuantityTest {
       return new String(Files.readAllBytes(Paths.get("src/test/resources/data/" + fileName + ".txt")));
    }
 
-   private String readJsonFileAsString(String fileName) throws IOException {
+   public String readJsonFileAsString(String fileName) throws IOException {
       return new String(Files.readAllBytes(Paths.get("src/test/resources/data/" + fileName + ".json")));
    }
 
-   private CalculateBuyQtyRequest create(String channel, int lvl0Nbr, int lvl1Nbr, int lvl2Nbr, int lvl3Nbr, int lvl4Nbr, int finelineNbr) {
+   public CalculateBuyQtyRequest create(String channel, int lvl0Nbr, int lvl1Nbr, int lvl2Nbr, int lvl3Nbr, int lvl4Nbr, int finelineNbr) {
       CalculateBuyQtyRequest request = new CalculateBuyQtyRequest();
       request.setChannel(channel);
       request.setLvl0Nbr(lvl0Nbr);
@@ -366,7 +374,7 @@ public class CalculateFinelineBuyQuantityTest {
       return request;
    }
 
-   private CalculateBuyQtyParallelRequest createFromRequest(CalculateBuyQtyRequest request) {
+   public CalculateBuyQtyParallelRequest createFromRequest(CalculateBuyQtyRequest request) {
       CalculateBuyQtyParallelRequest pRequest = new CalculateBuyQtyParallelRequest();
       pRequest.setPlanId(request.getPlanId());
       pRequest.setChannel(request.getChannel());
