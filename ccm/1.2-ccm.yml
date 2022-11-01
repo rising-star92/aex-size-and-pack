@@ -262,7 +262,7 @@ configDefinitions:
         description: "markDownWeek and inStoreWeek Query for GraphQL Call"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "query ($rfaWeekRequest:RfaWeekRequest!){getRFAWeeksByFineline(rfaWeekRequest:$rfaWeekRequest){planId lvl0Nbr lvl1Nbr lvl2Nbr lvl3Nbr lvl4Nbr finelineNbr inStoreWeek { yearWkNbr wmYearWk wmYearWkLy wmYearWkLly fiscalWeekDesc } markDownWeek { yearWkNbr wmYearWk wmYearWkLy wmYearWkLly fiscalWeekDesc } }}",
+        defaultValue: "query ($rfaWeekRequest:RfaWeekRequest!){getRFAWeeksByFineline(rfaWeekRequest:$rfaWeekRequest){planId lvl0Nbr lvl1Nbr lvl2Nbr lvl3Nbr lvl4Nbr finelineNbr inStoreWeek { yearWkNbr wmYearWk wmYearWkLy wmYearWkLly fiscalWeekDesc } markDownWeek { yearWkNbr wmYearWk wmYearWkLy wmYearWkLly fiscalWeekDesc } }}"
       "buy.qty.rfa.weeks.url":
         description: "Get buy quantity rfaweek URL from buy quantity Service"
         type: "STRING"
@@ -302,7 +302,7 @@ configDefinitions:
         description: "markDownWeek and inStoreWeek Query for GraphQL Call"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "query getLinePlanFinelines($planId : Int!, $finelineIds: [Int]!) {getLinePlanFinelines(planId : $planId, finelineIds: $finelineIds) {lvl3Nbr lvl4List {finelines {finelineName altFinelineName finelineId metrics {current {online {financialAttributes {transactableStart {wmYearWk} transactableEnd {wmYearWk}}}}}}}}}",
+        defaultValue: "query getLinePlanFinelines($planId : Int!, $finelineIds: [Int]!) {getLinePlanFinelines(planId : $planId, finelineIds: $finelineIds) {lvl3Nbr lvl4List {finelines {finelineName altFinelineName finelineId metrics {current {online {financialAttributes {transactableStart {wmYearWk} transactableEnd {wmYearWk}}}}}}}}}"
       "buy.qty.line.plan.weeks.url":
         description: "Get buy quantity Line Plan URL from buy quantity Service"
         type: "STRING"
