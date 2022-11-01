@@ -115,7 +115,6 @@ public class CommonUtil {
                 Whitelist.basic()), PlanSizeAndPackDTO.class);
     }
 
-
     @FunctionalInterface
     public interface Action {
         void execute();
