@@ -24,13 +24,9 @@ import static com.walmart.aex.sp.service.SizeAndPackService.SUCCESS_STATUS;
 @Slf4j
 public class PackOptimizationService {
 
-
-    private final PackOptimizationRepository packOptRepo;
     private final FineLinePackOptimizationRepository finelinePackOptimizationRepository;
     private final PackOptimizationMapper packOptimizationMapper;
     private final FinelinePackOptRepository packOptfineplanRepo;
-    private final CcPackOptimizationRepository ccPackOptimizationRepository;
-    private final StylePackOptimizationRepository stylePackOptimizationRepository;
     private final AnalyticsMlSendRepository analyticsMlSendRepository;
     private final MerchPackOptimizationRepository merchPackOptimizationRepository;
     private final UpdatePackOptimizationMapper updatePackOptimizationMapper;
@@ -39,21 +35,15 @@ public class PackOptimizationService {
 
     Function<Object, String> ifNullThenEmpty = o -> Objects.nonNull(o) ? o.toString() : "";
 
-    public PackOptimizationService(PackOptimizationRepository packOptRepo,
-                                   FineLinePackOptimizationRepository finelinePackOptimizationRepository,
+    public PackOptimizationService(FineLinePackOptimizationRepository finelinePackOptimizationRepository,
                                    FinelinePackOptRepository packOptfineplanRepo,
-                                   CcPackOptimizationRepository ccPackOptimizationRepository,
-                                   StylePackOptimizationRepository stylePackOptimizationRepository, 
                                    AnalyticsMlSendRepository analyticsMlSendRepository,
                                    PackOptimizationMapper packOptimizationMapper, 
                                    StyleCcPackOptConsRepository styleCcPackOptConsRepository, 
                                    PackOptConstraintMapper packOptConstraintMapper,
                                    MerchPackOptimizationRepository merchPackOptimizationRepository, UpdatePackOptimizationMapper updatePackOptimizationMapper){
-        this.packOptRepo = packOptRepo;
         this.finelinePackOptimizationRepository = finelinePackOptimizationRepository;
         this.packOptfineplanRepo = packOptfineplanRepo;
-        this.ccPackOptimizationRepository = ccPackOptimizationRepository;
-        this.stylePackOptimizationRepository = stylePackOptimizationRepository;
         this.packOptimizationMapper = packOptimizationMapper;
         this.analyticsMlSendRepository = analyticsMlSendRepository;
         this.merchPackOptimizationRepository = merchPackOptimizationRepository;
@@ -65,9 +55,7 @@ public class PackOptimizationService {
     public PackOptimizationResponse getPackOptDetails(Long planId, Integer channelId) {
         try {
             List<FineLineMapperDto> finePlanPackOptimizationList = packOptfineplanRepo.findByFinePlanPackOptimizationIDPlanIdAndChannelTextChannelId(planId, channelId);
-            Set<StylePackOptimization> stylePkOptList = Collections.emptySet();
-            List<CcPackOptimization> ccPkOptList = Collections.emptyList();
-            return packOptDetails(finePlanPackOptimizationList, stylePkOptList, ccPkOptList, planId, channelId);
+            return packOptDetails(finePlanPackOptimizationList,planId, channelId);
         } catch (Exception e) {
             log.error("Error Occurred while fetching Pack Opt", e);
             throw e;
@@ -75,11 +63,8 @@ public class PackOptimizationService {
 
     }
 
-
     public PackOptimizationResponse packOptDetails(
             List<FineLineMapperDto> fineLineMapperDtos,
-            Set<StylePackOptimization> stylePkOptList,
-            List<CcPackOptimization> ccPkOptList,
             Long planId,
             Integer channelId) {
 
@@ -87,9 +72,9 @@ public class PackOptimizationService {
         packOptResp.setPlanId(planId);
         packOptResp.setChannel(channelId);
         List<Lvl3> lvl3List = new ArrayList<>();
-        fineLineMapperDtos.forEach(fineLineMapperDto -> {
-            packOptResp.setLvl3List(maplvl3PackOpResponse(fineLineMapperDto, lvl3List));
-        });
+        fineLineMapperDtos.forEach(fineLineMapperDto ->
+            packOptResp.setLvl3List(maplvl3PackOpResponse(fineLineMapperDto, lvl3List))
+        );
 
         return packOptResp;
     }
@@ -336,7 +321,7 @@ public class PackOptimizationService {
             Lvl4 lvl4 = new Lvl4();
             lvl4.setConstraints(getSubCatConstraintsDetails(subctgpkopt));
 
-            List<Fineline> fineLinelist = new ArrayList<>();
+            List<Fineline> fineLinelist;
             fineLinelist = finelineResponseList(finelineList, stylePkOptList, ccPkOptList);
             lvl4.setFinelines(fineLinelist);
 
@@ -353,7 +338,7 @@ public class PackOptimizationService {
             Fineline fineListObj = new Fineline();
             fineListObj.setFinelineNbr(fineLinePkOpt.getFinelinePackOptId().getFinelineNbr());
 
-            List<Style> styleList = new ArrayList<>();
+            List<Style> styleList;
             styleList = styleResponseList(stylePkOptList, ccPkOptList);
             fineListObj.setConstraints(getFinelinePkOptConstraintDetails(fineLinePkOpt));
             fineListObj.setStyles(styleList);
@@ -369,7 +354,7 @@ public class PackOptimizationService {
 
         for (StylePackOptimization stylePkOptObj : stylePkOptList) {
             Style style = new Style();
-            List<CustomerChoice> customerChoiceList = new ArrayList();
+            List<CustomerChoice> customerChoiceList;
             customerChoiceList = customerChoiceResponseList(ccPkOptList);
 
             style.setStyleNbr(stylePkOptObj.getStylePackoptimizationId().getStyleNbr());
@@ -383,7 +368,7 @@ public class PackOptimizationService {
     }
 
     public List<CustomerChoice> customerChoiceResponseList(Set<CcPackOptimization> ccPkOptList) {
-        List<CustomerChoice> customerChoiceList = new ArrayList();
+        List<CustomerChoice> customerChoiceList = new ArrayList<> ();
 
         for (CcPackOptimization ccpkOptObj : ccPkOptList) {
             CustomerChoice customerChoice = new CustomerChoice();
@@ -429,7 +414,7 @@ public class PackOptimizationService {
             log.info("Check if a MerchCatPackOptimization for planID : {} already exists or not", request.getPlanId().toString());
             List<MerchantPackOptimization> merchantPackOptimizationList = merchPackOptimizationRepository.findMerchantPackOptimizationByMerchantPackOptimizationID_planIdAndMerchantPackOptimizationID_repTLvl3AndChannelText_channelId(request.getPlanId(), request.getLvl3Nbr(),channelId);
             if (!CollectionUtils.isEmpty(merchantPackOptimizationList)) {
-                updatePackOptimizationMapper.updateCategoryPackOptCons(channelId, request, merchantPackOptimizationList);
+                updatePackOptimizationMapper.updateCategoryPackOptCons(request, merchantPackOptimizationList);
                 response.setStatus(SUCCESS_STATUS);
             } else {
                 log.info("MerchCatPackOptimization for planID : {} doesn't exists and therefore cannot update", request.getPlanId().toString());

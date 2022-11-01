@@ -114,4 +114,15 @@ public class CommonUtil {
         return objectMapper.readValue(Jsoup.clean(StringEscapeUtils.escapeHtml(StringEscapeUtils.escapeSql(objectMapper.writeValueAsString(arg0))),
                 Whitelist.basic()), PlanSizeAndPackDTO.class);
     }
+
+
+    @FunctionalInterface
+    public interface Action {
+        void execute();
+    }
+
+    public static void setIfNotNull(Object value, Action action) {
+        if (value != null)
+            action.execute();
+    }
 }

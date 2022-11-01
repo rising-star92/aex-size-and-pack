@@ -3,12 +3,15 @@ package com.walmart.aex.sp.service;
 import com.walmart.aex.sp.dto.packoptimization.UpdatePackOptConstraintRequestDTO;
 import com.walmart.aex.sp.entity.*;
 import com.walmart.aex.sp.repository.*;
+import com.walmart.aex.sp.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.walmart.aex.sp.util.CommonUtil.setIfNotNull;
 
 @Service
 @Slf4j
@@ -29,23 +32,23 @@ public class UpdatePackOptimizationMapper {
         this.finelinePackOptConsRepository = finelinePackOptConsRepository;
     }
 
-    public void updateCategoryPackOptCons(Integer channelId, UpdatePackOptConstraintRequestDTO request, List<MerchantPackOptimization> merchantPackOptimizationList) {
+    public void updateCategoryPackOptCons(UpdatePackOptConstraintRequestDTO request, List<MerchantPackOptimization> merchantPackOptimizationList) {
         log.info("Updating Category pack optimization constraint for lvl3Nbr {} ", request.getLvl3Nbr().toString());
         if (request.getLvl3Nbr()!=null && request.getLvl4Nbr() == null) {
-            merchantPackOptimizationList.forEach(merchantPackOpt -> {
+            for (MerchantPackOptimization merchantPackOpt : merchantPackOptimizationList) {
                 updateMerchCatgPackOptConstFields(request, merchantPackOpt);
-            });
+            };
             merchPackOptimizationRepository.saveAll(merchantPackOptimizationList);
         }
         List<SubCatgPackOptimization> subCatgPkOptPkConsList = merchantPackOptimizationList
                 .stream()
-                .flatMap(catgPackOptCons -> catgPackOptCons.getSubCatgPackOptimization().stream()).filter(subCatgPkOpt -> Objects.equals(subCatgPkOpt.getChannelText().getChannelId(), channelId)).collect(Collectors.toList());
+                .flatMap(catgPackOptCons -> catgPackOptCons.getSubCatgPackOptimization().stream()).collect(Collectors.toList());
         if(!CollectionUtils.isEmpty(subCatgPkOptPkConsList)){
-            updateSubCategoryPackOptCons(request, subCatgPkOptPkConsList, channelId);
+            updateSubCategoryPackOptCons(request, subCatgPkOptPkConsList);
         }
     }
 
-    private void updateSubCategoryPackOptCons(UpdatePackOptConstraintRequestDTO request, List<SubCatgPackOptimization> subCatgReplnPkConsList, Integer channelId) {
+    private void updateSubCategoryPackOptCons(UpdatePackOptConstraintRequestDTO request, List<SubCatgPackOptimization> subCatgReplnPkConsList) {
         log.info("Updating Sub Category pack optimization constraint for planId {} ", request.getPlanId().toString());
         if(request.getLvl4Nbr()!=null){
             subCatgReplnPkConsList = subCatgReplnPkConsList.stream().filter(subCatg-> subCatg.getSubCatgPackOptimizationID().getRepTLvl4().equals(request.getLvl4Nbr())).collect(Collectors.toList());
@@ -58,13 +61,13 @@ public class UpdatePackOptimizationMapper {
         }
         List<FineLinePackOptimization> fineLinePkOptPkConsList = subCatgReplnPkConsList
                 .stream()
-                .flatMap(subCatgPackOptCons -> subCatgPackOptCons.getFinelinepackOptimization().stream()).filter(fineLinePkOpt -> Objects.equals(fineLinePkOpt.getChannelText().getChannelId(), channelId)).collect(Collectors.toList());
+                .flatMap(subCatgPackOptCons -> subCatgPackOptCons.getFinelinepackOptimization().stream()).collect(Collectors.toList());
         if(!CollectionUtils.isEmpty(fineLinePkOptPkConsList)){
-            updateFinelinePackOptCons(request, fineLinePkOptPkConsList, channelId);
+            updateFinelinePackOptCons(request, fineLinePkOptPkConsList);
         }
     }
 
-    private void updateFinelinePackOptCons(UpdatePackOptConstraintRequestDTO request, List<FineLinePackOptimization> fineLinePackOptimizationList, Integer channelId) {
+    private void updateFinelinePackOptCons(UpdatePackOptConstraintRequestDTO request, List<FineLinePackOptimization> fineLinePackOptimizationList) {
         log.info("Updating Fine Line pack optimization constraint for planId {} ", request.getPlanId().toString());
         if(request.getFinelineNbr()!=null){
             fineLinePackOptimizationList = fineLinePackOptimizationList.stream().filter(flPkOpt-> flPkOpt.getFinelinePackOptId().getFinelineNbr().equals(request.getFinelineNbr())).collect(Collectors.toList());
@@ -77,13 +80,13 @@ public class UpdatePackOptimizationMapper {
         }
         List<StylePackOptimization> stylePackOptimizationList = fineLinePackOptimizationList
                 .stream()
-                .flatMap(fineLinePackOptCons -> fineLinePackOptCons.getStylePackOptimization().stream()).filter(stylePkOpt -> Objects.equals(stylePkOpt.getChannelText().getChannelId(), channelId)).collect(Collectors.toList());
+                .flatMap(fineLinePackOptCons -> fineLinePackOptCons.getStylePackOptimization().stream()).collect(Collectors.toList());
         if(!CollectionUtils.isEmpty(stylePackOptimizationList)){
-            updateStylePackOptCons(request, stylePackOptimizationList, channelId);
+            updateStylePackOptCons(request, stylePackOptimizationList);
         }
     }
 
-    private void updateStylePackOptCons(UpdatePackOptConstraintRequestDTO request, List<StylePackOptimization> stylePackOptimizationList, Integer channelId) {
+    private void updateStylePackOptCons(UpdatePackOptConstraintRequestDTO request, List<StylePackOptimization> stylePackOptimizationList) {
         log.info("Updating Style pack optimization constraint for planId {} ", request.getPlanId().toString());
         if(request.getStyleNbr()!=null && !request.getStyleNbr().isEmpty()){
             stylePackOptimizationList=stylePackOptimizationList.stream().filter(stPkOpt-> stPkOpt.getStylePackoptimizationId().getStyleNbr().trim().equalsIgnoreCase(request.getStyleNbr().trim())).collect(Collectors.toList());
@@ -96,7 +99,7 @@ public class UpdatePackOptimizationMapper {
         }
         List<CcPackOptimization> ccPackOptimizationList = stylePackOptimizationList
                 .stream()
-                .flatMap(stylePackOptCons -> stylePackOptCons.getCcPackOptimization().stream()).filter(ccPkOpt -> Objects.equals(ccPkOpt.getChannelText().getChannelId(), channelId)).collect(Collectors.toList());
+                .flatMap(stylePackOptCons -> stylePackOptCons.getCcPackOptimization().stream()).collect(Collectors.toList());
         if(!CollectionUtils.isEmpty(ccPackOptimizationList)){
             updateCcPackOptCons(request, ccPackOptimizationList);
         }
@@ -114,149 +117,85 @@ public class UpdatePackOptimizationMapper {
     }
 
     private void updateMerchCatgPackOptConstFields(UpdatePackOptConstraintRequestDTO request, MerchantPackOptimization merchantPackOpt) {
-        if (request.getColorCombination() != null && !request.getColorCombination().isEmpty())
-            merchantPackOpt.setColorCombination(request.getColorCombination());
-        else if (request.getMaxNbrOfPacks() != null)
-            merchantPackOpt.setMaxNbrOfPacks(request.getMaxNbrOfPacks());
-        else if (request.getMaxUnitsPerPack() != null)
-            merchantPackOpt.setMaxUnitsPerPack(request.getMaxUnitsPerPack());
-        else if (request.getPortOfOriginId() != null)
-            merchantPackOpt.setPortOfOriginId(request.getPortOfOriginId());
-        else if (request.getPortOfOriginName() != null && request.getPortOfOriginName().isEmpty())
-            merchantPackOpt.setPortOfOriginName(request.getPortOfOriginName());
-        else if (request.getSinglePackInd() != null)
-            merchantPackOpt.setSinglePackInd(request.getSinglePackInd());
-        else if (request.getFactoryName() != null && !request.getFactoryName().isEmpty())
-            merchantPackOpt.setFactoryName(request.getFactoryName());
-        else if (request.getFactoryId() != null)
-            merchantPackOpt.setFactoryId(request.getFactoryId());
-        else if (request.getOriginCountryCode() != null && !request.getOriginCountryCode().isEmpty())
-            merchantPackOpt.setOriginCountryCode(request.getOriginCountryCode());
-        else if (request.getOriginCountryName() != null && !request.getOriginCountryName().isEmpty())
-            merchantPackOpt.setOriginCountryName(request.getOriginCountryName());
-        else if (request.getVendorName() != null && !request.getVendorName().isEmpty())
-            merchantPackOpt.setVendorName(request.getVendorName());
-        else if (request.getVendorNbr6() != null)
-            merchantPackOpt.setVendorNbr6(request.getVendorNbr6());
-        else if (request.getVendorNbr9() != null)
-            merchantPackOpt.setVendorNbr9(request.getVendorNbr9());
+        setIfNotNull(request.getColorCombination(), () -> merchantPackOpt.setColorCombination(request.getColorCombination()));
+        setIfNotNull(request.getMaxNbrOfPacks(), () -> merchantPackOpt.setMaxNbrOfPacks(request.getMaxNbrOfPacks()));
+        setIfNotNull(request.getMaxUnitsPerPack(), () -> merchantPackOpt.setMaxUnitsPerPack(request.getMaxUnitsPerPack()));
+        setIfNotNull(request.getPortOfOriginId(), () -> merchantPackOpt.setPortOfOriginId(request.getPortOfOriginId()));
+        setIfNotNull(request.getPortOfOriginName(), () -> merchantPackOpt.setPortOfOriginName(request.getPortOfOriginName()));
+        setIfNotNull(request.getSinglePackInd(), () -> merchantPackOpt.setSinglePackInd(request.getSinglePackInd()));
+        setIfNotNull(request.getFactoryId(), () -> merchantPackOpt.setFactoryId(request.getFactoryId()));
+        setIfNotNull(request.getFactoryName(), () -> merchantPackOpt.setFactoryName(request.getFactoryName()));
+        setIfNotNull(request.getOriginCountryCode(), () -> merchantPackOpt.setOriginCountryCode(request.getOriginCountryCode()));
+        setIfNotNull(request.getOriginCountryName(), () -> merchantPackOpt.setOriginCountryName(request.getOriginCountryName()));
+        setIfNotNull(request.getVendorName(), () -> merchantPackOpt.setVendorName(request.getVendorName()));
+        setIfNotNull(request.getVendorNbr6(), () -> merchantPackOpt.setVendorNbr6(request.getVendorNbr6()));
+        setIfNotNull(request.getVendorNbr9(), () -> merchantPackOpt.setVendorNbr9(request.getVendorNbr9()));
     }
 
     private void updateSubCatgPackOptConstFields(UpdatePackOptConstraintRequestDTO request, SubCatgPackOptimization subCatgPackOpt) {
-        if (request.getColorCombination() != null && !request.getColorCombination().isEmpty())
-            subCatgPackOpt.setColorCombination(request.getColorCombination());
-        else if (request.getMaxNbrOfPacks() != null)
-            subCatgPackOpt.setMaxNbrOfPacks(request.getMaxNbrOfPacks());
-        else if (request.getMaxUnitsPerPack() != null)
-            subCatgPackOpt.setMaxUnitsPerPack(request.getMaxUnitsPerPack());
-        else if (request.getPortOfOriginId() != null)
-            subCatgPackOpt.setPortOfOriginId(request.getPortOfOriginId());
-        else if (request.getPortOfOriginName() != null && request.getPortOfOriginName().isEmpty())
-            subCatgPackOpt.setPortOfOriginName(request.getPortOfOriginName());
-        else if (request.getSinglePackInd() != null)
-            subCatgPackOpt.setSinglePackInd(request.getSinglePackInd());
-        else if (request.getFactoryName() != null && !request.getFactoryName().isEmpty())
-            subCatgPackOpt.setFactoryName(request.getFactoryName());
-        else if (request.getFactoryId() != null)
-            subCatgPackOpt.setFactoryId(request.getFactoryId());
-        else if (request.getOriginCountryCode() != null && !request.getOriginCountryCode().isEmpty())
-            subCatgPackOpt.setOriginCountryCode(request.getOriginCountryCode());
-        else if (request.getOriginCountryName() != null && !request.getOriginCountryName().isEmpty())
-            subCatgPackOpt.setOriginCountryName(request.getOriginCountryName());
-        else if (request.getVendorName() != null && !request.getVendorName().isEmpty())
-            subCatgPackOpt.setVendorName(request.getVendorName());
-        else if (request.getVendorNbr6() != null)
-            subCatgPackOpt.setVendorNbr6(request.getVendorNbr6());
-        else if (request.getVendorNbr9() != null)
-            subCatgPackOpt.setVendorNbr9(request.getVendorNbr9());
+        setIfNotNull(request.getColorCombination(), () -> subCatgPackOpt.setColorCombination(request.getColorCombination()));
+        setIfNotNull(request.getMaxNbrOfPacks(), () -> subCatgPackOpt.setMaxNbrOfPacks(request.getMaxNbrOfPacks()));
+        setIfNotNull(request.getMaxUnitsPerPack(), () -> subCatgPackOpt.setMaxUnitsPerPack(request.getMaxUnitsPerPack()));
+        setIfNotNull(request.getPortOfOriginId(), () -> subCatgPackOpt.setPortOfOriginId(request.getPortOfOriginId()));
+        setIfNotNull(request.getPortOfOriginName(), () -> subCatgPackOpt.setPortOfOriginName(request.getPortOfOriginName()));
+        setIfNotNull(request.getSinglePackInd(), () -> subCatgPackOpt.setSinglePackInd(request.getSinglePackInd()));
+        setIfNotNull(request.getFactoryId(), () -> subCatgPackOpt.setFactoryId(request.getFactoryId()));
+        setIfNotNull(request.getFactoryName(), () -> subCatgPackOpt.setFactoryName(request.getFactoryName()));
+        setIfNotNull(request.getOriginCountryCode(), () -> subCatgPackOpt.setOriginCountryCode(request.getOriginCountryCode()));
+        setIfNotNull(request.getOriginCountryName(), () -> subCatgPackOpt.setOriginCountryName(request.getOriginCountryName()));
+        setIfNotNull(request.getVendorName(), () -> subCatgPackOpt.setVendorName(request.getVendorName()));
+        setIfNotNull(request.getVendorNbr6(), () -> subCatgPackOpt.setVendorNbr6(request.getVendorNbr6()));
+        setIfNotNull(request.getVendorNbr9(), () -> subCatgPackOpt.setVendorNbr9(request.getVendorNbr9()));
 
     }
 
     private void updateFlPackOptConstFields(UpdatePackOptConstraintRequestDTO request, FineLinePackOptimization fineLinePackOpt) {
-        if (request.getColorCombination() != null && !request.getColorCombination().isEmpty())
-            fineLinePackOpt.setColorCombination(request.getColorCombination());
-        else if (request.getMaxNbrOfPacks() != null)
-            fineLinePackOpt.setMaxNbrOfPacks(request.getMaxNbrOfPacks());
-        else if (request.getMaxUnitsPerPack() != null)
-            fineLinePackOpt.setMaxUnitsPerPack(request.getMaxUnitsPerPack());
-        else if (request.getPortOfOriginId() != null)
-            fineLinePackOpt.setPortOfOriginId(request.getPortOfOriginId());
-        else if (request.getPortOfOriginName() != null && request.getPortOfOriginName().isEmpty())
-            fineLinePackOpt.setPortOfOriginName(request.getPortOfOriginName());
-        else if (request.getSinglePackInd() != null)
-            fineLinePackOpt.setSinglePackInd(request.getSinglePackInd());
-        else if (request.getFactoryName() != null && !request.getFactoryName().isEmpty())
-            fineLinePackOpt.setFactoryName(request.getFactoryName());
-        else if (request.getFactoryId() != null)
-            fineLinePackOpt.setFactoryId(request.getFactoryId());
-        else if (request.getOriginCountryCode() != null && !request.getOriginCountryCode().isEmpty())
-            fineLinePackOpt.setOriginCountryCode(request.getOriginCountryCode());
-        else if (request.getOriginCountryName() != null && !request.getOriginCountryName().isEmpty())
-            fineLinePackOpt.setOriginCountryName(request.getOriginCountryName());
-        else if (request.getVendorName() != null && !request.getVendorName().isEmpty())
-            fineLinePackOpt.setVendorName(request.getVendorName());
-        else if (request.getVendorNbr6() != null)
-            fineLinePackOpt.setVendorNbr6(request.getVendorNbr6());
-        else if (request.getVendorNbr9() != null)
-            fineLinePackOpt.setVendorNbr9(request.getVendorNbr9());
+        setIfNotNull(request.getColorCombination(), () -> fineLinePackOpt.setColorCombination(request.getColorCombination()));
+        setIfNotNull(request.getMaxNbrOfPacks(), () -> fineLinePackOpt.setMaxNbrOfPacks(request.getMaxNbrOfPacks()));
+        setIfNotNull(request.getMaxUnitsPerPack(), () -> fineLinePackOpt.setMaxUnitsPerPack(request.getMaxUnitsPerPack()));
+        setIfNotNull(request.getPortOfOriginId(), () -> fineLinePackOpt.setPortOfOriginId(request.getPortOfOriginId()));
+        setIfNotNull(request.getPortOfOriginName(), () -> fineLinePackOpt.setPortOfOriginName(request.getPortOfOriginName()));
+        setIfNotNull(request.getSinglePackInd(), () -> fineLinePackOpt.setSinglePackInd(request.getSinglePackInd()));
+        setIfNotNull(request.getFactoryId(), () -> fineLinePackOpt.setFactoryId(request.getFactoryId()));
+        setIfNotNull(request.getFactoryName(), () -> fineLinePackOpt.setFactoryName(request.getFactoryName()));
+        setIfNotNull(request.getOriginCountryCode(), () -> fineLinePackOpt.setOriginCountryCode(request.getOriginCountryCode()));
+        setIfNotNull(request.getOriginCountryName(), () -> fineLinePackOpt.setOriginCountryName(request.getOriginCountryName()));
+        setIfNotNull(request.getVendorName(), () -> fineLinePackOpt.setVendorName(request.getVendorName()));
+        setIfNotNull(request.getVendorNbr6(), () -> fineLinePackOpt.setVendorNbr6(request.getVendorNbr6()));
+        setIfNotNull(request.getVendorNbr9(), () -> fineLinePackOpt.setVendorNbr9(request.getVendorNbr9()));
     }
 
     private void updateStPackOptConstFields(UpdatePackOptConstraintRequestDTO request, StylePackOptimization stylePackOpt) {
-        if (request.getColorCombination() != null && !request.getColorCombination().isEmpty())
-            stylePackOpt.setColorCombination(request.getColorCombination());
-        else if (request.getMaxNbrOfPacks() != null)
-            stylePackOpt.setMaxNbrOfPacks(request.getMaxNbrOfPacks());
-        else if (request.getMaxUnitsPerPack() != null)
-            stylePackOpt.setMaxUnitsPerPack(request.getMaxUnitsPerPack());
-        else if (request.getPortOfOriginId() != null)
-            stylePackOpt.setPortOfOriginId(request.getPortOfOriginId());
-        else if (request.getPortOfOriginName() != null && request.getPortOfOriginName().isEmpty())
-            stylePackOpt.setPortOfOriginName(request.getPortOfOriginName());
-        else if (request.getSinglePackInd() != null)
-            stylePackOpt.setSinglePackInd(request.getSinglePackInd());
-        else if (request.getFactoryName() != null && !request.getFactoryName().isEmpty())
-            stylePackOpt.setFactoryName(request.getFactoryName());
-        else if (request.getFactoryId() != null)
-            stylePackOpt.setFactoryId(request.getFactoryId());
-        else if (request.getOriginCountryCode() != null && !request.getOriginCountryCode().isEmpty())
-            stylePackOpt.setOriginCountryCode(request.getOriginCountryCode());
-        else if (request.getOriginCountryName() != null && !request.getOriginCountryName().isEmpty())
-            stylePackOpt.setOriginCountryName(request.getOriginCountryName());
-        else if (request.getVendorName() != null && !request.getVendorName().isEmpty())
-            stylePackOpt.setVendorName(request.getVendorName());
-        else if (request.getVendorNbr6() != null)
-            stylePackOpt.setVendorNbr6(request.getVendorNbr6());
-        else if (request.getVendorNbr9() != null)
-            stylePackOpt.setVendorNbr9(request.getVendorNbr9());
+        setIfNotNull(request.getColorCombination(), () -> stylePackOpt.setColorCombination(request.getColorCombination()));
+        setIfNotNull(request.getMaxNbrOfPacks(), () -> stylePackOpt.setMaxNbrOfPacks(request.getMaxNbrOfPacks()));
+        setIfNotNull(request.getMaxUnitsPerPack(), () -> stylePackOpt.setMaxUnitsPerPack(request.getMaxUnitsPerPack()));
+        setIfNotNull(request.getPortOfOriginId(), () -> stylePackOpt.setPortOfOriginId(request.getPortOfOriginId()));
+        setIfNotNull(request.getPortOfOriginName(), () -> stylePackOpt.setPortOfOriginName(request.getPortOfOriginName()));
+        setIfNotNull(request.getSinglePackInd(), () -> stylePackOpt.setSinglePackInd(request.getSinglePackInd()));
+        setIfNotNull(request.getFactoryId(), () -> stylePackOpt.setFactoryId(request.getFactoryId()));
+        setIfNotNull(request.getFactoryName(), () -> stylePackOpt.setFactoryName(request.getFactoryName()));
+        setIfNotNull(request.getOriginCountryCode(), () -> stylePackOpt.setOriginCountryCode(request.getOriginCountryCode()));
+        setIfNotNull(request.getOriginCountryName(), () -> stylePackOpt.setOriginCountryName(request.getOriginCountryName()));
+        setIfNotNull(request.getVendorName(), () -> stylePackOpt.setVendorName(request.getVendorName()));
+        setIfNotNull(request.getVendorNbr6(), () -> stylePackOpt.setVendorNbr6(request.getVendorNbr6()));
+        setIfNotNull(request.getVendorNbr9(), () -> stylePackOpt.setVendorNbr9(request.getVendorNbr9()));
     }
 
     private void updateCcPackOptConstFields(UpdatePackOptConstraintRequestDTO request, CcPackOptimization ccPackOpt) {
-        if (request.getColorCombination() != null && !request.getColorCombination().isEmpty())
-            ccPackOpt.setColorCombination(request.getColorCombination());
-        else if (request.getMaxNbrOfPacks() != null)
-            ccPackOpt.setMaxNbrOfPacks(request.getMaxNbrOfPacks());
-        else if (request.getMaxUnitsPerPack() != null)
-            ccPackOpt.setMaxUnitsPerPack(request.getMaxUnitsPerPack());
-        else if (request.getPortOfOriginId() != null)
-            ccPackOpt.setPortOfOriginId(request.getPortOfOriginId());
-        else if (request.getPortOfOriginName() != null && request.getPortOfOriginName().isEmpty())
-            ccPackOpt.setPortOfOriginName(request.getPortOfOriginName());
-        else if (request.getSinglePackInd() != null)
-            ccPackOpt.setSinglePackInd(request.getSinglePackInd());
-        else if (request.getFactoryName() != null && !request.getFactoryName().isEmpty())
-            ccPackOpt.setFactoryName(request.getFactoryName());
-        else if (request.getFactoryId() != null)
-            ccPackOpt.setFactoryId(request.getFactoryId());
-        else if (request.getOriginCountryCode() != null && !request.getOriginCountryCode().isEmpty())
-            ccPackOpt.setOriginCountryCode(request.getOriginCountryCode());
-        else if (request.getOriginCountryName() != null && !request.getOriginCountryName().isEmpty())
-            ccPackOpt.setOriginCountryName(request.getOriginCountryName());
-        else if (request.getVendorName() != null && !request.getVendorName().isEmpty())
-            ccPackOpt.setVendorName(request.getVendorName());
-        else if (request.getVendorNbr6() != null)
-            ccPackOpt.setVendorNbr6(request.getVendorNbr6());
-        else if (request.getVendorNbr9() != null)
-            ccPackOpt.setVendorNbr9(request.getVendorNbr9());
+        setIfNotNull(request.getColorCombination(), () -> ccPackOpt.setColorCombination(request.getColorCombination()));
+        setIfNotNull(request.getMaxNbrOfPacks(), () -> ccPackOpt.setMaxNbrOfPacks(request.getMaxNbrOfPacks()));
+        setIfNotNull(request.getMaxUnitsPerPack(), () -> ccPackOpt.setMaxUnitsPerPack(request.getMaxUnitsPerPack()));
+        setIfNotNull(request.getPortOfOriginId(), () -> ccPackOpt.setPortOfOriginId(request.getPortOfOriginId()));
+        setIfNotNull(request.getPortOfOriginName(), () -> ccPackOpt.setPortOfOriginName(request.getPortOfOriginName()));
+        setIfNotNull(request.getSinglePackInd(), () -> ccPackOpt.setSinglePackInd(request.getSinglePackInd()));
+        setIfNotNull(request.getFactoryId(), () -> ccPackOpt.setFactoryId(request.getFactoryId()));
+        setIfNotNull(request.getFactoryName(), () -> ccPackOpt.setFactoryName(request.getFactoryName()));
+        setIfNotNull(request.getOriginCountryCode(), () -> ccPackOpt.setOriginCountryCode(request.getOriginCountryCode()));
+        setIfNotNull(request.getOriginCountryName(), () -> ccPackOpt.setOriginCountryName(request.getOriginCountryName()));
+        setIfNotNull(request.getVendorName(), () -> ccPackOpt.setVendorName(request.getVendorName()));
+        setIfNotNull(request.getVendorNbr6(), () -> ccPackOpt.setVendorNbr6(request.getVendorNbr6()));
+        setIfNotNull(request.getVendorNbr9(), () -> ccPackOpt.setVendorNbr9(request.getVendorNbr9()));
     }
+
 
 }

@@ -103,7 +103,7 @@ public class UpdatePackOptimizationMapperTest {
         merchantPackOptimization.setSubCatgPackOptimization(subCatgPkOptPkConsList);
         merchantPackOptimizationList.add(merchantPackOptimization);
 
-        pkOptConstMapper.updateCategoryPackOptCons(1,request,merchantPackOptimizationList);
+        pkOptConstMapper.updateCategoryPackOptCons(request,merchantPackOptimizationList);
         assertEquals(merchantPackOptimizationList.get(0).getOriginCountryCode(), "US");
         for (SubCatgPackOptimization subcatgOptCons :merchantPackOptimizationList.get(0).getSubCatgPackOptimization()){
             assertEquals(subcatgOptCons.getOriginCountryCode(), "US");
