@@ -52,8 +52,9 @@ public class WeeksServiceImpl implements WeeksService {
     private Optional<FinancialAttributes> getFinancialAttributes(Payload payload) {
         Optional<FinancialAttributes> response = Optional.empty();
         if(!ObjectUtils.isEmpty(payload)) {
-            response = Optional.of(payload.getGetLinePlanFinelines().get(0).getLvl4List().get(0)
-                    .getFinelines().get(0).getMetrics().getCurrent().getOnline().getFinancialAttributes());
+            response = Optional.of(payload.getGetLinePlanFinelines().stream().findFirst()
+                    .get().getLvl4List().stream().findFirst().get().getFinelines().stream().findFirst()
+                    .get().getMetrics().getCurrent().getOnline().getFinancialAttributes());
         }
         return response;
     }
