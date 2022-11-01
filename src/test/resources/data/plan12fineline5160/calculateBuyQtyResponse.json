@@ -1,0 +1,45 @@
+{
+  "spFineLineChannelFixtures" : [ ],
+  "merchCatgReplPacks" : [ {
+    "merchCatgReplPackId" : {
+      "planId" : 12,
+      "repTLvl0" : 50000,
+      "repTLvl1" : 34,
+      "repTLvl2" : 6419,
+      "repTLvl3" : 12231,
+      "channelId" : 2,
+      "fixtureTypeRollupId" : 0
+    },
+    "finalBuyUnits" : 5554,
+    "replUnits" : 5554,
+    "vendorPackCnt" : 12,
+    "whsePackCnt" : 2,
+    "vnpkWhpkRatio" : 6.0,
+    "replPackCnt" : 462,
+    "fixtureTypeRollupName" : "ONLINE_FIXTURE",
+    "runStatusCode" : 0,
+    "subReplPack" : [ {
+      "subCatgReplPackId" : {
+        "merchCatgReplPackId" : {
+          "planId" : 12,
+          "repTLvl0" : 50000,
+          "repTLvl1" : 34,
+          "repTLvl2" : 6419,
+          "repTLvl3" : 12231,
+          "channelId" : 2,
+          "fixtureTypeRollupId" : 0
+        },
+        "repTLvl4" : 31516
+      },
+      "finalBuyUnits" : 5554,
+      "replUnits" : 5554,
+      "vendorPackCnt" : 12,
+      "whsePackCnt" : 2,
+      "vnpkWhpkRatio" : 6.0,
+      "replPackCnt" : 462,
+      "fixtureTypeRollupName" : "ONLINE_FIXTURE",
+      "runStatusCode" : 0,
+      "finelineReplPack" : [ ]
+    } ]
+  } ]
+}
