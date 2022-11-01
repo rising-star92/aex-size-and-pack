@@ -11,7 +11,7 @@ import com.walmart.aex.sp.dto.commitmentreport.InitialBumpSetResponse;
 import com.walmart.aex.sp.dto.commitmentreport.Metrics;
 import com.walmart.aex.sp.dto.commitmentreport.PackDetails;
 import com.walmart.aex.sp.dto.commitmentreport.RFAInitialSetBumpSetResponse;
-import com.walmart.aex.sp.dto.commitmentreport.IntialSetStyle;
+import com.walmart.aex.sp.dto.commitmentreport.InitialSetStyle;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,8 +25,8 @@ public class InitialSetPlanMapper {
 		
 	}
 	
-	private List<IntialSetStyle> mapInitialSetStyle(RFAInitialSetBumpSetResponse rfaInitialSetBumpSetResponse, InitialBumpSetResponse response) {
-		List<IntialSetStyle> styles = Optional.ofNullable(response.getIntialSetStyles()).orElse(new ArrayList<>());
+	private List<InitialSetStyle> mapInitialSetStyle(RFAInitialSetBumpSetResponse rfaInitialSetBumpSetResponse, InitialBumpSetResponse response) {
+		List<InitialSetStyle> styles = Optional.ofNullable(response.getIntialSetStyles()).orElse(new ArrayList<>());
 
 		styles.stream().filter(styleObj -> rfaInitialSetBumpSetResponse.getStyle_id().equals(styleObj.getStyleId())).findFirst()
 				.ifPresentOrElse(styleObj -> styleObj.setInitialSetPlan(mapInitialSet(rfaInitialSetBumpSetResponse, styleObj)),
@@ -34,14 +34,14 @@ public class InitialSetPlanMapper {
 		return styles;
 	}
 	
-	private void setInitialSetStyle(RFAInitialSetBumpSetResponse rfaInitialSetBumpSetResponse, List<IntialSetStyle> styles) {
-		IntialSetStyle style = new IntialSetStyle();
+	private void setInitialSetStyle(RFAInitialSetBumpSetResponse rfaInitialSetBumpSetResponse, List<InitialSetStyle> styles) {
+		InitialSetStyle style = new InitialSetStyle();
 		style.setStyleId(rfaInitialSetBumpSetResponse.getStyle_id());
 		style.setInitialSetPlan(mapInitialSet(rfaInitialSetBumpSetResponse, style));
 		styles.add(style);
 	}
 	
-	private List<InitialSetPlan> mapInitialSet(RFAInitialSetBumpSetResponse rfaInitialSetBumpSetResponse, IntialSetStyle style) {
+	private List<InitialSetPlan> mapInitialSet(RFAInitialSetBumpSetResponse rfaInitialSetBumpSetResponse, InitialSetStyle style) {
 		List<InitialSetPlan> initialSetPlans = Optional.ofNullable(style.getInitialSetPlan()).orElse(new ArrayList<>());
 
 		initialSetPlans.stream().filter(initialSetPlan -> rfaInitialSetBumpSetResponse.getIn_store_week().equals(initialSetPlan.getInStoreWeek())).findFirst()

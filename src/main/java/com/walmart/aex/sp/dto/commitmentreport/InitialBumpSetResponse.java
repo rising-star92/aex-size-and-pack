@@ -8,6 +8,6 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class InitialBumpSetResponse {
 	private Integer finelineNbr;
-	private List<IntialSetStyle> intialSetStyles;
+	private List<InitialSetStyle> intialSetStyles;
 	
 }

@@ -77,7 +77,7 @@ public class BigQueryInitialSetPlanService {
 						rfaRes.setCc(rfaInitialSetResponse.getCc());
 						rfaRes.setMerch_method(rfaBumpSetResponse.getMerch_method());
 						rfaRes.setPack_id(rfaBumpSetResponse.getPack_id());
-						rfaRes.setSize(rfaInitialSetResponse.getStyle_id());
+						rfaRes.setSize(rfaInitialSetResponse.getSize());
 						rfaRes.setBumppack_ratio(rfaBumpSetResponse.getBumppack_ratio());
 						rfaRes.setIs_quantity(rfaBumpSetResponse.getIs_quantity());
 						rfaRes.setInitialpack_ratio(rfaInitialSetResponse.getInitialpack_ratio());
