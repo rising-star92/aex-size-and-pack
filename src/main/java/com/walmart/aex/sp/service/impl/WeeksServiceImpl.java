@@ -1,5 +1,6 @@
 package com.walmart.aex.sp.service.impl;
 
+import com.walmart.aex.sp.dto.currentlineplan.FinancialAttributes;
 import com.walmart.aex.sp.dto.gql.GraphQLResponse;
 import com.walmart.aex.sp.dto.gql.Payload;
 import com.walmart.aex.sp.dto.historicalmetrics.WeeksResponse;
@@ -10,6 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
+
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -35,11 +39,21 @@ public class WeeksServiceImpl implements WeeksService {
         } else {
             GraphQLResponse graphQLResponse = linePlanWeeksService.getWeeksByFineline(finelineNbr, planId, lvl3Nbr, lvl4Nbr);
             Payload payload = graphQLResponse.getData();
-            response.setFinelineNbr(finelineNbr);
-            response.setStartWeek(payload.getGetLinePlanFinelines().get(0).getLvl4List().get(0)
-                    .getFinelines().get(0).getMetrics().getCurrent().getOnline().getFinancialAttributes().getTransactableStart());
-            response.setEndWeek(payload.getGetLinePlanFinelines().get(0).getLvl4List().get(0)
-                    .getFinelines().get(0).getMetrics().getCurrent().getOnline().getFinancialAttributes().getTransactableEnd());
+            Optional<FinancialAttributes> financialAttributes = getFinancialAttributes(payload);
+            if(financialAttributes.isPresent()) {
+                response.setFinelineNbr(finelineNbr);
+                response.setStartWeek(financialAttributes.get().getTransactableStart());
+                response.setEndWeek(financialAttributes.get().getTransactableEnd());
+            }
+        }
+        return response;
+    }
+
+    private Optional<FinancialAttributes> getFinancialAttributes(Payload payload) {
+        Optional<FinancialAttributes> response = Optional.empty();
+        if(!ObjectUtils.isEmpty(payload)) {
+            response = Optional.of(payload.getGetLinePlanFinelines().get(0).getLvl4List().get(0)
+                    .getFinelines().get(0).getMetrics().getCurrent().getOnline().getFinancialAttributes());
         }
         return response;
     }
