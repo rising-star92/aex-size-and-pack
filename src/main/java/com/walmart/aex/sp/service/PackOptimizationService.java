@@ -322,8 +322,7 @@ public class PackOptimizationService {
             Lvl4 lvl4 = new Lvl4();
             lvl4.setConstraints(getSubCatConstraintsDetails(subctgpkopt));
 
-            List<Fineline> fineLinelist;
-            fineLinelist = finelineResponseList(finelineList, stylePkOptList, ccPkOptList);
+            List<Fineline> fineLinelist = finelineResponseList(finelineList, stylePkOptList, ccPkOptList);
             lvl4.setFinelines(fineLinelist);
 
             lvl4list.add(lvl4);
@@ -339,8 +338,7 @@ public class PackOptimizationService {
             Fineline fineListObj = new Fineline();
             fineListObj.setFinelineNbr(fineLinePkOpt.getFinelinePackOptId().getFinelineNbr());
 
-            List<Style> styleList;
-            styleList = styleResponseList(stylePkOptList, ccPkOptList);
+            List<Style> styleList = styleResponseList(stylePkOptList, ccPkOptList);
             fineListObj.setConstraints(getFinelinePkOptConstraintDetails(fineLinePkOpt));
             fineListObj.setStyles(styleList);
 
@@ -355,8 +353,7 @@ public class PackOptimizationService {
 
         for (StylePackOptimization stylePkOptObj : stylePkOptList) {
             Style style = new Style();
-            List<CustomerChoice> customerChoiceList;
-            customerChoiceList = customerChoiceResponseList(ccPkOptList);
+            List<CustomerChoice> customerChoiceList = customerChoiceResponseList(ccPkOptList);
 
             style.setStyleNbr(stylePkOptObj.getStylePackoptimizationId().getStyleNbr());
             style.setConstraints(getStylePkOptConstraintDetails(stylePkOptObj));

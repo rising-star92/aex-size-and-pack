@@ -3,6 +3,7 @@ package com.walmart.aex.sp.service;
 import com.walmart.aex.sp.dto.packoptimization.UpdatePackOptConstraintRequestDTO;
 import com.walmart.aex.sp.entity.*;
 import com.walmart.aex.sp.repository.*;
+import com.walmart.aex.sp.repository.common.PackOptimizationCommonRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -15,12 +16,14 @@ import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UpdatePackOptimizationMapperTest {
     @InjectMocks
     UpdatePackOptimizationMapper pkOptConstMapper;
-
+    @Mock
+    PackOptimizationCommonRepository packOptimizationCommonRepository;
     @Mock
     MerchPackOptimizationRepository merchPackOptimizationRepository;
     @Mock
@@ -102,7 +105,11 @@ public class UpdatePackOptimizationMapperTest {
 
         merchantPackOptimization.setSubCatgPackOptimization(subCatgPkOptPkConsList);
         merchantPackOptimizationList.add(merchantPackOptimization);
-
+        when(packOptimizationCommonRepository.getMerchPackOptimizationRepository()).thenReturn(merchPackOptimizationRepository);
+        when(packOptimizationCommonRepository.getSubCatgPackOptimizationRepository()).thenReturn(subCatgPackOptimizationRepository);
+        when(packOptimizationCommonRepository.getFinelinePackOptConsRepository()).thenReturn(finelinePackOptConsRepository);
+        when(packOptimizationCommonRepository.getStylePackOptimizationRepository()).thenReturn(stylePackOptimizationRepository);
+        when(packOptimizationCommonRepository.getCcPackOptimizationRepository()).thenReturn(ccPackOptimizationRepository);
         pkOptConstMapper.updateCategoryPackOptCons(request,merchantPackOptimizationList);
         assertEquals(merchantPackOptimizationList.get(0).getOriginCountryCode(), "US");
         for (SubCatgPackOptimization subcatgOptCons :merchantPackOptimizationList.get(0).getSubCatgPackOptimization()){

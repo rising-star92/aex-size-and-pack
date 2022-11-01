@@ -2,8 +2,9 @@ package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.packoptimization.UpdatePackOptConstraintRequestDTO;
 import com.walmart.aex.sp.entity.*;
-import com.walmart.aex.sp.repository.*;
+import com.walmart.aex.sp.repository.common.PackOptimizationCommonRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -13,20 +14,11 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class UpdatePackOptimizationMapper {
+    @Autowired
+    private final PackOptimizationCommonRepository packOptimizationCommonRepository;
 
-    private final MerchPackOptimizationRepository merchPackOptimizationRepository;
-    private final SubCatgPackOptimizationRepository subCatgPackOptimizationRepository;
-    private final CcPackOptimizationRepository ccPackOptimizationRepository;
-    private final StylePackOptimizationRepository stylePackOptimizationRepository;
-    private final FinelinePackOptConsRepository finelinePackOptConsRepository;
-
-    public UpdatePackOptimizationMapper(MerchPackOptimizationRepository merchPackOptimizationRepository, SubCatgPackOptimizationRepository subCatgPackOptimizationRepository, StylePackOptimizationRepository stylePackOptimizationRepository,
-                                        CcPackOptimizationRepository ccPackOptimizationRepository, FinelinePackOptConsRepository finelinePackOptConsRepository) {
-        this.merchPackOptimizationRepository = merchPackOptimizationRepository;
-        this.subCatgPackOptimizationRepository = subCatgPackOptimizationRepository;
-        this.ccPackOptimizationRepository = ccPackOptimizationRepository;
-        this.stylePackOptimizationRepository = stylePackOptimizationRepository;
-        this.finelinePackOptConsRepository = finelinePackOptConsRepository;
+    public UpdatePackOptimizationMapper(PackOptimizationCommonRepository packOptimizationCommonRepository) {
+        this.packOptimizationCommonRepository = packOptimizationCommonRepository;
     }
 
     public void updateCategoryPackOptCons(UpdatePackOptConstraintRequestDTO request, List<MerchantPackOptimization> merchantPackOptimizationList) {
@@ -35,7 +27,7 @@ public class UpdatePackOptimizationMapper {
             for (MerchantPackOptimization merchantPackOpt : merchantPackOptimizationList) {
                 updateMerchCatgPackOptConstFields(request, merchantPackOpt);
             }
-            merchPackOptimizationRepository.saveAll(merchantPackOptimizationList);
+            packOptimizationCommonRepository.getMerchPackOptimizationRepository().saveAll(merchantPackOptimizationList);
         }
         List<SubCatgPackOptimization> subCatgPkOptPkConsList = merchantPackOptimizationList
                 .stream()
@@ -55,7 +47,7 @@ public class UpdatePackOptimizationMapper {
             for (SubCatgPackOptimization lvl4PackOptCons : subCatgReplnPkConsList) {
                 updateSubCatgPackOptConstFields(request, lvl4PackOptCons);
             }
-            subCatgPackOptimizationRepository.saveAll(subCatgReplnPkConsList);
+            packOptimizationCommonRepository.getSubCatgPackOptimizationRepository().saveAll(subCatgReplnPkConsList);
         }
         List<FineLinePackOptimization> fineLinePkOptPkConsList = subCatgReplnPkConsList
                 .stream()
@@ -74,7 +66,7 @@ public class UpdatePackOptimizationMapper {
             for (FineLinePackOptimization fl : fineLinePackOptimizationList) {
                 updateFlPackOptConstFields(request, fl);
             }
-            finelinePackOptConsRepository.saveAll(fineLinePackOptimizationList);
+            packOptimizationCommonRepository.getFinelinePackOptConsRepository().saveAll(fineLinePackOptimizationList);
         }
         List<StylePackOptimization> stylePackOptimizationList = fineLinePackOptimizationList
                 .stream()
@@ -93,7 +85,7 @@ public class UpdatePackOptimizationMapper {
             for (StylePackOptimization st : stylePackOptimizationList) {
                 updateStPackOptConstFields(request, st);
             }
-            stylePackOptimizationRepository.saveAll(stylePackOptimizationList);
+            packOptimizationCommonRepository.getStylePackOptimizationRepository().saveAll(stylePackOptimizationList);
         }
         List<CcPackOptimization> ccPackOptimizationList = stylePackOptimizationList
                 .stream()
@@ -111,7 +103,7 @@ public class UpdatePackOptimizationMapper {
         for (CcPackOptimization cc : ccPackOptimizationList) {
             updateCcPackOptConstFields(request, cc);
         }
-        ccPackOptimizationRepository.saveAll(ccPackOptimizationList);
+        packOptimizationCommonRepository.getCcPackOptimizationRepository().saveAll(ccPackOptimizationList);
     }
 
     private void updateMerchCatgPackOptConstFields(UpdatePackOptConstraintRequestDTO request, MerchantPackOptimization merchantPackOpt) {
