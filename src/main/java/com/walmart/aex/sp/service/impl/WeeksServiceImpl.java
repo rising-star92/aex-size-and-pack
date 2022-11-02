@@ -5,6 +5,7 @@ import com.walmart.aex.sp.dto.gql.GraphQLResponse;
 import com.walmart.aex.sp.dto.gql.Payload;
 import com.walmart.aex.sp.dto.historicalmetrics.WeeksResponse;
 import com.walmart.aex.sp.enums.ChannelType;
+import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.service.ChannelWeeksService;
 import com.walmart.aex.sp.service.WeeksService;
 import lombok.extern.slf4j.Slf4j;
@@ -30,15 +31,19 @@ public class WeeksServiceImpl implements WeeksService {
     @Override
     public WeeksResponse getWeeks(String channelName, Integer finelineNbr, Long planId, Integer lvl3Nbr, Integer lvl4Nbr) {
         WeeksResponse response = new WeeksResponse();
+        GraphQLResponse graphQLRfaResponse;
+        Payload payload;
         if (ChannelType.getChannelNameFromName(channelName).equalsIgnoreCase(ChannelType.STORE.getDescription())) {
-            GraphQLResponse graphQLRfaResponse = rfaWeeksService.getWeeksByFineline(finelineNbr, planId, lvl3Nbr, lvl4Nbr);
-            Payload payload = graphQLRfaResponse.getData();
+            graphQLRfaResponse = rfaWeeksService.getWeeksByFineline(finelineNbr, planId, lvl3Nbr, lvl4Nbr);
+            checkErrors(graphQLRfaResponse);
+            payload = graphQLRfaResponse.getData();
             response.setFinelineNbr(finelineNbr);
             response.setStartWeek(payload.getGetRFAWeeksByFineline().getInStoreWeek());
             response.setEndWeek(payload.getGetRFAWeeksByFineline().getMarkDownWeek());
         } else {
-            GraphQLResponse graphQLResponse = linePlanWeeksService.getWeeksByFineline(finelineNbr, planId, lvl3Nbr, lvl4Nbr);
-            Payload payload = graphQLResponse.getData();
+            graphQLRfaResponse = linePlanWeeksService.getWeeksByFineline(finelineNbr, planId, lvl3Nbr, lvl4Nbr);
+            checkErrors(graphQLRfaResponse);
+            payload = graphQLRfaResponse.getData();
             Optional<FinancialAttributes> financialAttributes = getFinancialAttributes(payload);
             if(financialAttributes.isPresent()) {
                 response.setFinelineNbr(finelineNbr);
@@ -57,5 +62,13 @@ public class WeeksServiceImpl implements WeeksService {
                     .get().getMetrics().getCurrent().getOnline().getFinancialAttributes());
         }
         return response;
+    }
+
+    private void checkErrors(GraphQLResponse graphQLRfaResponse) {
+        if (graphQLRfaResponse.getData() == null && graphQLRfaResponse.getErrors() == null) {
+            throw new CustomException("No data/errors found");
+        } else if (graphQLRfaResponse.getErrors() != null && !graphQLRfaResponse. getErrors().isEmpty()) {
+            throw new CustomException(graphQLRfaResponse.getErrors().get(0).getMessage());
+        }
     }
 }
