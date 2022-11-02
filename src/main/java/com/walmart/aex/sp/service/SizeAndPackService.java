@@ -3,6 +3,7 @@ package com.walmart.aex.sp.service;
 import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.dto.commitmentreport.InitialBumpSetResponse;
 import com.walmart.aex.sp.dto.commitmentreport.InitialSetPackRequest;
+import com.walmart.aex.sp.dto.commitmentreport.Metrics;
 import com.walmart.aex.sp.dto.commitmentreport.RFAInitialSetBumpSetResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,6 +23,8 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.groupingBy;
 
 @Service
 @Slf4j
@@ -299,6 +302,8 @@ public class SizeAndPackService {
 			}
 			Optional.of(rfaInitialSetBumpSetResponses).stream().flatMap(Collection::stream).forEach(
 					intialSetResponseOne -> initialSetPlanMapper.mapInitialSetPlan(intialSetResponseOne, response, request.getFinelineNbr()));
+
+
 		} catch (Exception e) {
 			log.error("Exception While fetching Initial Set Pack Qunatities {}:", e);
 		}
