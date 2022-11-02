@@ -15,5 +15,6 @@ public class RFAInitialSetBumpSetResponse {
 	private Integer bumppack_ratio;
 	private Integer store;
 	private Integer is_quantity;
-	
+	private Integer bs_quantity;
+
 }

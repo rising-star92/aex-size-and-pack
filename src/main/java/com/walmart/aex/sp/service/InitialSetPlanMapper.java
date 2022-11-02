@@ -77,12 +77,16 @@ public class InitialSetPlanMapper {
 		List<Metrics> metrics = Optional.ofNullable(packDetails.getMetrics()).orElse(new ArrayList<>());
 		Metrics metrics2 = new Metrics();
 		metrics2.setSize(rfaInitialSetBumpSetResponse.getSize());
-		if(packDetails.getPackId().startsWith("SP_is")) {
+		//if no IS this would be a bump set
+		if(rfaInitialSetBumpSetResponse.getInitialpack_ratio() !=null && rfaInitialSetBumpSetResponse.getInitialpack_ratio()>0) {
 			metrics2.setRatio(rfaInitialSetBumpSetResponse.getInitialpack_ratio());
+			metrics2.setQuantity(rfaInitialSetBumpSetResponse.getIs_quantity());
+
 		}else {
 			metrics2.setRatio(rfaInitialSetBumpSetResponse.getBumppack_ratio());
+			metrics2.setQuantity(rfaInitialSetBumpSetResponse.getBs_quantity());
 		}
-		metrics2.setQuantity(rfaInitialSetBumpSetResponse.getIs_quantity());
+		//metrics2.setQuantity(rfaInitialSetBumpSetResponse.getIs_quantity());
 		metrics2.setCcId(rfaInitialSetBumpSetResponse.getCc());
 		metrics2.setMerchMethod(rfaInitialSetBumpSetResponse.getMerch_method());
 		metrics.add(metrics2);
