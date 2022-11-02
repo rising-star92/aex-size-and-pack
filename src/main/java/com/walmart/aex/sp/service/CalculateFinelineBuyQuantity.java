@@ -17,6 +17,8 @@ import com.walmart.aex.sp.exception.SizeAndPackException;
 import com.walmart.aex.sp.repository.MerchCatgReplPackRepository;
 import com.walmart.aex.sp.repository.SpFineLineChannelFixtureRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Marker;
+import org.slf4j.helpers.BasicMarkerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -794,7 +796,8 @@ public class CalculateFinelineBuyQuantity {
     private void logExtResponse(String title, Object response) {
         final String key = title == null ? "Response" : title;
         try {
-            log.debug("{}: {}", key, objectMapper.writeValueAsString(response));
+            Marker tag = new BasicMarkerFactory().getMarker(title);
+            log.debug(tag, objectMapper.writeValueAsString(response));
         } catch (JsonProcessingException e) {
             log.error("Unable to serialize response: {}", key, e);
         }
