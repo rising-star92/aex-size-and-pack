@@ -100,8 +100,7 @@ public class BigQueryInitialSetPlanService {
 	     }catch (Exception e) {
 	         log.error("Query not performed \n" + e.getMessage());
 	     }
-	    // log.info("resultsIS: {}",rfaInitialSetBumpSetResponses);
-	   
+
 	     return rfaInitialSetBumpSetResponses;
 	 }
 	public String getInStoreWeek(Integer planId, Integer finelineNbr){

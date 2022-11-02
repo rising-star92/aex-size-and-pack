@@ -86,7 +86,6 @@ public class InitialSetPlanMapper {
 			metrics2.setRatio(rfaInitialSetBumpSetResponse.getBumppack_ratio());
 			metrics2.setQuantity(rfaInitialSetBumpSetResponse.getBs_quantity());
 		}
-		//metrics2.setQuantity(rfaInitialSetBumpSetResponse.getIs_quantity());
 		metrics2.setCcId(rfaInitialSetBumpSetResponse.getCc());
 		metrics2.setMerchMethod(rfaInitialSetBumpSetResponse.getMerch_method());
 		metrics.add(metrics2);

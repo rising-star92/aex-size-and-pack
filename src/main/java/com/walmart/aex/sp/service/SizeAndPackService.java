@@ -302,7 +302,7 @@ public class SizeAndPackService {
 			}
 			Optional.of(rfaInitialSetBumpSetResponses).stream().flatMap(Collection::stream).forEach(
 					intialSetResponseOne -> initialSetPlanMapper.mapInitialSetPlan(intialSetResponseOne, response, request.getFinelineNbr()));
-			log.info("getInitialAndBumpSetDetails Plan {} and fineline {} response stats -->  Total number of styles {}, cc's {}, plans {}, packs {}, sizes&quantity{}",
+			/*log.debug("getInitialAndBumpSetDetails Plan {} and fineline {} response stats -->  Total number of styles {}, cc's {}, plans {}, packs {}, sizes&quantity{}",
                     request.getPlanId(),
                     request.getFinelineNbr(),
                     response.getIntialSetStyles().stream().count(),
@@ -310,7 +310,7 @@ public class SizeAndPackService {
                     response.getIntialSetStyles().stream().flatMap(iss -> iss.getInitialSetPlan().stream()).count(),
                     response.getIntialSetStyles().stream().flatMap(iss -> iss.getInitialSetPlan().stream().flatMap(isp->isp.getPackDetails().stream())).map(t -> t.getPackId()).distinct().count(),
                     response.getIntialSetStyles().stream().flatMap(iss -> iss.getInitialSetPlan().stream().flatMap(isp->isp.getPackDetails().stream().flatMap(t -> t.getMetrics().stream()))).collect(groupingBy(Metrics::getSize,Collectors.summingInt(Metrics::getQuantity)))
-                    );
+                    );*/
 
 		} catch (Exception e) {
 			log.error("Exception While fetching Initial Set Pack Qunatities {}:", e);
