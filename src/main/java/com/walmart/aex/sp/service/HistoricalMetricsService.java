@@ -18,7 +18,6 @@ import java.util.Objects;
 @Service
 @Slf4j
 public class HistoricalMetricsService {
-   private static final String WEEK_START = "01";
 
    @Autowired
    MidasServiceCall midasServiceCall;
@@ -35,8 +34,8 @@ public class HistoricalMetricsService {
          WeeksResponse weeksResponse = weeksService.getWeeks(request.getChannel(), request.getFinelineNbr(), request.getPlanId(), request.getLvl3Nbr(), request.getLvl4Nbr());
 
          if(Objects.nonNull(weeksResponse)){
-            request.setLyCompWeekStart(weeksResponse.getStartWeek().getWmYearWkLy());
-            request.setLyCompWeekEnd(weeksResponse.getEndWeek().getWmYearWkLy());
+            request.setLyCompWeekStart(weeksResponse.getStartWeek().getWmYearWk() - 100);
+            request.setLyCompWeekEnd(weeksResponse.getEndWeek().getWmYearWk() - 100);
          }
          FinelinePlan fineline = finelinePlanRepository.findByFinelinePlanId_SubCatPlanId_MerchCatPlanId_PlanIdAndFinelinePlanId_FinelineNbrAndFinelinePlanId_SubCatPlanId_MerchCatPlanId_ChannelId(request.getPlanId(),
                          request.getFinelineNbr(),
@@ -63,14 +62,6 @@ public class HistoricalMetricsService {
 
    public HistoricalMetricsResponse fetchHistoricalMetricsCC(HistoricalMetricsRequest request) {
       return new HistoricalMetricsResponse(new ArrayList<>());
-   }
-
-   private Integer getLastYear() {
-      return LocalDate.now().getYear() - 1;
-   }
-
-   private Integer getCurrentYear() {
-      return LocalDate.now().getYear();
    }
 
    private HistoricalMetricsResponse createDefaultResponse() {
