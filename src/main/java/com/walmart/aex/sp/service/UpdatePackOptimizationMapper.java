@@ -3,6 +3,7 @@ package com.walmart.aex.sp.service;
 import com.walmart.aex.sp.dto.packoptimization.UpdatePackOptConstraintRequestDTO;
 import com.walmart.aex.sp.entity.*;
 import com.walmart.aex.sp.repository.common.PackOptimizationCommonRepository;
+import com.walmart.aex.sp.service.helper.Action;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -194,7 +195,3 @@ public class UpdatePackOptimizationMapper {
 
 }
 
- @FunctionalInterface
- interface Action {
-    void execute();
- }
