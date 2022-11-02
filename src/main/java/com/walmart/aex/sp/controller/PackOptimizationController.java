@@ -1,6 +1,7 @@
 package com.walmart.aex.sp.controller;
 
 
+import com.walmart.aex.sp.dto.StatusResponse;
 import com.walmart.aex.sp.dto.packoptimization.isbpqty.ISAndBPQtyDTO;
 import com.walmart.aex.sp.service.PostPackOptimizationService;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -106,6 +107,11 @@ public class PackOptimizationController {
 		return ResponseEntity.ok("Success");
 	}
 
+	@MutationMapping
+	public StatusResponse updatePackOptConstraints(@Argument UpdatePackOptConstraintRequestDTO request) {
+		return packOptService.updatePackOptConstraints(request);
+	}
+
 	@QueryMapping
 	public PackOptimizationResponse fetchPackOptConstraintsByFineline(@Argument PackOptConstraintRequest request)
 	{
@@ -114,3 +120,4 @@ public class PackOptimizationController {
 
 
 }
+

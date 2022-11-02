@@ -3,7 +3,7 @@ package com.walmart.aex.sp.controller;
 import com.walmart.aex.sp.dto.buyquantity.BuyQtyRequest;
 import com.walmart.aex.sp.dto.buyquantity.BuyQtyResponse;
 import com.walmart.aex.sp.dto.buyquantity.CalculateBuyQtyRequest;
-import com.walmart.aex.sp.dto.buyquantity.StatusResponse;
+import com.walmart.aex.sp.dto.StatusResponse;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.service.CalculateBuyQuantityService;
 import com.walmart.aex.sp.service.InitialSetBumpPackQtyService;
