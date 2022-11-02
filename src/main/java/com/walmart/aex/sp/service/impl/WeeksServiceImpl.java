@@ -67,7 +67,7 @@ public class WeeksServiceImpl implements WeeksService {
     private void checkErrors(GraphQLResponse graphQLRfaResponse) {
         if (graphQLRfaResponse.getData() == null && graphQLRfaResponse.getErrors() == null) {
             throw new CustomException("No data/errors found");
-        } else if (graphQLRfaResponse.getErrors() != null && !graphQLRfaResponse. getErrors().isEmpty()) {
+        } else if (graphQLRfaResponse.getErrors() != null && !graphQLRfaResponse.getErrors().isEmpty()) {
             throw new CustomException(graphQLRfaResponse.getErrors().get(0).getMessage());
         }
     }
