@@ -113,7 +113,6 @@ public interface FinelinePackOptRepository
             " ON analytic.planId = finePlan.finelinePlanId.subCatPlanId.merchCatPlanId.planId \n" +
             " AND analytic.finelineNbr = finePlan.finelinePlanId.finelineNbr \n" +
             " left join RunStatusText r ON r.runStatusCode = analytic.runStatusCode.runStatusCode \n" +
-            " AND r.runStatusCode = fineLinePackOpt.runStatusText.runStatusCode \n" +
             " WHERE  merchCatPlan.merchCatPlanId.channelId = ?2 and merchCatPlan.merchCatPlanId.planId =?1")
     List<FineLineMapperDto> findByFinePlanPackOptimizationIDPlanIdAndChannelTextChannelId(Long planId, Integer channelId);
 
