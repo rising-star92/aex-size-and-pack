@@ -409,13 +409,13 @@ public class PackOptimizationService {
         StatusResponse response = new StatusResponse();
         if (isRequestValid(request)) {
             Integer channelId = ChannelType.getChannelIdFromName(request.getChannel());
-            log.info("Check if a MerchCatPackOptimization for planID : {} already exists or not", request.getPlanId().toString());
+            log.debug("Check if a MerchCatPackOptimization for planID : {} already exists or not", request.getPlanId().toString());
             List<MerchantPackOptimization> merchantPackOptimizationList = merchPackOptimizationRepository.findMerchantPackOptimizationByMerchantPackOptimizationID_planIdAndMerchantPackOptimizationID_repTLvl3AndChannelText_channelId(request.getPlanId(), request.getLvl3Nbr(),channelId);
             if (!CollectionUtils.isEmpty(merchantPackOptimizationList)) {
                 updatePackOptimizationMapper.updateCategoryPackOptCons(request, merchantPackOptimizationList);
                 response.setStatus(SUCCESS_STATUS);
             } else {
-                log.info("MerchCatPackOptimization for planID : {} doesn't exists and therefore cannot update", request.getPlanId().toString());
+                log.warn("MerchCatPackOptimization for planID : {} doesn't exists and therefore cannot update", request.getPlanId().toString());
                 response.setStatus(FAILED_STATUS);
             }
         } else {
@@ -426,19 +426,19 @@ public class PackOptimizationService {
 
     private boolean isRequestValid(UpdatePackOptConstraintRequestDTO request) {
         if(request.getLvl3Nbr()==null){
-            log.error("Invalid Request: Lvl3Nbr cannot be NULL in the request {}", request.toString());
+            log.warn("Invalid Request: Lvl3Nbr cannot be NULL in the request {}", request.toString());
             return false;
         }else if(request.getLvl4Nbr()!=null && request.getLvl3Nbr()==null){
-            log.error("Invalid Request: Lvl3Nbr cannot be NULL when lvl4Nbr is not NULL in the request {}", request.toString());
+            log.warn("Invalid Request: Lvl3Nbr cannot be NULL when lvl4Nbr is not NULL in the request {}", request.toString());
             return false;
         }else if(request.getLvl4Nbr()==null && request.getFinelineNbr()!=null){
-            log.error("Invalid Request: Lvl4Nbr cannot be NULL when finelineNbr is not NULL in the request {}", request.toString());
+            log.warn("Invalid Request: Lvl4Nbr cannot be NULL when finelineNbr is not NULL in the request {}", request.toString());
             return false;
         }else if(request.getFinelineNbr()==null && request.getStyleNbr()!=null){
-            log.error("Invalid Request: finelineNbr cannot be NULL when styleNbr is not NULL in the request {}", request.toString());
+            log.warn("Invalid Request: finelineNbr cannot be NULL when styleNbr is not NULL in the request {}", request.toString());
             return false;
         }else if(request.getStyleNbr()==null && request.getCcId()!=null){
-            log.error("Invalid Request: styleNbr cannot be NULL when ccId is not NULL in the request {}", request.toString());
+            log.warn("Invalid Request: styleNbr cannot be NULL when ccId is not NULL in the request {}", request.toString());
             return false;
         }
         return true;
