@@ -27,7 +27,7 @@
         </root>
     </springProfile>
 
-    <springProfile name="dev|stage">
+    <springProfile name="dev|stg">
         <root level="INFO">
             <appender-ref ref="jsonLogger"/>
         </root>
