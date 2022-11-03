@@ -4,10 +4,12 @@
             <providers>
                 <timestamp>
                     <pattern>ISO_OFFSET_DATE_TIME</pattern>
+                    <fieldName>timestamp</fieldName>
                 </timestamp>
                 <logLevel/>
                 <loggerName>
                     <shortenedLoggerNameLength>16</shortenedLoggerNameLength>
+                    <fieldName>logger</fieldName>
                 </loggerName>
                 <tags />
                 <pattern>
