@@ -31,6 +31,9 @@ public class PackOptConstraintMapper {
             response.setLvl2Nbr(packOptConstraintResponseDTO.getLvl2Nbr());
             response.setLvl2Desc(packOptConstraintResponseDTO.getLvl2Desc());
         }
+        if (response.getChannel() == null) {
+            response.setChannel(packOptConstraintResponseDTO.getChannelId());
+        }
         response.setLvl3List(mapPackOptLvl3(packOptConstraintResponseDTO, response, finelineNbr));
     }
 
@@ -89,7 +92,7 @@ public class PackOptConstraintMapper {
         fineline.setFinelineNbr(packOptConstraintResponseDTO.getFinelineNbr());
         fineline.setFinelineName(packOptConstraintResponseDTO.getFinelineDesc());
         fineline.setAltFinelineName(packOptConstraintResponseDTO.getAltfinelineDesc());
-        if (finelineNbr != null ) {
+        if (finelineNbr != null) {
 
             fineline.setStyles(mapPackOptStyles(packOptConstraintResponseDTO, fineline));
         }
@@ -101,13 +104,11 @@ public class PackOptConstraintMapper {
 
         styleDtoList.stream()
                 .filter(styleDto -> packOptConstraintResponseDTO.getStyleNbr().equals(styleDto.getStyleNbr())).findFirst()
-                .ifPresentOrElse(style -> {
-                    style.setCustomerChoices(mapPackOptCc(packOptConstraintResponseDTO, style));
-                        },
+                .ifPresentOrElse(style ->
+                            style.setCustomerChoices(mapPackOptCc(packOptConstraintResponseDTO, style)),
                         () -> setPackOptStyle(packOptConstraintResponseDTO, styleDtoList));
         return styleDtoList;
     }
-
 
 
     private void setPackOptStyle(PackOptConstraintResponseDTO packOptConstraintResponseDTO, List<Style> styleDtoList) {
@@ -116,8 +117,8 @@ public class PackOptConstraintMapper {
         styleDto.setStyleNbr(packOptConstraintResponseDTO.getStyleNbr());
         styleDto.setConstraints(setConstraints(packOptConstraintResponseDTO.getStyleSupplierName(),
                 packOptConstraintResponseDTO.getStyleFactoryIds(), packOptConstraintResponseDTO.getStyleCountryOfOrigin(),
-                packOptConstraintResponseDTO.getStylePortOfOrigin(),packOptConstraintResponseDTO.getStyleMaxPacks(),
-                packOptConstraintResponseDTO.getStyleMaxUnitsPerPack(),packOptConstraintResponseDTO.getStyleSinglePackIndicator(),
+                packOptConstraintResponseDTO.getStylePortOfOrigin(), packOptConstraintResponseDTO.getStyleMaxPacks(),
+                packOptConstraintResponseDTO.getStyleMaxUnitsPerPack(), packOptConstraintResponseDTO.getStyleSinglePackIndicator(),
                 packOptConstraintResponseDTO.getStyleColorCombination()));
         styleDto.setCustomerChoices(mapPackOptCc(packOptConstraintResponseDTO, styleDto));
         styleDtoList.add(styleDto);
@@ -128,7 +129,8 @@ public class PackOptConstraintMapper {
 
         customerChoiceList.stream()
                 .filter(customerChoiceDto -> packOptConstraintResponseDTO.getCcId().equals(customerChoiceDto.getCcId())).findFirst()
-                .ifPresentOrElse(customerChoiceDto -> {},
+                .ifPresentOrElse(customerChoiceDto -> {
+                        },
                         () -> setPackOptCc(packOptConstraintResponseDTO, customerChoiceList));
         return customerChoiceList;
 
@@ -138,18 +140,16 @@ public class PackOptConstraintMapper {
 
         CustomerChoice customerChoiceDto = new CustomerChoice();
         customerChoiceDto.setCcId(packOptConstraintResponseDTO.getCcId());
-        Constraints constraints = new Constraints();
-        customerChoiceDto.setConstraints(setConstraints(packOptConstraintResponseDTO.getCcSupplierName(),packOptConstraintResponseDTO.getCcFactoryIds(),
-                packOptConstraintResponseDTO.getCcCountryOfOrigin(), packOptConstraintResponseDTO.getCcPortOfOrigin(),packOptConstraintResponseDTO.getCcMaxPacks(),
-                packOptConstraintResponseDTO.getCcMaxUnitsPerPack(),packOptConstraintResponseDTO.getCcSinglePackIndicator(),
+        customerChoiceDto.setConstraints(setConstraints(packOptConstraintResponseDTO.getCcSupplierName(), packOptConstraintResponseDTO.getCcFactoryIds(),
+                packOptConstraintResponseDTO.getCcCountryOfOrigin(), packOptConstraintResponseDTO.getCcPortOfOrigin(), packOptConstraintResponseDTO.getCcMaxPacks(),
+                packOptConstraintResponseDTO.getCcMaxUnitsPerPack(), packOptConstraintResponseDTO.getCcSinglePackIndicator(),
                 packOptConstraintResponseDTO.getCcColorCombination()));
         customerChoiceDtoList.add(customerChoiceDto);
     }
 
-    private Constraints setConstraints(String vendorName,String factoryId,String originCountryName,
-                                       String portOfOriginName,Integer maxNbrOfPacks,Integer maxUnitsPerPack,
-                                       Integer singlePackInd,String colorCombination)
-    {
+    private Constraints setConstraints(String vendorName, String factoryId, String originCountryName,
+                                       String portOfOriginName, Integer maxNbrOfPacks, Integer maxUnitsPerPack,
+                                       Integer singlePackInd, String colorCombination) {
         Constraints constraints = new Constraints();
         SupplierConstraints supplierConstraints = new SupplierConstraints();
         supplierConstraints.setSupplierName(vendorName);
