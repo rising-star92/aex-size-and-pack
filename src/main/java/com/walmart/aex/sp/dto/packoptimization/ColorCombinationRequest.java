@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ColorCombinationRequest {
     private Long planId;
-    private String planDesc; //S3
+    private String planDesc;
     private Integer lvl0Nbr;
     private Integer lvl1Nbr;
     private Integer lvl2Nbr;
