@@ -81,7 +81,7 @@ public class PackOptimizationController {
 		UpdatePkOptResponse response = new UpdatePkOptResponse();
 		if (status.equals(6) || status.equals(10)) {
 			try {
-				packOptService.UpdatePkOptServiceStatus(planId, finelineNbr, status);
+				packOptService.updatePackOptServiceStatus(planId, finelineNbr, status);
 				response.setStatus(SUCCESS_STATUS);
 			} catch (Exception e) {
 				response.setStatus(FAILURE_STATUS);
@@ -117,6 +117,8 @@ public class PackOptimizationController {
 		return packOptService.getPackOptConstraintDetails(request);
 	}
 
-
-}
+	@MutationMapping
+	public StatusResponse setColorCombination(@Argument ColorCombinationRequest request) {
+		return packOptService.setColorCombination(request);
+	}
 
