@@ -2,11 +2,14 @@ package com.walmart.aex.sp.service.impl;
 
 import com.walmart.aex.sp.dto.bqfp.RfaWeeksResponse;
 import com.walmart.aex.sp.dto.bqfp.WeeksDTO;
+import com.walmart.aex.sp.dto.gql.Error;
 import com.walmart.aex.sp.dto.gql.GraphQLResponse;
 import com.walmart.aex.sp.dto.gql.Payload;
 import com.walmart.aex.sp.dto.historicalmetrics.WeeksResponse;
 import com.walmart.aex.sp.dto.currentlineplan.*;
+import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.service.ChannelWeeksService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,12 +18,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.Collections;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class WeeksServiceImplTest {
+class WeeksServiceImplTest {
 
     @InjectMocks
     private WeeksServiceImpl weeksService;
@@ -34,7 +38,7 @@ public class WeeksServiceImplTest {
     private ChannelWeeksService linePlanWeeksService;
 
     @Test
-    public void test_getWeeksShouldReturnStoreReponse() {
+    void test_getWeeksShouldReturnStoreReponse() {
         GraphQLResponse graphQLRfaResponseMock = new GraphQLResponse();
         Payload payload = new Payload();
         RfaWeeksResponse rfaWeeksResponse = new RfaWeeksResponse();
@@ -55,7 +59,25 @@ public class WeeksServiceImplTest {
     }
 
     @Test
-    public void test_getWeeksShouldReturnOnlineReponse() {
+    void test_getWeeksShouldReturnExceptionWhenResponseNull() {
+        when(linePlanWeeksService.getWeeksByFineline(1,1L,1,1)).thenReturn(new GraphQLResponse());
+        Assertions.assertThrows(CustomException.class, () -> {
+            weeksService.getWeeks("Online", 1, 1L, 1, 1);
+        });
+    }
+
+    @Test
+    void test_getWeeksShouldReturnExceptionWhenErrors() {
+        GraphQLResponse response = new GraphQLResponse();
+        response.setErrors(List.of(new Error()));
+        when(rfaWeeksService.getWeeksByFineline(1,1L,1,1)).thenReturn(response);
+        Assertions.assertThrows(CustomException.class, () -> {
+            weeksService.getWeeks("Store", 1, 1L, 1, 1);
+        });
+    }
+
+    @Test
+    void test_getWeeksShouldReturnOnlineReponse() {
         GraphQLResponse response = new GraphQLResponse();
         Payload payload = new Payload();
         WeeksDTO markWeeksDTO = new WeeksDTO();

@@ -53,9 +53,8 @@ public class HistoricalMetricsService {
             return midasServiceCall.fetchHistoricalMetrics(request);
          }
       } catch (Exception e) {
-         e.printStackTrace();
          log.error("Unable to retrieve historical size metrics for plan: {}, fineline: {}, error: {}",
-               request.getPlanId(), request.getFinelineNbr(), e.toString());
+               request.getPlanId(), request.getFinelineNbr(), e);
          return createDefaultResponse();
       }
    }

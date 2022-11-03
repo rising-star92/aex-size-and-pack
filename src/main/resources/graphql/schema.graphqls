@@ -396,7 +396,7 @@ input HistoricalMetricsRequest {
   planId: Int!
   lvl3Nbr: Int!
   lvl4Nbr: Int!
-  finelineNbr: Int
+  finelineNbr: Int!
   channel: String!
 }
 
