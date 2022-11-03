@@ -6,7 +6,10 @@ import com.walmart.aex.sp.dto.commitmentreport.InitialBumpSetResponse;
 import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDTO;
 import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDeleteDTO;
 import com.walmart.aex.sp.dto.planhierarchy.SizeAndPackResponse;
+import com.walmart.aex.sp.dto.storedistribution.PackInfoRequest;
+import com.walmart.aex.sp.dto.storedistribution.StoreDistributionResponse;
 import com.walmart.aex.sp.service.SizeAndPackService;
+import com.walmart.aex.sp.service.StoreDistributionService;
 import com.walmart.aex.sp.util.CommonUtil;
 
 
@@ -29,13 +32,17 @@ import lombok.extern.slf4j.Slf4j;
 @Api(consumes = MediaType.APPLICATION_JSON_VALUE)
 public class SizeAndPackController {
 
-    private final CommonUtil commonUtil;
-    @Autowired
-    SizeAndPackService sizeAndPackService;
+	private final CommonUtil commonUtil;
 
-    public SizeAndPackController(CommonUtil commonUtil) {
-        this.commonUtil = commonUtil;
-    }
+	@Autowired
+	SizeAndPackService sizeAndPackService;
+
+	private final StoreDistributionService storeDistributionService;
+
+	public SizeAndPackController(CommonUtil commonUtil, StoreDistributionService storeDistributionService) {
+		this.commonUtil = commonUtil;
+		this.storeDistributionService = storeDistributionService;
+	}
 
 
     @GetMapping("/health")
@@ -74,12 +81,17 @@ public class SizeAndPackController {
             log.error("Exception occurred when updating a line plan : {}", exp.getMessage());
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-    }
+    }	
 
     @QueryMapping
     public InitialBumpSetResponse getInitialAndBumpSetDetails(@Argument InitialSetPackRequest request) {
         return sizeAndPackService.getInitialAndBumpSetDetails(request);
     }
+    
+    @QueryMapping
+	public StoreDistributionResponse getStoreDistributionByPlan(@Argument PackInfoRequest request) {
+		return storeDistributionService.fetchStoreDistributionResponse(request);
+	}
 
 }
 
