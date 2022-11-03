@@ -64,8 +64,7 @@ public class PackOptimizationController {
 	@MutationMapping
 	public RunPackOptResponse createRunPackOptExecution(@Argument RunPackOptRequest request)
 	{
-		RunPackOptResponse response;
-		response = integrationHubService.callIntegrationHubForPackOpt(request);
+		RunPackOptResponse response = integrationHubService.callIntegrationHubForPackOpt(request);
 		if(response!=null)
 		{
 			return response;
