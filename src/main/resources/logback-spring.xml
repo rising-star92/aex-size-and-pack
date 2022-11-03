@@ -1,0 +1,50 @@
+<configuration>
+    <appender name="jsonLogger" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <timestamp>
+                    <pattern>ISO_OFFSET_DATE_TIME</pattern>
+                </timestamp>
+                <logLevel/>
+                <loggerName>
+                    <shortenedLoggerNameLength>16</shortenedLoggerNameLength>
+                </loggerName>
+                <tags />
+                <pattern>
+                    <pattern>
+                        <!-- If message in json format, will write the json body to log -->
+                        {"message": "#tryJson{%message}"}
+                    </pattern>
+                </pattern>
+            </providers>
+        </encoder>
+    </appender>
+
+    <springProfile name="local">
+        <include resource="org/springframework/boot/logging/logback/base.xml"/>
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="dev|stg">
+        <root level="INFO">
+            <appender-ref ref="jsonLogger"/>
+        </root>
+
+        <logger name="org.hibernate.SQL" level="DEBUG" additivity="false">
+            <appender-ref ref="jsonLogger"/>
+        </logger>
+
+        <logger name="com.walmart.aex.sp" level="DEBUG" additivity="false">
+            <appender-ref ref="jsonLogger"/>
+        </logger>
+    </springProfile>
+
+    <springProfile name="prod">
+        <root level="INFO">
+            <appender-ref ref="jsonLogger"/>
+        </root>
+    </springProfile>
+
+</configuration>
