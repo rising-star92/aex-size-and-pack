@@ -64,7 +64,7 @@ public class PackOptimizationController {
 	@MutationMapping
 	public RunPackOptResponse createRunPackOptExecution(@Argument RunPackOptRequest request)
 	{
-		RunPackOptResponse response= new RunPackOptResponse();
+		RunPackOptResponse response;
 		response = integrationHubService.callIntegrationHubForPackOpt(request);
 		if(response!=null)
 		{
@@ -104,7 +104,7 @@ public class PackOptimizationController {
 			return ResponseEntity.internalServerError().build();
 
 		}
-		return ResponseEntity.ok("Success");
+		return ResponseEntity.ok(SUCCESS_STATUS);
 	}
 
 	@MutationMapping

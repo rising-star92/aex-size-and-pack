@@ -6,9 +6,6 @@ import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import java.math.BigInteger;
-import java.util.Date;
-
 @Getter
 @Setter
 @Entity

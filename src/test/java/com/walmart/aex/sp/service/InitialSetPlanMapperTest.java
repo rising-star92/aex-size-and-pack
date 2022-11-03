@@ -2,7 +2,6 @@ package com.walmart.aex.sp.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -18,12 +17,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.walmart.aex.sp.dto.buyquantity.BuyQtyResponse;
 import com.walmart.aex.sp.dto.commitmentreport.InitialBumpSetResponse;
-import com.walmart.aex.sp.dto.commitmentreport.InitialSetPackRequest;
-import com.walmart.aex.sp.dto.commitmentreport.RFAInitialSetBumpSetResponse;
 import com.walmart.aex.sp.dto.commitmentreport.RFAInitialSetBumpSetResponses;
-import com.walmart.aex.sp.dto.initsetbumppkqty.InitialSetBumpPackQtyData;
 
 import lombok.extern.slf4j.Slf4j;
 
