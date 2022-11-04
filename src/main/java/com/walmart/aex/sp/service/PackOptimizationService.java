@@ -7,6 +7,7 @@ import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
 import com.walmart.aex.sp.dto.planhierarchy.Style;
 import com.walmart.aex.sp.entity.*;
+import com.walmart.aex.sp.enums.Action;
 import com.walmart.aex.sp.enums.CategoryType;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.exception.CustomException;
@@ -469,10 +470,12 @@ public class PackOptimizationService {
 
     }
 
-    public StatusResponse setColorCombination(ColorCombinationRequest request) {
+    public StatusResponse updateColorCombination(ColorCombinationRequest request) {
         StatusResponse response = new StatusResponse();
+        response.setStatus(SUCCESS_STATUS);
 //        TODO: add logic for generating colorCombination
         String colorCombination = "4-22-1";
+        String action = Action.getEnumValue(request.getAction());
         try {
             List<String> styles = request.getStyles().stream().map(ColorCombinationStyle::getStyleNbr).collect(Collectors.toList());
             List<String> customerChoices = request.getStyles().stream()
@@ -482,21 +485,49 @@ public class PackOptimizationService {
             List<CcPackOptimization> ccPackOptimizationList = ccPackOptimizationRepository.findCCPackOptimizationList(request.getPlanId(),
                     request.getLvl0Nbr(), request.getLvl1Nbr(), request.getLvl2Nbr(), request.getLvl3Nbr(), request.getLvl4Nbr(),
                     request.getFinelineNbr(), styles, customerChoices);
-            if (ccPackOptimizationList.stream().anyMatch(ccPackOptimization -> StringUtils.isNotEmpty(ccPackOptimization.getColorCombination()))) {
-                log.info("There are records which already have ColorCombinationId assigned. Cannot proceed further.");
+
+            if (Action.ADD.getDescription().equals(action)) {
+                ccPackOptimizationList = addColorCombination(colorCombination, ccPackOptimizationList);
+            } else if (Action.DELETE.getDescription().equals(action)) {
+                ccPackOptimizationList = deleteColorCombination(request.getColorCombinationId(), ccPackOptimizationList);
+            } else {
+                response.setMessage("Incorrect Action passed");
                 response.setStatus(FAILED_STATUS);
                 return response;
             }
-            for (CcPackOptimization ccPackOptimization : ccPackOptimizationList) {
-                ccPackOptimization.setColorCombination(colorCombination);
-            }
-            ccPackOptimizationRepository.saveAll(ccPackOptimizationList);
-            response.setStatus(SUCCESS_STATUS);
+
+            if (!ccPackOptimizationList.isEmpty()) ccPackOptimizationRepository.saveAll(ccPackOptimizationList);
         } catch (Exception e) {
             log.error("Exception While fetching CC PackOpt :", e);
+            response.setMessage("Exception occurred while processing Color Combination");
             response.setStatus(FAILED_STATUS);
         }
         return response;
 
+    }
+
+    private List<CcPackOptimization> deleteColorCombination(String colorCombination, List<CcPackOptimization> ccPackOptimizationList) {
+        if (StringUtils.isEmpty(colorCombination)) {
+            log.info("No Color Combination ID is passed for delete operation.");
+            throw new CustomException("Color Combination Id is missing");
+        }
+        ccPackOptimizationList = ccPackOptimizationList.stream()
+                .filter(ccPackOptimization -> colorCombination.equals(ccPackOptimization.getColorCombination()))
+                .collect(Collectors.toList());
+        for (CcPackOptimization ccPackOptimization : ccPackOptimizationList) {
+            ccPackOptimization.setColorCombination(null);
+        }
+        return ccPackOptimizationList;
+    }
+
+    private List<CcPackOptimization> addColorCombination(String colorCombination, List<CcPackOptimization> ccPackOptimizationList) {
+        if (ccPackOptimizationList.stream().anyMatch(ccPackOptimization -> StringUtils.isNotEmpty(ccPackOptimization.getColorCombination()))) {
+            log.info("There are records which already have ColorCombinationId assigned. Cannot proceed further.");
+            throw new CustomException("Color Combination already exist");
+        }
+        for (CcPackOptimization ccPackOptimization : ccPackOptimizationList) {
+            ccPackOptimization.setColorCombination(colorCombination);
+        }
+        return ccPackOptimizationList;
     }
 }

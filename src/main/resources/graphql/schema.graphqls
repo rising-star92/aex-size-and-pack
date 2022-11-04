@@ -27,7 +27,7 @@ type Mutation {
     calculateBuyQty(calculateBuyQtyRequest: CalculateBuyQtyRequest!): StatusResponse!
     createRunPackOptExecution(request: RunPackOptRequest!): RunPackOptResponse
     updatePackOptConstraints(request:UpdatePackOptConstraintRequestDTO!):StatusResponse
-    setColorCombination(request: ColorCombinationRequest!): StatusResponse!
+    updateColorCombination(request: ColorCombinationRequest!): StatusResponse!
 }
 
 input UpdatePackOptConstraintRequestDTO {
@@ -148,6 +148,7 @@ input PackOptConstraintRequest {
 
 type StatusResponse {
     status: String!
+    message: String
 }
 
 type UpdateVnPkWhPkResponse {

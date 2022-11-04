@@ -118,7 +118,15 @@ public class PackOptimizationController {
 	}
 
 	@MutationMapping
-	public StatusResponse setColorCombination(@Argument ColorCombinationRequest request) {
-		return packOptService.setColorCombination(request);
+	public StatusResponse updateColorCombination(@Argument ColorCombinationRequest request) {
+		StatusResponse response = new StatusResponse();
+		if (request.getAction() != null) {
+			response = packOptService.updateColorCombination(request);
+		}
+		else {
+			response.setMessage("No Action provided");
+			response.setStatus(FAILURE_STATUS);
+		}
+		return response;
 	}
 
