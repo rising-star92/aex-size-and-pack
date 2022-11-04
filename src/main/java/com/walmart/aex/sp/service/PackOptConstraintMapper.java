@@ -117,8 +117,7 @@ public class PackOptConstraintMapper {
         styleDto.setStyleNbr(packOptConstraintResponseDTO.getStyleNbr());
         styleDto.setConstraints(setConstraints(packOptConstraintResponseDTO.getStyleSupplierName(),
                 packOptConstraintResponseDTO.getStyleFactoryIds(), packOptConstraintResponseDTO.getStyleCountryOfOrigin(),
-                packOptConstraintResponseDTO.getStylePortOfOrigin(), packOptConstraintResponseDTO.getStyleMaxPacks(),
-                packOptConstraintResponseDTO.getStyleMaxUnitsPerPack(), packOptConstraintResponseDTO.getStyleSinglePackIndicator(),
+                packOptConstraintResponseDTO.getStylePortOfOrigin(), packOptConstraintResponseDTO.getStyleSinglePackIndicator(),
                 packOptConstraintResponseDTO.getStyleColorCombination()));
         styleDto.setCustomerChoices(mapPackOptCc(packOptConstraintResponseDTO, styleDto));
         styleDtoList.add(styleDto);
@@ -141,28 +140,22 @@ public class PackOptConstraintMapper {
         CustomerChoice customerChoiceDto = new CustomerChoice();
         customerChoiceDto.setCcId(packOptConstraintResponseDTO.getCcId());
         customerChoiceDto.setConstraints(setConstraints(packOptConstraintResponseDTO.getCcSupplierName(), packOptConstraintResponseDTO.getCcFactoryIds(),
-                packOptConstraintResponseDTO.getCcCountryOfOrigin(), packOptConstraintResponseDTO.getCcPortOfOrigin(), packOptConstraintResponseDTO.getCcMaxPacks(),
-                packOptConstraintResponseDTO.getCcMaxUnitsPerPack(), packOptConstraintResponseDTO.getCcSinglePackIndicator(),
+                packOptConstraintResponseDTO.getCcCountryOfOrigin(), packOptConstraintResponseDTO.getCcPortOfOrigin(), packOptConstraintResponseDTO.getCcSinglePackIndicator(),
                 packOptConstraintResponseDTO.getCcColorCombination()));
         customerChoiceDtoList.add(customerChoiceDto);
     }
 
     private Constraints setConstraints(String vendorName, String factoryId, String originCountryName,
-                                       String portOfOriginName, Integer maxNbrOfPacks, Integer maxUnitsPerPack,
-                                       Integer singlePackInd, String colorCombination) {
+                                       String portOfOriginName, Integer singlePackInd, String colorCombination) {
         Constraints constraints = new Constraints();
-        SupplierConstraints supplierConstraints = new SupplierConstraints();
-        supplierConstraints.setSupplierName(vendorName);
-        supplierConstraints.setFactoryIds(factoryId);
-        supplierConstraints.setCountryOfOrigin(originCountryName);
-        supplierConstraints.setPortOfOrigin(portOfOriginName);
-        CcLevelConstraints ccLevelConstraints = new CcLevelConstraints();
-        ccLevelConstraints.setMaxPacks(maxNbrOfPacks);
-        ccLevelConstraints.setMaxUnitsPerPack(maxUnitsPerPack);
-        ccLevelConstraints.setSinglePackIndicator(singlePackInd);
-        ccLevelConstraints.setColorCombination(colorCombination);
-        constraints.setSupplierConstraints(supplierConstraints);
-        constraints.setCcLevelConstraints(ccLevelConstraints);
+        ColorCombinationConstraints colorCombinationConstraints = new ColorCombinationConstraints();
+        colorCombinationConstraints.setSupplierName(vendorName);
+        colorCombinationConstraints.setFactoryId(factoryId);
+        colorCombinationConstraints.setCountryOfOrigin(originCountryName);
+        colorCombinationConstraints.setPortOfOrigin(portOfOriginName);
+        colorCombinationConstraints.setColorCombination(colorCombination);
+        colorCombinationConstraints.setSinglePackInd(singlePackInd);
+        constraints.setColorCombinationConstraints(colorCombinationConstraints);
         return constraints;
     }
 

@@ -10,6 +10,10 @@ public class Constraints {
 	private SupplierConstraints supplierConstraints;
 	
 	private CcLevelConstraints ccLevelConstraints;
+
+	private ColorCombinationConstraints colorCombinationConstraints;
+
+	private FinelineLevelConstraints finelineLevelConstraints;
 	
 	
 

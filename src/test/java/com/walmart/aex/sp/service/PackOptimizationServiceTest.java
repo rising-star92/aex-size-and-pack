@@ -62,8 +62,7 @@ public class PackOptimizationServiceTest {
 	List<FineLinePackOptimizationResponseDTO> finelinePackOptimizationResponseList;
 
 	@Test
-	public void testGetPackOptDetails()
-	{
+	public void testGetPackOptDetails() {
 		Long planId = 362L;
 		Integer channelId = 1;
 		ChannelText channeltext = new ChannelText();
@@ -73,7 +72,7 @@ public class PackOptimizationServiceTest {
 		FineLineMapperDto merchpackOptObj = new FineLineMapperDto();
 
 
-		List<FineLineMapperDto>  merchantPackOptimizationlist = new ArrayList();
+		List<FineLineMapperDto> merchantPackOptimizationlist = new ArrayList();
 
 		MerchantPackOptimizationID merchpackOptID = new MerchantPackOptimizationID();
 
@@ -138,7 +137,7 @@ public class PackOptimizationServiceTest {
 		Set<FineLinePackOptimization> finelinepkoptlist = new LinkedHashSet<>();
 		StylePackOptimizationID stylepkOptID = new StylePackOptimizationID();
 		stylepkOptID.setFinelinePackOptimizationID(finelinepkOptID);
-		StylePackOptimization stylepkOptObj= new StylePackOptimization();
+		StylePackOptimization stylepkOptObj = new StylePackOptimization();
 		stylepkOptObj.setStylePackoptimizationId(stylepkOptID);
 
 		Set<StylePackOptimization> stylepkoptlist = new LinkedHashSet<>();
@@ -147,9 +146,9 @@ public class PackOptimizationServiceTest {
 		finelinepkOptObj.setStylePackOptimization(stylepkoptlist);
 		finelinepkoptlist.add(finelinepkOptObj);
 
-		CcPackOptimizationID ccpkoptId= new CcPackOptimizationID();
+		CcPackOptimizationID ccpkoptId = new CcPackOptimizationID();
 		ccpkoptId.setStylePackOptimizationID(stylepkOptID);
-		CcPackOptimization ccpkOptObj= new CcPackOptimization();
+		CcPackOptimization ccpkOptObj = new CcPackOptimization();
 		ccpkOptObj.setCcPackOptimizationId(ccpkoptId);
 		Set<CcPackOptimization> ccpkoptlist = new LinkedHashSet<>();
 		ccpkoptlist.add(ccpkOptObj);
@@ -164,21 +163,14 @@ public class PackOptimizationServiceTest {
 
 		Mockito.when(packOptfineplanRepo.findByFinePlanPackOptimizationIDPlanIdAndChannelTextChannelId(planId, channelId)).thenReturn(merchantPackOptimizationlist);
 		packOptResponse = packOptimizationService.getPackOptDetails(362L, 1);
-		String expectedResult = "PackOptimizationResponse(planId=362, channel=1, lvl0Nbr=null, lvl0Desc=null, lvl1Nbr=null, lvl1Desc=null, lvl2Nbr=null, lvl2Desc=null, lvl3List=[Lvl3(lvl0Nbr=0, lvl1Nbr=0, lvl2Nbr=0, lvl3Nbr=25, lvl3Name=null, constraints=Constraints(supplierConstraints=SupplierConstraints(factoryIds=120, 121, countryOfOrigin=USA, portOfOrigin=Texas, supplierName=Vendor Name), ccLevelConstraints=CcLevelConstraints(maxUnitsPerPack=10, maxPacks=50, singlePackIndicator=1, colorCombination=Merch Color Combination)), lvl4List=[Lvl4(lvl4Nbr=252, lvl4Name=null, constraints=Constraints(supplierConstraints=SupplierConstraints(factoryIds=120, countryOfOrigin=USA, portOfOrigin=Texas, supplierName=Supplier Vendor Name), ccLevelConstraints=CcLevelConstraints(maxUnitsPerPack=10, maxPacks=20, singlePackIndicator=1, colorCombination=Sub Category Color Combination)), finelines=[Fineline(finelineNbr=2542, finelineName=null, altFinelineName=null, channel=null, packOptimizationStatus=NOT SENT, constraints=Constraints(supplierConstraints=SupplierConstraints(factoryIds=120, countryOfOrigin=USA, portOfOrigin=Texas, supplierName=FineLine Vendor Name), ccLevelConstraints=CcLevelConstraints(maxUnitsPerPack=2, maxPacks=5, singlePackIndicator=1, colorCombination=FineLine Color Combination)), styles=null, optimizationDetails=[RunOptimization(name=null, returnMessage=null, startTs=null, endTs=null, runStatusCode=null)])])])])";
-
+		String expectedResult = "PackOptimizationResponse(planId=362, channel=1, lvl0Nbr=null, lvl0Desc=null, lvl1Nbr=null, lvl1Desc=null, lvl2Nbr=null, lvl2Desc=null, lvl3List=[Lvl3(lvl0Nbr=0, lvl1Nbr=0, lvl2Nbr=0, lvl3Nbr=25, lvl3Name=null, constraints=Constraints(supplierConstraints=null, ccLevelConstraints=null, colorCombinationConstraints=ColorCombinationConstraints(supplierName=Vendor Name, factoryId=120, 121, countryOfOrigin=USA, portOfOrigin=Texas, colorCombination=Merch Color Combination, singlePackInd=1), finelineLevelConstraints=FinelineLevelConstraints(maxUnitsPerPack=10, maxPacks=50)), lvl4List=[Lvl4(lvl4Nbr=252, lvl4Name=null, constraints=Constraints(supplierConstraints=null, ccLevelConstraints=null, colorCombinationConstraints=ColorCombinationConstraints(supplierName=Supplier Vendor Name, factoryId=120, countryOfOrigin=USA, portOfOrigin=Texas, colorCombination=Sub Category Color Combination, singlePackInd=1), finelineLevelConstraints=FinelineLevelConstraints(maxUnitsPerPack=10, maxPacks=20)), finelines=[Fineline(finelineNbr=2542, finelineName=null, altFinelineName=null, channel=null, packOptimizationStatus=NOT SENT, constraints=Constraints(supplierConstraints=null, ccLevelConstraints=null, colorCombinationConstraints=ColorCombinationConstraints(supplierName=FineLine Vendor Name, factoryId=120, countryOfOrigin=USA, portOfOrigin=Texas, colorCombination=FineLine Color Combination, singlePackInd=1), finelineLevelConstraints=FinelineLevelConstraints(maxUnitsPerPack=2, maxPacks=5)), styles=null, optimizationDetails=[RunOptimization(name=null, returnMessage=null, startTs=null, endTs=null, runStatusCode=null)])])])])";
 		assertNotNull(packOptResponse);
 		assertEquals(packOptResponse.getPlanId(), 362L);
 		assertEquals(expectedResult, packOptResponse.toString());
 
-		assertEquals(supplierConstraints.getFactoryIds(), packOptResponse.getLvl3List().get(0).getConstraints().getSupplierConstraints().getFactoryIds());
-		assertEquals(supplierConstraints.getSupplierName(), packOptResponse.getLvl3List().get(0).getConstraints().getSupplierConstraints().getSupplierName());
-		assertEquals(supplierConstraints.getPortOfOrigin(), packOptResponse.getLvl3List().get(0).getConstraints().getSupplierConstraints().getPortOfOrigin());
-		assertEquals(supplierConstraints.getCountryOfOrigin(), packOptResponse.getLvl3List().get(0).getConstraints().getSupplierConstraints().getCountryOfOrigin());
-		assertEquals(ccLevelConstraints.getMaxPacks(), packOptResponse.getLvl3List().get(0).getConstraints().getCcLevelConstraints().getMaxPacks());
-		assertEquals(ccLevelConstraints.getSinglePackIndicator(), packOptResponse.getLvl3List().get(0).getConstraints().getCcLevelConstraints().getSinglePackIndicator());
-		assertEquals(ccLevelConstraints.getMaxUnitsPerPack(), packOptResponse.getLvl3List().get(0).getConstraints().getCcLevelConstraints().getMaxUnitsPerPack());
-		assertEquals(ccLevelConstraints.getColorCombination(), packOptResponse.getLvl3List().get(0).getConstraints().getCcLevelConstraints().getColorCombination());
-
+		assertEquals("120, 121", packOptResponse.getLvl3List().get(0).getConstraints().getColorCombinationConstraints().getFactoryId());
+		assertEquals("Vendor Name", packOptResponse.getLvl3List().get(0).getConstraints().getColorCombinationConstraints().getSupplierName());
+		assertEquals(50, packOptResponse.getLvl3List().get(0).getConstraints().getFinelineLevelConstraints().getMaxPacks());
 	}
 
 	@Test

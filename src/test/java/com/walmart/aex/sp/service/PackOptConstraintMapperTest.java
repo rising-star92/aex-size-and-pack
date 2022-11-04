@@ -60,8 +60,8 @@ class PackOptConstraintMapperTest {
         assertEquals(planId, packOptimizationResponse.getPlanId());
         assertEquals(styleNbr, packOptimizationResponse.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getStyleNbr());
         assertEquals(ccId, packOptimizationResponse.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getCustomerChoices().get(0).getCcId());
-        assertEquals(vendorName, packOptimizationResponse.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getConstraints().getSupplierConstraints().getSupplierName());
-        assertEquals(factoryId, packOptimizationResponse.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getCustomerChoices().get(0).getConstraints().getSupplierConstraints().getFactoryIds());
+        assertEquals(vendorName, packOptimizationResponse.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getConstraints().getColorCombinationConstraints().getSupplierName());
+        assertEquals(factoryId, packOptimizationResponse.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getCustomerChoices().get(0).getConstraints().getColorCombinationConstraints().getFactoryId());
     }
 
     @Test
