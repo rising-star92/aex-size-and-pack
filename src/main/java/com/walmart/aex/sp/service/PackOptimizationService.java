@@ -74,10 +74,31 @@ public class PackOptimizationService {
         packOptResp.setChannel(channelId);
         List<Lvl3> lvl3List = new ArrayList<>();
         fineLineMapperDtos.forEach(fineLineMapperDto ->
-            packOptResp.setLvl3List(maplvl3PackOpResponse(fineLineMapperDto, lvl3List))
+                mapPackOptLvl2(fineLineMapperDto,lvl3List,packOptResp)
         );
 
         return packOptResp;
+    }
+    public void mapPackOptLvl2(FineLineMapperDto fineLineMapperDto, List<Lvl3> lvl3List,PackOptimizationResponse response) {
+        if (response.getPlanId() == null) {
+            response.setPlanId(fineLineMapperDto.getPlanId());
+        }
+        if (response.getLvl0Nbr() == null) {
+            response.setLvl0Nbr(fineLineMapperDto.getLvl0Nbr());
+            response.setLvl0Desc(fineLineMapperDto.getLvl0Desc());
+        }
+        if (response.getLvl1Nbr() == null) {
+            response.setLvl1Nbr(fineLineMapperDto.getLvl1Nbr());
+            response.setLvl1Desc(fineLineMapperDto.getLvl1Desc());
+        }
+        if (response.getLvl2Nbr() == null) {
+            response.setLvl2Nbr(fineLineMapperDto.getLvl2Nbr());
+            response.setLvl2Desc(fineLineMapperDto.getLvl2Desc());
+        }
+        if (response.getChannel() == null) {
+            response.setChannel(fineLineMapperDto.getChannelId());
+        }
+        response.setLvl3List(maplvl3PackOpResponse(fineLineMapperDto ,lvl3List));
     }
 
     private List<Lvl3> maplvl3PackOpResponse(FineLineMapperDto fineLineMapperDto, List<Lvl3> lvl3List) {
