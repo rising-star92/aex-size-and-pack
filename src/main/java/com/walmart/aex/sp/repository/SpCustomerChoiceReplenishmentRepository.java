@@ -4,8 +4,6 @@ import com.walmart.aex.sp.dto.buyquantity.BuyQntyResponseDTO;
 import com.walmart.aex.sp.dto.replenishment.ReplenishmentResponseDTO;
 import com.walmart.aex.sp.entity.CcReplPack;
 import com.walmart.aex.sp.entity.CcReplPackId;
-import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixture;
-import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixtureId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

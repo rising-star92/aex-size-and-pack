@@ -82,7 +82,7 @@ public class CalculateOnlineFinelineBuyQuantity {
                                      BQFPResponse bqfpResponse, CalculateBuyQtyResponse calculateBuyQtyResponse, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest) {
         Map<SizeDto, BuyQtyObj> storeBuyQtyBySizeId = new HashMap<>();
         //Replenishment
-        List<Replenishment> replenishments = getReplenishments(merchMethodsDto, bqfpResponse, styleDto, customerChoiceDto);
+        List<Replenishment> replenishments = getReplenishments(bqfpResponse, styleDto, customerChoiceDto);
         log.info("Get All Replenishments if exists for customerchoice: {} and merch method: {}", customerChoiceDto.getCcId(), merchMethodsDto.getFixtureTypeRollupId());
         if (!CollectionUtils.isEmpty(replenishments)) {
             //Set Replenishment for Size Map
@@ -140,7 +140,7 @@ public class CalculateOnlineFinelineBuyQuantity {
 
 
     //TODO: Move to common Replenishment Utils
-    private List<Replenishment> getReplenishments(MerchMethodsDto merchMethodsDto, BQFPResponse bqfpResponse, StyleDto styleDto, CustomerChoiceDto customerChoiceDto) {
+    private List<Replenishment> getReplenishments(BQFPResponse bqfpResponse, StyleDto styleDto, CustomerChoiceDto customerChoiceDto) {
         return Optional.ofNullable(bqfpResponse.getStyles())
                 .stream()
                 .flatMap(Collection::stream)
