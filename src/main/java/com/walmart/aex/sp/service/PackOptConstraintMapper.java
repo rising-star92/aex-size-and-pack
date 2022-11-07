@@ -148,14 +148,8 @@ public class PackOptConstraintMapper {
     private Constraints setConstraints(String vendorName, String factoryId, String originCountryName,
                                        String portOfOriginName, Integer singlePackInd, String colorCombination) {
         Constraints constraints = new Constraints();
-        ColorCombinationConstraints colorCombinationConstraints = new ColorCombinationConstraints();
-        colorCombinationConstraints.setSupplierName(vendorName);
-        colorCombinationConstraints.setFactoryId(factoryId);
-        colorCombinationConstraints.setCountryOfOrigin(originCountryName);
-        colorCombinationConstraints.setPortOfOrigin(portOfOriginName);
-        colorCombinationConstraints.setColorCombination(colorCombination);
-        colorCombinationConstraints.setSinglePackInd(singlePackInd);
-        constraints.setColorCombinationConstraints(colorCombinationConstraints);
+        constraints.setColorCombinationConstraints(new ColorCombinationConstraints(vendorName,factoryId,
+                originCountryName,portOfOriginName,singlePackInd,colorCombination));
         return constraints;
     }
 
