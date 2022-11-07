@@ -296,6 +296,9 @@ public class CalculateFinelineBuyQuantity {
                 merchMethodsDto.getFixtureTypeRollupId(), rfaSizePackData.getVolume_group_cluster_id());
         if (volumeCluster != null) {
             //Calculate IS Buy Quantity
+        	if(volumeCluster.getInitialSet().getInitialSetUnitsPerFix()==null) {
+        		volumeCluster.getInitialSet().setInitialSetUnitsPerFix(0L);
+        	}
             Float isCalculatedBq = rfaSizePackData.getStore_cnt() * volumeCluster.getInitialSet().getInitialSetUnitsPerFix() * rfaSizePackData.getFixture_group();
             double isQty = (isCalculatedBq * getSizePct(sizeDto)) / 100;
             double perStoreQty = Math.round(isQty / rfaSizePackData.getStore_cnt());
