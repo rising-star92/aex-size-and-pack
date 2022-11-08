@@ -17,7 +17,7 @@ public class ColorCombinationConstraints {
 
     private String portOfOrigin;
 
-    private Integer singlePackInd;
+    private Boolean singlePackIndicator;
 
     private String colorCombination;
 

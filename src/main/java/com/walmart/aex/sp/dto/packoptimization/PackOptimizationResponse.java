@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 public class PackOptimizationResponse {
 	private Long planId;
-	private Integer channel;
+	private String channel;
 	private Integer lvl0Nbr;
 	private String lvl0Desc;
 	private Integer lvl1Nbr;

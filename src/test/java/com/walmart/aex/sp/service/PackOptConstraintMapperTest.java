@@ -55,6 +55,8 @@ class PackOptConstraintMapperTest {
         packOptConstraintResponseDTO.setCcColorCombination(colorCombination);
         packOptConstraintResponseDTO.setStyleSupplierName(vendorName);
         packOptConstraintResponseDTO.setCcFactoryIds(factoryId);
+        packOptConstraintResponseDTO.setCcSinglePackIndicator(1);
+        packOptConstraintResponseDTO.setStyleSinglePackIndicator(1);
         packOptConstraintMapper.mapPackOptLvl2(packOptConstraintResponseDTO, packOptimizationResponse, finelineNbr);
         assertNotNull(packOptimizationResponse);
         assertEquals(planId, packOptimizationResponse.getPlanId());
@@ -90,7 +92,7 @@ class PackOptConstraintMapperTest {
         packOptimizationResponse.setLvl0Nbr(123);
         packOptimizationResponse.setLvl1Nbr(234);
         packOptimizationResponse.setLvl2Nbr(12);
-        packOptimizationResponse.setChannel(2);
+        packOptimizationResponse.setChannel("store");
         packOptimizationResponse.setLvl3List(List.of(lvl3));
         packOptConstraintResponseDTO = new PackOptConstraintResponseDTO();
         packOptConstraintResponseDTO.setChannelId(2);

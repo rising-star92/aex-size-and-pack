@@ -155,7 +155,7 @@ type UpdateVnPkWhPkResponse {
 
 type PackOptimizationResponse{
     planId: Int!
-    channel:Int
+    channel:String!
     planDesc: String
     lvl0Nbr: Int
     lvl0Desc: String
@@ -188,7 +188,7 @@ type ColorCombinationConstraints{
    factoryId:String
    countryOfOrigin:String
    portOfOrigin:String
-   singlePackIndicator:Int
+   singlePackIndicator: Boolean!
    colorCombination:String
 }
 

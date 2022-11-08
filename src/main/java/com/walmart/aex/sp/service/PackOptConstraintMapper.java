@@ -4,6 +4,7 @@ import com.walmart.aex.sp.dto.packoptimization.*;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
 import com.walmart.aex.sp.dto.planhierarchy.Style;
+import com.walmart.aex.sp.enums.ChannelType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +33,7 @@ public class PackOptConstraintMapper {
             response.setLvl2Desc(packOptConstraintResponseDTO.getLvl2Desc());
         }
         if (response.getChannel() == null) {
-            response.setChannel(packOptConstraintResponseDTO.getChannelId());
+            response.setChannel(ChannelType.getChannelNameFromId(packOptConstraintResponseDTO.getChannelId()));
         }
         response.setLvl3List(mapPackOptLvl3(packOptConstraintResponseDTO, response, finelineNbr));
     }
@@ -149,8 +150,15 @@ public class PackOptConstraintMapper {
                                        String portOfOriginName, Integer singlePackInd, String colorCombination) {
         Constraints constraints = new Constraints();
         constraints.setColorCombinationConstraints(new ColorCombinationConstraints(vendorName,factoryId,
-                originCountryName,portOfOriginName,singlePackInd,colorCombination));
+                originCountryName,portOfOriginName,getBoolenValueByInt(singlePackInd),colorCombination));
         return constraints;
     }
-
+    Boolean getBoolenValueByInt(Integer number)
+    {
+        if(number>0)
+        {
+            return true;
+        }
+        return false;
+    }
 }
