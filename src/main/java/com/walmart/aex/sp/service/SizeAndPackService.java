@@ -3,7 +3,6 @@ package com.walmart.aex.sp.service;
 import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.dto.commitmentreport.InitialBumpSetResponse;
 import com.walmart.aex.sp.dto.commitmentreport.InitialSetPackRequest;
-import com.walmart.aex.sp.dto.commitmentreport.Metrics;
 import com.walmart.aex.sp.dto.commitmentreport.RFAInitialSetBumpSetResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
 
@@ -55,6 +53,10 @@ public class SizeAndPackService {
     
     private final InitialSetPlanMapper initialSetPlanMapper;
 
+    private final MerchPackOptimizationRepository merchPackOptimizationRepository;
+
+    private final SizeAndPackPackOptObjectMapper sizeAndPackPackOptObjectMapper;
+
     @ManagedConfiguration
 	BigQueryConnectionProperties bigQueryConnectionProperties;
 
@@ -69,7 +71,7 @@ public class SizeAndPackService {
                               MerchCatPlanRepository merchCatPlanRepository, StrategyFetchService strategyFetchService,
                               SpCustomerChoiceChannelFixtureSizeRepository spCustomerChoiceChannelFixtureSizeRepository,
                               SizeAndPackDeleteService sizeAndPackDeleteService, SizeAndPackDeletePlanService sizeAndPackDeletePlanService
-            , BuyQtyCommonUtil buyQtyCommonUtil, BigQueryInitialSetPlanService bigQueryInitialSetPlanService,InitialSetPlanMapper initialSetPlanMapper) {
+            , BuyQtyCommonUtil buyQtyCommonUtil, BigQueryInitialSetPlanService bigQueryInitialSetPlanService, InitialSetPlanMapper initialSetPlanMapper, MerchPackOptimizationRepository merchPackOptimizationRepository, SizeAndPackPackOptObjectMapper sizeAndPackPackOptObjectMapper) {
         this.spFineLineChannelFixtureRepository = spFineLineChannelFixtureRepository;
         this.buyQuantityMapper = buyQuantityMapper;
         this.spCustomerChoiceChannelFixtureRepository = spCustomerChoiceChannelFixtureRepository;
@@ -83,6 +85,8 @@ public class SizeAndPackService {
         this.buyQtyCommonUtil = buyQtyCommonUtil;
         this.bigQueryInitialSetPlanService = bigQueryInitialSetPlanService;
         this.initialSetPlanMapper = initialSetPlanMapper;
+        this.merchPackOptimizationRepository = merchPackOptimizationRepository;
+        this.sizeAndPackPackOptObjectMapper = sizeAndPackPackOptObjectMapper;
     }
 
     public BuyQtyResponse fetchFinelineBuyQnty(BuyQtyRequest buyQtyRequest) {
@@ -213,6 +217,8 @@ public class SizeAndPackService {
                 for (Lvl2 lvl2 : lvl1.getLvl2List()) {
                     for (Lvl3 lvl3 : lvl2.getLvl3List()) {
                         merchCatPlanRepository.saveAll(sizeAndPackObjectMapper.setMerchCatPlan(planSizeAndPackDTO, lvl1, lvl2, lvl3, merchCatPlanRepository));
+                        merchPackOptimizationRepository.saveAll(sizeAndPackPackOptObjectMapper.setMerchCatPackOpt(planSizeAndPackDTO, lvl1, lvl2, lvl3, merchPackOptimizationRepository));
+
                     }
                 }
             }
