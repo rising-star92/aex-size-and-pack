@@ -2,6 +2,7 @@ package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.packoptimization.UpdatePackOptConstraintRequestDTO;
 import com.walmart.aex.sp.entity.*;
+import com.walmart.aex.sp.enums.SingleIndicator;
 import com.walmart.aex.sp.repository.common.PackOptimizationCommonRepository;
 import com.walmart.aex.sp.service.helper.Action;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +49,9 @@ public class UpdatePackOptimizationMapper {
             for (SubCatgPackOptimization lvl4PackOptCons : subCatgReplnPkConsList) {
                 updateSubCatgPackOptConstFields(request, lvl4PackOptCons);
             }
+            subCatgReplnPkConsList.forEach(subCatgPackOptimization -> {
+                subCatgPackOptimization.setSinglePackInd(getSignalIndicatorFlag(subCatgPackOptimization.getFinelinepackOptimization().stream().map(FineLinePackOptimization::getSinglePackInd).collect(Collectors.toList())));
+            });
             packOptimizationCommonRepository.getSubCatgPackOptimizationRepository().saveAll(subCatgReplnPkConsList);
         }
         List<FineLinePackOptimization> fineLinePkOptPkConsList = subCatgReplnPkConsList
@@ -67,6 +71,10 @@ public class UpdatePackOptimizationMapper {
             for (FineLinePackOptimization fl : fineLinePackOptimizationList) {
                 updateFlPackOptConstFields(request, fl);
             }
+
+            fineLinePackOptimizationList.forEach(fineLinePackOptimization -> {
+                fineLinePackOptimization.setSinglePackInd(getSignalIndicatorFlag(fineLinePackOptimization.getStylePackOptimization().stream().map(StylePackOptimization::getSinglePackInd).collect(Collectors.toList())));
+            });
             packOptimizationCommonRepository.getFinelinePackOptConsRepository().saveAll(fineLinePackOptimizationList);
         }
         List<StylePackOptimization> stylePackOptimizationList = fineLinePackOptimizationList
@@ -86,6 +94,12 @@ public class UpdatePackOptimizationMapper {
             for (StylePackOptimization st : stylePackOptimizationList) {
                 updateStPackOptConstFields(request, st);
             }
+
+            stylePackOptimizationList.forEach(stylePackOptimization -> stylePackOptimization.getCcPackOptimization());
+
+            stylePackOptimizationList.forEach(stylePackOptimization -> {
+                stylePackOptimization.setSinglePackInd(getSignalIndicatorFlag(stylePackOptimization.getCcPackOptimization().stream().map(CcPackOptimization::getSinglePackInd).collect(Collectors.toList())));
+            });
             packOptimizationCommonRepository.getStylePackOptimizationRepository().saveAll(stylePackOptimizationList);
         }
         List<CcPackOptimization> ccPackOptimizationList = stylePackOptimizationList
@@ -191,6 +205,17 @@ public class UpdatePackOptimizationMapper {
     public static void setIfNotNull(Object value, Action action) {
         if (value != null)
             action.execute();
+    }
+  public Integer getSignalIndicatorFlag(List<Integer> integers){
+      boolean allChecked = integers.stream().allMatch(integer -> integer.equals(1));
+      boolean allUnChecked = integers.stream().allMatch(integer -> integer.equals(0));
+      if(allChecked==true){
+          return SingleIndicator.SELECTED.getId();
+      }else if(allUnChecked==true){
+          return SingleIndicator.UNSELECTED.getId();
+      }  else {
+          return SingleIndicator.PARTIAL.getId();
+      }
     }
 
 }
