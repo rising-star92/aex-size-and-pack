@@ -20,7 +20,7 @@ public class ColorCombinationRequest {
     private Integer lvl4Nbr;
     private Integer finelineNbr;
     private String action;
-    private String colorCombinationId;
+    private List<String> colorCombinationIds;
     private List<ColorCombinationStyle> styles;
 
 }

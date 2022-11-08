@@ -3,6 +3,7 @@ package com.walmart.aex.sp.controller;
 
 import com.walmart.aex.sp.dto.StatusResponse;
 import com.walmart.aex.sp.dto.packoptimization.isbpqty.ISAndBPQtyDTO;
+import com.walmart.aex.sp.enums.Action;
 import com.walmart.aex.sp.service.PostPackOptimizationService;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
@@ -27,6 +28,8 @@ import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigInteger;
+
+import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
 
 @Slf4j
 
@@ -118,9 +121,17 @@ public class PackOptimizationController {
     public StatusResponse updateColorCombination(@Argument ColorCombinationRequest request) {
         StatusResponse response = new StatusResponse();
         if (request.getAction() != null) {
-            response = packOptService.updateColorCombination(request);
+            String action = Action.getEnumValue(request.getAction());
+            if (Action.ADD.getDescription().equals(action))
+                response = packOptService.addColorCombination(request);
+            else if (Action.DELETE.getDescription().equals(action))
+                response = packOptService.deleteColorCombination(request);
+            else {
+                response.setMessage(INCORRECT_ACTION_MSG);
+                response.setStatus(FAILED_STATUS);
+            }
         } else {
-            response.setMessage("No Action provided");
+            response.setMessage(NO_ACTION_MSG);
             response.setStatus(FAILURE_STATUS);
         }
         return response;

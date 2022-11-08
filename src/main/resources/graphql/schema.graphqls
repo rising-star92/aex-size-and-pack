@@ -424,7 +424,7 @@ input ColorCombinationRequest {
     lvl4Nbr: Int
     finelineNbr: Int
     action: String
-    colorCombinationId: String
+    colorCombinationIds: [String]
     styles: [ColorCombinationStyles]
 }
 
