@@ -188,7 +188,7 @@ type ColorCombinationConstraints{
    factoryId:String
    countryOfOrigin:String
    portOfOrigin:String
-   singlePackIndicator: Boolean!
+   singlePackIndicator: Int
    colorCombination:String
 }
 

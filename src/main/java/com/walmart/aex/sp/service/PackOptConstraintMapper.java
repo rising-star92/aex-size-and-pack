@@ -106,7 +106,7 @@ public class PackOptConstraintMapper {
         styleDtoList.stream()
                 .filter(styleDto -> packOptConstraintResponseDTO.getStyleNbr().equals(styleDto.getStyleNbr())).findFirst()
                 .ifPresentOrElse(style ->
-                            style.setCustomerChoices(mapPackOptCc(packOptConstraintResponseDTO, style)),
+                                style.setCustomerChoices(mapPackOptCc(packOptConstraintResponseDTO, style)),
                         () -> setPackOptStyle(packOptConstraintResponseDTO, styleDtoList));
         return styleDtoList;
     }
@@ -149,16 +149,8 @@ public class PackOptConstraintMapper {
     private Constraints setConstraints(String vendorName, String factoryId, String originCountryName,
                                        String portOfOriginName, Integer singlePackInd, String colorCombination) {
         Constraints constraints = new Constraints();
-        constraints.setColorCombinationConstraints(new ColorCombinationConstraints(vendorName,factoryId,
-                originCountryName,portOfOriginName,getBoolenValueByInt(singlePackInd),colorCombination));
+        constraints.setColorCombinationConstraints(new ColorCombinationConstraints(vendorName, factoryId,
+                originCountryName, portOfOriginName, singlePackInd, colorCombination));
         return constraints;
-    }
-    Boolean getBoolenValueByInt(Integer number)
-    {
-        if(number>0)
-        {
-            return true;
-        }
-        return false;
     }
 }

@@ -191,19 +191,19 @@ public class PackOptimizationService {
                 constraints.setFinelineLevelConstraints(new FinelineLevelConstraints(fineLineMapperDto.getMerchMaxNbrOfPacks(),fineLineMapperDto.getMerchMaxUnitsPerPack()));
                constraints.setColorCombinationConstraints(new ColorCombinationConstraints(fineLineMapperDto.getMerchSupplierName(), fineLineMapperDto.getMerchFactoryId(),
                        fineLineMapperDto.getMerchOriginCountryName(), fineLineMapperDto.getMerchPortOfOriginName(),
-                       packOptConstraintMapper.getBoolenValueByInt(fineLineMapperDto.getMerchSinglePackInd()), fineLineMapperDto.getMerchColorCombination()));
+                       fineLineMapperDto.getMerchSinglePackInd(), fineLineMapperDto.getMerchColorCombination()));
                  break;
             case SUB_CATEGORY:
                 constraints.setFinelineLevelConstraints(new FinelineLevelConstraints(fineLineMapperDto.getSubCatMaxNbrOfPacks(),fineLineMapperDto.getSubCatMaxUnitsPerPack()));
                 constraints.setColorCombinationConstraints(new ColorCombinationConstraints(fineLineMapperDto.getSubCatSupplierName(), fineLineMapperDto.getSubCatFactoryId(),
                         fineLineMapperDto.getSubCatOriginCountryName(), fineLineMapperDto.getSubCatPortOfOriginName(),
-                        packOptConstraintMapper.getBoolenValueByInt(fineLineMapperDto.getSubCatSinglePackInd()), fineLineMapperDto.getSubCatColorCombination()));
+                        fineLineMapperDto.getSubCatSinglePackInd(), fineLineMapperDto.getSubCatColorCombination()));
                 break;
             default:
                 constraints.setFinelineLevelConstraints(new FinelineLevelConstraints(fineLineMapperDto.getFineLineMaxNbrOfPacks(),fineLineMapperDto.getFineLineMaxUnitsPerPack()));
                 constraints.setColorCombinationConstraints(new ColorCombinationConstraints(fineLineMapperDto.getFineLineSupplierName(), fineLineMapperDto.getFineLineFactoryId(),
                         fineLineMapperDto.getFineLineOriginCountryName(), fineLineMapperDto.getFineLinePortOfOriginName(),
-                        packOptConstraintMapper.getBoolenValueByInt(fineLineMapperDto.getFineLineSinglePackInd()), fineLineMapperDto.getFineLineColorCombination()));
+                        fineLineMapperDto.getFineLineSinglePackInd(), fineLineMapperDto.getFineLineColorCombination()));
                 break;
         }
         return constraints;
