@@ -303,8 +303,7 @@ public class CalculateFinelineBuyQuantity {
 				if (volumeCluster.getInitialSet().getInitialSetUnitsPerFix() == null) {
 					log.warn("InitialSetUnitsPerFix of volumeCluster : {} is null. Setting InitialSetUnitsPerFix as zero   for styleNbr : {} , ccId :{}  " ,volumeCluster,styleDto.getStyleNbr(),customerChoiceDto.getCcId());
 					volumeCluster.getInitialSet().setInitialSetUnitsPerFix(0L);
-
-				}
+			}
             Float isCalculatedBq = rfaSizePackData.getStore_cnt() * volumeCluster.getInitialSet().getInitialSetUnitsPerFix() * rfaSizePackData.getFixture_group();
             double isQty = (isCalculatedBq * getSizePct(sizeDto)) / 100;
             double perStoreQty = Math.round(isQty / rfaSizePackData.getStore_cnt());
@@ -545,10 +544,6 @@ public class CalculateFinelineBuyQuantity {
         volumeCluster.getBumpList().forEach(bumpSet -> {
             BumpSetQuantity bumpSetQuantity = new BumpSetQuantity();
             
-//            if(volumeCluster.getInitialSet().getInitialSetUnitsPerFix()==null) {
-//            	volumeCluster.getInitialSet().setInitialSetUnitsPerFix(0L);
-//            }
-
             //Calculate BS Buy Quantity
             double bumpQtyPerFixture = (bumpSet.getUnits() * volumeCluster.getInitialSet().getInitialSetUnitsPerFix()) / volumeCluster.getInitialSet().getTotalInitialSetUnits().doubleValue();
             double bsCalculatedBq = storeCnt * bumpQtyPerFixture * rfaSizePackData.getFixture_group();
