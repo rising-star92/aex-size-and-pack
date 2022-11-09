@@ -7,19 +7,21 @@ import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
 import com.walmart.aex.sp.dto.planhierarchy.Style;
 import com.walmart.aex.sp.entity.*;
+import com.walmart.aex.sp.enums.Action;
 import com.walmart.aex.sp.enums.CategoryType;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.repository.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
-import static com.walmart.aex.sp.util.SizeAndPackConstants.FAILED_STATUS;
-import static com.walmart.aex.sp.util.SizeAndPackConstants.SUCCESS_STATUS;
+import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
 
 @Service
 @Slf4j
@@ -33,16 +35,19 @@ public class PackOptimizationService {
     private final UpdatePackOptimizationMapper updatePackOptimizationMapper;
     private final StyleCcPackOptConsRepository styleCcPackOptConsRepository;
     private final PackOptConstraintMapper packOptConstraintMapper;
+    private final CcPackOptimizationRepository ccPackOptimizationRepository;
 
     Function<Object, String> ifNullThenEmpty = o -> Objects.nonNull(o) ? o.toString() : "";
 
     public PackOptimizationService(FineLinePackOptimizationRepository finelinePackOptimizationRepository,
                                    FinelinePackOptRepository packOptfineplanRepo,
                                    AnalyticsMlSendRepository analyticsMlSendRepository,
-                                   PackOptimizationMapper packOptimizationMapper, 
-                                   StyleCcPackOptConsRepository styleCcPackOptConsRepository, 
+                                   PackOptimizationMapper packOptimizationMapper,
+                                   StyleCcPackOptConsRepository styleCcPackOptConsRepository,
                                    PackOptConstraintMapper packOptConstraintMapper,
-                                   MerchPackOptimizationRepository merchPackOptimizationRepository, UpdatePackOptimizationMapper updatePackOptimizationMapper){
+                                   MerchPackOptimizationRepository merchPackOptimizationRepository,
+                                   UpdatePackOptimizationMapper updatePackOptimizationMapper,
+                                   CcPackOptimizationRepository ccPackOptimizationRepository) {
         this.finelinePackOptimizationRepository = finelinePackOptimizationRepository;
         this.packOptfineplanRepo = packOptfineplanRepo;
         this.packOptimizationMapper = packOptimizationMapper;
@@ -51,12 +56,13 @@ public class PackOptimizationService {
         this.updatePackOptimizationMapper = updatePackOptimizationMapper;
         this.styleCcPackOptConsRepository = styleCcPackOptConsRepository;
         this.packOptConstraintMapper = packOptConstraintMapper;
+        this.ccPackOptimizationRepository = ccPackOptimizationRepository;
     }
 
     public PackOptimizationResponse getPackOptDetails(Long planId, Integer channelId) {
         try {
             List<FineLineMapperDto> finePlanPackOptimizationList = packOptfineplanRepo.findByFinePlanPackOptimizationIDPlanIdAndChannelTextChannelId(planId, channelId);
-            return packOptDetails(finePlanPackOptimizationList,planId, channelId);
+            return packOptDetails(finePlanPackOptimizationList, planId, channelId);
         } catch (Exception e) {
             log.error("Error Occurred while fetching Pack Opt", e);
             throw e;
@@ -74,7 +80,7 @@ public class PackOptimizationService {
         packOptResp.setChannel(channelId);
         List<Lvl3> lvl3List = new ArrayList<>();
         fineLineMapperDtos.forEach(fineLineMapperDto ->
-            packOptResp.setLvl3List(maplvl3PackOpResponse(fineLineMapperDto, lvl3List))
+                packOptResp.setLvl3List(maplvl3PackOpResponse(fineLineMapperDto, lvl3List))
         );
 
         return packOptResp;
@@ -121,7 +127,7 @@ public class PackOptimizationService {
     }
 
     private List<Fineline> mapFLPackOp(FineLineMapperDto fineLineMapperDto, Lvl4 lvl4, Integer finelineNbr) {
-        List<Fineline> finelineDtoList = Optional.ofNullable(lvl4.getFinelines()).orElse(new ArrayList<Fineline>());
+        List<Fineline> finelineDtoList = Optional.ofNullable(lvl4.getFinelines()).orElse(new ArrayList<>());
 
         Fineline fineline = finelineDtoList.stream()
                 .filter(f -> finelineNbr.equals(f.getFinelineNbr()))
@@ -366,7 +372,7 @@ public class PackOptimizationService {
     }
 
     public List<CustomerChoice> customerChoiceResponseList(Set<CcPackOptimization> ccPkOptList) {
-        List<CustomerChoice> customerChoiceList = new ArrayList<> ();
+        List<CustomerChoice> customerChoiceList = new ArrayList<>();
 
         for (CcPackOptimization ccpkOptObj : ccPkOptList) {
             CustomerChoice customerChoice = new CustomerChoice();
@@ -389,8 +395,8 @@ public class PackOptimizationService {
             Optional.of(finelinePackOptimizationResponseDTOS)
                     .stream()
                     .flatMap(Collection::stream)
-                    .forEach(FinelinePackOptimizationResponseDTO -> packOptimizationMapper.
-                            mapPackOptimizationFineline(FinelinePackOptimizationResponseDTO, finelinePackOptimizationResponse,planId));
+                    .forEach(finelinePackOptimizationResponseDTO -> packOptimizationMapper.
+                            mapPackOptimizationFineline(finelinePackOptimizationResponseDTO, finelinePackOptimizationResponse, planId));
 
 
         } catch (Exception e) {
@@ -401,7 +407,7 @@ public class PackOptimizationService {
         return finelinePackOptimizationResponse;
     }
 
-    public void UpdatePkOptServiceStatus(Long planId, Integer finelineNbr, Integer status) {
+    public void updatePackOptServiceStatus(Long planId, Integer finelineNbr, Integer status) {
         analyticsMlSendRepository.updateStatus(planId, finelineNbr, status);
     }
 
@@ -410,7 +416,7 @@ public class PackOptimizationService {
         if (isRequestValid(request)) {
             Integer channelId = ChannelType.getChannelIdFromName(request.getChannel());
             log.debug("Check if a MerchCatPackOptimization for planID : {} already exists or not", request.getPlanId().toString());
-            List<MerchantPackOptimization> merchantPackOptimizationList = merchPackOptimizationRepository.findMerchantPackOptimizationByMerchantPackOptimizationID_planIdAndMerchantPackOptimizationID_repTLvl3AndChannelText_channelId(request.getPlanId(), request.getLvl3Nbr(),channelId);
+            List<MerchantPackOptimization> merchantPackOptimizationList = merchPackOptimizationRepository.findMerchantPackOptimizationByMerchantPackOptimizationID_planIdAndMerchantPackOptimizationID_repTLvl3AndChannelText_channelId(request.getPlanId(), request.getLvl3Nbr(), channelId);
             if (!CollectionUtils.isEmpty(merchantPackOptimizationList)) {
                 updatePackOptimizationMapper.updateCategoryPackOptCons(request, merchantPackOptimizationList);
                 response.setStatus(SUCCESS_STATUS);
@@ -425,31 +431,30 @@ public class PackOptimizationService {
     }
 
     private boolean isRequestValid(UpdatePackOptConstraintRequestDTO request) {
-        if(request.getLvl3Nbr()==null){
+        if (request.getLvl3Nbr() == null) {
             log.warn("Invalid Request: Lvl3Nbr cannot be NULL in the request {}", request.toString());
             return false;
-        }else if(request.getLvl4Nbr()!=null && request.getLvl3Nbr()==null){
+        } else if (request.getLvl4Nbr() != null && request.getLvl3Nbr() == null) {
             log.warn("Invalid Request: Lvl3Nbr cannot be NULL when lvl4Nbr is not NULL in the request {}", request.toString());
             return false;
-        }else if(request.getLvl4Nbr()==null && request.getFinelineNbr()!=null){
+        } else if (request.getLvl4Nbr() == null && request.getFinelineNbr() != null) {
             log.warn("Invalid Request: Lvl4Nbr cannot be NULL when finelineNbr is not NULL in the request {}", request.toString());
             return false;
-        }else if(request.getFinelineNbr()==null && request.getStyleNbr()!=null){
+        } else if (request.getFinelineNbr() == null && request.getStyleNbr() != null) {
             log.warn("Invalid Request: finelineNbr cannot be NULL when styleNbr is not NULL in the request {}", request.toString());
             return false;
-        }else if(request.getStyleNbr()==null && request.getCcId()!=null){
+        } else if (request.getStyleNbr() == null && request.getCcId() != null) {
             log.warn("Invalid Request: styleNbr cannot be NULL when ccId is not NULL in the request {}", request.toString());
             return false;
         }
         return true;
     }
 
-    public PackOptimizationResponse getPackOptConstraintDetails(PackOptConstraintRequest request)
-    {
+    public PackOptimizationResponse getPackOptConstraintDetails(PackOptConstraintRequest request) {
         PackOptimizationResponse packOptimizationResponse = new PackOptimizationResponse();
         try {
             List<PackOptConstraintResponseDTO> packOptConstraintResponseDTO = styleCcPackOptConsRepository
-                    .findByFinePlanPackOptimizationIDPlanIdAndChannelTextChannelId(request.getPlanId(), ChannelType.getChannelIdFromName(request.getChannel()),request.getFinelineNbr());
+                    .findByFinePlanPackOptimizationIDPlanIdAndChannelTextChannelId(request.getPlanId(), ChannelType.getChannelIdFromName(request.getChannel()), request.getFinelineNbr());
             Optional.of(packOptConstraintResponseDTO)
                     .stream()
                     .flatMap(Collection::stream)
@@ -462,5 +467,63 @@ public class PackOptimizationService {
         log.info("Fetch PackOpt Fineline response: {}", packOptimizationResponse);
         return packOptimizationResponse;
 
+    }
+
+    public StatusResponse deleteColorCombination(ColorCombinationRequest request) {
+        StatusResponse response = new StatusResponse(SUCCESS_STATUS, SUCCESS_STATUS);
+        try {
+            if (request.getColorCombinationIds() == null || request.getColorCombinationIds().isEmpty()) {
+                response.setMessage(COLOR_COMBINATION_MISSING_MSG);
+                response.setStatus(FAILED_STATUS);
+                return response;
+            }
+            List<CcPackOptimization> ccPackOptimizationList = ccPackOptimizationRepository.findCCPackOptimizationByColorCombinationList(request.getPlanId(),
+                    request.getLvl0Nbr(), request.getLvl1Nbr(), request.getLvl2Nbr(), request.getLvl3Nbr(), request.getLvl4Nbr(),
+                    request.getFinelineNbr(), request.getColorCombinationIds());
+            if (!ccPackOptimizationList.isEmpty()) {
+                for (CcPackOptimization ccPackOptimization : ccPackOptimizationList) {
+                    ccPackOptimization.setColorCombination(null);
+                }
+                ccPackOptimizationRepository.saveAll(ccPackOptimizationList);
+            }
+        } catch (Exception e) {
+            log.error("Exception While fetching CC PackOpt :", e);
+            response.setMessage(e.getMessage());
+            response.setStatus(FAILED_STATUS);
+        }
+        return response;
+    }
+
+    public StatusResponse addColorCombination(ColorCombinationRequest request) {
+        StatusResponse response = new StatusResponse(SUCCESS_STATUS, SUCCESS_STATUS);
+//        TODO: add logic for generating colorCombination
+        String colorCombination = "4-22-1";
+        try {
+            List<String> styles = request.getStyles().stream().map(ColorCombinationStyle::getStyleNbr).collect(Collectors.toList());
+            List<String> customerChoices = request.getStyles().stream()
+                    .map(ColorCombinationStyle::getCcIds)
+                    .flatMap(Collection::stream)
+                    .collect(Collectors.toList());
+            List<CcPackOptimization> ccPackOptimizationList = ccPackOptimizationRepository.findCCPackOptimizationList(request.getPlanId(),
+                    request.getLvl0Nbr(), request.getLvl1Nbr(), request.getLvl2Nbr(), request.getLvl3Nbr(), request.getLvl4Nbr(),
+                    request.getFinelineNbr(), styles, customerChoices);
+            if (!ccPackOptimizationList.isEmpty()) {
+                if (ccPackOptimizationList.stream().anyMatch(ccPackOptimization -> StringUtils.isNotEmpty(ccPackOptimization.getColorCombination()))) {
+                    log.info("There are records which already have ColorCombinationId assigned. Cannot proceed further.");
+                    response.setMessage(COLOR_COMBINATION_EXIST_MSG);
+                    response.setStatus(FAILED_STATUS);
+                    return response;
+                }
+                for (CcPackOptimization ccPackOptimization : ccPackOptimizationList) {
+                    ccPackOptimization.setColorCombination(colorCombination);
+                }
+                ccPackOptimizationRepository.saveAll(ccPackOptimizationList);
+            }
+        } catch (Exception e) {
+            log.error("Exception While fetching CC PackOpt :", e);
+            response.setMessage(e.getMessage());
+            response.setStatus(FAILED_STATUS);
+        }
+        return response;
     }
 }
