@@ -1,12 +1,16 @@
 package com.walmart.aex.sp.service;
 
+import com.walmart.aex.sp.dto.StatusResponse;
 import com.walmart.aex.sp.dto.mapper.FineLineMapperDto;
 import com.walmart.aex.sp.dto.packoptimization.*;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
 import com.walmart.aex.sp.entity.*;
 import com.walmart.aex.sp.repository.AnalyticsMlSendRepository;
+import com.walmart.aex.sp.repository.CcPackOptimizationRepository;
 import com.walmart.aex.sp.repository.FineLinePackOptimizationRepository;
 import com.walmart.aex.sp.repository.FinelinePackOptRepository;
+import com.walmart.aex.sp.util.SizeAndPackConstants;
+import org.hibernate.HibernateException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,23 +21,23 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.lenient;
 
 @ExtendWith(MockitoExtension.class)
-public class PackOptimizationServiceTest {
+class PackOptimizationServiceTest {
 
-	@InjectMocks
-	@Spy
-	private PackOptimizationService packOptimizationService;
+    @InjectMocks
+    @Spy
+    private PackOptimizationService packOptimizationService;
 
 	@Mock
 	private AnalyticsMlSendRepository analyticsMlSendRepository;
-	
+
 
 	@Mock
 	PackOptimizationResponse packOptResponse;
+
 
 	@Mock
 	FinelinePackOptRepository packOptfineplanRepo;
@@ -63,6 +67,9 @@ public class PackOptimizationServiceTest {
 
 	@Mock
 	PackOptConstraintMapper packOptConstraintMapper;
+  
+   @Mock
+    CcPackOptimizationRepository ccPackOptimizationRepository;
 
 	@Test
 	public void testGetPackOptDetails() {
@@ -277,4 +284,135 @@ public class PackOptimizationServiceTest {
 		assertEquals(3, constraints.getCcLevelConstraints().getMaxPacks());
 		assertEquals(1, constraints.getCcLevelConstraints().getMaxUnitsPerPack());
 	}
+
+    @Test
+    void testAddColorCombination() {
+        ColorCombinationRequest request = new ColorCombinationRequest(471L, "S3 2022", 50000, 34,
+                6419, 12228, 31507, 2855, "Add", null,
+                List.of(new ColorCombinationStyle("34_2855_4_19_8", List.of("34_2855_4_19_8_BLACK SOOT"))));
+
+        CcPackOptimization ccPackOptimization = new CcPackOptimization();
+
+        Mockito.when(ccPackOptimizationRepository.findCCPackOptimizationList(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt(),
+                Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyList(),
+                Mockito.anyList())).thenReturn(List.of(ccPackOptimization));
+        Mockito.when(ccPackOptimizationRepository.saveAll(Mockito.anyList())).thenReturn(List.of(ccPackOptimization));
+
+        StatusResponse response = packOptimizationService.addColorCombination(request);
+
+        assertEquals(SizeAndPackConstants.SUCCESS_STATUS, response.getStatus());
+        assertEquals(SizeAndPackConstants.SUCCESS_STATUS, response.getMessage());
+        assertEquals("4-22-1", ccPackOptimization.getColorCombination());
+
+        ccPackOptimization.setColorCombination(null);
+        Mockito.when(ccPackOptimizationRepository.findCCPackOptimizationList(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt(),
+                Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyList(),
+                Mockito.anyList())).thenReturn(Collections.emptyList());
+
+        response = packOptimizationService.addColorCombination(request);
+        assertEquals(SizeAndPackConstants.SUCCESS_STATUS, response.getStatus());
+        assertEquals(SizeAndPackConstants.SUCCESS_STATUS, response.getMessage());
+        assertNull(ccPackOptimization.getColorCombination());
+
+
+    }
+
+    @Test
+    void testAddColorCombinationException() {
+        ColorCombinationRequest request = new ColorCombinationRequest(471L, "S3 2022", 50000, 34,
+                6419, 12228, 31507, 2855, "Add", null,
+                List.of(new ColorCombinationStyle("34_2855_4_19_8", List.of("34_2855_4_19_8_BLACK SOOT"))));
+
+        Mockito.when(ccPackOptimizationRepository.findCCPackOptimizationList(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt(),
+                Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyList(),
+                Mockito.anyList())).thenThrow(HibernateException.class);
+
+        StatusResponse response = packOptimizationService.addColorCombination(request);
+
+        assertEquals(SizeAndPackConstants.FAILED_STATUS, response.getStatus());
+    }
+
+    @Test
+    void testAddColorCombinationExist() {
+        ColorCombinationRequest request = new ColorCombinationRequest(471L, "S3 2022", 50000, 34,
+                6419, 12228, 31507, 2855, "Add", null,
+                List.of(new ColorCombinationStyle("34_2855_4_19_8", List.of("34_2855_4_19_8_BLACK SOOT"))));
+
+        CcPackOptimization ccPackOptimization = new CcPackOptimization();
+        ccPackOptimization.setColorCombination("4-22-6");
+
+        Mockito.when(ccPackOptimizationRepository.findCCPackOptimizationList(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt(),
+                Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyList(),
+                Mockito.anyList())).thenReturn(List.of(ccPackOptimization));
+
+        StatusResponse response = packOptimizationService.addColorCombination(request);
+
+        assertEquals(SizeAndPackConstants.FAILED_STATUS, response.getStatus());
+        assertEquals(SizeAndPackConstants.COLOR_COMBINATION_EXIST_MSG, response.getMessage());
+    }
+
+    @Test
+    void testDeleteColorCombination() {
+        ColorCombinationRequest request = new ColorCombinationRequest(471L, "S3 2022", 50000, 34,
+                6419, 12228, 31507, 2855, "Delete", List.of("4-22-1"),
+                List.of(new ColorCombinationStyle("34_2855_4_19_8", List.of("34_2855_4_19_8_BLACK SOOT"))));
+
+        CcPackOptimization ccPackOptimization = new CcPackOptimization();
+        ccPackOptimization.setColorCombination("4-22-1");
+
+        Mockito.when(ccPackOptimizationRepository.findCCPackOptimizationByColorCombinationList(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt(),
+                Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyList())).thenReturn(List.of(ccPackOptimization));
+        Mockito.when(ccPackOptimizationRepository.saveAll(Mockito.anyList())).thenReturn(List.of(ccPackOptimization));
+
+        StatusResponse response = packOptimizationService.deleteColorCombination(request);
+
+        assertEquals(SizeAndPackConstants.SUCCESS_STATUS, response.getStatus());
+        assertEquals(SizeAndPackConstants.SUCCESS_STATUS, response.getMessage());
+        assertNull(ccPackOptimization.getColorCombination());
+
+        ccPackOptimization.setColorCombination("4-22-1");
+        Mockito.when(ccPackOptimizationRepository.findCCPackOptimizationByColorCombinationList(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt(),
+                Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyList())).thenReturn(Collections.emptyList());
+
+        response = packOptimizationService.deleteColorCombination(request);
+
+        assertEquals(SizeAndPackConstants.SUCCESS_STATUS, response.getStatus());
+        assertEquals(SizeAndPackConstants.SUCCESS_STATUS, response.getMessage());
+        System.out.println(ccPackOptimization.getColorCombination());
+        assertNotNull(ccPackOptimization.getColorCombination());
+    }
+
+    @Test
+    void testUpdateColorCombinationDeleteNull() {
+        ColorCombinationRequest request = new ColorCombinationRequest(471L, "S3 2022", 50000, 34,
+                6419, 12228, 31507, 2855, "Delete", null,
+                List.of(new ColorCombinationStyle("34_2855_4_19_8", List.of("34_2855_4_19_8_BLACK SOOT"))));
+
+        StatusResponse response = packOptimizationService.deleteColorCombination(request);
+
+        assertEquals(SizeAndPackConstants.FAILED_STATUS, response.getStatus());
+        assertEquals(SizeAndPackConstants.COLOR_COMBINATION_MISSING_MSG, response.getMessage());
+
+        request.setColorCombinationIds(Collections.emptyList());
+        response = packOptimizationService.deleteColorCombination(request);
+
+        assertEquals(SizeAndPackConstants.FAILED_STATUS, response.getStatus());
+        assertEquals(SizeAndPackConstants.COLOR_COMBINATION_MISSING_MSG, response.getMessage());
+    }
+
+    @Test
+    void testDeleteColorCombinationException() {
+        ColorCombinationRequest request = new ColorCombinationRequest(471L, "S3 2022", 50000, 34,
+                6419, 12228, 31507, 2855, "Add", List.of("4-22-1"),
+                List.of(new ColorCombinationStyle("34_2855_4_19_8", List.of("34_2855_4_19_8_BLACK SOOT"))));
+
+        Mockito.when(ccPackOptimizationRepository.findCCPackOptimizationByColorCombinationList(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt(),
+                Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyList())).thenThrow(HibernateException.class);
+
+        StatusResponse response = packOptimizationService.deleteColorCombination(request);
+
+        assertEquals(SizeAndPackConstants.FAILED_STATUS, response.getStatus());
+    }
+
+
 }

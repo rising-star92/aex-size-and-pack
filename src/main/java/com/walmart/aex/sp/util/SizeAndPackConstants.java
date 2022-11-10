@@ -24,6 +24,11 @@ public interface SizeAndPackConstants {
 	public static final String WM_CONSUMER_ID = "WM_CONSUMER.ID";
 	public static final String WM_SVC_NAME = "WM_SVC.NAME";
 	public static final String WM_SVC_ENV = "WM_SVC.ENV";
+	public static final String NO_ACTION_MSG = "No Action provided";
+	public static final String INCORRECT_ACTION_MSG = "Incorrect Action passed";
+	public static final String COLOR_COMBINATION_MISSING_MSG = "Color Combinations are missing";
+	public static final String COLOR_COMBINATION_EXIST_MSG = "Color Combination already exist";
+
 
 
 }

@@ -70,7 +70,6 @@ public class BuyQntyController {
         StatusResponse response = new StatusResponse();
 
         try {
-            //TODO: Add Calculate Buy Qty Service
             calculateBuyQuantityService.calculateBuyQuantity(calculateBuyQtyRequest);
             response.setStatus(SUCCESS_STATUS);
             return response;

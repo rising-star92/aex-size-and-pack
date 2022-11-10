@@ -42,9 +42,7 @@ public class RestTemplateConfig {
             requestFactory.setConnectionRequestTimeout(httpConnectionProperties.getConnectionRequestTimeout());
             requestFactory.setHttpClient(httpClient);
 
-            RestTemplate restTemplate = new RestTemplate(requestFactory);
-
-            return restTemplate;
+            return new RestTemplate(requestFactory);
         } catch (NoSuchAlgorithmException | KeyManagementException | KeyStoreException e) {
             log.error("Error Occurred in Rest Template Configuration - " + Arrays.toString(e.getStackTrace()));
             return null;

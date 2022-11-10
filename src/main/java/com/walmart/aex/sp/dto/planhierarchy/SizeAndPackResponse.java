@@ -6,5 +6,5 @@ import lombok.Data;
 @Data
 public class SizeAndPackResponse {
 
-    private String Status;
+    private String status;
 }
