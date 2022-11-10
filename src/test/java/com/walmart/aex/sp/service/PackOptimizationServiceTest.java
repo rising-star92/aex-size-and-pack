@@ -189,8 +189,8 @@ class PackOptimizationServiceTest {
 		Long planId = 234L;
 		Integer finelineNbr = 46;
 		Integer status = 10;
-		packOptimizationService.UpdatePkOptServiceStatus(planId, finelineNbr, status);
-		Mockito.verify(packOptimizationService,Mockito.times(1)).UpdatePkOptServiceStatus(planId, finelineNbr, status);
+		packOptimizationService.updatePackOptServiceStatus(planId, finelineNbr, status);
+		Mockito.verify(packOptimizationService,Mockito.times(1)).updatePackOptServiceStatus(planId, finelineNbr, status);
 		assertEquals(finelineNbr,46);
 	}	
 	
