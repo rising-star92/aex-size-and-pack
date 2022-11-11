@@ -55,13 +55,15 @@ class PackOptConstraintMapperTest {
         packOptConstraintResponseDTO.setCcColorCombination(colorCombination);
         packOptConstraintResponseDTO.setStyleSupplierName(vendorName);
         packOptConstraintResponseDTO.setCcFactoryIds(factoryId);
+        packOptConstraintResponseDTO.setCcSinglePackIndicator(1);
+        packOptConstraintResponseDTO.setStyleSinglePackIndicator(1);
         packOptConstraintMapper.mapPackOptLvl2(packOptConstraintResponseDTO, packOptimizationResponse, finelineNbr);
         assertNotNull(packOptimizationResponse);
         assertEquals(planId, packOptimizationResponse.getPlanId());
         assertEquals(styleNbr, packOptimizationResponse.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getStyleNbr());
         assertEquals(ccId, packOptimizationResponse.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getCustomerChoices().get(0).getCcId());
-        assertEquals(vendorName, packOptimizationResponse.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getConstraints().getSupplierConstraints().getSupplierName());
-        assertEquals(factoryId, packOptimizationResponse.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getCustomerChoices().get(0).getConstraints().getSupplierConstraints().getFactoryIds());
+        assertEquals(vendorName, packOptimizationResponse.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getConstraints().getColorCombinationConstraints().getSupplierName());
+        assertEquals(factoryId, packOptimizationResponse.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getCustomerChoices().get(0).getConstraints().getColorCombinationConstraints().getFactoryId());
     }
 
     @Test
@@ -90,7 +92,7 @@ class PackOptConstraintMapperTest {
         packOptimizationResponse.setLvl0Nbr(123);
         packOptimizationResponse.setLvl1Nbr(234);
         packOptimizationResponse.setLvl2Nbr(12);
-        packOptimizationResponse.setChannel(2);
+        packOptimizationResponse.setChannel("store");
         packOptimizationResponse.setLvl3List(List.of(lvl3));
         packOptConstraintResponseDTO = new PackOptConstraintResponseDTO();
         packOptConstraintResponseDTO.setChannelId(2);
