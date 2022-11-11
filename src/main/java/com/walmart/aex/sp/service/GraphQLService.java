@@ -40,7 +40,7 @@ public class GraphQLService {
                   url, response.getStatusCode(), (System.currentTimeMillis() - startTime), response.getBody());
 
         } catch (Exception e) {
-            log.error("Request failed.  url: {}, query: {}, data: {}, error: {}", url, query, data, e.getMessage());
+            log.error("Request failed.  url: {}, query: {}, data: {}, error: {}", url, query, data, e);
             throw new SizeAndPackException("Unable to call api " + url);
         }
         return response.getBody();
