@@ -79,6 +79,9 @@ public class FineLinePackOptimization {
     @Column(name="color_combination")
     private String colorCombination;
 
+    @Column(name="select_status_id ")
+    private Integer selectStatusId ;
+
     @JoinColumn(name = "run_status_code", insertable = false, updatable = false)
     @ManyToOne(targetEntity = RunStatusText.class, fetch = FetchType.LAZY)
     private RunStatusText runStatusText;

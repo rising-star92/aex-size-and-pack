@@ -64,6 +64,9 @@ public class MerchantPackOptimization {
     @Column(name="color_combination")
     private String colorCombination;
 
+    @Column(name="select_status_id ")
+    private Integer selectStatusId ;
+
 
     @JoinColumn(name = "channel_id", insertable = false, updatable = false)
     @ManyToOne(targetEntity = ChannelText.class, fetch = FetchType.LAZY)
