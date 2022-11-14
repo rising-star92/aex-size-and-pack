@@ -298,12 +298,12 @@ public class CalculateFinelineBuyQuantity {
     	Cluster volumeCluster = getVolumeCluster(bqfpResponse, styleDto.getStyleNbr(), customerChoiceDto.getCcId(),
                 merchMethodsDto.getFixtureTypeRollupId(), rfaSizePackData.getVolume_group_cluster_id());
 		if (volumeCluster != null) {
-			// Calculate IS Buy Quantity
-			if (volumeCluster.getInitialSet() != null) {
-				if (volumeCluster.getInitialSet().getInitialSetUnitsPerFix() == null) {
-					log.warn("InitialSetUnitsPerFix of volumeCluster : {} is null. Setting InitialSetUnitsPerFix as zero   for styleNbr : {} , ccId :{}  " ,volumeCluster,styleDto.getStyleNbr(),customerChoiceDto.getCcId());
-					volumeCluster.getInitialSet().setInitialSetUnitsPerFix(0L);
+			// Calculate IS Buy Quantity				
+			if (volumeCluster.getInitialSet() == null || volumeCluster.getInitialSet().getInitialSetUnitsPerFix() == null) {
+				log.warn("InitialSetUnitsPerFix of volumeCluster : {} is null for plan and fineline. Setting InitialSetUnitsPerFix as zero   for styleNbr : {} , ccId :{} plan :{} , fineline : {} ", volumeCluster, styleDto.getStyleNbr(), customerChoiceDto.getCcId());
+				volumeCluster.getInitialSet().setInitialSetUnitsPerFix(0L);
 			}
+					
             Float isCalculatedBq = rfaSizePackData.getStore_cnt() * volumeCluster.getInitialSet().getInitialSetUnitsPerFix() * rfaSizePackData.getFixture_group();
             double isQty = (isCalculatedBq * getSizePct(sizeDto)) / 100;
             double perStoreQty = Math.round(isQty / rfaSizePackData.getStore_cnt());
@@ -378,7 +378,7 @@ public class CalculateFinelineBuyQuantity {
 		}
 	}
   }
-}
+
     private StoreQuantity createStoreQuantity(RFASizePackData rfaSizePackData, double perStoreQty, List<Integer> storeListWithOldQty, double totalUnits, Cluster volumeCluster) {
         StoreQuantity storeQuantity = new StoreQuantity();
         storeQuantity.setTotalUnits(totalUnits);
@@ -811,5 +811,5 @@ public class CalculateFinelineBuyQuantity {
             log.error("Unable to serialize response: {}", key, e);
         }
 
-    }
+    }	
 }
