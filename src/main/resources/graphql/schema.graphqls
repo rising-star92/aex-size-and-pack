@@ -27,6 +27,7 @@ type Mutation {
     calculateBuyQty(calculateBuyQtyRequest: CalculateBuyQtyRequest!): StatusResponse!
     createRunPackOptExecution(request: RunPackOptRequest!): RunPackOptResponse
     updatePackOptConstraints(request:UpdatePackOptConstraintRequestDTO!):StatusResponse
+    updateColorCombination(request: ColorCombinationRequest!): StatusResponse!
 }
 
 input UpdatePackOptConstraintRequestDTO {
@@ -147,6 +148,7 @@ input PackOptConstraintRequest {
 
 type StatusResponse {
     status: String!
+    message: String
 }
 
 type UpdateVnPkWhPkResponse {
@@ -155,7 +157,7 @@ type UpdateVnPkWhPkResponse {
 
 type PackOptimizationResponse{
     planId: Int!
-    channel:Int!
+    channel:String!
     planDesc: String
     lvl0Nbr: Int
     lvl0Desc: String
@@ -179,6 +181,22 @@ type Lvl3 {
 type Constraints{
  supplierConstraints:SupplierConstraints
  ccLevelConstraints:CcLevelConstraints
+ colorCombinationConstraints: ColorCombinationConstraints
+ finelineLevelConstraints: FinelineLevelConstraints
+}
+
+type ColorCombinationConstraints{
+   supplierName:String
+   factoryId:String
+   countryOfOrigin:String
+   portOfOrigin:String
+   singlePackIndicator: Int
+   colorCombination:String
+}
+
+type FinelineLevelConstraints{
+    maxUnitsPerPack:Int
+    maxPacks:Int
 }
 
 type SupplierConstraints{
@@ -410,6 +428,25 @@ type HistoricalMetric {
   lyActualSalesUnitsPct: Float
   lyActualReceiptUnits: Int
   lyActualReceiptUnitsPct: Float
+}
+
+input ColorCombinationRequest {
+    planId: Int
+    planDesc: String
+    lvl0Nbr: Int
+    lvl1Nbr: Int
+    lvl2Nbr: Int
+    lvl3Nbr: Int
+    lvl4Nbr: Int
+    finelineNbr: Int
+    action: String
+    colorCombinationIds: [String]
+    styles: [ColorCombinationStyles]
+}
+
+input ColorCombinationStyles {
+    styleNbr: String
+    ccIds: [String]
 }
 
 input PackInfoRequest {
