@@ -14,8 +14,11 @@ import com.walmart.aex.sp.enums.FixtureTypeRollup;
 import com.walmart.aex.sp.enums.VdLevelCode;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.exception.SizeAndPackException;
+import com.walmart.aex.sp.properties.BuyQtyProperties;
 import com.walmart.aex.sp.repository.MerchCatgReplPackRepository;
 import com.walmart.aex.sp.repository.SpFineLineChannelFixtureRepository;
+import com.walmart.aex.sp.util.BuyQtyCommonUtil;
+import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Marker;
 import org.slf4j.helpers.BasicMarkerFactory;
@@ -38,6 +41,10 @@ public class CalculateFinelineBuyQuantity {
     private final CalculateOnlineFinelineBuyQuantity calculateOnlineFinelineBuyQuantity;
     private final SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository;
     private final MerchCatgReplPackRepository merchCatgReplPackRepository;
+    private final AddStoreBuyQuantitiesService addStoreBuyQuantitiesService;
+
+    @ManagedConfiguration
+    private BuyQtyProperties buyQtyProperties;
 
     public CalculateFinelineBuyQuantity(BQFPService bqfpService,
                                         ObjectMapper objectMapper,
@@ -45,7 +52,7 @@ public class CalculateFinelineBuyQuantity {
                                         CalculateOnlineFinelineBuyQuantity calculateOnlineFinelineBuyQuantity,
                                         StrategyFetchService strategyFetchService,
                                         SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository,
-                                        MerchCatgReplPackRepository merchCatgReplPackRepository) {
+                                        MerchCatgReplPackRepository merchCatgReplPackRepository, AddStoreBuyQuantitiesService addStoreBuyQuantitiesService) {
         this.bqfpService = bqfpService;
         this.objectMapper = objectMapper;
         this.strategyFetchService = strategyFetchService;
@@ -53,6 +60,7 @@ public class CalculateFinelineBuyQuantity {
         this.calculateOnlineFinelineBuyQuantity = calculateOnlineFinelineBuyQuantity;
         this.spFineLineChannelFixtureRepository = spFineLineChannelFixtureRepository;
         this.merchCatgReplPackRepository = merchCatgReplPackRepository;
+        this.addStoreBuyQuantitiesService = addStoreBuyQuantitiesService;
     }
 
     public CalculateBuyQtyResponse calculateFinelineBuyQty(CalculateBuyQtyRequest calculateBuyQtyRequest, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, CalculateBuyQtyResponse calculateBuyQtyResponse) throws CustomException {
@@ -231,7 +239,7 @@ public class CalculateFinelineBuyQuantity {
                                CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest) {
         Map<SizeDto, BuyQtyObj> storeBuyQtyBySizeId = new HashMap<>();
         //Replenishment
-        List<Replenishment> replenishments = getReplenishments(merchMethodsDto, bqfpResponse, styleDto, customerChoiceDto);
+        List<Replenishment> replenishments = BuyQtyCommonUtil.getReplenishments(merchMethodsDto, bqfpResponse, styleDto, customerChoiceDto);
         log.info("Get All Replenishments if exists for customerchoice: {} and fixtureType: {}", customerChoiceDto.getCcId(), merchMethodsDto.getFixtureTypeRollupId());
         if (!CollectionUtils.isEmpty(replenishments)) {
             //Set Replenishment for Size Map
@@ -277,110 +285,19 @@ public class CalculateFinelineBuyQuantity {
                 storeBuyQtyBySizeId.put(sizeDto, new BuyQtyObj());
                 buyQtyObj = storeBuyQtyBySizeId.get(sizeDto);
             }
-            BuyQtyStoreObj buyQtyStoreObj = Optional.ofNullable(buyQtyObj)
-                    .map(BuyQtyObj::getBuyQtyStoreObj)
-                    .orElse(new BuyQtyStoreObj());
-
-            List<StoreQuantity> initialSetQuantities = Optional.of(buyQtyStoreObj)
-                    .map(BuyQtyStoreObj::getBuyQuantities)
-                    .orElse(new ArrayList<>());
-            rfaSizePackDataList.forEach(rfaSizePackData -> addStoreBuyQuantities(styleDto, customerChoiceDto, merchMethodsDto, bqfpResponse, sizeDto, buyQtyObj, initialSetQuantities, rfaSizePackData));
-            buyQtyStoreObj.setBuyQuantities(initialSetQuantities);
-            buyQtyObj.setBuyQtyStoreObj(buyQtyStoreObj);
+            AddStoreBuyQuantities addStoreBuyQuantities = new AddStoreBuyQuantities();
+            addStoreBuyQuantities.setRfaSizePackDataList(rfaSizePackDataList);
+            addStoreBuyQuantities.setStyleDto(styleDto);
+            addStoreBuyQuantities.setSizeDto(sizeDto);
+            addStoreBuyQuantities.setMerchMethodsDto(merchMethodsDto);
+            addStoreBuyQuantities.setBqfpResponse(bqfpResponse);
+            addStoreBuyQuantities.setCustomerChoiceDto(customerChoiceDto);
+            buyQtyObj = addStoreBuyQuantitiesService.addStoreBuyQuantities(addStoreBuyQuantities, buyQtyObj);
+            //rfaSizePackDataList.forEach(rfaSizePackData -> addStoreBuyQuantities(styleDto, customerChoiceDto, merchMethodsDto, bqfpResponse, sizeDto, buyQtyObj, initialSetQuantities, rfaSizePackData));
+           // buyQtyStoreObj.setBuyQuantities(initialSetQuantities);
+           // buyQtyObj.setBuyQtyStoreObj(buyQtyStoreObj);
             storeBuyQtyBySizeId.put(sizeDto, buyQtyObj);
         });
-    }
-
-    private void addStoreBuyQuantities(StyleDto styleDto, CustomerChoiceDto customerChoiceDto, MerchMethodsDto merchMethodsDto, BQFPResponse bqfpResponse, SizeDto sizeDto, BuyQtyObj buyQtyObj, List<StoreQuantity> initialSetQuantities, RFASizePackData rfaSizePackData) {
-        Cluster volumeCluster = getVolumeCluster(bqfpResponse, styleDto.getStyleNbr(), customerChoiceDto.getCcId(),
-                merchMethodsDto.getFixtureTypeRollupId(), rfaSizePackData.getVolume_group_cluster_id());
-        if (volumeCluster != null) {
-            //Calculate IS Buy Quantity
-            Float isCalculatedBq = rfaSizePackData.getStore_cnt() * volumeCluster.getInitialSet().getInitialSetUnitsPerFix() * rfaSizePackData.getFixture_group();
-            double isQty = (isCalculatedBq * getSizePct(sizeDto)) / 100;
-            double perStoreQty = Math.round(isQty / rfaSizePackData.getStore_cnt());
-            isQty = perStoreQty * rfaSizePackData.getStore_cnt();
-            List<Integer> storeList = safeReadStoreList(rfaSizePackData.getStore_list()).stream().sorted().collect(Collectors.toList());
-
-            log.debug("| IS before constraints | : {} | {} | {} | {} | {} | {}", customerChoiceDto.getCcId(), sizeDto.getSizeDesc(), merchMethodsDto.getFixtureTypeRollupId()
-                    , isQty, perStoreQty, storeList.size());
-
-            //TODO: move threshold to CCM
-            double initialSetThreshold = 2.0;
-
-            if ((perStoreQty < initialSetThreshold && perStoreQty > 0) && (!CollectionUtils.isEmpty(buyQtyObj.getReplenishments()))) {
-
-                long totalReplenishment = buyQtyObj.getReplenishments()
-                        .stream()
-                        .filter(Objects::nonNull)
-                        .mapToLong(Replenishment::getAdjReplnUnits)
-                        .sum();
-
-                if (totalReplenishment > 0) {
-                    double unitsLessThanThreshold = initialSetThreshold - perStoreQty;
-                    double totalReducedReplenishment = unitsLessThanThreshold * rfaSizePackData.getStore_cnt();
-
-                    if (totalReplenishment >= totalReducedReplenishment) {
-                        List<Replenishment> replnsWithUnits = buyQtyObj.getReplenishments().stream()
-                                .filter(repln -> repln.getAdjReplnUnits() > 0).collect(Collectors.toList());
-                        List<Replenishment> replnsWithNoUnits = buyQtyObj.getReplenishments().stream()
-                                .filter(repln -> repln.getAdjReplnUnits() == null || repln.getAdjReplnUnits() == 0).collect(Collectors.toList());
-
-                        long replenishmentSize = replnsWithUnits.size();
-                        double perReplenishmentReduced = (totalReducedReplenishment / replenishmentSize);
-                        double perReplenishmentReducedRemainder = (totalReducedReplenishment % replenishmentSize);
-                        replnsWithUnits.forEach(replenishment -> replenishment.setAdjReplnUnits(Math.round(replenishment.getAdjReplnUnits() - perReplenishmentReduced)));
-                        replnsWithUnits.get(0).setAdjReplnUnits(Math.round(replnsWithUnits.get(0).getAdjReplnUnits() - perReplenishmentReducedRemainder));
-                        replnsWithUnits.addAll(replnsWithNoUnits);
-                        buyQtyObj.setReplenishments(replnsWithUnits);
-                        perStoreQty = initialSetThreshold;
-                        isQty = perStoreQty * rfaSizePackData.getStore_cnt();
-                        log.debug("| IS after IS constraints with more replenishment | : {} | {} | {} | {} | {} | {}", customerChoiceDto.getCcId(), sizeDto.getSizeDesc(), merchMethodsDto.getFixtureTypeRollupId(), isQty, perStoreQty, storeList.size());
-                    } else {
-                        int storeCntWithNewQty = (int) (totalReplenishment / unitsLessThanThreshold);
-                        List<Integer> storeListWithOldQty = storeList.subList(storeCntWithNewQty, storeList.size());
-                        StoreQuantity storeQtyCopy = createStoreQuantity(rfaSizePackData, perStoreQty, storeListWithOldQty, perStoreQty * storeListWithOldQty.size(), volumeCluster);
-                        storeQtyCopy.setBumpSets(calculateBumpPackQty(sizeDto, rfaSizePackData, volumeCluster, storeListWithOldQty.size()));
-                        initialSetQuantities.add(storeQtyCopy);
-
-                        log.debug("| IS after IS constraints with less replenishment with old IS qty | : {} | {} | {} | {} | {} | {}", customerChoiceDto.getCcId(), sizeDto.getSizeDesc(), merchMethodsDto.getFixtureTypeRollupId(),
-                                perStoreQty * storeListWithOldQty.size(), perStoreQty, storeListWithOldQty.size());
-
-                        List<Replenishment> replnsWithUnits = buyQtyObj.getReplenishments().stream()
-                                .filter(repln -> repln.getAdjReplnUnits() > 0).collect(Collectors.toList());
-                        List<Replenishment> replnsWithNoUnits = buyQtyObj.getReplenishments().stream()
-                                .filter(repln -> repln.getAdjReplnUnits() == null || repln.getAdjReplnUnits() == 0).collect(Collectors.toList());
-
-                        replnsWithUnits.forEach(replenishment -> replenishment.setAdjReplnUnits(0L));
-                        replnsWithUnits.addAll(replnsWithNoUnits);
-                        buyQtyObj.setReplenishments(replnsWithUnits);
-                        storeList = storeList.subList(0, storeCntWithNewQty);
-                        perStoreQty = initialSetThreshold;
-                        isQty = perStoreQty * storeList.size();
-
-                        log.debug("| IS after IS constraints with less replenishment with new IS qty | : {} | {} | {} | {} | {} | {}", customerChoiceDto.getCcId(), sizeDto.getSizeDesc(), merchMethodsDto.getFixtureTypeRollupId()
-                                , isQty, perStoreQty, storeList.size());
-                    }
-                }
-            }
-
-            StoreQuantity storeQuantity = createStoreQuantity(rfaSizePackData, perStoreQty, storeList, isQty, volumeCluster);
-            storeQuantity.setBumpSets(calculateBumpPackQty(sizeDto, rfaSizePackData, volumeCluster, storeList.size()));
-            initialSetQuantities.add(storeQuantity);
-        }
-    }
-
-    private StoreQuantity createStoreQuantity(RFASizePackData rfaSizePackData, double perStoreQty, List<Integer> storeListWithOldQty, double totalUnits, Cluster volumeCluster) {
-        StoreQuantity storeQuantity = new StoreQuantity();
-        storeQuantity.setTotalUnits(totalUnits);
-        storeQuantity.setIsUnits(perStoreQty);
-        storeQuantity.setVolumeCluster(rfaSizePackData.getVolume_group_cluster_id());
-        storeQuantity.setSizeCluster(rfaSizePackData.getSize_cluster_id());
-        storeQuantity.setStoreList(storeListWithOldQty);
-
-        if (volumeCluster.getFlowStrategy() != null)
-            storeQuantity.setFlowStrategyCode(volumeCluster.getFlowStrategy());
-        return storeQuantity;
     }
 
     private void setSizeChanFixtureBuyQty(MerchMethodsDto merchMethodsDto, SpCustomerChoiceChannelFixture spCustomerChoiceChannelFixture,
@@ -445,12 +362,10 @@ public class CalculateFinelineBuyQuantity {
     }
 
     public void updateQtysWithReplenishmentConstraints(Map.Entry<SizeDto, BuyQtyObj> entry) {
-        //TODO: move threshold to CCM
-        double replenishmentThreshold = 500.0;
         final BuyQtyObj allStoresBuyQty = entry.getValue();
         if (!CollectionUtils.isEmpty(allStoresBuyQty.getReplenishments()) && !CollectionUtils.isEmpty(allStoresBuyQty.getBuyQtyStoreObj().getBuyQuantities())) {
             allStoresBuyQty.setTotalReplenishment(getTotalReplenishment(allStoresBuyQty.getReplenishments()));
-            if (allStoresBuyQty.getTotalReplenishment() < replenishmentThreshold && allStoresBuyQty.getTotalReplenishment() > 0) {
+            if (allStoresBuyQty.getTotalReplenishment() < buyQtyProperties.getReplenishmentThreshold() && allStoresBuyQty.getTotalReplenishment() > 0) {
                 while (allStoresBuyQty.getTotalReplenishment() > 0)
                     moveReplnToInitialSet(entry);
             }
@@ -530,24 +445,6 @@ public class CalculateFinelineBuyQuantity {
                 : ZERO;
     }
 
-    private List<BumpSetQuantity> calculateBumpPackQty(SizeDto sizeDto, RFASizePackData rfaSizePackData, Cluster volumeCluster, int storeCnt) {
-        List<BumpSetQuantity> bumpPackQuantities = new ArrayList<>();
-        volumeCluster.getBumpList().forEach(bumpSet -> {
-            BumpSetQuantity bumpSetQuantity = new BumpSetQuantity();
-
-            //Calculate BS Buy Quantity
-            double bumpQtyPerFixture = (bumpSet.getUnits() * volumeCluster.getInitialSet().getInitialSetUnitsPerFix()) / volumeCluster.getInitialSet().getTotalInitialSetUnits().doubleValue();
-            double bsCalculatedBq = storeCnt * bumpQtyPerFixture * rfaSizePackData.getFixture_group();
-            double bsQty = (bsCalculatedBq * getSizePct(sizeDto)) / 100;
-            double bsPerStoreQty = Math.round(bsQty / storeCnt);
-            bsQty = bsPerStoreQty * storeCnt;
-            bumpSetQuantity.setTotalUnits(bsQty);
-            bumpSetQuantity.setBsUnits(bsPerStoreQty);
-            bumpPackQuantities.add(bumpSetQuantity);
-        });
-        return bumpPackQuantities;
-    }
-
     private BuyQtyResponse getSizeProfiles(CalculateBuyQtyRequest calculateBuyQtyRequest, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest) throws SizeAndPackException {
         BuyQtyRequest buyQtyRequest = new BuyQtyRequest();
         buyQtyRequest.setPlanId(calculateBuyQtyRequest.getPlanId());
@@ -610,43 +507,6 @@ public class CalculateFinelineBuyQuantity {
                 .flatMap(Collection::stream)
                 .findFirst()
                 .orElse(null);
-    }
-
-    private Cluster getVolumeCluster(BQFPResponse bqfpResponse, String styleNbr, String ccId, Integer fixtureTypeRollupId, Integer volumeClusterId) {
-        return Optional.ofNullable(bqfpResponse.getStyles())
-                .stream()
-                .flatMap(Collection::stream)
-                .filter(style -> style.getStyleId().equalsIgnoreCase(styleNbr))
-                .findFirst()
-                .map(Style::getCustomerChoices)
-                .stream()
-                .flatMap(Collection::stream)
-                .filter(customerChoice -> customerChoice.getCcId().equalsIgnoreCase(ccId))
-                .findFirst()
-                .map(CustomerChoice::getFixtures)
-                .stream()
-                .flatMap(Collection::stream)
-                .filter(fixture -> fixture.getFixtureTypeRollupId().equals(fixtureTypeRollupId))
-                .findFirst()
-                .map(Fixture::getClusters)
-                .stream()
-                .flatMap(Collection::stream)
-                .filter(cluster -> cluster.getAnalyticsClusterId().equals(volumeClusterId))
-                .findFirst()
-                .orElse(null);
-
-    }
-
-    private List<Integer> safeReadStoreList(String storeList) {
-        try {
-            return Arrays.asList(objectMapper.readValue(storeList, Integer[].class));
-        } catch (JsonProcessingException e) {
-            log.error("Error deserializing size object: {}", storeList);
-            throw new CustomException("Error deserializing size object");
-        } catch (IllegalArgumentException | NullPointerException e) {
-            log.warn("Size object provided was null");
-            return new ArrayList<>();
-        }
     }
 
     private void setFinelineChanFixtures(SpFineLineChannelFixture spFineLineChannelFixture, Set<SpStyleChannelFixture> spStyleChannelFixtures) {
@@ -762,27 +622,6 @@ public class CalculateFinelineBuyQuantity {
             });
             buyQtyObj.setReplenishments(replObj);
         });
-    }
-
-    //TODO: Move to common utils
-    private List<Replenishment> getReplenishments(MerchMethodsDto merchMethodsDto, BQFPResponse bqfpResponse, StyleDto styleDto, CustomerChoiceDto customerChoiceDto) {
-        return Optional.ofNullable(bqfpResponse.getStyles())
-                .stream()
-                .flatMap(Collection::stream)
-                .filter(style -> style.getStyleId().equalsIgnoreCase(styleDto.getStyleNbr()))
-                .findFirst()
-                .map(Style::getCustomerChoices)
-                .stream()
-                .flatMap(Collection::stream)
-                .filter(customerChoice -> customerChoice.getCcId().equalsIgnoreCase(customerChoiceDto.getCcId()))
-                .findFirst()
-                .map(CustomerChoice::getFixtures)
-                .stream()
-                .flatMap(Collection::stream)
-                .filter(fixture -> fixture.getFixtureTypeRollupId().equals(merchMethodsDto.getFixtureTypeRollupId()))
-                .findFirst()
-                .map(Fixture::getReplenishments)
-                .orElse(new ArrayList<>());
     }
 
     private Long getReplenishmentUnits(Replenishment replenishment) {

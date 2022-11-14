@@ -1,6 +1,8 @@
 package com.walmart.aex.sp.util;
 
+import com.walmart.aex.sp.dto.bqfp.*;
 import com.walmart.aex.sp.dto.buyquantity.*;
+import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
 import com.walmart.aex.sp.service.BuyQuantityMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -86,5 +88,33 @@ public class BuyQtyCommonUtil {
                 .flatMap(Collection::stream)
                 .filter(finelineDto -> finelineDto.getFinelineNbr().equals(dbResponse.getFinelineNbr()))
                 .collect(Collectors.toList());
+    }
+
+    public static Double getSizePct(SizeDto sizeDto) {
+        final Double ZERO = 0.0;
+        return sizeDto.getMetrics() != null
+                ? Optional.ofNullable(sizeDto.getMetrics().getAdjSizeProfilePct())
+                .orElse(Optional.ofNullable(sizeDto.getMetrics().getSizeProfilePct()).orElse(ZERO))
+                : ZERO;
+    }
+
+    public static List<Replenishment> getReplenishments(MerchMethodsDto merchMethodsDto, BQFPResponse bqfpResponse, StyleDto styleDto, CustomerChoiceDto customerChoiceDto) {
+        return Optional.ofNullable(bqfpResponse.getStyles())
+                .stream()
+                .flatMap(Collection::stream)
+                .filter(style -> style.getStyleId().equalsIgnoreCase(styleDto.getStyleNbr()))
+                .findFirst()
+                .map(Style::getCustomerChoices)
+                .stream()
+                .flatMap(Collection::stream)
+                .filter(customerChoice -> customerChoice.getCcId().equalsIgnoreCase(customerChoiceDto.getCcId()))
+                .findFirst()
+                .map(CustomerChoice::getFixtures)
+                .stream()
+                .flatMap(Collection::stream)
+                .filter(fixture -> fixture.getFixtureTypeRollupId().equals(merchMethodsDto.getFixtureTypeRollupId()))
+                .findFirst()
+                .map(Fixture::getReplenishments)
+                .orElse(new ArrayList<>());
     }
 }

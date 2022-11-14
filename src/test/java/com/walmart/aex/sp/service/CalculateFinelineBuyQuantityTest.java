@@ -3,6 +3,7 @@ package com.walmart.aex.sp.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.assortproduct.APResponse;
+import com.walmart.aex.sp.dto.bqfp.AddStoreBuyQuantities;
 import com.walmart.aex.sp.dto.bqfp.BQFPResponse;
 import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixture;
@@ -61,6 +62,9 @@ public class CalculateFinelineBuyQuantityTest {
     BQFPService bqfpService;
 
     @Mock
+    AddStoreBuyQuantitiesService addStoreBuyQuantitiesService;
+
+    @Mock
     private MerchCatgReplPackRepository merchCatgReplPackRepository;
 
    @InjectMocks
@@ -73,16 +77,17 @@ public class CalculateFinelineBuyQuantityTest {
 
    AdjustedDCInboundQty adjustedDCInboundQty;
 
-    ObjectMapper mapper = new ObjectMapper();
+   ObjectMapper mapper = new ObjectMapper();
 
     @BeforeEach
     public void setUp() {
        MockitoAnnotations.openMocks(this);
+       addStoreBuyQuantitiesService = new AddStoreBuyQuantitiesService();
        adjustedDCInboundQty=new AdjustedDCInboundQty();
        replenishmentsOptimizationServices=new ReplenishmentsOptimizationService(adjustedDCInboundQty);
        calculateOnlineFinelineBuyQuantity = new  CalculateOnlineFinelineBuyQuantity (mapper, new BuyQtyReplenishmentMapperService(),replenishmentsOptimizationServices );
        calculateFinelineBuyQuantity = new CalculateFinelineBuyQuantity(bqfpService, mapper, new BuyQtyReplenishmentMapperService(), calculateOnlineFinelineBuyQuantity,
-               strategyFetchService,spFineLineChannelFixtureRepository,merchCatgReplPackRepository);
+               strategyFetchService,spFineLineChannelFixtureRepository,merchCatgReplPackRepository, addStoreBuyQuantitiesService);
     }
 
     @Test
@@ -94,6 +99,7 @@ public class CalculateFinelineBuyQuantityTest {
        Mockito.when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
        Mockito.when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
        Mockito.when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
+       Mockito.when(addStoreBuyQuantitiesService.addStoreBuyQuantities(any(), any())).thenReturn(new BuyQtyObj());
        CalculateBuyQtyRequest request = create("store", 50000, 34, 1488, 9071, 7205, 1500);
        CalculateBuyQtyParallelRequest pRequest = createFromRequest(request);
 
