@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import com.walmart.aex.sp.enums.CategoryType;
 import com.walmart.aex.sp.enums.FlowStrategy;
 import com.walmart.aex.sp.util.CommonUtil;
 import org.springframework.stereotype.Service;
@@ -12,15 +13,21 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.walmart.aex.sp.dto.mapper.FineLineMapperDto;
 import com.walmart.aex.sp.dto.packoptimization.BuyQuantitiesDto;
+import com.walmart.aex.sp.dto.packoptimization.CcLevelConstraints;
 import com.walmart.aex.sp.dto.packoptimization.CcPackDto;
+import com.walmart.aex.sp.dto.packoptimization.ColorCombinationConstraints;
+import com.walmart.aex.sp.dto.packoptimization.Constraints;
 import com.walmart.aex.sp.dto.packoptimization.FineLinePackDto;
 import com.walmart.aex.sp.dto.packoptimization.FineLinePackOptimizationResponse;
 import com.walmart.aex.sp.dto.packoptimization.FineLinePackOptimizationResponseDTO;
+import com.walmart.aex.sp.dto.packoptimization.FinelineLevelConstraints;
 import com.walmart.aex.sp.dto.packoptimization.FixtureDto;
 import com.walmart.aex.sp.dto.packoptimization.MetricsPackDto;
 import com.walmart.aex.sp.dto.packoptimization.SizePackDto;
 import com.walmart.aex.sp.dto.packoptimization.StoreObjectDto;
+import com.walmart.aex.sp.dto.packoptimization.SupplierConstraints;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
@@ -50,11 +57,11 @@ public class PackOptimizationMapper {
 	private void setFinelineSP(FineLinePackOptimizationResponseDTO finelinePackOptimizationResponseDTO, List<FineLinePackDto> finelineDtoList) {
 		FineLinePackDto fineline = new FineLinePackDto();
 		fineline.setFinelineNbr(finelinePackOptimizationResponseDTO.getFinelineNbr());
+		fineline.setFinelineLevelConstraints(setFinelineConstraints(finelinePackOptimizationResponseDTO,fineline));
 		fineline.setCustomerChoices(mapReplenishmentCc(finelinePackOptimizationResponseDTO, fineline));
 		finelineDtoList.add(fineline);
 	}
-
-
+	
 	private List<CcPackDto> mapReplenishmentCc(FineLinePackOptimizationResponseDTO finelinePackOptimizationResponseDTO, FineLinePackDto finelineDto) {
 		List<CcPackDto> customerChoiceList = Optional.ofNullable(finelineDto.getCustomerChoices()).orElse(new ArrayList<>());
 
@@ -71,6 +78,7 @@ public class PackOptimizationMapper {
 		CcPackDto customerChoiceDto = new CcPackDto();
 		customerChoiceDto.setCcId(finelinePackOptimizationResponseDTO.getCcId());
 		customerChoiceDto.setFixtures(mapMerchMethod(finelinePackOptimizationResponseDTO, customerChoiceDto));
+		customerChoiceDto.setColorCombinationConstraints(setColorConstraints(finelinePackOptimizationResponseDTO,customerChoiceDto));
 		customerChoiceDtoList.add(customerChoiceDto);
 	}
 
@@ -152,7 +160,31 @@ public class PackOptimizationMapper {
 		}
 		metricsDtoList.add(metricsObj);
 	}
+	
+	
+	private FinelineLevelConstraints setFinelineConstraints(FineLinePackOptimizationResponseDTO finelinePackOptimizationResponseDTO, FineLinePackDto fineline) {
+		
+		FinelineLevelConstraints  finelineConstraints = new FinelineLevelConstraints();
+		finelineConstraints.setMaxUnitsPerPack(finelinePackOptimizationResponseDTO.getMaxUnitsPerPack());
+		finelineConstraints.setMaxPacks(finelinePackOptimizationResponseDTO.getMaxNbrOfPacks());
+		fineline.setFinelineLevelConstraints(finelineConstraints);
+		return finelineConstraints;
+	}
 
+
+	private ColorCombinationConstraints setColorConstraints(FineLinePackOptimizationResponseDTO finelinePackOptimizationResponseDTO, CcPackDto customerChoiceDto) {
+		
+		ColorCombinationConstraints colorConstraints = new  ColorCombinationConstraints();
+		colorConstraints.setFactoryId(finelinePackOptimizationResponseDTO.getFactoryId()); 
+		colorConstraints.setColorCombination(finelinePackOptimizationResponseDTO.getColorCombination());
+		colorConstraints.setSinglePackIndicator(finelinePackOptimizationResponseDTO.getSinglePackInd());
+		customerChoiceDto.setColorCombinationConstraints(colorConstraints);
+		return colorConstraints;
+	}
+	
+	
+
+	
 
 
 
