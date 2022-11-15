@@ -11,14 +11,9 @@ import com.walmart.aex.sp.dto.packoptimization.FineLinePackOptimizationResponseD
 import com.walmart.aex.sp.dto.packoptimization.FinelineLevelConstraints;
 import com.walmart.aex.sp.dto.packoptimization.PackOptimizationResponse;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
-import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
 import com.walmart.aex.sp.entity.CcPackOptimization;
-import com.walmart.aex.sp.entity.CcPackOptimizationID;
 import com.walmart.aex.sp.entity.FineLinePackOptimization;
-import com.walmart.aex.sp.entity.FineLinePackOptimizationID;
-import com.walmart.aex.sp.entity.MerchantPackOptimization;
 import com.walmart.aex.sp.entity.StylePackOptimization;
-import com.walmart.aex.sp.entity.StylePackOptimizationID;
 import com.walmart.aex.sp.entity.SubCatgPackOptimization;
 import com.walmart.aex.sp.repository.AnalyticsMlSendRepository;
 import com.walmart.aex.sp.repository.CcPackOptimizationRepository;
@@ -36,7 +31,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -159,7 +153,7 @@ class PackOptimizationServiceTest {
 		String expectedResult = "PackOptimizationResponse(planId=362, channel=Store, lvl0Nbr=0, lvl0Desc=null, lvl1Nbr=0, lvl1Desc=null, lvl2Nbr=0, lvl2Desc=null, lvl3List=[Lvl3(lvl0Nbr=0, lvl1Nbr=0, lvl2Nbr=0, lvl3Nbr=25, lvl3Name=null, constraints=Constraints(supplierConstraints=null, ccLevelConstraints=null, colorCombinationConstraints=ColorCombinationConstraints(supplierName=Vendor Name, factoryId=120, 121, countryOfOrigin=null, portOfOrigin=null, singlePackIndicator=null, colorCombination=null), finelineLevelConstraints=FinelineLevelConstraints(maxPacks=50, maxUnitsPerPack=null)), lvl4List=null)])";
 
 		assertNotNull(packOptResponse);
-		assertEquals(packOptResponse.getPlanId(), 362L);
+		assertEquals(362L, packOptResponse.getPlanId());
 		assertEquals(expectedResult, packOptResponse.toString());
 
 		assertEquals("120, 121", packOptResponse.getLvl3List().get(0).getConstraints().getColorCombinationConstraints().getFactoryId());
@@ -168,73 +162,18 @@ class PackOptimizationServiceTest {
 	}
 
 	@Test
-	public void testUpdateRunStatusCode()
+	void testUpdateRunStatusCode()
 	{
 		Long planId = 234L;
 		Integer finelineNbr = 46;
 		Integer status = 10;
 		packOptimizationService.updatePackOptServiceStatus(planId, finelineNbr, status);
 		Mockito.verify(packOptimizationService,Mockito.times(1)).updatePackOptServiceStatus(planId, finelineNbr, status);
-		assertEquals(finelineNbr,46);
-	}	
-	
-	@Test
-	public void testSubCategoryResponseList() {
-		subCatgList = new HashSet<SubCatgPackOptimization>();
-		SubCatgPackOptimization subCtgPkopt = new SubCatgPackOptimization();
-		subCtgPkopt.setVendorName("walmart");
-		subCtgPkopt.setMaxNbrOfPacks(3);
-		subCtgPkopt.setMaxUnitsPerPack(1);
-		subCtgPkopt.setFactoryId("123");
-		subCtgPkopt.setPortOfOriginName("cc");
-		subCatgList.add(subCtgPkopt);
-
-		finelineList = new HashSet<FineLinePackOptimization>();
-		FineLinePackOptimization finelinePackOptObj = new FineLinePackOptimization();
-		FineLinePackOptimizationID fineLinePackOptimizationID = new FineLinePackOptimizationID();
-		finelinePackOptObj.setFinelinePackOptId(fineLinePackOptimizationID);
-		fineLinePackOptimizationID.setFinelineNbr(5147);
-		finelinePackOptObj.setVendorName("walmart");
-		finelinePackOptObj.setMaxNbrOfPacks(1);
-		finelinePackOptObj.setMaxUnitsPerPack(1);
-		finelinePackOptObj.setFactoryId("123");
-		finelinePackOptObj.setPortOfOriginName("cc");
-		finelineList.add(finelinePackOptObj);
-
-		stylePkOptList = new HashSet<StylePackOptimization>();
-		StylePackOptimization stylePackOptObj = new StylePackOptimization();
-		StylePackOptimizationID stylePackOptimizationID = new StylePackOptimizationID();
-		stylePackOptObj.setStylePackoptimizationId(stylePackOptimizationID);
-		stylePackOptimizationID.setStyleNbr("34_2968_3_18_2");
-		stylePackOptObj.setVendorName("walmart");
-		stylePackOptObj.setMaxNbrOfPacks(3);
-		stylePackOptObj.setMaxUnitsPerPack(1);
-		stylePackOptObj.setFactoryId("123");
-		stylePackOptObj.setPortOfOriginName("cc");
-		stylePkOptList.add(stylePackOptObj);
-
-		ccPkOptList = new HashSet<CcPackOptimization>();
-		CcPackOptimization ccPackOptObj = new CcPackOptimization();
-		CcPackOptimizationID ccPackOptimizationID = new CcPackOptimizationID();
-		ccPackOptObj.setCcPackOptimizationId(ccPackOptimizationID);
-		ccPackOptimizationID.setCustomerChoice("34_2968_3_18_2_BLACK SOOT");
-		ccPackOptObj.setVendorName("walmart");
-		ccPackOptObj.setMaxNbrOfPacks(1);
-		ccPackOptObj.setMaxUnitsPerPack(1);
-		ccPackOptObj.setFactoryId("123");
-		ccPackOptObj.setPortOfOriginName("cc");
-		ccPkOptList.add(ccPackOptObj);
-		List<Lvl4> lvl4s = packOptimizationService.subCategoryResponseList(subCatgList, finelineList, stylePkOptList,
-				ccPkOptList);
-		assertEquals(5147, lvl4s.get(0).getFinelines().get(0).getFinelineNbr());
-		assertEquals("34_2968_3_18_2", lvl4s.get(0).getFinelines().get(0).getStyles().get(0).getStyleNbr());
-		assertEquals("34_2968_3_18_2_BLACK SOOT",
-				lvl4s.get(0).getFinelines().get(0).getStyles().get(0).getCustomerChoices().get(0).getCcId());
-
+		assertEquals(46, finelineNbr);
 	}
 
 	@Test
-	public void testGetPackOptFinelineDetails() {
+	void testGetPackOptFinelineDetails() {
 		finelinePackOptimizationResponseList = new ArrayList<FineLinePackOptimizationResponseDTO>();
 		FineLinePackOptimizationResponseDTO fineLinePackOptimizationResponse = new FineLinePackOptimizationResponseDTO();
 		fineLinePackOptimizationResponse.setPlanId(483l);
@@ -253,20 +192,6 @@ class PackOptimizationServiceTest {
 		Mockito.verify(packOptimizationMapper, Mockito.times(1)).mapPackOptimizationFineline(Mockito.any(),
 				Mockito.any(), Mockito.any());
 		assertNotNull(fineLinePackOptimizationResponse);
-	}	
-	
-	@Test
-	public void testGetMerchantPkOptConstraintDetails() {
-		MerchantPackOptimization merchPackOptObj = new MerchantPackOptimization();
-		merchPackOptObj.setVendorName("walmart");
-		merchPackOptObj.setMaxNbrOfPacks(3);
-		merchPackOptObj.setMaxUnitsPerPack(1);
-		merchPackOptObj.setFactoryId("123");
-		merchPackOptObj.setPortOfOriginName("cc");
-		Constraints constraints = packOptimizationService.getMerchantPkOptConstraintDetails(merchPackOptObj);
-		assertEquals("123", constraints.getSupplierConstraints().getFactoryIds());
-		assertEquals(3, constraints.getCcLevelConstraints().getMaxPacks());
-		assertEquals(1, constraints.getCcLevelConstraints().getMaxUnitsPerPack());
 	}
 
     @Test
