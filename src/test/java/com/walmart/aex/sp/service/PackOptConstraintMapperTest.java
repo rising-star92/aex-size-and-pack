@@ -3,7 +3,6 @@ package com.walmart.aex.sp.service;
 import com.walmart.aex.sp.dto.mapper.FineLineMapperDto;
 import com.walmart.aex.sp.dto.packoptimization.CustomerChoice;
 import com.walmart.aex.sp.dto.packoptimization.Fineline;
-import com.walmart.aex.sp.dto.packoptimization.PackOptConstraintResponseDTO;
 import com.walmart.aex.sp.dto.packoptimization.PackOptimizationResponse;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
@@ -11,7 +10,6 @@ import com.walmart.aex.sp.dto.planhierarchy.Style;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
@@ -23,10 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class PackOptConstraintMapperTest {
 
     @InjectMocks
-    PackOptConstraintMapper packOptConstraintMapper;
-
-    @Mock
-    PackOptConstraintResponseDTO packOptConstraintResponseDTO;
+    private PackOptConstraintMapper packOptConstraintMapper;
 
     private static final Integer finelineNbr = 3470;
     private static final Long planId = 471l;
