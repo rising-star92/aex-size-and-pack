@@ -22,7 +22,6 @@ import com.walmart.aex.sp.entity.CcSpMmReplPack;
 import com.walmart.aex.sp.entity.FinelineReplPack;
 import com.walmart.aex.sp.entity.MerchCatgReplPack;
 import com.walmart.aex.sp.entity.StyleReplPack;
-import com.walmart.aex.sp.entity.StyleReplenishmentPack;
 import com.walmart.aex.sp.entity.SubCatgReplPack;
 import com.walmart.aex.sp.repository.CatgReplnPkConsRepository;
 import com.walmart.aex.sp.repository.CcMmReplnPkConsRepository;
@@ -47,9 +46,6 @@ public class UpdateReplnConfigMapperTest {
 	
 	@Mock
 	List<FinelineReplPack> finelineReplnPkConsList;
-	
-	@Mock
-	List<StyleReplenishmentPack> styleReplnPkConsList;
 	
 	@Mock
 	FinelineReplnPkConsRepository finelineReplnPkConsRepository;

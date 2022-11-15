@@ -55,7 +55,7 @@ public class SizeAndPackService {
 
     private final MerchPackOptimizationRepository merchPackOptimizationRepository;
 
-    private final SizeAndPackPackOptObjectMapper sizeAndPackPackOptObjectMapper;
+    private final PackOptAddDataMapper packOptAddDataMapper;
 
     @ManagedConfiguration
 	BigQueryConnectionProperties bigQueryConnectionProperties;
@@ -71,7 +71,7 @@ public class SizeAndPackService {
                               MerchCatPlanRepository merchCatPlanRepository, StrategyFetchService strategyFetchService,
                               SpCustomerChoiceChannelFixtureSizeRepository spCustomerChoiceChannelFixtureSizeRepository,
                               SizeAndPackDeleteService sizeAndPackDeleteService, SizeAndPackDeletePlanService sizeAndPackDeletePlanService
-            , BuyQtyCommonUtil buyQtyCommonUtil, BigQueryInitialSetPlanService bigQueryInitialSetPlanService, InitialSetPlanMapper initialSetPlanMapper, MerchPackOptimizationRepository merchPackOptimizationRepository, SizeAndPackPackOptObjectMapper sizeAndPackPackOptObjectMapper) {
+            , BuyQtyCommonUtil buyQtyCommonUtil, BigQueryInitialSetPlanService bigQueryInitialSetPlanService, InitialSetPlanMapper initialSetPlanMapper, MerchPackOptimizationRepository merchPackOptimizationRepository, PackOptAddDataMapper packOptAddDataMapper) {
         this.spFineLineChannelFixtureRepository = spFineLineChannelFixtureRepository;
         this.buyQuantityMapper = buyQuantityMapper;
         this.spCustomerChoiceChannelFixtureRepository = spCustomerChoiceChannelFixtureRepository;
@@ -86,7 +86,7 @@ public class SizeAndPackService {
         this.bigQueryInitialSetPlanService = bigQueryInitialSetPlanService;
         this.initialSetPlanMapper = initialSetPlanMapper;
         this.merchPackOptimizationRepository = merchPackOptimizationRepository;
-        this.sizeAndPackPackOptObjectMapper = sizeAndPackPackOptObjectMapper;
+        this.packOptAddDataMapper = packOptAddDataMapper;
     }
 
     public BuyQtyResponse fetchFinelineBuyQnty(BuyQtyRequest buyQtyRequest) {
@@ -217,7 +217,7 @@ public class SizeAndPackService {
                 for (Lvl2 lvl2 : lvl1.getLvl2List()) {
                     for (Lvl3 lvl3 : lvl2.getLvl3List()) {
                         merchCatPlanRepository.saveAll(sizeAndPackObjectMapper.setMerchCatPlan(planSizeAndPackDTO, lvl1, lvl2, lvl3, merchCatPlanRepository));
-                        merchPackOptimizationRepository.saveAll(sizeAndPackPackOptObjectMapper.setMerchCatPackOpt(planSizeAndPackDTO, lvl1, lvl2, lvl3, merchPackOptimizationRepository));
+                        merchPackOptimizationRepository.saveAll(packOptAddDataMapper.setMerchCatPackOpt(planSizeAndPackDTO, lvl1, lvl2, lvl3, merchPackOptimizationRepository));
 
                     }
                 }
@@ -246,8 +246,7 @@ public class SizeAndPackService {
                 for (Lvl2 lvl2 : lvl1.getLvl2List()) {
                     for (Lvl3 lvl3 : lvl2.getLvl3List()) {
                         merchCatPlanRepository.saveAll(sizeAndPackObjectMapper.updateMerchCatPlan(planSizeAndPackDTO, lvl1, lvl2, lvl3, lvl2.getLvl3List(), merchCatPlanRepository));
-                        merchPackOptimizationRepository.saveAll(sizeAndPackPackOptObjectMapper.updateMerchCatPackOpt(planSizeAndPackDTO, lvl1, lvl2, lvl3,merchPackOptimizationRepository));
-                    }
+                       }
                 }
             }
             sizeAndPackResponse.setStatus(SUCCESS_STATUS);
