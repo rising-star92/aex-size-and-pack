@@ -27,7 +27,7 @@ public class PackOptConstraintMapper {
         List<Lvl3> lvl3List = Optional.ofNullable(response.getLvl3List()).orElse(new ArrayList<>());
 
         lvl3List.stream()
-                .filter(lvl3 -> fineLineMapperDto.getLvl3Nbr().equals(lvl3.getLvl3Nbr())).findFirst()
+                .filter(lvl3 -> lvl3.getLvl3Nbr() != null && fineLineMapperDto.getLvl3Nbr().equals(lvl3.getLvl3Nbr())).findFirst()
                 .ifPresentOrElse(lvl3 -> lvl3.setLvl4List(getLvl4Sp(fineLineMapperDto, lvl3)),
                         () -> setPackOptLvl3(fineLineMapperDto, lvl3List));
         return lvl3List;
@@ -49,7 +49,7 @@ public class PackOptConstraintMapper {
         List<Lvl4> lvl4DtoList = Optional.ofNullable(lvl3.getLvl4List()).orElse(new ArrayList<>());
 
         lvl4DtoList.stream()
-                .filter(lvl4 -> fineLineMapperDto.getLvl4Nbr().equals(lvl4.getLvl4Nbr())).findFirst()
+                .filter(lvl4 -> lvl4.getLvl4Nbr() != null && fineLineMapperDto.getLvl4Nbr().equals(lvl4.getLvl4Nbr())).findFirst()
                 .ifPresentOrElse(lvl4 -> lvl4.setFinelines(getFineLines(fineLineMapperDto, lvl4)),
                         () -> setPackoptLvl4(fineLineMapperDto, lvl4DtoList));
         return lvl4DtoList;
@@ -68,7 +68,7 @@ public class PackOptConstraintMapper {
         List<Fineline> finelineDtoList = Optional.ofNullable(lvl4.getFinelines()).orElse(new ArrayList<>());
 
         finelineDtoList.stream()
-                .filter(finelineDto -> fineLineMapperDto.getFineLineNbr().equals(finelineDto.getFinelineNbr())).findFirst()
+                .filter(finelineDto -> finelineDto.getFinelineNbr() != null && fineLineMapperDto.getFineLineNbr().equals(finelineDto.getFinelineNbr())).findFirst()
                 .ifPresentOrElse(finelineDto -> {
                             if (finelineDto.getOptimizationDetails() != null &&
                                     !finelineDto.getOptimizationDetails().isEmpty()
@@ -114,7 +114,7 @@ public class PackOptConstraintMapper {
         List<Style> styleDtoList = Optional.ofNullable(fineline.getStyles()).orElse(new ArrayList<>());
 
         styleDtoList.stream()
-                .filter(styleDto -> fineLineMapperDto.getStyleNbr().equals(styleDto.getStyleNbr())).findFirst()
+                .filter(styleDto -> styleDto.getStyleNbr() != null && fineLineMapperDto.getStyleNbr().equals(styleDto.getStyleNbr())).findFirst()
                 .ifPresentOrElse(style ->
                                 style.setCustomerChoices(getPackOptCustomerChoice(fineLineMapperDto, style)),
                         () -> setPackOptStyle(fineLineMapperDto, styleDtoList));
@@ -138,7 +138,7 @@ public class PackOptConstraintMapper {
         List<CustomerChoice> customerChoiceList = Optional.ofNullable(styleDto.getCustomerChoices()).orElse(new ArrayList<>());
 
         customerChoiceList.stream()
-                .filter(customerChoiceDto -> fineLineMapperDto.getCcId().equals(customerChoiceDto.getCcId())).findFirst()
+                .filter(customerChoiceDto -> customerChoiceDto.getCcId() != null && fineLineMapperDto.getCcId().equals(customerChoiceDto.getCcId())).findFirst()
                 .ifPresentOrElse(customerChoiceDto -> {
                         },
                         () -> setPackOptCc(fineLineMapperDto, customerChoiceList));
