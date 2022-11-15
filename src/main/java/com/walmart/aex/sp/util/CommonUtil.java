@@ -6,6 +6,7 @@ import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
 import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDTO;
 import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDeleteDTO;
+import com.walmart.aex.sp.exception.CustomException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -56,8 +57,10 @@ public class CommonUtil {
             case "TABLES": {
                 return 4;
             }
+            default: {
+                throw new CustomException("Fixture Type does not Match");
+            }
         }
-        throw new RuntimeException("Fixture Type does not Match");
     }
 
     public static Integer getMerchMethod(String merchMethod) {
@@ -71,8 +74,10 @@ public class CommonUtil {
             case "ONLINE_MERCH_METHOD": {
                 return 0;
             }
+            default: {
+                throw new CustomException("Merch Method does not Match");
+            }
         }
-        throw new RuntimeException("Merch Method does not Match");
     }
 
     public static String getMerchMethod(Integer merchMethod) {
@@ -86,8 +91,11 @@ public class CommonUtil {
             case 0:{
                 return "ONLINE_MERCH_METHOD";
             }
+            default: {
+                throw new CustomException("Merch Method does not Match");
+            }
         }
-        throw new RuntimeException("Merch Method does not Match");
+
     }
 
     public static Integer getChannelId(String channelDesc) {
@@ -101,8 +109,10 @@ public class CommonUtil {
             case "OMNI":{
                 return 3;
             }
+            default: {
+                throw new CustomException("Channel Type does not Match");
+            }
         }
-        throw new RuntimeException("Channel Type does not Match");
     }
 
     public PlanSizeAndPackDeleteDTO cleanSPDeleteRequest(PlanSizeAndPackDeleteDTO arg0) throws IOException {
