@@ -9,8 +9,7 @@ import com.walmart.aex.sp.dto.packoptimization.RunPackOptRequest;
 import com.walmart.aex.sp.dto.packoptimization.RunPackOptResponse;
 import com.walmart.aex.sp.properties.IntegrationHubServiceProperties;
 import com.walmart.aex.sp.repository.AnalyticsMlSendRepository;
-
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -26,13 +25,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class IntegrationHubServiceTest {
+class IntegrationHubServiceTest {
     @Mock
     private RestTemplate restTemplate;
 
@@ -45,14 +42,14 @@ public class IntegrationHubServiceTest {
     @Mock
     private AnalyticsMlSendRepository analyticsMlSendRepository;
 
-    @Before
-    public void init() {
+    @BeforeEach
+    void init() {
         MockitoAnnotations.openMocks(this);
-        integrationHubService = new IntegrationHubService(restTemplate, properties,analyticsMlSendRepository);
+        integrationHubService = new IntegrationHubService(restTemplate, properties, analyticsMlSendRepository);
     }
 
     @Test
-    public void successResponseReturnsFromIntegrationHub() {
+    void successResponseReturnsFromIntegrationHub() {
         MockitoAnnotations.openMocks(this);
         ResponseEntity<IntegrationHubResponseDTO> response = ResponseEntity.status(HttpStatus.OK).body(successResponse());
         when(properties.getUrl()).thenReturn("http://10.22.137.216/api/packopt?scenario=pack_optimization_dataproc");
