@@ -12,9 +12,6 @@ import com.walmart.aex.sp.dto.packoptimization.FinelineLevelConstraints;
 import com.walmart.aex.sp.dto.packoptimization.PackOptimizationResponse;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
 import com.walmart.aex.sp.entity.CcPackOptimization;
-import com.walmart.aex.sp.entity.FineLinePackOptimization;
-import com.walmart.aex.sp.entity.StylePackOptimization;
-import com.walmart.aex.sp.entity.SubCatgPackOptimization;
 import com.walmart.aex.sp.repository.AnalyticsMlSendRepository;
 import com.walmart.aex.sp.repository.CcPackOptimizationRepository;
 import com.walmart.aex.sp.repository.FineLinePackOptimizationRepository;
@@ -32,7 +29,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -49,43 +45,22 @@ class PackOptimizationServiceTest {
 
 	@Mock
 	private AnalyticsMlSendRepository analyticsMlSendRepository;
-
-
 	@Mock
-	PackOptimizationResponse packOptResponse;
-
-
+	private PackOptimizationResponse packOptResponse;
 	@Mock
-	FinelinePackOptRepository packOptfineplanRepo;
-	
+	private FinelinePackOptRepository packOptfineplanRepo;
 	@Mock
-	Set<SubCatgPackOptimization> subCatgList;
-	
+	private FineLinePackOptimizationRepository finelinePackOptimizationRepository;
 	@Mock
-	Set<FineLinePackOptimization> finelineList;
-	
+	private PackOptimizationMapper packOptimizationMapper;
 	@Mock
-	Set<StylePackOptimization> stylePkOptList;
-	
+	private FineLinePackOptimizationResponse finelinePackOptimizationResponse;
 	@Mock
-	Set<CcPackOptimization> ccPkOptList;
-	
+	private List<FineLinePackOptimizationResponseDTO> finelinePackOptimizationResponseList;
 	@Mock
-	FineLinePackOptimizationRepository finelinePackOptimizationRepository;
-	@Mock
-	PackOptimizationMapper packOptimizationMapper;
-	
-	@Mock
-	FineLinePackOptimizationResponse finelinePackOptimizationResponse;
-	
-	@Mock
-	List<FineLinePackOptimizationResponseDTO> finelinePackOptimizationResponseList;
-
-	@Mock
-	PackOptConstraintMapper packOptConstraintMapper;
-  
+	private PackOptConstraintMapper packOptConstraintMapper;
    @Mock
-    CcPackOptimizationRepository ccPackOptimizationRepository;
+    private CcPackOptimizationRepository ccPackOptimizationRepository;
 
 	@Test
 	void testGetPackOptDetails() {
