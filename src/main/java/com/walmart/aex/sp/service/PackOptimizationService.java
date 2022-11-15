@@ -1,27 +1,59 @@
 package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.StatusResponse;
+import com.walmart.aex.sp.dto.mapper.FineLineMapper;
 import com.walmart.aex.sp.dto.mapper.FineLineMapperDto;
-import com.walmart.aex.sp.dto.packoptimization.*;
+import com.walmart.aex.sp.dto.packoptimization.CcLevelConstraints;
+import com.walmart.aex.sp.dto.packoptimization.ColorCombinationConstraints;
+import com.walmart.aex.sp.dto.packoptimization.ColorCombinationRequest;
+import com.walmart.aex.sp.dto.packoptimization.ColorCombinationStyle;
+import com.walmart.aex.sp.dto.packoptimization.Constraints;
+import com.walmart.aex.sp.dto.packoptimization.CustomerChoice;
+import com.walmart.aex.sp.dto.packoptimization.FineLinePackOptimizationResponse;
+import com.walmart.aex.sp.dto.packoptimization.FineLinePackOptimizationResponseDTO;
+import com.walmart.aex.sp.dto.packoptimization.Fineline;
+import com.walmart.aex.sp.dto.packoptimization.FinelineLevelConstraints;
+import com.walmart.aex.sp.dto.packoptimization.PackOptConstraintRequest;
+import com.walmart.aex.sp.dto.packoptimization.PackOptConstraintResponseDTO;
+import com.walmart.aex.sp.dto.packoptimization.PackOptimizationResponse;
+import com.walmart.aex.sp.dto.packoptimization.RunOptimization;
+import com.walmart.aex.sp.dto.packoptimization.SupplierConstraints;
+import com.walmart.aex.sp.dto.packoptimization.UpdatePackOptConstraintRequestDTO;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
 import com.walmart.aex.sp.dto.planhierarchy.Style;
-import com.walmart.aex.sp.entity.*;
-import com.walmart.aex.sp.enums.Action;
+import com.walmart.aex.sp.entity.CcPackOptimization;
+import com.walmart.aex.sp.entity.FineLinePackOptimization;
+import com.walmart.aex.sp.entity.MerchantPackOptimization;
+import com.walmart.aex.sp.entity.StylePackOptimization;
+import com.walmart.aex.sp.entity.SubCatgPackOptimization;
 import com.walmart.aex.sp.enums.CategoryType;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.exception.CustomException;
-import com.walmart.aex.sp.repository.*;
+import com.walmart.aex.sp.repository.AnalyticsMlSendRepository;
+import com.walmart.aex.sp.repository.CcPackOptimizationRepository;
+import com.walmart.aex.sp.repository.FineLinePackOptimizationRepository;
+import com.walmart.aex.sp.repository.FinelinePackOptRepository;
+import com.walmart.aex.sp.repository.MerchPackOptimizationRepository;
+import com.walmart.aex.sp.repository.StyleCcPackOptConsRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
+import static com.walmart.aex.sp.util.SizeAndPackConstants.COLOR_COMBINATION_EXIST_MSG;
+import static com.walmart.aex.sp.util.SizeAndPackConstants.COLOR_COMBINATION_MISSING_MSG;
+import static com.walmart.aex.sp.util.SizeAndPackConstants.FAILED_STATUS;
+import static com.walmart.aex.sp.util.SizeAndPackConstants.SUCCESS_STATUS;
 
 @Service
 @Slf4j
@@ -80,7 +112,6 @@ public class PackOptimizationService {
         packOptResp.setChannel(ChannelType.getChannelNameFromId(channelId));
         List<Lvl3> lvl3List = new ArrayList<>();
         fineLineMapperDtos.forEach(fineLineMapperDto ->
-
                 mapPackOptLvl2(fineLineMapperDto,lvl3List,packOptResp)
         );
 
@@ -105,7 +136,7 @@ public class PackOptimizationService {
         if (response.getChannel() == null) {
             response.setChannel(ChannelType.getChannelNameFromId(fineLineMapperDto.getChannelId()));
         }
-        response.setLvl3List(maplvl3PackOpResponse(fineLineMapperDto ,lvl3List));
+        response.setLvl3List(packOptConstraintMapper.mapPackOptLvl3(fineLineMapperDto, new PackOptimizationResponse()));
     }
 
     private List<Lvl3> maplvl3PackOpResponse(FineLineMapperDto fineLineMapperDto, List<Lvl3> lvl3List) {
@@ -457,11 +488,17 @@ public class PackOptimizationService {
         try {
             List<PackOptConstraintResponseDTO> packOptConstraintResponseDTO = styleCcPackOptConsRepository
                     .findByFinePlanPackOptimizationIDPlanIdAndChannelTextChannelId(request.getPlanId(), ChannelType.getChannelIdFromName(request.getChannel()), request.getFinelineNbr());
-            Optional.of(packOptConstraintResponseDTO)
+            System.out.println("request.getFinelineNbr() = " + request.getFinelineNbr());
+            List<FineLineMapperDto> fineLineMapperDtoList = new ArrayList<>();
+            for (PackOptConstraintResponseDTO packOptConstraintResponseDTO1: packOptConstraintResponseDTO) {
+                FineLineMapperDto fineLineMapperDto = FineLineMapper.fineLineMapper.packOptConstraintResponseDTOToFineLineMapperDto(packOptConstraintResponseDTO1);
+                fineLineMapperDtoList.add(fineLineMapperDto);
+                System.out.println("fineLineMapperDto.getFineLineNbr() = " + fineLineMapperDto.getFineLineNbr());
+            }
+            Optional.of(fineLineMapperDtoList)
                     .stream()
                     .flatMap(Collection::stream)
-                    .forEach(constraintResponseDTO -> packOptConstraintMapper
-                            .mapPackOptLvl2(constraintResponseDTO, packOptimizationResponse, request.getFinelineNbr()));
+                    .forEach(fineLineMapperDto -> mapPackOptLvl2(fineLineMapperDto, packOptimizationResponse));
         } catch (Exception e) {
             log.error("Exception While fetching Fineline PackOpt :", e);
             throw new CustomException("Failed to fetch Fineline PackOpt, due to" + e);
@@ -469,6 +506,28 @@ public class PackOptimizationService {
         log.info("Fetch PackOpt Fineline response: {}", packOptimizationResponse);
         return packOptimizationResponse;
 
+    }
+
+    public void mapPackOptLvl2(FineLineMapperDto fineLineMapperDto, PackOptimizationResponse response) {
+        if (response.getPlanId() == null) {
+            response.setPlanId(fineLineMapperDto.getPlanId());
+        }
+        if (response.getLvl0Nbr() == null) {
+            response.setLvl0Nbr(fineLineMapperDto.getLvl0Nbr());
+            response.setLvl0Desc(fineLineMapperDto.getLvl0Desc());
+        }
+        if (response.getLvl1Nbr() == null) {
+            response.setLvl1Nbr(fineLineMapperDto.getLvl1Nbr());
+            response.setLvl1Desc(fineLineMapperDto.getLvl1Desc());
+        }
+        if (response.getLvl2Nbr() == null) {
+            response.setLvl2Nbr(fineLineMapperDto.getLvl2Nbr());
+            response.setLvl2Desc(fineLineMapperDto.getLvl2Desc());
+        }
+        if (response.getChannel() == null) {
+            response.setChannel(ChannelType.getChannelNameFromId(fineLineMapperDto.getChannelId()));
+        }
+        response.setLvl3List(packOptConstraintMapper.mapPackOptLvl3(fineLineMapperDto, response));
     }
 
     public StatusResponse deleteColorCombination(ColorCombinationRequest request) {
