@@ -1,5 +1,6 @@
 package com.walmart.aex.sp.util;
 
+import com.walmart.aex.sp.dto.assortproduct.RFASizePackData;
 import com.walmart.aex.sp.dto.bqfp.*;
 import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
@@ -116,5 +117,17 @@ public class BuyQtyCommonUtil {
                 .findFirst()
                 .map(Fixture::getReplenishments)
                 .orElse(new ArrayList<>());
+    }
+
+    public static StoreQuantity createStoreQuantity(RFASizePackData rfaSizePackData, double perStoreQty, List<Integer> storeListWithOldQty, double totalUnits, Cluster volumeCluster) {
+        StoreQuantity storeQuantity = new StoreQuantity();
+        storeQuantity.setTotalUnits(totalUnits);
+        storeQuantity.setIsUnits(perStoreQty);
+        storeQuantity.setVolumeCluster(rfaSizePackData.getVolume_group_cluster_id());
+        storeQuantity.setSizeCluster(rfaSizePackData.getSize_cluster_id());
+        storeQuantity.setStoreList(storeListWithOldQty);
+        if (volumeCluster.getFlowStrategy() != null)
+            storeQuantity.setFlowStrategyCode(volumeCluster.getFlowStrategy());
+        return storeQuantity;
     }
 }
