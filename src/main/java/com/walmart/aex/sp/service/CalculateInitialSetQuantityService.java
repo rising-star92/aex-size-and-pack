@@ -16,7 +16,6 @@ public class CalculateInitialSetQuantityService {
         /*** Calculate IS Buy Quantity ***/
         SPInitialSetQuantities spInitialSetQuantities = new SPInitialSetQuantities();
         Float isCalculatedBq = rfaSizePackData.getStore_cnt() * volumeCluster.getInitialSet().getInitialSetUnitsPerFix() * rfaSizePackData.getFixture_group();
-        Double aaa = BuyQtyCommonUtil.getSizePct(sizeDto);
         double isQty = (isCalculatedBq * BuyQtyCommonUtil.getSizePct(sizeDto)) / 100;
         double perStoreQty = Math.round(isQty / rfaSizePackData.getStore_cnt());
         isQty = perStoreQty * rfaSizePackData.getStore_cnt();
