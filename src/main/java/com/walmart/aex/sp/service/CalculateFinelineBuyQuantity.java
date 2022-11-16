@@ -299,7 +299,7 @@ public class CalculateFinelineBuyQuantity {
                 merchMethodsDto.getFixtureTypeRollupId(), rfaSizePackData.getVolume_group_cluster_id());
 		if (volumeCluster != null) {
 			// Calculate IS Buy Quantity				
-			if (volumeCluster.getInitialSet() == null && volumeCluster.getInitialSet().getInitialSetUnitsPerFix() == null) {
+			if (volumeCluster.getInitialSet() == null || volumeCluster.getInitialSet().getInitialSetUnitsPerFix() == null) {
 				log.warn("InitialSetUnitsPerFix of volumeCluster : {} is null for plan and fineline. Setting InitialSetUnitsPerFix as zero   for styleNbr : {} , ccId :{} plan :{} , fineline : {} ", volumeCluster, styleDto.getStyleNbr(), customerChoiceDto.getCcId());
 				volumeCluster.getInitialSet().setInitialSetUnitsPerFix(0L);
 			}
@@ -377,7 +377,7 @@ public class CalculateFinelineBuyQuantity {
             initialSetQuantities.add(storeQuantity);
 		}
 	}
-  }
+}  
 
     private StoreQuantity createStoreQuantity(RFASizePackData rfaSizePackData, double perStoreQty, List<Integer> storeListWithOldQty, double totalUnits, Cluster volumeCluster) {
         StoreQuantity storeQuantity = new StoreQuantity();
