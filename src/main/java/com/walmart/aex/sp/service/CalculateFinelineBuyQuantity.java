@@ -292,10 +292,18 @@ public class CalculateFinelineBuyQuantity {
     }
 
     private void addStoreBuyQuantities(StyleDto styleDto, CustomerChoiceDto customerChoiceDto, MerchMethodsDto merchMethodsDto, BQFPResponse bqfpResponse, SizeDto sizeDto, BuyQtyObj buyQtyObj, List<StoreQuantity> initialSetQuantities, RFASizePackData rfaSizePackData) {
-        Cluster volumeCluster = getVolumeCluster(bqfpResponse, styleDto.getStyleNbr(), customerChoiceDto.getCcId(),
+       if(rfaSizePackData == null) {
+    	   log.warn("rfaSizePackData is null. Not adding storeBuyQuantities for styleNbr : {} , ccId :{}  ",styleDto.getStyleNbr(),customerChoiceDto.getCcId());
+       }else{
+    	Cluster volumeCluster = getVolumeCluster(bqfpResponse, styleDto.getStyleNbr(), customerChoiceDto.getCcId(),
                 merchMethodsDto.getFixtureTypeRollupId(), rfaSizePackData.getVolume_group_cluster_id());
-        if (volumeCluster != null) {
-            //Calculate IS Buy Quantity
+		if (volumeCluster != null) {
+			// Calculate IS Buy Quantity				
+			if (volumeCluster.getInitialSet() == null || volumeCluster.getInitialSet().getInitialSetUnitsPerFix() == null) {
+				log.warn("InitialSetUnitsPerFix of volumeCluster : {} is null for plan and fineline. Setting InitialSetUnitsPerFix as zero   for styleNbr : {} , ccId :{} plan :{} , fineline : {} ", volumeCluster, styleDto.getStyleNbr(), customerChoiceDto.getCcId());
+				volumeCluster.getInitialSet().setInitialSetUnitsPerFix(0L);
+			}
+					
             Float isCalculatedBq = rfaSizePackData.getStore_cnt() * volumeCluster.getInitialSet().getInitialSetUnitsPerFix() * rfaSizePackData.getFixture_group();
             double isQty = (isCalculatedBq * getSizePct(sizeDto)) / 100;
             double perStoreQty = Math.round(isQty / rfaSizePackData.getStore_cnt());
@@ -367,8 +375,9 @@ public class CalculateFinelineBuyQuantity {
             StoreQuantity storeQuantity = createStoreQuantity(rfaSizePackData, perStoreQty, storeList, isQty, volumeCluster);
             storeQuantity.setBumpSets(calculateBumpPackQty(sizeDto, rfaSizePackData, volumeCluster, storeList.size()));
             initialSetQuantities.add(storeQuantity);
-        }
-    }
+		}
+	}
+}  
 
     private StoreQuantity createStoreQuantity(RFASizePackData rfaSizePackData, double perStoreQty, List<Integer> storeListWithOldQty, double totalUnits, Cluster volumeCluster) {
         StoreQuantity storeQuantity = new StoreQuantity();
@@ -534,7 +543,7 @@ public class CalculateFinelineBuyQuantity {
         List<BumpSetQuantity> bumpPackQuantities = new ArrayList<>();
         volumeCluster.getBumpList().forEach(bumpSet -> {
             BumpSetQuantity bumpSetQuantity = new BumpSetQuantity();
-
+            
             //Calculate BS Buy Quantity
             double bumpQtyPerFixture = (bumpSet.getUnits() * volumeCluster.getInitialSet().getInitialSetUnitsPerFix()) / volumeCluster.getInitialSet().getTotalInitialSetUnits().doubleValue();
             double bsCalculatedBq = storeCnt * bumpQtyPerFixture * rfaSizePackData.getFixture_group();
@@ -802,5 +811,5 @@ public class CalculateFinelineBuyQuantity {
             log.error("Unable to serialize response: {}", key, e);
         }
 
-    }
+    }	
 }
