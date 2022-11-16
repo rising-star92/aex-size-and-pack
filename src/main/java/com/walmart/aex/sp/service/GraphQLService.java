@@ -23,14 +23,12 @@ import java.util.*;
  */
 public class GraphQLService {
 
-    private static final String RESPONSE_URL = "Received response URL {}  Status {} Time taken {} ms";
-
     @Autowired
     RestTemplate restTemplate;
 
     @Retryable(backoff = @Backoff(delay = 3000))
     public GraphQLResponse post(String url, String query, Map<String, String> headers, Map<String, Object> data) throws SizeAndPackException {
-        log.info("Calling GET URL {} data {}", url, data);
+        log.debug("Request: url: {}, query: {}, data: {}", url, query, data);
         long startTime = System.currentTimeMillis();
         HttpHeaders httpHeaders = getHttpHeaders(headers);
         ResponseEntity<GraphQLResponse> response;
@@ -38,11 +36,11 @@ public class GraphQLService {
             GraphQLRequest graphQLReq = new GraphQLRequest(query, data);
             HttpEntity<GraphQLRequest> request = new HttpEntity<>(graphQLReq, httpHeaders);
             response = restTemplate.exchange(url, HttpMethod.POST, request, GraphQLResponse.class);
-            log.info(RESPONSE_URL, url, response.getStatusCode(), (System.currentTimeMillis() - startTime));
+            log.debug("Response: url: {} status: {} time: {}ms, body: {}",
+                  url, response.getStatusCode(), (System.currentTimeMillis() - startTime), response.getBody());
 
-            log.info("Response: {}", response.getBody());
         } catch (Exception e) {
-            log.error("Exception occurred while sending request to {} and exception {}", url, e.getMessage());
+            log.error("Request failed.  url: {}, query: {}, data: {}, error: {}", url, query, data, e);
             throw new SizeAndPackException("Unable to call api " + url);
         }
         return response.getBody();

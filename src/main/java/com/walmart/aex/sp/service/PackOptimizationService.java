@@ -77,13 +77,35 @@ public class PackOptimizationService {
 
         PackOptimizationResponse packOptResp = new PackOptimizationResponse();
         packOptResp.setPlanId(planId);
-        packOptResp.setChannel(channelId);
+        packOptResp.setChannel(ChannelType.getChannelNameFromId(channelId));
         List<Lvl3> lvl3List = new ArrayList<>();
         fineLineMapperDtos.forEach(fineLineMapperDto ->
-                packOptResp.setLvl3List(maplvl3PackOpResponse(fineLineMapperDto, lvl3List))
+
+                mapPackOptLvl2(fineLineMapperDto,lvl3List,packOptResp)
         );
 
         return packOptResp;
+    }
+    public void mapPackOptLvl2(FineLineMapperDto fineLineMapperDto, List<Lvl3> lvl3List,PackOptimizationResponse response) {
+        if (response.getPlanId() == null) {
+            response.setPlanId(fineLineMapperDto.getPlanId());
+        }
+        if (response.getLvl0Nbr() == null) {
+            response.setLvl0Nbr(fineLineMapperDto.getLvl0Nbr());
+            response.setLvl0Desc(fineLineMapperDto.getLvl0Desc());
+        }
+        if (response.getLvl1Nbr() == null) {
+            response.setLvl1Nbr(fineLineMapperDto.getLvl1Nbr());
+            response.setLvl1Desc(fineLineMapperDto.getLvl1Desc());
+        }
+        if (response.getLvl2Nbr() == null) {
+            response.setLvl2Nbr(fineLineMapperDto.getLvl2Nbr());
+            response.setLvl2Desc(fineLineMapperDto.getLvl2Desc());
+        }
+        if (response.getChannel() == null) {
+            response.setChannel(ChannelType.getChannelNameFromId(fineLineMapperDto.getChannelId()));
+        }
+        response.setLvl3List(maplvl3PackOpResponse(fineLineMapperDto ,lvl3List));
     }
 
     private List<Lvl3> maplvl3PackOpResponse(FineLineMapperDto fineLineMapperDto, List<Lvl3> lvl3List) {
@@ -170,49 +192,29 @@ public class PackOptimizationService {
 
     public Constraints getConstraints(FineLineMapperDto fineLineMapperDto, CategoryType type) {
 
-        Constraints constraints;
+        Constraints constraints = new Constraints();
         switch (type) {
             case MERCHANT:
-                constraints = setSupplierAndCCConstraints(fineLineMapperDto.getMerchSupplierName(), fineLineMapperDto.getMerchFactoryId(),
-                        fineLineMapperDto.getMerchOriginCountryName(), fineLineMapperDto.getMerchPortOfOriginName(),
-                        fineLineMapperDto.getMerchMaxNbrOfPacks(), fineLineMapperDto.getMerchMaxUnitsPerPack(),
-                        fineLineMapperDto.getMerchSinglePackInd(), fineLineMapperDto.getMerchColorCombination());
-                break;
+                constraints.setFinelineLevelConstraints(new FinelineLevelConstraints(fineLineMapperDto.getMerchMaxNbrOfPacks(),fineLineMapperDto.getMerchMaxUnitsPerPack()));
+               constraints.setColorCombinationConstraints(new ColorCombinationConstraints(fineLineMapperDto.getMerchSupplierName(), fineLineMapperDto.getMerchFactoryId(),
+                       fineLineMapperDto.getMerchOriginCountryName(), fineLineMapperDto.getMerchPortOfOriginName(),
+                       fineLineMapperDto.getMerchSinglePackInd(), fineLineMapperDto.getMerchColorCombination()));
+                 break;
             case SUB_CATEGORY:
-                constraints = setSupplierAndCCConstraints(fineLineMapperDto.getSubCatSupplierName(), fineLineMapperDto.getSubCatFactoryId(),
+                constraints.setFinelineLevelConstraints(new FinelineLevelConstraints(fineLineMapperDto.getSubCatMaxNbrOfPacks(),fineLineMapperDto.getSubCatMaxUnitsPerPack()));
+                constraints.setColorCombinationConstraints(new ColorCombinationConstraints(fineLineMapperDto.getSubCatSupplierName(), fineLineMapperDto.getSubCatFactoryId(),
                         fineLineMapperDto.getSubCatOriginCountryName(), fineLineMapperDto.getSubCatPortOfOriginName(),
-                        fineLineMapperDto.getSubCatMaxNbrOfPacks(), fineLineMapperDto.getSubCatMaxUnitsPerPack(),
-                        fineLineMapperDto.getSubCatSinglePackInd(), fineLineMapperDto.getSubCatColorCombination());
+                        fineLineMapperDto.getSubCatSinglePackInd(), fineLineMapperDto.getSubCatColorCombination()));
                 break;
             default:
-                constraints = setSupplierAndCCConstraints(fineLineMapperDto.getFineLineSupplierName(), fineLineMapperDto.getFineLineFactoryId(),
+                constraints.setFinelineLevelConstraints(new FinelineLevelConstraints(fineLineMapperDto.getFineLineMaxNbrOfPacks(),fineLineMapperDto.getFineLineMaxUnitsPerPack()));
+                constraints.setColorCombinationConstraints(new ColorCombinationConstraints(fineLineMapperDto.getFineLineSupplierName(), fineLineMapperDto.getFineLineFactoryId(),
                         fineLineMapperDto.getFineLineOriginCountryName(), fineLineMapperDto.getFineLinePortOfOriginName(),
-                        fineLineMapperDto.getFineLineMaxNbrOfPacks(), fineLineMapperDto.getFineLineMaxUnitsPerPack(),
-                        fineLineMapperDto.getFineLineSinglePackInd(), fineLineMapperDto.getFineLineColorCombination());
+                        fineLineMapperDto.getFineLineSinglePackInd(), fineLineMapperDto.getFineLineColorCombination()));
                 break;
         }
         return constraints;
 
-    }
-
-    private Constraints setSupplierAndCCConstraints(String supplierName, String factoryId, String originCountryName, String portOfOriginName, Integer maxNbrOfPacks, Integer maxUnitsPerPack, Integer singlePackInd, String colorCombination) {
-        Constraints constraints = new Constraints();
-        SupplierConstraints supplierConstraints = new SupplierConstraints();
-        CcLevelConstraints ccLevelConstraints = new CcLevelConstraints();
-
-        supplierConstraints.setSupplierName(supplierName);
-        supplierConstraints.setFactoryIds(factoryId);
-        supplierConstraints.setCountryOfOrigin(originCountryName);
-        supplierConstraints.setPortOfOrigin(portOfOriginName);
-
-        ccLevelConstraints.setMaxPacks(maxNbrOfPacks);
-        ccLevelConstraints.setMaxUnitsPerPack(maxUnitsPerPack);
-        ccLevelConstraints.setSinglePackIndicator(singlePackInd);
-        ccLevelConstraints.setColorCombination(colorCombination);
-
-        constraints.setSupplierConstraints(supplierConstraints);
-        constraints.setCcLevelConstraints(ccLevelConstraints);
-        return constraints;
     }
 
     public Constraints getSubCatConstraintsDetails(SubCatgPackOptimization subCatPackOpt) {

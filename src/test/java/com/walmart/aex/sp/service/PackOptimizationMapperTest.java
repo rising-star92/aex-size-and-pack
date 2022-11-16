@@ -33,8 +33,23 @@ public class PackOptimizationMapperTest {
 		fineLinePackOptimizationResponseDTO.setAhsSizeDesc("small");
 		fineLinePackOptimizationResponseDTO.setStoreObj("{\"buyQuantities\":[{\"isUnits\":1234,\"storeList\":[1,2,3],\"sizeCluster\":1,\"volumeCluster\":1,\"bumpSets\":[{\"setNbr\":1,\"wmYearWeek\":1,\"weekDesc\":\"1\",\"bsUnits\":12345}]},{\"isUnits\":1234,\"storeList\":[4,5,6],\"sizeCluster\":1,\"volumeCluster\":1,\"bumpSets\":[{\"setNbr\":1,\"wmYearWeek\":1,\"weekDesc\":\"1\",\"bsUnits\":12345}]},{\"isUnits\":235,\"storeList\":[6,8,9],\"sizeCluster\":2,\"volumeCluster\":1,\"bumpSets\":[{\"setNbr\":1,\"wmYearWeek\":1,\"weekDesc\":\"1\",\"bsUnits\":4879}]},{\"isUnits\":1234,\"storeList\":[8,9,0],\"sizeCluster\":1,\"volumeCluster\":1,\"bumpSets\":[{\"setNbr\":1,\"wmYearWeek\":1,\"weekDesc\":\"1\",\"bsUnits\":12345}]}]}\r\n"
 				+ "");
+		fineLinePackOptimizationResponseDTO.setMaxUnitsPerPack(20);
+		fineLinePackOptimizationResponseDTO.setMaxNbrOfPacks(5);
+		fineLinePackOptimizationResponseDTO.setFactoryId("0121");
+		fineLinePackOptimizationResponseDTO.setColorCombination("offWhite");
+		fineLinePackOptimizationResponseDTO.setSinglePackInd(1);
 		packOptimizationMapper.mapPackOptimizationFineline(fineLinePackOptimizationResponseDTO,fineLinePackOptimizationResponse,471l);
 		assertNotNull(fineLinePackOptimizationResponse);
 		assertEquals(fineLinePackOptimizationResponse.getPlanId(),471l);
+		assertNotNull(fineLinePackOptimizationResponse.getFinelines());
+		assertNotNull(fineLinePackOptimizationResponse.getFinelines().get(0).getFinelineLevelConstraints());
+		assertNotNull(fineLinePackOptimizationResponse.getFinelines().get(0).getCustomerChoices());
+		assertNotNull(fineLinePackOptimizationResponse.getFinelines().get(0).getCustomerChoices().get(0).getColorCombinationConstraints());
+		
+		assertEquals(fineLinePackOptimizationResponse.getFinelines().get(0).getFinelineLevelConstraints().getMaxUnitsPerPack(),20);
+		assertEquals(fineLinePackOptimizationResponse.getFinelines().get(0).getFinelineLevelConstraints().getMaxPacks(),5);
+		assertEquals(fineLinePackOptimizationResponse.getFinelines().get(0).getCustomerChoices().get(0).getColorCombinationConstraints().getFactoryId(),"0121");
+		assertEquals(fineLinePackOptimizationResponse.getFinelines().get(0).getCustomerChoices().get(0).getColorCombinationConstraints().getColorCombination(),"offWhite");
+		assertEquals(fineLinePackOptimizationResponse.getFinelines().get(0).getCustomerChoices().get(0).getColorCombinationConstraints().getSinglePackIndicator(),1);
 	}
 }

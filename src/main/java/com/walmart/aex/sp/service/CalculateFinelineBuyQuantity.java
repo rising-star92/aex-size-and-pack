@@ -43,7 +43,7 @@ public class CalculateFinelineBuyQuantity {
     private final AddStoreBuyQuantitiesService addStoreBuyQuantitiesService;
     private final BuyQuantityConstraintService buyQuantityConstraintService;
 
-   public CalculateFinelineBuyQuantity(BQFPService bqfpService,
+    public CalculateFinelineBuyQuantity(BQFPService bqfpService,
                                         ObjectMapper objectMapper,
                                         BuyQtyReplenishmentMapperService buyQtyReplenishmentMapperService,
                                         CalculateOnlineFinelineBuyQuantity calculateOnlineFinelineBuyQuantity,
@@ -68,44 +68,44 @@ public class CalculateFinelineBuyQuantity {
         CompletableFuture<BQFPResponse> bqfpResponseCompletableFuture = getBqfpResponseCompletableFuture(calculateBuyQtyRequest, calculateBuyQtyParallelRequest);
         //wrapper future completes when all futures have completed
         CompletableFuture<Void> combinedFuture = CompletableFuture.allOf(buyQtyResponseCompletableFuture, bqfpResponseCompletableFuture);
-          try {
-              combinedFuture.join();
-              final BuyQtyResponse buyQtyResponse = buyQtyResponseCompletableFuture.get();
-              final BQFPResponse bqfpResponse = bqfpResponseCompletableFuture.get();
-              APResponse apResponse = null;
-              if (ChannelType.STORE.getDescription().equalsIgnoreCase(calculateBuyQtyParallelRequest.getChannel()))
-                  apResponse = getRfaSpResponse(calculateBuyQtyRequest, calculateBuyQtyParallelRequest.getFinelineNbr(), bqfpResponse);
+        try {
+            combinedFuture.join();
+            final BuyQtyResponse buyQtyResponse = buyQtyResponseCompletableFuture.get();
+            final BQFPResponse bqfpResponse = bqfpResponseCompletableFuture.get();
+            APResponse apResponse = null;
+            if (ChannelType.STORE.getDescription().equalsIgnoreCase(calculateBuyQtyParallelRequest.getChannel()))
+                apResponse = getRfaSpResponse(calculateBuyQtyRequest, calculateBuyQtyParallelRequest.getFinelineNbr(), bqfpResponse);
 
-              if (log.isDebugEnabled()) {
-                  logExtResponse("Size Profiles", buyQtyResponse);
-                  logExtResponse("BQFP", bqfpResponse);
-                  logExtResponse("RFA", apResponse);
-              }
+            if (log.isDebugEnabled()) {
+                logExtResponse("Size Profiles", buyQtyResponse);
+                logExtResponse("BQFP", bqfpResponse);
+                logExtResponse("RFA", apResponse);
+            }
 
-              FinelineDto finelineDto = getFineline(buyQtyResponse);
-              if (finelineDto != null) {
-                  deleteExistingFinelineIsBsBuyQty(calculateBuyQtyParallelRequest, calculateBuyQtyResponse);
-                  if (!CollectionUtils.isEmpty(finelineDto.getMerchMethods()) && ChannelType.STORE.getDescription().equalsIgnoreCase(calculateBuyQtyParallelRequest.getChannel())) {
-                      getMerchMethod(calculateBuyQtyParallelRequest, finelineDto, apResponse, bqfpResponseCompletableFuture.get(), calculateBuyQtyResponse, calculateBuyQtyRequest);
-                  } else if (ChannelType.ONLINE.getDescription().equalsIgnoreCase(calculateBuyQtyParallelRequest.getChannel())) {
-                      calculateBuyQtyResponse = calculateOnlineFinelineBuyQuantity.calculateOnlineBuyQty(calculateBuyQtyParallelRequest, finelineDto, bqfpResponseCompletableFuture.get(), calculateBuyQtyResponse);
-                  } else log.info("Merchmethods or channel is empty: {}", buyQtyResponseCompletableFuture);
-              } else log.info("Size Profile Fineline is null: {}", bqfpResponseCompletableFuture);
-              return calculateBuyQtyResponse;
-          } catch (InterruptedException ie) {
-              log.error("CalculateBuyQty failed due to interruption. plan: {}, finelineNbr: {}",
+            FinelineDto finelineDto = getFineline(buyQtyResponse);
+            if (finelineDto != null) {
+                deleteExistingFinelineIsBsBuyQty(calculateBuyQtyParallelRequest, calculateBuyQtyResponse);
+                if (!CollectionUtils.isEmpty(finelineDto.getMerchMethods()) && ChannelType.STORE.getDescription().equalsIgnoreCase(calculateBuyQtyParallelRequest.getChannel())) {
+                    getMerchMethod(calculateBuyQtyParallelRequest, finelineDto, apResponse, bqfpResponseCompletableFuture.get(), calculateBuyQtyResponse, calculateBuyQtyRequest);
+                } else if (ChannelType.ONLINE.getDescription().equalsIgnoreCase(calculateBuyQtyParallelRequest.getChannel())) {
+                    calculateBuyQtyResponse = calculateOnlineFinelineBuyQuantity.calculateOnlineBuyQty(calculateBuyQtyParallelRequest, finelineDto, bqfpResponseCompletableFuture.get(), calculateBuyQtyResponse);
+                } else log.info("Merchmethods or channel is empty: {}", buyQtyResponseCompletableFuture);
+            } else log.info("Size Profile Fineline is null: {}", bqfpResponseCompletableFuture);
+            return calculateBuyQtyResponse;
+        } catch (InterruptedException ie) {
+            log.error("CalculateBuyQty failed due to interruption. plan: {}, finelineNbr: {}",
                     calculateBuyQtyRequest.getPlanId(), calculateBuyQtyParallelRequest.getFinelineNbr());
-              Thread.currentThread().interrupt();
-              return calculateBuyQtyResponse;
-          } catch (ExecutionException e) {
-              log.error("CalculateBuyQty failed due to external dependency failure.  plan: {}, finelineNbr: {}",
+            Thread.currentThread().interrupt();
+            return calculateBuyQtyResponse;
+        } catch (ExecutionException e) {
+            log.error("CalculateBuyQty failed due to external dependency failure.  plan: {}, finelineNbr: {}",
                     calculateBuyQtyRequest.getPlanId(), calculateBuyQtyParallelRequest.getFinelineNbr(), e.getCause());
-              return calculateBuyQtyResponse;
-          } catch (Exception e) {
-              log.error("CalculateBuyQty failed.  plan: {}, finelineNbr: {}",
+            return calculateBuyQtyResponse;
+        } catch (Exception e) {
+            log.error("CalculateBuyQty failed.  plan: {}, finelineNbr: {}",
                     calculateBuyQtyRequest.getPlanId(), calculateBuyQtyParallelRequest.getFinelineNbr(), e);
-              throw new CustomException("CalculateBuyQty failed");
-          }
+            throw new CustomException("CalculateBuyQty failed");
+        }
     }
 
     private CompletableFuture<BQFPResponse> getBqfpResponseCompletableFuture(CalculateBuyQtyRequest calculateBuyQtyRequest, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest) {
@@ -380,7 +380,7 @@ public class CalculateFinelineBuyQuantity {
         APRequest apRequest = new APRequest();
         apRequest.setPlanId(calculateBuyQtyRequest.getPlanId());
         apRequest.setFinelineNbr(finelineNbr);
-        if(null != bqfpResponse.getVolumeDeviationStrategyLevelSelection()){
+        if (null != bqfpResponse.getVolumeDeviationStrategyLevelSelection()) {
             apRequest.setVolumeDeviationLevel(VdLevelCode.getVdLevelCodeFromId(bqfpResponse.getVolumeDeviationStrategyLevelSelection().intValue()));
         }
 

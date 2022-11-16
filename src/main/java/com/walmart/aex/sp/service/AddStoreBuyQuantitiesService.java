@@ -68,12 +68,15 @@ public class AddStoreBuyQuantitiesService {
     }
 
     public void calculateAndAddStoreBuyQuantities(AddStoreBuyQuantities addStoreBuyQuantities, BuyQtyObj buyQtyObj, List<StoreQuantity> initialSetQuantities, RFASizePackData rfaSizePackData) {
-        Cluster volumeCluster = getVolumeCluster(addStoreBuyQuantities, rfaSizePackData);
-        if (volumeCluster == null) {
-            /***If there is no volume cluster then no calculation required *****/
+        if (rfaSizePackData == null) {
+            log.warn("rfaSizePackData is null. Not adding storeBuyQuantities for styleNbr : {} , ccId :{}  ", addStoreBuyQuantities.getStyleDto().getStyleNbr(), addStoreBuyQuantities.getCustomerChoiceDto().getCcId());
             return;
         }
-        calculateReplenishmentLogic(addStoreBuyQuantities, initialSetQuantities, volumeCluster, buyQtyObj, rfaSizePackData);
+        Cluster volumeCluster = getVolumeCluster(addStoreBuyQuantities, rfaSizePackData);
+        if (volumeCluster != null) {
+            nullCheckForInitialSet(volumeCluster);
+            calculateReplenishmentLogic(addStoreBuyQuantities, initialSetQuantities, volumeCluster, buyQtyObj, rfaSizePackData);
+        }
     }
 
     private void calculateReplenishmentLogic(AddStoreBuyQuantities addStoreBuyQuantities, List<StoreQuantity> initialSetQuantities, Cluster volumeCluster, BuyQtyObj buyQtyObj, RFASizePackData rfaSizePackData) {
@@ -153,6 +156,22 @@ public class AddStoreBuyQuantitiesService {
         } catch (IllegalArgumentException | NullPointerException e) {
             log.warn("Size object provided was null");
             return new ArrayList<>();
+        }
+    }
+
+    private void nullCheckForInitialSet(Cluster volumeCluster) {
+        if (volumeCluster.getInitialSet() == null) {
+            log.warn("InitialSet of volumeCluster : {} is null. Setting default initial Set ", volumeCluster);
+            InitialSet initialSet = new InitialSet();
+            initialSet.setInitialSetUnitsPerFix(0L);
+            initialSet.setTotalInitialSetUnits(1L);
+            volumeCluster.setInitialSet(initialSet);
+        } else if (volumeCluster.getInitialSet().getInitialSetUnitsPerFix() == null) {
+            log.warn("InitialSetUnitsPerFix of volumeCluster : {} is null. Setting InitialSetUnitsPerFix as zero ", volumeCluster);
+            volumeCluster.getInitialSet().setInitialSetUnitsPerFix(0L);
+        } else if (volumeCluster.getInitialSet().getTotalInitialSetUnits() == null) {
+            log.warn("TotalInitialSetUnits of volumeCluster : {} is null. Setting TotalInitialSetUnits as one ", volumeCluster);
+            volumeCluster.getInitialSet().setTotalInitialSetUnits(1L);
         }
     }
 }
