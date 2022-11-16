@@ -23,4 +23,7 @@ public interface BigQueryConnectionProperties {
 
 	@Property(propertyName = "ml.datasetName")
 	String getMLDataSetName();
+
+	@Property(propertyName = "analytics_data")
+	String getAnalyticsData();
 }

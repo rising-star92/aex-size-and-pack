@@ -7,6 +7,9 @@ import com.walmart.aex.sp.dto.commitmentreport.Metrics;
 import com.walmart.aex.sp.dto.commitmentreport.RFAInitialSetBumpSetResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.walmart.aex.sp.dto.isVolume.FinelineVolume;
+import com.walmart.aex.sp.dto.isVolume.InitialSetVolumeRequest;
+import com.walmart.aex.sp.dto.isVolume.InitialSetVolumeResponse;
 import com.walmart.aex.sp.dto.packoptimization.Fineline;
 import com.walmart.aex.sp.dto.planhierarchy.*;
 import com.walmart.aex.sp.enums.ChannelType;
@@ -306,11 +309,22 @@ public class SizeAndPackService {
 
 
 		} catch (Exception e) {
-			log.error("Exception While fetching Initial Set Pack Qunatities {}:", e);
+			log.error("Exception While fetching Initial Set Pack Quantities :", e);
 		}
 
 		return response;
 	}
-    
-    
+
+
+    public List<InitialSetVolumeResponse> getInitialAndBumpSetDetailsByVolumeCluster(InitialSetVolumeRequest request) {
+        List<InitialSetVolumeResponse> response = new ArrayList<>();
+        try {
+            for (FinelineVolume fineline : request.getFinelines()) {
+                response.addAll(bigQueryInitialSetPlanService.getInitialAndBumpSetDetailsByVolumeCluster(request.getPlanId(),fineline));
+            }
+        } catch (Exception e) {
+            log.error("Exception While fetching Initial Set Cluster volume ", e);
+        }
+        return response;
+    }
 }
