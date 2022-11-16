@@ -3,6 +3,8 @@ package com.walmart.aex.sp.controller;
 
 import com.walmart.aex.sp.dto.commitmentreport.InitialSetPackRequest;
 import com.walmart.aex.sp.dto.commitmentreport.InitialBumpSetResponse;
+import com.walmart.aex.sp.dto.isVolume.InitialSetVolumeRequest;
+import com.walmart.aex.sp.dto.isVolume.InitialSetVolumeResponse;
 import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDTO;
 import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDeleteDTO;
 import com.walmart.aex.sp.dto.planhierarchy.SizeAndPackResponse;
@@ -25,6 +27,8 @@ import org.springframework.web.bind.annotation.*;
 
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
 
 @Slf4j
 @RequestMapping("/size-and-pack/v1")
@@ -86,6 +90,11 @@ public class SizeAndPackController {
     @QueryMapping
     public InitialBumpSetResponse getInitialAndBumpSetDetails(@Argument InitialSetPackRequest request) {
         return sizeAndPackService.getInitialAndBumpSetDetails(request);
+    }
+
+    @QueryMapping
+    public List<InitialSetVolumeResponse> getInitialAndBumpSetDetailsByVolumeCluster(@Argument InitialSetVolumeRequest request) {
+        return sizeAndPackService.getInitialAndBumpSetDetailsByVolumeCluster(request);
     }
     
     @QueryMapping
