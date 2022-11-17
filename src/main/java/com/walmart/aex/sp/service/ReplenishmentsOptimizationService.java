@@ -23,7 +23,7 @@ public class ReplenishmentsOptimizationService {
         this.adjustedDCInboundQtyUtil = adjustedDCInboundQtyUtil;
     }
 
-    public List<Replenishment> getUpdatedReplenishmentsPack(List<Replenishment> replenishments, Double vnpkWhpkRatio) {
+    public List<Replenishment> getUpdatedReplenishmentsPack(List<Replenishment> replenishments, Integer vnpkQty) {
 
         //get non-zero weeks which are supposed to be adjusted.
         List<Replenishment> nonZeroReplenishmentList = replenishments.stream().filter(replenishment -> replenishment.getAdjReplnUnits() > 0).collect(Collectors.toList());
@@ -34,7 +34,7 @@ public class ReplenishmentsOptimizationService {
 
         //if only 1 week or empty , no operation can be performed.
         if (nonZeroReplenishmentList == null || nonZeroReplenishmentList.isEmpty()|| nonZeroReplenishmentList.size()==1) {
-            replenishments = adjustedDCInboundQtyUtil.updatedAdjustedDcInboundQty(replenishments,vnpkWhpkRatio);
+            replenishments = adjustedDCInboundQtyUtil.updatedAdjustedDcInboundQty(replenishments,vnpkQty);
             return replenishments;
         }
 
@@ -95,7 +95,7 @@ public class ReplenishmentsOptimizationService {
                 futureWeekAdjReplnUnitsSum = Math.abs(futureWeekAdjReplnUnitsSum - nonZeroReplenishmentList.get(i).getAdjReplnUnits());
             }
         }
-        replenishments = adjustedDCInboundQtyUtil.updatedAdjustedDcInboundQty(replenishments,vnpkWhpkRatio);
+        replenishments = adjustedDCInboundQtyUtil.updatedAdjustedDcInboundQty(replenishments,vnpkQty);
         return replenishments;
     }
 }

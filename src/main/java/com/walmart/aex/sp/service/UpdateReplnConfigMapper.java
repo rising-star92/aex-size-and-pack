@@ -25,9 +25,8 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class UpdateReplnConfigMapper {
-	
-	public static Integer replPackCnt = 0;
 
+	private Integer replPackCnt = 0;
 	private final CatgReplnPkConsRepository catgReplnPkConsRepository;
 	private final SubCatgReplnPkConsRepository subCatgReplnPkConsRepository;
 	private final FinelineReplnPkConsRepository finelineReplnPkConsRepository;
@@ -48,7 +47,7 @@ public class UpdateReplnConfigMapper {
 	   this.ccMmReplnPkConsRepository = ccMmReplnPkConsRepository;
 	   this.ccSpReplnPkConsRepository = ccSpReplnPkConsRepository;
 	}
-	
+
 	public void updateVnpkWhpkForCatgReplnConsMapper(List<MerchCatgReplPack> catgReplnPkConsList, Integer vnpk, Integer whpk)
 	{
 	   catgReplnPkConsList.forEach(catgReplnPkCons -> {
@@ -59,7 +58,7 @@ public class UpdateReplnConfigMapper {
 		   if(whpk != null)
 			   catgReplnPkCons.setWhsePackCnt(whpk);
 	      
-	      catgReplnPkCons.setVnpkWhpkRatio(getVnpkWhpkRatio(catgReplnPkCons.getVendorPackCnt(), catgReplnPkCons.getWhsePackCnt()));	      
+	      catgReplnPkCons.setVnpkWhpkRatio(getVnpkWhpkRatio(catgReplnPkCons.getVendorPackCnt(), catgReplnPkCons.getWhsePackCnt()));
 	      replPackCnt = getReplenishmentPackCount(catgReplnPkCons.getReplUnits(), catgReplnPkCons.getVendorPackCnt());
 	      
 		  catgReplnPkCons.setReplPackCnt(replPackCnt);
@@ -82,7 +81,7 @@ public class UpdateReplnConfigMapper {
 		   if(whpk != null)
 			   subCatgReplnPkCons.setWhsePackCnt(whpk);
 	      
-	      subCatgReplnPkCons.setVnpkWhpkRatio(getVnpkWhpkRatio(subCatgReplnPkCons.getVendorPackCnt(), subCatgReplnPkCons.getWhsePackCnt()));	      
+	      subCatgReplnPkCons.setVnpkWhpkRatio(getVnpkWhpkRatio(subCatgReplnPkCons.getVendorPackCnt(), subCatgReplnPkCons.getWhsePackCnt()));
 	      replPackCnt = getReplenishmentPackCount(subCatgReplnPkCons.getReplUnits(), subCatgReplnPkCons.getVendorPackCnt());
 	      
 		  subCatgReplnPkCons.setReplPackCnt(replPackCnt);
@@ -105,7 +104,7 @@ public class UpdateReplnConfigMapper {
 			if(whpk != null)
 				finelieneReplnPkCons.setWhsePackCnt(whpk);
 			
-			finelieneReplnPkCons.setVnpkWhpkRatio(getVnpkWhpkRatio(finelieneReplnPkCons.getVendorPackCnt(), finelieneReplnPkCons.getWhsePackCnt()));			
+			finelieneReplnPkCons.setVnpkWhpkRatio(getVnpkWhpkRatio(finelieneReplnPkCons.getVendorPackCnt(), finelieneReplnPkCons.getWhsePackCnt()));
 			replPackCnt = getReplenishmentPackCount(finelieneReplnPkCons.getReplUnits(), finelieneReplnPkCons.getVendorPackCnt());
 			
 			finelieneReplnPkCons.setReplPackCnt(replPackCnt);
@@ -134,7 +133,7 @@ public class UpdateReplnConfigMapper {
 				styleReplnPkCons.setWhsePackCnt(whpk);
 			}
 
-        	styleReplnPkCons.setVnpkWhpkRatio(getVnpkWhpkRatio(styleReplnPkCons.getVendorPackCnt(), styleReplnPkCons.getWhsePackCnt()));            
+        	styleReplnPkCons.setVnpkWhpkRatio(getVnpkWhpkRatio(styleReplnPkCons.getVendorPackCnt(), styleReplnPkCons.getWhsePackCnt()));
             replPackCnt = getReplenishmentPackCount(styleReplnPkCons.getReplUnits(), styleReplnPkCons.getVendorPackCnt());
             
 			styleReplnPkCons.setReplPackCnt(replPackCnt);
@@ -160,7 +159,7 @@ public class UpdateReplnConfigMapper {
 			if(whpk != null)
 				ccReplnPkCons.setWhsePackCnt(whpk);
 			
-			ccReplnPkCons.setVnpkWhpkRatio(getVnpkWhpkRatio(ccReplnPkCons.getVendorPackCnt(), ccReplnPkCons.getWhsePackCnt()));			
+			ccReplnPkCons.setVnpkWhpkRatio(getVnpkWhpkRatio(ccReplnPkCons.getVendorPackCnt(), ccReplnPkCons.getWhsePackCnt()));
 			replPackCnt = getReplenishmentPackCount(ccReplnPkCons.getReplUnits(), ccReplnPkCons.getVendorPackCnt());
 			
 			ccReplnPkCons.setReplPackCnt(replPackCnt);
@@ -185,7 +184,7 @@ public class UpdateReplnConfigMapper {
 			if(whpk != null)
 				ccMmReplnPkCons.setWhsePackCnt(whpk);
 
-			ccMmReplnPkCons.setVnpkWhpkRatio(getVnpkWhpkRatio(ccMmReplnPkCons.getVendorPackCnt(), ccMmReplnPkCons.getWhsePackCnt()));			
+			ccMmReplnPkCons.setVnpkWhpkRatio(getVnpkWhpkRatio(ccMmReplnPkCons.getVendorPackCnt(), ccMmReplnPkCons.getWhsePackCnt()));
 			replPackCnt = getReplenishmentPackCount(ccMmReplnPkCons.getReplUnits(), ccMmReplnPkCons.getVendorPackCnt());
 			
 			ccMmReplnPkCons.setReplPackCnt(replPackCnt);
@@ -199,7 +198,7 @@ public class UpdateReplnConfigMapper {
 		updateVnpkWhpkForCcSpMmReplnPkConsMapper(ccSpMmReplnPkConsList, vnpk, whpk);
 
 	}
-	
+
 	public void updateVnpkWhpkForCcSpMmReplnPkConsMapper(List<CcSpMmReplPack> ccSpReplnPkConsList, Integer vnpk, Integer whpk)
 	{
 		ccSpReplnPkConsList.forEach(ccSpReplnCons -> {
@@ -210,7 +209,7 @@ public class UpdateReplnConfigMapper {
 			if(whpk != null)
 				ccSpReplnCons.setWhsePackCnt(whpk);
 			
-			ccSpReplnCons.setVnpkWhpkRatio(getVnpkWhpkRatio(ccSpReplnCons.getVendorPackCnt(), ccSpReplnCons.getWhsePackCnt()));			
+			ccSpReplnCons.setVnpkWhpkRatio(getVnpkWhpkRatio(ccSpReplnCons.getVendorPackCnt(), ccSpReplnCons.getWhsePackCnt()));
 			replPackCnt = getReplenishmentPackCount(ccSpReplnCons.getReplUnits(), ccSpReplnCons.getVendorPackCnt());
 			
 			ccSpReplnCons.setReplPackCnt(replPackCnt);
@@ -227,7 +226,7 @@ public class UpdateReplnConfigMapper {
         }
         return ReplenishmentPackCount;
     }
-	
+
 	private Double getVnpkWhpkRatio(Integer vnpk, Integer whpk)
     {
         Double vnwhpkRatio = null;

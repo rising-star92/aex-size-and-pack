@@ -19,8 +19,8 @@ public class CalculateOnlineFinelineBuyQuantityTest extends CalculateFinelineBuy
         CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest = calculateBuyQtyParallelRequestFromJson(path.concat("/calculateBuyQtyParallelRequest"));
         BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
         calculateBuyQtyResponse = calculateOnlineFinelineBuyQuantity.calculateOnlineBuyQty(calculateBuyQtyParallelRequest, finelineDto, bqfpResponse, calculateBuyQtyResponse);
-        assertEquals(5554, calculateBuyQtyResponse.getMerchCatgReplPacks().get(0).getFinalBuyUnits().intValue());
-        assertEquals(5554, calculateBuyQtyResponse.getMerchCatgReplPacks().get(0).getReplUnits().intValue());
+        assertEquals(5544, calculateBuyQtyResponse.getMerchCatgReplPacks().get(0).getFinalBuyUnits().intValue());
+        assertEquals(5544, calculateBuyQtyResponse.getMerchCatgReplPacks().get(0).getReplUnits().intValue());
         assertEquals(462, calculateBuyQtyResponse.getMerchCatgReplPacks().get(0).getReplPackCnt().intValue());
     }
 
