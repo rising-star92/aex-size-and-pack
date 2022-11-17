@@ -4,7 +4,9 @@ import com.walmart.aex.sp.dto.bqfp.Replenishment;
 import com.walmart.aex.sp.util.AdjustedDCInboundQty;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,6 +23,11 @@ public class ReplenishmentsOptimizationService {
      * @return
      */
     public List<Replenishment> getUpdatedReplenishmentsPack(List<Replenishment> replenishments, Double vnpkWhpkRatio) {
+
+        if (CollectionUtils.isEmpty(replenishments)) {
+            log.info("Replenishment list is null/empty");
+            return Collections.emptyList();
+        }
 
         //get non-zero weeks which are supposed to be adjusted.
         List<Replenishment> nonZeroReplenishmentList = replenishments.stream().filter(replenishment -> replenishment.getAdjReplnUnits() > 0).collect(Collectors.toList());
@@ -39,7 +46,6 @@ public class ReplenishmentsOptimizationService {
         for (int i = 0; i < nonZeroReplenishmentList.size(); i++) {
             //if current adjReplnUnits is less than Minimum_Replenishment_Quantity only then it need adjustment and if nonZeroReplenishmentList is last and is less Minimum_Replenishment_Quantity
             if (nonZeroReplenishmentList.get(i).getAdjReplnUnits() < MINIMUM_REPLENISHMENT_QUANTITY) {
-
                 //get available future adjReplnUnits exclude current
                 futureWeekAdjReplnUnitsSum = Math.abs(futureWeekAdjReplnUnitsSum - nonZeroReplenishmentList.get(i).getAdjReplnUnits());
 

@@ -9,6 +9,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -39,6 +40,8 @@ public class ReplenishmentsOptimizationServiceTest {
         assertEquals(getReplenishmentsObj(List.of(500L, 997L, 0L)), replenishmentsOptimizationService.getUpdatedReplenishmentsPack(getReplenishmentsObj(List.of(499L, 499L, 499L)), 5.0));
         assertEquals(getReplenishmentsObj(List.of(500L, 0L, 0L)), replenishmentsOptimizationService.getUpdatedReplenishmentsPack(getReplenishmentsObj(List.of(250L, 250L, 0L)), 5.0));
         assertEquals(getReplenishmentsObj(List.of(0L, 0L, 750L, 0L)), replenishmentsOptimizationService.getUpdatedReplenishmentsPack(getReplenishmentsObj(List.of(0L, 0L, 500L, 250L)), 5.0));
+        assertEquals(Collections.emptyList(), replenishmentsOptimizationService.getUpdatedReplenishmentsPack(null, 5.0));
+        assertEquals(getReplenishmentsObj(List.of(999L, 0L, 0L)), replenishmentsOptimizationService.getUpdatedReplenishmentsPack(getReplenishmentsObj(List.of(1L, 499L, 499L)), 5.0));
 
     }
 
