@@ -12,10 +12,10 @@ public class AdjustedDCInboundQty {
 
 	public static List<Replenishment> updatedAdjustedDcInboundQty(List<Replenishment> replenishments,Integer vnpkQty) {
 
-		if(replenishments!=null && vnpkQty>0) {
+		if(replenishments!=null && vnpkQty!= null && vnpkQty>0) {
 			replenishments.forEach(replobj -> {
-				long noOfVendorPacks = (replobj.getAdjReplnUnits() / vnpkQty);
-				Long updatedAdjustedDcInboundQty = noOfVendorPacks * vnpkQty;
+				double noOfVendorPacks = Math.ceil((double)(replobj.getAdjReplnUnits()) / vnpkQty); // Math.ceil will return a double value
+				Long updatedAdjustedDcInboundQty = (long)(noOfVendorPacks * vnpkQty);
 				replobj.setAdjReplnUnits(updatedAdjustedDcInboundQty);
 			});
 		}
