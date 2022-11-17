@@ -149,7 +149,7 @@ public class SizeAndPackObjectMapper {
     }
 
     //When channel is Omni, two entries should be made. One for store and another for online
-    private List<Integer> getChannelListFromChannelId(Integer channelId) {
+     List<Integer> getChannelListFromChannelId(Integer channelId) {
         List<Integer> channelList = new ArrayList<>();
         if (channelId.equals(3)) {
             channelList.add(1);
