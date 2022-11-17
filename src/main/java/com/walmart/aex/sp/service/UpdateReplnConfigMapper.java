@@ -47,7 +47,6 @@ public class UpdateReplnConfigMapper {
 	   this.ccMmReplnPkConsRepository = ccMmReplnPkConsRepository;
 	   this.ccSpReplnPkConsRepository = ccSpReplnPkConsRepository;
 	}
-
 	public void updateVnpkWhpkForCatgReplnConsMapper(List<MerchCatgReplPack> catgReplnPkConsList, Integer vnpk, Integer whpk)
 	{
 	   catgReplnPkConsList.forEach(catgReplnPkCons -> {
@@ -173,7 +172,6 @@ public class UpdateReplnConfigMapper {
 		updateVnpkWhpkForCcMmReplnPkConsMapper(ccMmReplnPkConsList, vnpk, whpk);
 		
 	}
-	
 	public void updateVnpkWhpkForCcMmReplnPkConsMapper(List<CcMmReplPack> ccMmReplnPkConsList, Integer vnpk, Integer whpk)
 	{
 		ccMmReplnPkConsList.forEach(ccMmReplnPkCons -> {
@@ -226,7 +224,6 @@ public class UpdateReplnConfigMapper {
         }
         return ReplenishmentPackCount;
     }
-
 	private Double getVnpkWhpkRatio(Integer vnpk, Integer whpk)
     {
         Double vnwhpkRatio = null;
