@@ -13,6 +13,7 @@ type Query {
      fetchReplnFullHierarchyByPlanFineline(replenishmentRequest: ReplenishmentRequest!): ReplenishmentResponse!
      fetchPackOptConstraintsByFineline(request: PackOptConstraintRequest!): PackOptimizationResponse!
      getStoreDistributionByPlan(request: PackInfoRequest!): StoreDistributionResponse!
+     getInitialAndBumpSetDetailsByVolumeCluster(request: InitialSetVolumeRequest!): [InitialSetVolumeResponse]!
 }
 
 
@@ -488,4 +489,40 @@ type PackDistribution {
 type DistributionMetric {
   store: Int
   multiplier: Int
+}
+
+input InitialSetVolumeRequest {
+    planId: Int!
+    finelines: [FinelineVolume]!
+}
+
+input FinelineVolume {
+    finelineNbr : Int!
+    lvl3Nbr: Int!
+    lvl4Nbr: Int!
+    volumeDeviationLevel : String!
+}
+
+type InitialSetVolumeResponse{
+    finelineNbr: Int!
+    styleId: String!
+    customerChoices: [CustomerChoicesVolume]
+}
+
+type CustomerChoicesVolume {
+    ccId: String!
+    isPlans:  [IsPlan]
+}
+
+type IsPlan {
+    inStoreWeek: Int!
+    metrics: [MetricsVolume]
+}
+
+type MetricsVolume {
+    stores: [Int!]
+    volumeClusterId: Int!
+    fixtureType: String
+    fixtureAllocation: Float
+    quantity: Int!
 }

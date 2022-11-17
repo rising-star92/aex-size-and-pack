@@ -348,6 +348,11 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "rfa_cc_out_parquet"
+      "analytics_data":
+        description: "RFA Output for SP Pack Optimization"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "analytics_data_dev"
 configOverrides:
   graphQlConfig:
     - name: "dev"
@@ -455,4 +460,5 @@ configOverrides:
           "ml.projectId": "wmt-mtech-assortment-ml-prod"
           "ml.datasetName": "aex_pack_opt_non_prod"
           "rfa.table.sp.packoptimization.output": "output_stage"
+          "analytics_data": "analytics_data_stage"
         

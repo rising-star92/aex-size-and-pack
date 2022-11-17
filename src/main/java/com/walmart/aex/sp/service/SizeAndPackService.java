@@ -3,10 +3,12 @@ package com.walmart.aex.sp.service;
 import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.dto.commitmentreport.InitialBumpSetResponse;
 import com.walmart.aex.sp.dto.commitmentreport.InitialSetPackRequest;
-import com.walmart.aex.sp.dto.commitmentreport.Metrics;
 import com.walmart.aex.sp.dto.commitmentreport.RFAInitialSetBumpSetResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.walmart.aex.sp.dto.isVolume.FinelineVolume;
+import com.walmart.aex.sp.dto.isVolume.InitialSetVolumeRequest;
+import com.walmart.aex.sp.dto.isVolume.InitialSetVolumeResponse;
 import com.walmart.aex.sp.dto.packoptimization.Fineline;
 import com.walmart.aex.sp.dto.planhierarchy.*;
 import com.walmart.aex.sp.enums.ChannelType;
@@ -22,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
 
@@ -55,6 +56,10 @@ public class SizeAndPackService {
     
     private final InitialSetPlanMapper initialSetPlanMapper;
 
+    private final MerchPackOptimizationRepository merchPackOptimizationRepository;
+
+    private final PackOptAddDataMapper packOptAddDataMapper;
+
     @ManagedConfiguration
 	BigQueryConnectionProperties bigQueryConnectionProperties;
 
@@ -69,7 +74,7 @@ public class SizeAndPackService {
                               MerchCatPlanRepository merchCatPlanRepository, StrategyFetchService strategyFetchService,
                               SpCustomerChoiceChannelFixtureSizeRepository spCustomerChoiceChannelFixtureSizeRepository,
                               SizeAndPackDeleteService sizeAndPackDeleteService, SizeAndPackDeletePlanService sizeAndPackDeletePlanService
-            , BuyQtyCommonUtil buyQtyCommonUtil, BigQueryInitialSetPlanService bigQueryInitialSetPlanService,InitialSetPlanMapper initialSetPlanMapper) {
+            , BuyQtyCommonUtil buyQtyCommonUtil, BigQueryInitialSetPlanService bigQueryInitialSetPlanService, InitialSetPlanMapper initialSetPlanMapper, MerchPackOptimizationRepository merchPackOptimizationRepository, PackOptAddDataMapper packOptAddDataMapper) {
         this.spFineLineChannelFixtureRepository = spFineLineChannelFixtureRepository;
         this.buyQuantityMapper = buyQuantityMapper;
         this.spCustomerChoiceChannelFixtureRepository = spCustomerChoiceChannelFixtureRepository;
@@ -83,6 +88,8 @@ public class SizeAndPackService {
         this.buyQtyCommonUtil = buyQtyCommonUtil;
         this.bigQueryInitialSetPlanService = bigQueryInitialSetPlanService;
         this.initialSetPlanMapper = initialSetPlanMapper;
+        this.merchPackOptimizationRepository = merchPackOptimizationRepository;
+        this.packOptAddDataMapper = packOptAddDataMapper;
     }
 
     public BuyQtyResponse fetchFinelineBuyQnty(BuyQtyRequest buyQtyRequest) {
@@ -213,6 +220,8 @@ public class SizeAndPackService {
                 for (Lvl2 lvl2 : lvl1.getLvl2List()) {
                     for (Lvl3 lvl3 : lvl2.getLvl3List()) {
                         merchCatPlanRepository.saveAll(sizeAndPackObjectMapper.setMerchCatPlan(planSizeAndPackDTO, lvl1, lvl2, lvl3, merchCatPlanRepository));
+                        merchPackOptimizationRepository.saveAll(packOptAddDataMapper.setMerchCatPackOpt(planSizeAndPackDTO, lvl1, lvl2, lvl3, merchPackOptimizationRepository));
+
                     }
                 }
             }
@@ -240,7 +249,7 @@ public class SizeAndPackService {
                 for (Lvl2 lvl2 : lvl1.getLvl2List()) {
                     for (Lvl3 lvl3 : lvl2.getLvl3List()) {
                         merchCatPlanRepository.saveAll(sizeAndPackObjectMapper.updateMerchCatPlan(planSizeAndPackDTO, lvl1, lvl2, lvl3, lvl2.getLvl3List(), merchCatPlanRepository));
-                    }
+                       }
                 }
             }
             sizeAndPackResponse.setStatus(SUCCESS_STATUS);
@@ -306,11 +315,22 @@ public class SizeAndPackService {
 
 
 		} catch (Exception e) {
-			log.error("Exception While fetching Initial Set Pack Qunatities {}:", e);
+			log.error("Exception While fetching Initial Set Pack Quantities :", e);
 		}
 
 		return response;
 	}
-    
-    
+
+
+    public List<InitialSetVolumeResponse> getInitialAndBumpSetDetailsByVolumeCluster(InitialSetVolumeRequest request) {
+        List<InitialSetVolumeResponse> response = new ArrayList<>();
+        try {
+            for (FinelineVolume fineline : request.getFinelines()) {
+                response.addAll(bigQueryInitialSetPlanService.getInitialAndBumpSetDetailsByVolumeCluster(request.getPlanId(),fineline));
+            }
+        } catch (Exception e) {
+            log.error("Exception While fetching Initial Set Cluster volume ", e);
+        }
+        return response;
+    }
 }

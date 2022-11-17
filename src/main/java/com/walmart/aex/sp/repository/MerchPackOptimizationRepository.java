@@ -5,8 +5,6 @@ import com.walmart.aex.sp.entity.MerchantPackOptimizationID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 public interface MerchPackOptimizationRepository extends JpaRepository<MerchantPackOptimization, MerchantPackOptimizationID> {
     List<MerchantPackOptimization> findMerchantPackOptimizationByMerchantPackOptimizationID_planIdAndMerchantPackOptimizationID_repTLvl3AndChannelText_channelId(Long planId, Integer lvl3Nbr, Integer channel);
