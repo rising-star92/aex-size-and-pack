@@ -1,8 +1,6 @@
 package com.walmart.aex.sp.util;
 
 import java.util.List;
-
-import com.walmart.aex.sp.service.BuyQuantityMapper;
 import org.springframework.stereotype.Component;
 import com.walmart.aex.sp.dto.bqfp.Replenishment;
 
