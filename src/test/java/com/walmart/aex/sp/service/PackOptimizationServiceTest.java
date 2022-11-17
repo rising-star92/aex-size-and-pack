@@ -175,7 +175,7 @@ class PackOptimizationServiceTest {
 		packOptResponse = packOptimizationService.getPackOptDetails(362L, 1);
 		String expectedResult = "PackOptimizationResponse(planId=362, channel=Store, lvl0Nbr=0, lvl0Desc=null, lvl1Nbr=0, lvl1Desc=null, lvl2Nbr=0, lvl2Desc=null, lvl3List=[Lvl3(lvl0Nbr=0, lvl1Nbr=0, lvl2Nbr=0, lvl3Nbr=25, lvl3Name=null, constraints=Constraints(supplierConstraints=null, ccLevelConstraints=null, colorCombinationConstraints=ColorCombinationConstraints(supplierName=Vendor Name, factoryId=120, 121, countryOfOrigin=USA, portOfOrigin=Texas, singlePackIndicator=1, colorCombination=Merch Color Combination), finelineLevelConstraints=FinelineLevelConstraints(maxPacks=50, maxUnitsPerPack=10)), lvl4List=[Lvl4(lvl4Nbr=252, lvl4Name=null, constraints=Constraints(supplierConstraints=null, ccLevelConstraints=null, colorCombinationConstraints=ColorCombinationConstraints(supplierName=Supplier Vendor Name, factoryId=120, countryOfOrigin=USA, portOfOrigin=Texas, singlePackIndicator=1, colorCombination=Sub Category Color Combination), finelineLevelConstraints=FinelineLevelConstraints(maxPacks=20, maxUnitsPerPack=10)), finelines=[Fineline(finelineNbr=2542, finelineName=null, altFinelineName=null, channel=null, packOptimizationStatus=NOT SENT, constraints=Constraints(supplierConstraints=null, ccLevelConstraints=null, colorCombinationConstraints=ColorCombinationConstraints(supplierName=FineLine Vendor Name, factoryId=120, countryOfOrigin=USA, portOfOrigin=Texas, singlePackIndicator=1, colorCombination=FineLine Color Combination), finelineLevelConstraints=FinelineLevelConstraints(maxPacks=5, maxUnitsPerPack=2)), styles=null, optimizationDetails=[RunOptimization(name=null, returnMessage=null, startTs=null, endTs=null, runStatusCode=null)])])])])";
 		assertNotNull(packOptResponse);
-		assertEquals(packOptResponse.getPlanId(), 362L);
+		assertEquals(362L,packOptResponse.getPlanId());
 		assertEquals(expectedResult, packOptResponse.toString());
 
 		assertEquals("120, 121", packOptResponse.getLvl3List().get(0).getConstraints().getColorCombinationConstraints().getFactoryId());
@@ -191,7 +191,7 @@ class PackOptimizationServiceTest {
 		Integer status = 10;
 		packOptimizationService.updatePackOptServiceStatus(planId, finelineNbr, status);
 		Mockito.verify(packOptimizationService,Mockito.times(1)).updatePackOptServiceStatus(planId, finelineNbr, status);
-		assertEquals(finelineNbr,46);
+		assertEquals(46,finelineNbr);
 	}	
 	
 	@Test

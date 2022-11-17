@@ -88,7 +88,7 @@ public class PostPackOptimizationService {
                         List<Replenishment> replObj = objectMapper.readValue(replObjJson, new TypeReference<>() {});
                         Long total = replObj.stream().mapToLong(ru->ru.getAdjReplnUnits()).sum();
                         List<Replenishment> updateReplObj = replObj.stream()
-                                .peek(replenishment -> replenishment.setAdjReplnUnits((updatedReplenishmentQty*(((replenishment.getAdjReplnUnits()*100)/total))/100)))
+                                .peek(replenishment -> replenishment.setAdjReplnUnits((updatedReplenishmentQty*((replenishment.getAdjReplnUnits()*100)/total)/100)))
                                 .collect(Collectors.toList());
                         List<Replenishment> updatedReplenishmentsPack = replenishmentsOptimizationServices.getUpdatedReplenishmentsPack(updateReplObj,ccSpMmReplPack.getVnpkWhpkRatio());
                         ccSpMmReplPack.setReplenObj(objectMapper.writeValueAsString(updatedReplenishmentsPack));

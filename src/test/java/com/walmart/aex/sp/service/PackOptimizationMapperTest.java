@@ -40,16 +40,16 @@ public class PackOptimizationMapperTest {
 		fineLinePackOptimizationResponseDTO.setSinglePackInd(1);
 		packOptimizationMapper.mapPackOptimizationFineline(fineLinePackOptimizationResponseDTO,fineLinePackOptimizationResponse,471l);
 		assertNotNull(fineLinePackOptimizationResponse);
-		assertEquals(fineLinePackOptimizationResponse.getPlanId(),471l);
+		assertEquals(471,fineLinePackOptimizationResponse.getPlanId());
 		assertNotNull(fineLinePackOptimizationResponse.getFinelines());
 		assertNotNull(fineLinePackOptimizationResponse.getFinelines().get(0).getFinelineLevelConstraints());
 		assertNotNull(fineLinePackOptimizationResponse.getFinelines().get(0).getCustomerChoices());
 		assertNotNull(fineLinePackOptimizationResponse.getFinelines().get(0).getCustomerChoices().get(0).getColorCombinationConstraints());
 		
-		assertEquals(fineLinePackOptimizationResponse.getFinelines().get(0).getFinelineLevelConstraints().getMaxUnitsPerPack(),20);
-		assertEquals(fineLinePackOptimizationResponse.getFinelines().get(0).getFinelineLevelConstraints().getMaxPacks(),5);
-		assertEquals(fineLinePackOptimizationResponse.getFinelines().get(0).getCustomerChoices().get(0).getColorCombinationConstraints().getFactoryId(),"0121");
-		assertEquals(fineLinePackOptimizationResponse.getFinelines().get(0).getCustomerChoices().get(0).getColorCombinationConstraints().getColorCombination(),"offWhite");
-		assertEquals(fineLinePackOptimizationResponse.getFinelines().get(0).getCustomerChoices().get(0).getColorCombinationConstraints().getSinglePackIndicator(),1);
+		assertEquals(20,fineLinePackOptimizationResponse.getFinelines().get(0).getFinelineLevelConstraints().getMaxUnitsPerPack());
+		assertEquals(5,fineLinePackOptimizationResponse.getFinelines().get(0).getFinelineLevelConstraints().getMaxPacks());
+		assertEquals("0121",fineLinePackOptimizationResponse.getFinelines().get(0).getCustomerChoices().get(0).getColorCombinationConstraints().getFactoryId());
+		assertEquals("offWhite",fineLinePackOptimizationResponse.getFinelines().get(0).getCustomerChoices().get(0).getColorCombinationConstraints().getColorCombination());
+		assertEquals(1,fineLinePackOptimizationResponse.getFinelines().get(0).getCustomerChoices().get(0).getColorCombinationConstraints().getSinglePackIndicator());
 	}
 }
