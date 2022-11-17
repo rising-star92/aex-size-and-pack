@@ -1,6 +1,5 @@
 package com.walmart.aex.sp.dto.mapper;
 
-
 import com.walmart.aex.sp.dto.packoptimization.PackOptConstraintResponseDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
