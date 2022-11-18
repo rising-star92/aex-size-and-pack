@@ -36,7 +36,7 @@ public class ReplenishmentsOptimizationService {
         long futureWeekAdjReplnUnitsSum = nonZeroReplenishmentList.stream().map(Replenishment::getAdjReplnUnits).mapToLong(Long::longValue).sum();
 
         //if only 1 week or empty , no operation can be performed.
-        if (nonZeroReplenishmentList == null || nonZeroReplenishmentList.isEmpty()|| nonZeroReplenishmentList.size()==1) {
+        if (CollectionUtils.isEmpty(nonZeroReplenishmentList) || nonZeroReplenishmentList.isEmpty()|| nonZeroReplenishmentList.size()==1) {
             replenishments = AdjustedDCInboundQty.updatedAdjustedDcInboundQty(replenishments,vnpkQty);
 
             return replenishments;
