@@ -1,26 +1,12 @@
 package com.walmart.aex.sp.service;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
+import com.walmart.aex.sp.entity.*;
+import com.walmart.aex.sp.repository.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import com.walmart.aex.sp.entity.CcMmReplPack;
-import com.walmart.aex.sp.entity.CcReplPack;
-import com.walmart.aex.sp.entity.CcSpMmReplPack;
-import com.walmart.aex.sp.entity.FinelineReplPack;
-import com.walmart.aex.sp.entity.MerchCatgReplPack;
-import com.walmart.aex.sp.entity.StyleReplPack;
-import com.walmart.aex.sp.entity.SubCatgReplPack;
-import com.walmart.aex.sp.repository.CatgReplnPkConsRepository;
-import com.walmart.aex.sp.repository.CcMmReplnPkConsRepository;
-import com.walmart.aex.sp.repository.CcReplnPkConsRepository;
-import com.walmart.aex.sp.repository.CcSpReplnPkConsRepository;
-import com.walmart.aex.sp.repository.FinelineReplnPkConsRepository;
-import com.walmart.aex.sp.repository.StyleReplnPkConsRepository;
-import com.walmart.aex.sp.repository.SubCatgReplnPkConsRepository;
-
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -47,6 +33,7 @@ public class UpdateReplnConfigMapper {
 	   this.ccMmReplnPkConsRepository = ccMmReplnPkConsRepository;
 	   this.ccSpReplnPkConsRepository = ccSpReplnPkConsRepository;
 	}
+  
 	public void updateVnpkWhpkForCatgReplnConsMapper(List<MerchCatgReplPack> catgReplnPkConsList, Integer vnpk, Integer whpk)
 	{
 	   catgReplnPkConsList.forEach(catgReplnPkCons -> {
@@ -122,20 +109,20 @@ public class UpdateReplnConfigMapper {
 	
 	public void updateVnpkWhpkForStyleReplnConsMapper(List<StyleReplPack> styleReplnPkConsList, Integer vnpk,
             Integer whpk) {
+
         styleReplnPkConsList.forEach(styleReplnPkCons -> {
 
-			if(vnpk != null)
-				styleReplnPkCons.setVendorPackCnt(vnpk);
-		      
-			if(whpk != null)
-			{
-				styleReplnPkCons.setWhsePackCnt(whpk);
-			}
+            if (vnpk != null)
+                styleReplnPkCons.setVendorPackCnt(vnpk);
+
+            if (whpk != null) {
+                styleReplnPkCons.setWhsePackCnt(whpk);
+            }
 
         	styleReplnPkCons.setVnpkWhpkRatio(getVnpkWhpkRatio(styleReplnPkCons.getVendorPackCnt(), styleReplnPkCons.getWhsePackCnt()));
             replPackCnt = getReplenishmentPackCount(styleReplnPkCons.getReplUnits(), styleReplnPkCons.getVendorPackCnt());
-            
-			styleReplnPkCons.setReplPackCnt(replPackCnt);
+
+            styleReplnPkCons.setReplPackCnt(replPackCnt);
 
             styleReplnConsRepository.save(styleReplnPkCons);
         });
@@ -197,6 +184,7 @@ public class UpdateReplnConfigMapper {
 		updateVnpkWhpkForCcSpMmReplnPkConsMapper(ccSpMmReplnPkConsList, vnpk, whpk);
 
 	}
+  
 	public void updateVnpkWhpkForCcSpMmReplnPkConsMapper(List<CcSpMmReplPack> ccSpReplnPkConsList, Integer vnpk, Integer whpk)
 	{
 		ccSpReplnPkConsList.forEach(ccSpReplnCons -> {
@@ -215,21 +203,20 @@ public class UpdateReplnConfigMapper {
 			ccSpReplnPkConsRepository.save(ccSpReplnCons);
 		});
 	}
-	
-	private Integer getReplenishmentPackCount(Integer replenishmentUnits, Integer vnpk )
-    {
-        Integer ReplenishmentPackCount = null;
-        if(replenishmentUnits!= null && replenishmentUnits!= 0 && vnpk!= null && vnpk!= 0){
-            ReplenishmentPackCount =  ((int) replenishmentUnits/vnpk);
+
+    private Integer getReplenishmentPackCount(Integer replenishmentUnits, Integer vnpk) {
+        Integer replenishmentPackCount = null;
+        if (replenishmentUnits != null && replenishmentUnits != 0 && vnpk != null && vnpk != 0) {
+            replenishmentPackCount = (replenishmentUnits / vnpk);
         }
-        return ReplenishmentPackCount;
+        return replenishmentPackCount;
     }
 
-	private Double getVnpkWhpkRatio(Integer vnpk, Integer whpk)
-    {
+
+    private Double getVnpkWhpkRatio(Integer vnpk, Integer whpk) {
         Double vnwhpkRatio = null;
 
-        if(vnpk!=0 && whpk!=0) {
+        if (vnpk != 0 && whpk != 0) {
             vnwhpkRatio = ((double) vnpk / whpk);
         }
 

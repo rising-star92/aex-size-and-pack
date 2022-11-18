@@ -32,4 +32,6 @@ public class MerchantPackOptimizationID implements Serializable
 	    private Integer repTLvl2;
 	    @Column(name="rpt_lvl_3_nbr",nullable = false)
 	    private Integer repTLvl3;
+		@Column(name="channel_id",nullable = false)
+		private Integer channelId;
 }

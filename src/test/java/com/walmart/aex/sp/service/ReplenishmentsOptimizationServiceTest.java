@@ -1,7 +1,6 @@
 package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.bqfp.Replenishment;
-import com.walmart.aex.sp.util.AdjustedDCInboundQty;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,6 +9,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -21,12 +21,11 @@ public class ReplenishmentsOptimizationServiceTest {
 
     private ReplenishmentsOptimizationService replenishmentsOptimizationService;
 
-    private AdjustedDCInboundQty adjustedDCInboundQty;
-
     @Before
     public void setUp() {
-        replenishmentsOptimizationService = new ReplenishmentsOptimizationService(adjustedDCInboundQty);
+        replenishmentsOptimizationService = new ReplenishmentsOptimizationService();
     }
+
     @Test
     public void assertUpdatedReplenishmentWithDcInboundQtyRulesWithScenario1() {
         assertEquals(getReplenishmentsObj(List.of(595L,0L,0L,0L)), replenishmentsOptimizationService.getUpdatedReplenishmentsPack(getReplenishmentsObj(List.of(175L, 240L, 180L,0L)),5));
@@ -42,8 +41,10 @@ public class ReplenishmentsOptimizationServiceTest {
         assertEquals(getReplenishmentsObj(List.of(500L,0L,0L)),replenishmentsOptimizationService.getUpdatedReplenishmentsPack(getReplenishmentsObj(List.of(250L, 250L, 0L)),5));
         assertEquals(getReplenishmentsObj(List.of(0L,0L,750L,0L)),replenishmentsOptimizationService.getUpdatedReplenishmentsPack(getReplenishmentsObj(List.of(0L,0L,500L,250L)),5));
 
+
     }
-    private List<Replenishment> getReplenishmentsObj(List<Long> longs){
+
+    private List<Replenishment> getReplenishmentsObj(List<Long> longs) {
         List<Replenishment> replenishments = new ArrayList<>();
         longs.forEach(l -> {
             Replenishment replenishment = new Replenishment();

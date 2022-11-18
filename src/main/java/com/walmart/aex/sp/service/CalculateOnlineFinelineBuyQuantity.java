@@ -1,10 +1,15 @@
 package com.walmart.aex.sp.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.walmart.aex.sp.dto.bqfp.*;
+import com.walmart.aex.sp.dto.bqfp.BQFPResponse;
+import com.walmart.aex.sp.dto.bqfp.CustomerChoice;
+import com.walmart.aex.sp.dto.bqfp.Replenishment;
+import com.walmart.aex.sp.dto.bqfp.Style;
 import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
-import com.walmart.aex.sp.entity.*;
+import com.walmart.aex.sp.entity.CcSpMmReplPack;
+import com.walmart.aex.sp.entity.CcSpMmReplPackId;
+import com.walmart.aex.sp.entity.MerchCatgReplPack;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.enums.FixtureTypeRollup;
 import com.walmart.aex.sp.exception.CustomException;
@@ -16,6 +21,7 @@ import java.util.*;
 
 import static com.walmart.aex.sp.util.SizeAndPackConstants.VP_DEFAULT;
 
+
 @Service
 @Slf4j
 public class CalculateOnlineFinelineBuyQuantity {
@@ -25,8 +31,8 @@ public class CalculateOnlineFinelineBuyQuantity {
 
     private final ReplenishmentsOptimizationService replenishmentsOptimizationServices;
 
-    public CalculateOnlineFinelineBuyQuantity (ObjectMapper objectMapper,
-                                               BuyQtyReplenishmentMapperService buyQtyReplenishmentMapperService, ReplenishmentsOptimizationService replenishmentsOptimizationServices) {
+    public CalculateOnlineFinelineBuyQuantity(ObjectMapper objectMapper,
+                                              BuyQtyReplenishmentMapperService buyQtyReplenishmentMapperService, ReplenishmentsOptimizationService replenishmentsOptimizationServices) {
         this.objectMapper = objectMapper;
         this.buyQtyReplenishmentMapperService = buyQtyReplenishmentMapperService;
         this.replenishmentsOptimizationServices = replenishmentsOptimizationServices;
@@ -175,6 +181,7 @@ public class CalculateOnlineFinelineBuyQuantity {
                 replObj.add(replenishment1);
             });
             buyQtyObj.setReplenishments(replenishmentsOptimizationServices.getUpdatedReplenishmentsPack(replObj,VP_DEFAULT));
+
         });
     }
 
