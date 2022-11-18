@@ -40,7 +40,8 @@ public class ReplenishmentsOptimizationServiceTest {
         assertEquals(getReplenishmentsObj(List.of(500L,997l,0l)),replenishmentsOptimizationService.getUpdatedReplenishmentsPack(getReplenishmentsObj(List.of(499L, 499L, 499L)),5));
         assertEquals(getReplenishmentsObj(List.of(500L,0L,0L)),replenishmentsOptimizationService.getUpdatedReplenishmentsPack(getReplenishmentsObj(List.of(250L, 250L, 0L)),5));
         assertEquals(getReplenishmentsObj(List.of(0L,0L,750L,0L)),replenishmentsOptimizationService.getUpdatedReplenishmentsPack(getReplenishmentsObj(List.of(0L,0L,500L,250L)),5));
-
+        assertEquals(Collections.emptyList(), replenishmentsOptimizationService.getUpdatedReplenishmentsPack(null, 5));
+        assertEquals(getReplenishmentsObj(List.of(999L, 0L, 0L)), replenishmentsOptimizationService.getUpdatedReplenishmentsPack(getReplenishmentsObj(List.of(1L, 499L, 499L)), 5));
 
     }
 
