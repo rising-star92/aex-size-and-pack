@@ -16,21 +16,13 @@ public class ReplenishmentsOptimizationService {
 
     public static final Integer MINIMUM_REPLENISHMENT_QUANTITY = 500;
 
-
-    private final AdjustedDCInboundQty adjustedDCInboundQtyUtil;
-
-    public ReplenishmentsOptimizationService(AdjustedDCInboundQty adjustedDCInboundQtyUtil)
-    {
-        this.adjustedDCInboundQtyUtil = adjustedDCInboundQtyUtil;
-    }
-
     /**
      * Update Replenishments packs count from the list
      * @param replenishments
-     * @param vnpkWhpkRatio
+     * @param vnpkQty
      * @return
      */
-    public List<Replenishment> getUpdatedReplenishmentsPack(List<Replenishment> replenishments, Double vnpkWhpkRatio) {
+    public List<Replenishment> getUpdatedReplenishmentsPack(List<Replenishment> replenishments, Integer vnpkQty) {
 
         if (CollectionUtils.isEmpty(replenishments)) {
             log.info("Replenishment list is null/empty");
@@ -45,7 +37,7 @@ public class ReplenishmentsOptimizationService {
 
         //if only 1 week or empty , no operation can be performed.
         if (nonZeroReplenishmentList == null || nonZeroReplenishmentList.isEmpty()|| nonZeroReplenishmentList.size()==1) {
-            replenishments = adjustedDCInboundQtyUtil.updatedAdjustedDcInboundQty(replenishments,vnpkQty);
+            replenishments = AdjustedDCInboundQty.updatedAdjustedDcInboundQty(replenishments,vnpkQty);
 
             return replenishments;
         }
@@ -70,7 +62,7 @@ public class ReplenishmentsOptimizationService {
                 futureWeekAdjReplnUnitsSum = Math.abs(futureWeekAdjReplnUnitsSum - nonZeroReplenishmentList.get(i).getAdjReplnUnits());
             }
         }
-        replenishments = adjustedDCInboundQtyUtil.updatedAdjustedDcInboundQty(replenishments,vnpkQty);
+        replenishments = AdjustedDCInboundQty.updatedAdjustedDcInboundQty(replenishments,vnpkQty);
 
         return replenishments;
     }
