@@ -32,7 +32,7 @@ public class AdjustedDCInboundQtyTest {
 	    void testUpdatedAdjustedDcInboundQty(){    	
 
 	    	String replenishment="[{\"replnWeek\":null,\"replnWeekDesc\":\"FYE2024WK01\",\"replnUnits\":null,\"adjReplnUnits\":500,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":500}]";
-	    	Double VnpkWhpkRatio=5.0;
+	    	Integer vnpkCnt=5;
 
 	    	List<Replenishment> replobjectDTO = new ArrayList<>();
 			try {
@@ -43,7 +43,7 @@ public class AdjustedDCInboundQtyTest {
 				log.error("Error parsing replenishment object", e);
 			}
 
-	    	adjustedDCInboundQty.updatedAdjustedDcInboundQty(replobjectDTO, VnpkWhpkRatio);
+	    	adjustedDCInboundQty.updatedAdjustedDcInboundQty(replobjectDTO, vnpkCnt);
 
 
 	    	assertEquals(500,replobjectDTO.get(0).getDcInboundAdjUnits());

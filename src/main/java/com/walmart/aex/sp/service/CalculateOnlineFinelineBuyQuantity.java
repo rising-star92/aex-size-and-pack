@@ -19,7 +19,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 
-import static com.walmart.aex.sp.util.SizeAndPackConstants.VP_WP_RATIO_DEFAULT;
+import static com.walmart.aex.sp.util.SizeAndPackConstants.VP_DEFAULT;
 
 
 @Service
@@ -180,7 +180,8 @@ public class CalculateOnlineFinelineBuyQuantity {
                 replenishment1.setAdjReplnUnits((long) (getReplenishmentUnits(replenishment) * getAvgSizePct(sizeDto)) / 100);
                 replObj.add(replenishment1);
             });
-            buyQtyObj.setReplenishments(replenishmentsOptimizationServices.getUpdatedReplenishmentsPack(replObj, VP_WP_RATIO_DEFAULT));
+            buyQtyObj.setReplenishments(replenishmentsOptimizationServices.getUpdatedReplenishmentsPack(replObj,VP_DEFAULT));
+
         });
     }
 

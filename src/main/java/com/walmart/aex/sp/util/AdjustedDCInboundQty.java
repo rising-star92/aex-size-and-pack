@@ -10,18 +10,18 @@ import java.util.List;
 @Slf4j
 public class AdjustedDCInboundQty {
 
-    private AdjustedDCInboundQty() {
-    }
+	public static List<Replenishment> updatedAdjustedDcInboundQty(List<Replenishment> replenishments,Integer vnpkQty) {
 
-    public static List<Replenishment> updatedAdjustedDcInboundQty(List<Replenishment> replenishments, Double vnpkWhpkRatio) {
+		if(replenishments!=null && vnpkQty!= null && vnpkQty>0) {
+			replenishments.forEach(replobj -> {
+				if(replobj.getAdjReplnUnits()!=null){
+					double noOfVendorPacks = Math.ceil((double)(replobj.getAdjReplnUnits()) / vnpkQty); // Math.ceil will return a double value and double has higher range than int, therefore using double
+					Long updatedAdjustedDcInboundQty = (long)(noOfVendorPacks * vnpkQty);
+					replobj.setAdjReplnUnits(updatedAdjustedDcInboundQty);
+				}
+			});
+		}
+		return replenishments;
+		}
 
-        if (replenishments != null && vnpkWhpkRatio > 0) {
-            replenishments.forEach(replobj -> {
-                int noOfVendorPacks = (int) Math.ceil(replobj.getAdjReplnUnits() / vnpkWhpkRatio);
-                Long updatedAdjustedDcInboundQty = (long) (noOfVendorPacks * vnpkWhpkRatio);
-                replobj.setDcInboundAdjUnits(updatedAdjustedDcInboundQty);
-            });
-        }
-        return replenishments;
-    }
 }

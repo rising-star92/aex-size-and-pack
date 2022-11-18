@@ -19,10 +19,10 @@ public class ReplenishmentsOptimizationService {
     /**
      * Update Replenishments packs count from the list
      * @param replenishments
-     * @param vnpkWhpkRatio
+     * @param vnpkQty
      * @return
      */
-    public List<Replenishment> getUpdatedReplenishmentsPack(List<Replenishment> replenishments, Double vnpkWhpkRatio) {
+    public List<Replenishment> getUpdatedReplenishmentsPack(List<Replenishment> replenishments, Integer vnpkQty) {
 
         if (CollectionUtils.isEmpty(replenishments)) {
             log.info("Replenishment list is null/empty");
@@ -35,10 +35,10 @@ public class ReplenishmentsOptimizationService {
         //sum of all adjReplnUnits including starting index
         long futureWeekAdjReplnUnitsSum = nonZeroReplenishmentList.stream().map(Replenishment::getAdjReplnUnits).mapToLong(Long::longValue).sum();
 
-
         //if only 1 week or empty , no operation can be performed.
-        if (nonZeroReplenishmentList.isEmpty() || nonZeroReplenishmentList.size() == 1) {
-            replenishments = AdjustedDCInboundQty.updatedAdjustedDcInboundQty(replenishments, vnpkWhpkRatio);
+        if (CollectionUtils.isEmpty(nonZeroReplenishmentList) || nonZeroReplenishmentList.size()==1) {
+            replenishments = AdjustedDCInboundQty.updatedAdjustedDcInboundQty(replenishments,vnpkQty);
+
             return replenishments;
         }
 
@@ -62,7 +62,8 @@ public class ReplenishmentsOptimizationService {
                 futureWeekAdjReplnUnitsSum = Math.abs(futureWeekAdjReplnUnitsSum - nonZeroReplenishmentList.get(i).getAdjReplnUnits());
             }
         }
-        replenishments = AdjustedDCInboundQty.updatedAdjustedDcInboundQty(replenishments, vnpkWhpkRatio);
+        replenishments = AdjustedDCInboundQty.updatedAdjustedDcInboundQty(replenishments,vnpkQty);
+
         return replenishments;
     }
 
