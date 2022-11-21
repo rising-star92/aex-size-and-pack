@@ -16,8 +16,8 @@ public class AdjustedDCInboundQty {
 			replenishments.forEach(replobj -> {
 				if(replobj.getAdjReplnUnits()!=null){
 					double noOfVendorPacks = Math.ceil((double)(replobj.getAdjReplnUnits()) / vnpkQty); // Math.ceil will return a double value and double has higher range than int, therefore using double
-					Long updatedAdjustedDcInboundQty = (long)(noOfVendorPacks * vnpkQty);
-					replobj.setAdjReplnUnits(updatedAdjustedDcInboundQty);
+					Long updatedAdjReplnUnits = (long)(noOfVendorPacks * vnpkQty);
+					replobj.setAdjReplnUnits(updatedAdjReplnUnits);
 				}
 			});
 		}
