@@ -80,7 +80,7 @@ public class SizeAndPackObjectMapperTest {
         assertTrue(!merchCatPlanSet.isEmpty());
     }
 
-    private PlanSizeAndPackDTO getPlanSizeAndPackDTOObj() {
+     PlanSizeAndPackDTO getPlanSizeAndPackDTOObj() {
         PlanSizeAndPackDTO planSizeAndPackDTO = new PlanSizeAndPackDTO();
         planSizeAndPackDTO.setPlanId(100L);
         planSizeAndPackDTO.setPlanDesc("PlanDesc");

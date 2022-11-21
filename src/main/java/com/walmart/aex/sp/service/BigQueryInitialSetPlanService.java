@@ -1,10 +1,11 @@
 package com.walmart.aex.sp.service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.walmart.aex.sp.dto.isVolume.*;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -45,14 +46,9 @@ public class BigQueryInitialSetPlanService {
 		List<RFAInitialSetBumpSetResponse> rfaInitialSetBumpSetResponses = new ArrayList<>();
 		List<RFAInitialSetBumpSetResponse> rfaInitialSetBumpSetResponseBs = new ArrayList<>();
 	     try {
-	         String projectId = bigQueryConnectionProperties.getMLProjectId();
-	         String datasetName = bigQueryConnectionProperties.getMLDataSetName();
-	         String tableNameSp = bigQueryConnectionProperties.getRFASPPackOptTableName();
-	         String rfaProjectId = bigQueryConnectionProperties.getRFAProjectId();
-	         String rfaDatasetName = bigQueryConnectionProperties.getRFADataSetName();
-	         String tableNameCc = bigQueryConnectionProperties.getRFACCStageTable();
-	         String projectIdDatasetNameTableNameSp = projectId + "." + datasetName + "." + tableNameSp;
-	         String projectIdDatasetNameTableNameCc = rfaProjectId + "." + rfaDatasetName + "." + tableNameCc;
+	         String projectIdDatasetNameTableNameSp = getProjectIdSp();
+	         String projectIdDatasetNameTableNameCc = getProjectIdCc();
+
 	         String spQueryStringIs=getSizePackIntialSetQueryString(projectIdDatasetNameTableNameCc, projectIdDatasetNameTableNameSp, rfaSizePackRequest.getPlanId(),rfaSizePackRequest.getFinelineNbr());
 	         String spQueryStringBs=getSizePackBumpSetQueryString(projectIdDatasetNameTableNameSp, rfaSizePackRequest.getPlanId(),rfaSizePackRequest.getFinelineNbr());
 	         BigQuery bigQuery = BigQueryOptions.getDefaultInstance().getService();
@@ -103,6 +99,21 @@ public class BigQueryInitialSetPlanService {
 
 	     return rfaInitialSetBumpSetResponses;
 	 }
+
+	private String getProjectIdSp() {
+		String projectId = bigQueryConnectionProperties.getMLProjectId();
+		String datasetName = bigQueryConnectionProperties.getMLDataSetName();
+		String tableNameSp = bigQueryConnectionProperties.getRFASPPackOptTableName();
+		return projectId  +"."+ datasetName +"."+  tableNameSp;
+	}
+
+	private String getProjectIdCc(){
+		String rfaProjectId = bigQueryConnectionProperties.getRFAProjectId();
+		String rfaDatasetName = bigQueryConnectionProperties.getRFADataSetName();
+		String tableNameCc = bigQueryConnectionProperties.getRFACCStageTable();
+		return rfaProjectId + "." + rfaDatasetName + "." + tableNameCc;
+	}
+
 	public String getInStoreWeek(Integer planId, Integer finelineNbr){
 		BQFPRequest bqfpRequest = new BQFPRequest();
 		bqfpRequest.setPlanId(Long.valueOf(planId));
@@ -152,4 +163,200 @@ public class BigQueryInitialSetPlanService {
 	  	 String prodFineline = planId+"_"+finelineNbr;
 		 return  "WITH MyTable AS ( select distinct reverse( SUBSTR(REVERSE(ProductCustomerChoice), STRPOS(REVERSE(ProductCustomerChoice), \"_\")+1)) as style_id, SP.ProductCustomerChoice as cc, SP.MerchMethod AS merch_method, SP.SPPackID as pack_id,SP.Size as size, (SP.SPBumpSetPackSizeRatio) AS bumppack_ratio, SUM(SP.SPPackBumpOutput) AS bs_quantity FROM `"+spTableName+"` AS SP where ProductFineline = '"+prodFineline+"' and SPBumpSetPackSizeRatio>0 GROUP BY style_id,cc,merch_method,size,pack_id,bumppack_ratio order by style_id,cc,merch_method,size,pack_id,bumppack_ratio ) SELECT TO_JSON_STRING(rfaTable) AS json FROM MyTable AS rfaTable";
 	  }
+
+	  private String getISByVolumeFinelineClusterQuery(String ccTableName, String spTableName,Integer planId,Integer finelineNbr, String analyticsData){
+		  String prodFineline = planId+"_"+finelineNbr;
+		  return "WITH MyTable AS (\n" +
+				  "select distinct\n" +
+				  "RFA.in_store_week,\n" +
+				  "RFA.cc,\n" +
+				  "SUM(SP.is_quantity) AS is_quantity ,\n" +
+				  "CL.store,\n" +
+				  "CL.clusterId,\n" +
+				  "RFA.fixtureAllocation,\n" +
+				  "RFA.fixtureType\n" +
+				  "from (\n" +
+				  "select trim(cc) as cc,CAST(store AS INTEGER) as store,min(week) as in_store_week ,final_alloc_space as fixtureAllocation, final_pref as fixtureType\n" +
+				  "FROM `"+ ccTableName+"`as RFA\n" +
+				  "where plan_id_partition=12 and fineline="+finelineNbr+" and final_alloc_space>0 group by cc,store, fixtureAllocation, fixtureType order by cc, in_store_week, store, fixtureAllocation, fixtureType )\n" +
+				  "as RFA join\n" +
+				  "(\n" +
+				  "SELECT trim(SP.ProductCustomerChoice) as cc,SP.store, SP.SPPackInitialSetOutput as is_quantity, SP.SPPackBumpOutput as bs_quantity\n" +
+				  "FROM `"+spTableName+"` AS SP where ProductFineline = '"+prodFineline+"' and SPInitialSetPackSizeRatio >0\n" +
+				  ") as SP\n" +
+				  "on RFA.store = SP.store and RFA.cc = SP.cc\n" +
+				  "join (\n" +
+				  "select store_nbr as store,cluster_id  as clusterId from `"+ analyticsData +".svg_fl_cluster` where fineline_nbr = "+finelineNbr+"\n" +
+				  ") as CL\n" +
+				  "on RFA.store = CL.store\n" +
+				  "GROUP BY RFA.in_store_week,RFA.cc, CL.clusterId,CL.store ,RFA.fixtureAllocation, RFA.fixtureType order by RFA.in_store_week,RFA.cc,CL.clusterId,CL.store, RFA.fixtureAllocation, RFA.fixtureType\n" +
+				  ") SELECT TO_JSON_STRING(rfaTable) AS json FROM MyTable AS rfaTable\n";
+	  }
+
+	private String getISByVolumeSubCatClusterQuery(String ccTableName, String spTableName,Integer planId,Integer finelineNbr, Integer subCatNbr,String analyticsData){
+		String prodFineline = planId+"_"+finelineNbr;
+		return "WITH MyTable AS (\n" +
+				"select distinct\n" +
+				"RFA.in_store_week,\n" +
+				"RFA.cc,\n" +
+				"SUM(SP.is_quantity) AS is_quantity ,\n" +
+				"CL.store,\n" +
+				"CL.clusterId,\n" +
+				"RFA.fixtureAllocation,\n" +
+				"RFA.fixtureType\n" +
+				"from (\n" +
+				"select trim(cc) as cc,CAST(store AS INTEGER) as store,min(week) as in_store_week ,final_alloc_space as fixtureAllocation, final_pref as fixtureType\n" +
+				"FROM `"+ ccTableName+"`as RFA\n" +
+				"where plan_id_partition=12 and fineline="+finelineNbr+" and final_alloc_space>0 group by cc,store, fixtureAllocation, fixtureType order by cc, in_store_week, store, fixtureAllocation, fixtureType )\n" +
+				"as RFA join\n" +
+				"(\n" +
+				"SELECT trim(SP.ProductCustomerChoice) as cc,SP.store, SP.SPPackInitialSetOutput as is_quantity, SP.SPPackBumpOutput as bs_quantity\n" +
+				"FROM `"+spTableName+"` AS SP where ProductFineline = '"+prodFineline+"' and SPInitialSetPackSizeRatio >0\n" +
+				") as SP\n" +
+				"on RFA.store = SP.store and RFA.cc = SP.cc\n" +
+				"join (\n" +
+				"select scc.store_nbr as store,scc.cluster_id  as clusterId  from `"+ analyticsData +".svg_subcategory_cluster` scc join `analytics_data_dev.svg_subcategory` sc on sc.cluster_id = scc.cluster_id where sc.dept_subcatg_nbr = "+ subCatNbr +"\n" +
+				") as CL\n" +
+				"on RFA.store = CL.store\n" +
+				"GROUP BY RFA.in_store_week,RFA.cc, CL.clusterId,CL.store ,RFA.fixtureAllocation, RFA.fixtureType order by RFA.in_store_week,RFA.cc,CL.clusterId,CL.store, RFA.fixtureAllocation, RFA.fixtureType\n" +
+				") SELECT TO_JSON_STRING(rfaTable) AS json FROM MyTable AS rfaTable\n";
+	}
+
+	private String getISByVolumeCatClusterQuery(String ccTableName, String spTableName,Integer planId,Integer finelineNbr, Integer catNbr,String analyticsData){
+		String prodFineline = planId+"_"+finelineNbr;
+		return "WITH MyTable AS (\n" +
+				"select distinct\n" +
+				"RFA.in_store_week,\n" +
+				"RFA.cc,\n" +
+				"SUM(SP.is_quantity) AS is_quantity ,\n" +
+				"CL.store,\n" +
+				"CL.clusterId,\n" +
+				"RFA.fixtureAllocation,\n" +
+				"RFA.fixtureType\n" +
+				"from (\n" +
+				"select trim(cc) as cc,CAST(store AS INTEGER) as store,min(week) as in_store_week ,final_alloc_space as fixtureAllocation, final_pref as fixtureType\n" +
+				"FROM `"+ ccTableName+"`as RFA\n" +
+				"where plan_id_partition=12 and fineline="+finelineNbr+" and final_alloc_space>0 group by cc,store, fixtureAllocation, fixtureType order by cc, in_store_week, store, fixtureAllocation, fixtureType )\n" +
+				"as RFA join\n" +
+				"(\n" +
+				"SELECT trim(SP.ProductCustomerChoice) as cc,SP.store, SP.SPPackInitialSetOutput as is_quantity, SP.SPPackBumpOutput as bs_quantity\n" +
+				"FROM `"+spTableName+"` AS SP where ProductFineline = '"+prodFineline+"' and SPInitialSetPackSizeRatio >0\n" +
+				") as SP\n" +
+				"on RFA.store = SP.store and RFA.cc = SP.cc\n" +
+				"join (\n" +
+				"select scc.store_nbr as store,scc.cluster_id  as clusterId  from `"+ analyticsData +".svg_category_cluster` scc join `analytics_data_dev.svg_category` sc on sc.cluster_id = scc.cluster_id where sc.dept_catg_nbr = "+ catNbr +"\n" +
+				") as CL\n" +
+				"on RFA.store = CL.store\n" +
+				"GROUP BY RFA.in_store_week,RFA.cc, CL.clusterId,CL.store ,RFA.fixtureAllocation, RFA.fixtureType order by RFA.in_store_week,RFA.cc,CL.clusterId,CL.store, RFA.fixtureAllocation, RFA.fixtureType\n" +
+				") SELECT TO_JSON_STRING(rfaTable) AS json FROM MyTable AS rfaTable\n";
+	}
+
+	public List<InitialSetVolumeResponse> getInitialAndBumpSetDetailsByVolumeCluster(Long planId,FinelineVolume request) throws InterruptedException {
+		String sqlQuery = findSqlQuery(planId,request);
+		BigQuery bigQuery = BigQueryOptions.getDefaultInstance().getService();
+		QueryJobConfiguration queryConfigIs = QueryJobConfiguration.newBuilder(sqlQuery).build();
+		TableResult resultsIs = bigQuery.query(queryConfigIs);
+		HashMap<VolumeQueryId,List<JsonNode>> uniqueRows= new HashMap<>();
+		resultsIs.iterateAll().forEach(rows -> rows.forEach(row -> {
+			try {
+				JsonNode node = objectMapper.readTree(row.getStringValue());
+				VolumeQueryId nodeId = new VolumeQueryId(node.get("cc").textValue(),node.get("clusterId").intValue(),node.get("in_store_week").intValue());
+				if(uniqueRows.containsKey(nodeId)){
+					uniqueRows.get(nodeId).add(node);
+				} else{
+					List<JsonNode> nodes = new ArrayList<> ();
+					nodes.add(node);
+					uniqueRows.put(nodeId,nodes);
+				}
+			} catch (JsonProcessingException e) {
+				throw new RuntimeException(e);
+			}
+		}));
+
+		return formatUniqueRows(request,uniqueRows);
+	}
+
+	private List<InitialSetVolumeResponse> formatUniqueRows(FinelineVolume request, HashMap<VolumeQueryId, List<JsonNode>> uniqueRows) {
+		List<InitialSetVolumeResponse> initialSetVolumeResponseList = new ArrayList<>();
+		uniqueRows.keySet().forEach(key ->{
+			String styleId = key.getCc().substring(0,key.getCc().lastIndexOf("_"));
+			InitialSetVolumeResponse initialSetVolume = initialSetVolumeResponseList.stream().filter(initialSetVolumeResponse -> initialSetVolumeResponse.getStyleId().equals(styleId) && initialSetVolumeResponse.getFinelineNbr() == request.getFinelineNbr()).findFirst().orElse( new InitialSetVolumeResponse());
+			if(initialSetVolume.getStyleId() == null) {
+				initialSetVolume.setStyleId(styleId);
+				initialSetVolume.setFinelineNbr(request.getFinelineNbr());
+				List<CustomerChoicesVolume> customerChoicesVolumes = new ArrayList<>();
+				CustomerChoicesVolume customerChoicesVolume = getCustomerChoicesVolume(uniqueRows, key);
+
+				customerChoicesVolumes.add(customerChoicesVolume);
+				initialSetVolume.setCustomerChoices(customerChoicesVolumes);
+				initialSetVolumeResponseList.add(initialSetVolume);
+			} else {
+				CustomerChoicesVolume customerChoicesVolume1 = initialSetVolume.getCustomerChoices().stream().filter(customerChoicesVolume2 -> customerChoicesVolume2.getCcId().equals(key.getCc())).findFirst().orElse( new CustomerChoicesVolume());
+				if(customerChoicesVolume1.getCcId() == null){
+					customerChoicesVolume1.setCcId(key.getCc());
+					CustomerChoicesVolume customerChoicesVolume = getCustomerChoicesVolume(uniqueRows,key);
+					initialSetVolume.getCustomerChoices().add(customerChoicesVolume);
+				} else {
+					IsPlan isPlan =  customerChoicesVolume1.getIsPlans().stream().filter(isPlan1-> Objects.equals(isPlan1.getInStoreWeek(), key.getInStoreWeek())).findFirst().orElse( new IsPlan());
+					if(isPlan.getMetrics() == null){
+						IsPlan newIsPlan = getIsPlan(uniqueRows,key);
+						customerChoicesVolume1.getIsPlans().add(newIsPlan);
+					} else {
+						MetricsVolume metricsVolume = getMetricsVolume(uniqueRows, key);
+						isPlan.getMetrics().add(metricsVolume);
+					}
+				}
+			}
+		});
+		return initialSetVolumeResponseList;
+	}
+
+	private CustomerChoicesVolume getCustomerChoicesVolume(HashMap<VolumeQueryId, List<JsonNode>> uniqueRows, VolumeQueryId key) {
+		CustomerChoicesVolume customerChoicesVolume = new CustomerChoicesVolume();
+		customerChoicesVolume.setCcId(key.getCc());
+
+		List<IsPlan> isPlanList = new ArrayList<>();
+		getIsPlan(uniqueRows, key);
+		customerChoicesVolume.setIsPlans(isPlanList);
+		return customerChoicesVolume;
+	}
+
+	private IsPlan getIsPlan(HashMap<VolumeQueryId, List<JsonNode>> uniqueRows, VolumeQueryId key) {
+		IsPlan isPlan = new IsPlan();
+		isPlan.setInStoreWeek(key.getInStoreWeek());
+
+		MetricsVolume metricsVolume = getMetricsVolume(uniqueRows, key);
+		List<MetricsVolume> metricsVolumes = new ArrayList<>();
+		metricsVolumes.add(metricsVolume);
+		isPlan.setMetrics(metricsVolumes);
+		return isPlan;
+	}
+
+	private MetricsVolume getMetricsVolume(HashMap<VolumeQueryId, List<JsonNode>> uniqueRows, VolumeQueryId key) {
+		MetricsVolume metricsVolume = new MetricsVolume();
+		List<JsonNode> currentRows = uniqueRows.get(key);
+		Set<Integer> stores = currentRows.stream().map(jsonNode -> jsonNode.get("store").intValue()).collect(Collectors.toSet());
+		metricsVolume.setStores(new ArrayList<>(stores));
+		metricsVolume.setFixtureAllocation(currentRows.get(0).get("fixtureAllocation").decimalValue());
+		metricsVolume.setFixtureType(currentRows.get(0).get("fixtureType").textValue());
+		metricsVolume.setQuantity(currentRows.stream().flatMapToInt(jsonNode -> IntStream.of(jsonNode.get("is_quantity").intValue())).sum());
+		metricsVolume.setVolumeClusterId(key.getClusterId());
+		return metricsVolume;
+	}
+
+	private String findSqlQuery(Long planId, FinelineVolume request) {
+		String tableNameSp = getProjectIdSp();
+		String tableNameCc = getProjectIdCc();
+
+		switch (request.getVolumeDeviationLevel()){
+			case "Category":
+				return getISByVolumeCatClusterQuery(tableNameCc,tableNameSp, Math.toIntExact(planId),request.getFinelineNbr(),request.getLvl3Nbr(), bigQueryConnectionProperties.getAnalyticsData());
+			case "Subcategory":
+				return getISByVolumeSubCatClusterQuery(tableNameCc,tableNameSp, Math.toIntExact(planId),request.getFinelineNbr(),request.getLvl4Nbr(), bigQueryConnectionProperties.getAnalyticsData());
+			case "Fineline":
+				return getISByVolumeFinelineClusterQuery(tableNameCc,tableNameSp, Math.toIntExact(planId),request.getFinelineNbr(), bigQueryConnectionProperties.getAnalyticsData());
+			default:
+				throw new RuntimeException("Invalid Deviation Level, Fineline, Subcategory, Category are valid values");
+		}
+	}
 }

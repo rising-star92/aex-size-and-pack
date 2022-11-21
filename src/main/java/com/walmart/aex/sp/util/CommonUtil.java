@@ -6,15 +6,16 @@ import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
 import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDTO;
 import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDeleteDTO;
+import com.walmart.aex.sp.exception.CustomException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Optional;
-import org.jsoup.Jsoup;
-import org.jsoup.safety.Whitelist;
 
 @Component
 @Slf4j
@@ -40,69 +41,78 @@ public class CommonUtil {
     }
 
     public static Integer getFixtureRollUpId(String fixtureType) {
-        switch (fixtureType.toUpperCase()){
-            case "ONLINE_FIXTURE":{
+        switch (fixtureType.toUpperCase()) {
+            case "ONLINE_FIXTURE": {
                 return 0;
             }
-            case "WALLS":{
+            case "WALLS": {
                 return 1;
             }
-            case "ENDCAPS":{
+            case "ENDCAPS": {
                 return 2;
             }
-            case "RACKS":{
+            case "RACKS": {
                 return 3;
             }
             case "TABLES": {
                 return 4;
             }
+            default: {
+                throw new CustomException("Fixture Type does not Match");
+            }
         }
-        throw new RuntimeException("Fixture Type does not Match");
     }
 
     public static Integer getMerchMethod(String merchMethod) {
-        switch (merchMethod.toUpperCase()){
-            case "FOLDED":{
+        switch (merchMethod.toUpperCase()) {
+            case "FOLDED": {
                 return 2;
             }
-            case "HANGING":{
+            case "HANGING": {
                 return 1;
             }
             case "ONLINE_MERCH_METHOD": {
                 return 0;
             }
+            default: {
+                throw new CustomException("Merch Method does not Match");
+            }
         }
-        throw new RuntimeException("Merch Method does not Match");
     }
 
     public static String getMerchMethod(Integer merchMethod) {
-        switch (merchMethod){
-            case 2 :{
+        switch (merchMethod) {
+            case 2: {
                 return "FOLDED";
             }
-            case 1:{
+            case 1: {
                 return "HANGING";
             }
-            case 0:{
+            case 0: {
                 return "ONLINE_MERCH_METHOD";
             }
+            default: {
+                throw new CustomException("Merch Method does not Match");
+            }
         }
-        throw new RuntimeException("Merch Method does not Match");
+
     }
 
     public static Integer getChannelId(String channelDesc) {
-        switch (channelDesc.toUpperCase()){
-            case "STORE":{
+        switch (channelDesc.toUpperCase()) {
+            case "STORE": {
                 return 1;
             }
-            case "ONLINE":{
+            case "ONLINE": {
                 return 2;
             }
-            case "OMNI":{
+            case "OMNI": {
                 return 3;
             }
+            default: {
+                throw new CustomException("Channel Type does not Match");
+            }
         }
-        throw new RuntimeException("Channel Type does not Match");
     }
 
     public PlanSizeAndPackDeleteDTO cleanSPDeleteRequest(PlanSizeAndPackDeleteDTO arg0) throws IOException {

@@ -40,7 +40,7 @@ public class CalculateFinelineBuyQuantity {
     private final CalculateOnlineFinelineBuyQuantity calculateOnlineFinelineBuyQuantity;
     private final SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository;
     private final MerchCatgReplPackRepository merchCatgReplPackRepository;
-    private final AddStoreBuyQuantitiesService addStoreBuyQuantitiesService;
+    private final AddStoreBuyQuantityService addStoreBuyQuantityService;
     private final BuyQuantityConstraintService buyQuantityConstraintService;
 
     public CalculateFinelineBuyQuantity(BQFPService bqfpService,
@@ -50,7 +50,7 @@ public class CalculateFinelineBuyQuantity {
                                         StrategyFetchService strategyFetchService,
                                         SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository,
                                         MerchCatgReplPackRepository merchCatgReplPackRepository,
-                                        AddStoreBuyQuantitiesService addStoreBuyQuantitiesService,
+                                        AddStoreBuyQuantityService addStoreBuyQuantityService,
                                         BuyQuantityConstraintService buyQuantityConstraintService) {
         this.bqfpService = bqfpService;
         this.objectMapper = objectMapper;
@@ -59,7 +59,7 @@ public class CalculateFinelineBuyQuantity {
         this.calculateOnlineFinelineBuyQuantity = calculateOnlineFinelineBuyQuantity;
         this.spFineLineChannelFixtureRepository = spFineLineChannelFixtureRepository;
         this.merchCatgReplPackRepository = merchCatgReplPackRepository;
-        this.addStoreBuyQuantitiesService = addStoreBuyQuantitiesService;
+        this.addStoreBuyQuantityService = addStoreBuyQuantityService;
         this.buyQuantityConstraintService = buyQuantityConstraintService;
     }
 
@@ -285,14 +285,14 @@ public class CalculateFinelineBuyQuantity {
                 storeBuyQtyBySizeId.put(sizeDto, new BuyQtyObj());
                 buyQtyObj = storeBuyQtyBySizeId.get(sizeDto);
             }
-            AddStoreBuyQuantities addStoreBuyQuantities = new AddStoreBuyQuantities();
-            addStoreBuyQuantities.setRfaSizePackDataList(rfaSizePackDataList);
-            addStoreBuyQuantities.setStyleDto(styleDto);
-            addStoreBuyQuantities.setSizeDto(sizeDto);
-            addStoreBuyQuantities.setMerchMethodsDto(merchMethodsDto);
-            addStoreBuyQuantities.setBqfpResponse(bqfpResponse);
-            addStoreBuyQuantities.setCustomerChoiceDto(customerChoiceDto);
-            addStoreBuyQuantitiesService.addStoreBuyQuantities(addStoreBuyQuantities, buyQtyObj);
+            AddStoreBuyQuantity addStoreBuyQuantity = new AddStoreBuyQuantity();
+            addStoreBuyQuantity.setRfaSizePackDataList(rfaSizePackDataList);
+            addStoreBuyQuantity.setStyleDto(styleDto);
+            addStoreBuyQuantity.setSizeDto(sizeDto);
+            addStoreBuyQuantity.setMerchMethodsDto(merchMethodsDto);
+            addStoreBuyQuantity.setBqfpResponse(bqfpResponse);
+            addStoreBuyQuantity.setCustomerChoiceDto(customerChoiceDto);
+            addStoreBuyQuantityService.addStoreBuyQuantities(addStoreBuyQuantity, buyQtyObj);
             storeBuyQtyBySizeId.put(sizeDto, buyQtyObj);
         });
     }

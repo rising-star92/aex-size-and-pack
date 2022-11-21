@@ -22,8 +22,8 @@ public class CalculateBumpPackQtyService {
             double bsCalculatedBq = storeCnt * bumpQtyPerFixture * rfaSizePackData.getFixture_group();
             double bsQty = (bsCalculatedBq * BuyQtyCommonUtil.getSizePct(sizeDto)) / 100;
             double bsPerStoreQty = Math.round(bsQty / storeCnt);
-            bsQty = bsPerStoreQty * storeCnt;
-            bumpSetQuantity.setTotalUnits(bsQty);
+            double roundedBSQty = bsPerStoreQty * storeCnt;
+            bumpSetQuantity.setTotalUnits(roundedBSQty);
             bumpSetQuantity.setBsUnits(bsPerStoreQty);
             bumpPackQuantities.add(bumpSetQuantity);
         });

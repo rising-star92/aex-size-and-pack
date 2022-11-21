@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class AddStoreBuyQuantitiesService {
+public class AddStoreBuyQuantityService {
 
     @Autowired
     ObjectMapper objectMapper;
@@ -36,15 +36,15 @@ public class AddStoreBuyQuantitiesService {
     @ManagedConfiguration
     BuyQtyProperties buyQtyProperties;
 
-    public AddStoreBuyQuantitiesService() {
+    public AddStoreBuyQuantityService() {
 
     }
 
-    public AddStoreBuyQuantitiesService(ObjectMapper objectMapper,
-                                        CalculateBumpPackQtyService calculateBumpPackQtyService,
-                                        BuyQuantityConstraintService buyQuantityConstraintService,
-                                        CalculateInitialSetQuantityService calculateInitialSetQuantityService,
-                                        BuyQtyProperties buyQtyProperties) {
+    public AddStoreBuyQuantityService(ObjectMapper objectMapper,
+                                      CalculateBumpPackQtyService calculateBumpPackQtyService,
+                                      BuyQuantityConstraintService buyQuantityConstraintService,
+                                      CalculateInitialSetQuantityService calculateInitialSetQuantityService,
+                                      BuyQtyProperties buyQtyProperties) {
         this.objectMapper = objectMapper;
         this.calculateBumpPackQtyService = calculateBumpPackQtyService;
         this.buyQuantityConstraintService = buyQuantityConstraintService;
@@ -53,7 +53,7 @@ public class AddStoreBuyQuantitiesService {
     }
 
 
-    public void addStoreBuyQuantities(AddStoreBuyQuantities addStoreBuyQuantities, BuyQtyObj buyQtyObj) {
+    public void addStoreBuyQuantities(AddStoreBuyQuantity addStoreBuyQuantity, BuyQtyObj buyQtyObj) {
         BuyQtyStoreObj buyQtyStoreObj = Optional.ofNullable(buyQtyObj)
                 .map(BuyQtyObj::getBuyQtyStoreObj)
                 .orElse(new BuyQtyStoreObj());
@@ -61,30 +61,30 @@ public class AddStoreBuyQuantitiesService {
         List<StoreQuantity> initialSetQuantities = Optional.of(buyQtyStoreObj)
                 .map(BuyQtyStoreObj::getBuyQuantities)
                 .orElse(new ArrayList<>());
-        List<RFASizePackData> rfaSizePackDataList = addStoreBuyQuantities.getRfaSizePackDataList();
-        rfaSizePackDataList.forEach(rfaSizePackData -> calculateAndAddStoreBuyQuantities(addStoreBuyQuantities, buyQtyObj, initialSetQuantities, rfaSizePackData));
+        List<RFASizePackData> rfaSizePackDataList = addStoreBuyQuantity.getRfaSizePackDataList();
+        rfaSizePackDataList.forEach(rfaSizePackData -> calculateAndAddStoreBuyQuantities(addStoreBuyQuantity, buyQtyObj, initialSetQuantities, rfaSizePackData));
         buyQtyStoreObj.setBuyQuantities(initialSetQuantities);
         buyQtyObj.setBuyQtyStoreObj(buyQtyStoreObj);
     }
 
-    public void calculateAndAddStoreBuyQuantities(AddStoreBuyQuantities addStoreBuyQuantities, BuyQtyObj buyQtyObj, List<StoreQuantity> initialSetQuantities, RFASizePackData rfaSizePackData) {
+    public void calculateAndAddStoreBuyQuantities(AddStoreBuyQuantity addStoreBuyQuantity, BuyQtyObj buyQtyObj, List<StoreQuantity> initialSetQuantities, RFASizePackData rfaSizePackData) {
         if (rfaSizePackData == null) {
-            log.warn("rfaSizePackData is null. Not adding storeBuyQuantities for styleNbr : {} , ccId :{}  ", addStoreBuyQuantities.getStyleDto().getStyleNbr(), addStoreBuyQuantities.getCustomerChoiceDto().getCcId());
+            log.warn("rfaSizePackData is null. Not adding storeBuyQuantities for styleNbr : {} , ccId :{}  ", addStoreBuyQuantity.getStyleDto().getStyleNbr(), addStoreBuyQuantity.getCustomerChoiceDto().getCcId());
             return;
         }
-        Cluster volumeCluster = getVolumeCluster(addStoreBuyQuantities, rfaSizePackData);
+        Cluster volumeCluster = getVolumeCluster(addStoreBuyQuantity, rfaSizePackData);
         if (volumeCluster != null) {
             nullCheckForInitialSet(volumeCluster);
-            calculateReplenishmentLogic(addStoreBuyQuantities, initialSetQuantities, volumeCluster, buyQtyObj, rfaSizePackData);
+            calculateReplenishmentLogic(addStoreBuyQuantity, initialSetQuantities, volumeCluster, buyQtyObj, rfaSizePackData);
         }
     }
 
-    private void calculateReplenishmentLogic(AddStoreBuyQuantities addStoreBuyQuantities, List<StoreQuantity> initialSetQuantities, Cluster volumeCluster, BuyQtyObj buyQtyObj, RFASizePackData rfaSizePackData) {
+    private void calculateReplenishmentLogic(AddStoreBuyQuantity addStoreBuyQuantity, List<StoreQuantity> initialSetQuantities, Cluster volumeCluster, BuyQtyObj buyQtyObj, RFASizePackData rfaSizePackData) {
         List<Integer> storeList = safeReadStoreList(rfaSizePackData.getStore_list()).stream().sorted().collect(Collectors.toList());
-        SizeDto sizeDto = addStoreBuyQuantities.getSizeDto();
-        SPInitialSetQuantities spInitialSetQuantities = calculateInitialSetQuantityService.calculateInitialSetQty(sizeDto, volumeCluster, rfaSizePackData);
-        double perStoreQty = spInitialSetQuantities.getPerStoreQty();
-        double isQty = spInitialSetQuantities.getIsQty();
+        SizeDto sizeDto = addStoreBuyQuantity.getSizeDto();
+        SPInitialSetQuantity spInitialSetQuantity = calculateInitialSetQuantityService.calculateInitialSetQty(sizeDto, volumeCluster, rfaSizePackData);
+        double perStoreQty = spInitialSetQuantity.getPerStoreQty();
+        double isQty = spInitialSetQuantity.getIsQty();
         if ((perStoreQty < buyQtyProperties.getInitialThreshold() && perStoreQty > 0) && (!CollectionUtils.isEmpty(buyQtyObj.getReplenishments()))) {
             long totalReplenishment = getTotalReplenishment(buyQtyObj);
             if (totalReplenishment > 0) {
@@ -95,7 +95,7 @@ public class AddStoreBuyQuantitiesService {
                     buyQtyObj.setReplenishments(initialSetWithReplnsConstraint.getReplnsWithUnits());
                     perStoreQty = initialSetWithReplnsConstraint.getPerStoreQty();
                     isQty = initialSetWithReplnsConstraint.getIsQty();
-                    log.debug("| IS after IS constraints with more replenishment | : {} | {} | {} | {} | {} | {}", addStoreBuyQuantities.getCustomerChoiceDto().getCcId(), sizeDto.getSizeDesc(), addStoreBuyQuantities.getMerchMethodsDto().getFixtureTypeRollupId(), isQty, perStoreQty, storeList.size());
+                    log.debug("| IS after IS constraints with more replenishment | : {} | {} | {} | {} | {} | {}", addStoreBuyQuantity.getCustomerChoiceDto().getCcId(), sizeDto.getSizeDesc(), addStoreBuyQuantity.getMerchMethodsDto().getFixtureTypeRollupId(), isQty, perStoreQty, storeList.size());
                 } else {
                     int storeCntWithNewQty = (int) (totalReplenishment / unitsLessThanThreshold);
                     InitialSetWithReplnsConstraint initialSetWithReplnsConstraint = buyQuantityConstraintService.getISWithLessReplenConstraint(buyQtyObj, storeCntWithNewQty, storeList, perStoreQty, rfaSizePackData, volumeCluster, sizeDto);
@@ -105,7 +105,7 @@ public class AddStoreBuyQuantitiesService {
                     perStoreQty = initialSetWithReplnsConstraint.getPerStoreQty();
                     isQty = initialSetWithReplnsConstraint.getIsQty();
 
-                    log.debug("| IS after IS constraints with less replenishment with new IS qty | : {} | {} | {} | {} | {} | {}", addStoreBuyQuantities.getCustomerChoiceDto().getCcId(), sizeDto.getSizeDesc(), addStoreBuyQuantities.getMerchMethodsDto().getFixtureTypeRollupId()
+                    log.debug("| IS after IS constraints with less replenishment with new IS qty | : {} | {} | {} | {} | {} | {}", addStoreBuyQuantity.getCustomerChoiceDto().getCcId(), sizeDto.getSizeDesc(), addStoreBuyQuantity.getMerchMethodsDto().getFixtureTypeRollupId()
                             , isQty, perStoreQty, storeList.size());
                 }
             }
@@ -123,21 +123,21 @@ public class AddStoreBuyQuantitiesService {
                 .sum();
     }
 
-    private Cluster getVolumeCluster(AddStoreBuyQuantities addStoreBuyQuantities, RFASizePackData rfaSizePackData) {
-        return Optional.ofNullable(addStoreBuyQuantities.getBqfpResponse().getStyles())
+    private Cluster getVolumeCluster(AddStoreBuyQuantity addStoreBuyQuantity, RFASizePackData rfaSizePackData) {
+        return Optional.ofNullable(addStoreBuyQuantity.getBqfpResponse().getStyles())
                 .stream()
                 .flatMap(Collection::stream)
-                .filter(style -> style.getStyleId().equalsIgnoreCase(addStoreBuyQuantities.getStyleDto().getStyleNbr()))
+                .filter(style -> style.getStyleId().equalsIgnoreCase(addStoreBuyQuantity.getStyleDto().getStyleNbr()))
                 .findFirst()
                 .map(Style::getCustomerChoices)
                 .stream()
                 .flatMap(Collection::stream)
-                .filter(customerChoice -> customerChoice.getCcId().equalsIgnoreCase(addStoreBuyQuantities.getCustomerChoiceDto().getCcId()))
+                .filter(customerChoice -> customerChoice.getCcId().equalsIgnoreCase(addStoreBuyQuantity.getCustomerChoiceDto().getCcId()))
                 .findFirst()
                 .map(CustomerChoice::getFixtures)
                 .stream()
                 .flatMap(Collection::stream)
-                .filter(fixture -> fixture.getFixtureTypeRollupId().equals(addStoreBuyQuantities.getMerchMethodsDto().getFixtureTypeRollupId()))
+                .filter(fixture -> fixture.getFixtureTypeRollupId().equals(addStoreBuyQuantity.getMerchMethodsDto().getFixtureTypeRollupId()))
                 .findFirst()
                 .map(Fixture::getClusters)
                 .stream()

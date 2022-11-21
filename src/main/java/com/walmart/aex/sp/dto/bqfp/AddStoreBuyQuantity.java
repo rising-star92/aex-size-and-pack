@@ -8,7 +8,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class AddStoreBuyQuantities {
+public class AddStoreBuyQuantity {
     private StyleDto styleDto;
     private CustomerChoiceDto customerChoiceDto;
     private MerchMethodsDto merchMethodsDto;
