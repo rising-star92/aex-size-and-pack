@@ -46,7 +46,7 @@ public class MerchantPackOptimization {
     @Column(name="factory_name")
     private String factoryName;
 
-    @Column(name="single_pack_ind")
+    @Column(name="select_status_id")
     private Integer singlePackInd;
 
     @Column(name="port_of_origin_id")
@@ -63,9 +63,6 @@ public class MerchantPackOptimization {
 
     @Column(name="color_combination")
     private String colorCombination;
-
-    @Column(name="select_status_id ")
-    private Integer selectStatusId ;
 
 
     @JoinColumn(name = "channel_id", insertable = false, updatable = false)
