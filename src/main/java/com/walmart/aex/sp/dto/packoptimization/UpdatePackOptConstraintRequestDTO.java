@@ -18,7 +18,7 @@ public class UpdatePackOptConstraintRequestDTO {
     private String originCountryName;
     private String factoryId;
     private String factoryName;
-    private Integer selectStatusInd;
+    private Integer singlePackInd;
     private Integer portOfOriginId;
     private String portOfOriginName;
     private Integer maxUnitsPerPack;

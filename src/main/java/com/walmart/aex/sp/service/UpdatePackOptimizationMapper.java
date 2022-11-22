@@ -119,7 +119,7 @@ public class UpdatePackOptimizationMapper {
         setIfNotNull(request.getMaxUnitsPerPack(), () -> merchantPackOpt.setMaxUnitsPerPack(request.getMaxUnitsPerPack()));
         setIfNotNull(request.getPortOfOriginId(), () -> merchantPackOpt.setPortOfOriginId(request.getPortOfOriginId()));
         setIfNotNull(request.getPortOfOriginName(), () -> merchantPackOpt.setPortOfOriginName(request.getPortOfOriginName()));
-        setIfNotNull(request.getSelectStatusInd(), () -> merchantPackOpt.setSelectStatusId(request.getSelectStatusInd()));
+        setIfNotNull(request.getSinglePackInd(), () -> merchantPackOpt.setSelectStatusId(request.getSinglePackInd()));
         setIfNotNull(request.getFactoryId(), () -> merchantPackOpt.setFactoryId(request.getFactoryId()));
         setIfNotNull(request.getFactoryName(), () -> merchantPackOpt.setFactoryName(request.getFactoryName()));
         setIfNotNull(request.getOriginCountryCode(), () -> merchantPackOpt.setOriginCountryCode(request.getOriginCountryCode()));
@@ -135,7 +135,7 @@ public class UpdatePackOptimizationMapper {
         setIfNotNull(request.getMaxUnitsPerPack(), () -> subCatgPackOpt.setMaxUnitsPerPack(request.getMaxUnitsPerPack()));
         setIfNotNull(request.getPortOfOriginId(), () -> subCatgPackOpt.setPortOfOriginId(request.getPortOfOriginId()));
         setIfNotNull(request.getPortOfOriginName(), () -> subCatgPackOpt.setPortOfOriginName(request.getPortOfOriginName()));
-        setIfNotNull(request.getSelectStatusInd(), () -> subCatgPackOpt.setSelectStatusId(request.getSelectStatusInd()));
+        setIfNotNull(request.getSinglePackInd(), () -> subCatgPackOpt.setSelectStatusId(request.getSinglePackInd()));
         setIfNotNull(request.getFactoryId(), () -> subCatgPackOpt.setFactoryId(request.getFactoryId()));
         setIfNotNull(request.getFactoryName(), () -> subCatgPackOpt.setFactoryName(request.getFactoryName()));
         setIfNotNull(request.getOriginCountryCode(), () -> subCatgPackOpt.setOriginCountryCode(request.getOriginCountryCode()));
@@ -152,7 +152,7 @@ public class UpdatePackOptimizationMapper {
         setIfNotNull(request.getMaxUnitsPerPack(), () -> fineLinePackOpt.setMaxUnitsPerPack(request.getMaxUnitsPerPack()));
         setIfNotNull(request.getPortOfOriginId(), () -> fineLinePackOpt.setPortOfOriginId(request.getPortOfOriginId()));
         setIfNotNull(request.getPortOfOriginName(), () -> fineLinePackOpt.setPortOfOriginName(request.getPortOfOriginName()));
-        setIfNotNull(request.getSelectStatusInd(), () -> fineLinePackOpt.setSelectStatusId(request.getSelectStatusInd()));
+        setIfNotNull(request.getSinglePackInd(), () -> fineLinePackOpt.setSelectStatusId(request.getSinglePackInd()));
         setIfNotNull(request.getFactoryId(), () -> fineLinePackOpt.setFactoryId(request.getFactoryId()));
         setIfNotNull(request.getFactoryName(), () -> fineLinePackOpt.setFactoryName(request.getFactoryName()));
         setIfNotNull(request.getOriginCountryCode(), () -> fineLinePackOpt.setOriginCountryCode(request.getOriginCountryCode()));
@@ -168,7 +168,7 @@ public class UpdatePackOptimizationMapper {
         setIfNotNull(request.getMaxUnitsPerPack(), () -> stylePackOpt.setMaxUnitsPerPack(request.getMaxUnitsPerPack()));
         setIfNotNull(request.getPortOfOriginId(), () -> stylePackOpt.setPortOfOriginId(request.getPortOfOriginId()));
         setIfNotNull(request.getPortOfOriginName(), () -> stylePackOpt.setPortOfOriginName(request.getPortOfOriginName()));
-        setIfNotNull(request.getSelectStatusInd(), () -> stylePackOpt.setSelectStatusId(request.getSelectStatusInd()));
+        setIfNotNull(request.getSinglePackInd(), () -> stylePackOpt.setSelectStatusId(request.getSinglePackInd()));
         setIfNotNull(request.getFactoryId(), () -> stylePackOpt.setFactoryId(request.getFactoryId()));
         setIfNotNull(request.getFactoryName(), () -> stylePackOpt.setFactoryName(request.getFactoryName()));
         setIfNotNull(request.getOriginCountryCode(), () -> stylePackOpt.setOriginCountryCode(request.getOriginCountryCode()));
@@ -184,7 +184,7 @@ public class UpdatePackOptimizationMapper {
         setIfNotNull(request.getMaxUnitsPerPack(), () -> ccPackOpt.setMaxUnitsPerPack(request.getMaxUnitsPerPack()));
         setIfNotNull(request.getPortOfOriginId(), () -> ccPackOpt.setPortOfOriginId(request.getPortOfOriginId()));
         setIfNotNull(request.getPortOfOriginName(), () -> ccPackOpt.setPortOfOriginName(request.getPortOfOriginName()));
-        setIfNotNull(request.getSelectStatusInd(), () -> ccPackOpt.setSelectStatusId(request.getSelectStatusInd()));
+        setIfNotNull(request.getSinglePackInd(), () -> ccPackOpt.setSelectStatusId(request.getSinglePackInd()));
         setIfNotNull(request.getFactoryId(), () -> ccPackOpt.setFactoryId(request.getFactoryId()));
         setIfNotNull(request.getFactoryName(), () -> ccPackOpt.setFactoryName(request.getFactoryName()));
         setIfNotNull(request.getOriginCountryCode(), () -> ccPackOpt.setOriginCountryCode(request.getOriginCountryCode()));
