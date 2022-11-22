@@ -255,9 +255,9 @@ public class UpdatePackOptimizationMapper {
   public Integer getSignalIndicatorFlag(List<Integer> integers){
       boolean allChecked = integers.stream().allMatch(integer -> integer.equals(1));
       boolean allUnChecked = integers.stream().allMatch(integer -> integer.equals(0));
-      if(allChecked==true){
+      if(allChecked){
           return SingleIndicator.SELECTED.getId();
-      }else if(allUnChecked==true){
+      }else if(allUnChecked){
           return SingleIndicator.UNSELECTED.getId();
       }  else {
           return SingleIndicator.PARTIAL.getId();
