@@ -45,7 +45,6 @@ input UpdatePackOptConstraintRequestDTO {
 	originCountryName: String
 	factoryId: String
 	factoryName: String
-	singlePackInd: Int
 	selectStatusInd: Int
 	portOfOriginId: Int
 	portOfOriginName: String
