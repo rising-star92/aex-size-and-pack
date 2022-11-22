@@ -2,7 +2,7 @@ package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.packoptimization.UpdatePackOptConstraintRequestDTO;
 import com.walmart.aex.sp.entity.*;
-import com.walmart.aex.sp.enums.SingleIndicator;
+import com.walmart.aex.sp.enums.SinglePackIndicator;
 import com.walmart.aex.sp.repository.*;
 import com.walmart.aex.sp.repository.common.PackOptimizationCommonRepository;
 import org.junit.Test;
@@ -129,9 +129,9 @@ public class UpdatePackOptimizationMapperTest {
 
     @Test
     public void testSignalIndicator(){
-        assertEquals(SingleIndicator.PARTIAL.getId(),pkOptConstMapper.getSignalIndicatorFlag(List.of(1,0,0,0,1)));
-        assertEquals(SingleIndicator.SELECTED.getId(),pkOptConstMapper.getSignalIndicatorFlag(List.of(1,1,1,1)));
-        assertEquals(SingleIndicator.UNSELECTED.getId(),pkOptConstMapper.getSignalIndicatorFlag(List.of(0,0,0,0)));
+        assertEquals(SinglePackIndicator.PARTIAL.getId(),pkOptConstMapper.getSinglePackIndicatorFlag(List.of(1,0,0,0,1)));
+        assertEquals(SinglePackIndicator.SELECTED.getId(),pkOptConstMapper.getSinglePackIndicatorFlag(List.of(1,1,1,1)));
+        assertEquals(SinglePackIndicator.UNSELECTED.getId(),pkOptConstMapper.getSinglePackIndicatorFlag(List.of(0,0,0,0)));
     }
 
 }

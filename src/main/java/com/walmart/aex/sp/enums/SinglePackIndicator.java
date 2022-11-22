@@ -4,7 +4,7 @@ package com.walmart.aex.sp.enums;
 //selected - 1
 //unselected - 0
 //partial - 2
-public enum SingleIndicator {
+public enum SinglePackIndicator {
     SELECTED(1, "SELECTED"),
     UNSELECTED(0, "UNSELECTED"),
     PARTIAL(2, "PARTIAL SELECTED");
@@ -13,7 +13,7 @@ public enum SingleIndicator {
     private Integer id;
     private String description;
 
-    private SingleIndicator(Integer id, String description) {
+    private SinglePackIndicator(Integer id, String description) {
         this.id = id;
         this.description = description;
     }

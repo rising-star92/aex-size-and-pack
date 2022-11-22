@@ -2,7 +2,7 @@ package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.packoptimization.UpdatePackOptConstraintRequestDTO;
 import com.walmart.aex.sp.entity.*;
-import com.walmart.aex.sp.enums.SingleIndicator;
+import com.walmart.aex.sp.enums.SinglePackIndicator;
 import com.walmart.aex.sp.repository.common.PackOptimizationCommonRepository;
 import com.walmart.aex.sp.service.helper.Action;
 import lombok.extern.slf4j.Slf4j;
@@ -89,7 +89,7 @@ public class UpdatePackOptimizationMapper {
             for (StylePackOptimization st : stylePackOptimizationList) {
                 updateStPackOptConstFields(request, st);
             }
-            stylePackOptimizationList.forEach(stylePackOptimization -> stylePackOptimization.getCcPackOptimization());
+            stylePackOptimizationList.forEach(StylePackOptimization::getCcPackOptimization);
             rollupFinelineFields(merchantPackOptimizationList,request.getLvl3Nbr(), request.getLvl4Nbr(),request.getFinelineNbr());
         }
         packOptimizationCommonRepository.getStylePackOptimizationRepository().saveAll(stylePackOptimizationList);
@@ -119,7 +119,6 @@ public class UpdatePackOptimizationMapper {
         setIfNotNull(request.getMaxUnitsPerPack(), () -> merchantPackOpt.setMaxUnitsPerPack(request.getMaxUnitsPerPack()));
         setIfNotNull(request.getPortOfOriginId(), () -> merchantPackOpt.setPortOfOriginId(request.getPortOfOriginId()));
         setIfNotNull(request.getPortOfOriginName(), () -> merchantPackOpt.setPortOfOriginName(request.getPortOfOriginName()));
-        setIfNotNull(request.getSinglePackInd(), () -> merchantPackOpt.setSinglePackInd(request.getSinglePackInd()));
         setIfNotNull(request.getSelectStatusInd(), () -> merchantPackOpt.setSelectStatusId(request.getSelectStatusInd()));
         setIfNotNull(request.getFactoryId(), () -> merchantPackOpt.setFactoryId(request.getFactoryId()));
         setIfNotNull(request.getFactoryName(), () -> merchantPackOpt.setFactoryName(request.getFactoryName()));
@@ -136,7 +135,6 @@ public class UpdatePackOptimizationMapper {
         setIfNotNull(request.getMaxUnitsPerPack(), () -> subCatgPackOpt.setMaxUnitsPerPack(request.getMaxUnitsPerPack()));
         setIfNotNull(request.getPortOfOriginId(), () -> subCatgPackOpt.setPortOfOriginId(request.getPortOfOriginId()));
         setIfNotNull(request.getPortOfOriginName(), () -> subCatgPackOpt.setPortOfOriginName(request.getPortOfOriginName()));
-        setIfNotNull(request.getSinglePackInd(), () -> subCatgPackOpt.setSinglePackInd(request.getSinglePackInd()));
         setIfNotNull(request.getSelectStatusInd(), () -> subCatgPackOpt.setSelectStatusId(request.getSelectStatusInd()));
         setIfNotNull(request.getFactoryId(), () -> subCatgPackOpt.setFactoryId(request.getFactoryId()));
         setIfNotNull(request.getFactoryName(), () -> subCatgPackOpt.setFactoryName(request.getFactoryName()));
@@ -154,7 +152,6 @@ public class UpdatePackOptimizationMapper {
         setIfNotNull(request.getMaxUnitsPerPack(), () -> fineLinePackOpt.setMaxUnitsPerPack(request.getMaxUnitsPerPack()));
         setIfNotNull(request.getPortOfOriginId(), () -> fineLinePackOpt.setPortOfOriginId(request.getPortOfOriginId()));
         setIfNotNull(request.getPortOfOriginName(), () -> fineLinePackOpt.setPortOfOriginName(request.getPortOfOriginName()));
-        setIfNotNull(request.getSinglePackInd(), () -> fineLinePackOpt.setSinglePackInd(request.getSinglePackInd()));
         setIfNotNull(request.getSelectStatusInd(), () -> fineLinePackOpt.setSelectStatusId(request.getSelectStatusInd()));
         setIfNotNull(request.getFactoryId(), () -> fineLinePackOpt.setFactoryId(request.getFactoryId()));
         setIfNotNull(request.getFactoryName(), () -> fineLinePackOpt.setFactoryName(request.getFactoryName()));
@@ -171,7 +168,6 @@ public class UpdatePackOptimizationMapper {
         setIfNotNull(request.getMaxUnitsPerPack(), () -> stylePackOpt.setMaxUnitsPerPack(request.getMaxUnitsPerPack()));
         setIfNotNull(request.getPortOfOriginId(), () -> stylePackOpt.setPortOfOriginId(request.getPortOfOriginId()));
         setIfNotNull(request.getPortOfOriginName(), () -> stylePackOpt.setPortOfOriginName(request.getPortOfOriginName()));
-        setIfNotNull(request.getSinglePackInd(), () -> stylePackOpt.setSinglePackInd(request.getSinglePackInd()));
         setIfNotNull(request.getSelectStatusInd(), () -> stylePackOpt.setSelectStatusId(request.getSelectStatusInd()));
         setIfNotNull(request.getFactoryId(), () -> stylePackOpt.setFactoryId(request.getFactoryId()));
         setIfNotNull(request.getFactoryName(), () -> stylePackOpt.setFactoryName(request.getFactoryName()));
@@ -188,7 +184,6 @@ public class UpdatePackOptimizationMapper {
         setIfNotNull(request.getMaxUnitsPerPack(), () -> ccPackOpt.setMaxUnitsPerPack(request.getMaxUnitsPerPack()));
         setIfNotNull(request.getPortOfOriginId(), () -> ccPackOpt.setPortOfOriginId(request.getPortOfOriginId()));
         setIfNotNull(request.getPortOfOriginName(), () -> ccPackOpt.setPortOfOriginName(request.getPortOfOriginName()));
-        setIfNotNull(request.getSinglePackInd(), () -> ccPackOpt.setSinglePackInd(request.getSinglePackInd()));
         setIfNotNull(request.getSelectStatusInd(), () -> ccPackOpt.setSelectStatusId(request.getSelectStatusInd()));
         setIfNotNull(request.getFactoryId(), () -> ccPackOpt.setFactoryId(request.getFactoryId()));
         setIfNotNull(request.getFactoryName(), () -> ccPackOpt.setFactoryName(request.getFactoryName()));
@@ -207,7 +202,7 @@ public class UpdatePackOptimizationMapper {
     private void rollupCatgFields(List<MerchantPackOptimization> merchantPackOptimizationList,Integer lvl3Nbr)  {
         List<MerchantPackOptimization> merchantPackOptimizations = fetchMerchantPackOptimization(merchantPackOptimizationList, lvl3Nbr);
         merchantPackOptimizations.forEach(merchantPackOptimization -> {
-            merchantPackOptimization.setSelectStatusId(getSignalIndicatorFlag(merchantPackOptimization.getSubCatgPackOptimization().stream().map(SubCatgPackOptimization::getSelectStatusId).collect(Collectors.toList())));
+            merchantPackOptimization.setSelectStatusId(getSinglePackIndicatorFlag(merchantPackOptimization.getSubCatgPackOptimization().stream().map(SubCatgPackOptimization::getSelectStatusId).collect(Collectors.toList())));
         });
 
     }
@@ -217,7 +212,7 @@ public class UpdatePackOptimizationMapper {
         merchantPackOptimizations.forEach(merchantPackOptimization -> {
             fetchStrategySubCatgSpClus(merchantPackOptimization.getSubCatgPackOptimization(),lvl4Nbr).stream().forEach(
                     subCatgPackOptimization -> {
-                        subCatgPackOptimization.setSelectStatusId(getSignalIndicatorFlag(subCatgPackOptimization.getFinelinepackOptimization().stream().map(FineLinePackOptimization::getSelectStatusId).collect(Collectors.toList())));
+                        subCatgPackOptimization.setSelectStatusId(getSinglePackIndicatorFlag(subCatgPackOptimization.getFinelinepackOptimization().stream().map(FineLinePackOptimization::getSelectStatusId).collect(Collectors.toList())));
                     }
             );
         });
@@ -230,7 +225,7 @@ public class UpdatePackOptimizationMapper {
         merchantPackOptimizations.forEach(merchantPackOptimization -> {
             fetchStrategySubCatgSpClus(merchantPackOptimization.getSubCatgPackOptimization(),lvl4Nbr).stream().forEach(
                    subCatgPackOptimization -> fetchStrategyFinelineSpClus(subCatgPackOptimization.getFinelinepackOptimization(),finelineNbr).forEach(fineLinePackOptimization -> {
-                       fineLinePackOptimization.setSelectStatusId(getSignalIndicatorFlag(fineLinePackOptimization.getStylePackOptimization().stream().map(StylePackOptimization::getSelectStatusId).collect(Collectors.toList())));
+                       fineLinePackOptimization.setSelectStatusId(getSinglePackIndicatorFlag(fineLinePackOptimization.getStylePackOptimization().stream().map(StylePackOptimization::getSelectStatusId).collect(Collectors.toList())));
                    })
             );
         });
@@ -244,7 +239,7 @@ public class UpdatePackOptimizationMapper {
                     subCatgPackOptimization -> fetchStrategyFinelineSpClus(subCatgPackOptimization.getFinelinepackOptimization(),finelineNbr).forEach(fineLinePackOptimization -> {
                         fetchStylePackOptimization(fineLinePackOptimization.getStylePackOptimization(),styleNbr)
                                 .forEach(stylePackOptimization -> {
-                                    stylePackOptimization.setSelectStatusId(getSignalIndicatorFlag(stylePackOptimization.getCcPackOptimization().stream().map(CcPackOptimization::getSelectStatusId).collect(Collectors.toList())));
+                                    stylePackOptimization.setSelectStatusId(getSinglePackIndicatorFlag(stylePackOptimization.getCcPackOptimization().stream().map(CcPackOptimization::getSelectStatusId).collect(Collectors.toList())));
                                 });
                     })
             );
@@ -252,15 +247,15 @@ public class UpdatePackOptimizationMapper {
         rollupFinelineFields(merchantPackOptimizationList,lvl3Nbr,lvl4Nbr,finelineNbr);
     }
 
-  public Integer getSignalIndicatorFlag(List<Integer> integers){
+  public Integer getSinglePackIndicatorFlag(List<Integer> integers){
       boolean allChecked = integers.stream().allMatch(integer -> integer.equals(1));
       boolean allUnChecked = integers.stream().allMatch(integer -> integer.equals(0));
       if(allChecked){
-          return SingleIndicator.SELECTED.getId();
+          return SinglePackIndicator.SELECTED.getId();
       }else if(allUnChecked){
-          return SingleIndicator.UNSELECTED.getId();
+          return SinglePackIndicator.UNSELECTED.getId();
       }  else {
-          return SingleIndicator.PARTIAL.getId();
+          return SinglePackIndicator.PARTIAL.getId();
       }
     }
 
