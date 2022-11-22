@@ -50,7 +50,7 @@ public class ReplenishmentsOptimizationServiceTest {
         longs.forEach(l -> {
             Replenishment replenishment = new Replenishment();
             replenishment.setAdjReplnUnits(l);
-            double noOfVendorPacks =  Math.ceil((double) replenishment.getAdjReplnUnits() / 5.0);
+            double noOfVendorPacks = Math.ceil((double) replenishment.getAdjReplnUnits() / 5.0);
             Long updatedAdjReplnUnit = (long) (noOfVendorPacks * 5.0);
             replenishment.setAdjReplnUnits(updatedAdjReplnUnit);
             replenishments.add(replenishment);
