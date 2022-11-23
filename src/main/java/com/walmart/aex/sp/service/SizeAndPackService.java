@@ -58,6 +58,8 @@ public class SizeAndPackService {
 
     private final MerchPackOptimizationRepository merchPackOptimizationRepository;
 
+    private final PackOptUpdateDataMapper packOptUpdateDataMapper;
+
     private final PackOptAddDataMapper packOptAddDataMapper;
 
     @ManagedConfiguration
@@ -74,7 +76,7 @@ public class SizeAndPackService {
                               MerchCatPlanRepository merchCatPlanRepository, StrategyFetchService strategyFetchService,
                               SpCustomerChoiceChannelFixtureSizeRepository spCustomerChoiceChannelFixtureSizeRepository,
                               SizeAndPackDeleteService sizeAndPackDeleteService, SizeAndPackDeletePlanService sizeAndPackDeletePlanService
-            , BuyQtyCommonUtil buyQtyCommonUtil, BigQueryInitialSetPlanService bigQueryInitialSetPlanService, InitialSetPlanMapper initialSetPlanMapper, MerchPackOptimizationRepository merchPackOptimizationRepository, PackOptAddDataMapper packOptAddDataMapper) {
+            , BuyQtyCommonUtil buyQtyCommonUtil, BigQueryInitialSetPlanService bigQueryInitialSetPlanService, InitialSetPlanMapper initialSetPlanMapper, MerchPackOptimizationRepository merchPackOptimizationRepository, PackOptUpdateDataMapper packOptUpdateDataMapper, PackOptAddDataMapper packOptAddDataMapper) {
         this.spFineLineChannelFixtureRepository = spFineLineChannelFixtureRepository;
         this.buyQuantityMapper = buyQuantityMapper;
         this.spCustomerChoiceChannelFixtureRepository = spCustomerChoiceChannelFixtureRepository;
@@ -89,6 +91,7 @@ public class SizeAndPackService {
         this.bigQueryInitialSetPlanService = bigQueryInitialSetPlanService;
         this.initialSetPlanMapper = initialSetPlanMapper;
         this.merchPackOptimizationRepository = merchPackOptimizationRepository;
+        this.packOptUpdateDataMapper = packOptUpdateDataMapper;
         this.packOptAddDataMapper = packOptAddDataMapper;
     }
 
@@ -248,6 +251,7 @@ public class SizeAndPackService {
             for (Lvl1 lvl1 : planSizeAndPackDTO.getLvl1List()) {
                 for (Lvl2 lvl2 : lvl1.getLvl2List()) {
                     for (Lvl3 lvl3 : lvl2.getLvl3List()) {
+                        merchPackOptimizationRepository.saveAll(packOptUpdateDataMapper.updateMerchCatPackOpt(planSizeAndPackDTO, lvl1, lvl2, lvl3,merchPackOptimizationRepository));
                         merchCatPlanRepository.saveAll(sizeAndPackObjectMapper.updateMerchCatPlan(planSizeAndPackDTO, lvl1, lvl2, lvl3, lvl2.getLvl3List(), merchCatPlanRepository));
                        }
                 }
