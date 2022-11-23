@@ -62,7 +62,7 @@ public class FineLinePackOptimization {
     @Column(name="factory_name")
     private String factoryName;
 
-    @Column(name="single_pack_ind")
+    @Column(name="select_status_id")
     private Integer singlePackInd;
 
     @Column(name="port_of_origin_id")
