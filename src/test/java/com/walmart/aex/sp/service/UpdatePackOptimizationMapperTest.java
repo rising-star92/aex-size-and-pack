@@ -111,15 +111,15 @@ public class UpdatePackOptimizationMapperTest {
         when(packOptimizationCommonRepository.getStylePackOptimizationRepository()).thenReturn(stylePackOptimizationRepository);
         when(packOptimizationCommonRepository.getCcPackOptimizationRepository()).thenReturn(ccPackOptimizationRepository);
         pkOptConstMapper.updateCategoryPackOptCons(request,merchantPackOptimizationList);
-        assertEquals(merchantPackOptimizationList.get(0).getOriginCountryCode(), "US");
+        assertEquals("US",merchantPackOptimizationList.get(0).getOriginCountryCode());
         for (SubCatgPackOptimization subcatgOptCons :merchantPackOptimizationList.get(0).getSubCatgPackOptimization()){
-            assertEquals(subcatgOptCons.getOriginCountryCode(), "US");
+            assertEquals("US",subcatgOptCons.getOriginCountryCode());
             for (FineLinePackOptimization flPackOptimization :subcatgOptCons.getFinelinepackOptimization()){
-                assertEquals(flPackOptimization.getOriginCountryCode(), "US");
+                assertEquals("US",flPackOptimization.getOriginCountryCode());
                 for (StylePackOptimization stPackOptimization :flPackOptimization.getStylePackOptimization()){
-                    assertEquals(stPackOptimization.getOriginCountryCode(), "US");
+                    assertEquals("US",stPackOptimization.getOriginCountryCode());
                     for (CcPackOptimization ccPkOptimization :stPackOptimization.getCcPackOptimization()){
-                        assertEquals(ccPkOptimization.getOriginCountryCode(), "US");
+                        assertEquals("US",ccPkOptimization.getOriginCountryCode());
                     }
                 }
             }

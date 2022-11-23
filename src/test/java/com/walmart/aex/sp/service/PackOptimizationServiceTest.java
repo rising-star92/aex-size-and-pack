@@ -144,8 +144,9 @@ class PackOptimizationServiceTest {
 		Integer status = 10;
 		packOptimizationService.updatePackOptServiceStatus(planId, finelineNbr, status);
 		Mockito.verify(packOptimizationService,Mockito.times(1)).updatePackOptServiceStatus(planId, finelineNbr, status);
-		assertEquals(46, finelineNbr);
-	}
+		assertEquals(46,finelineNbr);
+	}	
+
 
 	@Test
 	void testGetPackOptFinelineDetails() {
