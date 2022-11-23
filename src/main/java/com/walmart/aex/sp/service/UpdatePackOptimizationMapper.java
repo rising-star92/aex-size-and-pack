@@ -248,8 +248,8 @@ public class UpdatePackOptimizationMapper {
     }
 
   public Integer getSinglePackIndicatorFlag(List<Integer> integers){
-      boolean allChecked = integers.stream().allMatch(integer -> integer.equals(1));
-      boolean allUnChecked = integers.stream().allMatch(integer -> integer.equals(0));
+      boolean allChecked = integers.stream().filter(Objects::nonNull).allMatch(integer -> integer.equals(1));
+      boolean allUnChecked = integers.stream().filter(Objects::nonNull).allMatch(integer -> integer.equals(0));
       if(allChecked){
           return SinglePackIndicator.SELECTED.getId();
       }else if(allUnChecked){
