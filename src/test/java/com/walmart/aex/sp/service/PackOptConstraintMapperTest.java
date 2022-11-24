@@ -1,6 +1,8 @@
 package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.mapper.FineLineMapperDto;
+import com.walmart.aex.sp.dto.packoptimization.ColorCombinationConstraints;
+import com.walmart.aex.sp.dto.packoptimization.Constraints;
 import com.walmart.aex.sp.dto.packoptimization.CustomerChoice;
 import com.walmart.aex.sp.dto.packoptimization.Fineline;
 import com.walmart.aex.sp.dto.packoptimization.PackOptimizationResponse;
@@ -104,6 +106,59 @@ class PackOptConstraintMapperTest {
         assertEquals(finelineNbr, actual.get(0).getLvl4List().get(0).getFinelines().get(0).getFinelineNbr());
         assertEquals(styleNbr, actual.get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getStyleNbr());
         assertEquals(ccId, actual.get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getCustomerChoices().get(0).getCcId());
+
+    }
+
+    @Test
+    void test_mapPackOptLvl3ShouldReturnConsolidatedSupplierNames() {
+        CustomerChoice customerChoice = new CustomerChoice();
+        customerChoice.setCcId(ccId);
+
+        Style style = new Style();
+        style.setStyleNbr(styleNbr);
+        style.setCustomerChoices(List.of(customerChoice));
+
+        ColorCombinationConstraints colorCombinationConstraints = new ColorCombinationConstraints();
+        colorCombinationConstraints.setSupplierName("PUMA");
+
+        Constraints constraint = new Constraints();
+        constraint.setColorCombinationConstraints(colorCombinationConstraints);
+
+        Fineline fineline = new Fineline();
+        fineline.setFinelineNbr(finelineNbr);
+        fineline.setStyles(List.of(style));
+        fineline.setConstraints(constraint);
+
+        Lvl4 lvl4 = new Lvl4();
+        lvl4.setLvl4Nbr(11);
+        lvl4.setFinelines(List.of(fineline));
+
+        Lvl3 lvl3 = new Lvl3();
+        lvl3.setLvl3Nbr(13);
+        lvl3.setLvl4List(List.of(lvl4));
+
+        PackOptimizationResponse packOptimizationResponse = new PackOptimizationResponse();
+        packOptimizationResponse.setPlanId(planId);
+        packOptimizationResponse.setLvl0Nbr(123);
+        packOptimizationResponse.setLvl1Nbr(234);
+        packOptimizationResponse.setLvl2Nbr(12);
+        packOptimizationResponse.setChannel("store");
+        packOptimizationResponse.setLvl3List(List.of(lvl3));
+        FineLineMapperDto fineLineMapperDto = new FineLineMapperDto();
+        fineLineMapperDto.setChannelId(2);
+        fineLineMapperDto.setPlanId(planId);
+        fineLineMapperDto.setLvl2Nbr(12);
+        fineLineMapperDto.setLvl3Nbr(13);
+        fineLineMapperDto.setLvl4Nbr(11);
+        fineLineMapperDto.setLvl0Nbr(123);
+        fineLineMapperDto.setLvl1Nbr(234);
+        fineLineMapperDto.setFineLineNbr(finelineNbr);
+        fineLineMapperDto.setStyleNbr(styleNbr);
+        fineLineMapperDto.setCcId(ccId);
+        fineLineMapperDto.setCcSupplierName("NIKE");
+        List<Lvl3> actual = packOptConstraintMapper.mapPackOptLvl3(fineLineMapperDto, packOptimizationResponse);
+        assertEquals(finelineNbr, actual.get(0).getLvl4List().get(0).getFinelines().get(0).getFinelineNbr());
+        assertEquals("PUMA, NIKE", actual.get(0).getLvl4List().get(0).getFinelines().get(0).getConstraints().getColorCombinationConstraints().getSupplierName());
 
     }
 }

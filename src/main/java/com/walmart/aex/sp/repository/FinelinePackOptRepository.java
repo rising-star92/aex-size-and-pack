@@ -53,6 +53,15 @@ public interface FinelinePackOptRepository
             "fineLinePackOpt.portOfOriginName,\n" +
             "fineLinePackOpt.singlePackInd,\n" +
             "fineLinePackOpt.colorCombination,\n" +
+            "cpk.ccPackOptimizationId.customerChoice, \n" +
+            "cpk.vendorName as ccSupplierName , " +
+            "cpk.factoryId as ccFactoryIds , " +
+            "cpk.originCountryName as ccCountryOfOrigin , " +
+            "cpk.portOfOriginName as ccPortOfOrigin , " +
+            "cpk.singlePackInd as ccSinglePackIndicator , " +
+            "cpk.colorCombination as ccColorCombination , " +
+            "cpk.maxUnitsPerPack as ccMaxUnitsPerPack , " +
+            "cpk.maxNbrOfPacks as ccMaxPacks , " +
             "analytic.startTs,\n" +
             "analytic.endTs,\n" +
             "r.runStatusCode,\n" +
@@ -108,6 +117,15 @@ public interface FinelinePackOptRepository
             "AND finePlan.finelinePlanId.subCatPlanId.merchCatPlanId.lvl0Nbr = fineLinePackOpt.finelinePackOptId.subCatgPackOptimizationID.merchantPackOptimizationID.repTLvl0 \n" +
             "AND finePlan.finelinePlanId.subCatPlanId.merchCatPlanId.channelId = fineLinePackOpt.channelText.channelId \n" +
             "AND finePlan.finelinePlanId.subCatPlanId.merchCatPlanId.planId = fineLinePackOpt.finelinePackOptId.subCatgPackOptimizationID.merchantPackOptimizationID.planId \n" +
+
+            "left join CcPackOptimization cpk ON finePlan.finelinePlanId.finelineNbr = cpk.ccPackOptimizationId.stylePackOptimizationID.finelinePackOptimizationID.finelineNbr \n" +
+            "AND finePlan.finelinePlanId.subCatPlanId.merchCatPlanId.planId = cpk.ccPackOptimizationId.stylePackOptimizationID.finelinePackOptimizationID.subCatgPackOptimizationID.merchantPackOptimizationID.planId \n" +
+            "AND finePlan.finelinePlanId.subCatPlanId.merchCatPlanId.lvl0Nbr = cpk.ccPackOptimizationId.stylePackOptimizationID.finelinePackOptimizationID.subCatgPackOptimizationID.merchantPackOptimizationID.repTLvl0 \n" +
+            "AND finePlan.finelinePlanId.subCatPlanId.merchCatPlanId.lvl1Nbr = cpk.ccPackOptimizationId.stylePackOptimizationID.finelinePackOptimizationID.subCatgPackOptimizationID.merchantPackOptimizationID.repTLvl1 \n" +
+            "AND finePlan.finelinePlanId.subCatPlanId.merchCatPlanId.lvl2Nbr = cpk.ccPackOptimizationId.stylePackOptimizationID.finelinePackOptimizationID.subCatgPackOptimizationID.merchantPackOptimizationID.repTLvl2 \n" +
+            "AND subCatPlan.merchCatPlan.merchCatPlanId.lvl3Nbr = cpk.ccPackOptimizationId.stylePackOptimizationID.finelinePackOptimizationID.subCatgPackOptimizationID.merchantPackOptimizationID.repTLvl3\n " +
+            "AND finePlan.finelinePlanId.subCatPlanId.lvl4Nbr = cpk.ccPackOptimizationId.stylePackOptimizationID.finelinePackOptimizationID.subCatgPackOptimizationID.repTLvl4 \n" +
+            "AND finePlan.finelinePlanId.subCatPlanId.merchCatPlanId.channelId = cpk.channelText.channelId " +
 
             "left JOIN AnalyticsMlSend analytic " +
             " ON analytic.planId = finePlan.finelinePlanId.subCatPlanId.merchCatPlanId.planId \n" +

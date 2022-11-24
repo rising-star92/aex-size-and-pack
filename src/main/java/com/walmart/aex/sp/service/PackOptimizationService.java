@@ -28,7 +28,9 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -74,12 +76,26 @@ public class PackOptimizationService {
     public PackOptimizationResponse getPackOptDetails(Long planId, Integer channelId) {
         try {
             List<FineLineMapperDto> finePlanPackOptimizationList = packOptfineplanRepo.findByFinePlanPackOptimizationIDPlanIdAndChannelTextChannelId(planId, channelId);
+            finePlanPackOptimizationList = getUniqueFineLineMapperDTO(finePlanPackOptimizationList);
             return packOptDetails(finePlanPackOptimizationList, planId, channelId);
         } catch (Exception e) {
             log.error("Error Occurred while fetching Pack Opt", e);
             throw e;
         }
 
+    }
+
+    private List<FineLineMapperDto> getUniqueFineLineMapperDTO(List<FineLineMapperDto> finePlanPackOptimizationList) {
+        Map<Integer, Map<String,FineLineMapperDto>> res = new HashMap<>();
+        List<FineLineMapperDto> finalFineLineMapperDtoList = new ArrayList<>();
+        finePlanPackOptimizationList.forEach(fineLineMapperDto -> {
+            res.putIfAbsent(fineLineMapperDto.getFineLineNbr(), new HashMap<>());
+            Map<String, FineLineMapperDto> currentCCIDMap = res.get(fineLineMapperDto.getFineLineNbr());
+            currentCCIDMap.put(fineLineMapperDto.getCcId()+""+fineLineMapperDto.getFineLineNbr(), fineLineMapperDto);
+            res.put(fineLineMapperDto.getFineLineNbr(), currentCCIDMap);
+        });
+        res.forEach((k,v) -> v.keySet().stream().map(v::get).forEach(finalFineLineMapperDtoList::add));
+        return finalFineLineMapperDtoList;
     }
 
     private PackOptimizationResponse packOptDetails(

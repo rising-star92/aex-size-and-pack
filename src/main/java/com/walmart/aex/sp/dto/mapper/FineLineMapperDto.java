@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.Date;
 
@@ -12,6 +13,7 @@ import java.util.Date;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class FineLineMapperDto {
 
     private Long planId;
@@ -80,7 +82,7 @@ public class FineLineMapperDto {
     private Integer ccMaxUnitsPerPack;
     private Integer ccMaxPacks;
 
-    public FineLineMapperDto(Long planId, Integer channelId, Integer lvl0Nbr, Integer lvl1Nbr, Integer lvl2Nbr, Integer lvl3Nbr, Integer lvl4Nbr, Integer fineLineNbr, String fineLineDesc, String altfineLineDesc, String lvl0Desc, String lvl1Desc, String lvl2Desc, String lvl3Desc, String lvl4Desc, String merchSupplierName, Integer merchMaxUnitsPerPack, Integer merchMaxNbrOfPacks, String merchFactoryId, String merchOriginCountryName, String merchPortOfOriginName, Integer merchSinglePackInd, String merchColorCombination, String subCatSupplierName, Integer subCatMaxUnitsPerPack, Integer subCatMaxNbrOfPacks, String subCatFactoryId, String subCatOriginCountryName, String subCatPortOfOriginName, Integer subCatSinglePackInd, String subCatColorCombination, String fineLineSupplierName, Integer fineLineMaxUnitsPerPack, Integer fineLineMaxNbrOfPacks, String fineLineFactoryId, String fineLineOriginCountryName, String fineLinePortOfOriginName, Integer fineLineSinglePackInd, String fineLineColorCombination, Date startTs, Date endTs, Integer runStatusCode, String runStatusDesc, String firstName, String lastName, String returnMessage) {
+    public FineLineMapperDto(Long planId, Integer channelId, Integer lvl0Nbr, Integer lvl1Nbr, Integer lvl2Nbr, Integer lvl3Nbr, Integer lvl4Nbr, Integer fineLineNbr, String fineLineDesc, String altfineLineDesc, String lvl0Desc, String lvl1Desc, String lvl2Desc, String lvl3Desc, String lvl4Desc, String merchSupplierName, Integer merchMaxUnitsPerPack, Integer merchMaxNbrOfPacks, String merchFactoryId, String merchOriginCountryName, String merchPortOfOriginName, Integer merchSinglePackInd, String merchColorCombination, String subCatSupplierName, Integer subCatMaxUnitsPerPack, Integer subCatMaxNbrOfPacks, String subCatFactoryId, String subCatOriginCountryName, String subCatPortOfOriginName, Integer subCatSinglePackInd, String subCatColorCombination, String fineLineSupplierName, Integer fineLineMaxUnitsPerPack, Integer fineLineMaxNbrOfPacks, String fineLineFactoryId, String fineLineOriginCountryName, String fineLinePortOfOriginName, Integer fineLineSinglePackInd, String fineLineColorCombination,String ccId, String ccSupplierName, String ccFactoryIds, String ccCountryOfOrigin, String ccPortOfOrigin, Integer ccSinglePackIndicator, String ccColorCombination, Integer ccMaxUnitsPerPack, Integer ccMaxPacks, Date startTs, Date endTs, Integer runStatusCode, String runStatusDesc, String firstName, String lastName, String returnMessage) {
         this.planId = planId;
         this.channelId = channelId;
         this.lvl0Nbr = lvl0Nbr;
@@ -127,5 +129,14 @@ public class FineLineMapperDto {
         this.firstName = firstName;
         this.lastName = lastName;
         this.returnMessage = returnMessage;
+        this.ccId = ccId;
+        this.ccSupplierName = ccSupplierName;
+        this.ccFactoryIds = ccFactoryIds;
+        this.ccCountryOfOrigin = ccCountryOfOrigin;
+        this.ccPortOfOrigin = ccPortOfOrigin;
+        this.ccSinglePackIndicator = ccSinglePackIndicator;
+        this.ccColorCombination = ccColorCombination;
+        this.ccMaxUnitsPerPack = ccMaxUnitsPerPack;
+        this.ccMaxPacks = ccMaxPacks;
     }
 }
