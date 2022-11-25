@@ -13,20 +13,18 @@ import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
 import com.walmart.aex.sp.dto.planhierarchy.Style;
 import com.walmart.aex.sp.enums.CategoryType;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
 public class PackOptConstraintMapper {
 
     public List<Lvl3> mapPackOptLvl3(FineLineMapperDto fineLineMapperDto, PackOptimizationResponse response) {
-        List<Lvl3> lvl3List = CollectionUtils.isEmpty(response.getLvl3List())
-                ? new ArrayList<>() : new ArrayList<>(response.getLvl3List());
+        List<Lvl3> lvl3List = Optional.ofNullable(response.getLvl3List()).orElse(new ArrayList<>());
 
         lvl3List.stream()
                 .filter(lvl3 -> lvl3.getLvl3Nbr() != null && fineLineMapperDto.getLvl3Nbr().equals(lvl3.getLvl3Nbr())).findFirst()
@@ -48,8 +46,7 @@ public class PackOptConstraintMapper {
     }
 
     private List<Lvl4> getLvl4Sp(FineLineMapperDto fineLineMapperDto, Lvl3 lvl3) {
-        List<Lvl4> lvl4DtoList = CollectionUtils.isEmpty(lvl3.getLvl4List())
-                ? new ArrayList<>() : new ArrayList<>(lvl3.getLvl4List());
+        List<Lvl4> lvl4DtoList = Optional.ofNullable(lvl3.getLvl4List()).orElse(new ArrayList<>());
 
         lvl4DtoList.stream()
                 .filter(lvl4 -> lvl4.getLvl4Nbr() != null && fineLineMapperDto.getLvl4Nbr().equals(lvl4.getLvl4Nbr())).findFirst()
@@ -68,31 +65,39 @@ public class PackOptConstraintMapper {
     }
 
     private List<Fineline> getFineLines(FineLineMapperDto fineLineMapperDto, Lvl4 lvl4) {
-        List<Fineline> fineLineDtoList = CollectionUtils.isEmpty(lvl4.getFinelines())
-                ? new ArrayList<>() : new ArrayList<>(lvl4.getFinelines());
+        List<Fineline> finelineDtoList = Optional.ofNullable(lvl4.getFinelines()).orElse(new ArrayList<>());
 
-        fineLineDtoList.stream()
-                .filter(fineLineDto -> fineLineDto.getFinelineNbr() != null
-                        && fineLineMapperDto.getFineLineNbr().equals(fineLineDto.getFinelineNbr())).findFirst()
-                .ifPresentOrElse(fineLineDto -> {
-                            fineLineDtoList.remove(fineLineDto);
-                            setPackOptFineLine(fineLineMapperDto, fineLineDtoList);
+        finelineDtoList.stream()
+                .filter(finelineDto -> finelineDto.getFinelineNbr() != null && fineLineMapperDto.getFineLineNbr().equals(finelineDto.getFinelineNbr())).findFirst()
+                .ifPresentOrElse(finelineDto -> {
+                            if (finelineDto.getOptimizationDetails() != null &&
+                                    !finelineDto.getOptimizationDetails().isEmpty()
+                                    && finelineDto.getOptimizationDetails().get(0).getStartTs() != null
+                                    && finelineDto.getOptimizationDetails().get(0).getStartTs()
+                                    .compareTo(fineLineMapperDto.getStartTs()) < 0) {
+                                finelineDtoList.remove(finelineDto);
+                                setPackOptFineLine(fineLineMapperDto, finelineDtoList);
+                            }
+                            if (fineLineMapperDto.getFineLineNbr() != null) {
+                                finelineDto.setStyles(getPackOptStyles(fineLineMapperDto, finelineDto));
+                            }
                         },
-                        () -> setPackOptFineLine(fineLineMapperDto, fineLineDtoList));
-        return fineLineDtoList;
+                        () -> setPackOptFineLine(fineLineMapperDto, finelineDtoList));
+        return finelineDtoList;
     }
 
     private void setPackOptFineLine(FineLineMapperDto fineLineMapperDto, List<Fineline> finelineDtoList) {
         Fineline fineline = new Fineline();
-        String status = StringUtils.isEmpty(fineLineMapperDto.getRunStatusDesc())
-                ? "NOT SENT" : fineLineMapperDto.getRunStatusDesc();
+        String status = Optional.ofNullable(fineLineMapperDto.getRunStatusDesc()).orElse("NOT SENT");
         fineline.setFinelineNbr(fineLineMapperDto.getFineLineNbr());
         fineline.setFinelineName(fineLineMapperDto.getFineLineDesc());
         fineline.setAltFinelineName(fineLineMapperDto.getAltfineLineDesc());
         fineline.setPackOptimizationStatus(status);
         fineline.setOptimizationDetails(getRunOptimizationDetails(fineLineMapperDto));
         fineline.setConstraints(getConstraints(fineLineMapperDto, CategoryType.FINE_LINE));
-        setPackOptStyles(fineLineMapperDto, fineline);
+        if (fineLineMapperDto.getFineLineNbr() != null) {
+            fineline.setStyles(getPackOptStyles(fineLineMapperDto, fineline));
+        }
         finelineDtoList.add(fineline);
     }
 
@@ -105,42 +110,40 @@ public class PackOptConstraintMapper {
         return List.of(opt);
     }
 
-    private void setPackOptStyles(FineLineMapperDto fineLineMapperDto, Fineline fineline) {
-        List<Style> styleDtoList = CollectionUtils.isEmpty(fineline.getStyles())
-                ? new ArrayList<>() : new ArrayList<>(fineline.getStyles());
+    private List<Style> getPackOptStyles(FineLineMapperDto fineLineMapperDto, Fineline fineline) {
+        List<Style> styleDtoList = Optional.ofNullable(fineline.getStyles()).orElse(new ArrayList<>());
 
         styleDtoList.stream()
-                .filter(styleDto -> styleDto.getStyleNbr() != null
-                        && fineLineMapperDto.getStyleNbr().equals(styleDto.getStyleNbr())).findFirst()
+                .filter(styleDto -> styleDto.getStyleNbr() != null && fineLineMapperDto.getStyleNbr().equals(styleDto.getStyleNbr())).findFirst()
                 .ifPresentOrElse(style ->
-                                setPackOptCustomerChoice(fineLineMapperDto, style),
+                                style.setCustomerChoices(getPackOptCustomerChoice(fineLineMapperDto, style)),
                         () -> setPackOptStyle(fineLineMapperDto, styleDtoList));
-        fineline.setStyles(styleDtoList);
+        return styleDtoList;
     }
 
 
     private void setPackOptStyle(FineLineMapperDto fineLineMapperDto, List<Style> styleDtoList) {
+
         Style styleDto = new Style();
         styleDto.setStyleNbr(fineLineMapperDto.getStyleNbr());
         styleDto.setConstraints(getConstraints(fineLineMapperDto.getStyleSupplierName(),
                 fineLineMapperDto.getStyleFactoryIds(), fineLineMapperDto.getStyleCountryOfOrigin(),
                 fineLineMapperDto.getStylePortOfOrigin(), fineLineMapperDto.getStyleSinglePackIndicator(),
                 fineLineMapperDto.getStyleColorCombination()));
-        setPackOptCustomerChoice(fineLineMapperDto, styleDto);
+        styleDto.setCustomerChoices(getPackOptCustomerChoice(fineLineMapperDto, styleDto));
         styleDtoList.add(styleDto);
     }
 
-    private void setPackOptCustomerChoice(FineLineMapperDto fineLineMapperDto, Style styleDto) {
-        List<CustomerChoice> customerChoiceList = CollectionUtils.isEmpty(styleDto.getCustomerChoices())
-                ? new ArrayList<>() : new ArrayList<>(styleDto.getCustomerChoices());
+    private List<CustomerChoice> getPackOptCustomerChoice(FineLineMapperDto fineLineMapperDto, Style styleDto) {
+        List<CustomerChoice> customerChoiceList = Optional.ofNullable(styleDto.getCustomerChoices()).orElse(new ArrayList<>());
 
         customerChoiceList.stream()
-                .filter(customerChoiceDto -> customerChoiceDto.getCcId() != null
-                        && fineLineMapperDto.getCcId().equals(customerChoiceDto.getCcId())).findFirst()
+                .filter(customerChoiceDto -> customerChoiceDto.getCcId() != null && fineLineMapperDto.getCcId().equals(customerChoiceDto.getCcId())).findFirst()
                 .ifPresentOrElse(customerChoiceDto -> {
                         },
                         () -> setPackOptCc(fineLineMapperDto, customerChoiceList));
-        styleDto.setCustomerChoices(customerChoiceList);
+        return customerChoiceList;
+
     }
 
     private void setPackOptCc(FineLineMapperDto fineLineMapperDto, List<CustomerChoice> customerChoiceDtoList) {
