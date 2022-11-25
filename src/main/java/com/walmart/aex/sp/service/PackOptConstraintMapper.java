@@ -16,11 +16,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @Slf4j
@@ -30,43 +28,11 @@ public class PackOptConstraintMapper {
         List<Lvl3> lvl3List = CollectionUtils.isEmpty(response.getLvl3List())
                 ? new ArrayList<>() : new ArrayList<>(response.getLvl3List());
 
-        verifyAndUpdateSupplierInfo(fineLineMapperDto, response);
-
         lvl3List.stream()
                 .filter(lvl3 -> lvl3.getLvl3Nbr() != null && fineLineMapperDto.getLvl3Nbr().equals(lvl3.getLvl3Nbr())).findFirst()
                 .ifPresentOrElse(lvl3 -> lvl3.setLvl4List(getLvl4Sp(fineLineMapperDto, lvl3)),
                         () -> setPackOptLvl3(fineLineMapperDto, lvl3List));
         return lvl3List;
-    }
-
-    private static void verifyAndUpdateSupplierInfo(FineLineMapperDto fineLineMapperDto, PackOptimizationResponse response) {
-        if(!ObjectUtils.isEmpty(response) && !CollectionUtils.isEmpty(response.getLvl3List())) {
-            for (Lvl3 lvl3 : response.getLvl3List()) {
-                if (!CollectionUtils.isEmpty(lvl3.getLvl4List())) {
-                    for (Lvl4 lvl4 : lvl3.getLvl4List()) {
-                        if (!CollectionUtils.isEmpty(lvl4.getFinelines())) {
-                            updateSuppliersName(fineLineMapperDto, lvl4.getFinelines());
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private static void updateSuppliersName(FineLineMapperDto fineLineMapperDto, List<Fineline> fineLines) {
-        StringBuilder supplierName = new StringBuilder();
-        for (Fineline fineline : fineLines) {
-            if (!ObjectUtils.isEmpty(fineline.getConstraints())
-                    && !ObjectUtils.isEmpty(fineline.getConstraints().getColorCombinationConstraints())
-                    && fineline.getFinelineNbr() != null
-                    && Objects.equals(fineline.getFinelineNbr(), fineLineMapperDto.getFineLineNbr())
-                    && StringUtils.isNotEmpty(fineline.getConstraints().getColorCombinationConstraints().getSupplierName())
-            ) {
-                supplierName.append(fineline.getConstraints().getColorCombinationConstraints().getSupplierName()).append(", ");
-            }
-        }
-        supplierName.append(StringUtils.isNotEmpty(fineLineMapperDto.getCcSupplierName())? fineLineMapperDto.getCcSupplierName(): "");
-        fineLineMapperDto.setFineLineSupplierName(supplierName.toString().length() > 0 ? supplierName.toString(): "");
     }
 
     private void setPackOptLvl3(FineLineMapperDto fineLineMapperDto, List<Lvl3> lvl3List) {
