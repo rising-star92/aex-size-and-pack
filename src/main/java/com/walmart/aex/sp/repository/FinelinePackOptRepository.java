@@ -30,6 +30,8 @@ public interface FinelinePackOptRepository
             "merchCatPlan.lvl3Desc,\n" +
             "subCatPlan.lvl4Desc,\n" +
             "merchPackOpt.vendorName,\n" +
+            "merchPackOpt.vendorNbr6,\n" +
+            "merchPackOpt.vendorNbr9,\n" +
             "merchPackOpt.maxUnitsPerPack,\n" +
             "merchPackOpt.maxNbrOfPacks,\n" +
             "merchPackOpt.factoryId,\n" +
@@ -38,6 +40,8 @@ public interface FinelinePackOptRepository
             "merchPackOpt.singlePackInd,\n" +
             "merchPackOpt.colorCombination,\n" +
             "subCatPackOpt.vendorName,\n" +
+            "subCatPackOpt.vendorNbr6,\n" +
+            "subCatPackOpt.vendorNbr9,\n" +
             "subCatPackOpt.maxUnitsPerPack,\n" +
             "subCatPackOpt.maxNbrOfPacks,\n" +
             "subCatPackOpt.factoryId,\n" +
@@ -46,6 +50,8 @@ public interface FinelinePackOptRepository
             "subCatPackOpt.singlePackInd,\n" +
             "subCatPackOpt.colorCombination,\n" +
             "fineLinePackOpt.vendorName,\n" +
+            "fineLinePackOpt.vendorNbr6,\n" +
+            "fineLinePackOpt.vendorNbr9,\n" +
             "fineLinePackOpt.maxUnitsPerPack,\n" +
             "fineLinePackOpt.maxNbrOfPacks,\n" +
             "fineLinePackOpt.factoryId,\n" +

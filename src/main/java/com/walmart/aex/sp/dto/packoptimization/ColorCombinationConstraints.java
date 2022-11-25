@@ -8,19 +8,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ColorCombinationConstraints {
-
-    private String supplierName;
-
+    private Supplier supplier;
     private String factoryId;
-
     private String countryOfOrigin;
-
     private String portOfOrigin;
-
     private Integer singlePackIndicator;
-
     private String colorCombination;
-
-
-
 }

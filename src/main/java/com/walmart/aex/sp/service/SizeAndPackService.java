@@ -221,7 +221,6 @@ public class SizeAndPackService {
                     for (Lvl3 lvl3 : lvl2.getLvl3List()) {
                         merchCatPlanRepository.saveAll(sizeAndPackObjectMapper.setMerchCatPlan(planSizeAndPackDTO, lvl1, lvl2, lvl3, merchCatPlanRepository));
                         merchPackOptimizationRepository.saveAll(packOptAddDataMapper.setMerchCatPackOpt(planSizeAndPackDTO, lvl1, lvl2, lvl3, merchPackOptimizationRepository));
-
                     }
                 }
             }
