@@ -28,9 +28,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -76,44 +74,12 @@ public class PackOptimizationService {
     public PackOptimizationResponse getPackOptDetails(Long planId, Integer channelId) {
         try {
             List<FineLineMapperDto> finePlanPackOptimizationList = packOptfineplanRepo.findByFinePlanPackOptimizationIDPlanIdAndChannelTextChannelId(planId, channelId);
-            finePlanPackOptimizationList = getUniqueFineLineMapperDTO(finePlanPackOptimizationList);
             return packOptConstraintMapper.packOptDetails(finePlanPackOptimizationList, false);
         } catch (Exception e) {
             log.error("Error Occurred while fetching Pack Opt", e);
             throw e;
         }
 
-    }
-
-    private List<FineLineMapperDto> getUniqueFineLineMapperDTO(List<FineLineMapperDto> finePlanPackOptimizationList) {
-        Map<Integer, Map<String,FineLineMapperDto>> res = new LinkedHashMap<>();
-
-        finePlanPackOptimizationList.forEach(fineLineMapperDto -> {
-            res.putIfAbsent(fineLineMapperDto.getFineLineNbr(), new LinkedHashMap<>());
-            Map<String, FineLineMapperDto> currentCCIDMap = res.get(fineLineMapperDto.getFineLineNbr());
-            currentCCIDMap.put(fineLineMapperDto.getCcId()+""+fineLineMapperDto.getFineLineNbr(), fineLineMapperDto);
-            res.put(fineLineMapperDto.getFineLineNbr(), currentCCIDMap);
-        });
-
-        return applyFineLineSupplierNames(res);
-    }
-
-    private List<FineLineMapperDto> applyFineLineSupplierNames(Map<Integer, Map<String, FineLineMapperDto>> fineLineDtoMap) {
-        List<FineLineMapperDto> fineLineMapperDtoList = new ArrayList<>();
-        fineLineDtoMap.values().forEach(ccIdFIneLineMap -> {
-            StringBuilder sb = new StringBuilder();
-            ccIdFIneLineMap.values().forEach(fineLine -> {
-                if(fineLine.getCcSupplierName() != null) {
-                    sb.append(fineLine.getCcSupplierName()).append(", ");
-                }
-            });
-            FineLineMapperDto current = ccIdFIneLineMap.values().stream().findFirst().get();
-            if(!sb.toString().isEmpty()) {
-                current.setFineLineSupplierName(sb.substring(0, sb.toString().length() - 2));
-            }
-            fineLineMapperDtoList.add(current);
-        });
-        return fineLineMapperDtoList;
     }
 
     public FineLinePackOptimizationResponse getPackOptFinelineDetails(Long planId, Integer finelineNbr) {

@@ -8,14 +8,20 @@ import com.walmart.aex.sp.dto.packoptimization.ColorCombinationStyle;
 import com.walmart.aex.sp.dto.packoptimization.Constraints;
 import com.walmart.aex.sp.dto.packoptimization.FineLinePackOptimizationResponse;
 import com.walmart.aex.sp.dto.packoptimization.FineLinePackOptimizationResponseDTO;
+import com.walmart.aex.sp.dto.packoptimization.Fineline;
 import com.walmart.aex.sp.dto.packoptimization.FinelineLevelConstraints;
+import com.walmart.aex.sp.dto.packoptimization.PackOptConstraintRequest;
+import com.walmart.aex.sp.dto.packoptimization.PackOptConstraintResponseDTO;
 import com.walmart.aex.sp.dto.packoptimization.PackOptimizationResponse;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
+import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
+import com.walmart.aex.sp.dto.planhierarchy.Style;
 import com.walmart.aex.sp.entity.CcPackOptimization;
 import com.walmart.aex.sp.repository.AnalyticsMlSendRepository;
 import com.walmart.aex.sp.repository.CcPackOptimizationRepository;
 import com.walmart.aex.sp.repository.FineLinePackOptimizationRepository;
 import com.walmart.aex.sp.repository.FinelinePackOptRepository;
+import com.walmart.aex.sp.repository.StyleCcPackOptConsRepository;
 import com.walmart.aex.sp.util.SizeAndPackConstants;
 import org.hibernate.HibernateException;
 import org.junit.jupiter.api.Test;
@@ -34,8 +40,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PackOptimizationServiceTest {
@@ -62,6 +71,8 @@ class PackOptimizationServiceTest {
 	private PackOptConstraintMapper packOptConstraintMapper;
    @Mock
     private CcPackOptimizationRepository ccPackOptimizationRepository;
+   @Mock
+   private StyleCcPackOptConsRepository styleCcPackOptConsRepository;
 
 	@Test
 	void testGetPackOptDetails() {
@@ -129,9 +140,9 @@ class PackOptimizationServiceTest {
 		response.setLvl2Nbr(0);
 		response.setLvl3List(lvl3List);
 
-		Mockito.when(packOptConstraintMapper.packOptDetails(anyList(), anyBoolean())).thenReturn(response);
+		when(packOptConstraintMapper.packOptDetails(anyList(), anyBoolean())).thenReturn(response);
 
-		Mockito.when(packOptfineplanRepo.findByFinePlanPackOptimizationIDPlanIdAndChannelTextChannelId(planId, channelId)).thenReturn(merchantPackOptimizationlist);
+		when(packOptfineplanRepo.findByFinePlanPackOptimizationIDPlanIdAndChannelTextChannelId(planId, channelId)).thenReturn(merchantPackOptimizationlist);
 		packOptResponse = packOptimizationService.getPackOptDetails(362L, 1);
 		String expectedResult = "PackOptimizationResponse(planId=362, channel=Store, lvl0Nbr=0, lvl0Desc=null, lvl1Nbr=0, lvl1Desc=null, lvl2Nbr=0, lvl2Desc=null, lvl3List=[Lvl3(lvl0Nbr=0, lvl1Nbr=0, lvl2Nbr=0, lvl3Nbr=25, lvl3Name=null, constraints=Constraints(supplierConstraints=null, ccLevelConstraints=null, colorCombinationConstraints=ColorCombinationConstraints(supplierName=Vendor Name, factoryId=120, 121, countryOfOrigin=null, portOfOrigin=null, singlePackIndicator=null, colorCombination=null), finelineLevelConstraints=FinelineLevelConstraints(maxPacks=50, maxUnitsPerPack=null)), lvl4List=null)])";
 
@@ -142,6 +153,71 @@ class PackOptimizationServiceTest {
 		assertEquals("120, 121", packOptResponse.getLvl3List().get(0).getConstraints().getColorCombinationConstraints().getFactoryId());
 		assertEquals("Vendor Name", packOptResponse.getLvl3List().get(0).getConstraints().getColorCombinationConstraints().getSupplierName());
 		assertEquals(50, packOptResponse.getLvl3List().get(0).getConstraints().getFinelineLevelConstraints().getMaxPacks());
+	}
+
+	@Test
+	void test_getPackOptConstraintDetails() {
+		PackOptConstraintResponseDTO packOptConstraintResponseDTO = new PackOptConstraintResponseDTO();
+		List<PackOptConstraintResponseDTO> packOptConstraintResponseDTOList = new ArrayList<>();
+
+		packOptConstraintResponseDTO.setPlanId(362L);
+		packOptConstraintResponseDTO.setLvl0Nbr(0);
+		packOptConstraintResponseDTO.setLvl1Nbr(0);
+		packOptConstraintResponseDTO.setLvl2Nbr(0);
+		packOptConstraintResponseDTO.setLvl3Nbr(25);
+		packOptConstraintResponseDTO.setLvl4Nbr(252);
+		packOptConstraintResponseDTO.setFinelineNbr(2542);
+		packOptConstraintResponseDTO.setChannelId(1);
+		packOptConstraintResponseDTO.setStyleNbr("34_2816_2_19_2");
+		packOptConstraintResponseDTO.setCcId("34_2956_1_18_1_BLUE SAPPHIRE");
+		packOptConstraintResponseDTO.setCcSupplierName("NIKE");
+
+		packOptConstraintResponseDTOList.add(packOptConstraintResponseDTO);
+
+		ColorCombinationConstraints colorCombinationConstraint = new ColorCombinationConstraints();
+		colorCombinationConstraint.setSupplierName("NIKE");
+		Constraints constraint = new Constraints();
+		constraint.setColorCombinationConstraints(colorCombinationConstraint);
+		Style style = new Style();
+		style.setConstraints(constraint);
+		Fineline fineline = new Fineline();
+		fineline.setStyles(Collections.singletonList(style));
+
+		Lvl4 lvl4 = new Lvl4();
+		lvl4.setFinelines(Collections.singletonList(fineline));
+
+		Lvl3 lvl3= new Lvl3();
+		lvl3.setLvl3Nbr(25);
+		lvl3.setLvl2Nbr(0);
+		lvl3.setLvl1Nbr(0);
+		lvl3.setLvl0Nbr(0);
+		lvl3.setLvl4List(Collections.singletonList(lvl4));
+		List<Lvl3> lvl3List = List.of(lvl3);
+
+		PackOptimizationResponse response = new PackOptimizationResponse();
+		response.setPlanId(362L);
+		response.setChannel("Store");
+		response.setLvl0Nbr(0);
+		response.setLvl1Nbr(0);
+		response.setLvl2Nbr(0);
+		response.setLvl3List(lvl3List);
+
+		when(styleCcPackOptConsRepository
+				.findByFinePlanPackOptimizationIDPlanIdAndChannelTextChannelId(anyLong(), anyInt(), anyInt())).thenReturn(packOptConstraintResponseDTOList);
+
+		when(packOptConstraintMapper.packOptDetails(anyList(), anyBoolean())).thenReturn(response);
+		PackOptConstraintRequest request = new PackOptConstraintRequest();
+		request.setPlanId(362L);
+		request.setChannel("Store");
+		request.setFinelineNbr(2542);
+		packOptResponse = packOptimizationService.getPackOptConstraintDetails(request);
+
+		String expectedResult = "PackOptimizationResponse(planId=362, channel=Store, lvl0Nbr=0, lvl0Desc=null, lvl1Nbr=0, lvl1Desc=null, lvl2Nbr=0, lvl2Desc=null, lvl3List=[Lvl3(lvl0Nbr=0, lvl1Nbr=0, lvl2Nbr=0, lvl3Nbr=25, lvl3Name=null, constraints=null, lvl4List=[Lvl4(lvl4Nbr=null, lvl4Name=null, constraints=null, finelines=[Fineline(finelineNbr=null, finelineName=null, altFinelineName=null, channel=null, packOptimizationStatus=null, constraints=null, styles=[Style(styleNbr=null, altStyleDesc=null, channel=null, constraints=Constraints(supplierConstraints=null, ccLevelConstraints=null, colorCombinationConstraints=ColorCombinationConstraints(supplierName=NIKE, factoryId=null, countryOfOrigin=null, portOfOrigin=null, singlePackIndicator=null, colorCombination=null), finelineLevelConstraints=null), customerChoices=null)], optimizationDetails=null)])])])";
+
+		assertNotNull(packOptResponse);
+		assertEquals(362L, packOptResponse.getPlanId());
+		assertEquals(expectedResult, packOptResponse.toString());
+		assertEquals("NIKE", packOptResponse.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getConstraints().getColorCombinationConstraints().getSupplierName());
 	}
 
 	@Test
@@ -169,7 +245,7 @@ class PackOptimizationServiceTest {
 		finelinePackOptimizationResponseList.add(fineLinePackOptimizationResponse);
 		lenient().doNothing().when(packOptimizationMapper).mapPackOptimizationFineline(fineLinePackOptimizationResponse,
 				finelinePackOptimizationResponse, 483l);
-		Mockito.when(finelinePackOptimizationRepository.getPackOptByFineline(483l, 5147))
+		when(finelinePackOptimizationRepository.getPackOptByFineline(483l, 5147))
 				.thenReturn(finelinePackOptimizationResponseList);
 		finelinePackOptimizationResponse = packOptimizationService.getPackOptFinelineDetails(483l, 5147);
 		Mockito.verify(packOptimizationMapper, Mockito.times(1)).mapPackOptimizationFineline(Mockito.any(),
@@ -185,10 +261,10 @@ class PackOptimizationServiceTest {
 
         CcPackOptimization ccPackOptimization = new CcPackOptimization();
 
-        Mockito.when(ccPackOptimizationRepository.findCCPackOptimizationList(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt(),
+        when(ccPackOptimizationRepository.findCCPackOptimizationList(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt(),
                 Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyList(),
                 Mockito.anyList())).thenReturn(List.of(ccPackOptimization));
-        Mockito.when(ccPackOptimizationRepository.saveAll(Mockito.anyList())).thenReturn(List.of(ccPackOptimization));
+        when(ccPackOptimizationRepository.saveAll(Mockito.anyList())).thenReturn(List.of(ccPackOptimization));
 
         StatusResponse response = packOptimizationService.addColorCombination(request);
 
@@ -197,7 +273,7 @@ class PackOptimizationServiceTest {
         assertEquals("4-22-1", ccPackOptimization.getColorCombination());
 
         ccPackOptimization.setColorCombination(null);
-        Mockito.when(ccPackOptimizationRepository.findCCPackOptimizationList(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt(),
+        when(ccPackOptimizationRepository.findCCPackOptimizationList(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt(),
                 Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyList(),
                 Mockito.anyList())).thenReturn(Collections.emptyList());
 
@@ -215,7 +291,7 @@ class PackOptimizationServiceTest {
                 6419, 12228, 31507, 2855, "Add", null,
                 List.of(new ColorCombinationStyle("34_2855_4_19_8", List.of("34_2855_4_19_8_BLACK SOOT"))));
 
-        Mockito.when(ccPackOptimizationRepository.findCCPackOptimizationList(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt(),
+        when(ccPackOptimizationRepository.findCCPackOptimizationList(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt(),
                 Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyList(),
                 Mockito.anyList())).thenThrow(HibernateException.class);
 
@@ -233,7 +309,7 @@ class PackOptimizationServiceTest {
         CcPackOptimization ccPackOptimization = new CcPackOptimization();
         ccPackOptimization.setColorCombination("4-22-6");
 
-        Mockito.when(ccPackOptimizationRepository.findCCPackOptimizationList(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt(),
+        when(ccPackOptimizationRepository.findCCPackOptimizationList(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt(),
                 Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyList(),
                 Mockito.anyList())).thenReturn(List.of(ccPackOptimization));
 
@@ -252,9 +328,9 @@ class PackOptimizationServiceTest {
         CcPackOptimization ccPackOptimization = new CcPackOptimization();
         ccPackOptimization.setColorCombination("4-22-1");
 
-        Mockito.when(ccPackOptimizationRepository.findCCPackOptimizationByColorCombinationList(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt(),
+        when(ccPackOptimizationRepository.findCCPackOptimizationByColorCombinationList(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt(),
                 Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyList())).thenReturn(List.of(ccPackOptimization));
-        Mockito.when(ccPackOptimizationRepository.saveAll(Mockito.anyList())).thenReturn(List.of(ccPackOptimization));
+        when(ccPackOptimizationRepository.saveAll(Mockito.anyList())).thenReturn(List.of(ccPackOptimization));
 
         StatusResponse response = packOptimizationService.deleteColorCombination(request);
 
@@ -263,7 +339,7 @@ class PackOptimizationServiceTest {
         assertNull(ccPackOptimization.getColorCombination());
 
         ccPackOptimization.setColorCombination("4-22-1");
-        Mockito.when(ccPackOptimizationRepository.findCCPackOptimizationByColorCombinationList(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt(),
+        when(ccPackOptimizationRepository.findCCPackOptimizationByColorCombinationList(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt(),
                 Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyList())).thenReturn(Collections.emptyList());
 
         response = packOptimizationService.deleteColorCombination(request);
@@ -298,7 +374,7 @@ class PackOptimizationServiceTest {
                 6419, 12228, 31507, 2855, "Add", List.of("4-22-1"),
                 List.of(new ColorCombinationStyle("34_2855_4_19_8", List.of("34_2855_4_19_8_BLACK SOOT"))));
 
-        Mockito.when(ccPackOptimizationRepository.findCCPackOptimizationByColorCombinationList(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt(),
+        when(ccPackOptimizationRepository.findCCPackOptimizationByColorCombinationList(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt(),
                 Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyList())).thenThrow(HibernateException.class);
 
         StatusResponse response = packOptimizationService.deleteColorCombination(request);
