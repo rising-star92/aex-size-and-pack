@@ -33,7 +33,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.lenient;
 
 @ExtendWith(MockitoExtension.class)
@@ -120,8 +121,15 @@ class PackOptimizationServiceTest {
 		lvl3.setLvl1Nbr(0);
 		lvl3.setLvl0Nbr(0);
 		List<Lvl3> lvl3List = List.of(lvl3);
+		PackOptimizationResponse response = new PackOptimizationResponse();
+		response.setPlanId(362L);
+		response.setChannel("Store");
+		response.setLvl0Nbr(0);
+		response.setLvl1Nbr(0);
+		response.setLvl2Nbr(0);
+		response.setLvl3List(lvl3List);
 
-		Mockito.when(packOptConstraintMapper.mapPackOptLvl3(any(), any())).thenReturn(lvl3List);
+		Mockito.when(packOptConstraintMapper.packOptDetails(anyList(), anyBoolean())).thenReturn(response);
 
 		Mockito.when(packOptfineplanRepo.findByFinePlanPackOptimizationIDPlanIdAndChannelTextChannelId(planId, channelId)).thenReturn(merchantPackOptimizationlist);
 		packOptResponse = packOptimizationService.getPackOptDetails(362L, 1);
