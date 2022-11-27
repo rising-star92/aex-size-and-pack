@@ -74,7 +74,7 @@ public class PackOptimizationService {
     public PackOptimizationResponse getPackOptDetails(Long planId, Integer channelId) {
         try {
             List<FineLineMapperDto> finePlanPackOptimizationList = packOptfineplanRepo.findByFinePlanPackOptimizationIDPlanIdAndChannelTextChannelId(planId, channelId);
-            return packOptConstraintMapper.packOptDetails(finePlanPackOptimizationList, false);
+            return packOptConstraintMapper.packOptDetails(finePlanPackOptimizationList);
         } catch (Exception e) {
             log.error("Error Occurred while fetching Pack Opt", e);
             throw e;
@@ -155,7 +155,7 @@ public class PackOptimizationService {
                 FineLineMapperDto fineLineMapperDto = FineLineMapper.fineLineMapper.packOptConstraintResponseDTOToFineLineMapperDto(packOptConstraintResponseDTO1);
                 fineLineMapperDtoList.add(fineLineMapperDto);
             }
-            packOptimizationResponse = packOptConstraintMapper.packOptDetails(fineLineMapperDtoList, true);
+            packOptimizationResponse = packOptConstraintMapper.packOptDetails(fineLineMapperDtoList);
         } catch (Exception e) {
             log.error("Exception While fetching Fineline PackOpt :", e);
             throw new CustomException("Failed to fetch Fineline PackOpt, due to" + e);

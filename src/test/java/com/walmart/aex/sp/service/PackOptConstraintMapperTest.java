@@ -27,7 +27,6 @@ class PackOptConstraintMapperTest {
 
     private static final Integer finelineNbr = 3470;
     private static final Long planId = 471L;
-    private static final String vendorName = "AbcD";
     private static final String factoryId = "S1D0027";
     private static final String styleNbr = "34_2816_2_19_2";
     private static final String ccId = "34_2816_2_19_2_CHARCOAL GREY HEATHER";
@@ -37,11 +36,11 @@ class PackOptConstraintMapperTest {
     @Test
     void test_packOptDetails() {
         PackOptimizationResponse packOptimizationResponse = new PackOptimizationResponse();
-        PackOptimizationResponse actual = packOptConstraintMapper.packOptDetails(Collections.singletonList(getFineLines().get(0)), false);
+        PackOptimizationResponse actual = packOptConstraintMapper.packOptDetails(Collections.singletonList(getFineLines().get(0)));
         assertNotNull(packOptimizationResponse);
         assertEquals(styleNbr, actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getStyleNbr());
         assertEquals(ccId, actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getCustomerChoices().get(0).getCcId());
-        assertEquals(vendorName, actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getConstraints().getColorCombinationConstraints().getSupplierName());
+        assertEquals("PUMA", actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getConstraints().getColorCombinationConstraints().getSupplierName());
         assertEquals(factoryId, actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getCustomerChoices().get(0).getConstraints().getColorCombinationConstraints().getFactoryId());
     }
 
@@ -74,7 +73,7 @@ class PackOptConstraintMapperTest {
         packOptimizationResponse.setChannel("store");
         packOptimizationResponse.setLvl3List(List.of(lvl3));
 
-        PackOptimizationResponse actual = packOptConstraintMapper.packOptDetails(Collections.singletonList(getFineLines().get(0)), false);
+        PackOptimizationResponse actual = packOptConstraintMapper.packOptDetails(Collections.singletonList(getFineLines().get(0)));
         assertEquals(finelineNbr, actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getFinelineNbr());
         assertEquals(styleNbr, actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getStyleNbr());
         assertEquals(ccId, actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getCustomerChoices().get(0).getCcId());
@@ -84,7 +83,7 @@ class PackOptConstraintMapperTest {
     @Test
     void test_packOptDetailsShouldReturnConsolidatedSupplierNamesForFineLines() {
         List<FineLineMapperDto> requestFineLines = getFineLines();
-        PackOptimizationResponse actual = packOptConstraintMapper.packOptDetails(requestFineLines, false);
+        PackOptimizationResponse actual = packOptConstraintMapper.packOptDetails(requestFineLines);
         assertEquals(finelineNbr, actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getFinelineNbr());
         assertEquals("PUMA, NIKE", actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getConstraints().getColorCombinationConstraints().getSupplierName());
 
@@ -93,7 +92,7 @@ class PackOptConstraintMapperTest {
     @Test
     void test_packOptDetailsShouldReturnConsolidatedSupplierNamesForStyles() {
         List<FineLineMapperDto> requestFineLines = getFineLines();
-        PackOptimizationResponse actual = packOptConstraintMapper.packOptDetails(requestFineLines, true);
+        PackOptimizationResponse actual = packOptConstraintMapper.packOptDetails(requestFineLines);
         assertEquals(finelineNbr, actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getFinelineNbr());
         assertEquals("PUMA, NIKE", actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getConstraints().getColorCombinationConstraints().getSupplierName());
 
@@ -115,7 +114,6 @@ class PackOptConstraintMapperTest {
         fineLineMapperDto.setStyleMaxPacks(43);
         fineLineMapperDto.setStyleColorCombination(colorCombination);
         fineLineMapperDto.setCcColorCombination(colorCombination);
-        fineLineMapperDto.setStyleSupplierName(vendorName);
         fineLineMapperDto.setCcFactoryIds(factoryId);
         fineLineMapperDto.setCcSinglePackIndicator(1);
         fineLineMapperDto.setStyleSinglePackIndicator(1);

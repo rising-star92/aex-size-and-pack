@@ -39,7 +39,6 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -140,7 +139,7 @@ class PackOptimizationServiceTest {
 		response.setLvl2Nbr(0);
 		response.setLvl3List(lvl3List);
 
-		when(packOptConstraintMapper.packOptDetails(anyList(), anyBoolean())).thenReturn(response);
+		when(packOptConstraintMapper.packOptDetails(anyList())).thenReturn(response);
 
 		when(packOptfineplanRepo.findByFinePlanPackOptimizationIDPlanIdAndChannelTextChannelId(planId, channelId)).thenReturn(merchantPackOptimizationlist);
 		packOptResponse = packOptimizationService.getPackOptDetails(362L, 1);
@@ -205,7 +204,7 @@ class PackOptimizationServiceTest {
 		when(styleCcPackOptConsRepository
 				.findByFinePlanPackOptimizationIDPlanIdAndChannelTextChannelId(anyLong(), anyInt(), anyInt())).thenReturn(packOptConstraintResponseDTOList);
 
-		when(packOptConstraintMapper.packOptDetails(anyList(), anyBoolean())).thenReturn(response);
+		when(packOptConstraintMapper.packOptDetails(anyList())).thenReturn(response);
 		PackOptConstraintRequest request = new PackOptConstraintRequest();
 		request.setPlanId(362L);
 		request.setChannel("Store");
