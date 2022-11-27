@@ -12,18 +12,118 @@ import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
 import com.walmart.aex.sp.dto.planhierarchy.Style;
 import com.walmart.aex.sp.enums.CategoryType;
+import com.walmart.aex.sp.enums.ChannelType;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @Slf4j
 public class PackOptConstraintMapper {
 
-    public List<Lvl3> mapPackOptLvl3(FineLineMapperDto fineLineMapperDto, PackOptimizationResponse response) {
+    public PackOptimizationResponse packOptDetails(
+            List<FineLineMapperDto> fineLineMapperDtos, boolean styleDetails) {
+
+        PackOptimizationResponse packOptResp = new PackOptimizationResponse();
+        if(styleDetails) {
+            fineLineMapperDtos = updateStyleSupplierNames(fineLineMapperDtos);
+        } else {
+            fineLineMapperDtos = getUniqueFineLineMapperDTOAndSetFineLineSupplierNames(fineLineMapperDtos);
+        }
+        Optional.of(fineLineMapperDtos)
+                .stream()
+                .flatMap(Collection::stream)
+                .forEach(fineLineMapperDto -> mapPackOptLvl2(fineLineMapperDto, packOptResp));
+
+        return packOptResp;
+    }
+
+    private List<FineLineMapperDto> getUniqueFineLineMapperDTOAndSetFineLineSupplierNames(List<FineLineMapperDto> finePlanPackOptimizationList) {
+        Map<Integer, Map<String,FineLineMapperDto>> res = new LinkedHashMap<>();
+
+        finePlanPackOptimizationList.forEach(fineLineMapperDto -> {
+            res.putIfAbsent(fineLineMapperDto.getFineLineNbr(), new LinkedHashMap<>());
+            Map<String, FineLineMapperDto> currentCCIDMap = res.get(fineLineMapperDto.getFineLineNbr());
+            currentCCIDMap.put(fineLineMapperDto.getCcId()+""+fineLineMapperDto.getFineLineNbr(), fineLineMapperDto);
+            res.put(fineLineMapperDto.getFineLineNbr(), currentCCIDMap);
+        });
+
+        return applyFineLineSupplierNames(res);
+    }
+
+    private List<FineLineMapperDto> applyFineLineSupplierNames(Map<Integer, Map<String, FineLineMapperDto>> fineLineDtoMap) {
+        List<FineLineMapperDto> fineLineMapperDtoList = new ArrayList<>();
+        fineLineDtoMap.values().forEach(ccIdFIneLineMap -> {
+            StringBuilder sb = new StringBuilder();
+            ccIdFIneLineMap.values().forEach(fineLine -> {
+                if(fineLine.getCcSupplierName() != null) {
+                    sb.append(fineLine.getCcSupplierName()).append(", ");
+                }
+            });
+            FineLineMapperDto current = ccIdFIneLineMap.values().stream().findFirst().get();
+            if(!sb.toString().isEmpty()) {
+                current.setFineLineSupplierName(sb.substring(0, sb.toString().length() - 2));
+            }
+            fineLineMapperDtoList.add(current);
+        });
+        return fineLineMapperDtoList;
+    }
+
+    private List<FineLineMapperDto> updateStyleSupplierNames(List<FineLineMapperDto> finePlanPackOptimizationList) {
+        List<FineLineMapperDto> fineLineMapperDtoList = new ArrayList<>();
+        Map<String, Set<String>> styleSupplierMap = new LinkedHashMap<>();
+        finePlanPackOptimizationList.forEach(fineLineMapperDto -> {
+            styleSupplierMap.putIfAbsent(fineLineMapperDto.getStyleNbr(), new LinkedHashSet<>());
+            styleSupplierMap.computeIfPresent(fineLineMapperDto.getStyleNbr(), (k, v) -> {
+                if(StringUtils.isNotEmpty(fineLineMapperDto.getCcSupplierName())) {
+                    v.add(fineLineMapperDto.getCcSupplierName());
+                }
+                return v;
+            });
+        });
+        finePlanPackOptimizationList.forEach(fineLineMapperDto -> {
+            if(styleSupplierMap.containsKey(fineLineMapperDto.getStyleNbr())) {
+                StringBuilder sb = new StringBuilder();
+                styleSupplierMap.get(fineLineMapperDto.getStyleNbr()).forEach(val -> sb.append(val).append(", "));
+                fineLineMapperDto.setStyleSupplierName(sb.toString().isEmpty() ? "" : sb.substring(0, sb.toString().length() - 2));
+                fineLineMapperDtoList.add(fineLineMapperDto);
+            }
+        });
+        return fineLineMapperDtoList;
+    }
+
+    private void mapPackOptLvl2(FineLineMapperDto fineLineMapperDto, PackOptimizationResponse response) {
+        if (response.getPlanId() == null) {
+            response.setPlanId(fineLineMapperDto.getPlanId());
+        }
+        if (response.getLvl0Nbr() == null) {
+            response.setLvl0Nbr(fineLineMapperDto.getLvl0Nbr());
+            response.setLvl0Desc(fineLineMapperDto.getLvl0Desc());
+        }
+        if (response.getLvl1Nbr() == null) {
+            response.setLvl1Nbr(fineLineMapperDto.getLvl1Nbr());
+            response.setLvl1Desc(fineLineMapperDto.getLvl1Desc());
+        }
+        if (response.getLvl2Nbr() == null) {
+            response.setLvl2Nbr(fineLineMapperDto.getLvl2Nbr());
+            response.setLvl2Desc(fineLineMapperDto.getLvl2Desc());
+        }
+        if (response.getChannel() == null) {
+            response.setChannel(ChannelType.getChannelNameFromId(fineLineMapperDto.getChannelId()));
+        }
+        response.setLvl3List(mapPackOptLvl3(fineLineMapperDto, response));
+    }
+
+    private List<Lvl3> mapPackOptLvl3(FineLineMapperDto fineLineMapperDto, PackOptimizationResponse response) {
         List<Lvl3> lvl3List = Optional.ofNullable(response.getLvl3List()).orElse(new ArrayList<>());
 
         lvl3List.stream()
