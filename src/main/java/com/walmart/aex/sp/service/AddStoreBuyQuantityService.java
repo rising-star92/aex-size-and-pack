@@ -36,6 +36,9 @@ public class AddStoreBuyQuantityService {
     @ManagedConfiguration
     BuyQtyProperties buyQtyProperties;
 
+    private static final Long DEFAULT_IS_QTY = 0L;
+    private static final Long DEFAULT_TOTAL_IS_QTY = 1L;
+
     public AddStoreBuyQuantityService() {
 
     }
@@ -74,7 +77,7 @@ public class AddStoreBuyQuantityService {
         }
         Cluster volumeCluster = getVolumeCluster(addStoreBuyQuantity, rfaSizePackData);
         if (volumeCluster != null) {
-            nullCheckForInitialSet(volumeCluster);
+            setDefaultValueForNullInitialSet(volumeCluster);
             calculateReplenishmentLogic(addStoreBuyQuantity, initialSetQuantities, volumeCluster, buyQtyObj, rfaSizePackData);
         }
     }
@@ -159,19 +162,19 @@ public class AddStoreBuyQuantityService {
         }
     }
 
-    private void nullCheckForInitialSet(Cluster volumeCluster) {
+    private void setDefaultValueForNullInitialSet(Cluster volumeCluster) {
         if (volumeCluster.getInitialSet() == null) {
             log.warn("InitialSet of volumeCluster : {} is null. Setting default initial Set ", volumeCluster);
             InitialSet initialSet = new InitialSet();
-            initialSet.setInitialSetUnitsPerFix(0L);
-            initialSet.setTotalInitialSetUnits(1L);
+            initialSet.setInitialSetUnitsPerFix(DEFAULT_IS_QTY);
+            initialSet.setTotalInitialSetUnits(DEFAULT_TOTAL_IS_QTY);
             volumeCluster.setInitialSet(initialSet);
         } else if (volumeCluster.getInitialSet().getInitialSetUnitsPerFix() == null) {
             log.warn("InitialSetUnitsPerFix of volumeCluster : {} is null. Setting InitialSetUnitsPerFix as zero ", volumeCluster);
-            volumeCluster.getInitialSet().setInitialSetUnitsPerFix(0L);
+            volumeCluster.getInitialSet().setInitialSetUnitsPerFix(DEFAULT_IS_QTY);
         } else if (volumeCluster.getInitialSet().getTotalInitialSetUnits() == null) {
             log.warn("TotalInitialSetUnits of volumeCluster : {} is null. Setting TotalInitialSetUnits as one ", volumeCluster);
-            volumeCluster.getInitialSet().setTotalInitialSetUnits(1L);
+            volumeCluster.getInitialSet().setTotalInitialSetUnits(DEFAULT_TOTAL_IS_QTY);
         }
     }
 }
