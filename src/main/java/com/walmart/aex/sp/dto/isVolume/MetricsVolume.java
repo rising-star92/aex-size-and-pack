@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 public class MetricsVolume {
-    private List<Integer> stores;
+    private List<StoreDetail> stores;
     private int volumeClusterId;
     private String fixtureType;
     private BigDecimal  fixtureAllocation;
