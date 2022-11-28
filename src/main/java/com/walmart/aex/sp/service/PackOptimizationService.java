@@ -74,27 +74,12 @@ public class PackOptimizationService {
     public PackOptimizationResponse getPackOptDetails(Long planId, Integer channelId) {
         try {
             List<FineLineMapperDto> finePlanPackOptimizationList = packOptfineplanRepo.findByFinePlanPackOptimizationIDPlanIdAndChannelTextChannelId(planId, channelId);
-            return packOptDetails(finePlanPackOptimizationList, planId, channelId);
+            return packOptConstraintMapper.packOptDetails(finePlanPackOptimizationList);
         } catch (Exception e) {
             log.error("Error Occurred while fetching Pack Opt", e);
             throw e;
         }
 
-    }
-
-    private PackOptimizationResponse packOptDetails(
-            List<FineLineMapperDto> fineLineMapperDtos,
-            Long planId,
-            Integer channelId) {
-
-        PackOptimizationResponse packOptResp = new PackOptimizationResponse();
-        packOptResp.setPlanId(planId);
-        packOptResp.setChannel(ChannelType.getChannelNameFromId(channelId));
-        fineLineMapperDtos.forEach(fineLineMapperDto ->
-                mapPackOptLvl2(fineLineMapperDto, packOptResp)
-        );
-
-        return packOptResp;
     }
 
     public FineLinePackOptimizationResponse getPackOptFinelineDetails(Long planId, Integer finelineNbr) {
@@ -170,10 +155,7 @@ public class PackOptimizationService {
                 FineLineMapperDto fineLineMapperDto = FineLineMapper.fineLineMapper.packOptConstraintResponseDTOToFineLineMapperDto(packOptConstraintResponseDTO1);
                 fineLineMapperDtoList.add(fineLineMapperDto);
             }
-            Optional.of(fineLineMapperDtoList)
-                    .stream()
-                    .flatMap(Collection::stream)
-                    .forEach(fineLineMapperDto -> mapPackOptLvl2(fineLineMapperDto, packOptimizationResponse));
+            packOptimizationResponse = packOptConstraintMapper.packOptDetails(fineLineMapperDtoList);
         } catch (Exception e) {
             log.error("Exception While fetching Fineline PackOpt :", e);
             throw new CustomException("Failed to fetch Fineline PackOpt, due to" + e);
@@ -181,28 +163,6 @@ public class PackOptimizationService {
         log.info("Fetch PackOpt Fineline response: {}", packOptimizationResponse);
         return packOptimizationResponse;
 
-    }
-
-    private void mapPackOptLvl2(FineLineMapperDto fineLineMapperDto, PackOptimizationResponse response) {
-        if (response.getPlanId() == null) {
-            response.setPlanId(fineLineMapperDto.getPlanId());
-        }
-        if (response.getLvl0Nbr() == null) {
-            response.setLvl0Nbr(fineLineMapperDto.getLvl0Nbr());
-            response.setLvl0Desc(fineLineMapperDto.getLvl0Desc());
-        }
-        if (response.getLvl1Nbr() == null) {
-            response.setLvl1Nbr(fineLineMapperDto.getLvl1Nbr());
-            response.setLvl1Desc(fineLineMapperDto.getLvl1Desc());
-        }
-        if (response.getLvl2Nbr() == null) {
-            response.setLvl2Nbr(fineLineMapperDto.getLvl2Nbr());
-            response.setLvl2Desc(fineLineMapperDto.getLvl2Desc());
-        }
-        if (response.getChannel() == null) {
-            response.setChannel(ChannelType.getChannelNameFromId(fineLineMapperDto.getChannelId()));
-        }
-        response.setLvl3List(packOptConstraintMapper.mapPackOptLvl3(fineLineMapperDto, response));
     }
 
     public StatusResponse deleteColorCombination(ColorCombinationRequest request) {
