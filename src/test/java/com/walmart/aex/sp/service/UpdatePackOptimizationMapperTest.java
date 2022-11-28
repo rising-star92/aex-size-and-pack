@@ -2,6 +2,7 @@ package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.packoptimization.UpdatePackOptConstraintRequestDTO;
 import com.walmart.aex.sp.entity.*;
+import com.walmart.aex.sp.enums.SinglePackIndicator;
 import com.walmart.aex.sp.repository.*;
 import com.walmart.aex.sp.repository.common.PackOptimizationCommonRepository;
 import org.junit.Test;
@@ -111,18 +112,26 @@ public class UpdatePackOptimizationMapperTest {
         when(packOptimizationCommonRepository.getStylePackOptimizationRepository()).thenReturn(stylePackOptimizationRepository);
         when(packOptimizationCommonRepository.getCcPackOptimizationRepository()).thenReturn(ccPackOptimizationRepository);
         pkOptConstMapper.updateCategoryPackOptCons(request,merchantPackOptimizationList);
-        assertEquals(merchantPackOptimizationList.get(0).getOriginCountryCode(), "US");
+        assertEquals("US",merchantPackOptimizationList.get(0).getOriginCountryCode());
         for (SubCatgPackOptimization subcatgOptCons :merchantPackOptimizationList.get(0).getSubCatgPackOptimization()){
-            assertEquals(subcatgOptCons.getOriginCountryCode(), "US");
+            assertEquals("US",subcatgOptCons.getOriginCountryCode());
             for (FineLinePackOptimization flPackOptimization :subcatgOptCons.getFinelinepackOptimization()){
-                assertEquals(flPackOptimization.getOriginCountryCode(), "US");
+                assertEquals("US",flPackOptimization.getOriginCountryCode());
                 for (StylePackOptimization stPackOptimization :flPackOptimization.getStylePackOptimization()){
-                    assertEquals(stPackOptimization.getOriginCountryCode(), "US");
+                    assertEquals("US",stPackOptimization.getOriginCountryCode());
                     for (CcPackOptimization ccPkOptimization :stPackOptimization.getCcPackOptimization()){
-                        assertEquals(ccPkOptimization.getOriginCountryCode(), "US");
+                        assertEquals("US",ccPkOptimization.getOriginCountryCode());
                     }
                 }
             }
         }
     }
+
+    @Test
+    public void testSignalIndicator(){
+        assertEquals(SinglePackIndicator.PARTIAL.getId(),pkOptConstMapper.getSinglePackIndicatorFlag(List.of(1,0,0,0,1)));
+        assertEquals(SinglePackIndicator.SELECTED.getId(),pkOptConstMapper.getSinglePackIndicatorFlag(List.of(1,1,1,1)));
+        assertEquals(SinglePackIndicator.UNSELECTED.getId(),pkOptConstMapper.getSinglePackIndicatorFlag(List.of(0,0,0,0)));
+    }
+
 }

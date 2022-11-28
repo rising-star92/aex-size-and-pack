@@ -13,6 +13,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -115,13 +116,20 @@ public class CalculateBuyQuantityService {
                 .stream()
                 .filter(completableFuture1 -> !completableFuture1.isCompletedExceptionally())
                 .map(completableFuture1 -> {
-                    try {
-                        return completableFuture1.get();
-                    } catch (Exception e) {
-                        throw new CustomException("Failed to Execute calculate buy quantity");
-                    }
+                	 try {
+                         return completableFuture1.get();
+                     } catch (InterruptedException e) {
+                    log.error("InterruptedException occurred while calculating buy quantity- ", e);
+                    Thread.currentThread().interrupt();
+                } catch (ExecutionException e) {
+                    log.error("ExecutionException occurred while calculating buy quantity - ", e);
+                    throw new CustomException("Failed to Execute calculate buy quantity");
+                }
+                	 return null;
+                	 
+                
                 })
-                .collect(Collectors.toList());
+              .collect(Collectors.toList());
         if (completableFutures.size() != calculateBuyQtyParallelRequests.size()) {
             throw new CustomException("Not All finelines complted successfully");
         }
