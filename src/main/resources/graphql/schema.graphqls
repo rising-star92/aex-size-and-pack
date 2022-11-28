@@ -500,6 +500,8 @@ input FinelineVolume {
     finelineNbr : Int!
     lvl3Nbr: Int!
     lvl4Nbr: Int!
+    interval: String!,
+    fiscalYear: Int!,
     volumeDeviationLevel : String!
 }
 
