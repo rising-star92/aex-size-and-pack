@@ -29,10 +29,10 @@ public interface FinelinePackOptRepository
             "merchCatPlan.lvl2Desc,\n" +
             "merchCatPlan.lvl3Desc,\n" +
             "subCatPlan.lvl4Desc,\n" +
-            "merchPackOpt.vendorName,\n" +
-            "merchPackOpt.vendorNbr6,\n" +
-            "merchPackOpt.gsmSupplierId,\n" +
-            "merchPackOpt.vendorNbr9,\n" +
+            "merchPackOpt.vendorName as merchSupplierName,\n" +
+            "merchPackOpt.vendorNbr6 as merchSupplierNumber6,\n" +
+            "merchPackOpt.gsmSupplierId as merchSupplierNumber8,\n" +
+            "merchPackOpt.vendorNbr9 as merchSupplierNumber9,\n" +
             "merchPackOpt.maxUnitsPerPack,\n" +
             "merchPackOpt.maxNbrOfPacks,\n" +
             "merchPackOpt.factoryId,\n" +
@@ -40,10 +40,10 @@ public interface FinelinePackOptRepository
             "merchPackOpt.portOfOriginName,\n" +
             "merchPackOpt.singlePackInd,\n" +
             "merchPackOpt.colorCombination,\n" +
-            "subCatPackOpt.vendorName,\n" +
-            "subCatPackOpt.vendorNbr6,\n" +
-            "subCatPackOpt.gsmSupplierId,\n" +
-            "subCatPackOpt.vendorNbr9,\n" +
+            "subCatPackOpt.vendorName as subCatSupplierName,\n" +
+            "subCatPackOpt.vendorNbr6 as subCatSupplierNumber6,\n" +
+            "subCatPackOpt.gsmSupplierId as subCatSupplierNumber8,\n" +
+            "subCatPackOpt.vendorNbr9 as subCatSupplierNumber9,\n" +
             "subCatPackOpt.maxUnitsPerPack,\n" +
             "subCatPackOpt.maxNbrOfPacks,\n" +
             "subCatPackOpt.factoryId,\n" +
@@ -51,10 +51,10 @@ public interface FinelinePackOptRepository
             "subCatPackOpt.portOfOriginName,\n" +
             "subCatPackOpt.singlePackInd,\n" +
             "subCatPackOpt.colorCombination,\n" +
-            "fineLinePackOpt.vendorName,\n" +
-            "fineLinePackOpt.vendorNbr6,\n" +
-            "fineLinePackOpt.gsmSupplierId,\n" +
-            "fineLinePackOpt.vendorNbr9,\n" +
+            "fineLinePackOpt.vendorName as fineLineSupplierName,\n" +
+            "fineLinePackOpt.vendorNbr6 as fineLineSupplierNumber6,\n" +
+            "fineLinePackOpt.gsmSupplierId as fineLineSupplierNumber8,\n" +
+            "fineLinePackOpt.vendorNbr9 as fineLineSupplierNumber9,\n" +
             "fineLinePackOpt.maxUnitsPerPack,\n" +
             "fineLinePackOpt.maxNbrOfPacks,\n" +
             "fineLinePackOpt.factoryId,\n" +
