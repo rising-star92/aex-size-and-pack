@@ -349,11 +349,11 @@ public class BigQueryInitialSetPlanService {
         String tableNameSp = getProjectIdSp();
         String tableNameCc = getProjectIdCc();
 
-        if (request.getVolumeDeviationLevel().equals(VdLevelCode.Category.getDescription())) {
+        if (request.getVolumeDeviationLevel().equals(VdLevelCode.CATEGORY.getDescription())) {
             return getISByVolumeCatClusterQuery(tableNameCc, tableNameSp, Math.toIntExact(planId), request.getFinelineNbr(), request.getLvl3Nbr(), bigQueryConnectionProperties.getAnalyticsData(),request.getInterval(),request.getFiscalYear());
-        } else if (request.getVolumeDeviationLevel().equals(VdLevelCode.Sub_Category.getDescription())) {
+        } else if (request.getVolumeDeviationLevel().equals(VdLevelCode.SUB_CATEGORY.getDescription())) {
             return getISByVolumeSubCatClusterQuery(tableNameCc, tableNameSp, Math.toIntExact(planId), request.getFinelineNbr(), request.getLvl4Nbr(), bigQueryConnectionProperties.getAnalyticsData(),request.getInterval(),request.getFiscalYear());
-        } else if (request.getVolumeDeviationLevel().equals(VdLevelCode.Fineline.getDescription())) {
+        } else if (request.getVolumeDeviationLevel().equals(VdLevelCode.FINELINE.getDescription())) {
             return getISByVolumeFinelineClusterQuery(tableNameCc, tableNameSp, Math.toIntExact(planId), request.getFinelineNbr(), bigQueryConnectionProperties.getAnalyticsData(),request.getInterval(),request.getFiscalYear());
         }
         throw new RuntimeException("Invalid Deviation Level, Fineline, Subcategory, Category are valid values");
