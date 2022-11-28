@@ -33,6 +33,7 @@ public class FineLineMapperDto {
     private String lvl4Desc;
     private String merchSupplierName;
     private Integer merchSupplierNumber6;
+    private Integer merchSupplierNumber8;
     private Integer merchSupplierNumber9;
     private Integer merchMaxUnitsPerPack;
     private Integer merchMaxNbrOfPacks;
@@ -43,6 +44,7 @@ public class FineLineMapperDto {
     private String merchColorCombination;
     private String subCatSupplierName;
     private Integer subCatSupplierNumber6;
+    private Integer subCatSupplierNumber8;
     private Integer subCatSupplierNumber9;
     private Integer subCatMaxUnitsPerPack;
     private Integer subCatMaxNbrOfPacks;
@@ -53,6 +55,7 @@ public class FineLineMapperDto {
     private String subCatColorCombination;
     private String fineLineSupplierName;
     private Integer fineLineSupplierNumber6;
+    private Integer fineLineSupplierNumber8;
     private Integer fineLineSupplierNumber9;
     private Integer fineLineMaxUnitsPerPack;
     private Integer fineLineMaxNbrOfPacks;
@@ -71,6 +74,7 @@ public class FineLineMapperDto {
     private String styleNbr;
     private String styleSupplierName;
     private Integer styleSupplierNumber6;
+    private Integer styleSupplierNumber8;
     private Integer styleSupplierNumber9;
     private String styleFactoryIds;
     private String styleCountryOfOrigin;
@@ -82,6 +86,7 @@ public class FineLineMapperDto {
     private String ccId;
     private String ccSupplierName;
     private Integer ccSupplierNumber6;
+    private Integer ccSupplierNumber8;
     private Integer ccSupplierNumber9;
     private String ccFactoryIds;
     private String ccCountryOfOrigin;
@@ -110,6 +115,7 @@ public class FineLineMapperDto {
         this.lvl4Desc = lvl4Desc;
         this.merchSupplierName = merchSupplierName;
         this.merchSupplierNumber6 = merchSupplierNumber6;
+        this.merchSupplierNumber8 = merchSupplierNumber8;
         this.merchSupplierNumber9 = merchSupplierNumber9;
         this.merchMaxUnitsPerPack = merchMaxUnitsPerPack;
         this.merchMaxNbrOfPacks = merchMaxNbrOfPacks;
@@ -120,6 +126,7 @@ public class FineLineMapperDto {
         this.merchColorCombination = merchColorCombination;
         this.subCatSupplierName = subCatSupplierName;
         this.subCatSupplierNumber6 = subCatSupplierNumber6;
+        this.subCatSupplierNumber8 = subCatSupplierNumber8;
         this.subCatSupplierNumber9 = subCatSupplierNumber9;
         this.subCatMaxUnitsPerPack = subCatMaxUnitsPerPack;
         this.subCatMaxNbrOfPacks = subCatMaxNbrOfPacks;
@@ -130,6 +137,7 @@ public class FineLineMapperDto {
         this.subCatColorCombination = subCatColorCombination;
         this.fineLineSupplierName = fineLineSupplierName;
         this.fineLineSupplierNumber6 = fineLineSupplierNumber6;
+        this.fineLineSupplierNumber8 = fineLineSupplierNumber8;
         this.fineLineSupplierNumber9 = fineLineSupplierNumber9;
         this.fineLineMaxUnitsPerPack = fineLineMaxUnitsPerPack;
         this.fineLineMaxNbrOfPacks = fineLineMaxNbrOfPacks;

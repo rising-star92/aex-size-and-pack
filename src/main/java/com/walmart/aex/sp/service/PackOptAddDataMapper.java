@@ -164,6 +164,7 @@ public class PackOptAddDataMapper {
                     ccPackOptimization.setVendorName(constraints.getColorCombinationConstraints().getSupplier().getSupplierName());
                     ccPackOptimization.setVendorNbr6(constraints.getColorCombinationConstraints().getSupplier().getSupplierNumber());
                     ccPackOptimization.setVendorNbr9(constraints.getColorCombinationConstraints().getSupplier().getSupplierId());
+                    ccPackOptimization.setGsmSupplierId(constraints.getColorCombinationConstraints().getSupplier().getSupplier8Number());
                 }
                 if (constraints.getFinelineLevelConstraints() != null) {
                     ccPackOptimization.setMaxNbrOfPacks(constraints.getFinelineLevelConstraints().getMaxPacks());

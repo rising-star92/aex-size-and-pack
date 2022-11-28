@@ -23,6 +23,7 @@ public class PackOptConstraintResponseDTO {
     private String styleNbr;
     private String styleSupplierName;
     private Integer styleSupplierNumber6;
+    private Integer styleSupplierNumber8;
     private Integer styleSupplierNumber9;
     private String styleFactoryIds;
     private String styleCountryOfOrigin;
@@ -34,6 +35,7 @@ public class PackOptConstraintResponseDTO {
     private String ccId;
     private String ccSupplierName;
     private Integer ccSupplierNumber6;
+    private Integer ccSupplierNumber8;
     private Integer ccSupplierNumber9;
     private String ccFactoryIds;
     private String ccCountryOfOrigin;

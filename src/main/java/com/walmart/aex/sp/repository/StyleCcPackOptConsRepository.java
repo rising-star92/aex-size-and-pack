@@ -25,6 +25,7 @@ public interface StyleCcPackOptConsRepository extends JpaRepository<CcPackOptimi
             "sp.stylePlanId.styleNbr, " +
             "spk.vendorName as styleSupplierName , " +
             "spk.vendorNbr6 as styleSupplierNumber6 , " +
+            "spk.gsmSupplierId as styleSupplierNumber8 , " +
             "spk.vendorNbr9 as styleSupplierNumber9 , " +
             "spk.factoryId as styleFactoryIds , " +
             "spk.originCountryName as styleCountryOfOrigin , " +
@@ -36,6 +37,7 @@ public interface StyleCcPackOptConsRepository extends JpaRepository<CcPackOptimi
             "ccp.custChoicePlanId.ccId , " +
             "cpk.vendorName as ccSupplierName , " +
             "cpk.vendorNbr6 as ccSupplierNumber6 , " +
+            "cpk.gsmSupplierId as ccSupplierNumber8 , " +
             "cpk.vendorNbr9 as ccSupplierNumber9 , " +
             "cpk.factoryId as ccFactoryIds , " +
             "cpk.originCountryName as ccCountryOfOrigin , " +

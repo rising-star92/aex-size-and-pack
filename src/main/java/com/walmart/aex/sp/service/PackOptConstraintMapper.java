@@ -252,6 +252,7 @@ public class PackOptConstraintMapper {
                 supplier.setSupplierName(fineLineMapperDto.getMerchSupplierName());
                 supplier.setSupplierId(fineLineMapperDto.getMerchSupplierNumber9());
                 supplier.setSupplierNumber(fineLineMapperDto.getMerchSupplierNumber6());
+                supplier.setSupplier8Number(fineLineMapperDto.getMerchSupplierNumber8());
                 constraints.setFinelineLevelConstraints(new FinelineLevelConstraints(fineLineMapperDto.getMerchMaxNbrOfPacks(),fineLineMapperDto.getMerchMaxUnitsPerPack()));
                 constraints.setColorCombinationConstraints(new ColorCombinationConstraints(supplier, fineLineMapperDto.getMerchFactoryId(),
                         fineLineMapperDto.getMerchOriginCountryName(), fineLineMapperDto.getMerchPortOfOriginName(),
@@ -261,6 +262,7 @@ public class PackOptConstraintMapper {
                 supplier.setSupplierName(fineLineMapperDto.getSubCatSupplierName());
                 supplier.setSupplierId(fineLineMapperDto.getSubCatSupplierNumber9());
                 supplier.setSupplierNumber(fineLineMapperDto.getSubCatSupplierNumber6());
+                supplier.setSupplier8Number(fineLineMapperDto.getSubCatSupplierNumber8());
                 constraints.setFinelineLevelConstraints(new FinelineLevelConstraints(fineLineMapperDto.getSubCatMaxNbrOfPacks(),fineLineMapperDto.getSubCatMaxUnitsPerPack()));
                 constraints.setColorCombinationConstraints(new ColorCombinationConstraints(supplier, fineLineMapperDto.getSubCatFactoryId(),
                         fineLineMapperDto.getSubCatOriginCountryName(), fineLineMapperDto.getSubCatPortOfOriginName(),
@@ -270,6 +272,7 @@ public class PackOptConstraintMapper {
                 supplier.setSupplierName(fineLineMapperDto.getFineLineSupplierName());
                 supplier.setSupplierId(fineLineMapperDto.getFineLineSupplierNumber9());
                 supplier.setSupplierNumber(fineLineMapperDto.getFineLineSupplierNumber6());
+                supplier.setSupplier8Number(fineLineMapperDto.getFineLineSupplierNumber8());
                 constraints.setFinelineLevelConstraints(new FinelineLevelConstraints(fineLineMapperDto.getFineLineMaxNbrOfPacks(),fineLineMapperDto.getFineLineMaxUnitsPerPack()));
                 constraints.setColorCombinationConstraints(new ColorCombinationConstraints(supplier, fineLineMapperDto.getFineLineFactoryId(),
                         fineLineMapperDto.getFineLineOriginCountryName(), fineLineMapperDto.getFineLinePortOfOriginName(),
@@ -279,6 +282,7 @@ public class PackOptConstraintMapper {
                 supplier.setSupplierName(fineLineMapperDto.getStyleSupplierName());
                 supplier.setSupplierId(fineLineMapperDto.getStyleSupplierNumber9());
                 supplier.setSupplierNumber(fineLineMapperDto.getStyleSupplierNumber6());
+                supplier.setSupplier8Number(fineLineMapperDto.getStyleSupplierNumber8());
                 constraints.setFinelineLevelConstraints(new FinelineLevelConstraints(fineLineMapperDto.getStyleMaxPacks(),fineLineMapperDto.getStyleMaxUnitsPerPack()));
                 constraints.setColorCombinationConstraints(new ColorCombinationConstraints(supplier, fineLineMapperDto.getStyleFactoryIds(),
                         fineLineMapperDto.getStyleCountryOfOrigin(), fineLineMapperDto.getStylePortOfOrigin(),
@@ -288,6 +292,7 @@ public class PackOptConstraintMapper {
                 supplier.setSupplierName(fineLineMapperDto.getCcSupplierName());
                 supplier.setSupplierId(fineLineMapperDto.getCcSupplierNumber9());
                 supplier.setSupplierNumber(fineLineMapperDto.getCcSupplierNumber6());
+                supplier.setSupplier8Number(fineLineMapperDto.getCcSupplierNumber8());
                 constraints.setFinelineLevelConstraints(new FinelineLevelConstraints(fineLineMapperDto.getCcMaxPacks(),fineLineMapperDto.getCcMaxUnitsPerPack()));
                 constraints.setColorCombinationConstraints(new ColorCombinationConstraints(supplier, fineLineMapperDto.getCcFactoryIds(),
                         fineLineMapperDto.getCcCountryOfOrigin(), fineLineMapperDto.getCcPortOfOrigin(),
