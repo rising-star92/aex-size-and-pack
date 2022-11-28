@@ -216,7 +216,7 @@ public class BigQueryInitialSetPlanService {
                 ") as SP\n" +
                 "on RFA.store = SP.store and RFA.cc = SP.cc\n" +
                 "join (\n" +
-                "select distinct scc.store_nbr as store,scc.cluster_id  as clusterId  from `" + analyticsData + ".svg_subcategory_cluster` scc join `analytics_data_dev.svg_subcategory` sc on sc.cluster_id = scc.cluster_id and sc.dept_nbr = scc.dept_nbr and sc.dept_catg_nbr = scc.dept_catg_nbr and sc.dept_subcatg_nbr = scc.dept_subcatg_nbr and sc.season = scc.season and sc.fiscal_year = scc.fiscal_year where sc.dept_subcatg_nbr = " + subCatNbr + " and  sc.season = '"+interval+"' and sc.fiscal_year = " +fiscalYear + " \n" +
+                "select distinct scc.store_nbr as store,scc.cluster_id  as clusterId  from `" + analyticsData + ".svg_subcategory_cluster` scc join `"+analyticsData+".svg_subcategory` sc on sc.cluster_id = scc.cluster_id and sc.dept_nbr = scc.dept_nbr and sc.dept_catg_nbr = scc.dept_catg_nbr and sc.dept_subcatg_nbr = scc.dept_subcatg_nbr and sc.season = scc.season and sc.fiscal_year = scc.fiscal_year where sc.dept_subcatg_nbr = " + subCatNbr + " and  sc.season = '"+interval+"' and sc.fiscal_year = " +fiscalYear + " \n" +
                 ") as CL\n" +
                 "on RFA.store = CL.store\n" +
                 "GROUP BY RFA.in_store_week,RFA.cc, CL.clusterId,CL.store ,RFA.fixtureAllocation, RFA.fixtureType order by RFA.in_store_week,RFA.cc,CL.clusterId,CL.store, RFA.fixtureAllocation, RFA.fixtureType\n" +
@@ -245,7 +245,7 @@ public class BigQueryInitialSetPlanService {
                 ") as SP\n" +
                 "on RFA.store = SP.store and RFA.cc = SP.cc\n" +
                 "join (\n" +
-                "select scc.store_nbr as store,scc.cluster_id  as clusterId  from `" + analyticsData + ".svg_category_cluster` scc join `analytics_data_dev.svg_category` sc on sc.cluster_id = scc.cluster_id and sc.dept_nbr = scc.dept_nbr and sc.dept_catg_nbr = scc.dept_catg_nbr and sc.season = scc.season and sc.fiscal_year = scc.fiscal_year where sc.dept_catg_nbr = " + catNbr +" and  sc.season = '"+interval+"' and sc.fiscal_year = " +fiscalYear + " \n" +
+                "select scc.store_nbr as store,scc.cluster_id  as clusterId  from `" + analyticsData + ".svg_category_cluster` scc join `"+analyticsData+".svg_category` sc on sc.cluster_id = scc.cluster_id and sc.dept_nbr = scc.dept_nbr and sc.dept_catg_nbr = scc.dept_catg_nbr and sc.season = scc.season and sc.fiscal_year = scc.fiscal_year where sc.dept_catg_nbr = " + catNbr +" and  sc.season = '"+interval+"' and sc.fiscal_year = " +fiscalYear + " \n" +
                 ") as CL\n" +
                 "on RFA.store = CL.store\n" +
                 "GROUP BY RFA.in_store_week,RFA.cc, CL.clusterId,CL.store ,RFA.fixtureAllocation, RFA.fixtureType order by RFA.in_store_week,RFA.cc,CL.clusterId,CL.store, RFA.fixtureAllocation, RFA.fixtureType\n" +
