@@ -85,9 +85,9 @@ public class AddStoreBuyQuantityService {
     private void calculateReplenishmentLogic(AddStoreBuyQuantity addStoreBuyQuantity, List<StoreQuantity> initialSetQuantities, Cluster volumeCluster, BuyQtyObj buyQtyObj, RFASizePackData rfaSizePackData) {
         List<Integer> storeList = safeReadStoreList(rfaSizePackData.getStore_list()).stream().sorted().collect(Collectors.toList());
         SizeDto sizeDto = addStoreBuyQuantity.getSizeDto();
-        SPInitialSetQuantity spInitialSetQuantity = calculateInitialSetQuantityService.calculateInitialSetQty(sizeDto, volumeCluster, rfaSizePackData);
-        double perStoreQty = spInitialSetQuantity.getPerStoreQty();
-        double isQty = spInitialSetQuantity.getIsQty();
+        InitialSetQuantity initialSetQuantity = calculateInitialSetQuantityService.calculateInitialSetQty(sizeDto, volumeCluster, rfaSizePackData);
+        double perStoreQty = initialSetQuantity.getPerStoreQty();
+        double isQty = initialSetQuantity.getIsQty();
         if ((perStoreQty < buyQtyProperties.getInitialThreshold() && perStoreQty > 0) && (!CollectionUtils.isEmpty(buyQtyObj.getReplenishments()))) {
             long totalReplenishment = getTotalReplenishment(buyQtyObj);
             if (totalReplenishment > 0) {
