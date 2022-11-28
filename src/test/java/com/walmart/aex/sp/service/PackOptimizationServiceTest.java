@@ -2,17 +2,7 @@ package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.StatusResponse;
 import com.walmart.aex.sp.dto.mapper.FineLineMapperDto;
-import com.walmart.aex.sp.dto.packoptimization.ColorCombinationConstraints;
-import com.walmart.aex.sp.dto.packoptimization.ColorCombinationRequest;
-import com.walmart.aex.sp.dto.packoptimization.ColorCombinationStyle;
-import com.walmart.aex.sp.dto.packoptimization.Constraints;
-import com.walmart.aex.sp.dto.packoptimization.FineLinePackOptimizationResponse;
-import com.walmart.aex.sp.dto.packoptimization.FineLinePackOptimizationResponseDTO;
-import com.walmart.aex.sp.dto.packoptimization.Fineline;
-import com.walmart.aex.sp.dto.packoptimization.FinelineLevelConstraints;
-import com.walmart.aex.sp.dto.packoptimization.PackOptConstraintRequest;
-import com.walmart.aex.sp.dto.packoptimization.PackOptConstraintResponseDTO;
-import com.walmart.aex.sp.dto.packoptimization.PackOptimizationResponse;
+import com.walmart.aex.sp.dto.packoptimization.*;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
 import com.walmart.aex.sp.dto.planhierarchy.Style;
@@ -117,9 +107,12 @@ class PackOptimizationServiceTest {
 		merchantPackOptimizationlist.add(merchpackOptObj);
 
 		Lvl3 lvl3= new Lvl3();
+		Supplier supplier = new Supplier();
+		supplier.setSupplierName("Vendor Name");
+
 		ColorCombinationConstraints colorCombinationConstraints = new ColorCombinationConstraints();
 		colorCombinationConstraints.setFactoryId("120, 121");
-		colorCombinationConstraints.setSupplierName("Vendor Name");
+		colorCombinationConstraints.setSupplier(supplier);
 		FinelineLevelConstraints finelineLevelConstraints = new FinelineLevelConstraints();
 		finelineLevelConstraints.setMaxPacks(50);
 		Constraints constraints = new Constraints();
@@ -143,14 +136,14 @@ class PackOptimizationServiceTest {
 
 		when(packOptfineplanRepo.findByFinePlanPackOptimizationIDPlanIdAndChannelTextChannelId(planId, channelId)).thenReturn(merchantPackOptimizationlist);
 		packOptResponse = packOptimizationService.getPackOptDetails(362L, 1);
-		String expectedResult = "PackOptimizationResponse(planId=362, channel=Store, lvl0Nbr=0, lvl0Desc=null, lvl1Nbr=0, lvl1Desc=null, lvl2Nbr=0, lvl2Desc=null, lvl3List=[Lvl3(lvl0Nbr=0, lvl1Nbr=0, lvl2Nbr=0, lvl3Nbr=25, lvl3Name=null, constraints=Constraints(supplierConstraints=null, ccLevelConstraints=null, colorCombinationConstraints=ColorCombinationConstraints(supplierName=Vendor Name, factoryId=120, 121, countryOfOrigin=null, portOfOrigin=null, singlePackIndicator=null, colorCombination=null), finelineLevelConstraints=FinelineLevelConstraints(maxPacks=50, maxUnitsPerPack=null)), lvl4List=null)])";
+		String expectedResult = "PackOptimizationResponse(planId=362, channel=Store, lvl0Nbr=0, lvl0Desc=null, lvl1Nbr=0, lvl1Desc=null, lvl2Nbr=0, lvl2Desc=null, lvl3List=[Lvl3(lvl0Nbr=0, lvl1Nbr=0, lvl2Nbr=0, lvl3Nbr=25, lvl3Name=null, constraints=Constraints(colorCombinationConstraints=ColorCombinationConstraints(supplier=Supplier(supplierId=null, supplier8Number=null, supplierName=Vendor Name, supplierType=null, supplierNumber=null), factoryId=120, 121, countryOfOrigin=null, portOfOrigin=null, singlePackIndicator=null, colorCombination=null), finelineLevelConstraints=FinelineLevelConstraints(maxPacks=50, maxUnitsPerPack=null)), lvl4List=null)])";
 
 		assertNotNull(packOptResponse);
 		assertEquals(362L, packOptResponse.getPlanId());
 		assertEquals(expectedResult, packOptResponse.toString());
 
 		assertEquals("120, 121", packOptResponse.getLvl3List().get(0).getConstraints().getColorCombinationConstraints().getFactoryId());
-		assertEquals("Vendor Name", packOptResponse.getLvl3List().get(0).getConstraints().getColorCombinationConstraints().getSupplierName());
+		assertEquals("Vendor Name", packOptResponse.getLvl3List().get(0).getConstraints().getColorCombinationConstraints().getSupplier().getSupplierName());
 		assertEquals(50, packOptResponse.getLvl3List().get(0).getConstraints().getFinelineLevelConstraints().getMaxPacks());
 	}
 
@@ -173,8 +166,12 @@ class PackOptimizationServiceTest {
 
 		packOptConstraintResponseDTOList.add(packOptConstraintResponseDTO);
 
+		Supplier supplier = new Supplier();
+		supplier.setSupplierName("NIKE");
+
 		ColorCombinationConstraints colorCombinationConstraint = new ColorCombinationConstraints();
-		colorCombinationConstraint.setSupplierName("NIKE");
+		colorCombinationConstraint.setSupplier(supplier);
+
 		Constraints constraint = new Constraints();
 		constraint.setColorCombinationConstraints(colorCombinationConstraint);
 		Style style = new Style();
@@ -211,12 +208,12 @@ class PackOptimizationServiceTest {
 		request.setFinelineNbr(2542);
 		packOptResponse = packOptimizationService.getPackOptConstraintDetails(request);
 
-		String expectedResult = "PackOptimizationResponse(planId=362, channel=Store, lvl0Nbr=0, lvl0Desc=null, lvl1Nbr=0, lvl1Desc=null, lvl2Nbr=0, lvl2Desc=null, lvl3List=[Lvl3(lvl0Nbr=0, lvl1Nbr=0, lvl2Nbr=0, lvl3Nbr=25, lvl3Name=null, constraints=null, lvl4List=[Lvl4(lvl4Nbr=null, lvl4Name=null, constraints=null, finelines=[Fineline(finelineNbr=null, finelineName=null, altFinelineName=null, channel=null, packOptimizationStatus=null, constraints=null, styles=[Style(styleNbr=null, altStyleDesc=null, channel=null, constraints=Constraints(supplierConstraints=null, ccLevelConstraints=null, colorCombinationConstraints=ColorCombinationConstraints(supplierName=NIKE, factoryId=null, countryOfOrigin=null, portOfOrigin=null, singlePackIndicator=null, colorCombination=null), finelineLevelConstraints=null), customerChoices=null)], optimizationDetails=null)])])])";
+		String expectedResult = "PackOptimizationResponse(planId=362, channel=Store, lvl0Nbr=0, lvl0Desc=null, lvl1Nbr=0, lvl1Desc=null, lvl2Nbr=0, lvl2Desc=null, lvl3List=[Lvl3(lvl0Nbr=0, lvl1Nbr=0, lvl2Nbr=0, lvl3Nbr=25, lvl3Name=null, constraints=null, lvl4List=[Lvl4(lvl4Nbr=null, lvl4Name=null, constraints=null, finelines=[Fineline(finelineNbr=null, finelineName=null, altFinelineName=null, channel=null, packOptimizationStatus=null, constraints=null, styles=[Style(styleNbr=null, altStyleDesc=null, channel=null, constraints=Constraints(colorCombinationConstraints=ColorCombinationConstraints(supplier=Supplier(supplierId=null, supplier8Number=null, supplierName=NIKE, supplierType=null, supplierNumber=null), factoryId=null, countryOfOrigin=null, portOfOrigin=null, singlePackIndicator=null, colorCombination=null), finelineLevelConstraints=null), customerChoices=null)], optimizationDetails=null)])])])";
 
 		assertNotNull(packOptResponse);
 		assertEquals(362L, packOptResponse.getPlanId());
 		assertEquals(expectedResult, packOptResponse.toString());
-		assertEquals("NIKE", packOptResponse.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getConstraints().getColorCombinationConstraints().getSupplierName());
+		assertEquals("NIKE", packOptResponse.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getConstraints().getColorCombinationConstraints().getSupplier().getSupplierName());
 	}
 
 	@Test
