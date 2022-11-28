@@ -522,9 +522,14 @@ type IsPlan {
 }
 
 type MetricsVolume {
-    stores: [Int!]
+    stores: [StoreDetail]
     volumeClusterId: Int!
     fixtureType: String
     fixtureAllocation: Float
     quantity: Int!
+}
+
+type StoreDetail {
+    store: Int!
+    qty: Int!
 }
