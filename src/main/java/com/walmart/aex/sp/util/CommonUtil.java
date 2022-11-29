@@ -115,13 +115,13 @@ public class CommonUtil {
         }
     }
 
-    public PlanSizeAndPackDeleteDTO cleanSPDeleteRequest(PlanSizeAndPackDeleteDTO arg0) throws IOException {
-        return objectMapper.readValue(Jsoup.clean(StringEscapeUtils.escapeHtml(StringEscapeUtils.escapeSql(objectMapper.writeValueAsString(arg0))),
+    public PlanSizeAndPackDeleteDTO cleanSPDeleteRequest(PlanSizeAndPackDeleteDTO planSizeAndPackDeleteDTO) throws IOException {
+        return objectMapper.readValue(Jsoup.clean(StringEscapeUtils.escapeHtml(StringEscapeUtils.escapeSql(objectMapper.writeValueAsString(planSizeAndPackDeleteDTO))),
                 Whitelist.basic()), PlanSizeAndPackDeleteDTO.class);
     }
 
-    public PlanSizeAndPackDTO cleanSPRequest(PlanSizeAndPackDTO arg0) throws IOException {
-        return objectMapper.readValue(Jsoup.clean(StringEscapeUtils.escapeHtml(StringEscapeUtils.escapeSql(objectMapper.writeValueAsString(arg0))),
+    public PlanSizeAndPackDTO cleanSPRequest(PlanSizeAndPackDTO planSizeAndPackDTO) throws IOException {
+        return objectMapper.readValue(Jsoup.clean(StringEscapeUtils.escapeHtml(StringEscapeUtils.escapeSql(objectMapper.writeValueAsString(planSizeAndPackDTO))),
                 Whitelist.basic()), PlanSizeAndPackDTO.class);
     }
 }

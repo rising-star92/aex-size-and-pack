@@ -156,7 +156,7 @@ type UpdateVnPkWhPkResponse {
 	status: String!
 }
 
-type PackOptimizationResponse{
+type PackOptimizationResponse {
     planId: Int!
     channel:String!
     planDesc: String
@@ -179,39 +179,30 @@ type Lvl3 {
    	lvl4List: [Lvl4]
 }
 
-type Constraints{
- supplierConstraints:SupplierConstraints
- ccLevelConstraints:CcLevelConstraints
- colorCombinationConstraints: ColorCombinationConstraints
- finelineLevelConstraints: FinelineLevelConstraints
+type Constraints {
+    colorCombinationConstraints: ColorCombinationConstraints
+    finelineLevelConstraints: FinelineLevelConstraints
 }
 
-type ColorCombinationConstraints{
-   supplierName:String
-   factoryId:String
-   countryOfOrigin:String
-   portOfOrigin:String
-   singlePackIndicator: Int
-   colorCombination:String
+type ColorCombinationConstraints {
+    supplier: Supplier
+    factoryId: String
+    countryOfOrigin: String
+    portOfOrigin: String
+    singlePackIndicator: Int
+    colorCombination: String
 }
 
-type FinelineLevelConstraints{
-    maxUnitsPerPack:Int
-    maxPacks:Int
+type FinelineLevelConstraints {
+    maxUnitsPerPack: Int
+    maxPacks: Int
 }
 
-type SupplierConstraints{
-   supplierName:String
-   factoryIds:String
-   countryOfOrigin:String
-   portOfOrigin:String
-}
-
-type CcLevelConstraints{
-    maxUnitsPerPack:Int
-    maxPacks:Int
-    singlePackIndicator:Int
-    colorCombination:String
+type Supplier {
+    supplierId: Int
+    supplier8Number: Int
+    supplierName: String
+    supplierNumber: Int
 }
 
 type Lvl4 {

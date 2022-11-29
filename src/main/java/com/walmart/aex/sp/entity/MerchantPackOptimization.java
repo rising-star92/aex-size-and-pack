@@ -49,6 +49,9 @@ public class MerchantPackOptimization {
     @Column(name="select_status_id")
     private Integer singlePackInd;
 
+    @Column(name="gsm_supplier_id")
+    private Integer gsmSupplierId;
+
     @Column(name="port_of_origin_id")
     private Integer portOfOriginId;
 

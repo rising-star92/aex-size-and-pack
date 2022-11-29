@@ -27,6 +27,9 @@ class PackOptConstraintMapperTest {
 
     private static final Integer finelineNbr = 3470;
     private static final Long planId = 471L;
+    private static final Integer vendorNbr6 = 123456;
+    private static final Integer gsmSupplierId = 12345678;
+    private static final Integer vendorNbr9 = 123456789;
     private static final String factoryId = "S1D0027";
     private static final String styleNbr = "34_2816_2_19_2";
     private static final String ccId = "34_2816_2_19_2_CHARCOAL GREY HEATHER";
@@ -40,7 +43,10 @@ class PackOptConstraintMapperTest {
         assertNotNull(packOptimizationResponse);
         assertEquals(styleNbr, actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getStyleNbr());
         assertEquals(ccId, actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getCustomerChoices().get(0).getCcId());
-        assertEquals("PUMA", actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getConstraints().getColorCombinationConstraints().getSupplierName());
+        assertEquals("PUMA", actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getConstraints().getColorCombinationConstraints().getSupplier().getSupplierName());
+        assertEquals(vendorNbr9, actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getConstraints().getColorCombinationConstraints().getSupplier().getSupplierId());
+        assertEquals(vendorNbr6, actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getConstraints().getColorCombinationConstraints().getSupplier().getSupplierNumber());
+        assertEquals(gsmSupplierId, actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getConstraints().getColorCombinationConstraints().getSupplier().getSupplier8Number());
         assertEquals(factoryId, actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getCustomerChoices().get(0).getConstraints().getColorCombinationConstraints().getFactoryId());
     }
 
@@ -85,7 +91,7 @@ class PackOptConstraintMapperTest {
         List<FineLineMapperDto> requestFineLines = getFineLines();
         PackOptimizationResponse actual = packOptConstraintMapper.packOptDetails(requestFineLines);
         assertEquals(finelineNbr, actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getFinelineNbr());
-        assertEquals("PUMA, NIKE", actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getConstraints().getColorCombinationConstraints().getSupplierName());
+        assertEquals("PUMA, NIKE", actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getConstraints().getColorCombinationConstraints().getSupplier().getSupplierName());
 
     }
 
@@ -94,7 +100,7 @@ class PackOptConstraintMapperTest {
         List<FineLineMapperDto> requestFineLines = getFineLines();
         PackOptimizationResponse actual = packOptConstraintMapper.packOptDetails(requestFineLines);
         assertEquals(finelineNbr, actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getFinelineNbr());
-        assertEquals("PUMA, NIKE", actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getConstraints().getColorCombinationConstraints().getSupplierName());
+        assertEquals("PUMA, NIKE", actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getConstraints().getColorCombinationConstraints().getSupplier().getSupplierName());
 
     }
 
@@ -114,6 +120,9 @@ class PackOptConstraintMapperTest {
         fineLineMapperDto.setStyleMaxPacks(43);
         fineLineMapperDto.setStyleColorCombination(colorCombination);
         fineLineMapperDto.setCcColorCombination(colorCombination);
+        fineLineMapperDto.setStyleSupplierNumber9(vendorNbr9);
+        fineLineMapperDto.setStyleSupplierNumber6(vendorNbr6);
+        fineLineMapperDto.setStyleSupplierNumber8(gsmSupplierId);
         fineLineMapperDto.setCcFactoryIds(factoryId);
         fineLineMapperDto.setCcSinglePackIndicator(1);
         fineLineMapperDto.setStyleSinglePackIndicator(1);
