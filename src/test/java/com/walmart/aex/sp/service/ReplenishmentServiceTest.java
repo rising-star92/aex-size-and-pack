@@ -1,11 +1,22 @@
 package com.walmart.aex.sp.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.buyquantity.BuyQntyResponseDTO;
 import com.walmart.aex.sp.dto.buyquantity.BuyQtyRequest;
 import com.walmart.aex.sp.dto.buyquantity.BuyQtyResponse;
-import com.walmart.aex.sp.dto.replenishment.ReplenishmentRequest;
-import com.walmart.aex.sp.dto.replenishment.ReplenishmentResponse;
 import com.walmart.aex.sp.dto.replenishment.ReplenishmentResponseDTO;
 import com.walmart.aex.sp.dto.replenishment.UpdateVnPkWhPkReplnRequest;
 import com.walmart.aex.sp.entity.CcMmReplPack;
@@ -16,21 +27,18 @@ import com.walmart.aex.sp.entity.MerchCatgReplPack;
 import com.walmart.aex.sp.entity.StyleReplPack;
 import com.walmart.aex.sp.entity.SubCatgReplPack;
 import com.walmart.aex.sp.exception.SizeAndPackException;
-import com.walmart.aex.sp.repository.*;
+import com.walmart.aex.sp.repository.CatgReplnPkConsRepository;
+import com.walmart.aex.sp.repository.CcMmReplnPkConsRepository;
+import com.walmart.aex.sp.repository.CcReplnPkConsRepository;
+import com.walmart.aex.sp.repository.CcSpReplnPkConsRepository;
+import com.walmart.aex.sp.repository.FineLineReplenishmentRepository;
+import com.walmart.aex.sp.repository.FinelineReplnPkConsRepository;
+import com.walmart.aex.sp.repository.SizeListReplenishmentRepository;
+import com.walmart.aex.sp.repository.SpCustomerChoiceReplenishmentRepository;
+import com.walmart.aex.sp.repository.StyleReplnPkConsRepository;
+import com.walmart.aex.sp.repository.SubCatgReplnPkConsRepository;
 import com.walmart.aex.sp.util.BuyQtyCommonUtil;
 import com.walmart.aex.sp.util.BuyQtyResponseInputs;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
 public class ReplenishmentServiceTest {
@@ -183,8 +191,6 @@ public class ReplenishmentServiceTest {
         Mockito.verify(buyQuantityMapper, Mockito.times(5)).mapBuyQntySizeSp(Mockito.any(),Mockito.any());
     }
     
-   
-  
     @Test
     public void testUpdateVnpkWhpkForCatgReplnCons() {
     	UpdateVnPkWhPkReplnRequest updateVnPkWhPkReplnRequest = new UpdateVnPkWhPkReplnRequest();
