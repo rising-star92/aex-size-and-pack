@@ -28,22 +28,21 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class PackOptUpdateDateMapperTest {
 
     @InjectMocks
-    PackOptUpdateDataMapper packOptUpdateDataMapper;
+    private PackOptUpdateDataMapper packOptUpdateDataMapper;
 
     @Mock
-    SizeAndPackObjectMapper sizeAndPackObjectMapper;
+    private SizeAndPackObjectMapper sizeAndPackObjectMapper;
 
     @Mock
-    PackOptAddDataMapper packOptAddDataMapper;
+    private PackOptAddDataMapper packOptAddDataMapper;
 
     @Mock
-    MerchPackOptimizationRepository merchPackOptimizationRepository;
+    private MerchPackOptimizationRepository merchPackOptimizationRepository;
 
-    private SizeAndPackObjectMapperTest sizeAndPackObjectMapperTest;
 
     @Test
     void testUpdateLinePlanEventsToPackOpt() {
-        sizeAndPackObjectMapperTest=new SizeAndPackObjectMapperTest();
+        SizeAndPackObjectMapperTest sizeAndPackObjectMapperTest=new SizeAndPackObjectMapperTest();
         PlanSizeAndPackDTO planSizeAndPackDTO = sizeAndPackObjectMapperTest.getPlanSizeAndPackDTOObj();
         Lvl1 lvl1 = planSizeAndPackDTO.getLvl1List().get(0);
         Lvl2 lvl2 = lvl1.getLvl2List().get(0);
