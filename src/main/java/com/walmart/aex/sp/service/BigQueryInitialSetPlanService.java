@@ -22,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static java.util.Objects.requireNonNull;
@@ -179,7 +178,7 @@ public class BigQueryInitialSetPlanService {
                 "from (\n" +
                 "select trim(cc) as cc,CAST(store AS INTEGER) as store,min(week) as in_store_week ,final_alloc_space as fixtureAllocation, final_pref as fixtureType\n" +
                 "FROM `" + ccTableName + "`as RFA\n" +
-                "where plan_id_partition=12 and fineline=" + finelineNbr + " and final_alloc_space>0 group by cc,store, fixtureAllocation, fixtureType order by cc, in_store_week, store, fixtureAllocation, fixtureType )\n" +
+                "where plan_id_partition="+planId+" and fineline=" + finelineNbr + " and final_alloc_space>0 group by cc,store, fixtureAllocation, fixtureType order by cc, in_store_week, store, fixtureAllocation, fixtureType )\n" +
                 "as RFA join\n" +
                 "(\n" +
                 "SELECT trim(SP.ProductCustomerChoice) as cc,SP.store, SP.SPPackInitialSetOutput as is_quantity, SP.SPPackBumpOutput as bs_quantity\n" +
@@ -208,7 +207,7 @@ public class BigQueryInitialSetPlanService {
                 "from (\n" +
                 "select trim(cc) as cc,CAST(store AS INTEGER) as store,min(week) as in_store_week ,final_alloc_space as fixtureAllocation, final_pref as fixtureType\n" +
                 "FROM `" + ccTableName + "`as RFA\n" +
-                "where plan_id_partition=12 and fineline=" + finelineNbr + " and final_alloc_space>0 group by cc,store, fixtureAllocation, fixtureType order by cc, in_store_week, store, fixtureAllocation, fixtureType )\n" +
+                "where plan_id_partition="+planId+" and fineline=" + finelineNbr + " and final_alloc_space>0 group by cc,store, fixtureAllocation, fixtureType order by cc, in_store_week, store, fixtureAllocation, fixtureType )\n" +
                 "as RFA join\n" +
                 "(\n" +
                 "SELECT trim(SP.ProductCustomerChoice) as cc,SP.store, SP.SPPackInitialSetOutput as is_quantity, SP.SPPackBumpOutput as bs_quantity\n" +
@@ -216,7 +215,7 @@ public class BigQueryInitialSetPlanService {
                 ") as SP\n" +
                 "on RFA.store = SP.store and RFA.cc = SP.cc\n" +
                 "join (\n" +
-                "select distinct scc.store_nbr as store,scc.cluster_id  as clusterId  from `" + analyticsData + ".svg_subcategory_cluster` scc join `analytics_data_dev.svg_subcategory` sc on sc.cluster_id = scc.cluster_id and sc.dept_nbr = scc.dept_nbr and sc.dept_catg_nbr = scc.dept_catg_nbr and sc.dept_subcatg_nbr = scc.dept_subcatg_nbr and sc.season = scc.season and sc.fiscal_year = scc.fiscal_year where sc.dept_subcatg_nbr = " + subCatNbr + " and  sc.season = '"+interval+"' and sc.fiscal_year = " +fiscalYear + " \n" +
+                "select distinct scc.store_nbr as store,scc.cluster_id  as clusterId  from `" + analyticsData + ".svg_subcategory_cluster` scc join `"+analyticsData+".svg_subcategory` sc on sc.cluster_id = scc.cluster_id and sc.dept_nbr = scc.dept_nbr and sc.dept_catg_nbr = scc.dept_catg_nbr and sc.dept_subcatg_nbr = scc.dept_subcatg_nbr and sc.season = scc.season and sc.fiscal_year = scc.fiscal_year where sc.dept_subcatg_nbr = " + subCatNbr + " and  sc.season = '"+interval+"' and sc.fiscal_year = " +fiscalYear + " \n" +
                 ") as CL\n" +
                 "on RFA.store = CL.store\n" +
                 "GROUP BY RFA.in_store_week,RFA.cc, CL.clusterId,CL.store ,RFA.fixtureAllocation, RFA.fixtureType order by RFA.in_store_week,RFA.cc,CL.clusterId,CL.store, RFA.fixtureAllocation, RFA.fixtureType\n" +
@@ -237,7 +236,7 @@ public class BigQueryInitialSetPlanService {
                 "from (\n" +
                 "select trim(cc) as cc,CAST(store AS INTEGER) as store,min(week) as in_store_week ,final_alloc_space as fixtureAllocation, final_pref as fixtureType\n" +
                 "FROM `" + ccTableName + "`as RFA\n" +
-                "where plan_id_partition=12 and fineline=" + finelineNbr + " and final_alloc_space>0 group by cc,store, fixtureAllocation, fixtureType order by cc, in_store_week, store, fixtureAllocation, fixtureType )\n" +
+                "where plan_id_partition="+planId+" and fineline=" + finelineNbr + " and final_alloc_space>0 group by cc,store, fixtureAllocation, fixtureType order by cc, in_store_week, store, fixtureAllocation, fixtureType )\n" +
                 "as RFA join\n" +
                 "(\n" +
                 "SELECT trim(SP.ProductCustomerChoice) as cc,SP.store, SP.SPPackInitialSetOutput as is_quantity, SP.SPPackBumpOutput as bs_quantity\n" +
@@ -245,7 +244,94 @@ public class BigQueryInitialSetPlanService {
                 ") as SP\n" +
                 "on RFA.store = SP.store and RFA.cc = SP.cc\n" +
                 "join (\n" +
-                "select scc.store_nbr as store,scc.cluster_id  as clusterId  from `" + analyticsData + ".svg_category_cluster` scc join `analytics_data_dev.svg_category` sc on sc.cluster_id = scc.cluster_id and sc.dept_nbr = scc.dept_nbr and sc.dept_catg_nbr = scc.dept_catg_nbr and sc.season = scc.season and sc.fiscal_year = scc.fiscal_year where sc.dept_catg_nbr = " + catNbr +" and  sc.season = '"+interval+"' and sc.fiscal_year = " +fiscalYear + " \n" +
+                "select scc.store_nbr as store,scc.cluster_id  as clusterId  from `" + analyticsData + ".svg_category_cluster` scc join `"+analyticsData+".svg_category` sc on sc.cluster_id = scc.cluster_id and sc.dept_nbr = scc.dept_nbr and sc.dept_catg_nbr = scc.dept_catg_nbr and sc.season = scc.season and sc.fiscal_year = scc.fiscal_year where sc.dept_catg_nbr = " + catNbr +" and  sc.season = '"+interval+"' and sc.fiscal_year = " +fiscalYear + " \n" +
+                ") as CL\n" +
+                "on RFA.store = CL.store\n" +
+                "GROUP BY RFA.in_store_week,RFA.cc, CL.clusterId,CL.store ,RFA.fixtureAllocation, RFA.fixtureType order by RFA.in_store_week,RFA.cc,CL.clusterId,CL.store, RFA.fixtureAllocation, RFA.fixtureType\n" +
+                ") SELECT TO_JSON_STRING(rfaTable) AS json FROM MyTable AS rfaTable\n";
+    }
+
+    private String getBumpQTYVolumeSubCatClusterQuery(String ccTableName, String spTableName, Integer planId, Integer finelineNbr, Integer subCatNbr, String analyticsData,String interval, Integer fiscalYear, Integer week) {
+        String prodFineline = planId + "_" + finelineNbr;
+        return "WITH MyTable AS (\n" +
+                "select distinct\n" +
+                "RFA.in_store_week,\n" +
+                "RFA.cc,\n" +
+                "SUM(SP.bs_quantity) AS bs_quantity ,\n" +
+                "CL.store,\n" +
+                "CL.clusterId,\n" +
+                "RFA.fixtureAllocation,\n" +
+                "RFA.fixtureType\n" +
+                "from (\n" +
+                "select trim(cc) as cc,CAST(store AS INTEGER) as store,min(week) as in_store_week ,final_alloc_space as fixtureAllocation, final_pref as fixtureType\n" +
+                "FROM `" + ccTableName + "`as RFA\n" +
+                "where plan_id_partition="+planId+" and fineline=" + finelineNbr + " and final_alloc_space>0 and week =" + week + " group by cc,store, fixtureAllocation, fixtureType order by cc, in_store_week, store, fixtureAllocation, fixtureType )\n" +
+                "as RFA join\n" +
+                "(\n" +
+                "SELECT trim(SP.ProductCustomerChoice) as cc,SP.store, SP.SPPackBumpOutput as bs_quantity\n" +
+                "FROM `" + spTableName + "` AS SP where ProductFineline = '" + prodFineline + "' and SPPackBumpOutput >0\n" +
+                ") as SP\n" +
+                "on RFA.store = SP.store and RFA.cc = SP.cc\n" +
+                "join (\n" +
+                "select distinct scc.store_nbr as store,scc.cluster_id  as clusterId  from `" + analyticsData + ".svg_subcategory_cluster` scc join `"+analyticsData+".svg_subcategory` sc on sc.cluster_id = scc.cluster_id and sc.dept_nbr = scc.dept_nbr and sc.dept_catg_nbr = scc.dept_catg_nbr and sc.dept_subcatg_nbr = scc.dept_subcatg_nbr and sc.season = scc.season and sc.fiscal_year = scc.fiscal_year where sc.dept_subcatg_nbr = " + subCatNbr + " and  sc.season = '"+interval+"' and sc.fiscal_year = " +fiscalYear + " \n" +
+                ") as CL\n" +
+                "on RFA.store = CL.store\n" +
+                "GROUP BY RFA.in_store_week,RFA.cc, CL.clusterId,CL.store ,RFA.fixtureAllocation, RFA.fixtureType order by RFA.in_store_week,RFA.cc,CL.clusterId,CL.store, RFA.fixtureAllocation, RFA.fixtureType\n" +
+                ") SELECT TO_JSON_STRING(rfaTable) AS json FROM MyTable AS rfaTable\n";
+    }
+
+    private String getBumpQTYVolumeCatClusterQuery(String ccTableName, String spTableName, Integer planId, Integer finelineNbr, Integer catNbr, String analyticsData,String interval, Integer fiscalYear, Integer week) {
+        String prodFineline = planId + "_" + finelineNbr;
+        return "WITH MyTable AS (\n" +
+                "select distinct\n" +
+                "RFA.in_store_week,\n" +
+                "RFA.cc,\n" +
+                "SUM(SP.bs_quantity) AS bs_quantity ,\n" +
+                "CL.store,\n" +
+                "CL.clusterId,\n" +
+                "RFA.fixtureAllocation,\n" +
+                "RFA.fixtureType\n" +
+                "from (\n" +
+                "select trim(cc) as cc,CAST(store AS INTEGER) as store,min(week) as in_store_week ,final_alloc_space as fixtureAllocation, final_pref as fixtureType\n" +
+                "FROM `" + ccTableName + "`as RFA\n" +
+                "where plan_id_partition="+planId+" and fineline=" + finelineNbr + " and final_alloc_space>0 and week =" + week + " group by cc,store, fixtureAllocation, fixtureType order by cc, in_store_week, store, fixtureAllocation, fixtureType )\n" +
+                "as RFA join\n" +
+                "(\n" +
+                "SELECT trim(SP.ProductCustomerChoice) as cc,SP.store, SP.SPPackBumpOutput as bs_quantity\n" +
+                "FROM `" + spTableName + "` AS SP where ProductFineline = '" + prodFineline + "' and SPPackBumpOutput >0\n" +
+                ") as SP\n" +
+                "on RFA.store = SP.store and RFA.cc = SP.cc\n" +
+                "join (\n" +
+                "select scc.store_nbr as store,scc.cluster_id  as clusterId  from `" + analyticsData + ".svg_category_cluster` scc join `"+analyticsData+".svg_category` sc on sc.cluster_id = scc.cluster_id and sc.dept_nbr = scc.dept_nbr and sc.dept_catg_nbr = scc.dept_catg_nbr and sc.season = scc.season and sc.fiscal_year = scc.fiscal_year where sc.dept_catg_nbr = " + catNbr +" and  sc.season = '"+interval+"' and sc.fiscal_year = " +fiscalYear + " \n" +
+                ") as CL\n" +
+                "on RFA.store = CL.store\n" +
+                "GROUP BY RFA.in_store_week,RFA.cc, CL.clusterId,CL.store ,RFA.fixtureAllocation, RFA.fixtureType order by RFA.in_store_week,RFA.cc,CL.clusterId,CL.store, RFA.fixtureAllocation, RFA.fixtureType\n" +
+                ") SELECT TO_JSON_STRING(rfaTable) AS json FROM MyTable AS rfaTable\n";
+    }
+
+    private String getBumpQTYVolumeFinelineClusterQuery(String ccTableName, String spTableName, Integer planId, Integer finelineNbr,  String analyticsData,String interval, Integer fiscalYear, Integer week) {
+        String prodFineline = planId + "_" + finelineNbr;
+        return "WITH MyTable AS (\n" +
+                "select distinct\n" +
+                "RFA.in_store_week,\n" +
+                "RFA.cc,\n" +
+                "SUM(SP.bs_quantity) AS bs_quantity ,\n" +
+                "CL.store,\n" +
+                "CL.clusterId,\n" +
+                "RFA.fixtureAllocation,\n" +
+                "RFA.fixtureType\n" +
+                "from (\n" +
+                "select trim(cc) as cc,CAST(store AS INTEGER) as store,min(week) as in_store_week ,final_alloc_space as fixtureAllocation, final_pref as fixtureType\n" +
+                "FROM `" + ccTableName + "`as RFA\n" +
+                "where plan_id_partition="+planId+" and fineline=" + finelineNbr + " and final_alloc_space>0 and week =" + week + " group by cc,store, fixtureAllocation, fixtureType order by cc, in_store_week, store, fixtureAllocation, fixtureType )\n" +
+                "as RFA join\n" +
+                "(\n" +
+                "SELECT trim(SP.ProductCustomerChoice) as cc,SP.store, SP.SPPackBumpOutput as bs_quantity\n" +
+                "FROM `" + spTableName + "` AS SP where ProductFineline = '" + prodFineline + "' and SPPackBumpOutput >0\n" +
+                ") as SP\n" +
+                "on RFA.store = SP.store and RFA.cc = SP.cc\n" +
+                "join (\n" +
+                "select store_nbr as store,cluster_id  as clusterId from `" + analyticsData + ".svg_fl_cluster` where fineline_nbr = " + finelineNbr + " and season = '"+interval+"' and fiscal_year = " +fiscalYear + " \n" +
                 ") as CL\n" +
                 "on RFA.store = CL.store\n" +
                 "GROUP BY RFA.in_store_week,RFA.cc, CL.clusterId,CL.store ,RFA.fixtureAllocation, RFA.fixtureType order by RFA.in_store_week,RFA.cc,CL.clusterId,CL.store, RFA.fixtureAllocation, RFA.fixtureType\n" +
@@ -258,6 +344,7 @@ public class BigQueryInitialSetPlanService {
         QueryJobConfiguration queryConfigIs = QueryJobConfiguration.newBuilder(sqlQuery).build();
         TableResult resultsIs = bigQuery.query(queryConfigIs);
         HashMap<VolumeQueryId, List<JsonNode>> uniqueRows = new HashMap<>();
+
         resultsIs.iterateAll().forEach(rows -> rows.forEach(row -> {
             try {
                 JsonNode node = objectMapper.readTree(row.getStringValue());
@@ -270,11 +357,50 @@ public class BigQueryInitialSetPlanService {
                     uniqueRows.put(nodeId, nodes);
                 }
             } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
+                log.error("Error Occurred while fetching IS Information", e);
             }
         }));
 
+        try{
+            String bsInstoreweek = getInStoreWeek(planId.intValue(), request.getFinelineNbr());
+            sqlQuery = findBumpSqlQuery(planId, request,bsInstoreweek);
+            bigQuery = BigQueryOptions.getDefaultInstance().getService();
+            queryConfigIs = QueryJobConfiguration.newBuilder(sqlQuery).build();
+            resultsIs = bigQuery.query(queryConfigIs);
+
+            resultsIs.iterateAll().forEach(rows -> rows.forEach(row -> {
+                try {
+                    JsonNode node = objectMapper.readTree(row.getStringValue());
+                    VolumeQueryId nodeId = new VolumeQueryId(node.get("cc").textValue(), node.get("clusterId").intValue(), node.get("in_store_week").intValue());
+                    if (uniqueRows.containsKey(nodeId)) {
+                        uniqueRows.get(nodeId).add(node);
+                    } else {
+                        List<JsonNode> nodes = new ArrayList<>();
+                        nodes.add(node);
+                        uniqueRows.put(nodeId, nodes);
+                    }
+                } catch (JsonProcessingException e) {
+                    throw new RuntimeException(e);
+                }
+            }));
+        }catch (Exception e){
+            log.error("Error Occured while fetch Bump Pack information", e);
+        }
         return formatUniqueRows(request, uniqueRows);
+    }
+
+    private String findBumpSqlQuery(Long planId, FinelineVolume request, String bsInstoreweek) {
+        String tableNameSp = getProjectIdSp();
+        String tableNameCc = getProjectIdCc();
+
+        if (request.getVolumeDeviationLevel().equals(VdLevelCode.CATEGORY.getDescription())) {
+            return getBumpQTYVolumeCatClusterQuery(tableNameCc, tableNameSp, Math.toIntExact(planId), request.getFinelineNbr(), request.getLvl3Nbr(), bigQueryConnectionProperties.getAnalyticsData(),request.getInterval(),request.getFiscalYear(), Integer.parseInt(bsInstoreweek));
+        } else if (request.getVolumeDeviationLevel().equals(VdLevelCode.SUB_CATEGORY.getDescription())) {
+            return getBumpQTYVolumeSubCatClusterQuery(tableNameCc, tableNameSp, Math.toIntExact(planId), request.getFinelineNbr(), request.getLvl4Nbr(), bigQueryConnectionProperties.getAnalyticsData(),request.getInterval(),request.getFiscalYear(), Integer.parseInt(bsInstoreweek));
+        } else if (request.getVolumeDeviationLevel().equals(VdLevelCode.FINELINE.getDescription())) {
+            return getBumpQTYVolumeFinelineClusterQuery(tableNameCc, tableNameSp, Math.toIntExact(planId), request.getFinelineNbr(), bigQueryConnectionProperties.getAnalyticsData(),request.getInterval(),request.getFiscalYear(), Integer.parseInt(bsInstoreweek));
+        }
+        throw new RuntimeException("Invalid Deviation Level, Fineline, Subcategory, Category are valid values");
     }
 
     private List<InitialSetVolumeResponse> formatUniqueRows(FinelineVolume request, HashMap<VolumeQueryId, List<JsonNode>> uniqueRows) {
@@ -339,7 +465,7 @@ public class BigQueryInitialSetPlanService {
         HashMap<Integer,StoreDetail> storeMap = new HashMap<>();
         currentRows.stream().forEach(jsonNode -> {
             Integer store =  jsonNode.get("store").intValue();
-            Integer qty = jsonNode.get("is_quantity").intValue();
+            Integer qty = Optional.ofNullable(jsonNode.get("is_quantity")).orElse(jsonNode.get("bs_quantity")).intValue() ;
             if(storeMap.containsKey(store)){
                 StoreDetail storeDetail = storeMap.get(store);
                 storeDetail.setQty(storeDetail.getQty() + qty);
@@ -351,7 +477,7 @@ public class BigQueryInitialSetPlanService {
         metricsVolume.setStores(new ArrayList<>(storeMap.values()));
         metricsVolume.setFixtureAllocation(currentRows.get(0).get("fixtureAllocation").decimalValue());
         metricsVolume.setFixtureType(currentRows.get(0).get("fixtureType").textValue());
-        metricsVolume.setQuantity(currentRows.stream().flatMapToInt(jsonNode -> IntStream.of(jsonNode.get("is_quantity").intValue())).sum());
+        metricsVolume.setQuantity(currentRows.stream().flatMapToInt(jsonNode -> IntStream.of(Optional.ofNullable(jsonNode.get("is_quantity")).orElse(jsonNode.get("bs_quantity")).intValue())).sum());
         metricsVolume.setVolumeClusterId(key.getClusterId());
         return metricsVolume;
     }
