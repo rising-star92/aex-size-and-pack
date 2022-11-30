@@ -47,7 +47,7 @@ class PackOptConstraintMapperTest {
         assertEquals(vendorNbr9, actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getConstraints().getColorCombinationConstraints().getSupplier().getSupplierId());
         assertEquals(vendorNbr6, actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getConstraints().getColorCombinationConstraints().getSupplier().getSupplierNumber());
         assertEquals(gsmSupplierId, actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getConstraints().getColorCombinationConstraints().getSupplier().getSupplier8Number());
-        assertEquals(factoryId, actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getCustomerChoices().get(0).getConstraints().getColorCombinationConstraints().getFactoryId());
+        assertEquals("123", actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getCustomerChoices().get(0).getConstraints().getColorCombinationConstraints().getFactoryId());
     }
 
     @Test
@@ -92,6 +92,9 @@ class PackOptConstraintMapperTest {
         PackOptimizationResponse actual = packOptConstraintMapper.packOptDetails(requestFineLines);
         assertEquals(finelineNbr, actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getFinelineNbr());
         assertEquals("PUMA, NIKE", actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getConstraints().getColorCombinationConstraints().getSupplier().getSupplierName());
+        assertEquals("123, 234", actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getConstraints().getColorCombinationConstraints().getFactoryId());
+        assertEquals("INDIA, USA", actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getConstraints().getColorCombinationConstraints().getCountryOfOrigin());
+        assertEquals("INDIA, USA", actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getConstraints().getColorCombinationConstraints().getPortOfOrigin());
 
     }
 
@@ -101,6 +104,9 @@ class PackOptConstraintMapperTest {
         PackOptimizationResponse actual = packOptConstraintMapper.packOptDetails(requestFineLines);
         assertEquals(finelineNbr, actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getFinelineNbr());
         assertEquals("PUMA, NIKE", actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getConstraints().getColorCombinationConstraints().getSupplier().getSupplierName());
+        assertEquals("123, 234", actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getConstraints().getColorCombinationConstraints().getFactoryId());
+        assertEquals("INDIA, USA", actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getConstraints().getColorCombinationConstraints().getCountryOfOrigin());
+        assertEquals("INDIA, USA", actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getConstraints().getColorCombinationConstraints().getPortOfOrigin());
 
     }
 
@@ -127,6 +133,9 @@ class PackOptConstraintMapperTest {
         fineLineMapperDto.setCcSinglePackIndicator(1);
         fineLineMapperDto.setStyleSinglePackIndicator(1);
         fineLineMapperDto.setCcSupplierName("PUMA");
+        fineLineMapperDto.setCcFactoryIds("123");
+        fineLineMapperDto.setCcCountryOfOrigin("INDIA");
+        fineLineMapperDto.setCcPortOfOrigin("INDIA");
 
         FineLineMapperDto fineLineMapperDto1 = new FineLineMapperDto();
         fineLineMapperDto1.setChannelId(2);
@@ -140,6 +149,10 @@ class PackOptConstraintMapperTest {
         fineLineMapperDto1.setStyleNbr(styleNbr);
         fineLineMapperDto1.setCcId(ccId_2);
         fineLineMapperDto1.setCcSupplierName("NIKE");
+        fineLineMapperDto1.setCcFactoryIds("234");
+        fineLineMapperDto1.setCcCountryOfOrigin("USA");
+        fineLineMapperDto1.setCcPortOfOrigin("USA");
+
         return Arrays.asList(fineLineMapperDto, fineLineMapperDto1);
     }
 }

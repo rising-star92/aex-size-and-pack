@@ -1,7 +1,14 @@
 package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.mapper.FineLineMapperDto;
-import com.walmart.aex.sp.dto.packoptimization.*;
+import com.walmart.aex.sp.dto.packoptimization.ColorCombinationConstraints;
+import com.walmart.aex.sp.dto.packoptimization.Constraints;
+import com.walmart.aex.sp.dto.packoptimization.CustomerChoice;
+import com.walmart.aex.sp.dto.packoptimization.Fineline;
+import com.walmart.aex.sp.dto.packoptimization.FinelineLevelConstraints;
+import com.walmart.aex.sp.dto.packoptimization.PackOptimizationResponse;
+import com.walmart.aex.sp.dto.packoptimization.RunOptimization;
+import com.walmart.aex.sp.dto.packoptimization.Supplier;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
 import com.walmart.aex.sp.dto.planhierarchy.Style;
@@ -46,49 +53,102 @@ public class PackOptConstraintMapper {
 
     private List<FineLineMapperDto> updateFineLineLevelSuppliers(List<FineLineMapperDto> finePlanPackOptimizationList) {
         Map<Integer, Set<String>> fineLineSupplierMap = new LinkedHashMap<>();
+        Map<Integer, Set<String>> fineLineCountryOfOrigin = new LinkedHashMap<>();
+        Map<Integer, Set<String>> fineLinePortOfOrigin = new LinkedHashMap<>();
+        Map<Integer, Set<String>> fineLineFactoryId = new LinkedHashMap<>();
         List<FineLineMapperDto> fineLineMapperDtoList = new ArrayList<>();
 
         finePlanPackOptimizationList.forEach(fineLineMapperDto -> {
             fineLineSupplierMap.putIfAbsent(fineLineMapperDto.getFineLineNbr(), new LinkedHashSet<>());
-            fineLineSupplierMap.computeIfPresent(fineLineMapperDto.getFineLineNbr(), (k, v) -> {
-                if(StringUtils.isNotEmpty(fineLineMapperDto.getCcSupplierName())) {
-                    v.add(fineLineMapperDto.getCcSupplierName());
-                }
-                return v;
-            });
+            fineLineCountryOfOrigin.putIfAbsent(fineLineMapperDto.getFineLineNbr(), new LinkedHashSet<>());
+            fineLinePortOfOrigin.putIfAbsent(fineLineMapperDto.getFineLineNbr(), new LinkedHashSet<>());
+            fineLineFactoryId.putIfAbsent(fineLineMapperDto.getFineLineNbr(), new LinkedHashSet<>());
+
+            if(StringUtils.isNotEmpty(fineLineMapperDto.getCcSupplierName())) {
+                addValue(fineLineSupplierMap, fineLineMapperDto.getFineLineNbr(), fineLineMapperDto.getCcSupplierName());
+            }
+            if(StringUtils.isNotEmpty(fineLineMapperDto.getCcCountryOfOrigin())) {
+                addValue(fineLineCountryOfOrigin, fineLineMapperDto.getFineLineNbr(), fineLineMapperDto.getCcCountryOfOrigin());
+            }
+            if(StringUtils.isNotEmpty(fineLineMapperDto.getCcPortOfOrigin())) {
+                addValue(fineLinePortOfOrigin, fineLineMapperDto.getFineLineNbr(), fineLineMapperDto.getCcPortOfOrigin());
+            }
+            if(StringUtils.isNotEmpty(fineLineMapperDto.getCcFactoryIds())) {
+                addValue(fineLineFactoryId, fineLineMapperDto.getFineLineNbr(), fineLineMapperDto.getCcFactoryIds());
+            }
+
         });
 
         finePlanPackOptimizationList.forEach(fineLineMapperDto -> {
-            if(fineLineSupplierMap.containsKey(fineLineMapperDto.getFineLineNbr())) {
-                StringBuilder sb = new StringBuilder();
-                fineLineSupplierMap.get(fineLineMapperDto.getFineLineNbr()).forEach(val -> sb.append(val).append(", "));
-                fineLineMapperDto.setFineLineSupplierName(sb.toString().isEmpty() ? "" : sb.substring(0, sb.toString().length() - 2));
-                fineLineMapperDtoList.add(fineLineMapperDto);
-            }
+            fineLineMapperDto.setFineLineSupplierName(prepareConcatString(fineLineSupplierMap, fineLineMapperDto.getFineLineNbr()));
+            fineLineMapperDto.setFineLineOriginCountryName(prepareConcatString(fineLineCountryOfOrigin, fineLineMapperDto.getFineLineNbr()));
+            fineLineMapperDto.setFineLinePortOfOriginName(prepareConcatString(fineLinePortOfOrigin, fineLineMapperDto.getFineLineNbr()));
+            fineLineMapperDto.setFineLineFactoryId(prepareConcatString(fineLineFactoryId, fineLineMapperDto.getFineLineNbr()));
+            fineLineMapperDtoList.add(fineLineMapperDto);
         });
         return fineLineMapperDtoList;
     }
 
+    private static String prepareConcatString(Map<Integer, Set<String>> map, Integer fineLineNbr) {
+        StringBuilder sb = new StringBuilder();
+        map.get(fineLineNbr).forEach(val -> sb.append(val).append(", "));
+        return sb.toString().isEmpty() ? "" : sb.substring(0, sb.toString().length() - 2);
+    }
+
+    private static String prepareConcatString(Map<String, Set<String>> map, String styleNumber) {
+        StringBuilder sb = new StringBuilder();
+        map.get(styleNumber).forEach(val -> sb.append(val).append(", "));
+        return sb.toString().isEmpty() ? "" : sb.substring(0, sb.toString().length() - 2);
+    }
+
+    private static void addValue(Map<Integer, Set<String>> map, Integer key, String value) {
+        map.computeIfPresent(key, (k, v) -> {
+            v.add(value);
+            return v;
+        });
+    }
+
+    private static void addValue(Map<String, Set<String>> map, String key, String value) {
+        map.computeIfPresent(key, (k, v) -> {
+            v.add(value);
+            return v;
+        });
+    }
+
     private List<FineLineMapperDto> updateStyleLevelSuppliers(List<FineLineMapperDto> finePlanPackOptimizationList) {
         Map<String, Set<String>> styleSupplierMap = new LinkedHashMap<>();
+        Map<String, Set<String>> styleCountryOfOrigin = new LinkedHashMap<>();
+        Map<String, Set<String>> stylePortOfOrigin = new LinkedHashMap<>();
+        Map<String, Set<String>> styleFactoryId  = new LinkedHashMap<>();
+
         List<FineLineMapperDto> fineLineMapperDtoList = new ArrayList<>();
 
         finePlanPackOptimizationList.forEach(fineLineMapperDto -> {
             styleSupplierMap.putIfAbsent(fineLineMapperDto.getStyleNbr(), new LinkedHashSet<>());
-            styleSupplierMap.computeIfPresent(fineLineMapperDto.getStyleNbr(), (k, v) -> {
-                if(StringUtils.isNotEmpty(fineLineMapperDto.getCcSupplierName())) {
-                    v.add(fineLineMapperDto.getCcSupplierName());
-                }
-                return v;
-            });
+            styleCountryOfOrigin.putIfAbsent(fineLineMapperDto.getStyleNbr(), new LinkedHashSet<>());
+            stylePortOfOrigin.putIfAbsent(fineLineMapperDto.getStyleNbr(), new LinkedHashSet<>());
+            styleFactoryId.putIfAbsent(fineLineMapperDto.getStyleNbr(), new LinkedHashSet<>());
+
+            if(StringUtils.isNotEmpty(fineLineMapperDto.getCcSupplierName())) {
+                addValue(styleSupplierMap, fineLineMapperDto.getStyleNbr(), fineLineMapperDto.getCcSupplierName());
+            }
+            if(StringUtils.isNotEmpty(fineLineMapperDto.getCcCountryOfOrigin())) {
+                addValue(styleCountryOfOrigin, fineLineMapperDto.getStyleNbr(), fineLineMapperDto.getCcCountryOfOrigin());
+            }
+            if(StringUtils.isNotEmpty(fineLineMapperDto.getCcPortOfOrigin())) {
+                addValue(stylePortOfOrigin, fineLineMapperDto.getStyleNbr(), fineLineMapperDto.getCcPortOfOrigin());
+            }
+            if(StringUtils.isNotEmpty(fineLineMapperDto.getCcFactoryIds())) {
+                addValue(styleFactoryId, fineLineMapperDto.getStyleNbr(), fineLineMapperDto.getCcFactoryIds());
+            }
+
         });
         finePlanPackOptimizationList.forEach(fineLineMapperDto -> {
-            if(styleSupplierMap.containsKey(fineLineMapperDto.getStyleNbr())) {
-                StringBuilder sb = new StringBuilder();
-                styleSupplierMap.get(fineLineMapperDto.getStyleNbr()).forEach(val -> sb.append(val).append(", "));
-                fineLineMapperDto.setStyleSupplierName(sb.toString().isEmpty() ? "" : sb.substring(0, sb.toString().length() - 2));
-                fineLineMapperDtoList.add(fineLineMapperDto);
-            }
+            fineLineMapperDto.setStyleSupplierName(prepareConcatString(styleSupplierMap, fineLineMapperDto.getStyleNbr()));
+            fineLineMapperDto.setStyleCountryOfOrigin(prepareConcatString(styleCountryOfOrigin, fineLineMapperDto.getStyleNbr()));
+            fineLineMapperDto.setStylePortOfOrigin(prepareConcatString(stylePortOfOrigin, fineLineMapperDto.getStyleNbr()));
+            fineLineMapperDto.setStyleFactoryIds(prepareConcatString(styleFactoryId, fineLineMapperDto.getStyleNbr()));
+            fineLineMapperDtoList.add(fineLineMapperDto);
         });
         return fineLineMapperDtoList;
     }
