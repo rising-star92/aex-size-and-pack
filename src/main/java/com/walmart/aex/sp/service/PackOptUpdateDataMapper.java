@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -19,13 +18,15 @@ public class PackOptUpdateDataMapper {
 
     private final SizeAndPackObjectMapper sizeAndPackObjectMapper;
     private final PackOptAddDataMapper packOptAddDataMapper;
+    private final MerchPackOptimizationRepository merchPackOptimizationRepository;
 
-    public PackOptUpdateDataMapper(SizeAndPackObjectMapper sizeAndPackObjectMapper, PackOptAddDataMapper packOptAddDataMapper) {
+    public PackOptUpdateDataMapper(SizeAndPackObjectMapper sizeAndPackObjectMapper, PackOptAddDataMapper packOptAddDataMapper, MerchPackOptimizationRepository merchPackOptimizationRepository) {
         this.sizeAndPackObjectMapper = sizeAndPackObjectMapper;
         this.packOptAddDataMapper = packOptAddDataMapper;
+        this.merchPackOptimizationRepository = merchPackOptimizationRepository;
     }
 
-    public Set<MerchantPackOptimization> updateMerchCatPackOpt(PlanSizeAndPackDTO request, Lvl1 lvl1, Lvl2 lvl2, Lvl3 lvl3, MerchPackOptimizationRepository merchPackOptimizationRepository) {
+    public Set<MerchantPackOptimization> updateMerchCatPackOpt(PlanSizeAndPackDTO request, Lvl1 lvl1, Lvl2 lvl2, Lvl3 lvl3) {
         Integer requestChannel = ChannelType.getChannelIdFromName(CommonUtil.getRequestedFlChannel(lvl3));
         List<Integer> channelList = sizeAndPackObjectMapper.getChannelListFromChannelId(requestChannel);
 
@@ -49,14 +50,12 @@ public class PackOptUpdateDataMapper {
         deleteMerchSubCatPackOpt(merchantPackOptimizationSet, lvl3, channelId);
         if (!channelId.equals(3)) {
             MerchantPackOptimization merchantPackOptimization = fetchMerchCatPackOpt(merchantPackOptimizationSet, lvl3.getLvl3Nbr(), channelId);
-            if(merchantPackOptimization != null && CollectionUtils.isEmpty(merchantPackOptimization.getSubCatgPackOptimization()))
-            {
-                    //Only removing from set is not deleting the entry in the DB. Hence deleting by the ID
-                    merchPackOptimizationRepository.deleteById(merchantPackOptimization.getMerchantPackOptimizationID());
+            if (merchantPackOptimization != null && CollectionUtils.isEmpty(merchantPackOptimization.getSubCatgPackOptimization())) {
+                //Only removing from set is not deleting the entry in the DB. Hence deleting by the ID
+                merchPackOptimizationRepository.deleteById(merchantPackOptimization.getMerchantPackOptimizationID());
+                merchantPackOptimizationSet.removeIf(merchantPackOptimization1 -> CollectionUtils.isEmpty(merchantPackOptimization1.getSubCatgPackOptimization()) && merchantPackOptimization1.getMerchantPackOptimizationID().getRepTLvl3().equals(lvl3.getLvl3Nbr()) &&
+                        !merchantPackOptimization.getMerchantPackOptimizationID().getChannelId().equals(channelId));
             }
-
-            merchantPackOptimizationSet.removeIf(merchantPackOptimization1 -> CollectionUtils.isEmpty(merchantPackOptimization1.getSubCatgPackOptimization()) && merchantPackOptimization1.getMerchantPackOptimizationID().getRepTLvl3().equals(lvl3.getLvl3Nbr()) &&
-                    !merchantPackOptimization.getMerchantPackOptimizationID().getChannelId().equals(channelId));
         }
     }
 

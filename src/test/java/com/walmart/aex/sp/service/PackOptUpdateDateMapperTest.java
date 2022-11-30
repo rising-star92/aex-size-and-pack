@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 @ExtendWith(MockitoExtension.class)
-public class PackOptUpdateDateMapperTest {
+class PackOptUpdateDateMapperTest {
 
     @InjectMocks
     private PackOptUpdateDataMapper packOptUpdateDataMapper;
@@ -41,7 +41,7 @@ public class PackOptUpdateDateMapperTest {
 
 
     @Test
-    void testUpdateLinePlanEventsToPackOpt() {
+    void testUpdateLinePlanEventsToPackOptShouldReturnSetOfMerchantPackOptimization() {
         SizeAndPackObjectMapperTest sizeAndPackObjectMapperTest=new SizeAndPackObjectMapperTest();
         PlanSizeAndPackDTO planSizeAndPackDTO = sizeAndPackObjectMapperTest.getPlanSizeAndPackDTOObj();
         Lvl1 lvl1 = planSizeAndPackDTO.getLvl1List().get(0);
@@ -69,7 +69,7 @@ public class PackOptUpdateDateMapperTest {
         Mockito.when(merchPackOptimizationRepository.findMerchantPackOptimizationByMerchantPackOptimizationID_planIdAndMerchantPackOptimizationID_repTLvl0AndMerchantPackOptimizationID_repTLvl1AndMerchantPackOptimizationID_repTLvl2AndMerchantPackOptimizationID_repTLvl3(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt())).thenReturn(merchCatPackOptResult);
         Mockito.when(packOptAddDataMapper.setMerchCatPackOpt(planSizeAndPackDTO,lvl1,lvl2,lvl3,merchPackOptimizationRepository)).thenReturn(merchantPackOptimizationSet1);
 
-        Set<MerchantPackOptimization> merchantPackOptimizationSet = packOptUpdateDataMapper.updateMerchCatPackOpt(planSizeAndPackDTO, lvl1, lvl2, lvl3, merchPackOptimizationRepository);
+        Set<MerchantPackOptimization> merchantPackOptimizationSet = packOptUpdateDataMapper.updateMerchCatPackOpt(planSizeAndPackDTO, lvl1, lvl2, lvl3);
         assertTrue(!merchantPackOptimizationSet.isEmpty());
         List<MerchantPackOptimization> merchantPackOptimizationList = merchantPackOptimizationSet.stream().collect(Collectors.toList());
         assertEquals(100,merchantPackOptimizationList.get(0).getMerchantPackOptimizationID().getPlanId());
