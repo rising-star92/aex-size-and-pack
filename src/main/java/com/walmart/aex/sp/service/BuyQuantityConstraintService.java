@@ -78,13 +78,19 @@ public class BuyQuantityConstraintService {
     public void processReplenishmentConstraints(Map.Entry<SizeDto, BuyQtyObj> entry) {
         final BuyQtyObj allStoresBuyQty = entry.getValue();
         if (!CollectionUtils.isEmpty(allStoresBuyQty.getReplenishments()) && !CollectionUtils.isEmpty(allStoresBuyQty.getBuyQtyStoreObj().getBuyQuantities())) {
-            allStoresBuyQty.setTotalReplenishment(getTotalReplenishment(allStoresBuyQty.getReplenishments()));
+            setReplenishmentQty(allStoresBuyQty);
             if (allStoresBuyQty.getTotalReplenishment() < buyQtyProperties.getReplenishmentThreshold() && allStoresBuyQty.getTotalReplenishment() > 0) {
                 while (allStoresBuyQty.getTotalReplenishment() > 0)
                     updateReplnToInitialSet(entry);
             }
         }
     }
+
+    private void setReplenishmentQty(BuyQtyObj allStoresBuyQty) {
+        allStoresBuyQty.setTotalReplenishment(getTotalReplenishment(allStoresBuyQty.getReplenishments()));
+    }
+
+
 
     private void updateReplnToInitialSet(Map.Entry<SizeDto, BuyQtyObj> entry) {
         List<StoreQuantity> splitStoreQtys = new ArrayList<>();

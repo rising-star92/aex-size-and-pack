@@ -78,11 +78,11 @@ public class AddStoreBuyQuantityService {
         Cluster volumeCluster = getVolumeCluster(addStoreBuyQuantity, rfaSizePackData);
         if (volumeCluster != null) {
             setDefaultValueForNullInitialSet(volumeCluster);
-            calculateReplenishmentLogic(addStoreBuyQuantity, initialSetQuantities, volumeCluster, buyQtyObj, rfaSizePackData);
+            setInitialSetAndBumpSetQty(addStoreBuyQuantity, initialSetQuantities, volumeCluster, buyQtyObj, rfaSizePackData);
         }
     }
 
-    private void calculateReplenishmentLogic(AddStoreBuyQuantity addStoreBuyQuantity, List<StoreQuantity> initialSetQuantities, Cluster volumeCluster, BuyQtyObj buyQtyObj, RFASizePackData rfaSizePackData) {
+    private void setInitialSetAndBumpSetQty(AddStoreBuyQuantity addStoreBuyQuantity, List<StoreQuantity> initialSetQuantities, Cluster volumeCluster, BuyQtyObj buyQtyObj, RFASizePackData rfaSizePackData) {
         List<Integer> storeList = safeReadStoreList(rfaSizePackData.getStore_list()).stream().sorted().collect(Collectors.toList());
         SizeDto sizeDto = addStoreBuyQuantity.getSizeDto();
         InitialSetQuantity initialSetQuantity = calculateInitialSetQuantityService.calculateInitialSetQty(sizeDto, volumeCluster, rfaSizePackData);
