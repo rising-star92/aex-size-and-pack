@@ -443,7 +443,7 @@ public class BigQueryInitialSetPlanService {
         customerChoicesVolume.setCcId(key.getCc());
 
         List<IsPlan> isPlanList = new ArrayList<>();
-        getIsPlan(uniqueRows, key);
+        isPlanList.add(getIsPlan(uniqueRows, key));
         customerChoicesVolume.setIsPlans(isPlanList);
         return customerChoicesVolume;
     }
