@@ -99,31 +99,10 @@ public class ReplenishmentServiceTest {
 
     @Mock
     private BuyQtyResponseInputs buyQtyInputs;
-    
-    @Mock
-    List<MerchCatgReplPack> catgReplnPkConsList;
-    
-    @Mock
-    List<SubCatgReplPack> SubcatgReplnPkConsList;
-    
-    @Mock
-    List<FinelineReplPack> finelineReplnPkConsList;
-    
-    @Mock
-    List<StyleReplPack> styleReplnPkConsList; 
-    
-    @Mock
-    List<CcReplPack> ccReplnPkConsList1;
-    
+     
     @Mock
     CcMmReplnPkConsRepository ccMmReplnPkConsRepository;
-    
-    @Mock
-    List<CcMmReplPack> ccMmReplnPkConsList;
-    
-    @Mock
-    List<CcSpMmReplPack> ccSpReplnPkConsList;
-    
+      
     @Mock
     List<ReplenishmentResponseDTO> replenishmentResponseDTOS;
     @Mock
@@ -205,6 +184,7 @@ public class ReplenishmentServiceTest {
     @Test
     public void testUpdateVnpkWhpkForCatgReplnCons() {
     	UpdateVnPkWhPkReplnRequest updateVnPkWhPkReplnRequest = new UpdateVnPkWhPkReplnRequest();
+    	List<MerchCatgReplPack> catgReplnPkConsList = new ArrayList<>();
     	updateVnPkWhPkReplnRequest.setPlanId(12l);
     	updateVnPkWhPkReplnRequest.setChannel("online");
     	updateVnPkWhPkReplnRequest.setLvl3Nbr(3);
@@ -218,14 +198,14 @@ public class ReplenishmentServiceTest {
     @Test
     public void testUpdateVnpkWhpkForSubCatgReplnCons() {
     	UpdateVnPkWhPkReplnRequest updateVnPkWhPkReplnRequest = new UpdateVnPkWhPkReplnRequest();
-    	SubcatgReplnPkConsList = new ArrayList<>();
+    	List<SubCatgReplPack> subCatgReplnPkConsList = new ArrayList<>();
     	updateVnPkWhPkReplnRequest.setPlanId(12l);
     	updateVnPkWhPkReplnRequest.setChannel("store");
     	updateVnPkWhPkReplnRequest.setLvl3Nbr(12231);
     	updateVnPkWhPkReplnRequest.setLvl4Nbr(31516);
     	updateVnPkWhPkReplnRequest.setVnpk(2);
     	updateVnPkWhPkReplnRequest.setWhpk(1);
-    	Mockito.when(subCatgReplnPkConsRepository.getSubCatgReplnConsData(12l, 1, 12231,31516)).thenReturn(SubcatgReplnPkConsList);
+    	Mockito.when(subCatgReplnPkConsRepository.getSubCatgReplnConsData(12l, 1, 12231,31516)).thenReturn(subCatgReplnPkConsList);
     	replenishmentService1.updateVnpkWhpkForSubCatgReplnCons(updateVnPkWhPkReplnRequest);	
     	Mockito.verify(updateReplnConfigMapper, Mockito.times(1)).updateVnpkWhpkForSubCatgReplnConsMapper(Mockito.any(),Mockito.any(),Mockito.any());
 
@@ -234,7 +214,7 @@ public class ReplenishmentServiceTest {
     @Test
     public void testUpdateVnpkWhpkForFinelineReplnCons() {
     	UpdateVnPkWhPkReplnRequest updateVnPkWhPkReplnRequest = new UpdateVnPkWhPkReplnRequest();
-    	finelineReplnPkConsList = new ArrayList<>();
+    	List<FinelineReplPack> finelineReplnPkConsList = new ArrayList<>();
     	updateVnPkWhPkReplnRequest.setPlanId(12l);
     	updateVnPkWhPkReplnRequest.setChannel("store");
     	updateVnPkWhPkReplnRequest.setLvl3Nbr(12231);
@@ -250,7 +230,7 @@ public class ReplenishmentServiceTest {
     @Test
     public void testUpdateVnpkWhpkForStyleReplnCons() {
     	UpdateVnPkWhPkReplnRequest updateVnPkWhPkReplnRequest = new UpdateVnPkWhPkReplnRequest();
-    	styleReplnPkConsList = new ArrayList<>();
+    	 List<StyleReplPack> styleReplnPkConsList = new ArrayList<>();
     	updateVnPkWhPkReplnRequest.setPlanId(12l);
     	updateVnPkWhPkReplnRequest.setChannel("store");
     	updateVnPkWhPkReplnRequest.setLvl3Nbr(12231);
@@ -269,7 +249,7 @@ public class ReplenishmentServiceTest {
     @Test
     public void testUpdateVnpkWhpkForCcReplnPkCons() {
     	UpdateVnPkWhPkReplnRequest updateVnPkWhPkReplnRequest = new UpdateVnPkWhPkReplnRequest();
-    	ccReplnPkConsList1 = new ArrayList<>();
+    	 List<CcReplPack> ccReplnPkConsList1 = new ArrayList<>();
     	updateVnPkWhPkReplnRequest.setPlanId(12l);
     	updateVnPkWhPkReplnRequest.setChannel("store");
     	updateVnPkWhPkReplnRequest.setLvl3Nbr(12231);
@@ -289,7 +269,7 @@ public class ReplenishmentServiceTest {
     @Test
     public void testUpdateVnPkWhPkCcMerchMethodReplnCon() {
     	UpdateVnPkWhPkReplnRequest updateVnPkWhPkReplnRequest = new UpdateVnPkWhPkReplnRequest();
-    	ccMmReplnPkConsList = new ArrayList<>();
+    	 List<CcMmReplPack> ccMmReplnPkConsList = new ArrayList<>();
     	updateVnPkWhPkReplnRequest.setPlanId(12l);
     	updateVnPkWhPkReplnRequest.setChannel("store");
     	updateVnPkWhPkReplnRequest.setLvl3Nbr(12231);
@@ -308,7 +288,7 @@ public class ReplenishmentServiceTest {
     @Test
     public void testUpdateVnPkWhPkCcSpSizeReplnCon() {
     	UpdateVnPkWhPkReplnRequest updateVnPkWhPkReplnRequest = new UpdateVnPkWhPkReplnRequest();
-    	ccSpReplnPkConsList = new ArrayList<>();
+    	 List<CcSpMmReplPack> ccSpReplnPkConsList = new ArrayList<>();
     	updateVnPkWhPkReplnRequest.setPlanId(12l);
     	updateVnPkWhPkReplnRequest.setChannel("store");
     	updateVnPkWhPkReplnRequest.setLvl3Nbr(12231);
