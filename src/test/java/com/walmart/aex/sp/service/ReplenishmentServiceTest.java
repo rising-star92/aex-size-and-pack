@@ -17,6 +17,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.buyquantity.BuyQntyResponseDTO;
 import com.walmart.aex.sp.dto.buyquantity.BuyQtyRequest;
 import com.walmart.aex.sp.dto.buyquantity.BuyQtyResponse;
+import com.walmart.aex.sp.dto.replenishment.ReplenishmentRequest;
+import com.walmart.aex.sp.dto.replenishment.ReplenishmentResponse;
 import com.walmart.aex.sp.dto.replenishment.ReplenishmentResponseDTO;
 import com.walmart.aex.sp.dto.replenishment.UpdateVnPkWhPkReplnRequest;
 import com.walmart.aex.sp.entity.CcMmReplPack;
@@ -26,6 +28,7 @@ import com.walmart.aex.sp.entity.FinelineReplPack;
 import com.walmart.aex.sp.entity.MerchCatgReplPack;
 import com.walmart.aex.sp.entity.StyleReplPack;
 import com.walmart.aex.sp.entity.SubCatgReplPack;
+import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.exception.SizeAndPackException;
 import com.walmart.aex.sp.repository.CatgReplnPkConsRepository;
 import com.walmart.aex.sp.repository.CcMmReplnPkConsRepository;
@@ -33,6 +36,7 @@ import com.walmart.aex.sp.repository.CcReplnPkConsRepository;
 import com.walmart.aex.sp.repository.CcSpReplnPkConsRepository;
 import com.walmart.aex.sp.repository.FineLineReplenishmentRepository;
 import com.walmart.aex.sp.repository.FinelineReplnPkConsRepository;
+import com.walmart.aex.sp.repository.SizeLevelReplenishmentRepository;
 import com.walmart.aex.sp.repository.SizeListReplenishmentRepository;
 import com.walmart.aex.sp.repository.SpCustomerChoiceReplenishmentRepository;
 import com.walmart.aex.sp.repository.StyleReplnPkConsRepository;
@@ -122,6 +126,13 @@ public class ReplenishmentServiceTest {
     
     @Mock
     List<ReplenishmentResponseDTO> replenishmentResponseDTOS;
+    @Mock
+    ReplenishmentRequest replenishmentRequest; 
+    
+    @Mock
+    SizeLevelReplenishmentRepository sizeLevelReplenishmentRepository;
+    @Mock
+    SizeLevelReplenishmentMapper sizeLevelReplenishmentMapper;
     
     @Test
     public void updateVnpkWhpkForCatgReplnConsTest(){
@@ -313,4 +324,79 @@ public class ReplenishmentServiceTest {
     	replenishmentService1.updateVnPkWhPkCcSpSizeReplnCon(updateVnPkWhPkReplnRequest);	
     	Mockito.verify(updateReplnConfigMapper, Mockito.times(1)).updateVnpkWhpkForCcSpMmReplnPkConsMapper(Mockito.any(),Mockito.any(),Mockito.any());    	                
     }
+    
+    @Test
+    public void testfetchSizeListReplenishment() {
+    	replenishmentRequest = new ReplenishmentRequest();
+    	ReplenishmentResponseDTO replenishmentResponseDTO1 = new ReplenishmentResponseDTO(88L, 50000, null, 34, "123", 6420,
+                "folded", 12238, "wall", 31526, "rack", 5471, "34_5471_3_24_001", "34_5471_3_24_001_CHINO TAN","4321", 3174,543, 12, 45, 54.0, 34, "L",
+                "hanging", 1125, 1125, 1125, 2511, 12.0, 5431);
+    	
+    	replenishmentResponseDTOS = new ArrayList<>();    	
+    	replenishmentResponseDTOS.add(replenishmentResponseDTO1);
+    	replenishmentRequest.setPlanId(12l);
+    	replenishmentRequest.setChannel("store");
+    	replenishmentRequest.setFinelineNbr(1021);
+    	replenishmentRequest.setStyleNbr("34_1021_2_21_2");
+    	replenishmentRequest.setCcId("34_1021_2_21_2_AURA ORANGE STENCIL");
+    	Mockito.when(sizeListReplenishmentRepository.getReplenishmentPlanChannelFinelineCc(12l,1,1021,"34_1021_2_21_2","34_1021_2_21_2_AURA ORANGE STENCIL")).thenReturn(replenishmentResponseDTOS);
+    	ReplenishmentResponse replenishmentResponse  =replenishmentService1.fetchSizeListReplenishment(replenishmentRequest);
+        Mockito.verify(replenishmentMapper, Mockito.times(1)).mapReplenishmentLvl2Sp(Mockito.any(),Mockito.any(),Mockito.any(),Mockito.any());
+    }
+    
+    @Test
+    public void testFetchFinelineReplenishment() {
+    	replenishmentRequest = new ReplenishmentRequest();
+    	ReplenishmentResponseDTO replenishmentResponseDTO1 = new ReplenishmentResponseDTO(88L, 50000, null, 34, "123", 6420,
+                "folded", 12238, "wall", 31526, "rack", 5471, "34_5471_3_24_001", "34_5471_3_24_001_CHINO TAN","4321", 3174,543, 12, 45, 54.0, 34, "L",
+                "hanging", 1125, 1125, 1125, 2511, 12.0, 5431);
+    	
+    	replenishmentResponseDTOS = new ArrayList<>();    	
+    	replenishmentResponseDTOS.add(replenishmentResponseDTO1);
+    	replenishmentRequest.setPlanId(12l);
+    	replenishmentRequest.setChannel("store");
+    	Mockito.when( fineLineReplenishmentRepository
+                    .getByPlanChannel(12l,1)).thenReturn(replenishmentResponseDTOS);
+    	ReplenishmentResponse replenishmentResponse=replenishmentService1.fetchFinelineReplenishment(replenishmentRequest);
+    	Mockito.verify(replenishmentMapper, Mockito.times(1)).mapReplenishmentLvl2Sp(Mockito.any(),Mockito.any(),Mockito.any(),Mockito.any());
+
+    }
+    @Test
+    public void testFetchCcReplenishment() {
+    	replenishmentRequest = new ReplenishmentRequest();
+    	ReplenishmentResponseDTO replenishmentResponseDTO1 = new ReplenishmentResponseDTO(88L, 50000, null, 34, "123", 6420,
+                "folded", 12238, "wall", 31526, "rack", 5471, "34_5471_3_24_001", "34_5471_3_24_001_CHINO TAN","4321", 3174,543, 12, 45, 54.0, 34, "L",
+                "hanging", 1125, 1125, 1125, 2511, 12.0, 5431);
+    	
+    	replenishmentResponseDTOS = new ArrayList<>();    	
+    	replenishmentResponseDTOS.add(replenishmentResponseDTO1);
+    	replenishmentRequest.setPlanId(12l);
+    	replenishmentRequest.setChannel("store");
+    	replenishmentRequest.setFinelineNbr(1021);
+    	Mockito.when(spCustomerChoiceReplenishmentRepository
+                    .getReplenishmentByPlanChannelFineline(12l,1,1021)).thenReturn(replenishmentResponseDTOS);
+    	ReplenishmentResponse replenishmentResponse=replenishmentService1.fetchCcReplenishment(replenishmentRequest);
+    	Mockito.verify(replenishmentMapper, Mockito.times(1)).mapReplenishmentLvl2Sp(Mockito.any(),Mockito.any(),Mockito.any(),Mockito.any());
+    }
+    
+    @Test
+    public void testFetchSizeListReplenishmentFullHierarchy() {
+    	replenishmentRequest = new ReplenishmentRequest();
+    	ReplenishmentResponseDTO replenishmentResponseDTO1 = new ReplenishmentResponseDTO(88L, 50000, null, 34, "123", 6420,
+                "folded", 12238, "wall", 31526, "rack", 5471, "34_5471_3_24_001", "34_5471_3_24_001_CHINO TAN","4321", 3174,543, 12, 45, 54.0, 34, "L",
+                "hanging", 1125, 1125, 1125, 2511, 12.0, 5431);
+    	
+    	replenishmentResponseDTOS = new ArrayList<>();    	
+    	replenishmentResponseDTOS.add(replenishmentResponseDTO1);
+    	replenishmentRequest.setPlanId(12l);
+    	replenishmentRequest.setChannel("store");
+    	replenishmentRequest.setFinelineNbr(1021);
+    	Mockito.when(sizeLevelReplenishmentRepository
+					.getReplnFullHierarchyByPlanFineline(12l,1,1021)).thenReturn(replenishmentResponseDTOS);
+    	ReplenishmentResponse replenishmentResponse=replenishmentService1.fetchSizeListReplenishmentFullHierarchy(replenishmentRequest);
+    	Mockito.verify(sizeLevelReplenishmentMapper, Mockito.times(1)).mapReplenishmentLvl2Sp(Mockito.any(),Mockito.any(),Mockito.any());
+
+    }
+    
+    
 }
