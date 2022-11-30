@@ -1,11 +1,20 @@
 package com.walmart.aex.sp.service;
 
-import com.walmart.aex.sp.dto.buyquantity.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.walmart.aex.sp.dto.buyquantity.BuyQntyResponseDTO;
+import com.walmart.aex.sp.dto.buyquantity.BuyQtyRequest;
+import com.walmart.aex.sp.dto.buyquantity.BuyQtyResponse;
+import com.walmart.aex.sp.dto.buyquantity.ClustersDto;
+import com.walmart.aex.sp.dto.buyquantity.CustomerChoiceDto;
+import com.walmart.aex.sp.dto.buyquantity.FinelineDto;
+import com.walmart.aex.sp.dto.buyquantity.Lvl3Dto;
+import com.walmart.aex.sp.dto.buyquantity.Lvl4Dto;
+import com.walmart.aex.sp.dto.buyquantity.SizeDto;
+import com.walmart.aex.sp.dto.buyquantity.StyleDto;
 import com.walmart.aex.sp.dto.commitmentreport.InitialBumpSetResponse;
 import com.walmart.aex.sp.dto.commitmentreport.InitialSetPackRequest;
 import com.walmart.aex.sp.dto.commitmentreport.RFAInitialSetBumpSetResponse;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.isVolume.FinelineVolume;
 import com.walmart.aex.sp.dto.isVolume.InitialSetVolumeRequest;
 import com.walmart.aex.sp.dto.isVolume.InitialSetVolumeResponse;
@@ -34,9 +43,11 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
