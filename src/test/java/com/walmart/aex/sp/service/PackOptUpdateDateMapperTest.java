@@ -21,7 +21,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -67,11 +67,12 @@ class PackOptUpdateDateMapperTest {
 
         Set<MerchantPackOptimization> merchantPackOptimizationSet1 = merchCatPackOptResult.stream().filter(x->x.getMerchantPackOptimizationID().getChannelId().equals(1)).collect(Collectors.toSet());
         Mockito.when(merchPackOptimizationRepository.findMerchantPackOptimizationByMerchantPackOptimizationID_planIdAndMerchantPackOptimizationID_repTLvl0AndMerchantPackOptimizationID_repTLvl1AndMerchantPackOptimizationID_repTLvl2AndMerchantPackOptimizationID_repTLvl3(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt())).thenReturn(merchCatPackOptResult);
-        Mockito.when(packOptAddDataMapper.setMerchCatPackOpt(planSizeAndPackDTO,lvl1,lvl2,lvl3,merchPackOptimizationRepository)).thenReturn(merchantPackOptimizationSet1);
+        Mockito.when(packOptAddDataMapper.setMerchCatPackOpt(planSizeAndPackDTO,lvl1,lvl2,lvl3)).thenReturn(merchantPackOptimizationSet1);
 
         Set<MerchantPackOptimization> merchantPackOptimizationSet = packOptUpdateDataMapper.updateMerchCatPackOpt(planSizeAndPackDTO, lvl1, lvl2, lvl3);
-        assertTrue(!merchantPackOptimizationSet.isEmpty());
-        List<MerchantPackOptimization> merchantPackOptimizationList = merchantPackOptimizationSet.stream().collect(Collectors.toList());
+        List<MerchantPackOptimization> merchantPackOptimizationList = new ArrayList<>(merchantPackOptimizationSet);
+
+        assertFalse(merchantPackOptimizationSet.isEmpty());
         assertEquals(100,merchantPackOptimizationList.get(0).getMerchantPackOptimizationID().getPlanId());
         assertEquals(221,merchantPackOptimizationList.get(0).getMerchantPackOptimizationID().getRepTLvl3());
         assertEquals(50,merchantPackOptimizationList.get(0).getMaxNbrOfPacks());

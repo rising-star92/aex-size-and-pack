@@ -2,15 +2,27 @@ package com.walmart.aex.sp.service;
 
 import com.nimbusds.oauth2.sdk.util.CollectionUtils;
 import com.walmart.aex.sp.dto.packoptimization.Fineline;
-import com.walmart.aex.sp.dto.planhierarchy.*;
-import com.walmart.aex.sp.entity.*;
+import com.walmart.aex.sp.dto.planhierarchy.Lvl1;
+import com.walmart.aex.sp.dto.planhierarchy.Lvl2;
+import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
+import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
+import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDTO;
+import com.walmart.aex.sp.dto.planhierarchy.Style;
+import com.walmart.aex.sp.entity.FineLinePackOptimization;
+import com.walmart.aex.sp.entity.MerchantPackOptimization;
+import com.walmart.aex.sp.entity.StylePackOptimization;
+import com.walmart.aex.sp.entity.SubCatgPackOptimization;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.repository.MerchPackOptimizationRepository;
 import com.walmart.aex.sp.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @Service
 @Slf4j
@@ -30,23 +42,21 @@ public class PackOptUpdateDataMapper {
         Integer requestChannel = ChannelType.getChannelIdFromName(CommonUtil.getRequestedFlChannel(lvl3));
         List<Integer> channelList = sizeAndPackObjectMapper.getChannelListFromChannelId(requestChannel);
 
-        List<MerchantPackOptimization> merchantPackOptimizationList = merchPackOptimizationRepository.findMerchantPackOptimizationByMerchantPackOptimizationID_planIdAndMerchantPackOptimizationID_repTLvl0AndMerchantPackOptimizationID_repTLvl1AndMerchantPackOptimizationID_repTLvl2AndMerchantPackOptimizationID_repTLvl3(request.getPlanId(),
-                request.getLvl0Nbr(), lvl1.getLvl1Nbr(), lvl2.getLvl2Nbr(), lvl3.getLvl3Nbr());
-
-
-
-        Set<MerchantPackOptimization> merchantPackOptimizationSet = new HashSet<>(merchantPackOptimizationList);
         if (!CollectionUtils.isEmpty(channelList)) {
+            List<MerchantPackOptimization> merchantPackOptimizationList = merchPackOptimizationRepository.findMerchantPackOptimizationByMerchantPackOptimizationID_planIdAndMerchantPackOptimizationID_repTLvl0AndMerchantPackOptimizationID_repTLvl1AndMerchantPackOptimizationID_repTLvl2AndMerchantPackOptimizationID_repTLvl3(request.getPlanId(),
+                    request.getLvl0Nbr(), lvl1.getLvl1Nbr(), lvl2.getLvl2Nbr(), lvl3.getLvl3Nbr());
+
+            Set<MerchantPackOptimization> merchantPackOptimizationSet = new HashSet<>(merchantPackOptimizationList);
             channelList.forEach(channelId -> {
                 if (!CollectionUtils.isEmpty(merchantPackOptimizationSet)) {
-                    deleteMerchCatPackOpt(merchantPackOptimizationSet, lvl3, channelId, merchPackOptimizationRepository);
+                    deleteMerchCatPackOpt(merchantPackOptimizationSet, lvl3, channelId);
                 }
             });
         }
-        return packOptAddDataMapper.setMerchCatPackOpt(request,lvl1, lvl2, lvl3,merchPackOptimizationRepository);
+        return packOptAddDataMapper.setMerchCatPackOpt(request,lvl1, lvl2, lvl3);
     }
 
-    private void deleteMerchCatPackOpt(Set<MerchantPackOptimization> merchantPackOptimizationSet, Lvl3 lvl3, Integer channelId, MerchPackOptimizationRepository merchPackOptimizationRepository) {
+    private void deleteMerchCatPackOpt(Set<MerchantPackOptimization> merchantPackOptimizationSet, Lvl3 lvl3, Integer channelId) {
         deleteMerchSubCatPackOpt(merchantPackOptimizationSet, lvl3, channelId);
         if (!channelId.equals(3)) {
             MerchantPackOptimization merchantPackOptimization = fetchMerchCatPackOpt(merchantPackOptimizationSet, lvl3.getLvl3Nbr(), channelId);
