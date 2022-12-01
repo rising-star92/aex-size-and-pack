@@ -212,7 +212,7 @@ public class UpdatePackOptimizationMapper {
         List<MerchantPackOptimization> merchantPackOptimizations = fetchMerchantPackOptimization(merchantPackOptimizationList, lvl3Nbr);
         if(!CollectionUtils.isEmpty(merchantPackOptimizations)) {
             merchantPackOptimizations.forEach(merchantPackOptimization -> {
-                if(!CollectionUtils.isEmpty(merchantPackOptimizations) && lvl4Nbr!=null) {
+                if(lvl4Nbr!=null) {
                     fetchStrategySubCatgSpClus(merchantPackOptimization.getSubCatgPackOptimization(), lvl4Nbr).stream().forEach(
                             subCatgPackOptimization -> {
                                 subCatgPackOptimization.setSinglePackInd(getSinglePackIndicatorFlag(subCatgPackOptimization.getFinelinepackOptimization().stream().map(FineLinePackOptimization::getSinglePackInd).collect(Collectors.toList())));
@@ -229,7 +229,7 @@ public class UpdatePackOptimizationMapper {
         List<MerchantPackOptimization> merchantPackOptimizations = fetchMerchantPackOptimization(merchantPackOptimizationList, lvl3Nbr);
         if(!CollectionUtils.isEmpty(merchantPackOptimizations)) {
             merchantPackOptimizations.forEach(merchantPackOptimization -> {
-                if(!CollectionUtils.isEmpty(merchantPackOptimizations) && lvl4Nbr!=null && finelineNbr!=null ) {
+                if(lvl4Nbr!=null && finelineNbr!=null ) {
                     fetchStrategySubCatgSpClus(merchantPackOptimization.getSubCatgPackOptimization(), lvl4Nbr).stream().forEach(
                             subCatgPackOptimization -> fetchStrategyFinelineSpClus(subCatgPackOptimization.getFinelinepackOptimization(), finelineNbr).forEach(fineLinePackOptimization -> {
                                 fineLinePackOptimization.setSinglePackInd(getSinglePackIndicatorFlag(fineLinePackOptimization.getStylePackOptimization().stream().map(StylePackOptimization::getSinglePackInd).collect(Collectors.toList())));
@@ -245,7 +245,7 @@ public class UpdatePackOptimizationMapper {
         List<MerchantPackOptimization> merchantPackOptimizations = fetchMerchantPackOptimization(merchantPackOptimizationList, lvl3Nbr);
         if(!CollectionUtils.isEmpty(merchantPackOptimizations)) {
             merchantPackOptimizations.forEach(merchantPackOptimization -> {
-                if(!CollectionUtils.isEmpty(merchantPackOptimizations) && lvl4Nbr!=null && finelineNbr!=null) {
+                if(lvl4Nbr!=null && finelineNbr!=null) {
                     fetchStrategySubCatgSpClus(merchantPackOptimization.getSubCatgPackOptimization(), lvl4Nbr).stream().forEach(
                             subCatgPackOptimization -> fetchStrategyFinelineSpClus(subCatgPackOptimization.getFinelinepackOptimization(), finelineNbr).forEach(fineLinePackOptimization -> {
                                 if (styleNbr != null) {
