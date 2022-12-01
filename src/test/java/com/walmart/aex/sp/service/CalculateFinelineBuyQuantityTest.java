@@ -10,18 +10,15 @@ import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixtureSize;
 import com.walmart.aex.sp.entity.SpFineLineChannelFixture;
 import com.walmart.aex.sp.entity.SpStyleChannelFixture;
 import com.walmart.aex.sp.exception.SizeAndPackException;
+import com.walmart.aex.sp.properties.BuyQtyProperties;
 import com.walmart.aex.sp.repository.MerchCatgReplPackRepository;
 import com.walmart.aex.sp.repository.SpFineLineChannelFixtureRepository;
-import com.walmart.aex.sp.util.AdjustedDCInboundQty;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.annotation.DirtiesContext;
 
@@ -51,6 +48,21 @@ class CalculateFinelineBuyQuantityTest {
     @Mock
     BQFPService bqfpService;
 
+    @Spy
+    AddStoreBuyQuantityService addStoreBuyQuantityService;
+
+    @Mock
+    CalculateInitialSetQuantityService  calculateInitialSetQuantityService;
+
+    @Mock
+    CalculateBumpPackQtyService calculateBumpPackQtyService;
+
+    @Mock
+    BuyQtyProperties buyQtyProperties;
+
+    @Mock
+    BuyQuantityConstraintService buyQuantityConstraintService;
+
     @Mock
     private MerchCatgReplPackRepository merchCatgReplPackRepository;
 
@@ -62,31 +74,37 @@ class CalculateFinelineBuyQuantityTest {
 
     ReplenishmentsOptimizationService replenishmentsOptimizationServices;
 
-    @Mock
-    AdjustedDCInboundQty adjustedDCInboundQty;
-
-    ObjectMapper mapper = new ObjectMapper();
+   @Spy
+   ObjectMapper mapper = new ObjectMapper();
 
     @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        replenishmentsOptimizationServices = new ReplenishmentsOptimizationService();
-        calculateOnlineFinelineBuyQuantity = new CalculateOnlineFinelineBuyQuantity(mapper, new BuyQtyReplenishmentMapperService(), replenishmentsOptimizationServices);
-        calculateFinelineBuyQuantity = new CalculateFinelineBuyQuantity(bqfpService, mapper, new BuyQtyReplenishmentMapperService(), calculateOnlineFinelineBuyQuantity,
-                strategyFetchService, spFineLineChannelFixtureRepository, merchCatgReplPackRepository);
+
+    public void setUp() {
+       MockitoAnnotations.openMocks(this);
+       calculateInitialSetQuantityService = new CalculateInitialSetQuantityService();
+       calculateBumpPackQtyService = new CalculateBumpPackQtyService();
+       buyQuantityConstraintService = new BuyQuantityConstraintService(calculateBumpPackQtyService, buyQtyProperties);
+       addStoreBuyQuantityService = new AddStoreBuyQuantityService(mapper, calculateBumpPackQtyService, buyQuantityConstraintService, calculateInitialSetQuantityService, buyQtyProperties);
+       replenishmentsOptimizationServices=new ReplenishmentsOptimizationService();
+
+       calculateOnlineFinelineBuyQuantity = new  CalculateOnlineFinelineBuyQuantity (mapper, new BuyQtyReplenishmentMapperService(),replenishmentsOptimizationServices );
+       calculateFinelineBuyQuantity = new CalculateFinelineBuyQuantity(bqfpService, mapper, new BuyQtyReplenishmentMapperService(), calculateOnlineFinelineBuyQuantity,
+               strategyFetchService,spFineLineChannelFixtureRepository,merchCatgReplPackRepository, addStoreBuyQuantityService, buyQuantityConstraintService);
     }
 
     @Test
-    void initialSetCalculationTest() throws SizeAndPackException, IOException {
-        final String path = "/plan72fineline1500";
-        BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
-        APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
-        BuyQtyResponse buyQtyResponse = buyQtyResponseFromJson(path.concat("/BuyQtyResponse"));
-        Mockito.when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
-        Mockito.when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
-        Mockito.when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
-        CalculateBuyQtyRequest request = create("store", 50000, 34, 1488, 9071, 7205, 1500);
-        CalculateBuyQtyParallelRequest pRequest = createFromRequest(request);
+    public void initialSetCalculationTest() throws SizeAndPackException, IOException {
+       final String path = "/plan72fineline1500";
+       BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
+       APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
+       BuyQtyResponse buyQtyResponse = buyQtyResponseFromJson(path.concat("/BuyQtyResponse"));
+       Mockito.when(buyQtyProperties.getInitialThreshold()).thenReturn(2);
+       Mockito.when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
+       Mockito.when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
+       Mockito.when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
+       Mockito.when(buyQtyProperties.getInitialThreshold()).thenReturn(2);
+       CalculateBuyQtyRequest request = create("store", 50000, 34, 1488, 9071, 7205, 1500);
+       CalculateBuyQtyParallelRequest pRequest = createFromRequest(request);
 
         CalculateBuyQtyResponse r = new CalculateBuyQtyResponse();
         r.setMerchCatgReplPacks(new ArrayList<>());
@@ -167,8 +185,6 @@ class CalculateFinelineBuyQuantityTest {
         long expectedTotalReplnUnits = 19133;
         assertNotNull(response.getMerchCatgReplPacks());
         assertEquals("Only 1 merch catg repl pack created", 1, response.getMerchCatgReplPacks().size());
-        //assertEquals(expectedTotalReplnUnits, (long) response.getMerchCatgReplPacks().get(0).getReplUnits());
-        //assertEquals("Sum of all replns at size level equals total repln", expectedTotalReplnUnits, actualReplUnitsBySize);
     }
 
     @Test
@@ -221,43 +237,6 @@ class CalculateFinelineBuyQuantityTest {
         assertEquals("Total of all size bump pack qtys should match", expectedTotalBumpPackQtySize, actualTotalBumpPackQty);
         assertBumpSetStoreObject(spCCFixSizes, expectedTotalBumpPackQtySize);
     }
-
-    @Test
-    void moveReplnToInitialSetWhenNoInitialSet() {
-        SizeDto size48 = size48();
-        String bqoJson = "{\"buyQtyStoreObj\":{\"buyQuantities\":[{\"isUnits\":0,\"totalUnits\":0,\"storeList\":[1,2,3],\"sizeCluster\":1,\"volumeCluster\":1,\"bumpSets\":[],\"flowStrategyCode\":3},{\"isUnits\":0,\"totalUnits\":0,\"storeList\":[4,5],\"sizeCluster\":1,\"volumeCluster\":2,\"bumpSets\":[],\"flowStrategyCode\":3},{\"isUnits\":0,\"totalUnits\":0,\"storeList\":[6,7,8,9,10],\"sizeCluster\":1,\"volumeCluster\":3,\"bumpSets\":[],\"flowStrategyCode\":3}]},\"replenishments\":[{\"replnWeek\":12301,\"replnWeekDesc\":\"FYE2024WK01\",\"replnUnits\":null,\"adjReplnUnits\":5,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null},{\"replnWeek\":12305,\"replnWeekDesc\":\"FYE2024WK05\",\"replnUnits\":null,\"adjReplnUnits\":6,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null},{\"replnWeek\":12309,\"replnWeekDesc\":\"FYE2024WK09\",\"replnUnits\":null,\"adjReplnUnits\":6,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null},{\"replnWeek\":12313,\"replnWeekDesc\":\"FYE2024WK13\",\"replnUnits\":null,\"adjReplnUnits\":6,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null}],\"totalReplenishment\":23}";
-        BuyQtyObj bqo = deserializeBuyQtyObj(bqoJson);
-        Map.Entry<SizeDto, BuyQtyObj> entry = new AbstractMap.SimpleEntry<>(size48, bqo);
-        calculateFinelineBuyQuantity.updateQtysWithReplenishmentConstraints(entry);
-        assertEquals("Entry BuyQtyObj totalReplenishment should be 0", 0, entry.getValue().getTotalReplenishment());
-        assertEquals("Total Units of StoreQuantity IS Units should equal 23", 23.0, entry.getValue()
-                .getBuyQtyStoreObj().getBuyQuantities().stream()
-                .mapToDouble(StoreQuantity::getTotalUnits).sum(), 0.0);
-    }
-
-    @Test
-    void moveReplnToInitialSetWhenInitialSet() {
-        SizeDto size48 = size48();
-        String bqoJson = "{\"buyQtyStoreObj\":{\"buyQuantities\":[{\"isUnits\":1,\"totalUnits\":3,\"storeList\":[1,2,3],\"sizeCluster\":1,\"volumeCluster\":1,\"bumpSets\":[],\"flowStrategyCode\":3},{\"isUnits\":2,\"totalUnits\":4,\"storeList\":[4,5],\"sizeCluster\":1,\"volumeCluster\":2,\"bumpSets\":[],\"flowStrategyCode\":3},{\"isUnits\":0,\"totalUnits\":0,\"storeList\":[6,7,8,9,10],\"sizeCluster\":1,\"volumeCluster\":3,\"bumpSets\":[],\"flowStrategyCode\":3}]},\"replenishments\":[{\"replnWeek\":12301,\"replnWeekDesc\":\"FYE2024WK01\",\"replnUnits\":null,\"adjReplnUnits\":5,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null},{\"replnWeek\":12305,\"replnWeekDesc\":\"FYE2024WK05\",\"replnUnits\":null,\"adjReplnUnits\":6,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null},{\"replnWeek\":12309,\"replnWeekDesc\":\"FYE2024WK09\",\"replnUnits\":null,\"adjReplnUnits\":6,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null},{\"replnWeek\":12313,\"replnWeekDesc\":\"FYE2024WK13\",\"replnUnits\":null,\"adjReplnUnits\":6,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null}],\"totalReplenishment\":23}";
-        BuyQtyObj bqo = deserializeBuyQtyObj(bqoJson);
-        Map.Entry<SizeDto, BuyQtyObj> entry = new AbstractMap.SimpleEntry<>(size48, bqo);
-        calculateFinelineBuyQuantity.updateQtysWithReplenishmentConstraints(entry);
-        assertEquals("There should be only one StoreQuantity with 0 TotalUnits", 1, entry.getValue().getBuyQtyStoreObj().getBuyQuantities().stream().filter(sq -> sq.getTotalUnits() == 0).count());
-        assertEquals("There should be 2 StoreQuantity with > 0 TotalUnits", 2, entry.getValue().getBuyQtyStoreObj().getBuyQuantities().stream().filter(sq -> sq.getTotalUnits() > 0).count());
-        assertEquals("Total Units of StoreQuantity IS Units should equal 30", 30.0, entry.getValue()
-                .getBuyQtyStoreObj().getBuyQuantities().stream()
-                .mapToDouble(StoreQuantity::getTotalUnits).sum(), 0.0);
-    }
-
-    @Test
-    void emptyBuyQtyStoreObjProperlyHandled() {
-        String bqoJson = "{\"buyQtyStoreObj\":{\"buyQuantities\":[]},\"replenishments\":[{\"replnWeek\":12301,\"replnWeekDesc\":\"FYE2024WK01\",\"replnUnits\":null,\"adjReplnUnits\":100,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null},{\"replnWeek\":12305,\"replnWeekDesc\":\"FYE2024WK05\",\"replnUnits\":null,\"adjReplnUnits\":100,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null}],\"totalReplenishment\":null}";
-        BuyQtyObj bqo = deserializeBuyQtyObj(bqoJson);
-        Map.Entry<SizeDto, BuyQtyObj> entry = new AbstractMap.SimpleEntry<>(size48(), bqo);
-        calculateFinelineBuyQuantity.updateQtysWithReplenishmentConstraints(entry);
-        assertEquals("Total replenishments should remain 0 because replenishment wasn't distributed", 0, entry.getValue().getTotalReplenishment());
-    }
-
     private SizeDto size48() {
         return createSize(4042, "48", 0.0, 0.024999);
     }
