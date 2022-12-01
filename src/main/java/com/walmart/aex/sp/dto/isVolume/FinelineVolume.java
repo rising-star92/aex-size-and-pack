@@ -8,5 +8,7 @@ public class FinelineVolume {
     private int finelineNbr;
     private int lvl3Nbr;
     private int lvl4Nbr;
+    private String interval;
+    private Integer fiscalYear;
     private String volumeDeviationLevel;
 }

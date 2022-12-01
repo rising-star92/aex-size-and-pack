@@ -156,7 +156,7 @@ type UpdateVnPkWhPkResponse {
 	status: String!
 }
 
-type PackOptimizationResponse{
+type PackOptimizationResponse {
     planId: Int!
     channel:String!
     planDesc: String
@@ -179,39 +179,51 @@ type Lvl3 {
    	lvl4List: [Lvl4]
 }
 
-type Constraints{
- supplierConstraints:SupplierConstraints
- ccLevelConstraints:CcLevelConstraints
- colorCombinationConstraints: ColorCombinationConstraints
- finelineLevelConstraints: FinelineLevelConstraints
+type Constraints {
+    supplierConstraints:SupplierConstraints
+    ccLevelConstraints:CcLevelConstraints
+    colorCombinationConstraints: ColorCombinationConstraints
+    finelineLevelConstraints: FinelineLevelConstraints
 }
 
-type ColorCombinationConstraints{
-   supplierName:String
-   factoryId:String
-   countryOfOrigin:String
-   portOfOrigin:String
-   singlePackIndicator: Int
-   colorCombination:String
+type SupplierConstraints {
+    factoryIds: String
+    countryOfOrigin: String
+    portOfOrigin: String
+    supplierName: String
+    maxUnitsPerPack: Int
+    maxPacks: Int
 }
 
-type FinelineLevelConstraints{
-    maxUnitsPerPack:Int
-    maxPacks:Int
+type CcLevelConstraints {
+    factoryIds: String
+    countryOfOrigin: String
+    portOfOrigin: String
+    singlePackIndicator: Int
+    colorCombination: String
+    maxUnitsPerPack: Int
+    maxPacks: Int
 }
 
-type SupplierConstraints{
-   supplierName:String
-   factoryIds:String
-   countryOfOrigin:String
-   portOfOrigin:String
+type ColorCombinationConstraints {
+    supplier: Supplier
+    factoryId: String
+    countryOfOrigin: String
+    portOfOrigin: String
+    singlePackIndicator: Int
+    colorCombination: String
 }
 
-type CcLevelConstraints{
-    maxUnitsPerPack:Int
-    maxPacks:Int
-    singlePackIndicator:Int
-    colorCombination:String
+type FinelineLevelConstraints {
+    maxUnitsPerPack: Int
+    maxPacks: Int
+}
+
+type Supplier {
+    supplierId: Int
+    supplier8Number: Int
+    supplierName: String
+    supplierNumber: Int
 }
 
 type Lvl4 {
@@ -500,6 +512,8 @@ input FinelineVolume {
     finelineNbr : Int!
     lvl3Nbr: Int!
     lvl4Nbr: Int!
+    interval: String!,
+    fiscalYear: Int!,
     volumeDeviationLevel : String!
 }
 
@@ -520,9 +534,14 @@ type IsPlan {
 }
 
 type MetricsVolume {
-    stores: [Int!]
+    stores: [StoreDetail]
     volumeClusterId: Int!
     fixtureType: String
     fixtureAllocation: Float
     quantity: Int!
+}
+
+type StoreDetail {
+    store: Int!
+    qty: Int!
 }
