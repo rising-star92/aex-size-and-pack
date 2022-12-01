@@ -173,13 +173,14 @@ public class UpdateReplnConfigMapper {
 	{
 		ccMmReplnPkConsList.forEach(ccMmReplnPkCons -> {
 			String replObjJson = ccMmReplnPkCons.getReplenObj();
-			if(replObjJson!= null && !replObjJson.isEmpty()){
+			if (replObjJson != null && !replObjJson.isEmpty()) {
 				try {
-					List<Replenishment> replObj = objectMapper.readValue(replObjJson, new TypeReference<>() {});
+					List<Replenishment> replObj = objectMapper.readValue(replObjJson, new TypeReference<>() {
+					});
 					replObj = AdjustedDCInboundQty.updatedAdjustedDcInboundQty(replObj, vnpk);
 					ccMmReplnPkCons.setReplenObj(objectMapper.writeValueAsString(replObj));
 				} catch (JsonProcessingException e) {
-					log.error("Could not convert Replenishment Object Json for week disaggregation ",e );
+					log.error("Could not convert Replenishment Object Json for week disaggregation ", e);
 				}
 			}
 
