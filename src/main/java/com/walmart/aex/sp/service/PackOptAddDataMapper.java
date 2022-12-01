@@ -1,5 +1,6 @@
 package com.walmart.aex.sp.service;
 
+import com.walmart.aex.sp.dto.packoptimization.Constraints;
 import com.walmart.aex.sp.dto.packoptimization.CustomerChoice;
 import com.walmart.aex.sp.dto.packoptimization.Fineline;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl1;
@@ -175,6 +176,21 @@ public class PackOptAddDataMapper {
             ccPackOptimization.setMaxNbrOfPacks(50);
             ccPackOptimization.setMaxUnitsPerPack(36);
             ccPackOptimization.setSinglePackInd(1);
+
+            if (customerChoice.getConstraints() != null) {
+                Constraints constraints = customerChoice.getConstraints();
+                if (constraints.getColorCombinationConstraints() != null) {
+                    ccPackOptimization.setOriginCountryName(constraints.getColorCombinationConstraints().getCountryOfOrigin());
+                    ccPackOptimization.setVendorName(constraints.getColorCombinationConstraints().getSupplier().getSupplierName());
+                    ccPackOptimization.setVendorNbr6(constraints.getColorCombinationConstraints().getSupplier().getSupplierNumber());
+                    ccPackOptimization.setVendorNbr9(constraints.getColorCombinationConstraints().getSupplier().getSupplierId());
+                    ccPackOptimization.setGsmSupplierId(constraints.getColorCombinationConstraints().getSupplier().getSupplier8Number());
+                }
+                if (constraints.getFinelineLevelConstraints() != null) {
+                    ccPackOptimization.setMaxNbrOfPacks(constraints.getFinelineLevelConstraints().getMaxPacks());
+                    ccPackOptimization.setMaxUnitsPerPack(constraints.getFinelineLevelConstraints().getMaxUnitsPerPack());
+                }
+            }
 
             ccPackOptimizationSet.add(ccPackOptimization);
 

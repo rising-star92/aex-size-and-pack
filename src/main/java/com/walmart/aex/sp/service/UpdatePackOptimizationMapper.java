@@ -2,6 +2,7 @@ package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.packoptimization.UpdatePackOptConstraintRequestDTO;
 import com.walmart.aex.sp.entity.*;
+import com.walmart.aex.sp.enums.SinglePackIndicator;
 import com.walmart.aex.sp.repository.common.PackOptimizationCommonRepository;
 import com.walmart.aex.sp.service.helper.Action;
 import lombok.extern.slf4j.Slf4j;
@@ -34,12 +35,12 @@ public class UpdatePackOptimizationMapper {
                 .stream()
                 .flatMap(catgPackOptCons -> catgPackOptCons.getSubCatgPackOptimization().stream()).collect(Collectors.toList());
         if(!CollectionUtils.isEmpty(subCatgPkOptPkConsList)){
-            updateSubCategoryPackOptCons(request, subCatgPkOptPkConsList);
+            updateSubCategoryPackOptCons(request, subCatgPkOptPkConsList,merchantPackOptimizationList);
         }
 
     }
 
-    private void updateSubCategoryPackOptCons(UpdatePackOptConstraintRequestDTO request, List<SubCatgPackOptimization> subCatgReplnPkConsList) {
+    private void updateSubCategoryPackOptCons(UpdatePackOptConstraintRequestDTO request, List<SubCatgPackOptimization> subCatgReplnPkConsList,List<MerchantPackOptimization> merchantPackOptimizationList) {
         log.info("Updating Sub Category pack optimization constraint for planId {} ", request.getPlanId().toString());
         if(request.getLvl4Nbr()!=null){
             subCatgReplnPkConsList = subCatgReplnPkConsList.stream().filter(subCatg-> subCatg.getSubCatgPackOptimizationID().getRepTLvl4().equals(request.getLvl4Nbr())).collect(Collectors.toList());
@@ -48,17 +49,18 @@ public class UpdatePackOptimizationMapper {
             for (SubCatgPackOptimization lvl4PackOptCons : subCatgReplnPkConsList) {
                 updateSubCatgPackOptConstFields(request, lvl4PackOptCons);
             }
-            packOptimizationCommonRepository.getSubCatgPackOptimizationRepository().saveAll(subCatgReplnPkConsList);
+            rollupCatgFields(merchantPackOptimizationList,request.getLvl3Nbr());
         }
+        packOptimizationCommonRepository.getSubCatgPackOptimizationRepository().saveAll(subCatgReplnPkConsList);
         List<FineLinePackOptimization> fineLinePkOptPkConsList = subCatgReplnPkConsList
                 .stream()
                 .flatMap(subCatgPackOptCons -> subCatgPackOptCons.getFinelinepackOptimization().stream()).collect(Collectors.toList());
         if(!CollectionUtils.isEmpty(fineLinePkOptPkConsList)){
-            updateFinelinePackOptCons(request, fineLinePkOptPkConsList);
+            updateFinelinePackOptCons(request, fineLinePkOptPkConsList,merchantPackOptimizationList);
         }
     }
 
-    private void updateFinelinePackOptCons(UpdatePackOptConstraintRequestDTO request, List<FineLinePackOptimization> fineLinePackOptimizationList) {
+    private void updateFinelinePackOptCons(UpdatePackOptConstraintRequestDTO request, List<FineLinePackOptimization> fineLinePackOptimizationList,List<MerchantPackOptimization> merchantPackOptimizationList) {
         log.info("Updating Fine Line pack optimization constraint for planId {} ", request.getPlanId().toString());
         if(request.getFinelineNbr()!=null){
             fineLinePackOptimizationList = fineLinePackOptimizationList.stream().filter(flPkOpt-> flPkOpt.getFinelinePackOptId().getFinelineNbr().equals(request.getFinelineNbr())).collect(Collectors.toList());
@@ -67,17 +69,18 @@ public class UpdatePackOptimizationMapper {
             for (FineLinePackOptimization fl : fineLinePackOptimizationList) {
                 updateFlPackOptConstFields(request, fl);
             }
-            packOptimizationCommonRepository.getFinelinePackOptConsRepository().saveAll(fineLinePackOptimizationList);
+            rollupSubCatgFields(merchantPackOptimizationList,request.getLvl3Nbr(),request.getLvl4Nbr());
         }
+        packOptimizationCommonRepository.getFinelinePackOptConsRepository().saveAll(fineLinePackOptimizationList);
         List<StylePackOptimization> stylePackOptimizationList = fineLinePackOptimizationList
                 .stream()
                 .flatMap(fineLinePackOptCons -> fineLinePackOptCons.getStylePackOptimization().stream()).collect(Collectors.toList());
         if(!CollectionUtils.isEmpty(stylePackOptimizationList)){
-            updateStylePackOptCons(request, stylePackOptimizationList);
+            updateStylePackOptCons(request, stylePackOptimizationList,merchantPackOptimizationList);
         }
     }
 
-    private void updateStylePackOptCons(UpdatePackOptConstraintRequestDTO request, List<StylePackOptimization> stylePackOptimizationList) {
+    private void updateStylePackOptCons(UpdatePackOptConstraintRequestDTO request, List<StylePackOptimization> stylePackOptimizationList,List<MerchantPackOptimization> merchantPackOptimizationList) {
         log.info("Updating Style pack optimization constraint for planId {} ", request.getPlanId().toString());
         if(request.getStyleNbr()!=null && !request.getStyleNbr().isEmpty()){
             stylePackOptimizationList=stylePackOptimizationList.stream().filter(stPkOpt-> stPkOpt.getStylePackoptimizationId().getStyleNbr().trim().equalsIgnoreCase(request.getStyleNbr().trim())).collect(Collectors.toList());
@@ -86,17 +89,19 @@ public class UpdatePackOptimizationMapper {
             for (StylePackOptimization st : stylePackOptimizationList) {
                 updateStPackOptConstFields(request, st);
             }
-            packOptimizationCommonRepository.getStylePackOptimizationRepository().saveAll(stylePackOptimizationList);
+            stylePackOptimizationList.forEach(StylePackOptimization::getCcPackOptimization);
+            rollupFinelineFields(merchantPackOptimizationList,request.getLvl3Nbr(), request.getLvl4Nbr(),request.getFinelineNbr());
         }
+        packOptimizationCommonRepository.getStylePackOptimizationRepository().saveAll(stylePackOptimizationList);
         List<CcPackOptimization> ccPackOptimizationList = stylePackOptimizationList
                 .stream()
                 .flatMap(stylePackOptCons -> stylePackOptCons.getCcPackOptimization().stream()).collect(Collectors.toList());
         if(!CollectionUtils.isEmpty(ccPackOptimizationList)){
-            updateCcPackOptCons(request, ccPackOptimizationList);
+            updateCcPackOptCons(request, ccPackOptimizationList,merchantPackOptimizationList);
         }
     }
 
-    private void updateCcPackOptCons(UpdatePackOptConstraintRequestDTO request, List<CcPackOptimization> ccPackOptimizationList) {
+    private void updateCcPackOptCons(UpdatePackOptConstraintRequestDTO request, List<CcPackOptimization> ccPackOptimizationList,List<MerchantPackOptimization> merchantPackOptimizationList) {
         log.info("Updating Customer choice pack optimization constraint for planId {} ", request.getPlanId().toString());
         if(request.getCcId()!=null && !request.getCcId().isEmpty()){
             ccPackOptimizationList=ccPackOptimizationList.stream().filter(stPkOpt-> stPkOpt.getCcPackOptimizationId().getCustomerChoice().trim().equalsIgnoreCase(request.getCcId().trim())).collect(Collectors.toList());
@@ -104,6 +109,7 @@ public class UpdatePackOptimizationMapper {
         for (CcPackOptimization cc : ccPackOptimizationList) {
             updateCcPackOptConstFields(request, cc);
         }
+        rollupStyleFields(merchantPackOptimizationList,request.getLvl3Nbr(), request.getLvl4Nbr(), request.getFinelineNbr(), request.getStyleNbr());
         packOptimizationCommonRepository.getCcPackOptimizationRepository().saveAll(ccPackOptimizationList);
     }
 
@@ -191,6 +197,112 @@ public class UpdatePackOptimizationMapper {
     public static void setIfNotNull(Object value, Action action) {
         if (value != null)
             action.execute();
+    }
+
+    private void rollupCatgFields(List<MerchantPackOptimization> merchantPackOptimizationList,Integer lvl3Nbr)  {
+        List<MerchantPackOptimization> merchantPackOptimizations = fetchMerchantPackOptimization(merchantPackOptimizationList, lvl3Nbr);
+       if(!CollectionUtils.isEmpty(merchantPackOptimizations)){
+           merchantPackOptimizations.forEach(merchantPackOptimization -> {
+               merchantPackOptimization.setSinglePackInd(getSinglePackIndicatorFlag(merchantPackOptimization.getSubCatgPackOptimization().stream().map(SubCatgPackOptimization::getSinglePackInd).collect(Collectors.toList())));
+           });
+       }
+    }
+
+    private void rollupSubCatgFields(List<MerchantPackOptimization> merchantPackOptimizationList, Integer lvl3Nbr, Integer lvl4Nbr){
+        List<MerchantPackOptimization> merchantPackOptimizations = fetchMerchantPackOptimization(merchantPackOptimizationList, lvl3Nbr);
+        if(!CollectionUtils.isEmpty(merchantPackOptimizations)) {
+            merchantPackOptimizations.forEach(merchantPackOptimization -> {
+                if(lvl4Nbr!=null) {
+                    fetchStrategySubCatgSpClus(merchantPackOptimization.getSubCatgPackOptimization(), lvl4Nbr).stream().forEach(
+                            subCatgPackOptimization -> {
+                                subCatgPackOptimization.setSinglePackInd(getSinglePackIndicatorFlag(subCatgPackOptimization.getFinelinepackOptimization().stream().map(FineLinePackOptimization::getSinglePackInd).collect(Collectors.toList())));
+                            }
+                    );
+                }
+            });
+        }
+        rollupCatgFields(merchantPackOptimizationList,lvl3Nbr);
+
+    }
+
+    private void rollupFinelineFields(List<MerchantPackOptimization> merchantPackOptimizationList, Integer lvl3Nbr, Integer lvl4Nbr, Integer finelineNbr){
+        List<MerchantPackOptimization> merchantPackOptimizations = fetchMerchantPackOptimization(merchantPackOptimizationList, lvl3Nbr);
+        if(!CollectionUtils.isEmpty(merchantPackOptimizations)) {
+            merchantPackOptimizations.forEach(merchantPackOptimization -> {
+                if(lvl4Nbr!=null && finelineNbr!=null ) {
+                    fetchStrategySubCatgSpClus(merchantPackOptimization.getSubCatgPackOptimization(), lvl4Nbr).stream().forEach(
+                            subCatgPackOptimization -> fetchStrategyFinelineSpClus(subCatgPackOptimization.getFinelinepackOptimization(), finelineNbr).forEach(fineLinePackOptimization -> {
+                                fineLinePackOptimization.setSinglePackInd(getSinglePackIndicatorFlag(fineLinePackOptimization.getStylePackOptimization().stream().map(StylePackOptimization::getSinglePackInd).collect(Collectors.toList())));
+                            })
+                    );
+                }
+            });
+        }
+        rollupSubCatgFields(merchantPackOptimizationList,lvl3Nbr,lvl4Nbr);
+    }
+
+    private void rollupStyleFields(List<MerchantPackOptimization> merchantPackOptimizationList,Integer lvl3Nbr, Integer lvl4Nbr, Integer finelineNbr, String styleNbr){
+        List<MerchantPackOptimization> merchantPackOptimizations = fetchMerchantPackOptimization(merchantPackOptimizationList, lvl3Nbr);
+        if(!CollectionUtils.isEmpty(merchantPackOptimizations)) {
+            merchantPackOptimizations.forEach(merchantPackOptimization -> {
+                if(lvl4Nbr!=null && finelineNbr!=null) {
+                    fetchStrategySubCatgSpClus(merchantPackOptimization.getSubCatgPackOptimization(), lvl4Nbr).stream().forEach(
+                            subCatgPackOptimization -> fetchStrategyFinelineSpClus(subCatgPackOptimization.getFinelinepackOptimization(), finelineNbr).forEach(fineLinePackOptimization -> {
+                                if (styleNbr != null) {
+                                    fetchStylePackOptimization(fineLinePackOptimization.getStylePackOptimization(), styleNbr)
+                                            .forEach(stylePackOptimization -> {
+                                                stylePackOptimization.setSinglePackInd(getSinglePackIndicatorFlag(stylePackOptimization.getCcPackOptimization().stream().map(CcPackOptimization::getSinglePackInd).collect(Collectors.toList())));
+                                            });
+                                }
+
+                            })
+                    );
+                }
+            });
+        }
+        rollupFinelineFields(merchantPackOptimizationList,lvl3Nbr,lvl4Nbr,finelineNbr);
+    }
+
+  public Integer getSinglePackIndicatorFlag(List<Integer> integers){
+      boolean allChecked = integers.stream().filter(Objects::nonNull).allMatch(integer -> integer.equals(1));
+      boolean allUnChecked = integers.stream().filter(Objects::nonNull).allMatch(integer -> integer.equals(0));
+      if(allChecked){
+          return SinglePackIndicator.SELECTED.getId();
+      }else if(allUnChecked){
+          return SinglePackIndicator.UNSELECTED.getId();
+      }  else {
+          return SinglePackIndicator.PARTIAL.getId();
+      }
+    }
+
+    private List<MerchantPackOptimization> fetchMerchantPackOptimization(List<MerchantPackOptimization> merchantPackOptimizationList, Integer lvl3Nbr) {
+        return Optional.ofNullable(merchantPackOptimizationList)
+                .stream()
+                .flatMap(Collection::stream)
+                .filter(merchantPackOptimization -> merchantPackOptimization.getMerchantPackOptimizationID().getRepTLvl3().equals(lvl3Nbr)).collect(Collectors.toList());
+
+    }
+
+    private List<SubCatgPackOptimization> fetchStrategySubCatgSpClus(Set<SubCatgPackOptimization> subCatgPackOptimizations,Integer lvl4Nbr) {
+        return Optional.ofNullable(subCatgPackOptimizations)
+                .stream()
+                .flatMap(Collection::stream)
+                .filter(subCatgPackOptimization -> subCatgPackOptimization.getSubCatgPackOptimizationID().getRepTLvl4().equals(lvl4Nbr)).collect(Collectors.toList());
+
+
+    }
+
+    private List<FineLinePackOptimization> fetchStrategyFinelineSpClus(Set<FineLinePackOptimization> fineLinePackOptimizations,Integer finelineNbr) {
+        return Optional.ofNullable(fineLinePackOptimizations)
+                .stream()
+                .flatMap(Collection::stream)
+                .filter(fineLinePackOptimization -> fineLinePackOptimization.getFinelinePackOptId().getFinelineNbr().equals(finelineNbr)).collect(Collectors.toList());
+    }
+    private List<StylePackOptimization> fetchStylePackOptimization(Set<StylePackOptimization> stylePackOptimizations,String styleNum) {
+        return Optional.ofNullable(stylePackOptimizations)
+                .stream()
+                .flatMap(Collection::stream)
+                .filter(stylePackOptimization -> stylePackOptimization.getStylePackoptimizationId().getStyleNbr().trim().equalsIgnoreCase(styleNum.trim())).collect(Collectors.toList());
     }
 
 }

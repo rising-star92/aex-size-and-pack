@@ -1,20 +1,11 @@
 package com.walmart.aex.sp.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.walmart.aex.sp.dto.buyquantity.BuyQntyResponseDTO;
-import com.walmart.aex.sp.dto.buyquantity.BuyQtyRequest;
-import com.walmart.aex.sp.dto.buyquantity.BuyQtyResponse;
-import com.walmart.aex.sp.dto.buyquantity.ClustersDto;
-import com.walmart.aex.sp.dto.buyquantity.CustomerChoiceDto;
-import com.walmart.aex.sp.dto.buyquantity.FinelineDto;
-import com.walmart.aex.sp.dto.buyquantity.Lvl3Dto;
-import com.walmart.aex.sp.dto.buyquantity.Lvl4Dto;
-import com.walmart.aex.sp.dto.buyquantity.SizeDto;
-import com.walmart.aex.sp.dto.buyquantity.StyleDto;
+import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.dto.commitmentreport.InitialBumpSetResponse;
 import com.walmart.aex.sp.dto.commitmentreport.InitialSetPackRequest;
 import com.walmart.aex.sp.dto.commitmentreport.RFAInitialSetBumpSetResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.isVolume.FinelineVolume;
 import com.walmart.aex.sp.dto.isVolume.InitialSetVolumeRequest;
 import com.walmart.aex.sp.dto.isVolume.InitialSetVolumeResponse;
@@ -153,13 +144,20 @@ public class SizeAndPackService {
                 }
             } else {
                 BuyQtyResponse buyQtyResponseAllChannels = new BuyQtyResponse();
+                buyQtyRequest.setChannel(ChannelType.STORE.getDescription());
+                BuyQtyResponse stylesCcWithSizesFromStrategyStore = strategyFetchService.getBuyQtyDetailsForStylesCc(buyQtyRequest, finelineNbr);
+                buyQtyRequest.setChannel(ChannelType.ONLINE.getDescription());
+                BuyQtyResponse stylesCcWithSizesFromStrategyOnline = strategyFetchService.getBuyQtyDetailsForStylesCc(buyQtyRequest, finelineNbr);
+
+                HashMap<Integer,List<String>> ccsWithSizes = mergeBuyQtyResponse(stylesCcWithSizesFromStrategyStore, stylesCcWithSizesFromStrategyOnline);
                 buyQntyResponseDTOS = spCustomerChoiceChannelFixtureRepository
                         .getBuyQntyByPlanChannelFineline(buyQtyRequest.getPlanId(), null, finelineNbr);
                 Optional.of(buyQntyResponseDTOS)
                         .stream()
                         .flatMap(Collection::stream)
+                        .filter(buyQntyResponseDTO -> ccsWithSizes.get(buyQntyResponseDTO.getChannelId()).contains(buyQntyResponseDTO.getCcId()))
                         .forEach(buyQntyResponseDTO -> buyQuantityMapper
-                                .mapBuyQntyLvl2Sp(buyQntyResponseDTO, buyQtyResponseAllChannels, finelineNbr));
+                        .mapBuyQntyLvl2Sp(buyQntyResponseDTO, buyQtyResponseAllChannels, finelineNbr));
                 return buyQtyResponseAllChannels;
             }
             return buyQtyResponse;
@@ -167,6 +165,27 @@ public class SizeAndPackService {
             log.error("Exception While fetching CC Buy Qunatities with Sizes:", e);
             throw new CustomException("Failed to fetch CC Buy Qunatities with Sizes, due to" + e);
         }
+    }
+
+    private HashMap<Integer,List<String>> mergeBuyQtyResponse(BuyQtyResponse store, BuyQtyResponse online) {
+        Set<String> ccsStore = store.getLvl3List().stream()
+                .flatMap(lvl3Dto -> lvl3Dto.getLvl4List().stream()
+                        .flatMap(lvl4Dto -> lvl4Dto.getFinelines().stream()
+                                .flatMap(finelineDto -> finelineDto.getStyles().stream()
+                                        .flatMap(styleDto -> styleDto.getCustomerChoices().stream()
+                                                .map(CustomerChoiceDto::getCcId)))))
+                .collect(Collectors.toSet());
+        Set<String> ccsOnline = online.getLvl3List().stream()
+                .flatMap(lvl3Dto -> lvl3Dto.getLvl4List().stream()
+                        .flatMap(lvl4Dto -> lvl4Dto.getFinelines().stream()
+                                .flatMap(finelineDto -> finelineDto.getStyles().stream()
+                                        .flatMap(styleDto -> styleDto.getCustomerChoices().stream()
+                                                .map(CustomerChoiceDto::getCcId)))))
+                .collect(Collectors.toSet());
+        HashMap<Integer,List<String>> result = new HashMap<>();
+        result.put(ChannelType.STORE.getId(),new ArrayList<>(ccsStore));
+        result.put(ChannelType.ONLINE.getId(),new ArrayList<>(ccsOnline));
+        return result;
     }
 
     public BuyQtyResponse fetchSizeBuyQnty(BuyQtyRequest buyQtyRequest) {
