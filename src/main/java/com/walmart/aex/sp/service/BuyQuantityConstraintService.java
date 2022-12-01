@@ -75,19 +75,11 @@ public class BuyQuantityConstraintService {
         return initialSetWithReplnsConstraint;
     }
 
-    public void processReplenishmentConstraints(Map.Entry<SizeDto, BuyQtyObj> entry) {
-        final BuyQtyObj allStoresBuyQty = entry.getValue();
-        if (!CollectionUtils.isEmpty(allStoresBuyQty.getReplenishments()) && !CollectionUtils.isEmpty(allStoresBuyQty.getBuyQtyStoreObj().getBuyQuantities())) {
-            setReplenishmentQty(allStoresBuyQty);
-            if (allStoresBuyQty.getTotalReplenishment() < buyQtyProperties.getReplenishmentThreshold() && allStoresBuyQty.getTotalReplenishment() > 0) {
-                while (allStoresBuyQty.getTotalReplenishment() > 0)
-                    updateReplnToInitialSet(entry);
-            }
+    public void processReplenishmentConstraints(Map.Entry<SizeDto, BuyQtyObj> entry, long totalReplenishment) {
+        if (totalReplenishment < buyQtyProperties.getReplenishmentThreshold() && totalReplenishment > 0) {
+            while (entry.getValue().getTotalReplenishment() > 0)
+                updateReplnToInitialSet(entry);
         }
-    }
-
-    private void setReplenishmentQty(BuyQtyObj allStoresBuyQty) {
-        allStoresBuyQty.setTotalReplenishment(getTotalReplenishment(allStoresBuyQty.getReplenishments()));
     }
 
 
@@ -139,7 +131,7 @@ public class BuyQuantityConstraintService {
         entry.getValue().setTotalReplenishment(entry.getValue().getTotalReplenishment() - storeQuantity.getStoreList().size());
     }
 
-    private long getTotalReplenishment(List<Replenishment> replenishments) {
+    public long getTotalReplenishment(List<Replenishment> replenishments) {
         return replenishments
                 .stream()
                 .filter(Objects::nonNull)

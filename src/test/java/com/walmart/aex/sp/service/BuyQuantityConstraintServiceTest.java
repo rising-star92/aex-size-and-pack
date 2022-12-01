@@ -49,7 +49,7 @@ public class BuyQuantityConstraintServiceTest {
         BuyQtyObj bqo = deserializeBuyQtyObj(bqoJson);
         Map.Entry<SizeDto, BuyQtyObj> entry = new AbstractMap.SimpleEntry<>(size48, bqo);
         Mockito.when(buyQtyProperties.getReplenishmentThreshold()).thenReturn(500);
-        buyQuantityConstraintService.processReplenishmentConstraints(entry);
+        buyQuantityConstraintService.processReplenishmentConstraints(entry, bqo.getTotalReplenishment());
         assertEquals("Entry BuyQtyObj totalReplenishment should be 0", 0, entry.getValue().getTotalReplenishment());
         assertEquals("Total Units of StoreQuantity IS Units should equal 23", 23.0, entry.getValue()
                 .getBuyQtyStoreObj().getBuyQuantities().stream()
@@ -63,7 +63,7 @@ public class BuyQuantityConstraintServiceTest {
         BuyQtyObj bqo = deserializeBuyQtyObj(bqoJson);
         Map.Entry<SizeDto, BuyQtyObj> entry = new AbstractMap.SimpleEntry<>(size48, bqo);
         Mockito.when(buyQtyProperties.getReplenishmentThreshold()).thenReturn(500);
-        buyQuantityConstraintService.processReplenishmentConstraints(entry);
+        buyQuantityConstraintService.processReplenishmentConstraints(entry, bqo.getTotalReplenishment());
         assertEquals("There should be only one StoreQuantity with 0 TotalUnits", 1, entry.getValue().getBuyQtyStoreObj().getBuyQuantities().stream().filter(sq -> sq.getTotalUnits() == 0).count());
         assertEquals("There should be 2 StoreQuantity with > 0 TotalUnits", 2, entry.getValue().getBuyQtyStoreObj().getBuyQuantities().stream().filter(sq -> sq.getTotalUnits() > 0).count());
         assertEquals("Total Units of StoreQuantity IS Units should equal 30", 30.0, entry.getValue()
@@ -76,7 +76,7 @@ public class BuyQuantityConstraintServiceTest {
         String bqoJson = "{\"buyQtyStoreObj\":{\"buyQuantities\":[]},\"replenishments\":[{\"replnWeek\":12301,\"replnWeekDesc\":\"FYE2024WK01\",\"replnUnits\":null,\"adjReplnUnits\":100,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null},{\"replnWeek\":12305,\"replnWeekDesc\":\"FYE2024WK05\",\"replnUnits\":null,\"adjReplnUnits\":100,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null}],\"totalReplenishment\":null}";
         BuyQtyObj bqo = deserializeBuyQtyObj(bqoJson);
         Map.Entry<SizeDto, BuyQtyObj> entry = new AbstractMap.SimpleEntry<>(size48(), bqo);
-        buyQuantityConstraintService.processReplenishmentConstraints(entry);
+        buyQuantityConstraintService.processReplenishmentConstraints(entry, bqo.getTotalReplenishment());
         assertEquals("Total replenishments should remain 0 because replenishment wasn't distributed", 0, entry.getValue().getTotalReplenishment());
     }
 
@@ -87,7 +87,7 @@ public class BuyQuantityConstraintServiceTest {
         BuyQtyObj bqo = deserializeBuyQtyObj(bqoJson);
         Map.Entry<SizeDto, BuyQtyObj> entry = new AbstractMap.SimpleEntry<>(size48, bqo);
         Mockito.when(buyQtyProperties.getReplenishmentThreshold()).thenReturn(500);
-        buyQuantityConstraintService.processReplenishmentConstraints(entry);
+        buyQuantityConstraintService.processReplenishmentConstraints(entry, bqo.getTotalReplenishment());
         assertEquals("Entry BuyQtyObj totalReplenishment should be 0", 0, entry.getValue().getTotalReplenishment());
         assertEquals("Total Units of StoreQuantity IS Units should equal 2", 2.0, entry.getValue()
                 .getBuyQtyStoreObj().getBuyQuantities().stream()

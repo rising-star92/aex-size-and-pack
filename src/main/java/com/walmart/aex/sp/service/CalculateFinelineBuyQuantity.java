@@ -313,7 +313,12 @@ public class CalculateFinelineBuyQuantity {
 
         entry.getValue().setTotalReplenishment(0L);
         //Update Store Qty
-        buyQuantityConstraintService.processReplenishmentConstraints(entry);
+        final BuyQtyObj allStoresBuyQty = entry.getValue();
+        if (!CollectionUtils.isEmpty(allStoresBuyQty.getReplenishments()) && !CollectionUtils.isEmpty(allStoresBuyQty.getBuyQtyStoreObj().getBuyQuantities())) {
+            allStoresBuyQty.setTotalReplenishment(buyQuantityConstraintService.getTotalReplenishment(allStoresBuyQty.getReplenishments()));
+            buyQuantityConstraintService.processReplenishmentConstraints(entry, allStoresBuyQty.getTotalReplenishment());
+        }
+
         double bsBuyQty = getBsQty(entry);
         double isBuyQty = getIsQty(entry);
         double totalBuyQty = isBuyQty + bsBuyQty + entry.getValue().getTotalReplenishment();
