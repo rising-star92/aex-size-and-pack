@@ -1,32 +1,53 @@
 package com.walmart.aex.sp.service;
 
-import com.walmart.aex.sp.dto.buyquantity.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.walmart.aex.sp.dto.buyquantity.BuyQntyResponseDTO;
+import com.walmart.aex.sp.dto.buyquantity.BuyQtyRequest;
+import com.walmart.aex.sp.dto.buyquantity.BuyQtyResponse;
+import com.walmart.aex.sp.dto.buyquantity.ClustersDto;
+import com.walmart.aex.sp.dto.buyquantity.CustomerChoiceDto;
+import com.walmart.aex.sp.dto.buyquantity.FinelineDto;
+import com.walmart.aex.sp.dto.buyquantity.Lvl3Dto;
+import com.walmart.aex.sp.dto.buyquantity.Lvl4Dto;
+import com.walmart.aex.sp.dto.buyquantity.SizeDto;
+import com.walmart.aex.sp.dto.buyquantity.StyleDto;
 import com.walmart.aex.sp.dto.commitmentreport.InitialBumpSetResponse;
 import com.walmart.aex.sp.dto.commitmentreport.InitialSetPackRequest;
 import com.walmart.aex.sp.dto.commitmentreport.RFAInitialSetBumpSetResponse;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.isVolume.FinelineVolume;
 import com.walmart.aex.sp.dto.isVolume.InitialSetVolumeRequest;
 import com.walmart.aex.sp.dto.isVolume.InitialSetVolumeResponse;
 import com.walmart.aex.sp.dto.packoptimization.Fineline;
-import com.walmart.aex.sp.dto.planhierarchy.*;
+import com.walmart.aex.sp.dto.planhierarchy.Lvl1;
+import com.walmart.aex.sp.dto.planhierarchy.Lvl2;
+import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
+import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDTO;
+import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDeleteDTO;
+import com.walmart.aex.sp.dto.planhierarchy.SizeAndPackResponse;
+import com.walmart.aex.sp.dto.planhierarchy.StrongKey;
+import com.walmart.aex.sp.entity.MerchCatPlan;
+import com.walmart.aex.sp.entity.MerchantPackOptimization;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.exception.CustomException;
-import com.walmart.aex.sp.properties.BigQueryConnectionProperties;
-import com.walmart.aex.sp.properties.GraphQLProperties;
-import com.walmart.aex.sp.repository.*;
+import com.walmart.aex.sp.repository.MerchCatPlanRepository;
+import com.walmart.aex.sp.repository.MerchPackOptimizationRepository;
+import com.walmart.aex.sp.repository.SpCustomerChoiceChannelFixtureRepository;
+import com.walmart.aex.sp.repository.SpCustomerChoiceChannelFixtureSizeRepository;
+import com.walmart.aex.sp.repository.SpFineLineChannelFixtureRepository;
 import com.walmart.aex.sp.util.BuyQtyCommonUtil;
-import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.groupingBy;
 
 @Service
 @Slf4j
@@ -59,15 +80,11 @@ public class SizeAndPackService {
 
     private final MerchPackOptimizationRepository merchPackOptimizationRepository;
 
+    private final PackOptUpdateDataMapper packOptUpdateDataMapper;
+
     private final PackOptAddDataMapper packOptAddDataMapper;
 
-    @ManagedConfiguration
-	BigQueryConnectionProperties bigQueryConnectionProperties;
-
-    @ManagedConfiguration
-    GraphQLProperties graphQLProperties;
-
-    final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
 
     public SizeAndPackService(SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository, BuyQuantityMapper buyQuantityMapper,
                               SpCustomerChoiceChannelFixtureRepository spCustomerChoiceChannelFixtureRepository,
@@ -75,7 +92,7 @@ public class SizeAndPackService {
                               MerchCatPlanRepository merchCatPlanRepository, StrategyFetchService strategyFetchService,
                               SpCustomerChoiceChannelFixtureSizeRepository spCustomerChoiceChannelFixtureSizeRepository,
                               SizeAndPackDeleteService sizeAndPackDeleteService, SizeAndPackDeletePlanService sizeAndPackDeletePlanService
-            , BuyQtyCommonUtil buyQtyCommonUtil, BigQueryInitialSetPlanService bigQueryInitialSetPlanService, InitialSetPlanMapper initialSetPlanMapper, MerchPackOptimizationRepository merchPackOptimizationRepository, PackOptAddDataMapper packOptAddDataMapper) {
+            , BuyQtyCommonUtil buyQtyCommonUtil, BigQueryInitialSetPlanService bigQueryInitialSetPlanService, InitialSetPlanMapper initialSetPlanMapper, MerchPackOptimizationRepository merchPackOptimizationRepository, PackOptUpdateDataMapper packOptUpdateDataMapper, PackOptAddDataMapper packOptAddDataMapper) {
         this.spFineLineChannelFixtureRepository = spFineLineChannelFixtureRepository;
         this.buyQuantityMapper = buyQuantityMapper;
         this.spCustomerChoiceChannelFixtureRepository = spCustomerChoiceChannelFixtureRepository;
@@ -90,7 +107,9 @@ public class SizeAndPackService {
         this.bigQueryInitialSetPlanService = bigQueryInitialSetPlanService;
         this.initialSetPlanMapper = initialSetPlanMapper;
         this.merchPackOptimizationRepository = merchPackOptimizationRepository;
+        this.packOptUpdateDataMapper = packOptUpdateDataMapper;
         this.packOptAddDataMapper = packOptAddDataMapper;
+        this.objectMapper = new ObjectMapper();
     }
 
     public BuyQtyResponse fetchFinelineBuyQnty(BuyQtyRequest buyQtyRequest) {
@@ -248,8 +267,14 @@ public class SizeAndPackService {
             for (Lvl1 lvl1 : planSizeAndPackDTO.getLvl1List()) {
                 for (Lvl2 lvl2 : lvl1.getLvl2List()) {
                     for (Lvl3 lvl3 : lvl2.getLvl3List()) {
-                        merchCatPlanRepository.saveAll(sizeAndPackObjectMapper.setMerchCatPlan(planSizeAndPackDTO, lvl1, lvl2, lvl3, merchCatPlanRepository));
-                        merchPackOptimizationRepository.saveAll(packOptAddDataMapper.setMerchCatPackOpt(planSizeAndPackDTO, lvl1, lvl2, lvl3, merchPackOptimizationRepository));
+                        Set<MerchCatPlan> merchCatPlans = sizeAndPackObjectMapper.setMerchCatPlan(planSizeAndPackDTO, lvl1, lvl2, lvl3);
+                        if(!CollectionUtils.isEmpty(merchCatPlans)) {
+                            merchCatPlanRepository.saveAll(merchCatPlans);
+                        }
+                        Set<MerchantPackOptimization> merchantPackOptimizations = packOptAddDataMapper.setMerchCatPackOpt(planSizeAndPackDTO, lvl1, lvl2, lvl3);
+                        if(!CollectionUtils.isEmpty(merchantPackOptimizations)) {
+                            merchPackOptimizationRepository.saveAll(merchantPackOptimizations);
+                        }
                     }
                 }
             }
@@ -276,7 +301,14 @@ public class SizeAndPackService {
             for (Lvl1 lvl1 : planSizeAndPackDTO.getLvl1List()) {
                 for (Lvl2 lvl2 : lvl1.getLvl2List()) {
                     for (Lvl3 lvl3 : lvl2.getLvl3List()) {
-                        merchCatPlanRepository.saveAll(sizeAndPackObjectMapper.updateMerchCatPlan(planSizeAndPackDTO, lvl1, lvl2, lvl3, lvl2.getLvl3List(), merchCatPlanRepository));
+                        Set<MerchantPackOptimization> merchantPackOptimizations = packOptUpdateDataMapper.updateMerchCatPackOpt(planSizeAndPackDTO, lvl1, lvl2, lvl3);
+                        if(!CollectionUtils.isEmpty(merchantPackOptimizations)) {
+                            merchPackOptimizationRepository.saveAll(merchantPackOptimizations);
+                        }
+                        Set<MerchCatPlan> merchCatPlans = sizeAndPackObjectMapper.updateMerchCatPlan(planSizeAndPackDTO, lvl1, lvl2, lvl3);
+                        if(!CollectionUtils.isEmpty(merchCatPlans)) {
+                            merchCatPlanRepository.saveAll(merchCatPlans);
+                        }
                        }
                 }
             }
@@ -322,7 +354,10 @@ public class SizeAndPackService {
             for (Lvl1 lvl1 : lvl1s) {
                 for (Lvl2 lvl2 : lvl1.getLvl2List()) {
                     for (Lvl3 lvl3 : lvl2.getLvl3List()) {
-                        merchCatPlanRepository.saveAll(sizeAndPackDeletePlanService.updateMerchCatPlan(sizeAndPackPayloadDTO, lvl1, lvl2, lvl3, fineline, merchCatPlanRepository));
+                        Set<MerchCatPlan> merchCatPlans = sizeAndPackDeletePlanService.updateMerchCatPlan(sizeAndPackPayloadDTO, lvl1, lvl2, lvl3, fineline, merchCatPlanRepository);
+                        if(!CollectionUtils.isEmpty(merchCatPlans)) {
+                            merchCatPlanRepository.saveAll(merchCatPlans);
+                        }
                     }
                 }
             }
