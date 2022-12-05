@@ -140,7 +140,6 @@ public class UpdateReplnConfigMapperTest {
 		ccMmReplnPkConsList.add(cc);
 					
 		replenishmentMapper.updateVnpkWhpkForCatgReplnConsMapper(catgReplnPkConsList, 500, 500);
-		
 		//Assert
     	Mockito.verify(replenishmentMapper,Mockito.times(1)).updateVnpkWhpkForCatgReplnConsMapper(catgReplnPkConsList, vnpk, whpk);
     	
