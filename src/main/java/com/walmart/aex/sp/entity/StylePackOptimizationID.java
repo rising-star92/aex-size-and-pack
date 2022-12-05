@@ -3,6 +3,7 @@ package com.walmart.aex.sp.entity;
 import java.io.Serializable;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 
@@ -26,6 +27,7 @@ public class StylePackOptimizationID implements Serializable{
 	private FineLinePackOptimizationID finelinePackOptimizationID;
 	
 	@Column(name="style_nbr", nullable=false)
+	@Convert(converter = CharConverter.class)
 	private String styleNbr;
 
 }

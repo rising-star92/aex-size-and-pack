@@ -1,13 +1,7 @@
 package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.mapper.FineLineMapperDto;
-import com.walmart.aex.sp.dto.packoptimization.ColorCombinationConstraints;
-import com.walmart.aex.sp.dto.packoptimization.Constraints;
-import com.walmart.aex.sp.dto.packoptimization.CustomerChoice;
-import com.walmart.aex.sp.dto.packoptimization.Fineline;
-import com.walmart.aex.sp.dto.packoptimization.FinelineLevelConstraints;
-import com.walmart.aex.sp.dto.packoptimization.PackOptimizationResponse;
-import com.walmart.aex.sp.dto.packoptimization.RunOptimization;
+import com.walmart.aex.sp.dto.packoptimization.*;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
 import com.walmart.aex.sp.dto.planhierarchy.Style;
@@ -224,10 +218,7 @@ public class PackOptConstraintMapper {
 
         Style styleDto = new Style();
         styleDto.setStyleNbr(fineLineMapperDto.getStyleNbr());
-        styleDto.setConstraints(getConstraints(fineLineMapperDto.getStyleSupplierName(),
-                fineLineMapperDto.getStyleFactoryIds(), fineLineMapperDto.getStyleCountryOfOrigin(),
-                fineLineMapperDto.getStylePortOfOrigin(), fineLineMapperDto.getStyleSinglePackIndicator(),
-                fineLineMapperDto.getStyleColorCombination()));
+        styleDto.setConstraints(getConstraints(fineLineMapperDto, CategoryType.STYLE));
         styleDto.setCustomerChoices(getPackOptCustomerChoice(fineLineMapperDto, styleDto));
         styleDtoList.add(styleDto);
     }
@@ -248,41 +239,64 @@ public class PackOptConstraintMapper {
 
         CustomerChoice customerChoiceDto = new CustomerChoice();
         customerChoiceDto.setCcId(fineLineMapperDto.getCcId());
-        customerChoiceDto.setConstraints(getConstraints(fineLineMapperDto.getCcSupplierName(), fineLineMapperDto.getCcFactoryIds(),
-                fineLineMapperDto.getCcCountryOfOrigin(), fineLineMapperDto.getCcPortOfOrigin(), fineLineMapperDto.getCcSinglePackIndicator(),
-                fineLineMapperDto.getCcColorCombination()));
+        customerChoiceDto.setConstraints(getConstraints(fineLineMapperDto, CategoryType.CUSTOMER_CHOICE));
         customerChoiceDtoList.add(customerChoiceDto);
-    }
-
-    private Constraints getConstraints(String vendorName, String factoryId, String originCountryName,
-                                       String portOfOriginName, Integer singlePackInd, String colorCombination) {
-        Constraints constraints = new Constraints();
-        constraints.setColorCombinationConstraints(new ColorCombinationConstraints(vendorName, factoryId,
-                originCountryName, portOfOriginName, singlePackInd, colorCombination));
-        return constraints;
     }
 
     private Constraints getConstraints(FineLineMapperDto fineLineMapperDto, CategoryType type) {
 
         Constraints constraints = new Constraints();
+        Supplier supplier = new Supplier();
         switch (type) {
             case MERCHANT:
+                supplier.setSupplierName(fineLineMapperDto.getMerchSupplierName());
+                supplier.setSupplierId(fineLineMapperDto.getMerchSupplierNumber9());
+                supplier.setSupplierNumber(fineLineMapperDto.getMerchSupplierNumber6());
+                supplier.setSupplier8Number(fineLineMapperDto.getMerchSupplierNumber8());
                 constraints.setFinelineLevelConstraints(new FinelineLevelConstraints(fineLineMapperDto.getMerchMaxNbrOfPacks(),fineLineMapperDto.getMerchMaxUnitsPerPack()));
-                constraints.setColorCombinationConstraints(new ColorCombinationConstraints(fineLineMapperDto.getMerchSupplierName(), fineLineMapperDto.getMerchFactoryId(),
+                constraints.setColorCombinationConstraints(new ColorCombinationConstraints(supplier, fineLineMapperDto.getMerchFactoryId(),
                         fineLineMapperDto.getMerchOriginCountryName(), fineLineMapperDto.getMerchPortOfOriginName(),
                         fineLineMapperDto.getMerchSinglePackInd(), fineLineMapperDto.getMerchColorCombination()));
                 break;
             case SUB_CATEGORY:
+                supplier.setSupplierName(fineLineMapperDto.getSubCatSupplierName());
+                supplier.setSupplierId(fineLineMapperDto.getSubCatSupplierNumber9());
+                supplier.setSupplierNumber(fineLineMapperDto.getSubCatSupplierNumber6());
+                supplier.setSupplier8Number(fineLineMapperDto.getSubCatSupplierNumber8());
                 constraints.setFinelineLevelConstraints(new FinelineLevelConstraints(fineLineMapperDto.getSubCatMaxNbrOfPacks(),fineLineMapperDto.getSubCatMaxUnitsPerPack()));
-                constraints.setColorCombinationConstraints(new ColorCombinationConstraints(fineLineMapperDto.getSubCatSupplierName(), fineLineMapperDto.getSubCatFactoryId(),
+                constraints.setColorCombinationConstraints(new ColorCombinationConstraints(supplier, fineLineMapperDto.getSubCatFactoryId(),
                         fineLineMapperDto.getSubCatOriginCountryName(), fineLineMapperDto.getSubCatPortOfOriginName(),
                         fineLineMapperDto.getSubCatSinglePackInd(), fineLineMapperDto.getSubCatColorCombination()));
                 break;
-            default:
+            case FINE_LINE:
+                supplier.setSupplierName(fineLineMapperDto.getFineLineSupplierName());
+                supplier.setSupplierId(fineLineMapperDto.getFineLineSupplierNumber9());
+                supplier.setSupplierNumber(fineLineMapperDto.getFineLineSupplierNumber6());
+                supplier.setSupplier8Number(fineLineMapperDto.getFineLineSupplierNumber8());
                 constraints.setFinelineLevelConstraints(new FinelineLevelConstraints(fineLineMapperDto.getFineLineMaxNbrOfPacks(),fineLineMapperDto.getFineLineMaxUnitsPerPack()));
-                constraints.setColorCombinationConstraints(new ColorCombinationConstraints(fineLineMapperDto.getFineLineSupplierName(), fineLineMapperDto.getFineLineFactoryId(),
+                constraints.setColorCombinationConstraints(new ColorCombinationConstraints(supplier, fineLineMapperDto.getFineLineFactoryId(),
                         fineLineMapperDto.getFineLineOriginCountryName(), fineLineMapperDto.getFineLinePortOfOriginName(),
                         fineLineMapperDto.getFineLineSinglePackInd(), fineLineMapperDto.getFineLineColorCombination()));
+                break;
+            case STYLE:
+                supplier.setSupplierName(fineLineMapperDto.getStyleSupplierName());
+                supplier.setSupplierId(fineLineMapperDto.getStyleSupplierNumber9());
+                supplier.setSupplierNumber(fineLineMapperDto.getStyleSupplierNumber6());
+                supplier.setSupplier8Number(fineLineMapperDto.getStyleSupplierNumber8());
+                constraints.setFinelineLevelConstraints(new FinelineLevelConstraints(fineLineMapperDto.getStyleMaxPacks(),fineLineMapperDto.getStyleMaxUnitsPerPack()));
+                constraints.setColorCombinationConstraints(new ColorCombinationConstraints(supplier, fineLineMapperDto.getStyleFactoryIds(),
+                        fineLineMapperDto.getStyleCountryOfOrigin(), fineLineMapperDto.getStylePortOfOrigin(),
+                        fineLineMapperDto.getStyleSinglePackIndicator(), fineLineMapperDto.getStyleColorCombination()));
+                break;
+            default:
+                supplier.setSupplierName(fineLineMapperDto.getCcSupplierName());
+                supplier.setSupplierId(fineLineMapperDto.getCcSupplierNumber9());
+                supplier.setSupplierNumber(fineLineMapperDto.getCcSupplierNumber6());
+                supplier.setSupplier8Number(fineLineMapperDto.getCcSupplierNumber8());
+                constraints.setFinelineLevelConstraints(new FinelineLevelConstraints(fineLineMapperDto.getCcMaxPacks(),fineLineMapperDto.getCcMaxUnitsPerPack()));
+                constraints.setColorCombinationConstraints(new ColorCombinationConstraints(supplier, fineLineMapperDto.getCcFactoryIds(),
+                        fineLineMapperDto.getCcCountryOfOrigin(), fineLineMapperDto.getCcPortOfOrigin(),
+                        fineLineMapperDto.getCcSinglePackIndicator(), fineLineMapperDto.getCcColorCombination()));
                 break;
         }
         return constraints;

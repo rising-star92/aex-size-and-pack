@@ -1,9 +1,24 @@
 package com.walmart.aex.sp.service;
 
+import com.walmart.aex.sp.dto.packoptimization.Constraints;
 import com.walmart.aex.sp.dto.packoptimization.CustomerChoice;
 import com.walmart.aex.sp.dto.packoptimization.Fineline;
-import com.walmart.aex.sp.dto.planhierarchy.*;
-import com.walmart.aex.sp.entity.*;
+import com.walmart.aex.sp.dto.planhierarchy.Lvl1;
+import com.walmart.aex.sp.dto.planhierarchy.Lvl2;
+import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
+import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
+import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDTO;
+import com.walmart.aex.sp.dto.planhierarchy.Style;
+import com.walmart.aex.sp.entity.CcPackOptimization;
+import com.walmart.aex.sp.entity.CcPackOptimizationID;
+import com.walmart.aex.sp.entity.FineLinePackOptimization;
+import com.walmart.aex.sp.entity.FineLinePackOptimizationID;
+import com.walmart.aex.sp.entity.MerchantPackOptimization;
+import com.walmart.aex.sp.entity.MerchantPackOptimizationID;
+import com.walmart.aex.sp.entity.StylePackOptimization;
+import com.walmart.aex.sp.entity.StylePackOptimizationID;
+import com.walmart.aex.sp.entity.SubCatgPackOptimization;
+import com.walmart.aex.sp.entity.SubCatgPackOptimizationID;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.repository.MerchPackOptimizationRepository;
 import com.walmart.aex.sp.util.CommonUtil;
@@ -11,7 +26,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @Service
 @Slf4j
@@ -19,12 +38,14 @@ public class PackOptAddDataMapper {
 
 
     private final SizeAndPackObjectMapper sizeAndPackObjectMapper;
+    private final MerchPackOptimizationRepository merchPackOptimizationRepository;
 
-    public PackOptAddDataMapper(SizeAndPackObjectMapper sizeAndPackObjectMapper) {
+    public PackOptAddDataMapper(SizeAndPackObjectMapper sizeAndPackObjectMapper, MerchPackOptimizationRepository merchPackOptimizationRepository) {
         this.sizeAndPackObjectMapper = sizeAndPackObjectMapper;
+        this.merchPackOptimizationRepository = merchPackOptimizationRepository;
     }
 
-    public Set<MerchantPackOptimization> setMerchCatPackOpt(PlanSizeAndPackDTO request, Lvl1 lvl1, Lvl2 lvl2, Lvl3 lvl3, MerchPackOptimizationRepository merchPackOptimizationRepository) {
+    public Set<MerchantPackOptimization> setMerchCatPackOpt(PlanSizeAndPackDTO request, Lvl1 lvl1, Lvl2 lvl2, Lvl3 lvl3) {
         Set<MerchantPackOptimization> merchCatPackOptSet = new HashSet<>();
         Integer requestChannel = ChannelType.getChannelIdFromName(CommonUtil.getRequestedFlChannel(lvl3));
         List<Integer> channelList = sizeAndPackObjectMapper.getChannelListFromChannelId(requestChannel);
@@ -155,6 +176,21 @@ public class PackOptAddDataMapper {
             ccPackOptimization.setMaxNbrOfPacks(50);
             ccPackOptimization.setMaxUnitsPerPack(36);
             ccPackOptimization.setSinglePackInd(1);
+
+            if (customerChoice.getConstraints() != null) {
+                Constraints constraints = customerChoice.getConstraints();
+                if (constraints.getColorCombinationConstraints() != null) {
+                    ccPackOptimization.setOriginCountryName(constraints.getColorCombinationConstraints().getCountryOfOrigin());
+                    ccPackOptimization.setVendorName(constraints.getColorCombinationConstraints().getSupplier().getSupplierName());
+                    ccPackOptimization.setVendorNbr6(constraints.getColorCombinationConstraints().getSupplier().getSupplierNumber());
+                    ccPackOptimization.setVendorNbr9(constraints.getColorCombinationConstraints().getSupplier().getSupplierId());
+                    ccPackOptimization.setGsmSupplierId(constraints.getColorCombinationConstraints().getSupplier().getSupplier8Number());
+                }
+                if (constraints.getFinelineLevelConstraints() != null) {
+                    ccPackOptimization.setMaxNbrOfPacks(constraints.getFinelineLevelConstraints().getMaxPacks());
+                    ccPackOptimization.setMaxUnitsPerPack(constraints.getFinelineLevelConstraints().getMaxUnitsPerPack());
+                }
+            }
 
             ccPackOptimizationSet.add(ccPackOptimization);
 

@@ -1,7 +1,10 @@
 package com.walmart.aex.sp.service;
 
-import com.walmart.aex.sp.dto.planhierarchy.*;
-import com.walmart.aex.sp.entity.*;
+import com.walmart.aex.sp.dto.planhierarchy.Lvl1;
+import com.walmart.aex.sp.dto.planhierarchy.Lvl2;
+import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
+import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDTO;
+import com.walmart.aex.sp.entity.MerchantPackOptimization;
 import com.walmart.aex.sp.repository.MerchPackOptimizationRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,7 +43,7 @@ public class SizeAndPackPackOptObjectMapperTest {
         Lvl2 lvl2 = lvl1.getLvl2List().get(0);
         Lvl3 lvl3 = lvl2.getLvl3List().get(0);
         Mockito.when(sizeAndPackObjectMapper.getChannelListFromChannelId(1)).thenCallRealMethod();
-        Set<MerchantPackOptimization> merchantPackOptimizationSet = packOptAddDataMapper.setMerchCatPackOpt(planSizeAndPackDTO, lvl1, lvl2, lvl3,merchPackOptimizationRepository);
+        Set<MerchantPackOptimization> merchantPackOptimizationSet = packOptAddDataMapper.setMerchCatPackOpt(planSizeAndPackDTO, lvl1, lvl2, lvl3);
         assertTrue(!merchantPackOptimizationSet.isEmpty());
         List<MerchantPackOptimization> merchantPackOptimizationList = merchantPackOptimizationSet.stream().collect(Collectors.toList());
         assertEquals(100,merchantPackOptimizationList.get(0).getMerchantPackOptimizationID().getPlanId());
