@@ -8,7 +8,16 @@ import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
 import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDTO;
 import com.walmart.aex.sp.dto.planhierarchy.Style;
-import com.walmart.aex.sp.entity.*;
+import com.walmart.aex.sp.entity.CustChoicePlan;
+import com.walmart.aex.sp.entity.CustChoicePlanId;
+import com.walmart.aex.sp.entity.FinelinePlan;
+import com.walmart.aex.sp.entity.FinelinePlanId;
+import com.walmart.aex.sp.entity.MerchCatPlan;
+import com.walmart.aex.sp.entity.MerchCatPlanId;
+import com.walmart.aex.sp.entity.StylePlan;
+import com.walmart.aex.sp.entity.StylePlanId;
+import com.walmart.aex.sp.entity.SubCatPlan;
+import com.walmart.aex.sp.entity.SubCatPlanId;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.repository.MerchCatPlanRepository;
 import com.walmart.aex.sp.util.CommonUtil;
@@ -22,12 +31,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class SizeAndPackObjectMapper {
-    public Set<MerchCatPlan> setMerchCatPlan(PlanSizeAndPackDTO request, Lvl1 lvl1, Lvl2 lvl2, Lvl3 lvl3, MerchCatPlanRepository merchCatPlanRepository) {
+
+    private final MerchCatPlanRepository merchCatPlanRepository;
+
+    public SizeAndPackObjectMapper(MerchCatPlanRepository merchCatPlanRepository) {
+        this.merchCatPlanRepository = merchCatPlanRepository;
+    }
+
+    public Set<MerchCatPlan> setMerchCatPlan(PlanSizeAndPackDTO request, Lvl1 lvl1, Lvl2 lvl2, Lvl3 lvl3) {
         Set<MerchCatPlan> merchCatPlanSet = new HashSet<>();
         Integer finelineChannel = ChannelType.getChannelIdFromName(CommonUtil.getRequestedFlChannel(lvl3));
         List<Integer> channelList = getChannelListFromChannelId(finelineChannel);
@@ -161,38 +176,35 @@ public class SizeAndPackObjectMapper {
         return channelList;
     }
 
-    public Set<MerchCatPlan> updateMerchCatPlan(PlanSizeAndPackDTO request, Lvl1 lvl1, Lvl2 lvl2, Lvl3 lvl3, List<Lvl3> lvl3s, MerchCatPlanRepository merchCatPlanRepository) {
+    public Set<MerchCatPlan> updateMerchCatPlan(PlanSizeAndPackDTO request, Lvl1 lvl1, Lvl2 lvl2, Lvl3 lvl3) {
         Integer finelineChannel = ChannelType.getChannelIdFromName(CommonUtil.getRequestedFlChannel(lvl3));
         List<Integer> channelList = getChannelListFromChannelId(finelineChannel);
 
         List<MerchCatPlan> merchCatPlans = merchCatPlanRepository.findMerchCatPlanByMerchCatPlanId_planIdAndMerchCatPlanId_lvl0NbrAndMerchCatPlanId_lvl1NbrAndMerchCatPlanId_lvl2NbrAndMerchCatPlanId_lvl3Nbr(request.getPlanId(),
                 request.getLvl0Nbr(), lvl1.getLvl1Nbr(), lvl2.getLvl2Nbr(), lvl3.getLvl3Nbr());
 
-        Set<MerchCatPlan> merchCatPlanSet = merchCatPlans.stream().collect(Collectors.toSet());
+        Set<MerchCatPlan> merchCatPlanSet = new HashSet<>(merchCatPlans);
         if (!CollectionUtils.isEmpty(channelList)) {
             channelList.forEach(channelId -> {
                 if (!CollectionUtils.isEmpty(merchCatPlanSet)) {
-                   deleteMerchCatPlan(merchCatPlanSet, lvl3, channelId, merchCatPlanRepository);
+                   deleteMerchCatPlan(merchCatPlanSet, lvl3, channelId);
                 }
             });
         }
-        return setMerchCatPlan(request,lvl1, lvl2, lvl3,merchCatPlanRepository);
+        return setMerchCatPlan(request,lvl1, lvl2, lvl3);
     }
 
-    private Set<MerchCatPlan> deleteMerchCatPlan(Set<MerchCatPlan> merchCatPlanSet, Lvl3 lvl3, Integer channelId, MerchCatPlanRepository merchCatPlanRepository) {
+    private void deleteMerchCatPlan(Set<MerchCatPlan> merchCatPlanSet, Lvl3 lvl3, Integer channelId) {
         deleteMerchSubCatPlan(merchCatPlanSet, lvl3, channelId);
         if (!channelId.equals(3)) {
             MerchCatPlan merchCatPlan = fetchMerchCatPlan(merchCatPlanSet, lvl3.getLvl3Nbr(), channelId);
-            if(merchCatPlan != null) {
-                if (CollectionUtils.isEmpty(merchCatPlan.getSubCatPlans())) {
-                    //Only removing from set is not deleting the entry in the DB. Hence deleting by the ID
-                    merchCatPlanRepository.deleteById(merchCatPlan.getMerchCatPlanId());
-                }
+            if(merchCatPlan != null && CollectionUtils.isEmpty(merchCatPlan.getSubCatPlans())) {
+                //Only removing from set is not deleting the entry in the DB. Hence deleting by the ID
+                merchCatPlanRepository.deleteById(merchCatPlan.getMerchCatPlanId());
             }
             merchCatPlanSet.removeIf(merchCatPlan1 -> CollectionUtils.isEmpty(merchCatPlan1.getSubCatPlans()) && merchCatPlan1.getMerchCatPlanId().getLvl3Nbr().equals(lvl3.getLvl3Nbr()) &&
                     !merchCatPlan1.getMerchCatPlanId().getChannelId().equals(channelId));
         }
-        return merchCatPlanSet;
     }
 
     private void deleteMerchSubCatPlan(Set<MerchCatPlan> merchCatPlanSet, Lvl3 lvl3, Integer channelId) {

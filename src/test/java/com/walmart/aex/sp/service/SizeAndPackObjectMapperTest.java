@@ -23,16 +23,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @ExtendWith(MockitoExtension.class)
-public class SizeAndPackObjectMapperTest {
+class SizeAndPackObjectMapperTest {
 
     @InjectMocks
-    SizeAndPackObjectMapper sizeAndPackObjectMapper;
+    private SizeAndPackObjectMapper sizeAndPackObjectMapper;
 
     @Mock
-    MerchCatPlanRepository merchCatPlanRepository;
+    private MerchCatPlanRepository merchCatPlanRepository;
 
     @Test
     void testAddLinePlanEvents() {
@@ -41,8 +41,8 @@ public class SizeAndPackObjectMapperTest {
         Lvl2 lvl2 = lvl1.getLvl2List().get(0);
         Lvl3 lvl3 = lvl2.getLvl3List().get(0);
         String channel = "store";
-        Set<MerchCatPlan> merchCatPlanSet = sizeAndPackObjectMapper.setMerchCatPlan(planSizeAndPackDTO, lvl1, lvl2, lvl3,merchCatPlanRepository);
-        assertTrue(!merchCatPlanSet.isEmpty());
+        Set<MerchCatPlan> merchCatPlanSet = sizeAndPackObjectMapper.setMerchCatPlan(planSizeAndPackDTO, lvl1, lvl2, lvl3);
+        assertFalse(merchCatPlanSet.isEmpty());
     }
 
     @Test
@@ -76,8 +76,8 @@ public class SizeAndPackObjectMapperTest {
 
         Mockito.when(merchCatPlanRepository.findMerchCatPlanByMerchCatPlanId_planIdAndMerchCatPlanId_lvl0NbrAndMerchCatPlanId_lvl1NbrAndMerchCatPlanId_lvl2NbrAndMerchCatPlanId_lvl3Nbr(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt())).thenReturn(merchCatPlanSetResult);
         Mockito.doNothing().when(merchCatPlanRepository).deleteById(merchCatPlanId2);
-        Set<MerchCatPlan> merchCatPlanSet = sizeAndPackObjectMapper.updateMerchCatPlan(planSizeAndPackDTO, lvl1, lvl2, lvl3, lvl2.getLvl3List(), merchCatPlanRepository);
-        assertTrue(!merchCatPlanSet.isEmpty());
+        Set<MerchCatPlan> merchCatPlanSet = sizeAndPackObjectMapper.updateMerchCatPlan(planSizeAndPackDTO, lvl1, lvl2, lvl3);
+        assertFalse(merchCatPlanSet.isEmpty());
     }
 
      PlanSizeAndPackDTO getPlanSizeAndPackDTOObj() {
