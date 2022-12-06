@@ -1,0 +1,3373 @@
+{
+  "planId": 72,
+  "lvl0Nbr": 50000,
+  "lvl1Nbr": 23,
+  "lvl2Nbr": 3669,
+  "lvl3Nbr": 8244,
+  "lvl4Nbr": 16906,
+  "finelineNbr": 250,
+  "volumeDeviationStrategyLevelSelection": 1,
+  "styles": [
+    {
+      "styleId": "23_250_0_22_1",
+      "styleName": null,
+      "channelType": null,
+      "metrics": null,
+      "initialSet": null,
+      "bumpList": null,
+      "recon": null,
+      "flowStrategy": null,
+      "customerChoices": [
+        {
+          "ccId": "23_250_0_22_1_ANTHRACITE",
+          "ccName": null,
+          "planId": null,
+          "lvl0Nbr": null,
+          "lvl1Nbr": null,
+          "lvl2Nbr": null,
+          "lvl3Nbr": null,
+          "lvl4Nbr": null,
+          "channelType": null,
+          "finelineId": null,
+          "styleId": null,
+          "metrics": null,
+          "fixtures": [
+            {
+              "fixtureType": "WALLS",
+              "fixtureTypeRollupId": 1,
+              "metrics": null,
+              "initialSet": null,
+              "bumpList": null,
+              "recon": null,
+              "clusters": [
+                {
+                  "volClusterDesc": null,
+                  "volClusterLevel": null,
+                  "analyticsClusterId": 1,
+                  "strategyId": null,
+                  "flowStrategy": 3,
+                  "metrics": {
+                    "inStoredate": null,
+                    "markdownDate": null,
+                    "sellingWeeks": null,
+                    "minPresentationUnits": null,
+                    "maxPresentationUnits": null,
+                    "totalStoresAllocated": null,
+                    "storeProductivity": null
+                  },
+                  "initialSet": {
+                    "weeksOfSale": null,
+                    "initialSetUnitsPerFix": 120,
+                    "totalInitialSetUnits": null
+                  },
+                  "bumpList": [],
+                  "recon": null
+                },
+                {
+                  "volClusterDesc": null,
+                  "volClusterLevel": null,
+                  "analyticsClusterId": 2,
+                  "strategyId": null,
+                  "flowStrategy": 3,
+                  "metrics": {
+                    "inStoredate": null,
+                    "markdownDate": null,
+                    "sellingWeeks": null,
+                    "minPresentationUnits": null,
+                    "maxPresentationUnits": null,
+                    "totalStoresAllocated": null,
+                    "storeProductivity": null
+                  },
+                  "initialSet": {
+                    "weeksOfSale": null,
+                    "initialSetUnitsPerFix": 120,
+                    "totalInitialSetUnits": 211
+                  },
+                  "bumpList": [],
+                  "recon": null
+                },
+                {
+                  "volClusterDesc": null,
+                  "volClusterLevel": null,
+                  "analyticsClusterId": 3,
+                  "strategyId": null,
+                  "flowStrategy": 3,
+                  "metrics": {
+                    "inStoredate": null,
+                    "markdownDate": null,
+                    "sellingWeeks": null,
+                    "minPresentationUnits": null,
+                    "maxPresentationUnits": null,
+                    "totalStoresAllocated": null,
+                    "storeProductivity": null
+                  },
+                  "initialSet": {
+                    "weeksOfSale": null,
+                    "initialSetUnitsPerFix": 120,
+                    "totalInitialSetUnits": 91
+                  },
+                  "bumpList": [],
+                  "recon": null
+                },
+                {
+                  "volClusterDesc": null,
+                  "volClusterLevel": null,
+                  "analyticsClusterId": 4,
+                  "strategyId": null,
+                  "flowStrategy": 3,
+                  "metrics": {
+                    "inStoredate": null,
+                    "markdownDate": null,
+                    "sellingWeeks": null,
+                    "minPresentationUnits": null,
+                    "maxPresentationUnits": null,
+                    "totalStoresAllocated": null,
+                    "storeProductivity": null
+                  },
+                  "initialSet": {
+                    "weeksOfSale": null,
+                    "initialSetUnitsPerFix": 120,
+                    "totalInitialSetUnits": 1373
+                  },
+                  "bumpList": [],
+                  "recon": null
+                },
+                {
+                  "volClusterDesc": null,
+                  "volClusterLevel": null,
+                  "analyticsClusterId": 5,
+                  "strategyId": null,
+                  "flowStrategy": 3,
+                  "metrics": {
+                    "inStoredate": null,
+                    "markdownDate": null,
+                    "sellingWeeks": null,
+                    "minPresentationUnits": null,
+                    "maxPresentationUnits": null,
+                    "totalStoresAllocated": null,
+                    "storeProductivity": null
+                  },
+                  "initialSet": {
+                    "weeksOfSale": null,
+                    "initialSetUnitsPerFix": 98,
+                    "totalInitialSetUnits": 932
+                  },
+                  "bumpList": [],
+                  "recon": null
+                }
+              ],
+              "flowStrategy": null,
+              "replenishments": [
+                {
+                  "replnWeek": 12322,
+                  "replnWeekDesc": "FYE2024WK22",
+                  "replnUnits": 2075,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 7510,
+                  "dcInboundUnits": 408,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12323,
+                  "replnWeekDesc": "FYE2024WK23",
+                  "replnUnits": 2193,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 7510,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12324,
+                  "replnWeekDesc": "FYE2024WK24",
+                  "replnUnits": 2262,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 7510,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12325,
+                  "replnWeekDesc": "FYE2024WK25",
+                  "replnUnits": 2286,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 7510,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12326,
+                  "replnWeekDesc": "FYE2024WK26",
+                  "replnUnits": 2405,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 7510,
+                  "dcInboundUnits": 306,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12327,
+                  "replnWeekDesc": "FYE2024WK27",
+                  "replnUnits": 17363,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 7510,
+                  "dcInboundUnits": 2886,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12328,
+                  "replnWeekDesc": "FYE2024WK28",
+                  "replnUnits": 16543,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 7510,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12329,
+                  "replnWeekDesc": "FYE2024WK29",
+                  "replnUnits": 15351,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 7510,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12330,
+                  "replnWeekDesc": "FYE2024WK30",
+                  "replnUnits": 14494,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 7510,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12331,
+                  "replnWeekDesc": "FYE2024WK31",
+                  "replnUnits": 15537,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 7510,
+                  "dcInboundUnits": 1988,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12332,
+                  "replnWeekDesc": "FYE2024WK32",
+                  "replnUnits": 13861,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 7510,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12333,
+                  "replnWeekDesc": "FYE2024WK33",
+                  "replnUnits": 13674,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 7510,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12334,
+                  "replnWeekDesc": "FYE2024WK34",
+                  "replnUnits": 13600,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 7510,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12335,
+                  "replnWeekDesc": "FYE2024WK35",
+                  "replnUnits": 13488,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 7510,
+                  "dcInboundUnits": 1908,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12336,
+                  "replnWeekDesc": "FYE2024WK36",
+                  "replnUnits": 14680,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 7510,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12337,
+                  "replnWeekDesc": "FYE2024WK37",
+                  "replnUnits": 14159,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 7510,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12338,
+                  "replnWeekDesc": "FYE2024WK38",
+                  "replnUnits": 11402,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 7510,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12339,
+                  "replnWeekDesc": "FYE2024WK39",
+                  "replnUnits": 12184,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 7510,
+                  "dcInboundUnits": 726,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12340,
+                  "replnWeekDesc": "FYE2024WK40",
+                  "replnUnits": 9240,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 7510,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12341,
+                  "replnWeekDesc": "FYE2024WK41",
+                  "replnUnits": 10731,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 7510,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12342,
+                  "replnWeekDesc": "FYE2024WK42",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 7510,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12343,
+                  "replnWeekDesc": "FYE2024WK43",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 7510,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12344,
+                  "replnWeekDesc": "FYE2024WK44",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 7510,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12345,
+                  "replnWeekDesc": "FYE2024WK45",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 7510,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12346,
+                  "replnWeekDesc": "FYE2024WK46",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 7510,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12347,
+                  "replnWeekDesc": "FYE2024WK47",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 7510,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12348,
+                  "replnWeekDesc": "FYE2024WK48",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 7510,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12349,
+                  "replnWeekDesc": "FYE2024WK49",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 7510,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12350,
+                  "replnWeekDesc": "FYE2024WK50",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 7510,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12351,
+                  "replnWeekDesc": "FYE2024WK51",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 7510,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12352,
+                  "replnWeekDesc": "FYE2024WK52",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 7510,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                }
+              ],
+              "remainingUnits": 7510
+            },
+            {
+              "fixtureType": "RACKS",
+              "fixtureTypeRollupId": 3,
+              "metrics": null,
+              "initialSet": null,
+              "bumpList": null,
+              "recon": null,
+              "clusters": [
+                {
+                  "volClusterDesc": null,
+                  "volClusterLevel": null,
+                  "analyticsClusterId": 1,
+                  "strategyId": null,
+                  "flowStrategy": 3,
+                  "metrics": {
+                    "inStoredate": null,
+                    "markdownDate": null,
+                    "sellingWeeks": null,
+                    "minPresentationUnits": null,
+                    "maxPresentationUnits": null,
+                    "totalStoresAllocated": null,
+                    "storeProductivity": null
+                  },
+                  "initialSet": {
+                    "weeksOfSale": null,
+                    "initialSetUnitsPerFix": 120,
+                    "totalInitialSetUnits": 4800
+                  },
+                  "bumpList": [],
+                  "recon": null
+                },
+                {
+                  "volClusterDesc": null,
+                  "volClusterLevel": null,
+                  "analyticsClusterId": 2,
+                  "strategyId": null,
+                  "flowStrategy": 3,
+                  "metrics": {
+                    "inStoredate": null,
+                    "markdownDate": null,
+                    "sellingWeeks": null,
+                    "minPresentationUnits": null,
+                    "maxPresentationUnits": null,
+                    "totalStoresAllocated": null,
+                    "storeProductivity": null
+                  },
+                  "initialSet": {
+                    "weeksOfSale": null,
+                    "initialSetUnitsPerFix": 120,
+                    "totalInitialSetUnits": 17903
+                  },
+                  "bumpList": [],
+                  "recon": null
+                },
+                {
+                  "volClusterDesc": null,
+                  "volClusterLevel": null,
+                  "analyticsClusterId": 3,
+                  "strategyId": null,
+                  "flowStrategy": 3,
+                  "metrics": {
+                    "inStoredate": null,
+                    "markdownDate": null,
+                    "sellingWeeks": null,
+                    "minPresentationUnits": null,
+                    "maxPresentationUnits": null,
+                    "totalStoresAllocated": null,
+                    "storeProductivity": null
+                  },
+                  "initialSet": {
+                    "weeksOfSale": null,
+                    "initialSetUnitsPerFix": 120,
+                    "totalInitialSetUnits": 25341
+                  },
+                  "bumpList": [],
+                  "recon": null
+                },
+                {
+                  "volClusterDesc": null,
+                  "volClusterLevel": null,
+                  "analyticsClusterId": 4,
+                  "strategyId": null,
+                  "flowStrategy": 3,
+                  "metrics": {
+                    "inStoredate": null,
+                    "markdownDate": null,
+                    "sellingWeeks": null,
+                    "minPresentationUnits": null,
+                    "maxPresentationUnits": null,
+                    "totalStoresAllocated": null,
+                    "storeProductivity": null
+                  },
+                  "initialSet": {
+                    "weeksOfSale": null,
+                    "initialSetUnitsPerFix": 120,
+                    "totalInitialSetUnits": 10658
+                  },
+                  "bumpList": [],
+                  "recon": null
+                },
+                {
+                  "volClusterDesc": null,
+                  "volClusterLevel": null,
+                  "analyticsClusterId": 5,
+                  "strategyId": null,
+                  "flowStrategy": 3,
+                  "metrics": {
+                    "inStoredate": null,
+                    "markdownDate": null,
+                    "sellingWeeks": null,
+                    "minPresentationUnits": null,
+                    "maxPresentationUnits": null,
+                    "totalStoresAllocated": null,
+                    "storeProductivity": null
+                  },
+                  "initialSet": {
+                    "weeksOfSale": null,
+                    "initialSetUnitsPerFix": 96,
+                    "totalInitialSetUnits": 10767
+                  },
+                  "bumpList": [],
+                  "recon": null
+                }
+              ],
+              "flowStrategy": null,
+              "replenishments": [
+                {
+                  "replnWeek": 12322,
+                  "replnWeekDesc": "FYE2024WK22",
+                  "replnUnits": 2075,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 198804,
+                  "dcInboundUnits": 10812,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12323,
+                  "replnWeekDesc": "FYE2024WK23",
+                  "replnUnits": 2193,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 198804,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12324,
+                  "replnWeekDesc": "FYE2024WK24",
+                  "replnUnits": 2262,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 198804,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12325,
+                  "replnWeekDesc": "FYE2024WK25",
+                  "replnUnits": 2286,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 198804,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12326,
+                  "replnWeekDesc": "FYE2024WK26",
+                  "replnUnits": 2405,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 198804,
+                  "dcInboundUnits": 8119,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12327,
+                  "replnWeekDesc": "FYE2024WK27",
+                  "replnUnits": 17363,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 198804,
+                  "dcInboundUnits": 76401,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12328,
+                  "replnWeekDesc": "FYE2024WK28",
+                  "replnUnits": 16543,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 198804,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12329,
+                  "replnWeekDesc": "FYE2024WK29",
+                  "replnUnits": 15351,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 198804,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12330,
+                  "replnWeekDesc": "FYE2024WK30",
+                  "replnUnits": 14494,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 198804,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12331,
+                  "replnWeekDesc": "FYE2024WK31",
+                  "replnUnits": 15537,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 198804,
+                  "dcInboundUnits": 52634,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12332,
+                  "replnWeekDesc": "FYE2024WK32",
+                  "replnUnits": 13861,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 198804,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12333,
+                  "replnWeekDesc": "FYE2024WK33",
+                  "replnUnits": 13674,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 198804,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12334,
+                  "replnWeekDesc": "FYE2024WK34",
+                  "replnUnits": 13600,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 198804,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12335,
+                  "replnWeekDesc": "FYE2024WK35",
+                  "replnUnits": 13488,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 198804,
+                  "dcInboundUnits": 50516,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12336,
+                  "replnWeekDesc": "FYE2024WK36",
+                  "replnUnits": 14680,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 198804,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12337,
+                  "replnWeekDesc": "FYE2024WK37",
+                  "replnUnits": 14159,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 198804,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12338,
+                  "replnWeekDesc": "FYE2024WK38",
+                  "replnUnits": 11402,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 198804,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12339,
+                  "replnWeekDesc": "FYE2024WK39",
+                  "replnUnits": 12184,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 198804,
+                  "dcInboundUnits": 19244,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12340,
+                  "replnWeekDesc": "FYE2024WK40",
+                  "replnUnits": 9240,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 198804,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12341,
+                  "replnWeekDesc": "FYE2024WK41",
+                  "replnUnits": 10731,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 198804,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12342,
+                  "replnWeekDesc": "FYE2024WK42",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 198804,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12343,
+                  "replnWeekDesc": "FYE2024WK43",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 198804,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12344,
+                  "replnWeekDesc": "FYE2024WK44",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 198804,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12345,
+                  "replnWeekDesc": "FYE2024WK45",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 198804,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12346,
+                  "replnWeekDesc": "FYE2024WK46",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 198804,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12347,
+                  "replnWeekDesc": "FYE2024WK47",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 198804,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12348,
+                  "replnWeekDesc": "FYE2024WK48",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 198804,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12349,
+                  "replnWeekDesc": "FYE2024WK49",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 198804,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12350,
+                  "replnWeekDesc": "FYE2024WK50",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 198804,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12351,
+                  "replnWeekDesc": "FYE2024WK51",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 198804,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12352,
+                  "replnWeekDesc": "FYE2024WK52",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 198804,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                }
+              ],
+              "remainingUnits": 198804
+            }
+          ],
+          "initialSet": null,
+          "bumpList": null,
+          "recon": null,
+          "flowStrategy": null,
+          "replenishments": []
+        },
+        {
+          "ccId": "23_250_0_22_1_BISTRE",
+          "ccName": null,
+          "planId": null,
+          "lvl0Nbr": null,
+          "lvl1Nbr": null,
+          "lvl2Nbr": null,
+          "lvl3Nbr": null,
+          "lvl4Nbr": null,
+          "channelType": null,
+          "finelineId": null,
+          "styleId": null,
+          "metrics": null,
+          "fixtures": [
+            {
+              "fixtureType": "WALLS",
+              "fixtureTypeRollupId": 1,
+              "metrics": null,
+              "initialSet": null,
+              "bumpList": null,
+              "recon": null,
+              "clusters": [
+                {
+                  "volClusterDesc": null,
+                  "volClusterLevel": null,
+                  "analyticsClusterId": 1,
+                  "strategyId": null,
+                  "flowStrategy": 3,
+                  "metrics": {
+                    "inStoredate": null,
+                    "markdownDate": null,
+                    "sellingWeeks": null,
+                    "minPresentationUnits": null,
+                    "maxPresentationUnits": null,
+                    "totalStoresAllocated": null,
+                    "storeProductivity": null
+                  },
+                  "initialSet": {
+                    "weeksOfSale": null,
+                    "initialSetUnitsPerFix": 120,
+                    "totalInitialSetUnits": null
+                  },
+                  "bumpList": [],
+                  "recon": null
+                },
+                {
+                  "volClusterDesc": null,
+                  "volClusterLevel": null,
+                  "analyticsClusterId": 2,
+                  "strategyId": null,
+                  "flowStrategy": 3,
+                  "metrics": {
+                    "inStoredate": null,
+                    "markdownDate": null,
+                    "sellingWeeks": null,
+                    "minPresentationUnits": null,
+                    "maxPresentationUnits": null,
+                    "totalStoresAllocated": null,
+                    "storeProductivity": null
+                  },
+                  "initialSet": {
+                    "weeksOfSale": null,
+                    "initialSetUnitsPerFix": 120,
+                    "totalInitialSetUnits": 210
+                  },
+                  "bumpList": [],
+                  "recon": null
+                },
+                {
+                  "volClusterDesc": null,
+                  "volClusterLevel": null,
+                  "analyticsClusterId": 3,
+                  "strategyId": null,
+                  "flowStrategy": 3,
+                  "metrics": {
+                    "inStoredate": null,
+                    "markdownDate": null,
+                    "sellingWeeks": null,
+                    "minPresentationUnits": null,
+                    "maxPresentationUnits": null,
+                    "totalStoresAllocated": null,
+                    "storeProductivity": null
+                  },
+                  "initialSet": {
+                    "weeksOfSale": null,
+                    "initialSetUnitsPerFix": 120,
+                    "totalInitialSetUnits": 90
+                  },
+                  "bumpList": [],
+                  "recon": null
+                },
+                {
+                  "volClusterDesc": null,
+                  "volClusterLevel": null,
+                  "analyticsClusterId": 4,
+                  "strategyId": null,
+                  "flowStrategy": 3,
+                  "metrics": {
+                    "inStoredate": null,
+                    "markdownDate": null,
+                    "sellingWeeks": null,
+                    "minPresentationUnits": null,
+                    "maxPresentationUnits": null,
+                    "totalStoresAllocated": null,
+                    "storeProductivity": null
+                  },
+                  "initialSet": {
+                    "weeksOfSale": null,
+                    "initialSetUnitsPerFix": 120,
+                    "totalInitialSetUnits": 1380
+                  },
+                  "bumpList": [],
+                  "recon": null
+                },
+                {
+                  "volClusterDesc": null,
+                  "volClusterLevel": null,
+                  "analyticsClusterId": 5,
+                  "strategyId": null,
+                  "flowStrategy": 3,
+                  "metrics": {
+                    "inStoredate": null,
+                    "markdownDate": null,
+                    "sellingWeeks": null,
+                    "minPresentationUnits": null,
+                    "maxPresentationUnits": null,
+                    "totalStoresAllocated": null,
+                    "storeProductivity": null
+                  },
+                  "initialSet": {
+                    "weeksOfSale": null,
+                    "initialSetUnitsPerFix": 102,
+                    "totalInitialSetUnits": 969
+                  },
+                  "bumpList": [],
+                  "recon": null
+                }
+              ],
+              "flowStrategy": null,
+              "replenishments": [
+                {
+                  "replnWeek": 12322,
+                  "replnWeekDesc": "FYE2024WK22",
+                  "replnUnits": 3402,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 5779,
+                  "dcInboundUnits": 824,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12323,
+                  "replnWeekDesc": "FYE2024WK23",
+                  "replnUnits": 3549,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 5779,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12324,
+                  "replnWeekDesc": "FYE2024WK24",
+                  "replnUnits": 3470,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 5779,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12325,
+                  "replnWeekDesc": "FYE2024WK25",
+                  "replnUnits": 3476,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 5779,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12326,
+                  "replnWeekDesc": "FYE2024WK26",
+                  "replnUnits": 3574,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 5779,
+                  "dcInboundUnits": 603,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12327,
+                  "replnWeekDesc": "FYE2024WK27",
+                  "replnUnits": 3466,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 5779,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12328,
+                  "replnWeekDesc": "FYE2024WK28",
+                  "replnUnits": 13419,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 5779,
+                  "dcInboundUnits": 2860,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12329,
+                  "replnWeekDesc": "FYE2024WK29",
+                  "replnUnits": 12228,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 5779,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12330,
+                  "replnWeekDesc": "FYE2024WK30",
+                  "replnUnits": 11462,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 5779,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12331,
+                  "replnWeekDesc": "FYE2024WK31",
+                  "replnUnits": 12398,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 5779,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12332,
+                  "replnWeekDesc": "FYE2024WK32",
+                  "replnUnits": 11093,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 5779,
+                  "dcInboundUnits": 2029,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12333,
+                  "replnWeekDesc": "FYE2024WK33",
+                  "replnUnits": 10752,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 5779,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12334,
+                  "replnWeekDesc": "FYE2024WK34",
+                  "replnUnits": 10525,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 5779,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12335,
+                  "replnWeekDesc": "FYE2024WK35",
+                  "replnUnits": 10440,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 5779,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12336,
+                  "replnWeekDesc": "FYE2024WK36",
+                  "replnUnits": 11291,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 5779,
+                  "dcInboundUnits": 890,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12337,
+                  "replnWeekDesc": "FYE2024WK37",
+                  "replnUnits": 10809,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 5779,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12338,
+                  "replnWeekDesc": "FYE2024WK38",
+                  "replnUnits": 8057,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 5779,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12339,
+                  "replnWeekDesc": "FYE2024WK39",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 5779,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12340,
+                  "replnWeekDesc": "FYE2024WK40",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 5779,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12341,
+                  "replnWeekDesc": "FYE2024WK41",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 5779,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12342,
+                  "replnWeekDesc": "FYE2024WK42",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 5779,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12343,
+                  "replnWeekDesc": "FYE2024WK43",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 5779,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12344,
+                  "replnWeekDesc": "FYE2024WK44",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 5779,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12345,
+                  "replnWeekDesc": "FYE2024WK45",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 5779,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12346,
+                  "replnWeekDesc": "FYE2024WK46",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 5779,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12347,
+                  "replnWeekDesc": "FYE2024WK47",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 5779,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12348,
+                  "replnWeekDesc": "FYE2024WK48",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 5779,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12349,
+                  "replnWeekDesc": "FYE2024WK49",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 5779,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12350,
+                  "replnWeekDesc": "FYE2024WK50",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 5779,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12351,
+                  "replnWeekDesc": "FYE2024WK51",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 5779,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12352,
+                  "replnWeekDesc": "FYE2024WK52",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 5779,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                }
+              ],
+              "remainingUnits": 5779
+            },
+            {
+              "fixtureType": "RACKS",
+              "fixtureTypeRollupId": 3,
+              "metrics": null,
+              "initialSet": null,
+              "bumpList": null,
+              "recon": null,
+              "clusters": [
+                {
+                  "volClusterDesc": null,
+                  "volClusterLevel": null,
+                  "analyticsClusterId": 1,
+                  "strategyId": null,
+                  "flowStrategy": 3,
+                  "metrics": {
+                    "inStoredate": null,
+                    "markdownDate": null,
+                    "sellingWeeks": null,
+                    "minPresentationUnits": null,
+                    "maxPresentationUnits": null,
+                    "totalStoresAllocated": null,
+                    "storeProductivity": null
+                  },
+                  "initialSet": {
+                    "weeksOfSale": null,
+                    "initialSetUnitsPerFix": 120,
+                    "totalInitialSetUnits": 4620
+                  },
+                  "bumpList": [],
+                  "recon": null
+                },
+                {
+                  "volClusterDesc": null,
+                  "volClusterLevel": null,
+                  "analyticsClusterId": 2,
+                  "strategyId": null,
+                  "flowStrategy": 3,
+                  "metrics": {
+                    "inStoredate": null,
+                    "markdownDate": null,
+                    "sellingWeeks": null,
+                    "minPresentationUnits": null,
+                    "maxPresentationUnits": null,
+                    "totalStoresAllocated": null,
+                    "storeProductivity": null
+                  },
+                  "initialSet": {
+                    "weeksOfSale": null,
+                    "initialSetUnitsPerFix": 120,
+                    "totalInitialSetUnits": 17220
+                  },
+                  "bumpList": [],
+                  "recon": null
+                },
+                {
+                  "volClusterDesc": null,
+                  "volClusterLevel": null,
+                  "analyticsClusterId": 3,
+                  "strategyId": null,
+                  "flowStrategy": 3,
+                  "metrics": {
+                    "inStoredate": null,
+                    "markdownDate": null,
+                    "sellingWeeks": null,
+                    "minPresentationUnits": null,
+                    "maxPresentationUnits": null,
+                    "totalStoresAllocated": null,
+                    "storeProductivity": null
+                  },
+                  "initialSet": {
+                    "weeksOfSale": null,
+                    "initialSetUnitsPerFix": 120,
+                    "totalInitialSetUnits": 24390
+                  },
+                  "bumpList": [],
+                  "recon": null
+                },
+                {
+                  "volClusterDesc": null,
+                  "volClusterLevel": null,
+                  "analyticsClusterId": 4,
+                  "strategyId": null,
+                  "flowStrategy": 3,
+                  "metrics": {
+                    "inStoredate": null,
+                    "markdownDate": null,
+                    "sellingWeeks": null,
+                    "minPresentationUnits": null,
+                    "maxPresentationUnits": null,
+                    "totalStoresAllocated": null,
+                    "storeProductivity": null
+                  },
+                  "initialSet": {
+                    "weeksOfSale": null,
+                    "initialSetUnitsPerFix": 120,
+                    "totalInitialSetUnits": 10050
+                  },
+                  "bumpList": [],
+                  "recon": null
+                },
+                {
+                  "volClusterDesc": null,
+                  "volClusterLevel": null,
+                  "analyticsClusterId": 5,
+                  "strategyId": null,
+                  "flowStrategy": 3,
+                  "metrics": {
+                    "inStoredate": null,
+                    "markdownDate": null,
+                    "sellingWeeks": null,
+                    "minPresentationUnits": null,
+                    "maxPresentationUnits": null,
+                    "totalStoresAllocated": null,
+                    "storeProductivity": null
+                  },
+                  "initialSet": {
+                    "weeksOfSale": null,
+                    "initialSetUnitsPerFix": 90,
+                    "totalInitialSetUnits": 9607
+                  },
+                  "bumpList": [],
+                  "recon": null
+                }
+              ],
+              "flowStrategy": null,
+              "replenishments": [
+                {
+                  "replnWeek": 12322,
+                  "replnWeekDesc": "FYE2024WK22",
+                  "replnUnits": 3402,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 116695,
+                  "dcInboundUnits": 16646,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12323,
+                  "replnWeekDesc": "FYE2024WK23",
+                  "replnUnits": 3549,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 116695,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12324,
+                  "replnWeekDesc": "FYE2024WK24",
+                  "replnUnits": 3470,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 116695,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12325,
+                  "replnWeekDesc": "FYE2024WK25",
+                  "replnUnits": 3476,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 116695,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12326,
+                  "replnWeekDesc": "FYE2024WK26",
+                  "replnUnits": 3574,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 116695,
+                  "dcInboundUnits": 12187,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12327,
+                  "replnWeekDesc": "FYE2024WK27",
+                  "replnUnits": 3466,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 116695,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12328,
+                  "replnWeekDesc": "FYE2024WK28",
+                  "replnUnits": 13419,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 116695,
+                  "dcInboundUnits": 57739,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12329,
+                  "replnWeekDesc": "FYE2024WK29",
+                  "replnUnits": 12228,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 116695,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12330,
+                  "replnWeekDesc": "FYE2024WK30",
+                  "replnUnits": 11462,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 116695,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12331,
+                  "replnWeekDesc": "FYE2024WK31",
+                  "replnUnits": 12398,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 116695,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12332,
+                  "replnWeekDesc": "FYE2024WK32",
+                  "replnUnits": 11093,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 116695,
+                  "dcInboundUnits": 40978,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12333,
+                  "replnWeekDesc": "FYE2024WK33",
+                  "replnUnits": 10752,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 116695,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12334,
+                  "replnWeekDesc": "FYE2024WK34",
+                  "replnUnits": 10525,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 116695,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12335,
+                  "replnWeekDesc": "FYE2024WK35",
+                  "replnUnits": 10440,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 116695,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12336,
+                  "replnWeekDesc": "FYE2024WK36",
+                  "replnUnits": 11291,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 116695,
+                  "dcInboundUnits": 17975,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12337,
+                  "replnWeekDesc": "FYE2024WK37",
+                  "replnUnits": 10809,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 116695,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12338,
+                  "replnWeekDesc": "FYE2024WK38",
+                  "replnUnits": 8057,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 116695,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12339,
+                  "replnWeekDesc": "FYE2024WK39",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 116695,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12340,
+                  "replnWeekDesc": "FYE2024WK40",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 116695,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12341,
+                  "replnWeekDesc": "FYE2024WK41",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 116695,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12342,
+                  "replnWeekDesc": "FYE2024WK42",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 116695,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12343,
+                  "replnWeekDesc": "FYE2024WK43",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 116695,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12344,
+                  "replnWeekDesc": "FYE2024WK44",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 116695,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12345,
+                  "replnWeekDesc": "FYE2024WK45",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 116695,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12346,
+                  "replnWeekDesc": "FYE2024WK46",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 116695,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12347,
+                  "replnWeekDesc": "FYE2024WK47",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 116695,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12348,
+                  "replnWeekDesc": "FYE2024WK48",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 116695,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12349,
+                  "replnWeekDesc": "FYE2024WK49",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 116695,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12350,
+                  "replnWeekDesc": "FYE2024WK50",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 116695,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12351,
+                  "replnWeekDesc": "FYE2024WK51",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 116695,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12352,
+                  "replnWeekDesc": "FYE2024WK52",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 116695,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                }
+              ],
+              "remainingUnits": 116695
+            }
+          ],
+          "initialSet": null,
+          "bumpList": null,
+          "recon": null,
+          "flowStrategy": null,
+          "replenishments": []
+        },
+        {
+          "ccId": "23_250_0_22_1_BRNDLE",
+          "ccName": null,
+          "planId": null,
+          "lvl0Nbr": null,
+          "lvl1Nbr": null,
+          "lvl2Nbr": null,
+          "lvl3Nbr": null,
+          "lvl4Nbr": null,
+          "channelType": null,
+          "finelineId": null,
+          "styleId": null,
+          "metrics": null,
+          "fixtures": [
+            {
+              "fixtureType": "WALLS",
+              "fixtureTypeRollupId": 1,
+              "metrics": null,
+              "initialSet": null,
+              "bumpList": null,
+              "recon": null,
+              "clusters": [
+                {
+                  "volClusterDesc": null,
+                  "volClusterLevel": null,
+                  "analyticsClusterId": 1,
+                  "strategyId": null,
+                  "flowStrategy": 3,
+                  "metrics": {
+                    "inStoredate": null,
+                    "markdownDate": null,
+                    "sellingWeeks": null,
+                    "minPresentationUnits": null,
+                    "maxPresentationUnits": null,
+                    "totalStoresAllocated": null,
+                    "storeProductivity": null
+                  },
+                  "initialSet": {
+                    "weeksOfSale": null,
+                    "initialSetUnitsPerFix": 120,
+                    "totalInitialSetUnits": null
+                  },
+                  "bumpList": [],
+                  "recon": null
+                },
+                {
+                  "volClusterDesc": null,
+                  "volClusterLevel": null,
+                  "analyticsClusterId": 2,
+                  "strategyId": null,
+                  "flowStrategy": 3,
+                  "metrics": {
+                    "inStoredate": null,
+                    "markdownDate": null,
+                    "sellingWeeks": null,
+                    "minPresentationUnits": null,
+                    "maxPresentationUnits": null,
+                    "totalStoresAllocated": null,
+                    "storeProductivity": null
+                  },
+                  "initialSet": {
+                    "weeksOfSale": null,
+                    "initialSetUnitsPerFix": 120,
+                    "totalInitialSetUnits": 211
+                  },
+                  "bumpList": [],
+                  "recon": null
+                },
+                {
+                  "volClusterDesc": null,
+                  "volClusterLevel": null,
+                  "analyticsClusterId": 3,
+                  "strategyId": null,
+                  "flowStrategy": 3,
+                  "metrics": {
+                    "inStoredate": null,
+                    "markdownDate": null,
+                    "sellingWeeks": null,
+                    "minPresentationUnits": null,
+                    "maxPresentationUnits": null,
+                    "totalStoresAllocated": null,
+                    "storeProductivity": null
+                  },
+                  "initialSet": {
+                    "weeksOfSale": null,
+                    "initialSetUnitsPerFix": 120,
+                    "totalInitialSetUnits": 91
+                  },
+                  "bumpList": [],
+                  "recon": null
+                },
+                {
+                  "volClusterDesc": null,
+                  "volClusterLevel": null,
+                  "analyticsClusterId": 4,
+                  "strategyId": null,
+                  "flowStrategy": 3,
+                  "metrics": {
+                    "inStoredate": null,
+                    "markdownDate": null,
+                    "sellingWeeks": null,
+                    "minPresentationUnits": null,
+                    "maxPresentationUnits": null,
+                    "totalStoresAllocated": null,
+                    "storeProductivity": null
+                  },
+                  "initialSet": {
+                    "weeksOfSale": null,
+                    "initialSetUnitsPerFix": 120,
+                    "totalInitialSetUnits": 1373
+                  },
+                  "bumpList": [],
+                  "recon": null
+                },
+                {
+                  "volClusterDesc": null,
+                  "volClusterLevel": null,
+                  "analyticsClusterId": 5,
+                  "strategyId": null,
+                  "flowStrategy": 3,
+                  "metrics": {
+                    "inStoredate": null,
+                    "markdownDate": null,
+                    "sellingWeeks": null,
+                    "minPresentationUnits": null,
+                    "maxPresentationUnits": null,
+                    "totalStoresAllocated": null,
+                    "storeProductivity": null
+                  },
+                  "initialSet": {
+                    "weeksOfSale": null,
+                    "initialSetUnitsPerFix": 105,
+                    "totalInitialSetUnits": 999
+                  },
+                  "bumpList": [],
+                  "recon": null
+                }
+              ],
+              "flowStrategy": null,
+              "replenishments": [
+                {
+                  "replnWeek": 12322,
+                  "replnWeekDesc": "FYE2024WK22",
+                  "replnUnits": 4046,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 6485,
+                  "dcInboundUnits": 795,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12323,
+                  "replnWeekDesc": "FYE2024WK23",
+                  "replnUnits": 4220,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 6485,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12324,
+                  "replnWeekDesc": "FYE2024WK24",
+                  "replnUnits": 4127,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 6485,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12325,
+                  "replnWeekDesc": "FYE2024WK25",
+                  "replnUnits": 4133,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 6485,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12326,
+                  "replnWeekDesc": "FYE2024WK26",
+                  "replnUnits": 4249,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 6485,
+                  "dcInboundUnits": 582,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12327,
+                  "replnWeekDesc": "FYE2024WK27",
+                  "replnUnits": 15129,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 6485,
+                  "dcInboundUnits": 2660,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12328,
+                  "replnWeekDesc": "FYE2024WK28",
+                  "replnUnits": 14481,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 6485,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12329,
+                  "replnWeekDesc": "FYE2024WK29",
+                  "replnUnits": 13379,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 6485,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12330,
+                  "replnWeekDesc": "FYE2024WK30",
+                  "replnUnits": 12634,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 6485,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12331,
+                  "replnWeekDesc": "FYE2024WK31",
+                  "replnUnits": 13833,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 6485,
+                  "dcInboundUnits": 1868,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12332,
+                  "replnWeekDesc": "FYE2024WK32",
+                  "replnUnits": 12602,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 6485,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12333,
+                  "replnWeekDesc": "FYE2024WK33",
+                  "replnUnits": 12343,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 6485,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12334,
+                  "replnWeekDesc": "FYE2024WK34",
+                  "replnUnits": 12051,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 6485,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12335,
+                  "replnWeekDesc": "FYE2024WK35",
+                  "replnUnits": 11792,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 6485,
+                  "dcInboundUnits": 1645,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12336,
+                  "replnWeekDesc": "FYE2024WK36",
+                  "replnUnits": 12602,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 6485,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12337,
+                  "replnWeekDesc": "FYE2024WK37",
+                  "replnUnits": 11565,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 6485,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12338,
+                  "replnWeekDesc": "FYE2024WK38",
+                  "replnUnits": 9330,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 6485,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12339,
+                  "replnWeekDesc": "FYE2024WK39",
+                  "replnUnits": 9460,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 6485,
+                  "dcInboundUnits": 307,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12340,
+                  "replnWeekDesc": "FYE2024WK40",
+                  "replnUnits": 8034,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 6485,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12341,
+                  "replnWeekDesc": "FYE2024WK41",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 6485,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12342,
+                  "replnWeekDesc": "FYE2024WK42",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 6485,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12343,
+                  "replnWeekDesc": "FYE2024WK43",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 6485,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12344,
+                  "replnWeekDesc": "FYE2024WK44",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 6485,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12345,
+                  "replnWeekDesc": "FYE2024WK45",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 6485,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12346,
+                  "replnWeekDesc": "FYE2024WK46",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 6485,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12347,
+                  "replnWeekDesc": "FYE2024WK47",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 6485,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12348,
+                  "replnWeekDesc": "FYE2024WK48",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 6485,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12349,
+                  "replnWeekDesc": "FYE2024WK49",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 6485,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12350,
+                  "replnWeekDesc": "FYE2024WK50",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 6485,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12351,
+                  "replnWeekDesc": "FYE2024WK51",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 6485,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12352,
+                  "replnWeekDesc": "FYE2024WK52",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 6485,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                }
+              ],
+              "remainingUnits": 6485
+            },
+            {
+              "fixtureType": "RACKS",
+              "fixtureTypeRollupId": 3,
+              "metrics": null,
+              "initialSet": null,
+              "bumpList": null,
+              "recon": null,
+              "clusters": [
+                {
+                  "volClusterDesc": null,
+                  "volClusterLevel": null,
+                  "analyticsClusterId": 1,
+                  "strategyId": null,
+                  "flowStrategy": 3,
+                  "metrics": {
+                    "inStoredate": null,
+                    "markdownDate": null,
+                    "sellingWeeks": null,
+                    "minPresentationUnits": null,
+                    "maxPresentationUnits": null,
+                    "totalStoresAllocated": null,
+                    "storeProductivity": null
+                  },
+                  "initialSet": {
+                    "weeksOfSale": null,
+                    "initialSetUnitsPerFix": 120,
+                    "totalInitialSetUnits": 4800
+                  },
+                  "bumpList": [],
+                  "recon": null
+                },
+                {
+                  "volClusterDesc": null,
+                  "volClusterLevel": null,
+                  "analyticsClusterId": 2,
+                  "strategyId": null,
+                  "flowStrategy": 3,
+                  "metrics": {
+                    "inStoredate": null,
+                    "markdownDate": null,
+                    "sellingWeeks": null,
+                    "minPresentationUnits": null,
+                    "maxPresentationUnits": null,
+                    "totalStoresAllocated": null,
+                    "storeProductivity": null
+                  },
+                  "initialSet": {
+                    "weeksOfSale": null,
+                    "initialSetUnitsPerFix": 120,
+                    "totalInitialSetUnits": 17903
+                  },
+                  "bumpList": [],
+                  "recon": null
+                },
+                {
+                  "volClusterDesc": null,
+                  "volClusterLevel": null,
+                  "analyticsClusterId": 3,
+                  "strategyId": null,
+                  "flowStrategy": 3,
+                  "metrics": {
+                    "inStoredate": null,
+                    "markdownDate": null,
+                    "sellingWeeks": null,
+                    "minPresentationUnits": null,
+                    "maxPresentationUnits": null,
+                    "totalStoresAllocated": null,
+                    "storeProductivity": null
+                  },
+                  "initialSet": {
+                    "weeksOfSale": null,
+                    "initialSetUnitsPerFix": 120,
+                    "totalInitialSetUnits": 25341
+                  },
+                  "bumpList": [],
+                  "recon": null
+                },
+                {
+                  "volClusterDesc": null,
+                  "volClusterLevel": null,
+                  "analyticsClusterId": 4,
+                  "strategyId": null,
+                  "flowStrategy": 3,
+                  "metrics": {
+                    "inStoredate": null,
+                    "markdownDate": null,
+                    "sellingWeeks": null,
+                    "minPresentationUnits": null,
+                    "maxPresentationUnits": null,
+                    "totalStoresAllocated": null,
+                    "storeProductivity": null
+                  },
+                  "initialSet": {
+                    "weeksOfSale": null,
+                    "initialSetUnitsPerFix": 120,
+                    "totalInitialSetUnits": 10658
+                  },
+                  "bumpList": [],
+                  "recon": null
+                },
+                {
+                  "volClusterDesc": null,
+                  "volClusterLevel": null,
+                  "analyticsClusterId": 5,
+                  "strategyId": null,
+                  "flowStrategy": 3,
+                  "metrics": {
+                    "inStoredate": null,
+                    "markdownDate": null,
+                    "sellingWeeks": null,
+                    "minPresentationUnits": null,
+                    "maxPresentationUnits": null,
+                    "totalStoresAllocated": null,
+                    "storeProductivity": null
+                  },
+                  "initialSet": {
+                    "weeksOfSale": null,
+                    "initialSetUnitsPerFix": 95,
+                    "totalInitialSetUnits": 10655
+                  },
+                  "bumpList": [],
+                  "recon": null
+                }
+              ],
+              "flowStrategy": null,
+              "replenishments": [
+                {
+                  "replnWeek": 12322,
+                  "replnWeekDesc": "FYE2024WK22",
+                  "replnUnits": 4046,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 162750,
+                  "dcInboundUnits": 19979,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12323,
+                  "replnWeekDesc": "FYE2024WK23",
+                  "replnUnits": 4220,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 162750,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12324,
+                  "replnWeekDesc": "FYE2024WK24",
+                  "replnUnits": 4127,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 162750,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12325,
+                  "replnWeekDesc": "FYE2024WK25",
+                  "replnUnits": 4133,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 162750,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12326,
+                  "replnWeekDesc": "FYE2024WK26",
+                  "replnUnits": 4249,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 162750,
+                  "dcInboundUnits": 14628,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12327,
+                  "replnWeekDesc": "FYE2024WK27",
+                  "replnUnits": 15129,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 162750,
+                  "dcInboundUnits": 66795,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12328,
+                  "replnWeekDesc": "FYE2024WK28",
+                  "replnUnits": 14481,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 162750,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12329,
+                  "replnWeekDesc": "FYE2024WK29",
+                  "replnUnits": 13379,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 162750,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12330,
+                  "replnWeekDesc": "FYE2024WK30",
+                  "replnUnits": 12634,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 162750,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12331,
+                  "replnWeekDesc": "FYE2024WK31",
+                  "replnUnits": 13833,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 162750,
+                  "dcInboundUnits": 46919,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12332,
+                  "replnWeekDesc": "FYE2024WK32",
+                  "replnUnits": 12602,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 162750,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12333,
+                  "replnWeekDesc": "FYE2024WK33",
+                  "replnUnits": 12343,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 162750,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12334,
+                  "replnWeekDesc": "FYE2024WK34",
+                  "replnUnits": 12051,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 162750,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12335,
+                  "replnWeekDesc": "FYE2024WK35",
+                  "replnUnits": 11792,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 162750,
+                  "dcInboundUnits": 41311,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12336,
+                  "replnWeekDesc": "FYE2024WK36",
+                  "replnUnits": 12602,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 162750,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12337,
+                  "replnWeekDesc": "FYE2024WK37",
+                  "replnUnits": 11565,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 162750,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12338,
+                  "replnWeekDesc": "FYE2024WK38",
+                  "replnUnits": 9330,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 162750,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12339,
+                  "replnWeekDesc": "FYE2024WK39",
+                  "replnUnits": 9460,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 162750,
+                  "dcInboundUnits": 7726,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12340,
+                  "replnWeekDesc": "FYE2024WK40",
+                  "replnUnits": 8034,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 162750,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12341,
+                  "replnWeekDesc": "FYE2024WK41",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 162750,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12342,
+                  "replnWeekDesc": "FYE2024WK42",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 162750,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12343,
+                  "replnWeekDesc": "FYE2024WK43",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 162750,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12344,
+                  "replnWeekDesc": "FYE2024WK44",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 162750,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12345,
+                  "replnWeekDesc": "FYE2024WK45",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 162750,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12346,
+                  "replnWeekDesc": "FYE2024WK46",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 162750,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12347,
+                  "replnWeekDesc": "FYE2024WK47",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 162750,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12348,
+                  "replnWeekDesc": "FYE2024WK48",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 162750,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12349,
+                  "replnWeekDesc": "FYE2024WK49",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 162750,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12350,
+                  "replnWeekDesc": "FYE2024WK50",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 162750,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12351,
+                  "replnWeekDesc": "FYE2024WK51",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 162750,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12352,
+                  "replnWeekDesc": "FYE2024WK52",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 162750,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                }
+              ],
+              "remainingUnits": 162750
+            }
+          ],
+          "initialSet": null,
+          "bumpList": null,
+          "recon": null,
+          "flowStrategy": null,
+          "replenishments": []
+        },
+        {
+          "ccId": "23_250_0_22_1_KNGROO",
+          "ccName": null,
+          "planId": null,
+          "lvl0Nbr": null,
+          "lvl1Nbr": null,
+          "lvl2Nbr": null,
+          "lvl3Nbr": null,
+          "lvl4Nbr": null,
+          "channelType": null,
+          "finelineId": null,
+          "styleId": null,
+          "metrics": null,
+          "fixtures": [
+            {
+              "fixtureType": "WALLS",
+              "fixtureTypeRollupId": 1,
+              "metrics": null,
+              "initialSet": null,
+              "bumpList": null,
+              "recon": null,
+              "clusters": [
+                {
+                  "volClusterDesc": null,
+                  "volClusterLevel": null,
+                  "analyticsClusterId": 1,
+                  "strategyId": null,
+                  "flowStrategy": 3,
+                  "metrics": {
+                    "inStoredate": null,
+                    "markdownDate": null,
+                    "sellingWeeks": null,
+                    "minPresentationUnits": null,
+                    "maxPresentationUnits": null,
+                    "totalStoresAllocated": null,
+                    "storeProductivity": null
+                  },
+                  "initialSet": {
+                    "weeksOfSale": null,
+                    "initialSetUnitsPerFix": 120,
+                    "totalInitialSetUnits": null
+                  },
+                  "bumpList": [],
+                  "recon": null
+                },
+                {
+                  "volClusterDesc": null,
+                  "volClusterLevel": null,
+                  "analyticsClusterId": 2,
+                  "strategyId": null,
+                  "flowStrategy": 3,
+                  "metrics": {
+                    "inStoredate": null,
+                    "markdownDate": null,
+                    "sellingWeeks": null,
+                    "minPresentationUnits": null,
+                    "maxPresentationUnits": null,
+                    "totalStoresAllocated": null,
+                    "storeProductivity": null
+                  },
+                  "initialSet": {
+                    "weeksOfSale": null,
+                    "initialSetUnitsPerFix": 120,
+                    "totalInitialSetUnits": 210
+                  },
+                  "bumpList": [],
+                  "recon": null
+                },
+                {
+                  "volClusterDesc": null,
+                  "volClusterLevel": null,
+                  "analyticsClusterId": 3,
+                  "strategyId": null,
+                  "flowStrategy": 3,
+                  "metrics": {
+                    "inStoredate": null,
+                    "markdownDate": null,
+                    "sellingWeeks": null,
+                    "minPresentationUnits": null,
+                    "maxPresentationUnits": null,
+                    "totalStoresAllocated": null,
+                    "storeProductivity": null
+                  },
+                  "initialSet": {
+                    "weeksOfSale": null,
+                    "initialSetUnitsPerFix": 120,
+                    "totalInitialSetUnits": 90
+                  },
+                  "bumpList": [],
+                  "recon": null
+                },
+                {
+                  "volClusterDesc": null,
+                  "volClusterLevel": null,
+                  "analyticsClusterId": 4,
+                  "strategyId": null,
+                  "flowStrategy": 3,
+                  "metrics": {
+                    "inStoredate": null,
+                    "markdownDate": null,
+                    "sellingWeeks": null,
+                    "minPresentationUnits": null,
+                    "maxPresentationUnits": null,
+                    "totalStoresAllocated": null,
+                    "storeProductivity": null
+                  },
+                  "initialSet": {
+                    "weeksOfSale": null,
+                    "initialSetUnitsPerFix": 120,
+                    "totalInitialSetUnits": 1380
+                  },
+                  "bumpList": [],
+                  "recon": null
+                },
+                {
+                  "volClusterDesc": null,
+                  "volClusterLevel": null,
+                  "analyticsClusterId": 5,
+                  "strategyId": null,
+                  "flowStrategy": 3,
+                  "metrics": {
+                    "inStoredate": null,
+                    "markdownDate": null,
+                    "sellingWeeks": null,
+                    "minPresentationUnits": null,
+                    "maxPresentationUnits": null,
+                    "totalStoresAllocated": null,
+                    "storeProductivity": null
+                  },
+                  "initialSet": {
+                    "weeksOfSale": null,
+                    "initialSetUnitsPerFix": 100,
+                    "totalInitialSetUnits": 950
+                  },
+                  "bumpList": [],
+                  "recon": null
+                }
+              ],
+              "flowStrategy": null,
+              "replenishments": [
+                {
+                  "replnWeek": 12322,
+                  "replnWeekDesc": "FYE2024WK22",
+                  "replnUnits": 770,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 3884,
+                  "dcInboundUnits": 170,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12323,
+                  "replnWeekDesc": "FYE2024WK23",
+                  "replnUnits": 803,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 3884,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12324,
+                  "replnWeekDesc": "FYE2024WK24",
+                  "replnUnits": 785,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 3884,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12325,
+                  "replnWeekDesc": "FYE2024WK25",
+                  "replnUnits": 787,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 3884,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12326,
+                  "replnWeekDesc": "FYE2024WK26",
+                  "replnUnits": 809,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 3884,
+                  "dcInboundUnits": 124,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12327,
+                  "replnWeekDesc": "FYE2024WK27",
+                  "replnUnits": 785,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 3884,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12328,
+                  "replnWeekDesc": "FYE2024WK28",
+                  "replnUnits": 10141,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 3884,
+                  "dcInboundUnits": 1972,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12329,
+                  "replnWeekDesc": "FYE2024WK29",
+                  "replnUnits": 9219,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 3884,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12330,
+                  "replnWeekDesc": "FYE2024WK30",
+                  "replnUnits": 8624,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 3884,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12331,
+                  "replnWeekDesc": "FYE2024WK31",
+                  "replnUnits": 9457,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 3884,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12332,
+                  "replnWeekDesc": "FYE2024WK32",
+                  "replnUnits": 8327,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 3884,
+                  "dcInboundUnits": 1390,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12333,
+                  "replnWeekDesc": "FYE2024WK33",
+                  "replnUnits": 8029,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 3884,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12334,
+                  "replnWeekDesc": "FYE2024WK34",
+                  "replnUnits": 7851,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 3884,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12335,
+                  "replnWeekDesc": "FYE2024WK35",
+                  "replnUnits": 7732,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 3884,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12336,
+                  "replnWeekDesc": "FYE2024WK36",
+                  "replnUnits": 8654,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 3884,
+                  "dcInboundUnits": 516,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12337,
+                  "replnWeekDesc": "FYE2024WK37",
+                  "replnUnits": 5858,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 3884,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12338,
+                  "replnWeekDesc": "FYE2024WK38",
+                  "replnUnits": 6126,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 3884,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12339,
+                  "replnWeekDesc": "FYE2024WK39",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 3884,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12340,
+                  "replnWeekDesc": "FYE2024WK40",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 3884,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12341,
+                  "replnWeekDesc": "FYE2024WK41",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 3884,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12342,
+                  "replnWeekDesc": "FYE2024WK42",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 3884,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12343,
+                  "replnWeekDesc": "FYE2024WK43",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 3884,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12344,
+                  "replnWeekDesc": "FYE2024WK44",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 3884,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12345,
+                  "replnWeekDesc": "FYE2024WK45",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 3884,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12346,
+                  "replnWeekDesc": "FYE2024WK46",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 3884,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12347,
+                  "replnWeekDesc": "FYE2024WK47",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 3884,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12348,
+                  "replnWeekDesc": "FYE2024WK48",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 3884,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12349,
+                  "replnWeekDesc": "FYE2024WK49",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 3884,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12350,
+                  "replnWeekDesc": "FYE2024WK50",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 3884,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12351,
+                  "replnWeekDesc": "FYE2024WK51",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 3884,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12352,
+                  "replnWeekDesc": "FYE2024WK52",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 3884,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                }
+              ],
+              "remainingUnits": 3884
+            },
+            {
+              "fixtureType": "RACKS",
+              "fixtureTypeRollupId": 3,
+              "metrics": null,
+              "initialSet": null,
+              "bumpList": null,
+              "recon": null,
+              "clusters": [
+                {
+                  "volClusterDesc": null,
+                  "volClusterLevel": null,
+                  "analyticsClusterId": 1,
+                  "strategyId": null,
+                  "flowStrategy": 3,
+                  "metrics": {
+                    "inStoredate": null,
+                    "markdownDate": null,
+                    "sellingWeeks": null,
+                    "minPresentationUnits": null,
+                    "maxPresentationUnits": null,
+                    "totalStoresAllocated": null,
+                    "storeProductivity": null
+                  },
+                  "initialSet": {
+                    "weeksOfSale": null,
+                    "initialSetUnitsPerFix": 120,
+                    "totalInitialSetUnits": 4620
+                  },
+                  "bumpList": [],
+                  "recon": null
+                },
+                {
+                  "volClusterDesc": null,
+                  "volClusterLevel": null,
+                  "analyticsClusterId": 2,
+                  "strategyId": null,
+                  "flowStrategy": 3,
+                  "metrics": {
+                    "inStoredate": null,
+                    "markdownDate": null,
+                    "sellingWeeks": null,
+                    "minPresentationUnits": null,
+                    "maxPresentationUnits": null,
+                    "totalStoresAllocated": null,
+                    "storeProductivity": null
+                  },
+                  "initialSet": {
+                    "weeksOfSale": null,
+                    "initialSetUnitsPerFix": 120,
+                    "totalInitialSetUnits": 17220
+                  },
+                  "bumpList": [],
+                  "recon": null
+                },
+                {
+                  "volClusterDesc": null,
+                  "volClusterLevel": null,
+                  "analyticsClusterId": 3,
+                  "strategyId": null,
+                  "flowStrategy": 3,
+                  "metrics": {
+                    "inStoredate": null,
+                    "markdownDate": null,
+                    "sellingWeeks": null,
+                    "minPresentationUnits": null,
+                    "maxPresentationUnits": null,
+                    "totalStoresAllocated": null,
+                    "storeProductivity": null
+                  },
+                  "initialSet": {
+                    "weeksOfSale": null,
+                    "initialSetUnitsPerFix": 120,
+                    "totalInitialSetUnits": 24390
+                  },
+                  "bumpList": [],
+                  "recon": null
+                },
+                {
+                  "volClusterDesc": null,
+                  "volClusterLevel": null,
+                  "analyticsClusterId": 4,
+                  "strategyId": null,
+                  "flowStrategy": 3,
+                  "metrics": {
+                    "inStoredate": null,
+                    "markdownDate": null,
+                    "sellingWeeks": null,
+                    "minPresentationUnits": null,
+                    "maxPresentationUnits": null,
+                    "totalStoresAllocated": null,
+                    "storeProductivity": null
+                  },
+                  "initialSet": {
+                    "weeksOfSale": null,
+                    "initialSetUnitsPerFix": 120,
+                    "totalInitialSetUnits": 10050
+                  },
+                  "bumpList": [],
+                  "recon": null
+                },
+                {
+                  "volClusterDesc": null,
+                  "volClusterLevel": null,
+                  "analyticsClusterId": 5,
+                  "strategyId": null,
+                  "flowStrategy": 3,
+                  "metrics": {
+                    "inStoredate": null,
+                    "markdownDate": null,
+                    "sellingWeeks": null,
+                    "minPresentationUnits": null,
+                    "maxPresentationUnits": null,
+                    "totalStoresAllocated": null,
+                    "storeProductivity": null
+                  },
+                  "initialSet": {
+                    "weeksOfSale": null,
+                    "initialSetUnitsPerFix": 96,
+                    "totalInitialSetUnits": 10248
+                  },
+                  "bumpList": [],
+                  "recon": null
+                }
+              ],
+              "flowStrategy": null,
+              "replenishments": [
+                {
+                  "replnWeek": 12322,
+                  "replnWeekDesc": "FYE2024WK22",
+                  "replnUnits": 770,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 86129,
+                  "dcInboundUnits": 3783,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12323,
+                  "replnWeekDesc": "FYE2024WK23",
+                  "replnUnits": 803,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 86129,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12324,
+                  "replnWeekDesc": "FYE2024WK24",
+                  "replnUnits": 785,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 86129,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12325,
+                  "replnWeekDesc": "FYE2024WK25",
+                  "replnUnits": 787,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 86129,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12326,
+                  "replnWeekDesc": "FYE2024WK26",
+                  "replnUnits": 809,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 86129,
+                  "dcInboundUnits": 2770,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12327,
+                  "replnWeekDesc": "FYE2024WK27",
+                  "replnUnits": 785,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 86129,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12328,
+                  "replnWeekDesc": "FYE2024WK28",
+                  "replnUnits": 10141,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 86129,
+                  "dcInboundUnits": 43795,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12329,
+                  "replnWeekDesc": "FYE2024WK29",
+                  "replnUnits": 9219,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 86129,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12330,
+                  "replnWeekDesc": "FYE2024WK30",
+                  "replnUnits": 8624,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 86129,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12331,
+                  "replnWeekDesc": "FYE2024WK31",
+                  "replnUnits": 9457,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 86129,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12332,
+                  "replnWeekDesc": "FYE2024WK32",
+                  "replnUnits": 8327,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 86129,
+                  "dcInboundUnits": 30875,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12333,
+                  "replnWeekDesc": "FYE2024WK33",
+                  "replnUnits": 8029,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 86129,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12334,
+                  "replnWeekDesc": "FYE2024WK34",
+                  "replnUnits": 7851,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 86129,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12335,
+                  "replnWeekDesc": "FYE2024WK35",
+                  "replnUnits": 7732,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 86129,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12336,
+                  "replnWeekDesc": "FYE2024WK36",
+                  "replnUnits": 8654,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 86129,
+                  "dcInboundUnits": 11467,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12337,
+                  "replnWeekDesc": "FYE2024WK37",
+                  "replnUnits": 5858,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 86129,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12338,
+                  "replnWeekDesc": "FYE2024WK38",
+                  "replnUnits": 6126,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 86129,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12339,
+                  "replnWeekDesc": "FYE2024WK39",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 86129,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12340,
+                  "replnWeekDesc": "FYE2024WK40",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 86129,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12341,
+                  "replnWeekDesc": "FYE2024WK41",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 86129,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12342,
+                  "replnWeekDesc": "FYE2024WK42",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 86129,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12343,
+                  "replnWeekDesc": "FYE2024WK43",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 86129,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12344,
+                  "replnWeekDesc": "FYE2024WK44",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 86129,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12345,
+                  "replnWeekDesc": "FYE2024WK45",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 86129,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12346,
+                  "replnWeekDesc": "FYE2024WK46",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 86129,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12347,
+                  "replnWeekDesc": "FYE2024WK47",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 86129,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12348,
+                  "replnWeekDesc": "FYE2024WK48",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 86129,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12349,
+                  "replnWeekDesc": "FYE2024WK49",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 86129,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12350,
+                  "replnWeekDesc": "FYE2024WK50",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 86129,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12351,
+                  "replnWeekDesc": "FYE2024WK51",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 86129,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                },
+                {
+                  "replnWeek": 12352,
+                  "replnWeekDesc": "FYE2024WK52",
+                  "replnUnits": 0,
+                  "adjReplnUnits": null,
+                  "remainingUnits": 86129,
+                  "dcInboundUnits": 0,
+                  "dcInboundAdjUnits": 0
+                }
+              ],
+              "remainingUnits": 86129
+            }
+          ],
+          "initialSet": null,
+          "bumpList": null,
+          "recon": null,
+          "flowStrategy": null,
+          "replenishments": []
+        }
+      ],
+      "replenishment": null
+    }
+  ]
+}

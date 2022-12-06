@@ -8,10 +8,7 @@ import com.walmart.aex.sp.service.BuyQuantityMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -99,8 +96,8 @@ public class BuyQtyCommonUtil {
                 : ZERO;
     }
 
-    public static List<Replenishment> getReplenishments(MerchMethodsDto merchMethodsDto, BQFPResponse bqfpResponse, StyleDto styleDto, CustomerChoiceDto customerChoiceDto) {
-        return Optional.ofNullable(bqfpResponse.getStyles())
+    public static List<Replenishment> getReplenishments(List<MerchMethodsDto> merchMethodsDtos, BQFPResponse bqfpResponse, StyleDto styleDto, CustomerChoiceDto customerChoiceDto) {
+        List<Replenishment> replenishments = Optional.ofNullable(bqfpResponse.getStyles())
                 .stream()
                 .flatMap(Collection::stream)
                 .filter(style -> style.getStyleId().equalsIgnoreCase(styleDto.getStyleNbr()))
@@ -113,10 +110,23 @@ public class BuyQtyCommonUtil {
                 .map(CustomerChoice::getFixtures)
                 .stream()
                 .flatMap(Collection::stream)
-                .filter(fixture -> fixture.getFixtureTypeRollupId().equals(merchMethodsDto.getFixtureTypeRollupId()))
-                .findFirst()
+                .filter(fixture -> merchMethodsDtos.stream().map(MerchMethodsDto::getFixtureTypeRollupId).collect(Collectors.toList()).contains(fixture.getFixtureTypeRollupId()))
                 .map(Fixture::getReplenishments)
-                .orElse(new ArrayList<>());
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+        Map<Integer, Replenishment> replnMap = new HashMap<>();
+        replenishments.forEach(rep -> {
+            if (!replnMap.containsKey(rep.getReplnWeek())) {
+                replnMap.put(rep.getReplnWeek(), new Replenishment(rep.getReplnWeek(), rep.getReplnWeekDesc(), 0L, 0L, 0L, 0L, 0L));
+            }
+            Replenishment replnObjectMap = replnMap.get(rep.getReplnWeek());
+            replnObjectMap.setAdjReplnUnits(replnObjectMap.getAdjReplnUnits() + Optional.ofNullable(rep.getAdjReplnUnits()).orElse(0L));
+            replnObjectMap.setReplnUnits(replnObjectMap.getReplnUnits() + Optional.ofNullable(rep.getReplnUnits()).orElse(0L));
+            replnObjectMap.setRemainingUnits(replnObjectMap.getRemainingUnits() + Optional.ofNullable(rep.getRemainingUnits()).orElse(0L));
+            replnObjectMap.setDcInboundAdjUnits(replnObjectMap.getDcInboundUnits() + Optional.ofNullable(rep.getDcInboundUnits()).orElse(0L));
+            replnObjectMap.setDcInboundAdjUnits(replnObjectMap.getDcInboundAdjUnits() + Optional.ofNullable(rep.getDcInboundAdjUnits()).orElse(0L));
+        });
+        return replnMap.values().stream().collect(Collectors.toList());
     }
 
     public static StoreQuantity createStoreQuantity(RFASizePackData rfaSizePackData, double perStoreQty, List<Integer> storeListWithOldQty, double totalUnits, Cluster volumeCluster) {
