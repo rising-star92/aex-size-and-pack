@@ -1,7 +1,12 @@
 package com.walmart.aex.sp.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.walmart.aex.sp.dto.bqfp.Replenishment;
 import com.walmart.aex.sp.entity.*;
 import com.walmart.aex.sp.repository.*;
+import com.walmart.aex.sp.util.AdjustedDCInboundQty;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -20,11 +25,14 @@ public class UpdateReplnConfigMapper {
 	private final CcReplnPkConsRepository ccReplnPkConsRepository;
 	private final CcMmReplnPkConsRepository ccMmReplnPkConsRepository;
 	private final CcSpReplnPkConsRepository ccSpReplnPkConsRepository;
+
+	private final ObjectMapper objectMapper;
 	public UpdateReplnConfigMapper(CatgReplnPkConsRepository catgReplnPkConsRepository, SubCatgReplnPkConsRepository subCatgReplnPkConsRepository,
 	                     FinelineReplnPkConsRepository finelineReplnPkConsRepository,
 	                     StyleReplnPkConsRepository styleReplnConsRepository, CcReplnPkConsRepository ccReplnPkConsRepository,
 	                     CcMmReplnPkConsRepository ccMmReplnPkConsRepository,
-	                     CcSpReplnPkConsRepository ccSpReplnPkConsRepository) {
+	                     CcSpReplnPkConsRepository ccSpReplnPkConsRepository,
+						 ObjectMapper objectMapper) {
 	   this.catgReplnPkConsRepository = catgReplnPkConsRepository;
 	   this.subCatgReplnPkConsRepository = subCatgReplnPkConsRepository;
 	   this.finelineReplnPkConsRepository = finelineReplnPkConsRepository;
@@ -32,6 +40,7 @@ public class UpdateReplnConfigMapper {
 	   this.ccReplnPkConsRepository = ccReplnPkConsRepository;
 	   this.ccMmReplnPkConsRepository = ccMmReplnPkConsRepository;
 	   this.ccSpReplnPkConsRepository = ccSpReplnPkConsRepository;
+	   this.objectMapper = objectMapper;
 	}
   
 	public void updateVnpkWhpkForCatgReplnConsMapper(List<MerchCatgReplPack> catgReplnPkConsList, Integer vnpk, Integer whpk)
@@ -188,7 +197,17 @@ public class UpdateReplnConfigMapper {
 	public void updateVnpkWhpkForCcSpMmReplnPkConsMapper(List<CcSpMmReplPack> ccSpReplnPkConsList, Integer vnpk, Integer whpk)
 	{
 		ccSpReplnPkConsList.forEach(ccSpReplnCons -> {
-			
+			String replObjJson = ccSpReplnCons.getReplenObj();
+			if (replObjJson != null && !replObjJson.isEmpty()) {
+				try {
+					List<Replenishment> replObj = objectMapper.readValue(replObjJson, new TypeReference<>() {
+					});
+					replObj = AdjustedDCInboundQty.updatedAdjustedDcInboundQty(replObj, vnpk);
+					ccSpReplnCons.setReplenObj(objectMapper.writeValueAsString(replObj));
+				} catch (JsonProcessingException e) {
+					log.error("Could not convert Replenishment Object Json for week disaggregation ", e);
+				}
+			}
 			if(vnpk != null)
 				ccSpReplnCons.setVendorPackCnt(vnpk);
 		      

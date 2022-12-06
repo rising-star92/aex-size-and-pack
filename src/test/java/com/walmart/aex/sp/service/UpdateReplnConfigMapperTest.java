@@ -3,17 +3,16 @@ package com.walmart.aex.sp.service;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.walmart.aex.sp.dto.bqfp.Replenishment;
+import com.walmart.aex.sp.repository.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.Spy;
+import org.mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.walmart.aex.sp.entity.CcMmReplPack;
@@ -23,12 +22,6 @@ import com.walmart.aex.sp.entity.FinelineReplPack;
 import com.walmart.aex.sp.entity.MerchCatgReplPack;
 import com.walmart.aex.sp.entity.StyleReplPack;
 import com.walmart.aex.sp.entity.SubCatgReplPack;
-import com.walmart.aex.sp.repository.CatgReplnPkConsRepository;
-import com.walmart.aex.sp.repository.CcMmReplnPkConsRepository;
-import com.walmart.aex.sp.repository.CcReplnPkConsRepository;
-import com.walmart.aex.sp.repository.FinelineReplnPkConsRepository;
-import com.walmart.aex.sp.repository.StyleReplnPkConsRepository;
-import com.walmart.aex.sp.repository.SubCatgReplnPkConsRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UpdateReplnConfigMapperTest {
@@ -70,6 +63,16 @@ public class UpdateReplnConfigMapperTest {
 	
 	@Mock
 	List<CcSpMmReplPack> ccSpReplnPkConsList1;
+
+	@Mock
+	CcSpReplnPkConsRepository ccSpReplnPkConsRepository;
+
+
+	@Captor
+	ArgumentCaptor<CcSpMmReplPack> ccSpMmReplPackArgumentCaptor;
+
+	@Spy
+	private ObjectMapper objectMapper;
 	
 	@Test
 	public void testUpdateVnpkWhpkForStyleReplnConsMapper() {
@@ -140,7 +143,6 @@ public class UpdateReplnConfigMapperTest {
 		ccMmReplnPkConsList.add(cc);
 					
 		replenishmentMapper.updateVnpkWhpkForCatgReplnConsMapper(catgReplnPkConsList, 500, 500);
-		
 		//Assert
     	Mockito.verify(replenishmentMapper,Mockito.times(1)).updateVnpkWhpkForCatgReplnConsMapper(catgReplnPkConsList, vnpk, whpk);
     	
@@ -149,4 +151,31 @@ public class UpdateReplnConfigMapperTest {
     	assertEquals(catgReplnPkConsList.get(0).getVnpkWhpkRatio(), 1d);
     			
 	}
+
+	@Test
+	public void updateVnpkWhpkForCcSpMmReplnPkConsMapperTest() throws JsonProcessingException {
+
+		List<CcSpMmReplPack> ccSpMmReplPacks = new ArrayList<>();
+		CcSpMmReplPack ccSpMmReplPack = new CcSpMmReplPack();
+		ccSpMmReplPack.setReplPackCnt(6);
+		ccSpMmReplPack.setVendorPackCnt(3);
+		ccSpMmReplPack.setWhsePackCnt(2);
+		ccSpMmReplPack.setReplUnits(4);
+		ccSpMmReplPack.setReplenObj("[{\"replnWeek\": 1, " +
+				"\"replnWeekDesc\":\"test\", " +
+				"\"replnUnits\":1," +
+				"\"adjReplnUnits\":1," +
+				"\"remainingUnits\":1," +
+				"\"dcInboundUnits\":1," +
+				"\"dcInboundAdjUnits\":1}]");
+		ccSpMmReplPacks.add(ccSpMmReplPack);
+		replenishmentMapper.updateVnpkWhpkForCcSpMmReplnPkConsMapper(ccSpMmReplPacks, 4,2);
+		Mockito.verify(ccSpReplnPkConsRepository,Mockito.times(1)).save(ccSpMmReplPackArgumentCaptor.capture());
+		CcSpMmReplPack ccSpMmReplPack1 = ccSpMmReplPackArgumentCaptor.getValue();
+		assertNotNull(ccSpMmReplPack1);
+		List<Replenishment> replenishments = Arrays.asList(objectMapper.readValue(ccSpMmReplPack1.getReplenObj(),Replenishment[].class));
+		assertEquals(4, replenishments.get(0).getAdjReplnUnits());
+
+	}
+
 }
