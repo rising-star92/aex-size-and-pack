@@ -172,17 +172,6 @@ public class UpdateReplnConfigMapper {
 	public void updateVnpkWhpkForCcMmReplnPkConsMapper(List<CcMmReplPack> ccMmReplnPkConsList, Integer vnpk, Integer whpk)
 	{
 		ccMmReplnPkConsList.forEach(ccMmReplnPkCons -> {
-			String replObjJson = ccMmReplnPkCons.getReplenObj();
-			if (replObjJson != null && !replObjJson.isEmpty()) {
-				try {
-					List<Replenishment> replObj = objectMapper.readValue(replObjJson, new TypeReference<>() {
-					});
-					replObj = AdjustedDCInboundQty.updatedAdjustedDcInboundQty(replObj, vnpk);
-					ccMmReplnPkCons.setReplenObj(objectMapper.writeValueAsString(replObj));
-				} catch (JsonProcessingException e) {
-					log.error("Could not convert Replenishment Object Json for week disaggregation ", e);
-				}
-			}
 
 			if(vnpk != null)
 				ccMmReplnPkCons.setVendorPackCnt(vnpk);
@@ -208,7 +197,17 @@ public class UpdateReplnConfigMapper {
 	public void updateVnpkWhpkForCcSpMmReplnPkConsMapper(List<CcSpMmReplPack> ccSpReplnPkConsList, Integer vnpk, Integer whpk)
 	{
 		ccSpReplnPkConsList.forEach(ccSpReplnCons -> {
-			
+			String replObjJson = ccSpReplnCons.getReplenObj();
+			if (replObjJson != null && !replObjJson.isEmpty()) {
+				try {
+					List<Replenishment> replObj = objectMapper.readValue(replObjJson, new TypeReference<>() {
+					});
+					replObj = AdjustedDCInboundQty.updatedAdjustedDcInboundQty(replObj, vnpk);
+					ccSpReplnCons.setReplenObj(objectMapper.writeValueAsString(replObj));
+				} catch (JsonProcessingException e) {
+					log.error("Could not convert Replenishment Object Json for week disaggregation ", e);
+				}
+			}
 			if(vnpk != null)
 				ccSpReplnCons.setVendorPackCnt(vnpk);
 		      
