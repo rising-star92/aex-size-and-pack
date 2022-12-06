@@ -125,12 +125,12 @@ class CalculateFinelineBuyQuantityTest {
 //                .get().getSpCustomerChoiceChannelFixtureSize();
 
         assertEquals("Fixture 1 Should have 6 sizes present", 6, fixture1Sizes.size());
-        int fix1xs = 2392; //4201
-        int fix1s = 6235; //11321
-        int fix1m = 11050; //19740
-        int fix1l = 11977; //20627
-        int fix1xl = 7420; //13663
-        int fix1xxl = 4499; //7397
+        int fix1xs = 6593;
+        int fix1s = 17556;
+        int fix1m = 30790;
+        int fix1l = 32604;
+        int fix1xl = 21083;
+        int fix1xxl = 11896;
         int expectedTotalFix1InitialSetQty = IntStream.of(fix1xs, fix1s, fix1m, fix1l, fix1xl, fix1xxl).sum();
         assertUnitValueBySize(fixture1Sizes, "XS", fix1xs, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
         assertUnitValueBySize(fixture1Sizes, "S", fix1s, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);

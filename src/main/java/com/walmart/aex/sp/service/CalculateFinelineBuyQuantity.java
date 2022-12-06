@@ -154,7 +154,7 @@ public class CalculateFinelineBuyQuantity {
         List<SpFineLineChannelFixture> spFineLineChannelFixtures = calculateBuyQtyResponse.getSpFineLineChannelFixtures();
         Map<Integer, List<MerchMethodsDto>> merchCodeMap = new HashMap<>();
         finelineDto.getMerchMethods().stream().filter(mm -> mm != null && mm.getMerchMethodCode() != null).forEach(merch -> {
-            if (!merchCodeMap.containsKey(merch.getMerchMethod()))
+            if (!merchCodeMap.containsKey(merch.getMerchMethodCode()))
                 merchCodeMap.put(merch.getMerchMethodCode(), new ArrayList<>());
             merchCodeMap.get(merch.getMerchMethodCode()).add(merch);
         });
