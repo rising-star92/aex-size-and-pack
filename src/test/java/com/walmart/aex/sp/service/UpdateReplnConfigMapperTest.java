@@ -1,20 +1,8 @@
 package com.walmart.aex.sp.service;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.util.*;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.bqfp.Replenishment;
-import com.walmart.aex.sp.repository.*;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.*;
-import org.mockito.junit.MockitoJUnitRunner;
-
 import com.walmart.aex.sp.entity.CcMmReplPack;
 import com.walmart.aex.sp.entity.CcReplPack;
 import com.walmart.aex.sp.entity.CcSpMmReplPack;
@@ -22,9 +10,35 @@ import com.walmart.aex.sp.entity.FinelineReplPack;
 import com.walmart.aex.sp.entity.MerchCatgReplPack;
 import com.walmart.aex.sp.entity.StyleReplPack;
 import com.walmart.aex.sp.entity.SubCatgReplPack;
+import com.walmart.aex.sp.repository.CatgReplnPkConsRepository;
+import com.walmart.aex.sp.repository.CcMmReplnPkConsRepository;
+import com.walmart.aex.sp.repository.CcReplnPkConsRepository;
+import com.walmart.aex.sp.repository.CcSpReplnPkConsRepository;
+import com.walmart.aex.sp.repository.FinelineReplnPkConsRepository;
+import com.walmart.aex.sp.repository.StyleReplnPkConsRepository;
+import com.walmart.aex.sp.repository.SubCatgReplnPkConsRepository;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@RunWith(MockitoJUnitRunner.class)
-public class UpdateReplnConfigMapperTest {
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.verify;
+
+@ExtendWith(MockitoExtension.class)
+class UpdateReplnConfigMapperTest {
 	
 	private static final Integer vnpk=500;
 	private static final Integer whpk=500;
@@ -32,50 +46,53 @@ public class UpdateReplnConfigMapperTest {
 	
 	@InjectMocks
 	@Spy
-	UpdateReplnConfigMapper replenishmentMapper;
+	private UpdateReplnConfigMapper replenishmentMapper;
 		
 	@Mock
-	StyleReplnPkConsRepository styleReplnConsRepository;
+	private StyleReplnPkConsRepository styleReplnConsRepository;
 	
 	@Mock
-	List<FinelineReplPack> finelineReplnPkConsList;
+	private List<FinelineReplPack> finelineReplnPkConsList;
 	
 	@Mock
-	FinelineReplnPkConsRepository finelineReplnPkConsRepository;
+	private FinelineReplnPkConsRepository finelineReplnPkConsRepository;
 	
 	@Mock
-	CcReplnPkConsRepository ccReplnConsRepository;
+	private CcReplnPkConsRepository ccReplnConsRepository;
 		
 	@Mock
-	List<MerchCatgReplPack> catgReplnPkConsList;
+	private List<MerchCatgReplPack> catgReplnPkConsList;
 	
 	@Mock
-	CatgReplnPkConsRepository catgReplnPkConsRepository;
+	private CatgReplnPkConsRepository catgReplnPkConsRepository;
 	
 	@Mock
-	List<SubCatgReplPack> SubcatgReplnPkConsList;
+	private List<SubCatgReplPack> SubcatgReplnPkConsList;
 	
 	@Mock
-	SubCatgReplnPkConsRepository subCatgReplnPkConsRepository;
+	private SubCatgReplnPkConsRepository subCatgReplnPkConsRepository;
 	
 	@Mock
-	CcMmReplnPkConsRepository ccMmRepln;
+	private CcMmReplnPkConsRepository ccMmRepln;
 	
 	@Mock
-	List<CcSpMmReplPack> ccSpReplnPkConsList1;
+	private List<CcSpMmReplPack> ccSpReplnPkConsList1;
 
 	@Mock
-	CcSpReplnPkConsRepository ccSpReplnPkConsRepository;
+	private CcSpReplnPkConsRepository ccSpReplnPkConsRepository;
+
+	@Spy
+	private ReplenishmentsOptimizationService replenishmentsOptimizationService;
 
 
 	@Captor
-	ArgumentCaptor<CcSpMmReplPack> ccSpMmReplPackArgumentCaptor;
+	private ArgumentCaptor<CcSpMmReplPack> ccSpMmReplPackArgumentCaptor;
 
 	@Spy
 	private ObjectMapper objectMapper;
 	
 	@Test
-	public void testUpdateVnpkWhpkForStyleReplnConsMapper() {
+	void testUpdateVnpkWhpkForStyleReplnConsMapper() {
 		
 		catgReplnPkConsList = new ArrayList<>();
 		MerchCatgReplPack merch = new MerchCatgReplPack();
@@ -144,7 +161,7 @@ public class UpdateReplnConfigMapperTest {
 					
 		replenishmentMapper.updateVnpkWhpkForCatgReplnConsMapper(catgReplnPkConsList, 500, 500);
 		//Assert
-    	Mockito.verify(replenishmentMapper,Mockito.times(1)).updateVnpkWhpkForCatgReplnConsMapper(catgReplnPkConsList, vnpk, whpk);
+    	verify(replenishmentMapper,Mockito.times(1)).updateVnpkWhpkForCatgReplnConsMapper(catgReplnPkConsList, vnpk, whpk);
     	
     	assertEquals(catgReplnPkConsList.get(0).getVendorPackCnt(), 500);    	
     	assertEquals(catgReplnPkConsList.get(0).getWhsePackCnt(), 500);
@@ -153,7 +170,7 @@ public class UpdateReplnConfigMapperTest {
 	}
 
 	@Test
-	public void updateVnpkWhpkForCcSpMmReplnPkConsMapperTest() throws JsonProcessingException {
+	void test_updateVnpkWhpkForCcSpMmReplnPkConsMapperShouldRoundAdjReplnUnits() throws JsonProcessingException {
 
 		List<CcSpMmReplPack> ccSpMmReplPacks = new ArrayList<>();
 		CcSpMmReplPack ccSpMmReplPack = new CcSpMmReplPack();
@@ -161,20 +178,44 @@ public class UpdateReplnConfigMapperTest {
 		ccSpMmReplPack.setVendorPackCnt(3);
 		ccSpMmReplPack.setWhsePackCnt(2);
 		ccSpMmReplPack.setReplUnits(4);
-		ccSpMmReplPack.setReplenObj("[{\"replnWeek\": 1, " +
-				"\"replnWeekDesc\":\"test\", " +
-				"\"replnUnits\":1," +
-				"\"adjReplnUnits\":1," +
-				"\"remainingUnits\":1," +
-				"\"dcInboundUnits\":1," +
-				"\"dcInboundAdjUnits\":1}]");
+		ccSpMmReplPack.setReplenObj("[{\"replnWeek\":1,\"replnWeekDesc\":\"test\",\"replnUnits\":1," +
+				"\"adjReplnUnits\":333,\"remainingUnits\":1,\"dcInboundUnits\":1,\"dcInboundAdjUnits\":1}," +
+				"{\"replnWeek\":2,\"replnWeekDesc\":\"test\",\"replnUnits\":1,\"adjReplnUnits\":100," +
+				"\"remainingUnits\":1,\"dcInboundUnits\":1,\"dcInboundAdjUnits\":1}]");
+
 		ccSpMmReplPacks.add(ccSpMmReplPack);
 		replenishmentMapper.updateVnpkWhpkForCcSpMmReplnPkConsMapper(ccSpMmReplPacks, 4,2);
-		Mockito.verify(ccSpReplnPkConsRepository,Mockito.times(1)).save(ccSpMmReplPackArgumentCaptor.capture());
+		verify(ccSpReplnPkConsRepository,Mockito.times(1)).save(ccSpMmReplPackArgumentCaptor.capture());
 		CcSpMmReplPack ccSpMmReplPack1 = ccSpMmReplPackArgumentCaptor.getValue();
 		assertNotNull(ccSpMmReplPack1);
 		List<Replenishment> replenishments = Arrays.asList(objectMapper.readValue(ccSpMmReplPack1.getReplenObj(),Replenishment[].class));
-		assertEquals(4, replenishments.get(0).getAdjReplnUnits());
+		assertEquals(436, replenishments.get(0).getAdjReplnUnits());
+		assertEquals(0, replenishments.get(1).getAdjReplnUnits());
+
+	}
+
+	@Test
+	void test_updateVnpkWhpkForCcSpMmReplnPkConsMapperShouldSkipRoundingAdjReplnUnits() throws JsonProcessingException {
+
+		List<CcSpMmReplPack> ccSpMmReplPacks = new ArrayList<>();
+		CcSpMmReplPack ccSpMmReplPack = new CcSpMmReplPack();
+		ccSpMmReplPack.setReplPackCnt(6);
+		ccSpMmReplPack.setVendorPackCnt(3);
+		ccSpMmReplPack.setWhsePackCnt(2);
+		ccSpMmReplPack.setReplUnits(4);
+		ccSpMmReplPack.setReplenObj("[{\"replnWeek\":1,\"replnWeekDesc\":\"test\",\"replnUnits\":1," +
+				"\"adjReplnUnits\":300,\"remainingUnits\":1,\"dcInboundUnits\":1,\"dcInboundAdjUnits\":1}," +
+				"{\"replnWeek\":2,\"replnWeekDesc\":\"test\",\"replnUnits\":1,\"adjReplnUnits\":100," +
+				"\"remainingUnits\":1,\"dcInboundUnits\":1,\"dcInboundAdjUnits\":1}]");
+
+		ccSpMmReplPacks.add(ccSpMmReplPack);
+		replenishmentMapper.updateVnpkWhpkForCcSpMmReplnPkConsMapper(ccSpMmReplPacks, 4,2);
+		verify(ccSpReplnPkConsRepository,Mockito.times(1)).save(ccSpMmReplPackArgumentCaptor.capture());
+		CcSpMmReplPack ccSpMmReplPack1 = ccSpMmReplPackArgumentCaptor.getValue();
+		assertNotNull(ccSpMmReplPack1);
+		List<Replenishment> replenishments = Arrays.asList(objectMapper.readValue(ccSpMmReplPack1.getReplenObj(),Replenishment[].class));
+		assertEquals(400, replenishments.get(0).getAdjReplnUnits());
+		assertEquals(0, replenishments.get(1).getAdjReplnUnits());
 
 	}
 
