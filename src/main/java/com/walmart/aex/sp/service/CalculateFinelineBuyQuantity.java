@@ -160,7 +160,7 @@ public class CalculateFinelineBuyQuantity {
         });
         merchCodeMap.forEach((merchMethodCode, merchMethodsDtos) -> {
             // Hard coded for temporary testing of calculating InitialSet, BumpSet and Replenishment
-            FixtureTypeRollUpId fixtureTypeRollUpId = new FixtureTypeRollUpId(1);
+            FixtureTypeRollUpId fixtureTypeRollUpId = new FixtureTypeRollUpId(-1);
             SpFineLineChannelFixtureId spFineLineChannelFixtureId = new SpFineLineChannelFixtureId(fixtureTypeRollUpId, calculateBuyQtyRequest.getPlanId(), calculateBuyQtyRequest.getLvl0Nbr(),
                     calculateBuyQtyRequest.getLvl1Nbr(), calculateBuyQtyRequest.getLvl2Nbr(), calculateBuyQtyParallelRequest.getLvl3Nbr(), calculateBuyQtyParallelRequest.getLvl4Nbr(), finelineDto.getFinelineNbr(), ChannelType.getChannelIdFromName(calculateBuyQtyRequest.getChannel()));
             log.info("Checking if Fineline Chan Fixture Id is existing: {}", spFineLineChannelFixtureId);
@@ -257,14 +257,12 @@ public class CalculateFinelineBuyQuantity {
                     .findFirst().ifPresent(clustersDto -> setReplenishmentSizes(clustersDto, replenishments, storeBuyQtyBySizeId));
         }
         customerChoiceDto.getClusters().forEach(clustersDto -> {
-            merchMethodsDtos.stream().map(MerchMethodsDto::getFixtureTypeRollupId).distinct().forEach(fixture -> {
-                if (!CollectionUtils.isEmpty(clustersDto.getSizes()) && !clustersDto.getClusterID().equals(0)) {
-                    List<RFASizePackData> rfaSizePackDataList = getSizeVolumeClustersFromRfa(apResponse, clustersDto.getClusterID(), styleDto.getStyleNbr(), customerChoiceDto.getCcId(),
-                            FixtureTypeRollup.getFixtureTypeFromId(fixture));
-                    //Set Initial Set and Bump Set for Size Map
-                    getClusterSizes(styleDto, customerChoiceDto, clustersDto, bqfpResponse, storeBuyQtyBySizeId, rfaSizePackDataList);
-                }
-            });
+            if (!CollectionUtils.isEmpty(clustersDto.getSizes()) && !clustersDto.getClusterID().equals(0)) {
+                List<RFASizePackData> rfaSizePackDataList = getSizeVolumeClustersFromRfa(apResponse, clustersDto.getClusterID(), styleDto.getStyleNbr(), customerChoiceDto.getCcId(),
+                        merchMethodsDtos.stream().map(MerchMethodsDto::getFixtureTypeRollupId).distinct().collect(Collectors.toList()));
+                //Set Initial Set and Bump Set for Size Map
+                getClusterSizes(styleDto, customerChoiceDto, clustersDto, bqfpResponse, storeBuyQtyBySizeId, rfaSizePackDataList);
+            }
         });
         Set<SpCustomerChoiceChannelFixtureSize> spCustomerChoiceChannelFixtureSizes = Optional.ofNullable(spCustomerChoiceChannelFixture.getSpCustomerChoiceChannelFixtureSize()).orElse(new HashSet<>());
         Set<CcSpMmReplPack> ccSpMmReplPacks = new HashSet<>();
@@ -413,7 +411,7 @@ public class CalculateFinelineBuyQuantity {
         return bqfpService.getBuyQuantityUnits(bqfpRequest);
     }
 
-    private List<RFASizePackData> getSizeVolumeClustersFromRfa(APResponse apResponse, Integer sizeCluster, String styleNbr, String ccId, String fixtureType) {
+    private List<RFASizePackData> getSizeVolumeClustersFromRfa(APResponse apResponse, Integer sizeCluster, String styleNbr, String ccId, List<Integer> fixtureTypeRollUpIds) {
         return Optional.ofNullable(apResponse)
                 .map(APResponse::getRfaSizePackData)
                 .stream()
@@ -421,7 +419,7 @@ public class CalculateFinelineBuyQuantity {
                 .filter(rfaSizePackData -> rfaSizePackData.getSize_cluster_id().equals(sizeCluster)
                         && rfaSizePackData.getStyle_nbr().equalsIgnoreCase(styleNbr)
                         && rfaSizePackData.getCustomer_choice().equalsIgnoreCase(ccId)
-                        && rfaSizePackData.getFixture_type().equalsIgnoreCase(fixtureType)
+                        && fixtureTypeRollUpIds.contains(FixtureTypeRollup.getFixtureIdFromName(rfaSizePackData.getFixture_type()))
                 )
                 .collect(Collectors.toList());
     }

@@ -79,7 +79,7 @@ class CalculateFinelineBuyQuantityTest {
 
     @BeforeEach
 
-    public void setUp() {
+    void setUp() {
        MockitoAnnotations.openMocks(this);
        calculateInitialSetQuantityService = new CalculateInitialSetQuantityService();
        calculateBumpPackQtyService = new CalculateBumpPackQtyService();
@@ -93,7 +93,7 @@ class CalculateFinelineBuyQuantityTest {
     }
 
     @Test
-    public void initialSetCalculationTest() throws SizeAndPackException, IOException {
+    void initialSetCalculationTest() throws SizeAndPackException, IOException {
        final String path = "/plan72fineline1500";
        BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
        APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
@@ -113,16 +113,11 @@ class CalculateFinelineBuyQuantityTest {
         CalculateBuyQtyResponse response = calculateFinelineBuyQuantity.calculateFinelineBuyQty(request, pRequest, r);
 
         SpFineLineChannelFixture fixture1 = response.getSpFineLineChannelFixtures().stream().
-                filter(f -> f.getSpFineLineChannelFixtureId().getFixtureTypeRollUpId().getFixtureTypeRollupId().equals(1)).findFirst().get();
-//        SpFineLineChannelFixture fixture3 = response.getSpFineLineChannelFixtures().get(1);
+                filter(f -> f.getSpFineLineChannelFixtureId().getFixtureTypeRollUpId().getFixtureTypeRollupId().equals(-1)).findFirst().get();
         Set<SpCustomerChoiceChannelFixtureSize> fixture1Sizes = fixture1
                 .getSpStyleChannelFixtures().stream().findFirst()
                 .get().getSpCustomerChoiceChannelFixture().stream().findFirst()
                 .get().getSpCustomerChoiceChannelFixtureSize();
-//        Set<SpCustomerChoiceChannelFixtureSize> fixture3Sizes = fixture3
-//                .getSpStyleChannelFixtures().stream().findFirst()
-//                .get().getSpCustomerChoiceChannelFixture().stream().findFirst()
-//                .get().getSpCustomerChoiceChannelFixtureSize();
 
         assertEquals("Fixture 1 Should have 6 sizes present", 6, fixture1Sizes.size());
         int fix1xs = 6593;
@@ -139,22 +134,6 @@ class CalculateFinelineBuyQuantityTest {
         assertUnitValueBySize(fixture1Sizes, "XL", fix1xl, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
         assertUnitValueBySize(fixture1Sizes, "XXL", fix1xxl, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
         assertEquals("Fixture 1 Initial Set Qty rollup should be sum of all size values", expectedTotalFix1InitialSetQty, (int) fixture1.getInitialSetQty());
-
-        assertEquals("Fixture 1 Should have 6 sizes present", 6, fixture1Sizes.size());
-        int fix3xs = 2392;
-        int fix3s = 6235;
-        int fix3m = 11050;
-        int fix3l = 11977;
-        int fix3xl = 7420;
-        int fix3xxl = 4499;
-        int expectedTotalFix3InitialSetQty = IntStream.of(fix3xs, fix3s, fix3m, fix3l, fix3xl, fix3xxl).sum();
-//        assertUnitValueBySize(fixture3Sizes, "XS", fix3xs, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
-//        assertUnitValueBySize(fixture3Sizes, "S", fix3s, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
-//        assertUnitValueBySize(fixture3Sizes, "M", fix3m, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
-//        assertUnitValueBySize(fixture3Sizes, "L", fix3l, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
-//        assertUnitValueBySize(fixture3Sizes, "XL", fix3xl, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
-//        assertUnitValueBySize(fixture3Sizes, "XXL", fix3xxl, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
-//        assertEquals("Fixture 1 Initial Set Qty rollup should be sum of all size values", expectedTotalFix3InitialSetQty, (int) fixture3.getInitialSetQty());
     }
 
     @Test
@@ -357,7 +336,7 @@ class CalculateFinelineBuyQuantityTest {
     }
 
     @Test
-    public void multiMerchMethodTest() throws IOException, SizeAndPackException {
+    void multiMerchMethodTest() throws IOException, SizeAndPackException {
         final String path = "/plan72fineline250";
         BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
         APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
@@ -374,5 +353,51 @@ class CalculateFinelineBuyQuantityTest {
 
         CalculateBuyQtyResponse response = calculateFinelineBuyQuantity.calculateFinelineBuyQty(request, pRequest, r);
 
+        SpCustomerChoiceChannelFixture fixture1 = response.getSpFineLineChannelFixtures()
+                                                .stream()
+                                                .map(SpFineLineChannelFixture::getSpStyleChannelFixtures)
+                                                .flatMap(Collection::stream)
+                                                .map(SpStyleChannelFixture::getSpCustomerChoiceChannelFixture)
+                                                .flatMap(Collection::stream)
+                                                .filter(customer -> customer.getSpCustomerChoiceChannelFixtureId().getCustomerChoice().equals("23_250_0_22_1_ANTHRACITE"))
+                                                .findFirst().get();
+        Set<SpCustomerChoiceChannelFixtureSize> fixture1Sizes = fixture1.getSpCustomerChoiceChannelFixtureSize();
+
+        assertEquals("Fixture 1 Should have 16 sizes present", 16, fixture1Sizes.size());
+        int fix30x30 = 11791;
+        int fix40x32 = 11448;
+        int fix36x30 = 17443;
+        int fix38x32 = 14045;
+        int fix40x30 = 11399;
+        int fix44x30 = 9617;
+        int fix42x30 = 11742;
+        int fix38x30 = 13891;
+        int fix32x32 = 17356;
+        int fix34x30 = 17356;
+        int fix34x32 = 18017;
+        int fix36x32 = 14757;
+        int fix29x30 = 7026;
+        int fix30x32 = 11425;
+        int fix33x30 = 7210;
+        int fix32x30 = 17077;
+        int expectedTotalFix1InitialSetQty = IntStream.of(fix30x30, fix40x32, fix36x30, fix38x32, fix40x30, fix44x30, fix42x30,
+                fix38x30, fix32x32, fix34x30, fix34x32, fix36x32, fix29x30, fix30x32, fix33x30, fix32x30).sum();
+        assertUnitValueBySize(fixture1Sizes, "30X30", fix30x30, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
+        assertUnitValueBySize(fixture1Sizes, "40X32", fix40x32, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
+        assertUnitValueBySize(fixture1Sizes, "36X30", fix36x30, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
+        assertUnitValueBySize(fixture1Sizes, "38X32", fix38x32, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
+        assertUnitValueBySize(fixture1Sizes, "40X30", fix40x30, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
+        assertUnitValueBySize(fixture1Sizes, "44X30", fix44x30, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
+        assertUnitValueBySize(fixture1Sizes, "42X30", fix42x30, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
+        assertUnitValueBySize(fixture1Sizes, "38X30", fix38x30, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
+        assertUnitValueBySize(fixture1Sizes, "32X32", fix32x32, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
+        assertUnitValueBySize(fixture1Sizes, "34X30", fix34x30, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
+        assertUnitValueBySize(fixture1Sizes, "34X32", fix34x32, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
+        assertUnitValueBySize(fixture1Sizes, "36X32", fix36x32, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
+        assertUnitValueBySize(fixture1Sizes, "29X30", fix29x30, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
+        assertUnitValueBySize(fixture1Sizes, "30X32", fix30x32, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
+        assertUnitValueBySize(fixture1Sizes, "33X30", fix33x30, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
+        assertUnitValueBySize(fixture1Sizes, "32X30", fix32x30, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
+        assertEquals("Fixture 1 Initial Set Qty rollup should be sum of all size values", expectedTotalFix1InitialSetQty, (int) fixture1.getInitialSetQty());
     }
 }
