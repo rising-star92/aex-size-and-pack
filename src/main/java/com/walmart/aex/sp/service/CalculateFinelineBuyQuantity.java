@@ -123,10 +123,10 @@ public class CalculateFinelineBuyQuantity {
     }
 
     private void deleteExistingFinelineIsBsBuyQty(CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, CalculateBuyQtyResponse calculateBuyQtyResponse) {
-        List<SpFineLineChannelFixture> spFineLineChannelFixtures = calculateBuyQtyResponse.getSpFineLineChannelFixtures();
+        List<SpFineLineChannelFixture> spFineLineChannelFixtures = calculateBuyQtyResponse.getSpFineLineChannelFixtures().stream().filter(spFineLineChannelFixture -> spFineLineChannelFixture.getSpFineLineChannelFixtureId().getFineLineNbr().equals(calculateBuyQtyParallelRequest.getFinelineNbr())).collect(Collectors.toList());
         if (!CollectionUtils.isEmpty(spFineLineChannelFixtures)) {
             log.info("Deleteing IS BS Buy Qty data for Fineline: {}", calculateBuyQtyParallelRequest.getFinelineNbr());
-            spFineLineChannelFixtures.removeIf(spFineLineChannelFixture -> spFineLineChannelFixture.getSpFineLineChannelFixtureId().getFineLineNbr().equals(calculateBuyQtyParallelRequest.getFinelineNbr()));
+            spFineLineChannelFixtureRepository.deleteAll(spFineLineChannelFixtures);
             spFineLineChannelFixtureRepository.flush();
         }
 
