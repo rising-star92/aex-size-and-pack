@@ -14,6 +14,7 @@ import com.walmart.aex.sp.enums.FixtureTypeRollup;
 import com.walmart.aex.sp.enums.VdLevelCode;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.exception.SizeAndPackException;
+import com.walmart.aex.sp.repository.FineLineReplenishmentRepository;
 import com.walmart.aex.sp.repository.MerchCatgReplPackRepository;
 import com.walmart.aex.sp.repository.SpFineLineChannelFixtureRepository;
 import com.walmart.aex.sp.util.BuyQtyCommonUtil;
@@ -40,6 +41,7 @@ public class CalculateFinelineBuyQuantity {
     private final CalculateOnlineFinelineBuyQuantity calculateOnlineFinelineBuyQuantity;
     private final SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository;
     private final MerchCatgReplPackRepository merchCatgReplPackRepository;
+    private final FineLineReplenishmentRepository fineLineReplenishmentRepository;
     private final AddStoreBuyQuantityService addStoreBuyQuantityService;
     private final BuyQuantityConstraintService buyQuantityConstraintService;
 
@@ -50,6 +52,7 @@ public class CalculateFinelineBuyQuantity {
                                         StrategyFetchService strategyFetchService,
                                         SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository,
                                         MerchCatgReplPackRepository merchCatgReplPackRepository,
+                                        FineLineReplenishmentRepository fineLineReplenishmentRepository,
                                         AddStoreBuyQuantityService addStoreBuyQuantityService,
                                         BuyQuantityConstraintService buyQuantityConstraintService) {
         this.bqfpService = bqfpService;
@@ -59,6 +62,7 @@ public class CalculateFinelineBuyQuantity {
         this.calculateOnlineFinelineBuyQuantity = calculateOnlineFinelineBuyQuantity;
         this.spFineLineChannelFixtureRepository = spFineLineChannelFixtureRepository;
         this.merchCatgReplPackRepository = merchCatgReplPackRepository;
+        this.fineLineReplenishmentRepository = fineLineReplenishmentRepository;
         this.addStoreBuyQuantityService = addStoreBuyQuantityService;
         this.buyQuantityConstraintService = buyQuantityConstraintService;
     }
@@ -130,21 +134,21 @@ public class CalculateFinelineBuyQuantity {
             spFineLineChannelFixtureRepository.flush();
         }
 
-        Set<SubCatgReplPack> subCatgReplPacks = Optional.ofNullable(calculateBuyQtyResponse.getMerchCatgReplPacks())
+        Set<FinelineReplPack> finelineReplPacks = Optional.ofNullable(calculateBuyQtyResponse.getMerchCatgReplPacks())
                 .stream()
                 .flatMap(Collection::stream)
                 .filter(merchCatgReplPack -> merchCatgReplPack.getMerchCatgReplPackId().getRepTLvl3().equals(calculateBuyQtyParallelRequest.getLvl3Nbr()))
                 .map(MerchCatgReplPack::getSubReplPack)
                 .flatMap(Collection::stream)
                 .filter(subCatgReplPack -> subCatgReplPack.getSubCatgReplPackId().getRepTLvl4().equals(calculateBuyQtyParallelRequest.getLvl4Nbr()))
+                .map(SubCatgReplPack::getFinelineReplPack)
+                .flatMap(Collection::stream)
+                .filter(finelineReplPack -> finelineReplPack.getFinelineReplPackId().getFinelineNbr().equals(calculateBuyQtyParallelRequest.getFinelineNbr()))
                 .collect(Collectors.toSet());
-        if (!CollectionUtils.isEmpty(subCatgReplPacks)) {
+        if (!CollectionUtils.isEmpty(finelineReplPacks)) {
             log.info("Delete replenishment buy qty for fineline: {}", calculateBuyQtyParallelRequest.getFinelineNbr());
-            subCatgReplPacks.forEach(subCatgReplPack -> {
-                if (!CollectionUtils.isEmpty(subCatgReplPack.getFinelineReplPack())) {
-                    subCatgReplPack.getFinelineReplPack().removeIf(finelineReplPack -> finelineReplPack.getFinelineReplPackId().getFinelineNbr().equals(calculateBuyQtyParallelRequest.getFinelineNbr()));
-                }
-            });
+            fineLineReplenishmentRepository.deleteAll(finelineReplPacks);
+            fineLineReplenishmentRepository.flush();
         }
         merchCatgReplPackRepository.flush();
     }

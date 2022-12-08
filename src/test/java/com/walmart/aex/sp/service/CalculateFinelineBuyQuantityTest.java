@@ -11,6 +11,7 @@ import com.walmart.aex.sp.entity.SpFineLineChannelFixture;
 import com.walmart.aex.sp.entity.SpStyleChannelFixture;
 import com.walmart.aex.sp.exception.SizeAndPackException;
 import com.walmart.aex.sp.properties.BuyQtyProperties;
+import com.walmart.aex.sp.repository.FineLineReplenishmentRepository;
 import com.walmart.aex.sp.repository.MerchCatgReplPackRepository;
 import com.walmart.aex.sp.repository.SpFineLineChannelFixtureRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -66,6 +67,9 @@ class CalculateFinelineBuyQuantityTest {
     @Mock
     private MerchCatgReplPackRepository merchCatgReplPackRepository;
 
+    @Mock
+    private FineLineReplenishmentRepository fineLineReplenishmentRepository;
+
     @InjectMocks
     CalculateOnlineFinelineBuyQuantity calculateOnlineFinelineBuyQuantity;
 
@@ -89,7 +93,7 @@ class CalculateFinelineBuyQuantityTest {
 
        calculateOnlineFinelineBuyQuantity = new  CalculateOnlineFinelineBuyQuantity (mapper, new BuyQtyReplenishmentMapperService(),replenishmentsOptimizationServices );
        calculateFinelineBuyQuantity = new CalculateFinelineBuyQuantity(bqfpService, mapper, new BuyQtyReplenishmentMapperService(), calculateOnlineFinelineBuyQuantity,
-               strategyFetchService,spFineLineChannelFixtureRepository,merchCatgReplPackRepository, addStoreBuyQuantityService, buyQuantityConstraintService);
+               strategyFetchService,spFineLineChannelFixtureRepository,merchCatgReplPackRepository, fineLineReplenishmentRepository, addStoreBuyQuantityService, buyQuantityConstraintService);
     }
 
     @Test
