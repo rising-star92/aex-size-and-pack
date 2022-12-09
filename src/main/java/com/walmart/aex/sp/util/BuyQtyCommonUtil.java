@@ -123,7 +123,7 @@ public class BuyQtyCommonUtil {
             replnObjectMap.setAdjReplnUnits(replnObjectMap.getAdjReplnUnits() + Optional.ofNullable(rep.getAdjReplnUnits()).orElse(0L));
             replnObjectMap.setReplnUnits(replnObjectMap.getReplnUnits() + Optional.ofNullable(rep.getReplnUnits()).orElse(0L));
             replnObjectMap.setRemainingUnits(replnObjectMap.getRemainingUnits() + Optional.ofNullable(rep.getRemainingUnits()).orElse(0L));
-            replnObjectMap.setDcInboundAdjUnits(replnObjectMap.getDcInboundUnits() + Optional.ofNullable(rep.getDcInboundUnits()).orElse(0L));
+            replnObjectMap.setDcInboundUnits(replnObjectMap.getDcInboundUnits() + Optional.ofNullable(rep.getDcInboundUnits()).orElse(0L));
             replnObjectMap.setDcInboundAdjUnits(replnObjectMap.getDcInboundAdjUnits() + Optional.ofNullable(rep.getDcInboundAdjUnits()).orElse(0L));
         });
         return replnMap.values().stream().collect(Collectors.toList());
