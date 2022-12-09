@@ -145,8 +145,4 @@ public interface FinelinePackOptRepository
             " WHERE  merchCatPlan.merchCatPlanId.channelId = ?2 and merchCatPlan.merchCatPlanId.planId =?1")
     List<FineLineMapperDto> findByFinePlanPackOptimizationIDPlanIdAndChannelTextChannelId(Long planId, Integer channelId);
 
-
-
-
-
 }

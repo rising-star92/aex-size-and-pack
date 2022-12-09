@@ -122,7 +122,4 @@ public interface StyleCcPackOptConsRepository extends JpaRepository<CcPackOptimi
             " WHERE  merchCatPlan.merchCatPlanId.channelId = :channelId and merchCatPlan.merchCatPlanId.planId = :planId and fp.finelinePlanId.finelineNbr = :finelineNbr")
     List<PackOptConstraintResponseDTO> findByFinePlanPackOptimizationIDPlanIdAndChannelTextChannelId(Long planId, Integer channelId, Integer finelineNbr);
 
-
-
-
 }
