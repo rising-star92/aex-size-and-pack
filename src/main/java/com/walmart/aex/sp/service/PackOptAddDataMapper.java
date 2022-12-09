@@ -182,16 +182,18 @@ public class PackOptAddDataMapper {
                 if (constraints.getColorCombinationConstraints() != null) {
                     ccPackOptimization.setOriginCountryName(constraints.getColorCombinationConstraints().getCountryOfOrigin());
                     ccPackOptimization.setVendorName(constraints.getColorCombinationConstraints().getSuppliers().get(0).getSupplierName());
-                    ccPackOptimization.setVendorNbr6(constraints.getColorCombinationConstraints().getSuppliers().get(0).getSupplierNumber());
-                    ccPackOptimization.setVendorNbr9(constraints.getColorCombinationConstraints().getSuppliers().get(0).getSupplierId());
-                    ccPackOptimization.setGsmSupplierId(constraints.getColorCombinationConstraints().getSuppliers().get(0).getSupplier8Number());
+                    ccPackOptimization.setVendorNbr6(constraints.getColorCombinationConstraints().getSuppliers().get(0).getVendorNumber6());
+                    ccPackOptimization.setVendorNbr9(constraints.getColorCombinationConstraints().getSuppliers().get(0).getVendorNumber9());
+                    ccPackOptimization.setGsmSupplierId(constraints.getColorCombinationConstraints().getSuppliers().get(0).getGsmSupplierNumber());
                 }
                 if (constraints.getFinelineLevelConstraints() != null) {
                     ccPackOptimization.setMaxNbrOfPacks(constraints.getFinelineLevelConstraints().getMaxPacks());
                     ccPackOptimization.setMaxUnitsPerPack(constraints.getFinelineLevelConstraints().getMaxUnitsPerPack());
                 }
             }
+
             ccPackOptimizationSet.add(ccPackOptimization);
+
         }
         return ccPackOptimizationSet;
     }

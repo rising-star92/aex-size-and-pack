@@ -44,9 +44,9 @@ class PackOptConstraintMapperTest {
         assertEquals(styleNbr, actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getStyleNbr());
         assertEquals(ccId, actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getCustomerChoices().get(0).getCcId());
         assertEquals("PUMA", actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getConstraints().getColorCombinationConstraints().getSuppliers().get(0).getSupplierName());
-        assertEquals(vendorNbr9, actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getConstraints().getColorCombinationConstraints().getSuppliers().get(0).getSupplierId());
-        assertEquals(vendorNbr6, actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getConstraints().getColorCombinationConstraints().getSuppliers().get(0).getSupplierNumber());
-        assertEquals(gsmSupplierId, actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getConstraints().getColorCombinationConstraints().getSuppliers().get(0).getSupplier8Number());
+        assertEquals(vendorNbr9, actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getConstraints().getColorCombinationConstraints().getSuppliers().get(0).getVendorNumber6());
+        assertEquals(vendorNbr6, actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getConstraints().getColorCombinationConstraints().getSuppliers().get(0).getVendorNumber9());
+        assertEquals(gsmSupplierId, actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getConstraints().getColorCombinationConstraints().getSuppliers().get(0).getGsmSupplierNumber());
         assertEquals("123", actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getCustomerChoices().get(0).getConstraints().getColorCombinationConstraints().getFactoryId());
     }
 
@@ -130,9 +130,9 @@ class PackOptConstraintMapperTest {
         fineLineMapperDto.setCcSinglePackIndicator(1);
         fineLineMapperDto.setStyleSinglePackIndicator(1);
         fineLineMapperDto.setCcSupplierName("PUMA");
-        fineLineMapperDto.setCcSupplierNumber9(vendorNbr9);
-        fineLineMapperDto.setCcSupplierNumber6(vendorNbr6);
-        fineLineMapperDto.setCcSupplierNumber8(gsmSupplierId);
+        fineLineMapperDto.setCcVendorNumber9(vendorNbr9);
+        fineLineMapperDto.setCcVendorNumber6(vendorNbr6);
+        fineLineMapperDto.setCcGsmSupplierNumber(gsmSupplierId);
         fineLineMapperDto.setCcFactoryIds("123");
         fineLineMapperDto.setCcCountryOfOrigin("INDIA");
         fineLineMapperDto.setCcPortOfOrigin("INDIA");

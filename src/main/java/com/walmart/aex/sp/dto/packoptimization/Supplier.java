@@ -11,10 +11,10 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Supplier {
     @EqualsAndHashCode.Include
-    private Integer supplierId;
-    private Integer supplier8Number;
+    private Integer vendorNumber6;
+    private Integer gsmSupplierNumber;
     @EqualsAndHashCode.Include
     private String supplierName;
     private String supplierType;
-    private Integer supplierNumber;
+    private Integer vendorNumber9;
 }

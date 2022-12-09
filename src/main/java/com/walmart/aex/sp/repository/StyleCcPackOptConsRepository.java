@@ -24,9 +24,9 @@ public interface StyleCcPackOptConsRepository extends JpaRepository<CcPackOptimi
             "fp.altFinelineName,\n" +
             "sp.stylePlanId.styleNbr, " +
             "spk.vendorName as styleSupplierName , " +
-            "spk.vendorNbr6 as styleSupplierNumber6 , " +
-            "spk.gsmSupplierId as styleSupplierNumber8 , " +
-            "spk.vendorNbr9 as styleSupplierNumber9 , " +
+            "spk.vendorNbr6 as styleVendorNumber6 , " +
+            "spk.gsmSupplierId as styleGsmSupplierNumber , " +
+            "spk.vendorNbr9 as styleVendorNumber9 , " +
             "spk.factoryId as styleFactoryIds , " +
             "spk.originCountryName as styleCountryOfOrigin , " +
             "spk.portOfOriginName as stylePortOfOrigin , " +
@@ -36,9 +36,9 @@ public interface StyleCcPackOptConsRepository extends JpaRepository<CcPackOptimi
             "spk.maxNbrOfPacks as styleMaxPacks , " +
             "ccp.custChoicePlanId.ccId , " +
             "cpk.vendorName as ccSupplierName , " +
-            "cpk.vendorNbr6 as ccSupplierNumber6 , " +
-            "cpk.gsmSupplierId as ccSupplierNumber8 , " +
-            "cpk.vendorNbr9 as ccSupplierNumber9 , " +
+            "cpk.vendorNbr6 as ccVendorNumber6 , " +
+            "cpk.gsmSupplierId as ccGsmSupplierNumber , " +
+            "cpk.vendorNbr9 as ccVendorNumber9 , " +
             "cpk.factoryId as ccFactoryIds , " +
             "cpk.originCountryName as ccCountryOfOrigin , " +
             "cpk.portOfOriginName as ccPortOfOrigin , " +
