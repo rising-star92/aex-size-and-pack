@@ -4,11 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class ColorCombinationConstraints {
-    private Supplier supplier;
+    private List<Supplier> suppliers;
     private String factoryId;
     private String countryOfOrigin;
     private String portOfOrigin;
