@@ -109,10 +109,11 @@ class PackOptimizationServiceTest {
 		Lvl3 lvl3= new Lvl3();
 		Supplier supplier = new Supplier();
 		supplier.setSupplierName("Vendor Name");
+		List<Supplier> suppliers = List.of(supplier);
 
 		ColorCombinationConstraints colorCombinationConstraints = new ColorCombinationConstraints();
 		colorCombinationConstraints.setFactoryId("120, 121");
-		colorCombinationConstraints.setSupplier(supplier);
+		colorCombinationConstraints.setSuppliers(suppliers);
 		FinelineLevelConstraints finelineLevelConstraints = new FinelineLevelConstraints();
 		finelineLevelConstraints.setMaxPacks(50);
 		Constraints constraints = new Constraints();
@@ -141,7 +142,7 @@ class PackOptimizationServiceTest {
 		assertEquals(362L, packOptResponse.getPlanId());
 
 		assertEquals("120, 121", packOptResponse.getLvl3List().get(0).getConstraints().getColorCombinationConstraints().getFactoryId());
-		assertEquals("Vendor Name", packOptResponse.getLvl3List().get(0).getConstraints().getColorCombinationConstraints().getSupplier().getSupplierName());
+		assertEquals("Vendor Name", packOptResponse.getLvl3List().get(0).getConstraints().getColorCombinationConstraints().getSuppliers().get(0).getSupplierName());
 		assertEquals(50, packOptResponse.getLvl3List().get(0).getConstraints().getFinelineLevelConstraints().getMaxPacks());
 	}
 
@@ -166,9 +167,10 @@ class PackOptimizationServiceTest {
 
 		Supplier supplier = new Supplier();
 		supplier.setSupplierName("NIKE");
+		List<Supplier> suppliers = List.of(supplier);
 
 		ColorCombinationConstraints colorCombinationConstraint = new ColorCombinationConstraints();
-		colorCombinationConstraint.setSupplier(supplier);
+		colorCombinationConstraint.setSuppliers(suppliers);
 
 		Constraints constraint = new Constraints();
 		constraint.setColorCombinationConstraints(colorCombinationConstraint);
@@ -208,7 +210,7 @@ class PackOptimizationServiceTest {
 
 		assertNotNull(packOptResponse);
 		assertEquals(362L, packOptResponse.getPlanId());
-		assertEquals("NIKE", packOptResponse.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getConstraints().getColorCombinationConstraints().getSupplier().getSupplierName());
+		assertEquals("NIKE", packOptResponse.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getConstraints().getColorCombinationConstraints().getSuppliers().get(0).getSupplierName());
 	}
 
 	@Test

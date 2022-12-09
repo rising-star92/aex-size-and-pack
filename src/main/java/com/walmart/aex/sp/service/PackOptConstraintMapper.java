@@ -18,18 +18,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @Slf4j
 public class PackOptConstraintMapper {
+
+    Map<String, Set<Supplier>> supplierMap;
 
     public PackOptimizationResponse packOptDetails(
             List<FineLineMapperDto> fineLineMapperDtos) {
@@ -45,27 +40,28 @@ public class PackOptConstraintMapper {
     }
 
     private List<FineLineMapperDto> updateSupplierNames(List<FineLineMapperDto> finePlanPackOptimizationList) {
+        supplierMap = new LinkedHashMap<>();
         List<FineLineMapperDto> fineLineMapperDtoList;
         fineLineMapperDtoList = updateFineLineLevelSuppliers(finePlanPackOptimizationList);
-        fineLineMapperDtoList = updateStyleLevelSuppliers(fineLineMapperDtoList);
+        if (fineLineMapperDtoList.stream().filter(fineLineMapperDto -> fineLineMapperDto.getStyleNbr() != null).count() > 0)
+            fineLineMapperDtoList = updateStyleLevelSuppliers(fineLineMapperDtoList);
         return fineLineMapperDtoList;
     }
 
     private List<FineLineMapperDto> updateFineLineLevelSuppliers(List<FineLineMapperDto> finePlanPackOptimizationList) {
-        Map<Integer, Set<String>> fineLineSupplierMap = new LinkedHashMap<>();
         Map<Integer, Set<String>> fineLineCountryOfOrigin = new LinkedHashMap<>();
         Map<Integer, Set<String>> fineLinePortOfOrigin = new LinkedHashMap<>();
         Map<Integer, Set<String>> fineLineFactoryId = new LinkedHashMap<>();
         List<FineLineMapperDto> fineLineMapperDtoList = new ArrayList<>();
 
         finePlanPackOptimizationList.forEach(fineLineMapperDto -> {
-            fineLineSupplierMap.putIfAbsent(fineLineMapperDto.getFineLineNbr(), new LinkedHashSet<>());
+            supplierMap.putIfAbsent(fineLineMapperDto.getFineLineNbr().toString(), new LinkedHashSet<>());
             fineLineCountryOfOrigin.putIfAbsent(fineLineMapperDto.getFineLineNbr(), new LinkedHashSet<>());
             fineLinePortOfOrigin.putIfAbsent(fineLineMapperDto.getFineLineNbr(), new LinkedHashSet<>());
             fineLineFactoryId.putIfAbsent(fineLineMapperDto.getFineLineNbr(), new LinkedHashSet<>());
 
             if(StringUtils.isNotEmpty(fineLineMapperDto.getCcSupplierName())) {
-                addValue(fineLineSupplierMap, fineLineMapperDto.getFineLineNbr(), fineLineMapperDto.getCcSupplierName());
+                addSuppliers(fineLineMapperDto.getFineLineNbr().toString(), fineLineMapperDto);
             }
             if(StringUtils.isNotEmpty(fineLineMapperDto.getCcCountryOfOrigin())) {
                 addValue(fineLineCountryOfOrigin, fineLineMapperDto.getFineLineNbr(), fineLineMapperDto.getCcCountryOfOrigin());
@@ -80,7 +76,6 @@ public class PackOptConstraintMapper {
         });
 
         finePlanPackOptimizationList.forEach(fineLineMapperDto -> {
-            fineLineMapperDto.setFineLineSupplierName(prepareConcatString(fineLineSupplierMap, fineLineMapperDto.getFineLineNbr()));
             fineLineMapperDto.setFineLineOriginCountryName(prepareConcatString(fineLineCountryOfOrigin, fineLineMapperDto.getFineLineNbr()));
             fineLineMapperDto.setFineLinePortOfOriginName(prepareConcatString(fineLinePortOfOrigin, fineLineMapperDto.getFineLineNbr()));
             fineLineMapperDto.setFineLineFactoryId(prepareConcatString(fineLineFactoryId, fineLineMapperDto.getFineLineNbr()));
@@ -115,8 +110,14 @@ public class PackOptConstraintMapper {
         });
     }
 
+    private void addSuppliers(String key, FineLineMapperDto fineLineMapperDto) {
+        supplierMap.computeIfPresent(key, (k, v) -> {
+            v.add(new Supplier(fineLineMapperDto.getCcSupplierNumber9(), fineLineMapperDto.getCcSupplierNumber8(), fineLineMapperDto.getCcSupplierName(), null, fineLineMapperDto.getCcSupplierNumber6()));
+            return v;
+        });
+    }
+
     private List<FineLineMapperDto> updateStyleLevelSuppliers(List<FineLineMapperDto> finePlanPackOptimizationList) {
-        Map<String, Set<String>> styleSupplierMap = new LinkedHashMap<>();
         Map<String, Set<String>> styleCountryOfOrigin = new LinkedHashMap<>();
         Map<String, Set<String>> stylePortOfOrigin = new LinkedHashMap<>();
         Map<String, Set<String>> styleFactoryId  = new LinkedHashMap<>();
@@ -124,13 +125,13 @@ public class PackOptConstraintMapper {
         List<FineLineMapperDto> fineLineMapperDtoList = new ArrayList<>();
 
         finePlanPackOptimizationList.forEach(fineLineMapperDto -> {
-            styleSupplierMap.putIfAbsent(fineLineMapperDto.getStyleNbr(), new LinkedHashSet<>());
+            supplierMap.putIfAbsent(fineLineMapperDto.getStyleNbr(), new LinkedHashSet<>());
             styleCountryOfOrigin.putIfAbsent(fineLineMapperDto.getStyleNbr(), new LinkedHashSet<>());
             stylePortOfOrigin.putIfAbsent(fineLineMapperDto.getStyleNbr(), new LinkedHashSet<>());
             styleFactoryId.putIfAbsent(fineLineMapperDto.getStyleNbr(), new LinkedHashSet<>());
 
             if(StringUtils.isNotEmpty(fineLineMapperDto.getCcSupplierName())) {
-                addValue(styleSupplierMap, fineLineMapperDto.getStyleNbr(), fineLineMapperDto.getCcSupplierName());
+                addSuppliers(fineLineMapperDto.getStyleNbr(), fineLineMapperDto);
             }
             if(StringUtils.isNotEmpty(fineLineMapperDto.getCcCountryOfOrigin())) {
                 addValue(styleCountryOfOrigin, fineLineMapperDto.getStyleNbr(), fineLineMapperDto.getCcCountryOfOrigin());
@@ -144,7 +145,6 @@ public class PackOptConstraintMapper {
 
         });
         finePlanPackOptimizationList.forEach(fineLineMapperDto -> {
-            fineLineMapperDto.setStyleSupplierName(prepareConcatString(styleSupplierMap, fineLineMapperDto.getStyleNbr()));
             fineLineMapperDto.setStyleCountryOfOrigin(prepareConcatString(styleCountryOfOrigin, fineLineMapperDto.getStyleNbr()));
             fineLineMapperDto.setStylePortOfOrigin(prepareConcatString(stylePortOfOrigin, fineLineMapperDto.getStyleNbr()));
             fineLineMapperDto.setStyleFactoryIds(prepareConcatString(styleFactoryId, fineLineMapperDto.getStyleNbr()));
@@ -306,55 +306,39 @@ public class PackOptConstraintMapper {
     private Constraints getConstraints(FineLineMapperDto fineLineMapperDto, CategoryType type) {
 
         Constraints constraints = new Constraints();
-        Supplier supplier = new Supplier();
+        List<Supplier> suppliers = new ArrayList<>();
         switch (type) {
             case MERCHANT:
-                supplier.setSupplierName(fineLineMapperDto.getMerchSupplierName());
-                supplier.setSupplierId(fineLineMapperDto.getMerchSupplierNumber9());
-                supplier.setSupplierNumber(fineLineMapperDto.getMerchSupplierNumber6());
-                supplier.setSupplier8Number(fineLineMapperDto.getMerchSupplierNumber8());
                 constraints.setFinelineLevelConstraints(new FinelineLevelConstraints(fineLineMapperDto.getMerchMaxNbrOfPacks(),fineLineMapperDto.getMerchMaxUnitsPerPack()));
-                constraints.setColorCombinationConstraints(new ColorCombinationConstraints(supplier, fineLineMapperDto.getMerchFactoryId(),
+                constraints.setColorCombinationConstraints(new ColorCombinationConstraints(suppliers, fineLineMapperDto.getMerchFactoryId(),
                         fineLineMapperDto.getMerchOriginCountryName(), fineLineMapperDto.getMerchPortOfOriginName(),
                         fineLineMapperDto.getMerchSinglePackInd(), fineLineMapperDto.getMerchColorCombination()));
                 break;
             case SUB_CATEGORY:
-                supplier.setSupplierName(fineLineMapperDto.getSubCatSupplierName());
-                supplier.setSupplierId(fineLineMapperDto.getSubCatSupplierNumber9());
-                supplier.setSupplierNumber(fineLineMapperDto.getSubCatSupplierNumber6());
-                supplier.setSupplier8Number(fineLineMapperDto.getSubCatSupplierNumber8());
                 constraints.setFinelineLevelConstraints(new FinelineLevelConstraints(fineLineMapperDto.getSubCatMaxNbrOfPacks(),fineLineMapperDto.getSubCatMaxUnitsPerPack()));
-                constraints.setColorCombinationConstraints(new ColorCombinationConstraints(supplier, fineLineMapperDto.getSubCatFactoryId(),
+                constraints.setColorCombinationConstraints(new ColorCombinationConstraints(suppliers, fineLineMapperDto.getSubCatFactoryId(),
                         fineLineMapperDto.getSubCatOriginCountryName(), fineLineMapperDto.getSubCatPortOfOriginName(),
                         fineLineMapperDto.getSubCatSinglePackInd(), fineLineMapperDto.getSubCatColorCombination()));
                 break;
             case FINE_LINE:
-                supplier.setSupplierName(fineLineMapperDto.getFineLineSupplierName());
-                supplier.setSupplierId(fineLineMapperDto.getFineLineSupplierNumber9());
-                supplier.setSupplierNumber(fineLineMapperDto.getFineLineSupplierNumber6());
-                supplier.setSupplier8Number(fineLineMapperDto.getFineLineSupplierNumber8());
+                suppliers.addAll(supplierMap.get(fineLineMapperDto.getFineLineNbr().toString()));
                 constraints.setFinelineLevelConstraints(new FinelineLevelConstraints(fineLineMapperDto.getFineLineMaxNbrOfPacks(),fineLineMapperDto.getFineLineMaxUnitsPerPack()));
-                constraints.setColorCombinationConstraints(new ColorCombinationConstraints(supplier, fineLineMapperDto.getFineLineFactoryId(),
+                constraints.setColorCombinationConstraints(new ColorCombinationConstraints(suppliers, fineLineMapperDto.getFineLineFactoryId(),
                         fineLineMapperDto.getFineLineOriginCountryName(), fineLineMapperDto.getFineLinePortOfOriginName(),
                         fineLineMapperDto.getFineLineSinglePackInd(), fineLineMapperDto.getFineLineColorCombination()));
                 break;
             case STYLE:
-                supplier.setSupplierName(fineLineMapperDto.getStyleSupplierName());
-                supplier.setSupplierId(fineLineMapperDto.getStyleSupplierNumber9());
-                supplier.setSupplierNumber(fineLineMapperDto.getStyleSupplierNumber6());
-                supplier.setSupplier8Number(fineLineMapperDto.getStyleSupplierNumber8());
+                if (supplierMap.containsKey(fineLineMapperDto.getStyleNbr()))
+                    suppliers.addAll(supplierMap.get(fineLineMapperDto.getStyleNbr()));
                 constraints.setFinelineLevelConstraints(new FinelineLevelConstraints(fineLineMapperDto.getStyleMaxPacks(),fineLineMapperDto.getStyleMaxUnitsPerPack()));
-                constraints.setColorCombinationConstraints(new ColorCombinationConstraints(supplier, fineLineMapperDto.getStyleFactoryIds(),
+                constraints.setColorCombinationConstraints(new ColorCombinationConstraints(suppliers, fineLineMapperDto.getStyleFactoryIds(),
                         fineLineMapperDto.getStyleCountryOfOrigin(), fineLineMapperDto.getStylePortOfOrigin(),
                         fineLineMapperDto.getStyleSinglePackIndicator(), fineLineMapperDto.getStyleColorCombination()));
                 break;
             default:
-                supplier.setSupplierName(fineLineMapperDto.getCcSupplierName());
-                supplier.setSupplierId(fineLineMapperDto.getCcSupplierNumber9());
-                supplier.setSupplierNumber(fineLineMapperDto.getCcSupplierNumber6());
-                supplier.setSupplier8Number(fineLineMapperDto.getCcSupplierNumber8());
+                suppliers.add(new Supplier(fineLineMapperDto.getCcSupplierNumber9(), fineLineMapperDto.getCcSupplierNumber8(), fineLineMapperDto.getCcSupplierName(), null, fineLineMapperDto.getCcSupplierNumber6()));
                 constraints.setFinelineLevelConstraints(new FinelineLevelConstraints(fineLineMapperDto.getCcMaxPacks(),fineLineMapperDto.getCcMaxUnitsPerPack()));
-                constraints.setColorCombinationConstraints(new ColorCombinationConstraints(supplier, fineLineMapperDto.getCcFactoryIds(),
+                constraints.setColorCombinationConstraints(new ColorCombinationConstraints(suppliers, fineLineMapperDto.getCcFactoryIds(),
                         fineLineMapperDto.getCcCountryOfOrigin(), fineLineMapperDto.getCcPortOfOrigin(),
                         fineLineMapperDto.getCcSinglePackIndicator(), fineLineMapperDto.getCcColorCombination()));
                 break;
@@ -362,4 +346,5 @@ public class PackOptConstraintMapper {
         return constraints;
 
     }
+
 }

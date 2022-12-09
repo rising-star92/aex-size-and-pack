@@ -206,7 +206,7 @@ type CcLevelConstraints {
 }
 
 type ColorCombinationConstraints {
-    supplier: Supplier
+    suppliers: [Supplier]
     factoryId: String
     countryOfOrigin: String
     portOfOrigin: String

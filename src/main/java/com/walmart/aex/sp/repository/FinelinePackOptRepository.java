@@ -64,6 +64,9 @@ public interface FinelinePackOptRepository
             "fineLinePackOpt.colorCombination,\n" +
             "cpk.ccPackOptimizationId.customerChoice, \n" +
             "cpk.vendorName as ccSupplierName , " +
+            "cpk.vendorNbr6 as ccSupplierNumber6 , " +
+            "cpk.gsmSupplierId as ccSupplierNumber8 , " +
+            "cpk.vendorNbr9 as ccSupplierNumber9 , " +
             "cpk.factoryId as ccFactoryIds , " +
             "cpk.originCountryName as ccCountryOfOrigin , " +
             "cpk.portOfOriginName as ccPortOfOrigin , " +
