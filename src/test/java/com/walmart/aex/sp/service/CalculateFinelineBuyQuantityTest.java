@@ -117,7 +117,7 @@ class CalculateFinelineBuyQuantityTest {
         CalculateBuyQtyResponse response = calculateFinelineBuyQuantity.calculateFinelineBuyQty(request, pRequest, r);
 
         SpFineLineChannelFixture fixture1 = response.getSpFineLineChannelFixtures().stream().
-                filter(f -> f.getSpFineLineChannelFixtureId().getFixtureTypeRollUpId().getFixtureTypeRollupId().equals(-1)).findFirst().get();
+                filter(f -> f.getSpFineLineChannelFixtureId().getFixtureTypeRollUpId().getFixtureTypeRollupId().equals(1)).findFirst().get();
         Set<SpCustomerChoiceChannelFixtureSize> fixture1Sizes = fixture1
                 .getSpStyleChannelFixtures().stream().findFirst()
                 .get().getSpCustomerChoiceChannelFixture().stream().findFirst()
