@@ -97,6 +97,7 @@ public class CalculateBuyQuantityService {
                         calculateBuyQtyResponse =  calculateFinelineBuyQuantity.calculateFinelineBuyQty(calculateBuyQtyRequest, calculateBuyQtyParallelRequest, calculateBuyQtyResponse);
 
                         Set<SpFineLineChannelFixture> spFineLineChannelFixturesSet = calculateBuyQtyResponse.getSpFineLineChannelFixtures().stream().collect(Collectors.toSet());
+                        deleteFinelineOrphanRecords(spFineLineChannelFixturesSet);
                         spFineLineChannelFixtureRepository.saveAll(spFineLineChannelFixturesSet);
 
                         Set<MerchCatgReplPack> merchCatgReplPacksSet =  calculateBuyQtyResponse.getMerchCatgReplPacks().stream().collect(Collectors.toSet());
@@ -135,11 +136,23 @@ public class CalculateBuyQuantityService {
         }
     }
 
+    private void deleteFinelineOrphanRecords(Set<SpFineLineChannelFixture> spFineLineChannelFixturesSet) {
+        if (!CollectionUtils.isEmpty(spFineLineChannelFixturesSet)) {
+            log.info("Deleting Fineline Buy Qty Orphan records");
+            spFineLineChannelFixturesSet.removeIf(spFineLineChannelFixture -> CollectionUtils.isEmpty(spFineLineChannelFixture.getSpStyleChannelFixtures()));
+        }
+    }
+
     private void deleteReplnOrphanRecords(Set<MerchCatgReplPack> merchCatgReplPacks) {
         if (!CollectionUtils.isEmpty(merchCatgReplPacks)) {
             log.info("Deleting Replenishment Orphan records");
             merchCatgReplPacks.forEach(merchCatgReplPack -> {
                 if (!CollectionUtils.isEmpty(merchCatgReplPack.getSubReplPack())) {
+                    merchCatgReplPack.getSubReplPack().forEach(subCatgReplPack -> {
+                        if (!CollectionUtils.isEmpty(subCatgReplPack.getFinelineReplPack())) {
+                            subCatgReplPack.getFinelineReplPack().removeIf(finelineReplPack -> CollectionUtils.isEmpty(finelineReplPack.getStyleReplPack()));
+                        }
+                    });
                     merchCatgReplPack.getSubReplPack().removeIf(subCatgReplPack -> CollectionUtils.isEmpty(subCatgReplPack.getFinelineReplPack()));
                 }
             });
