@@ -148,11 +148,6 @@ public class CalculateBuyQuantityService {
             log.info("Deleting Replenishment Orphan records");
             merchCatgReplPacks.forEach(merchCatgReplPack -> {
                 if (!CollectionUtils.isEmpty(merchCatgReplPack.getSubReplPack())) {
-                    merchCatgReplPack.getSubReplPack().forEach(subCatgReplPack -> {
-                        if (!CollectionUtils.isEmpty(subCatgReplPack.getFinelineReplPack())) {
-                            subCatgReplPack.getFinelineReplPack().removeIf(finelineReplPack -> CollectionUtils.isEmpty(finelineReplPack.getStyleReplPack()));
-                        }
-                    });
                     merchCatgReplPack.getSubReplPack().removeIf(subCatgReplPack -> CollectionUtils.isEmpty(subCatgReplPack.getFinelineReplPack()));
                 }
             });
