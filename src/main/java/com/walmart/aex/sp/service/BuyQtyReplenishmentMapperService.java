@@ -23,7 +23,7 @@ public class BuyQtyReplenishmentMapperService {
         // Hard coded FixtureTypeRollUpId for testing calculation
         MerchCatgReplPackId merchCatgReplPackId = new MerchCatgReplPackId(calculateBuyQtyParallelRequest.getPlanId(), calculateBuyQtyParallelRequest.getLvl0Nbr(),
                 calculateBuyQtyParallelRequest.getLvl1Nbr(), calculateBuyQtyParallelRequest.getLvl2Nbr(), calculateBuyQtyParallelRequest.getLvl3Nbr(),
-                ChannelType.getChannelIdFromName(calculateBuyQtyParallelRequest.getChannel()), -1);
+                ChannelType.getChannelIdFromName(calculateBuyQtyParallelRequest.getChannel()), merchMethodsDto.getMerchMethodCode());
         log.info("Replenishment: Check if merch catg pack Id is existing: {}", merchCatgReplPackId);
         MerchCatgReplPack merchCatgReplPack = setMerchCatgReplPack(merchCatgReplPacks, merchCatgReplPackId);
 

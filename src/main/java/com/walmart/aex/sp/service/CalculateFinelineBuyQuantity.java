@@ -164,7 +164,7 @@ public class CalculateFinelineBuyQuantity {
         });
         merchCodeMap.forEach((merchMethodCode, merchMethodsDtos) -> {
             // Hard coded for temporary testing of calculating InitialSet, BumpSet and Replenishment
-            FixtureTypeRollUpId fixtureTypeRollUpId = new FixtureTypeRollUpId(-1);
+            FixtureTypeRollUpId fixtureTypeRollUpId = new FixtureTypeRollUpId(merchMethodCode);
             SpFineLineChannelFixtureId spFineLineChannelFixtureId = new SpFineLineChannelFixtureId(fixtureTypeRollUpId, calculateBuyQtyRequest.getPlanId(), calculateBuyQtyRequest.getLvl0Nbr(),
                     calculateBuyQtyRequest.getLvl1Nbr(), calculateBuyQtyRequest.getLvl2Nbr(), calculateBuyQtyParallelRequest.getLvl3Nbr(), calculateBuyQtyParallelRequest.getLvl4Nbr(), finelineDto.getFinelineNbr(), ChannelType.getChannelIdFromName(calculateBuyQtyRequest.getChannel()));
             log.info("Checking if Fineline Chan Fixture Id is existing: {}", spFineLineChannelFixtureId);
@@ -550,7 +550,7 @@ public class CalculateFinelineBuyQuantity {
                 Replenishment replenishment1 = new Replenishment(replenishment.getReplnWeek(), replenishment.getReplnWeekDesc());
                 //Updating to use the dcInboundAdjUnits if set or dcInboundUnits from BQFP service
                 Long units = getReplenishmentUnits(replenishment);
-                replenishment1.setAdjReplnUnits((long) (units * getAvgSizePct(sizeDto)) / 100);
+                replenishment1.setAdjReplnUnits(Math.round((units * getAvgSizePct(sizeDto)) / 100));
                 replObj.add(replenishment1);
             });
             buyQtyObj.setReplenishments(replObj);
