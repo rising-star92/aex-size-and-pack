@@ -64,6 +64,7 @@ public interface FineLineReplenishmentRepository extends JpaRepository<FinelineR
             "AND frp.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.repTLvl2 = mrp.merchCatgReplPackId.repTLvl2 " +
             "AND frp.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.repTLvl3 = mrp.merchCatgReplPackId.repTLvl3 " +
             "AND frp.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId = mrp.merchCatgReplPackId.channelId " +
+            "AND frp.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.fixtureTypeRollupId = mrp.merchCatgReplPackId.fixtureTypeRollupId " +
             " join " +
             "SubCatgReplPack srp " +
             "ON " +
@@ -74,6 +75,7 @@ public interface FineLineReplenishmentRepository extends JpaRepository<FinelineR
             "AND frp.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.repTLvl3 = srp.subCatgReplPackId.merchCatgReplPackId.repTLvl3 " +
             "AND frp.finelineReplPackId.subCatgReplPackId.repTLvl4= srp.subCatgReplPackId.repTLvl4 " +
             "AND frp.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId = srp.subCatgReplPackId.merchCatgReplPackId.channelId " +
+            "AND frp.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.fixtureTypeRollupId = srp.subCatgReplPackId.merchCatgReplPackId.fixtureTypeRollupId " +
             " join " +
             "MerchCatPlan msp " +
             "ON " +

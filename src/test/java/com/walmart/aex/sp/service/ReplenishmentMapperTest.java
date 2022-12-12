@@ -99,9 +99,7 @@ public class ReplenishmentMapperTest {
 	   lvl3.setMetrics(metricsDto);
 	   lvl3.setLvl4List(lvl4DtoList);
 	   lvl3List.add(lvl3);
-	   Mockito.when(buyQuantityMapper.lvl4MetricsAggregateQtys(lvl4DtoList)).thenReturn(metricsDto);
-	   Mockito.when(buyQuantityMapper.fineLineMetricsAggregateQtys(finelineDtoList)).thenReturn(metricsDto);
-	   //passing finelineNBR and CCID as null so that finalBQY,PackRation,ReplenishmentPacks are set 
+	   //passing finelineNBR and CCID as null so that finalBQY,PackRation,ReplenishmentPacks are set
 	   replenishmentMapper.mapReplenishmentLvl2Sp(replenishmentResponseDTO, replenishmentResponse, null, null);
 	   assertNotNull(replenishmentResponse);
 	   assertEquals(replenishmentResponse.getPlanId(), 471l);
