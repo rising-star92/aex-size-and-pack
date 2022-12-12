@@ -18,7 +18,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 @Service
 @Slf4j
@@ -112,7 +119,7 @@ public class PackOptConstraintMapper {
 
     private void addSuppliers(String key, FineLineMapperDto fineLineMapperDto) {
         supplierMap.computeIfPresent(key, (k, v) -> {
-            v.add(new Supplier(fineLineMapperDto.getCcSupplierNumber9(), fineLineMapperDto.getCcSupplierNumber8(), fineLineMapperDto.getCcSupplierName(), null, fineLineMapperDto.getCcSupplierNumber6()));
+            v.add(new Supplier(fineLineMapperDto.getCcVendorNumber9(), fineLineMapperDto.getCcGsmSupplierNumber(), fineLineMapperDto.getCcSupplierName(), null, fineLineMapperDto.getCcVendorNumber6()));
             return v;
         });
     }
@@ -336,7 +343,7 @@ public class PackOptConstraintMapper {
                         fineLineMapperDto.getStyleSinglePackIndicator(), fineLineMapperDto.getStyleColorCombination()));
                 break;
             default:
-                suppliers.add(new Supplier(fineLineMapperDto.getCcSupplierNumber9(), fineLineMapperDto.getCcSupplierNumber8(), fineLineMapperDto.getCcSupplierName(), null, fineLineMapperDto.getCcSupplierNumber6()));
+                suppliers.add(new Supplier(fineLineMapperDto.getCcVendorNumber9(), fineLineMapperDto.getCcGsmSupplierNumber(), fineLineMapperDto.getCcSupplierName(), null, fineLineMapperDto.getCcVendorNumber6()));
                 constraints.setFinelineLevelConstraints(new FinelineLevelConstraints(fineLineMapperDto.getCcMaxPacks(),fineLineMapperDto.getCcMaxUnitsPerPack()));
                 constraints.setColorCombinationConstraints(new ColorCombinationConstraints(suppliers, fineLineMapperDto.getCcFactoryIds(),
                         fineLineMapperDto.getCcCountryOfOrigin(), fineLineMapperDto.getCcPortOfOrigin(),
@@ -346,5 +353,4 @@ public class PackOptConstraintMapper {
         return constraints;
 
     }
-
 }

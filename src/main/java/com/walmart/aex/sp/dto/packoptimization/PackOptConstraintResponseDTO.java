@@ -22,9 +22,9 @@ public class PackOptConstraintResponseDTO {
     private String altfinelineDesc;
     private String styleNbr;
     private String styleSupplierName;
-    private Integer styleSupplierNumber6;
-    private Integer styleSupplierNumber8;
-    private Integer styleSupplierNumber9;
+    private Integer styleVendorNumber6;
+    private Integer styleGsmSupplierNumber;
+    private Integer styleVendorNumber9;
     private String styleFactoryIds;
     private String styleCountryOfOrigin;
     private String stylePortOfOrigin;
@@ -34,9 +34,9 @@ public class PackOptConstraintResponseDTO {
     private Integer styleMaxPacks;
     private String ccId;
     private String ccSupplierName;
-    private Integer ccSupplierNumber6;
-    private Integer ccSupplierNumber8;
-    private Integer ccSupplierNumber9;
+    private Integer ccVendorNumber6;
+    private Integer ccGsmSupplierNumber;
+    private Integer ccVendorNumber9;
     private String ccFactoryIds;
     private String ccCountryOfOrigin;
     private String ccPortOfOrigin;

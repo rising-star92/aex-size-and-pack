@@ -32,9 +32,9 @@ public class FineLineMapperDto {
     private String lvl3Desc;
     private String lvl4Desc;
     private String merchSupplierName;
-    private Integer merchSupplierNumber6;
-    private Integer merchSupplierNumber8;
-    private Integer merchSupplierNumber9;
+    private Integer merchVendorNumber6;
+    private Integer merchGsmSupplierNumber;
+    private Integer merchVendorNumber9;
     private Integer merchMaxUnitsPerPack;
     private Integer merchMaxNbrOfPacks;
     private String merchFactoryId;
@@ -43,9 +43,9 @@ public class FineLineMapperDto {
     private Integer merchSinglePackInd;
     private String merchColorCombination;
     private String subCatSupplierName;
-    private Integer subCatSupplierNumber6;
-    private Integer subCatSupplierNumber8;
-    private Integer subCatSupplierNumber9;
+    private Integer subCatVendorNumber6;
+    private Integer subCatGsmSupplierNumber;
+    private Integer subCatVendorNumber9;
     private Integer subCatMaxUnitsPerPack;
     private Integer subCatMaxNbrOfPacks;
     private String subCatFactoryId;
@@ -54,9 +54,9 @@ public class FineLineMapperDto {
     private Integer subCatSinglePackInd;
     private String subCatColorCombination;
     private String fineLineSupplierName;
-    private Integer fineLineSupplierNumber6;
-    private Integer fineLineSupplierNumber8;
-    private Integer fineLineSupplierNumber9;
+    private Integer fineLineVendorNumber6;
+    private Integer fineLineGsmSupplierNumber;
+    private Integer fineLineVendorNumber9;
     private Integer fineLineMaxUnitsPerPack;
     private Integer fineLineMaxNbrOfPacks;
     private String fineLineFactoryId;
@@ -73,9 +73,9 @@ public class FineLineMapperDto {
     private String returnMessage;
     private String styleNbr;
     private String styleSupplierName;
-    private Integer styleSupplierNumber6;
-    private Integer styleSupplierNumber8;
-    private Integer styleSupplierNumber9;
+    private Integer styleVendorNumber6;
+    private Integer styleGsmSupplierNumber;
+    private Integer styleVendorNumber9;
     private String styleFactoryIds;
     private String styleCountryOfOrigin;
     private String stylePortOfOrigin;
@@ -85,9 +85,9 @@ public class FineLineMapperDto {
     private Integer styleMaxPacks;
     private String ccId;
     private String ccSupplierName;
-    private Integer ccSupplierNumber6;
-    private Integer ccSupplierNumber8;
-    private Integer ccSupplierNumber9;
+    private Integer ccVendorNumber6;
+    private Integer ccGsmSupplierNumber;
+    private Integer ccVendorNumber9;
     private String ccFactoryIds;
     private String ccCountryOfOrigin;
     private String ccPortOfOrigin;
@@ -96,7 +96,25 @@ public class FineLineMapperDto {
     private Integer ccMaxUnitsPerPack;
     private Integer ccMaxPacks;
 
-    public FineLineMapperDto(Long planId, Integer channelId, Integer lvl0Nbr, Integer lvl1Nbr, Integer lvl2Nbr, Integer lvl3Nbr, Integer lvl4Nbr, Integer fineLineNbr, String fineLineDesc, String altfineLineDesc, String lvl0Desc, String lvl1Desc, String lvl2Desc, String lvl3Desc, String lvl4Desc, String merchSupplierName, Integer merchSupplierNumber6, Integer merchSupplierNumber8, Integer merchSupplierNumber9, Integer merchMaxUnitsPerPack, Integer merchMaxNbrOfPacks, String merchFactoryId, String merchOriginCountryName, String merchPortOfOriginName, Integer merchSinglePackInd, String merchColorCombination, String subCatSupplierName, Integer subCatSupplierNumber6, Integer subCatSupplierNumber8, Integer subCatSupplierNumber9, Integer subCatMaxUnitsPerPack, Integer subCatMaxNbrOfPacks, String subCatFactoryId, String subCatOriginCountryName, String subCatPortOfOriginName, Integer subCatSinglePackInd, String subCatColorCombination, String fineLineSupplierName, Integer fineLineSupplierNumber6, Integer fineLineSupplierNumber8, Integer fineLineSupplierNumber9, Integer fineLineMaxUnitsPerPack, Integer fineLineMaxNbrOfPacks, String fineLineFactoryId, String fineLineOriginCountryName, String fineLinePortOfOriginName, Integer fineLineSinglePackInd, String fineLineColorCombination, String ccId, String ccSupplierName, Integer ccSupplierNumber6, Integer ccSupplierNumber8, Integer ccSupplierNumber9, String ccFactoryIds, String ccCountryOfOrigin, String ccPortOfOrigin, Integer ccSinglePackIndicator, String ccColorCombination, Integer ccMaxUnitsPerPack, Integer ccMaxPacks, Date startTs, Date endTs, Integer runStatusCode, String runStatusDesc, String firstName, String lastName, String returnMessage) {
+    public FineLineMapperDto(
+            Long planId, Integer channelId, Integer lvl0Nbr, Integer lvl1Nbr, Integer lvl2Nbr, Integer lvl3Nbr,
+            Integer lvl4Nbr, Integer fineLineNbr, String fineLineDesc, String altfineLineDesc, String lvl0Desc,
+            String lvl1Desc, String lvl2Desc, String lvl3Desc, String lvl4Desc, String merchSupplierName,
+            Integer merchVendorNumber6, Integer merchGsmSupplierNumber, Integer merchVendorNumber9,
+            Integer merchMaxUnitsPerPack, Integer merchMaxNbrOfPacks, String merchFactoryId,
+            String merchOriginCountryName, String merchPortOfOriginName, Integer merchSinglePackInd,
+            String merchColorCombination, String subCatSupplierName, Integer subCatVendorNumber6,
+            Integer subCatGsmSupplierNumber, Integer subCatVendorNumber9, Integer subCatMaxUnitsPerPack,
+            Integer subCatMaxNbrOfPacks, String subCatFactoryId, String subCatOriginCountryName,
+            String subCatPortOfOriginName, Integer subCatSinglePackInd, String subCatColorCombination,
+            String fineLineSupplierName, Integer fineLineVendorNumber6, Integer fineLineGsmSupplierNumber,
+            Integer fineLineVendorNumber9, Integer fineLineMaxUnitsPerPack, Integer fineLineMaxNbrOfPacks,
+            String fineLineFactoryId, String fineLineOriginCountryName, String fineLinePortOfOriginName,
+            Integer fineLineSinglePackInd, String fineLineColorCombination, String ccId, String ccSupplierName,
+            Integer ccVendorNumber6, Integer ccGsmSupplierNumber, Integer ccVendorNumber9, String ccFactoryIds,
+            String ccCountryOfOrigin, String ccPortOfOrigin, Integer ccSinglePackIndicator, String ccColorCombination,
+            Integer ccMaxUnitsPerPack, Integer ccMaxPacks, Date startTs, Date endTs, Integer runStatusCode,
+            String runStatusDesc, String firstName, String lastName, String returnMessage) {
         this.planId = planId;
         this.channelId = channelId;
         this.lvl0Nbr = lvl0Nbr;
@@ -113,9 +131,9 @@ public class FineLineMapperDto {
         this.lvl3Desc = lvl3Desc;
         this.lvl4Desc = lvl4Desc;
         this.merchSupplierName = merchSupplierName;
-        this.merchSupplierNumber6 = merchSupplierNumber6;
-        this.merchSupplierNumber8 = merchSupplierNumber8;
-        this.merchSupplierNumber9 = merchSupplierNumber9;
+        this.merchVendorNumber6 = merchVendorNumber6;
+        this.merchGsmSupplierNumber = merchGsmSupplierNumber;
+        this.merchVendorNumber9 = merchVendorNumber9;
         this.merchMaxUnitsPerPack = merchMaxUnitsPerPack;
         this.merchMaxNbrOfPacks = merchMaxNbrOfPacks;
         this.merchFactoryId = merchFactoryId;
@@ -124,9 +142,9 @@ public class FineLineMapperDto {
         this.merchSinglePackInd = merchSinglePackInd;
         this.merchColorCombination = merchColorCombination;
         this.subCatSupplierName = subCatSupplierName;
-        this.subCatSupplierNumber6 = subCatSupplierNumber6;
-        this.subCatSupplierNumber8 = subCatSupplierNumber8;
-        this.subCatSupplierNumber9 = subCatSupplierNumber9;
+        this.subCatVendorNumber6 = subCatVendorNumber6;
+        this.subCatGsmSupplierNumber = subCatGsmSupplierNumber;
+        this.subCatVendorNumber9 = subCatVendorNumber9;
         this.subCatMaxUnitsPerPack = subCatMaxUnitsPerPack;
         this.subCatMaxNbrOfPacks = subCatMaxNbrOfPacks;
         this.subCatFactoryId = subCatFactoryId;
@@ -135,9 +153,9 @@ public class FineLineMapperDto {
         this.subCatSinglePackInd = subCatSinglePackInd;
         this.subCatColorCombination = subCatColorCombination;
         this.fineLineSupplierName = fineLineSupplierName;
-        this.fineLineSupplierNumber6 = fineLineSupplierNumber6;
-        this.fineLineSupplierNumber8 = fineLineSupplierNumber8;
-        this.fineLineSupplierNumber9 = fineLineSupplierNumber9;
+        this.fineLineVendorNumber6 = fineLineVendorNumber6;
+        this.fineLineGsmSupplierNumber = fineLineGsmSupplierNumber;
+        this.fineLineVendorNumber9 = fineLineVendorNumber9;
         this.fineLineMaxUnitsPerPack = fineLineMaxUnitsPerPack;
         this.fineLineMaxNbrOfPacks = fineLineMaxNbrOfPacks;
         this.fineLineFactoryId = fineLineFactoryId;
@@ -154,9 +172,9 @@ public class FineLineMapperDto {
         this.returnMessage = returnMessage;
         this.ccId = ccId;
         this.ccSupplierName = ccSupplierName;
-        this.ccSupplierNumber6 = ccSupplierNumber6;
-        this.ccSupplierNumber8 = ccSupplierNumber8;
-        this.ccSupplierNumber9 = ccSupplierNumber9;
+        this.ccGsmSupplierNumber = ccGsmSupplierNumber;
+        this.ccVendorNumber6 = ccVendorNumber6;
+        this.ccVendorNumber9 = ccVendorNumber9;
         this.ccFactoryIds = ccFactoryIds;
         this.ccCountryOfOrigin = ccCountryOfOrigin;
         this.ccPortOfOrigin = ccPortOfOrigin;

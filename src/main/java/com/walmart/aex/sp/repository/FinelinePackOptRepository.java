@@ -11,7 +11,6 @@ import java.util.List;
 
 public interface FinelinePackOptRepository
         extends JpaRepository<FinelinePlan, FinelinePlanId> {
-
     @Query(value = "SELECT \n" +
             "distinct new com.walmart.aex.sp.dto.mapper.FineLineMapperDto ( "+
             "merchCatPlan.merchCatPlanId.planId,\n" +
@@ -30,9 +29,9 @@ public interface FinelinePackOptRepository
             "merchCatPlan.lvl3Desc,\n" +
             "subCatPlan.lvl4Desc,\n" +
             "merchPackOpt.vendorName as merchSupplierName,\n" +
-            "merchPackOpt.vendorNbr6 as merchSupplierNumber6,\n" +
-            "merchPackOpt.gsmSupplierId as merchSupplierNumber8,\n" +
-            "merchPackOpt.vendorNbr9 as merchSupplierNumber9,\n" +
+            "merchPackOpt.vendorNbr6 as merchVendorNumber6,\n" +
+            "merchPackOpt.gsmSupplierId as merchGsmSupplierNumber,\n" +
+            "merchPackOpt.vendorNbr9 as merchVendorNumber9,\n" +
             "merchPackOpt.maxUnitsPerPack,\n" +
             "merchPackOpt.maxNbrOfPacks,\n" +
             "merchPackOpt.factoryId,\n" +
@@ -41,9 +40,9 @@ public interface FinelinePackOptRepository
             "merchPackOpt.singlePackInd,\n" +
             "merchPackOpt.colorCombination,\n" +
             "subCatPackOpt.vendorName as subCatSupplierName,\n" +
-            "subCatPackOpt.vendorNbr6 as subCatSupplierNumber6,\n" +
-            "subCatPackOpt.gsmSupplierId as subCatSupplierNumber8,\n" +
-            "subCatPackOpt.vendorNbr9 as subCatSupplierNumber9,\n" +
+            "subCatPackOpt.vendorNbr6 as subCatVendorNumber6,\n" +
+            "subCatPackOpt.gsmSupplierId as subCatGsmSupplierNumber,\n" +
+            "subCatPackOpt.vendorNbr9 as subCatVendorNumber9,\n" +
             "subCatPackOpt.maxUnitsPerPack,\n" +
             "subCatPackOpt.maxNbrOfPacks,\n" +
             "subCatPackOpt.factoryId,\n" +
@@ -52,9 +51,9 @@ public interface FinelinePackOptRepository
             "subCatPackOpt.singlePackInd,\n" +
             "subCatPackOpt.colorCombination,\n" +
             "fineLinePackOpt.vendorName as fineLineSupplierName,\n" +
-            "fineLinePackOpt.vendorNbr6 as fineLineSupplierNumber6,\n" +
-            "fineLinePackOpt.gsmSupplierId as fineLineSupplierNumber8,\n" +
-            "fineLinePackOpt.vendorNbr9 as fineLineSupplierNumber9,\n" +
+            "fineLinePackOpt.vendorNbr6 as fineLineVendorNumber6,\n" +
+            "fineLinePackOpt.gsmSupplierId as fineLineGsmSupplierNumber,\n" +
+            "fineLinePackOpt.vendorNbr9 as fineLineVendorNumber9,\n" +
             "fineLinePackOpt.maxUnitsPerPack,\n" +
             "fineLinePackOpt.maxNbrOfPacks,\n" +
             "fineLinePackOpt.factoryId,\n" +
@@ -64,9 +63,9 @@ public interface FinelinePackOptRepository
             "fineLinePackOpt.colorCombination,\n" +
             "cpk.ccPackOptimizationId.customerChoice, \n" +
             "cpk.vendorName as ccSupplierName , " +
-            "cpk.vendorNbr6 as ccSupplierNumber6 , " +
-            "cpk.gsmSupplierId as ccSupplierNumber8 , " +
-            "cpk.vendorNbr9 as ccSupplierNumber9 , " +
+            "cpk.vendorNbr6 as ccVendorNumber6 , " +
+            "cpk.gsmSupplierId as ccGsmSupplierNumber , " +
+            "cpk.vendorNbr9 as ccVendorNumber9 , " +
             "cpk.factoryId as ccFactoryIds , " +
             "cpk.originCountryName as ccCountryOfOrigin , " +
             "cpk.portOfOriginName as ccPortOfOrigin , " +
@@ -145,8 +144,5 @@ public interface FinelinePackOptRepository
             " left join RunStatusText r ON r.runStatusCode = analytic.runStatusCode.runStatusCode \n" +
             " WHERE  merchCatPlan.merchCatPlanId.channelId = ?2 and merchCatPlan.merchCatPlanId.planId =?1")
     List<FineLineMapperDto> findByFinePlanPackOptimizationIDPlanIdAndChannelTextChannelId(Long planId, Integer channelId);
-
-
-
 
 }
