@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface FineLineReplenishmentRepository extends JpaRepository<FinelineReplPack, FinelineReplPackId> {
 
-    @Query(value="select distinct new com.walmart.aex.sp.dto.replenishment.ReplenishmentResponseDTO(frp.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.planId , " +
+    @Query(value="select new com.walmart.aex.sp.dto.replenishment.ReplenishmentResponseDTO(frp.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.planId , " +
             "frp.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.repTLvl0 , " +
             "msp.lvl0Desc, " +
             "frp.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.repTLvl1 , " +
