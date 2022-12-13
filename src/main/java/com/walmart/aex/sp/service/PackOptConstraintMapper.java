@@ -119,7 +119,7 @@ public class PackOptConstraintMapper {
 
     private void addSuppliers(String key, FineLineMapperDto fineLineMapperDto) {
         supplierMap.computeIfPresent(key, (k, v) -> {
-            v.add(new Supplier(fineLineMapperDto.getCcVendorNumber9(), fineLineMapperDto.getCcGsmSupplierNumber(), fineLineMapperDto.getCcSupplierName(), null, fineLineMapperDto.getCcVendorNumber6()));
+            v.add(new Supplier(fineLineMapperDto.getCcVendorNumber6(),  fineLineMapperDto.getCcGsmSupplierNumber(), fineLineMapperDto.getCcSupplierName(), null, fineLineMapperDto.getCcVendorNumber9()));
             return v;
         });
     }
@@ -343,7 +343,7 @@ public class PackOptConstraintMapper {
                         fineLineMapperDto.getStyleSinglePackIndicator(), fineLineMapperDto.getStyleColorCombination()));
                 break;
             default:
-                suppliers.add(new Supplier(fineLineMapperDto.getCcVendorNumber9(), fineLineMapperDto.getCcGsmSupplierNumber(), fineLineMapperDto.getCcSupplierName(), null, fineLineMapperDto.getCcVendorNumber6()));
+                suppliers.add(new Supplier(fineLineMapperDto.getCcVendorNumber6(), fineLineMapperDto.getCcGsmSupplierNumber(), fineLineMapperDto.getCcSupplierName(), null, fineLineMapperDto.getCcVendorNumber9()));
                 constraints.setFinelineLevelConstraints(new FinelineLevelConstraints(fineLineMapperDto.getCcMaxPacks(),fineLineMapperDto.getCcMaxUnitsPerPack()));
                 constraints.setColorCombinationConstraints(new ColorCombinationConstraints(suppliers, fineLineMapperDto.getCcFactoryIds(),
                         fineLineMapperDto.getCcCountryOfOrigin(), fineLineMapperDto.getCcPortOfOrigin(),
