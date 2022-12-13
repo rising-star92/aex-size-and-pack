@@ -182,9 +182,9 @@ public class PackOptAddDataMapper {
                 if (constraints.getColorCombinationConstraints() != null) {
                     ccPackOptimization.setOriginCountryName(constraints.getColorCombinationConstraints().getCountryOfOrigin());
                     ccPackOptimization.setVendorName(constraints.getColorCombinationConstraints().getSuppliers().get(0).getSupplierName());
-                    ccPackOptimization.setVendorNbr6(constraints.getColorCombinationConstraints().getSuppliers().get(0).getVendorNumber6());
-                    ccPackOptimization.setVendorNbr9(constraints.getColorCombinationConstraints().getSuppliers().get(0).getVendorNumber9());
-                    ccPackOptimization.setGsmSupplierId(constraints.getColorCombinationConstraints().getSuppliers().get(0).getGsmSupplierNumber());
+                    ccPackOptimization.setVendorNbr6(constraints.getColorCombinationConstraints().getSuppliers().get(0).getSupplierId());
+                    ccPackOptimization.setVendorNbr9(constraints.getColorCombinationConstraints().getSuppliers().get(0).getSupplierNumber());
+                    ccPackOptimization.setGsmSupplierId(constraints.getColorCombinationConstraints().getSuppliers().get(0).getSupplier8Number());
                 }
                 if (constraints.getFinelineLevelConstraints() != null) {
                     ccPackOptimization.setMaxNbrOfPacks(constraints.getFinelineLevelConstraints().getMaxPacks());
