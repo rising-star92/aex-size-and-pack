@@ -73,6 +73,7 @@ public interface FinelinePackOptRepository
             "cpk.colorCombination as ccColorCombination , " +
             "cpk.maxUnitsPerPack as ccMaxUnitsPerPack , " +
             "cpk.maxNbrOfPacks as ccMaxPacks , " +
+            "cpk.factoryName as ccFactoryName , " +
             "analytic.startTs,\n" +
             "analytic.endTs,\n" +
             "r.runStatusCode,\n" +
