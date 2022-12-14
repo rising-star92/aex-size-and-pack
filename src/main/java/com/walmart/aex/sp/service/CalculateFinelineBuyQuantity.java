@@ -17,6 +17,7 @@ import com.walmart.aex.sp.exception.SizeAndPackException;
 import com.walmart.aex.sp.repository.FineLineReplenishmentRepository;
 import com.walmart.aex.sp.repository.MerchCatgReplPackRepository;
 import com.walmart.aex.sp.repository.SpFineLineChannelFixtureRepository;
+import com.walmart.aex.sp.repository.StyleReplenishmentRepository;
 import com.walmart.aex.sp.util.BuyQtyCommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Marker;
@@ -40,7 +41,7 @@ public class CalculateFinelineBuyQuantity {
     private final BuyQtyReplenishmentMapperService buyQtyReplenishmentMapperService;
     private final CalculateOnlineFinelineBuyQuantity calculateOnlineFinelineBuyQuantity;
     private final SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository;
-    private final MerchCatgReplPackRepository merchCatgReplPackRepository;
+    private final StyleReplenishmentRepository styleReplenishmentRepository;
     private final FineLineReplenishmentRepository fineLineReplenishmentRepository;
     private final AddStoreBuyQuantityService addStoreBuyQuantityService;
     private final BuyQuantityConstraintService buyQuantityConstraintService;
@@ -51,7 +52,7 @@ public class CalculateFinelineBuyQuantity {
                                         CalculateOnlineFinelineBuyQuantity calculateOnlineFinelineBuyQuantity,
                                         StrategyFetchService strategyFetchService,
                                         SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository,
-                                        MerchCatgReplPackRepository merchCatgReplPackRepository,
+                                        StyleReplenishmentRepository styleReplenishmentRepository,
                                         FineLineReplenishmentRepository fineLineReplenishmentRepository,
                                         AddStoreBuyQuantityService addStoreBuyQuantityService,
                                         BuyQuantityConstraintService buyQuantityConstraintService) {
@@ -61,7 +62,7 @@ public class CalculateFinelineBuyQuantity {
         this.buyQtyReplenishmentMapperService = buyQtyReplenishmentMapperService;
         this.calculateOnlineFinelineBuyQuantity = calculateOnlineFinelineBuyQuantity;
         this.spFineLineChannelFixtureRepository = spFineLineChannelFixtureRepository;
-        this.merchCatgReplPackRepository = merchCatgReplPackRepository;
+        this.styleReplenishmentRepository = styleReplenishmentRepository;
         this.fineLineReplenishmentRepository = fineLineReplenishmentRepository;
         this.addStoreBuyQuantityService = addStoreBuyQuantityService;
         this.buyQuantityConstraintService = buyQuantityConstraintService;
@@ -127,14 +128,16 @@ public class CalculateFinelineBuyQuantity {
     }
 
     private void deleteExistingFinelineIsBsBuyQty(CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, CalculateBuyQtyResponse calculateBuyQtyResponse) {
-        List<SpFineLineChannelFixture> spFineLineChannelFixtures = calculateBuyQtyResponse.getSpFineLineChannelFixtures().stream().filter(spFineLineChannelFixture -> spFineLineChannelFixture.getSpFineLineChannelFixtureId().getFineLineNbr().equals(calculateBuyQtyParallelRequest.getFinelineNbr())).collect(Collectors.toList());
+        List<SpFineLineChannelFixture> spFineLineChannelFixtures = calculateBuyQtyResponse.getSpFineLineChannelFixtures().stream()
+                .filter(spFineLineChannelFixture -> spFineLineChannelFixture.getSpFineLineChannelFixtureId()
+                        .getFineLineNbr().equals(calculateBuyQtyParallelRequest.getFinelineNbr())).collect(Collectors.toList());
         if (!CollectionUtils.isEmpty(spFineLineChannelFixtures)) {
             log.info("Deleteing IS BS Buy Qty data for Fineline: {}", calculateBuyQtyParallelRequest.getFinelineNbr());
             spFineLineChannelFixtureRepository.deleteAll(spFineLineChannelFixtures);
             spFineLineChannelFixtureRepository.flush();
         }
 
-        Set<FinelineReplPack> finelineReplPacks = Optional.ofNullable(calculateBuyQtyResponse.getMerchCatgReplPacks())
+        Set<StyleReplPack> styleReplPacks = Optional.ofNullable(calculateBuyQtyResponse.getMerchCatgReplPacks())
                 .stream()
                 .flatMap(Collection::stream)
                 .filter(merchCatgReplPack -> merchCatgReplPack.getMerchCatgReplPackId().getRepTLvl3().equals(calculateBuyQtyParallelRequest.getLvl3Nbr()))
@@ -144,13 +147,17 @@ public class CalculateFinelineBuyQuantity {
                 .map(SubCatgReplPack::getFinelineReplPack)
                 .flatMap(Collection::stream)
                 .filter(finelineReplPack -> finelineReplPack.getFinelineReplPackId().getFinelineNbr().equals(calculateBuyQtyParallelRequest.getFinelineNbr()))
+                .map(FinelineReplPack::getStyleReplPack)
+                .flatMap(Collection::stream)
+                .filter(styleReplPack ->
+                        styleReplPack.getStyleReplPackId().getFinelineReplPackId().getFinelineNbr().equals(calculateBuyQtyParallelRequest.getFinelineNbr())
+                )
                 .collect(Collectors.toSet());
-        if (!CollectionUtils.isEmpty(finelineReplPacks)) {
+        if (!CollectionUtils.isEmpty(styleReplPacks)) {
             log.info("Delete replenishment buy qty for fineline: {}", calculateBuyQtyParallelRequest.getFinelineNbr());
-            fineLineReplenishmentRepository.deleteAll(finelineReplPacks);
-            fineLineReplenishmentRepository.flush();
+            styleReplenishmentRepository.deleteAll(styleReplPacks);
+            styleReplenishmentRepository.flush();
         }
-        merchCatgReplPackRepository.flush();
     }
 
     private void getMerchMethod(CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, FinelineDto finelineDto, APResponse apResponse, BQFPResponse bqfpResponse,
