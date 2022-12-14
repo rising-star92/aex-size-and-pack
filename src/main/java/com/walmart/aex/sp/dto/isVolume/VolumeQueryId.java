@@ -11,5 +11,7 @@ public class VolumeQueryId {
     private String cc;
     private int clusterId;
     private int inStoreWeek;
+    private String fixtureType;
+    private Float fixtureAllocation;
 
 }
