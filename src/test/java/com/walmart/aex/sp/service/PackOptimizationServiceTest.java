@@ -22,9 +22,7 @@ import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -264,7 +262,7 @@ class PackOptimizationServiceTest {
 
         assertEquals(SizeAndPackConstants.SUCCESS_STATUS, response.getStatus());
         assertEquals(SizeAndPackConstants.SUCCESS_STATUS, response.getMessage());
-        assertEquals("4-22-1", ccPackOptimization.getColorCombination());
+        assertEquals("0", ccPackOptimization.getColorCombination());
 
         ccPackOptimization.setColorCombination(null);
         when(ccPackOptimizationRepository.findCCPackOptimizationList(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt(),
@@ -278,6 +276,34 @@ class PackOptimizationServiceTest {
 
 
     }
+
+	@Test
+	void testAddColorCombinationWithIncrement() {
+		ColorCombinationRequest request = new ColorCombinationRequest(471L, "S3 2022", 50000, 34,
+				6419, 12228, 31507, 2855, "Add", null,
+				List.of(new ColorCombinationStyle("34_2855_4_19_8", List.of("34_2855_4_19_8_BLACK SOOT"))));
+		CcPackOptimization ccPackOptimization = new CcPackOptimization();
+		Set<String> colorCombinationSet = new HashSet<>();
+		colorCombinationSet.add(null);
+		colorCombinationSet.add("Test");
+		colorCombinationSet.add("1");
+		colorCombinationSet.add("5");
+		colorCombinationSet.add("11");
+		colorCombinationSet.add("19");
+		when(ccPackOptimizationRepository.findCCPackOptimizationColorCombinationList(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt(),
+				Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt())).thenReturn(colorCombinationSet);
+
+		when(ccPackOptimizationRepository.findCCPackOptimizationList(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt(),
+				Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyList(),
+				Mockito.anyList())).thenReturn(List.of(ccPackOptimization));
+		when(ccPackOptimizationRepository.saveAll(Mockito.anyList())).thenReturn(List.of(ccPackOptimization));
+
+		StatusResponse response = packOptimizationService.addColorCombination(request);
+
+		assertEquals(SizeAndPackConstants.SUCCESS_STATUS, response.getStatus());
+		assertEquals(SizeAndPackConstants.SUCCESS_STATUS, response.getMessage());
+		assertEquals("20", ccPackOptimization.getColorCombination());
+	}
 
     @Test
     void testAddColorCombinationException() {
@@ -301,7 +327,7 @@ class PackOptimizationServiceTest {
                 List.of(new ColorCombinationStyle("34_2855_4_19_8", List.of("34_2855_4_19_8_BLACK SOOT"))));
 
         CcPackOptimization ccPackOptimization = new CcPackOptimization();
-        ccPackOptimization.setColorCombination("4-22-6");
+        ccPackOptimization.setColorCombination("0");
 
         when(ccPackOptimizationRepository.findCCPackOptimizationList(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt(),
                 Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyList(),
