@@ -122,9 +122,9 @@ class PackOptConstraintMapperTest {
         List<FineLineMapperDto> requestFineLines = getFineLinesForFactoryId();
         PackOptimizationResponse actual = packOptConstraintMapper.packOptDetails(requestFineLines);
         assertEquals(finelineNbr, actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getFinelineNbr());
-        assertEquals("123 - XYZ, 234", actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getConstraints().getColorCombinationConstraints().getFactoryId());
-        assertEquals("123 - XYZ, 234", actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getConstraints().getColorCombinationConstraints().getFactoryId());
-        assertEquals("123 - XYZ", actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getCustomerChoices().get(0).getConstraints().getColorCombinationConstraints().getFactoryId());
+        assertEquals("123, 234", actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getConstraints().getColorCombinationConstraints().getFactoryId());
+        assertEquals("123, 234", actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getConstraints().getColorCombinationConstraints().getFactoryId());
+        assertEquals("123", actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getCustomerChoices().get(0).getConstraints().getColorCombinationConstraints().getFactoryId());
         assertEquals("234", actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getCustomerChoices().get(1).getConstraints().getColorCombinationConstraints().getFactoryId());
     }
 
@@ -152,7 +152,6 @@ class PackOptConstraintMapperTest {
         fineLineMapperDto.setCcVendorNumber6(vendorNbr6);
         fineLineMapperDto.setCcGsmSupplierNumber(gsmSupplierId);
         fineLineMapperDto.setCcFactoryIds("123");
-        fineLineMapperDto.setCcFactoryName("123 - XYZ");
         fineLineMapperDto.setCcCountryOfOrigin("INDIA");
         fineLineMapperDto.setCcPortOfOrigin("INDIA");
 
@@ -169,7 +168,6 @@ class PackOptConstraintMapperTest {
         fineLineMapperDto1.setCcId(ccId_2);
         fineLineMapperDto1.setCcSupplierName("NIKE");
         fineLineMapperDto1.setCcFactoryIds("234");
-        fineLineMapperDto1.setCcFactoryName("234");
         fineLineMapperDto1.setCcCountryOfOrigin("USA");
         fineLineMapperDto1.setCcPortOfOrigin("USA");
         return Arrays.asList(fineLineMapperDto, fineLineMapperDto1);
@@ -199,7 +197,7 @@ class PackOptConstraintMapperTest {
         fineLineMapperDto.setCcVendorNumber6(vendorNbr6);
         fineLineMapperDto.setCcGsmSupplierNumber(gsmSupplierId);
         fineLineMapperDto.setCcFactoryIds("123");
-        fineLineMapperDto.setCcFactoryName("123 - XYZ");
+        fineLineMapperDto.setCcFactoryName("XYZ");
         fineLineMapperDto.setCcCountryOfOrigin("INDIA");
         fineLineMapperDto.setCcPortOfOrigin("INDIA");
 
@@ -216,7 +214,7 @@ class PackOptConstraintMapperTest {
         fineLineMapperDto1.setCcId(ccId_2);
         fineLineMapperDto1.setCcSupplierName("NIKE");
         fineLineMapperDto1.setCcFactoryIds("234");
-        fineLineMapperDto1.setCcFactoryName("234 - ABC");
+        fineLineMapperDto1.setCcFactoryName("ABC");
         fineLineMapperDto1.setCcCountryOfOrigin("USA");
         fineLineMapperDto1.setCcPortOfOrigin("USA");
 
