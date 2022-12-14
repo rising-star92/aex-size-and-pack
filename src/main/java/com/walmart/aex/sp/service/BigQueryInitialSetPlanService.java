@@ -348,7 +348,7 @@ public class BigQueryInitialSetPlanService {
         resultsIs.iterateAll().forEach(rows -> rows.forEach(row -> {
             try {
                 JsonNode node = objectMapper.readTree(row.getStringValue());
-                VolumeQueryId nodeId = new VolumeQueryId(node.get("cc").textValue(), node.get("clusterId").intValue(), node.get("in_store_week").intValue());
+                VolumeQueryId nodeId = new VolumeQueryId(node.get("cc").textValue(), node.get("clusterId").intValue(), node.get("in_store_week").intValue(),node.get("fixtureType").textValue(),node.get("fixtureAllocation").floatValue());
                 if (uniqueRows.containsKey(nodeId)) {
                     uniqueRows.get(nodeId).add(node);
                 } else {
@@ -371,7 +371,7 @@ public class BigQueryInitialSetPlanService {
             resultsIs.iterateAll().forEach(rows -> rows.forEach(row -> {
                 try {
                     JsonNode node = objectMapper.readTree(row.getStringValue());
-                    VolumeQueryId nodeId = new VolumeQueryId(node.get("cc").textValue(), node.get("clusterId").intValue(), node.get("in_store_week").intValue());
+                    VolumeQueryId nodeId = new VolumeQueryId(node.get("cc").textValue(), node.get("clusterId").intValue(), node.get("in_store_week").intValue(),node.get("fixtureType").textValue(),node.get("fixtureAllocation").floatValue());
                     if (uniqueRows.containsKey(nodeId)) {
                         uniqueRows.get(nodeId).add(node);
                     } else {
