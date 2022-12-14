@@ -225,20 +225,10 @@ public class PackOptimizationService {
     }
 
     private String getColorCombinationId(Set<String> colorCombinationIds) {
-        String colorCombinationId = DEFAULT_COLOR_COMBINATION_ID;
-        if (!CollectionUtils.isEmpty(colorCombinationIds)) {
-            List<Integer> colorCombIds = new ArrayList<>();
-            for (String id : colorCombinationIds) {
-                if (!StringUtils.isEmpty(id) && StringUtils.isNumeric(id)) {
-                    colorCombIds.add(Integer.parseInt(id));
-                }
-            }
-            if (!CollectionUtils.isEmpty(colorCombIds)) {
-                colorCombIds.sort(Collections.reverseOrder());
-                int newColorCombinationId = COLOR_COMBINATION_INCREMENT_VALUE + colorCombIds.get(0);
-                colorCombinationId = String.valueOf(newColorCombinationId);
-            }
-        }
-        return colorCombinationId;
+        int nextColorCombinationId =  colorCombinationIds.stream()
+                .filter(id -> !StringUtils.isEmpty(id) && StringUtils.isNumeric(id))
+                .mapToInt(Integer::valueOf)
+                .max().orElse(Integer.parseInt(DEFAULT_COLOR_COMBINATION_ID)) + COLOR_COMBINATION_INCREMENT_VALUE;
+        return String.valueOf(nextColorCombinationId);
     }
 }

@@ -327,7 +327,7 @@ class PackOptimizationServiceTest {
                 List.of(new ColorCombinationStyle("34_2855_4_19_8", List.of("34_2855_4_19_8_BLACK SOOT"))));
 
         CcPackOptimization ccPackOptimization = new CcPackOptimization();
-        ccPackOptimization.setColorCombination("4-22-6");
+        ccPackOptimization.setColorCombination("0");
 
         when(ccPackOptimizationRepository.findCCPackOptimizationList(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt(),
                 Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyList(),
