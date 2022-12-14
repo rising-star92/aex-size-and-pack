@@ -190,7 +190,7 @@
         <dependency>
             <groupId>com.walmart.aex</groupId>
             <artifactId>aex-security-common</artifactId>
-            <version>1.0.35</version>
+            <version>1.0.39</version>
         </dependency>
 
         <!-- Spring Retry Dependency -->
