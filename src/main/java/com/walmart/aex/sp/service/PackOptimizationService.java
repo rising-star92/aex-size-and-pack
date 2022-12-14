@@ -227,7 +227,7 @@ public class PackOptimizationService {
     private String getColorCombinationId(Set<String> colorCombinationIds) {
         if(CollectionUtils.isEmpty(colorCombinationIds)) return DEFAULT_COLOR_COMBINATION_ID;
         int nextColorCombinationId =  colorCombinationIds.stream()
-                .filter(id -> !StringUtils.isEmpty(id) && StringUtils.isNumeric(id))
+                .filter(StringUtils::isNumeric)
                 .mapToInt(Integer::valueOf)
                 .max().orElse(Integer.parseInt(DEFAULT_COLOR_COMBINATION_ID)) + COLOR_COMBINATION_INCREMENT_VALUE;
         return String.valueOf(nextColorCombinationId);
