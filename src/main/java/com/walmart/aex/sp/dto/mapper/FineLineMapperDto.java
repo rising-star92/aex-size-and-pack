@@ -95,6 +95,7 @@ public class FineLineMapperDto {
     private String ccColorCombination;
     private Integer ccMaxUnitsPerPack;
     private Integer ccMaxPacks;
+    private String ccFactoryName;
 
     public FineLineMapperDto(
             Long planId, Integer channelId, Integer lvl0Nbr, Integer lvl1Nbr, Integer lvl2Nbr, Integer lvl3Nbr,
@@ -113,7 +114,7 @@ public class FineLineMapperDto {
             Integer fineLineSinglePackInd, String fineLineColorCombination, String ccId, String ccSupplierName,
             Integer ccVendorNumber6, Integer ccGsmSupplierNumber, Integer ccVendorNumber9, String ccFactoryIds,
             String ccCountryOfOrigin, String ccPortOfOrigin, Integer ccSinglePackIndicator, String ccColorCombination,
-            Integer ccMaxUnitsPerPack, Integer ccMaxPacks, Date startTs, Date endTs, Integer runStatusCode,
+            Integer ccMaxUnitsPerPack, Integer ccMaxPacks, String ccFactoryName, Date startTs, Date endTs, Integer runStatusCode,
             String runStatusDesc, String firstName, String lastName, String returnMessage) {
         this.planId = planId;
         this.channelId = channelId;
@@ -182,5 +183,6 @@ public class FineLineMapperDto {
         this.ccColorCombination = ccColorCombination;
         this.ccMaxUnitsPerPack = ccMaxUnitsPerPack;
         this.ccMaxPacks = ccMaxPacks;
+        this.ccFactoryName = ccFactoryName;
     }
 }

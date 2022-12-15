@@ -44,6 +44,7 @@ public class PackOptConstraintResponseDTO {
     private String ccColorCombination;
     private Integer ccMaxUnitsPerPack;
     private Integer ccMaxPacks;
+    private String ccFactoryName;
     private String lvl0Desc;
     private String lvl1Desc;
     private String lvl2Desc;

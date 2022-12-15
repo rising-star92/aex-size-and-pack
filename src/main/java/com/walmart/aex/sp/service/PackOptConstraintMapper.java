@@ -77,7 +77,8 @@ public class PackOptConstraintMapper {
                 addValue(fineLinePortOfOrigin, fineLineMapperDto.getFineLineNbr(), fineLineMapperDto.getCcPortOfOrigin());
             }
             if(StringUtils.isNotEmpty(fineLineMapperDto.getCcFactoryIds())) {
-                addValue(fineLineFactoryId, fineLineMapperDto.getFineLineNbr(), fineLineMapperDto.getCcFactoryIds());
+                String newFactoryId = getFactoryId(fineLineMapperDto);
+                addValue(fineLineFactoryId, fineLineMapperDto.getFineLineNbr(), newFactoryId);
             }
 
         });
@@ -89,6 +90,16 @@ public class PackOptConstraintMapper {
             fineLineMapperDtoList.add(fineLineMapperDto);
         });
         return fineLineMapperDtoList;
+    }
+
+    private String getFactoryId(FineLineMapperDto fineLineMapperDto) {
+        StringBuilder sb = new StringBuilder();
+        if(StringUtils.isNotEmpty(fineLineMapperDto.getCcFactoryIds()) && StringUtils.isNotEmpty(fineLineMapperDto.getCcFactoryName())) {
+            sb.append(fineLineMapperDto.getCcFactoryIds()).append(" - ").append(fineLineMapperDto.getCcFactoryName());
+        } else if(StringUtils.isNotEmpty(fineLineMapperDto.getCcFactoryIds())) {
+            sb.append(fineLineMapperDto.getCcFactoryIds());
+        }
+        return sb.toString();
     }
 
     private static String prepareConcatString(Map<Integer, Set<String>> map, Integer fineLineNbr) {
@@ -147,7 +158,8 @@ public class PackOptConstraintMapper {
                 addValue(stylePortOfOrigin, fineLineMapperDto.getStyleNbr(), fineLineMapperDto.getCcPortOfOrigin());
             }
             if(StringUtils.isNotEmpty(fineLineMapperDto.getCcFactoryIds())) {
-                addValue(styleFactoryId, fineLineMapperDto.getStyleNbr(), fineLineMapperDto.getCcFactoryIds());
+                String newFactoryId = getFactoryId(fineLineMapperDto);
+                addValue(styleFactoryId, fineLineMapperDto.getStyleNbr(), newFactoryId);
             }
 
         });
@@ -345,7 +357,8 @@ public class PackOptConstraintMapper {
             default:
                 suppliers.add(new Supplier(fineLineMapperDto.getCcVendorNumber6(), fineLineMapperDto.getCcGsmSupplierNumber(), fineLineMapperDto.getCcSupplierName(), null, fineLineMapperDto.getCcVendorNumber9()));
                 constraints.setFinelineLevelConstraints(new FinelineLevelConstraints(fineLineMapperDto.getCcMaxPacks(),fineLineMapperDto.getCcMaxUnitsPerPack()));
-                constraints.setColorCombinationConstraints(new ColorCombinationConstraints(suppliers, fineLineMapperDto.getCcFactoryIds(),
+                String newFactoryId = getFactoryId(fineLineMapperDto);
+                constraints.setColorCombinationConstraints(new ColorCombinationConstraints(suppliers, newFactoryId,
                         fineLineMapperDto.getCcCountryOfOrigin(), fineLineMapperDto.getCcPortOfOrigin(),
                         fineLineMapperDto.getCcSinglePackIndicator(), fineLineMapperDto.getCcColorCombination()));
                 break;
