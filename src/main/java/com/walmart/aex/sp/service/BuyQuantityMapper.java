@@ -357,11 +357,9 @@ public class BuyQuantityMapper {
                 .orElse(0)
                 : 0;
 
-        metricsDto.setBumpPackQty(bumpQty + metricsDto.getBumpPackQty());
-
         metricsDto.setFinalReplenishmentQty(rplnQty + metricsDto.getFinalReplenishmentQty());
         metricsDto.setFinalBuyQty(buyQty + metricsDto.getBuyQty());
-        metricsDto.setBumpPackQty(Objects.nonNull(buyQntyResponseDTO.getBumpPackQty()) ? buyQntyResponseDTO.getBumpPackQty(): 0);
+        metricsDto.setBumpPackQty(bumpQty + metricsDto.getBumpPackQty());
         metricsDto.setBuyQty(buyQty + metricsDto.getBuyQty());
         customerChoiceDto.setMetrics(metricsDto);
     }
