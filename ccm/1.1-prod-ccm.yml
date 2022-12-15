@@ -13,7 +13,7 @@ metadata:
   externallyReferencedServiceConfig:
     -
       serviceId: "AEX_SECURITY_COMMON"
-      serviceConfigVersion: "1.3"
+      serviceConfigVersion: "1.4"
   notifications:
     slack:
       channel: "apparel-precision-ops"
@@ -347,6 +347,11 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "rfa_cc_out_parquet"
+      "analytics_data":
+        description: "Analytics Data"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "analytics_data_prod"
 apiVersion: "2.0"
 kind: "ServiceConfig"
 
