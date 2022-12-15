@@ -166,6 +166,11 @@ public class BigQueryInitialSetPlanService {
 
     private String getISByVolumeFinelineClusterQuery(String ccTableName, String spTableName, Integer planId, Integer finelineNbr, String analyticsData,String interval, Integer fiscalYear) {
         String prodFineline = planId + "_" + finelineNbr;
+          /*
+        Min week is added as a join condition to RFA. This is to prevent any inconsistent allocations in RFA.
+        For example- CC 1 in store 400 could have only 1 Fixture type and allocation. RFA , as of 14 Dec 2021, could allocate a new fixture
+        type and allocation mid season. This is not an expected behaviour. To shield us from this inconsistency, adding a min week check.
+         */
         return "WITH MyTable AS (\n" +
                 "select distinct\n" +
                 "RFA.in_store_week,\n" +
@@ -202,6 +207,11 @@ public class BigQueryInitialSetPlanService {
 
     private String getISByVolumeSubCatClusterQuery(String ccTableName, String spTableName, Integer planId, Integer finelineNbr, Integer subCatNbr, String analyticsData, String interval, Integer fiscalYear) {
         String prodFineline = planId + "_" + finelineNbr;
+          /*
+        Min week is added as a join condition to RFA. This is to prevent any inconsistent allocations in RFA.
+        For example- CC 1 in store 400 could have only 1 Fixture type and allocation. RFA , as of 14 Dec 2021, could allocate a new fixture
+        type and allocation mid season. This is not an expected behaviour. To shield us from this inconsistency, adding a min week check.
+         */
         return "WITH MyTable AS (\n" +
                 "select distinct\n" +
                 "RFA.in_store_week,\n" +
@@ -283,11 +293,6 @@ public class BigQueryInitialSetPlanService {
          */
     private String getBumpQTYVolumeSubCatClusterQuery(String ccTableName, String spTableName, Integer planId, Integer finelineNbr, Integer subCatNbr, String analyticsData,String interval, Integer fiscalYear, Integer week) {
         String prodFineline = planId + "_" + finelineNbr;
-        /*
-        Min week is added as a join condition to RFA. This is to prevent any inconsistent allocations in RFA.
-        For example- CC 1 in store 400 could have only 1 Fixture type and allocation. RFA , as of 14 Dec 2021, could allocate a new fixture
-        type and allocation mid season. This is not an expected behaviour. To shield us from this inconsistency, adding a min week check.
-         */
         return "WITH MyTable AS (\n" +
                 "select distinct\n" +
                 week + " as in_store_week,\n" +
@@ -321,11 +326,6 @@ public class BigQueryInitialSetPlanService {
      */
     private String getBumpQTYVolumeCatClusterQuery(String ccTableName, String spTableName, Integer planId, Integer finelineNbr, Integer catNbr, String analyticsData,String interval, Integer fiscalYear, Integer week) {
         String prodFineline = planId + "_" + finelineNbr;
-        /*
-        Min week is added as a join condition to RFA. This is to prevent any inconsistent allocations in RFA.
-        For example- CC 1 in store 400 could have only 1 Fixture type and allocation. RFA , as of 14 Dec 2021, could allocate a new fixture
-        type and allocation mid season. This is not an expected behaviour. To shield us from this inconsistency, adding a min week check.
-         */
         return "WITH MyTable AS (\n" +
                 "select distinct\n" +
                 week + " as in_store_week,\n" +
