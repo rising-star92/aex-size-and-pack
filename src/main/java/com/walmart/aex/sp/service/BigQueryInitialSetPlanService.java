@@ -250,12 +250,16 @@ public class BigQueryInitialSetPlanService {
                 "GROUP BY RFA.in_store_week,RFA.cc, CL.clusterId,CL.store ,RFA.fixtureAllocation, RFA.fixtureType order by RFA.in_store_week,RFA.cc,CL.clusterId,CL.store, RFA.fixtureAllocation, RFA.fixtureType\n" +
                 ") SELECT TO_JSON_STRING(rfaTable) AS json FROM MyTable AS rfaTable\n";
     }
-
+    /*
+        TODO add weeks back in the query when consistent RFA allocation is available.
+        Need to revisit when there are mulitple bump weeks . This is a very point in time solution to use only 1 bump week
+        Change for S4
+         */
     private String getBumpQTYVolumeSubCatClusterQuery(String ccTableName, String spTableName, Integer planId, Integer finelineNbr, Integer subCatNbr, String analyticsData,String interval, Integer fiscalYear, Integer week) {
         String prodFineline = planId + "_" + finelineNbr;
         return "WITH MyTable AS (\n" +
                 "select distinct\n" +
-                "RFA.in_store_week,\n" +
+                week + " as in_store_week,\n" +
                 "RFA.cc,\n" +
                 "SUM(SP.bs_quantity) AS bs_quantity ,\n" +
                 "CL.store,\n" +
@@ -276,15 +280,19 @@ public class BigQueryInitialSetPlanService {
                 "select distinct scc.store_nbr as store,scc.cluster_id  as clusterId  from `" + analyticsData + ".svg_subcategory_cluster` scc join `"+analyticsData+".svg_subcategory` sc on sc.cluster_id = scc.cluster_id and sc.dept_nbr = scc.dept_nbr and sc.dept_catg_nbr = scc.dept_catg_nbr and sc.dept_subcatg_nbr = scc.dept_subcatg_nbr and sc.season = scc.season and sc.fiscal_year = scc.fiscal_year where sc.dept_subcatg_nbr = " + subCatNbr + " and  sc.season = '"+interval+"' and sc.fiscal_year = " +fiscalYear + " \n" +
                 ") as CL\n" +
                 "on RFA.store = CL.store\n" +
-                "GROUP BY RFA.in_store_week,RFA.cc, CL.clusterId,CL.store ,RFA.fixtureAllocation, RFA.fixtureType order by RFA.in_store_week,RFA.cc,CL.clusterId,CL.store, RFA.fixtureAllocation, RFA.fixtureType\n" +
+                "GROUP BY RFA.in_store_week,RFA.cc, CL.clusterId,CL.store ,RFA.fixtureAllocation, RFA.fixtureType order by RFA.cc,CL.clusterId,CL.store, RFA.fixtureAllocation, RFA.fixtureType\n" +
                 ") SELECT TO_JSON_STRING(rfaTable) AS json FROM MyTable AS rfaTable\n";
     }
-
+    /*
+    TODO add weeks back in the query when consistent RFA allocation is available.
+    Need to revisit when there are mulitple bump weeks . This is a very point in time solution to use only 1 bump week
+    Change for S4
+     */
     private String getBumpQTYVolumeCatClusterQuery(String ccTableName, String spTableName, Integer planId, Integer finelineNbr, Integer catNbr, String analyticsData,String interval, Integer fiscalYear, Integer week) {
         String prodFineline = planId + "_" + finelineNbr;
         return "WITH MyTable AS (\n" +
                 "select distinct\n" +
-                "RFA.in_store_week,\n" +
+                week + " as in_store_week,\n" +
                 "RFA.cc,\n" +
                 "SUM(SP.bs_quantity) AS bs_quantity ,\n" +
                 "CL.store,\n" +
@@ -305,15 +313,20 @@ public class BigQueryInitialSetPlanService {
                 "select scc.store_nbr as store,scc.cluster_id  as clusterId  from `" + analyticsData + ".svg_category_cluster` scc join `"+analyticsData+".svg_category` sc on sc.cluster_id = scc.cluster_id and sc.dept_nbr = scc.dept_nbr and sc.dept_catg_nbr = scc.dept_catg_nbr and sc.season = scc.season and sc.fiscal_year = scc.fiscal_year where sc.dept_catg_nbr = " + catNbr +" and  sc.season = '"+interval+"' and sc.fiscal_year = " +fiscalYear + " \n" +
                 ") as CL\n" +
                 "on RFA.store = CL.store\n" +
-                "GROUP BY RFA.in_store_week,RFA.cc, CL.clusterId,CL.store ,RFA.fixtureAllocation, RFA.fixtureType order by RFA.in_store_week,RFA.cc,CL.clusterId,CL.store, RFA.fixtureAllocation, RFA.fixtureType\n" +
+                "GROUP BY RFA.in_store_week,RFA.cc, CL.clusterId,CL.store ,RFA.fixtureAllocation, RFA.fixtureType order by RFA.cc,CL.clusterId,CL.store, RFA.fixtureAllocation, RFA.fixtureType\n" +
                 ") SELECT TO_JSON_STRING(rfaTable) AS json FROM MyTable AS rfaTable\n";
     }
 
+    /*
+   TODO  add weeks back in the query when consistent RFA allocation is available.
+    Need to revisit when there are mulitple bump weeks . This is a very point in time solution to use only 1 bump week
+    Change for S4
+     */
     private String getBumpQTYVolumeFinelineClusterQuery(String ccTableName, String spTableName, Integer planId, Integer finelineNbr,  String analyticsData,String interval, Integer fiscalYear, Integer week) {
         String prodFineline = planId + "_" + finelineNbr;
         return "WITH MyTable AS (\n" +
                 "select distinct\n" +
-                "RFA.in_store_week,\n" +
+                week + " as in_store_week,\n" +
                 "RFA.cc,\n" +
                 "SUM(SP.bs_quantity) AS bs_quantity ,\n" +
                 "CL.store,\n" +
@@ -334,7 +347,7 @@ public class BigQueryInitialSetPlanService {
                 "select store_nbr as store,cluster_id  as clusterId from `" + analyticsData + ".svg_fl_cluster` where fineline_nbr = " + finelineNbr + " and season = '"+interval+"' and fiscal_year = " +fiscalYear + " \n" +
                 ") as CL\n" +
                 "on RFA.store = CL.store\n" +
-                "GROUP BY RFA.in_store_week,RFA.cc, CL.clusterId,CL.store ,RFA.fixtureAllocation, RFA.fixtureType order by RFA.in_store_week,RFA.cc,CL.clusterId,CL.store, RFA.fixtureAllocation, RFA.fixtureType\n" +
+                "GROUP BY RFA.in_store_week,RFA.cc, CL.clusterId,CL.store ,RFA.fixtureAllocation, RFA.fixtureType order by RFA.cc,CL.clusterId,CL.store, RFA.fixtureAllocation, RFA.fixtureType\n" +
                 ") SELECT TO_JSON_STRING(rfaTable) AS json FROM MyTable AS rfaTable\n";
     }
 
