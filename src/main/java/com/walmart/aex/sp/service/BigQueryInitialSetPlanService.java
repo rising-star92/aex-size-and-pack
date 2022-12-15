@@ -166,6 +166,11 @@ public class BigQueryInitialSetPlanService {
 
     private String getISByVolumeFinelineClusterQuery(String ccTableName, String spTableName, Integer planId, Integer finelineNbr, String analyticsData,String interval, Integer fiscalYear) {
         String prodFineline = planId + "_" + finelineNbr;
+          /*
+        Min week is added as a join condition to RFA. This is to prevent any inconsistent allocations in RFA.
+        For example- CC 1 in store 400 could have only 1 Fixture type and allocation. RFA , as of 14 Dec 2021, could allocate a new fixture
+        type and allocation mid season. This is not an expected behaviour. To shield us from this inconsistency, adding a min week check.
+         */
         return "WITH MyTable AS (\n" +
                 "select distinct\n" +
                 "RFA.in_store_week,\n" +
@@ -176,9 +181,16 @@ public class BigQueryInitialSetPlanService {
                 "RFA.fixtureAllocation,\n" +
                 "RFA.fixtureType\n" +
                 "from (\n" +
-                "select trim(cc) as cc,CAST(store AS INTEGER) as store,min(week) as in_store_week ,final_alloc_space as fixtureAllocation, final_pref as fixtureType\n" +
+                "select distinct cc, RFA.store,RFA.in_store_week,  fixtureAllocation,  fixtureType from\n"+
+                "(select trim(cc) as cc,CAST(store AS INTEGER) as store,min(week) as in_store_week ,final_alloc_space as fixtureAllocation, final_pref as fixtureType\n" +
                 "FROM `" + ccTableName + "`as RFA\n" +
-                "where plan_id_partition="+planId+" and fineline=" + finelineNbr + " and final_alloc_space>0 group by cc,store, fixtureAllocation, fixtureType order by cc, in_store_week, store, fixtureAllocation, fixtureType )\n" +
+                "where plan_id_partition="+planId+" and fineline=" + finelineNbr + " and final_alloc_space>0 group by cc,store, fixtureAllocation, fixtureType) as RFA\n" +
+                "join\n" +
+                "(select trim(cc),CAST(store AS INTEGER) as store,min(week) as in_store_week \n" +
+                "FROM `" + ccTableName + "` as RFA_Min\n" +
+                " where plan_id_partition="+planId+" and fineline=" + finelineNbr + " and final_alloc_space>0  group by cc,store) as RFA_Min\n" +
+                "on RFA_Min.in_store_week = RFA.in_store_week and RFA_Min.store= RFA.store\n"+
+                "order by cc, in_store_week, store, fixtureAllocation, fixtureType )\n" +
                 "as RFA join\n" +
                 "(\n" +
                 "SELECT trim(SP.ProductCustomerChoice) as cc,SP.store, SP.SPPackInitialSetOutput as is_quantity, SP.SPPackBumpOutput as bs_quantity\n" +
@@ -195,6 +207,11 @@ public class BigQueryInitialSetPlanService {
 
     private String getISByVolumeSubCatClusterQuery(String ccTableName, String spTableName, Integer planId, Integer finelineNbr, Integer subCatNbr, String analyticsData, String interval, Integer fiscalYear) {
         String prodFineline = planId + "_" + finelineNbr;
+          /*
+        Min week is added as a join condition to RFA. This is to prevent any inconsistent allocations in RFA.
+        For example- CC 1 in store 400 could have only 1 Fixture type and allocation. RFA , as of 14 Dec 2021, could allocate a new fixture
+        type and allocation mid season. This is not an expected behaviour. To shield us from this inconsistency, adding a min week check.
+         */
         return "WITH MyTable AS (\n" +
                 "select distinct\n" +
                 "RFA.in_store_week,\n" +
@@ -205,9 +222,16 @@ public class BigQueryInitialSetPlanService {
                 "RFA.fixtureAllocation,\n" +
                 "RFA.fixtureType\n" +
                 "from (\n" +
-                "select trim(cc) as cc,CAST(store AS INTEGER) as store,min(week) as in_store_week ,final_alloc_space as fixtureAllocation, final_pref as fixtureType\n" +
+                "select distinct cc, RFA.store,RFA.in_store_week,  fixtureAllocation,  fixtureType from\n"+
+                "(select trim(cc) as cc,CAST(store AS INTEGER) as store,min(week) as in_store_week ,final_alloc_space as fixtureAllocation, final_pref as fixtureType\n" +
                 "FROM `" + ccTableName + "`as RFA\n" +
-                "where plan_id_partition="+planId+" and fineline=" + finelineNbr + " and final_alloc_space>0 group by cc,store, fixtureAllocation, fixtureType order by cc, in_store_week, store, fixtureAllocation, fixtureType )\n" +
+                "where plan_id_partition="+planId+" and fineline=" + finelineNbr + " and final_alloc_space>0 group by cc,store, fixtureAllocation, fixtureType) as RFA\n" +
+                "join\n" +
+                "(select trim(cc),CAST(store AS INTEGER) as store,min(week) as in_store_week \n" +
+                "FROM `" + ccTableName + "` as RFA_Min\n" +
+                " where plan_id_partition="+planId+" and fineline=" + finelineNbr + " and final_alloc_space>0  group by cc,store) as RFA_Min\n" +
+                "on RFA_Min.in_store_week = RFA.in_store_week and RFA_Min.store= RFA.store\n"+
+                "order by cc, in_store_week, store, fixtureAllocation, fixtureType )\n" +
                 "as RFA join\n" +
                 "(\n" +
                 "SELECT trim(SP.ProductCustomerChoice) as cc,SP.store, SP.SPPackInitialSetOutput as is_quantity, SP.SPPackBumpOutput as bs_quantity\n" +
@@ -224,6 +248,11 @@ public class BigQueryInitialSetPlanService {
 
     private String getISByVolumeCatClusterQuery(String ccTableName, String spTableName, Integer planId, Integer finelineNbr, Integer catNbr, String analyticsData,String interval, Integer fiscalYear) {
         String prodFineline = planId + "_" + finelineNbr;
+        /*
+        Min week is added as a join condition to RFA. This is to prevent any inconsistent allocations in RFA.
+        For example- CC 1 in store 400 could have only 1 Fixture type and allocation. RFA , as of 14 Dec 2021, could allocate a new fixture
+        type and allocation mid season. This is not an expected behaviour. To shield us from this inconsistency, adding a min week check.
+         */
         return "WITH MyTable AS (\n" +
                 "select distinct\n" +
                 "RFA.in_store_week,\n" +
@@ -234,9 +263,16 @@ public class BigQueryInitialSetPlanService {
                 "RFA.fixtureAllocation,\n" +
                 "RFA.fixtureType\n" +
                 "from (\n" +
-                "select trim(cc) as cc,CAST(store AS INTEGER) as store,min(week) as in_store_week ,final_alloc_space as fixtureAllocation, final_pref as fixtureType\n" +
+                "select distinct cc, RFA.store,RFA.in_store_week,  fixtureAllocation,  fixtureType from\n"+
+                "(select trim(cc) as cc,CAST(store AS INTEGER) as store,min(week) as in_store_week ,final_alloc_space as fixtureAllocation, final_pref as fixtureType\n" +
                 "FROM `" + ccTableName + "`as RFA\n" +
-                "where plan_id_partition="+planId+" and fineline=" + finelineNbr + " and final_alloc_space>0 group by cc,store, fixtureAllocation, fixtureType order by cc, in_store_week, store, fixtureAllocation, fixtureType )\n" +
+                "where plan_id_partition="+planId+" and fineline=" + finelineNbr + " and final_alloc_space>0 group by cc,store, fixtureAllocation, fixtureType) as RFA\n" +
+                "join\n" +
+                "(select trim(cc),CAST(store AS INTEGER) as store,min(week) as in_store_week \n" +
+                "FROM `" + ccTableName + "` as RFA_Min\n" +
+                " where plan_id_partition="+planId+" and fineline=" + finelineNbr + " and final_alloc_space>0  group by cc,store) as RFA_Min\n" +
+                "on RFA_Min.in_store_week = RFA.in_store_week and RFA_Min.store= RFA.store\n"+
+                "order by cc, in_store_week, store, fixtureAllocation, fixtureType )\n" +
                 "as RFA join\n" +
                 "(\n" +
                 "SELECT trim(SP.ProductCustomerChoice) as cc,SP.store, SP.SPPackInitialSetOutput as is_quantity, SP.SPPackBumpOutput as bs_quantity\n" +
