@@ -265,7 +265,7 @@ public class BigQueryInitialSetPlanService {
                 "from (\n" +
                 "select trim(cc) as cc,CAST(store AS INTEGER) as store,min(week) as in_store_week ,final_alloc_space as fixtureAllocation, final_pref as fixtureType\n" +
                 "FROM `" + ccTableName + "`as RFA\n" +
-                "where plan_id_partition="+planId+" and fineline=" + finelineNbr + " and final_alloc_space>0 and week =" + week + " group by cc,store, fixtureAllocation, fixtureType order by cc, in_store_week, store, fixtureAllocation, fixtureType )\n" +
+                "where plan_id_partition="+planId+" and fineline=" + finelineNbr + " and final_alloc_space>0 group by cc,store, fixtureAllocation, fixtureType order by cc, in_store_week, store, fixtureAllocation, fixtureType )\n" +
                 "as RFA join\n" +
                 "(\n" +
                 "SELECT trim(SP.ProductCustomerChoice) as cc,SP.store, SP.SPPackBumpOutput as bs_quantity\n" +
@@ -294,7 +294,7 @@ public class BigQueryInitialSetPlanService {
                 "from (\n" +
                 "select trim(cc) as cc,CAST(store AS INTEGER) as store,min(week) as in_store_week ,final_alloc_space as fixtureAllocation, final_pref as fixtureType\n" +
                 "FROM `" + ccTableName + "`as RFA\n" +
-                "where plan_id_partition="+planId+" and fineline=" + finelineNbr + " and final_alloc_space>0 and week =" + week + " group by cc,store, fixtureAllocation, fixtureType order by cc, in_store_week, store, fixtureAllocation, fixtureType )\n" +
+                "where plan_id_partition="+planId+" and fineline=" + finelineNbr + " and final_alloc_space>0 group by cc,store, fixtureAllocation, fixtureType order by cc, in_store_week, store, fixtureAllocation, fixtureType )\n" +
                 "as RFA join\n" +
                 "(\n" +
                 "SELECT trim(SP.ProductCustomerChoice) as cc,SP.store, SP.SPPackBumpOutput as bs_quantity\n" +
@@ -323,7 +323,7 @@ public class BigQueryInitialSetPlanService {
                 "from (\n" +
                 "select trim(cc) as cc,CAST(store AS INTEGER) as store,min(week) as in_store_week ,final_alloc_space as fixtureAllocation, final_pref as fixtureType\n" +
                 "FROM `" + ccTableName + "`as RFA\n" +
-                "where plan_id_partition="+planId+" and fineline=" + finelineNbr + " and final_alloc_space>0 and week =" + week + " group by cc,store, fixtureAllocation, fixtureType order by cc, in_store_week, store, fixtureAllocation, fixtureType )\n" +
+                "where plan_id_partition="+planId+" and fineline=" + finelineNbr + " and final_alloc_space>0  group by cc,store, fixtureAllocation, fixtureType order by cc, in_store_week, store, fixtureAllocation, fixtureType )\n" +
                 "as RFA join\n" +
                 "(\n" +
                 "SELECT trim(SP.ProductCustomerChoice) as cc,SP.store, SP.SPPackBumpOutput as bs_quantity\n" +
