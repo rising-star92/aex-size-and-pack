@@ -348,7 +348,7 @@ configDefinitions:
         kind: "SINGLE"
         defaultValue: "rfa_cc_out_parquet"
       "analytics_data":
-        description: "Analytics Data"
+        description: "Analytics Data Dataset"
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "analytics_data_prod"
