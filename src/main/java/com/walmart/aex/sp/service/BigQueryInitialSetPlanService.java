@@ -156,7 +156,7 @@ public class BigQueryInitialSetPlanService {
 
     private String getSizePackIntialSetQueryString(String ccTableName, String spTableName, Integer planId, Integer finelineNbr) {
         String prodFineline = planId + "_" + finelineNbr;
-        return "WITH MyTable AS ( select distinct reverse( SUBSTR(REVERSE(RFA.cc), STRPOS(REVERSE(RFA.cc), \"_\")+1)) as style_id,RFA.in_store_week, RFA.cc, SP.merch_method, SP.pack_id,SP.size, (SP.initialpack_ratio) AS initialpack_ratio, SUM(SP.is_quantity) AS is_quantity from (select trim(cc) as cc,CAST(store AS INTEGER) as store,min(week) as in_store_week FROM `" + ccTableName + "`as RFA where plan_id_partition=" + planId + " and fineline=" + finelineNbr + " and final_alloc_space>0 group by cc,store order by cc, in_store_week, store )as RFA join (SELECT trim(SP.ProductCustomerChoice) as cc,SP.store, SP.SPPackID as pack_id, SP.MerchMethod as merch_method, SP.size, SP.SPBumpSetPackSizeRatio as bumppack_ratio, SP.SPInitialSetPackSizeRatio as initialpack_ratio, SP.SPPackInitialSetOutput as is_quantity, SP.SPPackBumpOutput as bs_quantity FROM `" + spTableName + "` AS SP where ProductFineline = '" + prodFineline + "' ) as SP on RFA.store = SP.store and RFA.cc = SP.cc GROUP BY RFA.in_store_week,RFA.cc,SP.merch_method,SP.size,SP.pack_id ,initialpack_ratio order by RFA.in_store_week,RFA.cc,SP.merch_method,SP.size,SP.pack_id,initialpack_ratio ) SELECT TO_JSON_STRING(rfaTable) AS json FROM MyTable AS rfaTable";
+        return "WITH MyTable AS ( select distinct reverse( SUBSTR(REVERSE(RFA.cc), STRPOS(REVERSE(RFA.cc), \"_\")+1)) as style_id,RFA.in_store_week, RFA.cc, SP.merch_method, SP.pack_id,SP.size, (SP.initialpack_ratio) AS initialpack_ratio, SUM(SP.is_quantity) AS is_quantity from (select trim(cc) as cc,CAST(store AS INTEGER) as store,min(week) as in_store_week FROM `" + ccTableName + "`as RFA where plan_id_partition=" + planId + " and fineline=" + finelineNbr + " and final_alloc_space>0 group by cc,store order by cc, in_store_week, store )as RFA join (SELECT trim(SP.ProductCustomerChoice) as cc,SP.store, SP.SPPackID as pack_id, SP.MerchMethod as merch_method, SP.size, SP.SPBumpSetPackSizeRatio as bumppack_ratio, SP.SPInitialSetPackSizeRatio as initialpack_ratio, SP.SPPackInitialSetOutput as is_quantity, SP.SPPackBumpOutput as bs_quantity FROM `" + spTableName + "` AS SP where ProductFineline = '" + prodFineline + "' and SPInitialSetPackSizeRatio >0 ) as SP on RFA.store = SP.store and RFA.cc = SP.cc GROUP BY RFA.in_store_week,RFA.cc,SP.merch_method,SP.size,SP.pack_id ,initialpack_ratio order by RFA.in_store_week,RFA.cc,SP.merch_method,SP.size,SP.pack_id,initialpack_ratio ) SELECT TO_JSON_STRING(rfaTable) AS json FROM MyTable AS rfaTable";
     }
 
     private String getSizePackBumpSetQueryString(String spTableName, Integer planId, Integer finelineNbr) {
@@ -376,7 +376,7 @@ public class BigQueryInitialSetPlanService {
                 "as RFA join\n" +
                 "(\n" +
                 "SELECT trim(SP.ProductCustomerChoice) as cc,SP.store, SP.SPPackBumpOutput as bs_quantity\n" +
-                "FROM `" + spTableName + "` AS SP where ProductFineline = '" + prodFineline + "' and SPPackBumpOutput >0\n" +
+                "FROM `" + spTableName + "` AS SP where ProductFineline = '" + prodFineline + "' \n" +
                 ") as SP\n" +
                 "on RFA.store = SP.store and RFA.cc = SP.cc\n" +
                 "join (\n" +
