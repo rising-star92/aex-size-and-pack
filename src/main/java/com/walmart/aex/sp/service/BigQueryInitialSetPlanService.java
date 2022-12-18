@@ -328,7 +328,7 @@ public class BigQueryInitialSetPlanService {
 				"as RFA join "+ 
                 "(\n" +
                 "SELECT trim(SP.ProductCustomerChoice) as cc,SP.store, SP.SPPackBumpOutput as bs_quantity\n" +
-                "FROM `" + spTableName + "` AS SP where ProductFineline = '" + prodFineline + "' \n" +
+                "FROM `" + spTableName + "` AS SP where ProductFineline = '" + prodFineline + "' and SPPackBumpOutput >0\n" +
                 ") as SP\n" +
                 "on RFA.store = SP.store and RFA.cc = SP.cc\n" +
                 "join (\n" +
@@ -371,7 +371,7 @@ public class BigQueryInitialSetPlanService {
 				"as RFA join "+ 
                 "(\n" +
                 "SELECT trim(SP.ProductCustomerChoice) as cc,SP.store, SP.SPPackBumpOutput as bs_quantity\n" +
-                "FROM `" + spTableName + "` AS SP where ProductFineline = '" + prodFineline + "' \n" +
+                "FROM `" + spTableName + "` AS SP where ProductFineline = '" + prodFineline + "' and SPPackBumpOutput >0\n" +
                 ") as SP\n" +
                 "on RFA.store = SP.store and RFA.cc = SP.cc\n" +
                 "join (\n" +
@@ -415,7 +415,7 @@ public class BigQueryInitialSetPlanService {
 				"as RFA join "+ 
                 "(\n" +
                 "SELECT trim(SP.ProductCustomerChoice) as cc,SP.store, SP.SPPackBumpOutput as bs_quantity\n" +
-                "FROM `" + spTableName + "` AS SP where ProductFineline = '" + prodFineline + "' \n" +
+                "FROM `" + spTableName + "` AS SP where ProductFineline = '" + prodFineline + "' and SPPackBumpOutput >0\n" +
                 ") as SP\n" +
                 "on RFA.store = SP.store and RFA.cc = SP.cc\n" +
                 "join (\n" +
