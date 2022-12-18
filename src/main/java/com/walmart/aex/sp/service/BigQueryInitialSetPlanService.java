@@ -296,7 +296,7 @@ public class BigQueryInitialSetPlanService {
                 ") SELECT TO_JSON_STRING(rfaTable) AS json FROM MyTable AS rfaTable\n";
     }
     /*
-        TODO add weeks back in the query when consistent RFA allocation is available.
+        TODO add weeks back in the query when consistent RFA allocation is available. 
         Need to revisit when there are mulitple bump weeks . This is a very point in time solution to use only 1 bump week
         Change for S4
          */
