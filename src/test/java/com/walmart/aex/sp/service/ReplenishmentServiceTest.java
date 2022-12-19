@@ -378,6 +378,4 @@ public class ReplenishmentServiceTest {
         Mockito.verify(sizeLevelReplenishmentMapper, Mockito.times(1)).mapReplenishmentLvl2Sp(Mockito.any(), Mockito.any(), Mockito.any());
 
     }
-
-
 }
