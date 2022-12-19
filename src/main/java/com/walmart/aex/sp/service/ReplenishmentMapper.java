@@ -52,7 +52,10 @@ public class ReplenishmentMapper {
 
         lvl3List.stream()
                 .filter(lvl3 -> replenishmentResponseDTO.getLvl3Nbr().equals(lvl3.getLvl3Nbr())).findFirst()
-                .ifPresentOrElse(lvl3 -> lvl3.setLvl4List(mapReplenishmentLvl4Sp(replenishmentResponseDTO, lvl3, finelineNbr, ccId)),
+                .ifPresentOrElse(lvl3 -> {
+                            updateFlSpMetrics(replenishmentResponseDTO, lvl3.getMetrics(), finelineNbr, ccId);
+                            lvl3.setLvl4List(mapReplenishmentLvl4Sp(replenishmentResponseDTO, lvl3, finelineNbr, ccId));
+                },
                         () -> setLvl3SP(replenishmentResponseDTO, lvl3List, finelineNbr, ccId));
         return lvl3List;
     }
@@ -63,10 +66,16 @@ public class ReplenishmentMapper {
         lvl3.setLvl3Desc(replenishmentResponseDTO.getLvl3Desc());
         if (finelineNbr == null && ccId == null) {
         	List<Lvl4Dto> lvl4DtoList = mapReplenishmentLvl4Sp(replenishmentResponseDTO, lvl3, finelineNbr, ccId);
-			MetricsDto metricsDto = buyQuantityMapper.lvl4MetricsAggregateQtys(lvl4DtoList);
+
+            MetricsDto metricsDto = new MetricsDto();
+
+            metricsDto.setFinalBuyQty(replenishmentResponseDTO.getFinelineFinalBuyUnits());
+            metricsDto.setFinalReplenishmentQty(replenishmentResponseDTO.getFinelineReplQty());
+
 			metricsDto.setVendorPack(replenishmentResponseDTO.getLvl3VenderPackCount());
 			metricsDto.setWarehousePack(replenishmentResponseDTO.getLvl3WhsePackCount());
-			metricsDto.setPackRatio(replenishmentResponseDTO.getLvl3vnpkWhpkRatio());;
+			metricsDto.setPackRatio(replenishmentResponseDTO.getLvl3vnpkWhpkRatio());
+			metricsDto.setReplenishmentPacks(replenishmentResponseDTO.getLvl3ReplPack());
 			lvl3.setMetrics(metricsDto);
 			lvl3.setLvl4List(lvl4DtoList);
         } else {
@@ -81,7 +90,10 @@ public class ReplenishmentMapper {
 
         lvl4DtoList.stream()
                 .filter(lvl4 -> replenishmentResponseDTO.getLvl4Nbr().equals(lvl4.getLvl4Nbr())).findFirst()
-                .ifPresentOrElse(lvl4 -> lvl4.setFinelines(mapReplenishmentFl(replenishmentResponseDTO, lvl4, finelineNbr, ccId)),
+                .ifPresentOrElse(lvl4 -> {
+                            updateFlSpMetrics(replenishmentResponseDTO, lvl4.getMetrics(), finelineNbr, ccId);
+                            lvl4.setFinelines(mapReplenishmentFl(replenishmentResponseDTO, lvl4, finelineNbr, ccId));
+                },
                         () -> setLvl4SP(replenishmentResponseDTO, lvl4DtoList, finelineNbr, ccId));
         return lvl4DtoList;
     }
@@ -93,10 +105,16 @@ public class ReplenishmentMapper {
 
         if (finelineNbr == null && ccId == null) {
         	List<FinelineDto> finelineDtoList = mapReplenishmentFl(replenishmentResponseDTO, lvl4, finelineNbr, ccId);
-			MetricsDto metricsDto = buyQuantityMapper.fineLineMetricsAggregateQtys(finelineDtoList);
-        	metricsDto.setVendorPack(replenishmentResponseDTO.getLvl4VenderPackCount());
+            MetricsDto metricsDto = new MetricsDto();
+
+            metricsDto.setFinalBuyQty(replenishmentResponseDTO.getFinelineFinalBuyUnits());
+            metricsDto.setFinalReplenishmentQty(replenishmentResponseDTO.getFinelineReplQty());
+
+			//Set packs
+			metricsDto.setVendorPack(replenishmentResponseDTO.getLvl4VenderPackCount());
 			metricsDto.setWarehousePack(replenishmentResponseDTO.getLvl4WhsePackCount());
 			metricsDto.setPackRatio(replenishmentResponseDTO.getLvl4vnpkWhpkRatio());
+			metricsDto.setReplenishmentPacks(replenishmentResponseDTO.getLvl4ReplPack());
 			lvl4.setMetrics(metricsDto);
 			lvl4.setFinelines(finelineDtoList);
         } else {
@@ -115,6 +133,7 @@ public class ReplenishmentMapper {
                             if (finelineNbr != null) {
                                 finelineDto.setStyles(mapReplenishmentStyles(replenishmentResponseDTO, finelineDto, finelineNbr, ccId));
                             }
+                            else updateFlSpMetrics(replenishmentResponseDTO, finelineDto.getMetrics(), finelineNbr, ccId);
                         },
                         () -> setFinelineSP(replenishmentResponseDTO, finelineDtoList, finelineNbr, ccId));
         return finelineDtoList;
@@ -140,12 +159,24 @@ public class ReplenishmentMapper {
         finelineDtoList.add(fineline);
     }
 
+    private void updateFlSpMetrics(ReplenishmentResponseDTO replenishmentResponseDTO, MetricsDto metrics, Integer finelineNbr, String ccId) {
+        if (finelineNbr == null && ccId == null) {
+        metrics.setFinalReplenishmentQty(Optional.ofNullable(metrics.getFinalReplenishmentQty()).orElse(0)
+                + Optional.ofNullable(replenishmentResponseDTO.getFinelineReplQty()).orElse(0));
+        metrics.setFinalBuyQty(Optional.ofNullable(metrics.getFinalBuyQty()).orElse(0)
+                + Optional.ofNullable(replenishmentResponseDTO.getFinelineFinalBuyUnits()).orElse(0)); }
+    }
+
     private List<StyleDto> mapReplenishmentStyles(ReplenishmentResponseDTO replenishmentResponseDTO, FinelineDto fineline, Integer finelineNbr, String ccId) {
         List<StyleDto> styleDtoList = Optional.ofNullable(fineline.getStyles()).orElse(new ArrayList<>());
 
         styleDtoList.stream()
                 .filter(styleDto -> replenishmentResponseDTO.getStyleNbr().equals(styleDto.getStyleNbr())).findFirst()
-                .ifPresentOrElse(styleDto -> styleDto.setCustomerChoices(mapReplenishmentCc(replenishmentResponseDTO, styleDto, finelineNbr, ccId)),
+                .ifPresentOrElse(styleDto -> {
+                            updateCcSpMetrics(replenishmentResponseDTO, styleDto.getMetrics(), ccId);
+                            styleDto.setCustomerChoices(mapReplenishmentCc(replenishmentResponseDTO, styleDto, finelineNbr, ccId));
+                        }
+                                ,
                         () -> setStyleSP(replenishmentResponseDTO, styleDtoList, finelineNbr, ccId));
         return styleDtoList;
     }
@@ -156,8 +187,8 @@ public class ReplenishmentMapper {
         styleDto.setStyleNbr(replenishmentResponseDTO.getStyleNbr());
         if (ccId == null) {
             MetricsDto metricsDto = new MetricsDto();
-            metricsDto.setFinalBuyQty(replenishmentResponseDTO.getStyleFinalBuyUnits());
-            metricsDto.setFinalReplenishmentQty(replenishmentResponseDTO.getStyleReplQty());
+            metricsDto.setFinalBuyQty(replenishmentResponseDTO.getCcFinalBuyUnits());
+            metricsDto.setFinalReplenishmentQty(replenishmentResponseDTO.getCcReplQty());
             metricsDto.setVendorPack(replenishmentResponseDTO.getStyleVenderPackCount());
             metricsDto.setWarehousePack(replenishmentResponseDTO.getStyleWhsePackCount());
             metricsDto.setPackRatio(replenishmentResponseDTO.getStyleVnpkWhpkRatio());
@@ -180,10 +211,19 @@ public class ReplenishmentMapper {
                             if (ccId != null) {
                                 customerChoiceDto.setMerchMethods(mapMerchMethod(replenishmentResponseDTO, customerChoiceDto));
                             }
+                            else updateCcSpMetrics(replenishmentResponseDTO, customerChoiceDto.getMetrics(), ccId);
                         },
                         () -> setCcSP(replenishmentResponseDTO, customerChoiceList, finelineNbr, ccId));
         return customerChoiceList;
 
+    }
+
+    private void updateCcSpMetrics(ReplenishmentResponseDTO replenishmentResponseDTO, MetricsDto metrics, String ccId) {
+        if (ccId == null) {
+        metrics.setFinalReplenishmentQty(Optional.ofNullable(metrics.getFinalReplenishmentQty()).orElse(0)
+                + Optional.ofNullable(replenishmentResponseDTO.getCcReplQty()).orElse(0));
+        metrics.setFinalBuyQty(Optional.ofNullable(metrics.getFinalBuyQty()).orElse(0)
+                + Optional.ofNullable(replenishmentResponseDTO.getCcFinalBuyUnits()).orElse(0));}
     }
 
     private void setCcSP(ReplenishmentResponseDTO replenishmentResponseDTO, List<CustomerChoiceDto> customerChoiceDtoList, Integer finelineNbr, String ccId) {

@@ -26,10 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.walmart.aex.sp.util.SizeAndPackConstants.COLOR_COMBINATION_EXIST_MSG;
@@ -50,6 +47,8 @@ public class PackOptimizationService {
     private final StyleCcPackOptConsRepository styleCcPackOptConsRepository;
     private final PackOptConstraintMapper packOptConstraintMapper;
     private final CcPackOptimizationRepository ccPackOptimizationRepository;
+    private static final String DEFAULT_COLOR_COMBINATION_ID = "0";
+    private static final int COLOR_COMBINATION_INCREMENT_VALUE = 1;
 
     public PackOptimizationService(FineLinePackOptimizationRepository finelinePackOptimizationRepository,
                                    FinelinePackOptRepository packOptfineplanRepo,
@@ -192,9 +191,11 @@ public class PackOptimizationService {
 
     public StatusResponse addColorCombination(ColorCombinationRequest request) {
         StatusResponse response = new StatusResponse(SUCCESS_STATUS, SUCCESS_STATUS);
-//        TODO: add logic for generating colorCombination
-        String colorCombination = "4-22-1";
         try {
+            Set<String> colorCombinationIds = ccPackOptimizationRepository.findCCPackOptimizationColorCombinationList(request.getPlanId(),
+                    request.getLvl0Nbr(), request.getLvl1Nbr(), request.getLvl2Nbr(), request.getLvl3Nbr(), request.getLvl4Nbr(),
+                    request.getFinelineNbr());
+            String colorCombination = getColorCombinationId(colorCombinationIds);
             List<String> styles = request.getStyles().stream().map(ColorCombinationStyle::getStyleNbr).collect(Collectors.toList());
             List<String> customerChoices = request.getStyles().stream()
                     .map(ColorCombinationStyle::getCcIds)
@@ -221,5 +222,14 @@ public class PackOptimizationService {
             response.setStatus(FAILED_STATUS);
         }
         return response;
+    }
+
+    private String getColorCombinationId(Set<String> colorCombinationIds) {
+        if(CollectionUtils.isEmpty(colorCombinationIds)) return DEFAULT_COLOR_COMBINATION_ID;
+        int nextColorCombinationId =  colorCombinationIds.stream()
+                .filter(StringUtils::isNumeric)
+                .mapToInt(Integer::valueOf)
+                .max().orElse(Integer.parseInt(DEFAULT_COLOR_COMBINATION_ID)) + COLOR_COMBINATION_INCREMENT_VALUE;
+        return String.valueOf(nextColorCombinationId);
     }
 }

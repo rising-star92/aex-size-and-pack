@@ -177,7 +177,7 @@ public class CalculateOnlineFinelineBuyQuantity {
                 Replenishment replenishment1 = new Replenishment();
                 replenishment1.setReplnWeek(replenishment.getReplnWeek());
                 replenishment1.setReplnWeekDesc(replenishment.getReplnWeekDesc());
-                replenishment1.setAdjReplnUnits((long) (getReplenishmentUnits(replenishment) * getAvgSizePct(sizeDto)) / 100);
+                replenishment1.setAdjReplnUnits(Math.round ((getReplenishmentUnits(replenishment) * getAvgSizePct(sizeDto)) / 100));
                 replObj.add(replenishment1);
             });
             buyQtyObj.setReplenishments(replenishmentsOptimizationServices.getUpdatedReplenishmentsPack(replObj,VP_DEFAULT));

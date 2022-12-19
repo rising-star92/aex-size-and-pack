@@ -1,18 +1,9 @@
 package com.walmart.aex.sp.service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.walmart.aex.sp.dto.buyquantity.*;
-import com.walmart.aex.sp.exception.SizeAndPackException;
-import com.walmart.aex.sp.util.BuyQtyCommonUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import com.walmart.aex.sp.dto.buyquantity.BuyQntyResponseDTO;
+import com.walmart.aex.sp.dto.buyquantity.BuyQtyRequest;
+import com.walmart.aex.sp.dto.buyquantity.BuyQtyResponse;
+import com.walmart.aex.sp.dto.buyquantity.SizeDto;
 import com.walmart.aex.sp.dto.replenishment.ReplenishmentRequest;
 import com.walmart.aex.sp.dto.replenishment.ReplenishmentResponse;
 import com.walmart.aex.sp.dto.replenishment.ReplenishmentResponseDTO;
@@ -37,15 +28,17 @@ import com.walmart.aex.sp.repository.SizeListReplenishmentRepository;
 import com.walmart.aex.sp.repository.SpCustomerChoiceReplenishmentRepository;
 import com.walmart.aex.sp.repository.StyleReplnPkConsRepository;
 import com.walmart.aex.sp.repository.SubCatgReplnPkConsRepository;
-
+import com.walmart.aex.sp.util.BuyQtyCommonUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
 public class ReplenishmentService  {
-    public static final String FAILED_STATUS = "Failed";
-    public static final String SUCCESS_STATUS = "Success";
-    public static Double vnpkwhpkRatio=0.0;
 
     private final FineLineReplenishmentRepository fineLineReplenishmentRepository;
     private final SpCustomerChoiceReplenishmentRepository  spCustomerChoiceReplenishmentRepository;
@@ -111,8 +104,8 @@ public class ReplenishmentService  {
             Optional.of(replenishmentResponseDTOS)
                     .stream()
                     .flatMap(Collection::stream)
-                    .forEach(ReplenishmentResponseDTO -> replenishmentMapper
-                            .mapReplenishmentLvl2Sp(ReplenishmentResponseDTO, replenishmentResponse, null,null));
+                    .forEach(replenishmentResponseDTO -> replenishmentMapper
+                            .mapReplenishmentLvl2Sp(replenishmentResponseDTO, replenishmentResponse, null,null));
         } catch (Exception e) {
             log.error("Exception While fetching Fineline Replenishment :", e);
             throw new CustomException("Failed to fetch Fineline Replenishment, due to" + e);
@@ -150,8 +143,8 @@ public class ReplenishmentService  {
             Optional.of(replenishmentResponseDTOS)
                     .stream()
                     .flatMap(Collection::stream)
-                    .forEach(ReplenishmentResponseDTO -> replenishmentMapper
-                            .mapReplenishmentLvl2Sp(ReplenishmentResponseDTO, replenishmentResponse,finelineNbr,null));
+                    .forEach(replenishmentResponseDTO -> replenishmentMapper
+                            .mapReplenishmentLvl2Sp(replenishmentResponseDTO, replenishmentResponse,finelineNbr,null));
         } catch (Exception e) {
             log.error("Exception While fetching style and CC Replenishment :", e);
             throw new CustomException("Failed to fetch style and CC Replenishment, due to" + e);
@@ -190,8 +183,8 @@ public class ReplenishmentService  {
 					.getReplnFullHierarchyByPlanFineline(replenishmentRequest.getPlanId(),
 							ChannelType.getChannelIdFromName(replenishmentRequest.getChannel()), finelineNbr);
 			Optional.of(replenishmentResponseDTOS).stream().flatMap(Collection::stream)
-					.forEach(ReplenishmentResponseDTO -> sizeLevelReplenishmentMapper
-							.mapReplenishmentLvl2Sp(ReplenishmentResponseDTO, replenishmentResponse, finelineNbr));
+					.forEach(replenishmentResponseDTO -> sizeLevelReplenishmentMapper
+							.mapReplenishmentLvl2Sp(replenishmentResponseDTO, replenishmentResponse, finelineNbr));
 		} catch (Exception e) {
 			log.error("Exception While fetching size list replenishment full hierarchy :", e);
 			throw new CustomException("Failed to fetch size list replenishment full hierarchy, due to" + e);
@@ -211,8 +204,8 @@ public class ReplenishmentService  {
             Optional.of(replenishmentResponseDTOS)
                     .stream()
                     .flatMap(Collection::stream)
-                    .forEach(ReplenishmentResponseDTO -> replenishmentMapper
-                            .mapReplenishmentLvl2Sp(ReplenishmentResponseDTO, replenishmentResponse,finelineNbr,ccId));
+                    .forEach(replenishmentResponseDTO -> replenishmentMapper
+                            .mapReplenishmentLvl2Sp(replenishmentResponseDTO, replenishmentResponse,finelineNbr,ccId));
         } catch (Exception e) {
             log.error("Exception While fetching MerchMethod Replenishment :", e);
             throw new CustomException("Failed to fetch MerchMethod Replenishment, due to" + e);
@@ -267,8 +260,8 @@ public class ReplenishmentService  {
         Integer vnpk = updateVnPkWhPkReplnRequest.getVnpk();
         Integer whpk = updateVnPkWhPkReplnRequest.getWhpk();
 
-        List<SubCatgReplPack> SubcatgReplnPkConsList = subCatgReplnPkConsRepository.getSubCatgReplnConsData(planId, channelId, lvl3Nbr,lvl4Nbr);
-        updateReplnConfigMapper.updateVnpkWhpkForSubCatgReplnConsMapper(SubcatgReplnPkConsList, vnpk, whpk);
+        List<SubCatgReplPack> subCatgReplnConsData = subCatgReplnPkConsRepository.getSubCatgReplnConsData(planId, channelId, lvl3Nbr,lvl4Nbr);
+        updateReplnConfigMapper.updateVnpkWhpkForSubCatgReplnConsMapper(subCatgReplnConsData, vnpk, whpk);
 
     }
     public void updateVnpkWhpkForFinelineReplnCons(UpdateVnPkWhPkReplnRequest updateVnPkWhPkReplnRequest)

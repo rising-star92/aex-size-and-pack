@@ -13,7 +13,7 @@ metadata:
       branch: "main"
   externallyReferencedServiceConfig:
     - serviceId: AEX_SECURITY_COMMON
-      serviceConfigVersion: 1.3
+      serviceConfigVersion: 1.4
   notifications:
     slack:
       channel: apparel-precision-ops

@@ -19,7 +19,7 @@ public class SpFineLineChannelFixture {
     @EqualsAndHashCode.Include
     private SpFineLineChannelFixtureId spFineLineChannelFixtureId;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.DETACH, fetch = FetchType.LAZY)
     @JoinColumn(name = "fixturetype_rollup_id", referencedColumnName = "fixturetype_rollup_id", nullable = false, insertable = false, updatable = false)
     @JsonIgnore
     private FixtureTypeRollUp fixtureTypeRollUp;

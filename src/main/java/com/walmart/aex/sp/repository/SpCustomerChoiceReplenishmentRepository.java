@@ -109,6 +109,7 @@ public interface SpCustomerChoiceReplenishmentRepository extends JpaRepository<C
             "AND ccp.custChoicePlanId.stylePlanId.styleNbr = crp.ccReplPackId.styleReplPackId.styleNbr " +
             "AND ccp.custChoicePlanId.ccId = crp.ccReplPackId.customerChoice " +
             "AND ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId = crp.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId " +
+            "AND srp.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.fixtureTypeRollupId = crp.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.fixtureTypeRollupId " +
             "where sp.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId in (:channelId) and ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId in (:channelId) and msp.merchCatPlanId.planId = :planId and " +
             "fp.finelinePlanId.finelineNbr = :finelineNbr and " +
             "(srp.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId is NULL or srp.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId = :channelId) and " +

@@ -206,7 +206,7 @@ type CcLevelConstraints {
 }
 
 type ColorCombinationConstraints {
-    supplier: Supplier
+    suppliers: [Supplier]
     factoryId: String
     countryOfOrigin: String
     portOfOrigin: String
@@ -220,10 +220,10 @@ type FinelineLevelConstraints {
 }
 
 type Supplier {
-    supplierId: Int
-    supplier8Number: Int
+    vendorNumber6: Int
+    gsmSupplierNumber: Int
     supplierName: String
-    supplierNumber: Int
+    vendorNumber9: Int
 }
 
 type Lvl4 {

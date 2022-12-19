@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.assortproduct.RFASizePackData;
 import com.walmart.aex.sp.dto.bqfp.*;
 import com.walmart.aex.sp.dto.buyquantity.*;
+import com.walmart.aex.sp.enums.FixtureTypeRollup;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.properties.BuyQtyProperties;
 import com.walmart.aex.sp.util.BuyQtyCommonUtil;
@@ -98,7 +99,7 @@ public class AddStoreBuyQuantityService {
                     buyQtyObj.setReplenishments(initialSetWithReplnsConstraint.getReplnsWithUnits());
                     perStoreQty = initialSetWithReplnsConstraint.getPerStoreQty();
                     isQty = initialSetWithReplnsConstraint.getIsQty();
-                    log.debug("| IS after IS constraints with more replenishment | : {} | {} | {} | {} | {} | {}", addStoreBuyQuantity.getCustomerChoiceDto().getCcId(), sizeDto.getSizeDesc(), addStoreBuyQuantity.getMerchMethodsDto().getFixtureTypeRollupId(), isQty, perStoreQty, storeList.size());
+                    log.debug("| IS after IS constraints with more replenishment | : {} | {} | {} | {} | {} | {}", addStoreBuyQuantity.getCustomerChoiceDto().getCcId(), sizeDto.getSizeDesc(), FixtureTypeRollup.getFixtureIdFromName(rfaSizePackData.getFixture_type()), isQty, perStoreQty, storeList.size());
                 } else {
                     int storeCntWithNewQty = (int) (totalReplenishment / unitsLessThanThreshold);
                     InitialSetWithReplnsConstraint initialSetWithReplnsConstraint = buyQuantityConstraintService.getISWithLessReplenConstraint(buyQtyObj, storeCntWithNewQty, storeList, perStoreQty, rfaSizePackData, volumeCluster, sizeDto);
@@ -108,7 +109,7 @@ public class AddStoreBuyQuantityService {
                     perStoreQty = initialSetWithReplnsConstraint.getPerStoreQty();
                     isQty = initialSetWithReplnsConstraint.getIsQty();
 
-                    log.debug("| IS after IS constraints with less replenishment with new IS qty | : {} | {} | {} | {} | {} | {}", addStoreBuyQuantity.getCustomerChoiceDto().getCcId(), sizeDto.getSizeDesc(), addStoreBuyQuantity.getMerchMethodsDto().getFixtureTypeRollupId()
+                    log.debug("| IS after IS constraints with less replenishment with new IS qty | : {} | {} | {} | {} | {} | {}", addStoreBuyQuantity.getCustomerChoiceDto().getCcId(), sizeDto.getSizeDesc(), FixtureTypeRollup.getFixtureIdFromName(rfaSizePackData.getFixture_type())
                             , isQty, perStoreQty, storeList.size());
                 }
             }
@@ -140,7 +141,7 @@ public class AddStoreBuyQuantityService {
                 .map(CustomerChoice::getFixtures)
                 .stream()
                 .flatMap(Collection::stream)
-                .filter(fixture -> fixture.getFixtureTypeRollupId().equals(addStoreBuyQuantity.getMerchMethodsDto().getFixtureTypeRollupId()))
+                .filter(fixture -> fixture.getFixtureTypeRollupId().equals(FixtureTypeRollup.getFixtureIdFromName(rfaSizePackData.getFixture_type())))
                 .findFirst()
                 .map(Fixture::getClusters)
                 .stream()

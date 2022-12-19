@@ -97,11 +97,12 @@ public class CalculateBuyQuantityService {
                         calculateBuyQtyResponse =  calculateFinelineBuyQuantity.calculateFinelineBuyQty(calculateBuyQtyRequest, calculateBuyQtyParallelRequest, calculateBuyQtyResponse);
 
                         Set<SpFineLineChannelFixture> spFineLineChannelFixturesSet = calculateBuyQtyResponse.getSpFineLineChannelFixtures().stream().collect(Collectors.toSet());
+                        deleteFinelineOrphanRecords(spFineLineChannelFixturesSet);
                         spFineLineChannelFixtureRepository.saveAll(spFineLineChannelFixturesSet);
 
                         Set<MerchCatgReplPack> merchCatgReplPacksSet =  calculateBuyQtyResponse.getMerchCatgReplPacks().stream().collect(Collectors.toSet());
                         //delete orphan repln catg and sub catg
-                        deleteReplnOrphanRecords(merchCatgReplPacksSet);
+                        deleteReplnOrphanCatgRecords(merchCatgReplPacksSet);
                         merchCatgReplPackRepository.saveAll(merchCatgReplPacksSet);
                         return calculateBuyQtyResponse ;
 
@@ -135,15 +136,41 @@ public class CalculateBuyQuantityService {
         }
     }
 
-    private void deleteReplnOrphanRecords(Set<MerchCatgReplPack> merchCatgReplPacks) {
+    private void deleteFinelineOrphanRecords(Set<SpFineLineChannelFixture> spFineLineChannelFixturesSet) {
+        if (!CollectionUtils.isEmpty(spFineLineChannelFixturesSet)) {
+            log.info("Deleting Fineline Buy Qty Orphan records");
+            spFineLineChannelFixturesSet.removeIf(spFineLineChannelFixture -> CollectionUtils.isEmpty(spFineLineChannelFixture.getSpStyleChannelFixtures()));
+        }
+    }
+
+    private void deleteReplnOrphanCatgRecords(Set<MerchCatgReplPack> merchCatgReplPacks) {
         if (!CollectionUtils.isEmpty(merchCatgReplPacks)) {
-            log.info("Deleting Replenishment Orphan records");
-            merchCatgReplPacks.forEach(merchCatgReplPack -> {
-                if (!CollectionUtils.isEmpty(merchCatgReplPack.getSubReplPack())) {
-                    merchCatgReplPack.getSubReplPack().removeIf(subCatgReplPack -> CollectionUtils.isEmpty(subCatgReplPack.getFinelineReplPack()));
-                }
-            });
+            log.info("Deleting Catg Replenishment Orphan records");
+            deleteReplnOrphanSubCatgRecords(merchCatgReplPacks);
             merchCatgReplPacks.removeIf(merchCatgReplPack -> CollectionUtils.isEmpty(merchCatgReplPack.getSubReplPack()));
+        }
+    }
+
+    private void deleteReplnOrphanSubCatgRecords(Set<MerchCatgReplPack> merchCatgReplPacks) {
+        if (!CollectionUtils.isEmpty(merchCatgReplPacks)) {
+            log.info("Deleting Sub Catg Replenishment Orphan records");
+            merchCatgReplPacks.forEach(merchCatgReplPack -> deleteReplnOrphanFlRecords(merchCatgReplPack.getSubReplPack()));
+            merchCatgReplPacks.forEach(merchCatgReplPack -> merchCatgReplPack.getSubReplPack().removeIf(subCatgReplPack ->  CollectionUtils.isEmpty(subCatgReplPack.getFinelineReplPack())));
+        }
+    }
+
+    private void deleteReplnOrphanFlRecords(Set<SubCatgReplPack> subCatgReplPacks) {
+        if (!CollectionUtils.isEmpty(subCatgReplPacks)) {
+            log.info("Deleting Fineline Replenishment Orphan records");
+            subCatgReplPacks.forEach(subCatgReplPack -> deleteReplnOrphanStyleRecords(subCatgReplPack.getFinelineReplPack()));
+            subCatgReplPacks.forEach(subCatgReplPack -> subCatgReplPack.getFinelineReplPack().removeIf(finelineReplPack ->  CollectionUtils.isEmpty(finelineReplPack.getStyleReplPack())));
+        }
+    }
+
+    private void deleteReplnOrphanStyleRecords(Set<FinelineReplPack> finelineReplPacks) {
+        if (!CollectionUtils.isEmpty(finelineReplPacks)) {
+            log.info("Deleting Fineline Replenishment Orphan records");
+            finelineReplPacks.forEach(finelineReplPack -> finelineReplPack.getStyleReplPack().removeIf(styleReplPack ->  CollectionUtils.isEmpty(styleReplPack.getCcReplPack())));
         }
     }
 }
