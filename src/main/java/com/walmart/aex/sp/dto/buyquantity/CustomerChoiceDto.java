@@ -10,6 +10,7 @@ public class CustomerChoiceDto {
 
     private String ccId;
     private String colorName;
+    private String colorFamilyDesc;
     private MetricsDto metrics;
     private List<ClustersDto> clusters;
     private List<MerchMethodsDto> merchMethods;

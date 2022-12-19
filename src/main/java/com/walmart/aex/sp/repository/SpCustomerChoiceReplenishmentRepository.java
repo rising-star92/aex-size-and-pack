@@ -136,7 +136,9 @@ public interface SpCustomerChoiceReplenishmentRepository extends JpaRepository<C
             "crp.finalBuyUnits as ccBuyQty, " +
             "crp.replUnits as ccReplnQty, " +
             "crp.replUnits as ccAdjReplnQty, " +
-            "msp.merchCatPlanId.channelId as channelId " +
+            "msp.merchCatPlanId.channelId as channelId, " +
+            "ccp.colorFamilyDesc as colorFamilyDesc, " +
+            "ccp.colorName as colorName " +
             ") " +
             "from MerchCatPlan msp " +
             "inner join " +
