@@ -41,15 +41,15 @@ public class  BuyQtyResponseInputs {
     {
         BuyQntyResponseDTO buyQntyResponseDTO1 = new BuyQntyResponseDTO(471l, 50000, 34, 6419,
                 12228, 31507, 2855, "34_2855_4_19_8", "34_2855_4_19_8_BLACK SOOT",
-                1125, 1125, 1125, 1125,1125,1125,2,"Red family","Red");
+                1125, 1125, 1125, 1125,1125,1125,2,"Red color family","Red");
 
         BuyQntyResponseDTO buyQntyResponseDTO = new BuyQntyResponseDTO(471l, 50000, 34, 6419,
                 12228, 31507, 2855, "34_2855_4_19_8", "34_5471_3_24_001_CHINO TAN",
-                1125, 1125, 1125, 1125,1125,1125,2, "Green family","Green");
+                1125, 1125, 1125, 1125,1125,1125,2, "Green color family","Green");
 
         BuyQntyResponseDTO buyQntyResponseDTO2 = new BuyQntyResponseDTO(471l, 50000, 34, 6419,
                 12229, 31508, 2855, "34_2855_4_20_8", "34_2855_4_20_8_BLACK SOOT",
-                1125, 1125, 1125, 1125,1125,1125,2,"Black family", "Black");
+                1125, 1125, 1125, 1125,1125,1125,2,"Black color family", "Black");
 
         List<BuyQntyResponseDTO> buyQntyResponseDTOS = new ArrayList<>();
         buyQntyResponseDTOS.add(buyQntyResponseDTO1);
