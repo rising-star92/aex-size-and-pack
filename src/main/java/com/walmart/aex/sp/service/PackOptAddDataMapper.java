@@ -39,6 +39,7 @@ public class PackOptAddDataMapper {
 
     private final SizeAndPackObjectMapper sizeAndPackObjectMapper;
     private final MerchPackOptimizationRepository merchPackOptimizationRepository;
+    private static final Integer DEFAULT_SINGLE_PACK_INDICATOR = 0;
 
     public PackOptAddDataMapper(SizeAndPackObjectMapper sizeAndPackObjectMapper, MerchPackOptimizationRepository merchPackOptimizationRepository) {
         this.sizeAndPackObjectMapper = sizeAndPackObjectMapper;
@@ -61,7 +62,7 @@ public class PackOptAddDataMapper {
                 //Other values has to be updated later after defining proper contract
                 merchantPackOptimization.setMaxNbrOfPacks(50);
                 merchantPackOptimization.setMaxUnitsPerPack(36);
-                merchantPackOptimization.setSinglePackInd(1);
+                merchantPackOptimization.setSinglePackInd(DEFAULT_SINGLE_PACK_INDICATOR);
 
                 if (!CollectionUtils.isEmpty(lvl3.getLvl4List())) {
                     merchantPackOptimization.setSubCatgPackOptimization(setSubCatPackOpt(merchantPackOptimization, lvl3.getLvl4List()));
@@ -89,7 +90,7 @@ public class PackOptAddDataMapper {
             //Other values has to be updated later after defining proper contract
             subCatgPackOptimization.setMaxNbrOfPacks(50);
             subCatgPackOptimization.setMaxUnitsPerPack(36);
-            subCatgPackOptimization.setSinglePackInd(1);
+            subCatgPackOptimization.setSinglePackInd(DEFAULT_SINGLE_PACK_INDICATOR);
 
 
             if (!CollectionUtils.isEmpty(lvl4.getFinelines())) {
@@ -117,7 +118,7 @@ public class PackOptAddDataMapper {
             //Other values has to be updated later after defining proper contract
             fineLinePackOptimization.setMaxNbrOfPacks(50);
             fineLinePackOptimization.setMaxUnitsPerPack(36);
-            fineLinePackOptimization.setSinglePackInd(1);
+            fineLinePackOptimization.setSinglePackInd(DEFAULT_SINGLE_PACK_INDICATOR);
 
 
             if (!CollectionUtils.isEmpty(fineline.getStyles())) {
@@ -146,7 +147,7 @@ public class PackOptAddDataMapper {
             //Other values has to be updated later after defining proper contract
             stylePackOptimization.setMaxNbrOfPacks(50);
             stylePackOptimization.setMaxUnitsPerPack(36);
-            stylePackOptimization.setSinglePackInd(1);
+            stylePackOptimization.setSinglePackInd(DEFAULT_SINGLE_PACK_INDICATOR);
 
             if (!CollectionUtils.isEmpty(style.getCustomerChoices())) {
                 stylePackOptimization.setCcPackOptimization(setCustChoicePackOpt(stylePackOptimization, style.getCustomerChoices()));
@@ -175,7 +176,7 @@ public class PackOptAddDataMapper {
             //Other values has to be updated later after defining proper contract
             ccPackOptimization.setMaxNbrOfPacks(50);
             ccPackOptimization.setMaxUnitsPerPack(36);
-            ccPackOptimization.setSinglePackInd(1);
+            ccPackOptimization.setSinglePackInd(DEFAULT_SINGLE_PACK_INDICATOR);
 
             if (customerChoice.getConstraints() != null) {
                 Constraints constraints = customerChoice.getConstraints();
