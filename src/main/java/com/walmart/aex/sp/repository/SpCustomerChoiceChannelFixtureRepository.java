@@ -4,10 +4,13 @@ import com.walmart.aex.sp.dto.buyquantity.BuyQntyResponseDTO;
 import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixture;
 import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixtureId;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Set;
 
 public interface SpCustomerChoiceChannelFixtureRepository extends JpaRepository<SpCustomerChoiceChannelFixture, SpCustomerChoiceChannelFixtureId> {
 
@@ -116,5 +119,10 @@ public interface SpCustomerChoiceChannelFixtureRepository extends JpaRepository<
                                                              @Param("finelineNbr") Integer finelineNbr);
 
     void deleteBySpCustomerChoiceChannelFixtureId_SpStyleChannelFixtureId_SpFineLineChannelFixtureId_planIdAndSpCustomerChoiceChannelFixtureId_SpStyleChannelFixtureId_SpFineLineChannelFixtureId_lvl3NbrAndSpCustomerChoiceChannelFixtureId_SpStyleChannelFixtureId_SpFineLineChannelFixtureId_lvl4NbrAndSpCustomerChoiceChannelFixtureId_SpStyleChannelFixtureId_SpFineLineChannelFixtureId_fineLineNbrAndSpCustomerChoiceChannelFixtureId_SpStyleChannelFixtureId_styleNbrAndSpCustomerChoiceChannelFixtureId_customerChoice(Long planId, Integer lvl3Nbr, Integer lvl4Nbr,Integer fineLineNbr, String styleNbr, String customerChoice);
+
+    @Transactional
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query(value = "delete from dbo.sp_cc_chan_fixtr where plan_id = :planId and channel_id = :channelId and fineline_nbr in (:finelineNbrs)", nativeQuery = true)
+    void deleteByPlanIdFinelineIdChannelId(@Param("planId") Long planId, @Param("channelId") Integer channelId, @Param("finelineNbrs") Set<Integer> finelineNbrs);
 
 }

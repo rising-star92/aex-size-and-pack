@@ -5,7 +5,6 @@ import com.walmart.aex.sp.dto.buyquantity.CalculateBuyQtyRequest;
 import com.walmart.aex.sp.dto.buyquantity.CalculateBuyQtyResponse;
 import com.walmart.aex.sp.entity.MerchCatgReplPack;
 import com.walmart.aex.sp.entity.SpFineLineChannelFixture;
-import com.walmart.aex.sp.entity.SubCatgReplPack;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.repository.SpFineLineChannelFixtureRepository;
@@ -80,21 +79,18 @@ public class CalculateBuyQuantityService {
     }
 
     private void calculateFinelinesParallel(CalculateBuyQtyRequest calculateBuyQtyRequest, List<CalculateBuyQtyParallelRequest> calculateBuyQtyParallelRequests) {
-        List<SpFineLineChannelFixture> spFineLineChannelFixtures1 = spFineLineChannelFixtureRepository.findSpFineLineChannelFixtureBySpFineLineChannelFixtureId_planIdAndSpFineLineChannelFixtureId_channelId(calculateBuyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(calculateBuyQtyRequest.getChannel())).orElse(new ArrayList<>());
 
-        Set<SpFineLineChannelFixture> finelinesToDelete = new HashSet<>();
         Set<Integer> replFinelinesToDelete = new HashSet<>();
 
         calculateBuyQtyParallelRequests.forEach(parallelRequest -> {
-            spFineLineChannelFixtures1.stream()
-                  .filter(spFineLineChannelFixture -> spFineLineChannelFixture.getSpFineLineChannelFixtureId().getFineLineNbr().equals(parallelRequest.getFinelineNbr()))
-                  .forEach(finelinesToDelete::add);
-
             replFinelinesToDelete.add(parallelRequest.getFinelineNbr());
-
         });
 
         deleteExistingReplnValues(calculateBuyQtyRequest, replFinelinesToDelete);
+        deleteExistingData(calculateBuyQtyRequest, replFinelinesToDelete);
+
+        List<SpFineLineChannelFixture> spFineLineChannelFixtures1 = spFineLineChannelFixtureRepository.findSpFineLineChannelFixtureBySpFineLineChannelFixtureId_planIdAndSpFineLineChannelFixtureId_channelId(calculateBuyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(calculateBuyQtyRequest.getChannel())).orElse(new ArrayList<>());
+
         List<MerchCatgReplPack> merchCatgReplPacks = replenishmentCommonRepository.getMerchCatgReplPackRepository().findMerchCatgReplPackByMerchCatgReplPackId_planIdAndMerchCatgReplPackId_channelId(calculateBuyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(calculateBuyQtyRequest.getChannel())).orElse(new ArrayList<>());
 
         List<CompletableFuture<CalculateBuyQtyResponse>> completableFutures = calculateBuyQtyParallelRequests.stream().map(calculateBuyQtyParallelRequest -> CompletableFuture.supplyAsync(() -> {
@@ -158,24 +154,15 @@ public class CalculateBuyQuantityService {
               .map(CalculateBuyQtyResponse::getMerchCatgReplPacks)
               .flatMap(Collection::stream)
               .collect(Collectors.toSet());
-        deleteReplnOrphanCatgRecords(allMerchCatReplns);
 
         Set<SpFineLineChannelFixture> allSPFinelineChannelFixtures = responses
               .stream()
               .map(CalculateBuyQtyResponse::getSpFineLineChannelFixtures)
               .flatMap(Collection::stream)
               .collect(Collectors.toSet());
-        deleteFinelineOrphanRecords(allSPFinelineChannelFixtures);
 
         spFineLineChannelFixtureRepository.saveAll(allSPFinelineChannelFixtures);
         replenishmentCommonRepository.getMerchCatgReplPackRepository().saveAll(allMerchCatReplns);
-    }
-
-    private void deleteFinelineOrphanRecords(Set<SpFineLineChannelFixture> spFineLineChannelFixturesSet) {
-        if (!CollectionUtils.isEmpty(spFineLineChannelFixturesSet)) {
-            log.info("Deleting Fineline Buy Qty Orphan records");
-            spFineLineChannelFixturesSet.removeIf(spFineLineChannelFixture -> CollectionUtils.isEmpty(spFineLineChannelFixture.getSpStyleChannelFixtures()));
-        }
     }
 
     private void deleteExistingReplnValues(CalculateBuyQtyRequest calculateBuyQtyRequest, Set<Integer> replFinelinesToDelete) {
@@ -185,26 +172,10 @@ public class CalculateBuyQuantityService {
         replenishmentCommonRepository.getStyleReplenishmentRepository().deleteByPlanIdFinelineIdChannelId(calculateBuyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(calculateBuyQtyRequest.getChannel()), replFinelinesToDelete);
     }
 
-    private void deleteReplnOrphanCatgRecords(Set<MerchCatgReplPack> merchCatgReplPacks) {
-        if (!CollectionUtils.isEmpty(merchCatgReplPacks)) {
-            log.info("Deleting Catg Replenishment Orphan records");
-            deleteReplnOrphanSubCatgRecords(merchCatgReplPacks);
-            merchCatgReplPacks.removeIf(merchCatgReplPack -> CollectionUtils.isEmpty(merchCatgReplPack.getSubReplPack()));
-        }
-    }
-
-    private void deleteReplnOrphanSubCatgRecords(Set<MerchCatgReplPack> merchCatgReplPacks) {
-        if (!CollectionUtils.isEmpty(merchCatgReplPacks)) {
-            log.info("Deleting Sub Catg Replenishment Orphan records");
-            merchCatgReplPacks.forEach(merchCatgReplPack -> deleteReplnOrphanFlRecords(merchCatgReplPack.getSubReplPack()));
-            merchCatgReplPacks.forEach(merchCatgReplPack -> merchCatgReplPack.getSubReplPack().removeIf(subCatgReplPack ->  CollectionUtils.isEmpty(subCatgReplPack.getFinelineReplPack())));
-        }
-    }
-
-    private void deleteReplnOrphanFlRecords(Set<SubCatgReplPack> subCatgReplPacks) {
-        if (!CollectionUtils.isEmpty(subCatgReplPacks)) {
-            log.info("Deleting Fineline Replenishment Orphan records");
-            subCatgReplPacks.forEach(subCatgReplPack -> subCatgReplPack.getFinelineReplPack().removeIf(finelineReplPack ->  CollectionUtils.isEmpty(finelineReplPack.getStyleReplPack())));
-        }
+    private void deleteExistingData(CalculateBuyQtyRequest calculateBuyQtyRequest, Set<Integer> replFinelinesToDelete) {
+        replenishmentCommonRepository.getSpCustomerChoiceChannelFixtureSizeRepository().deleteByPlanIdFinelineIdChannelId(calculateBuyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(calculateBuyQtyRequest.getChannel()), replFinelinesToDelete);
+        replenishmentCommonRepository.getSpCustomerChoiceChannelFixtureRepository().deleteByPlanIdFinelineIdChannelId(calculateBuyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(calculateBuyQtyRequest.getChannel()), replFinelinesToDelete);
+        replenishmentCommonRepository.getSpStyleChannelFixtureRepository().deleteByPlanIdFinelineIdChannelId(calculateBuyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(calculateBuyQtyRequest.getChannel()), replFinelinesToDelete);
+        replenishmentCommonRepository.getSpFineLineChannelFixtureRepository().deleteByPlanIdFinelineIdChannelId(calculateBuyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(calculateBuyQtyRequest.getChannel()), replFinelinesToDelete);
     }
 }

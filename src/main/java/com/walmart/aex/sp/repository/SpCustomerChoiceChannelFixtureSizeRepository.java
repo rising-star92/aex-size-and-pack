@@ -4,10 +4,13 @@ import com.walmart.aex.sp.dto.buyquantity.BuyQntyResponseDTO;
 import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixtureSize;
 import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixtureSizeId;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Set;
 
 public interface SpCustomerChoiceChannelFixtureSizeRepository extends JpaRepository<SpCustomerChoiceChannelFixtureSize, SpCustomerChoiceChannelFixtureSizeId> {
     @Query(value="select new com.walmart.aex.sp.dto.buyquantity.BuyQntyResponseDTO(msp.merchCatPlanId.planId, " +
@@ -91,4 +94,9 @@ public interface SpCustomerChoiceChannelFixtureSizeRepository extends JpaReposit
             "(sccfs.spCustomerChoiceChannelFixtureSizeId.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.channelId is NULL or sccfs.spCustomerChoiceChannelFixtureSizeId.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.channelId = :channelId) ")
     List<BuyQntyResponseDTO> getSizeBuyQntyByPlanChannelCc(@Param("planId") Long planId, @Param("channelId") Integer channelId,
                                                              @Param("ccId") String ccId);
+
+    @Transactional
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query(value = "delete from dbo.sp_cc_chan_fixtr_size where plan_id = :planId and channel_id = :channelId and fineline_nbr in (:finelineNbrs)", nativeQuery = true)
+    void deleteByPlanIdFinelineIdChannelId(@Param("planId") Long planId, @Param("channelId") Integer channelId, @Param("finelineNbrs") Set<Integer> finelineNbrs);
 }
