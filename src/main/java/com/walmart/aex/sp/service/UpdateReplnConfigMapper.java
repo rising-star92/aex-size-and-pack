@@ -236,7 +236,7 @@ public class UpdateReplnConfigMapper {
 		});
 	}
 
-    private Integer getReplenishmentPackCount(Integer replenishmentUnits, Integer vnpk) {
+    public static Integer getReplenishmentPackCount(Integer replenishmentUnits, Integer vnpk) {
         Integer replenishmentPackCount = null;
         if (replenishmentUnits != null && replenishmentUnits != 0 && vnpk != null && vnpk != 0) {
             replenishmentPackCount = (replenishmentUnits / vnpk);

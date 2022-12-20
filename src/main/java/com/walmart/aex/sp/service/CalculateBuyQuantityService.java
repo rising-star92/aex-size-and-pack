@@ -108,6 +108,7 @@ public class CalculateBuyQuantityService {
 
                     } catch (Exception e) {
                         log.error("Failed to get Size profiles: ", e);
+
                         throw new CustomException("Failed to calculate buy quantity: " + e);
                     }
                 })

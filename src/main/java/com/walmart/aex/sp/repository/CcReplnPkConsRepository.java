@@ -29,5 +29,5 @@ public interface CcReplnPkConsRepository extends JpaRepository <CcReplPack, CcRe
 			"and crp.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.planId=:planId " +
 			"and crp.ccReplPackId.customerChoice=:ccId " +
 			"and crp.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId=1")
-	Optional<CcReplPack> findByPlanIdAndCCId(@Param("planId")  Long planId, @Param("finelineNbr")  Integer finelineNbr,@Param("ccId")  String ccId);
+	Optional<List<CcReplPack>> findByPlanIdAndCCId(@Param("planId")  Long planId, @Param("finelineNbr")  Integer finelineNbr,@Param("ccId")  String ccId);
 }

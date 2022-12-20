@@ -30,6 +30,6 @@ public interface CcMmReplnPkConsRepository extends JpaRepository <CcMmReplPack, 
 			"and  csmrp.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.fixtureTypeRollupId=:fixtureId " +
 			"and csmrp.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId=1" +
 			"")
-	Optional<CcMmReplPack> findCcMmReplnPkConsData(@Param("planId")Long planId, @Param("fineline") Integer fineline, @Param("customerChoice") String customerChoice,
+	Optional<List<CcMmReplPack>> findCcMmReplnPkConsData(@Param("planId")Long planId, @Param("fineline") Integer fineline, @Param("customerChoice") String customerChoice,
 												  @Param("merchMethodDesc") Integer merchMethodDesc, @Param("fixtureId") Integer fixtureId);
 }
