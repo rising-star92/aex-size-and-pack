@@ -5,6 +5,7 @@ import com.walmart.aex.sp.dto.buyquantity.CalculateBuyQtyRequest;
 import com.walmart.aex.sp.dto.buyquantity.CalculateBuyQtyResponse;
 import com.walmart.aex.sp.entity.MerchCatgReplPack;
 import com.walmart.aex.sp.entity.SpFineLineChannelFixture;
+import com.walmart.aex.sp.entity.SubCatgReplPack;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.repository.SpFineLineChannelFixtureRepository;
@@ -119,9 +120,11 @@ public class CalculateBuyQuantityService {
 
                         calculateBuyQtyResponse =  calculateFinelineBuyQuantity.calculateFinelineBuyQty(calculateBuyQtyRequest, calculateBuyQtyParallelRequest, calculateBuyQtyResponse);
 
-                        Set<SpFineLineChannelFixture> spFineLineChannelFixturesSet = calculateBuyQtyResponse.getSpFineLineChannelFixtures().stream().collect(Collectors.toSet());
+                        Set<SpFineLineChannelFixture> spFineLineChannelFixturesSet = new HashSet<>(calculateBuyQtyResponse.getSpFineLineChannelFixtures());
+                        deleteFinelineOrphanRecords(spFineLineChannelFixturesSet);
 
-                        Set<MerchCatgReplPack> merchCatgReplPacksSet =  calculateBuyQtyResponse.getMerchCatgReplPacks().stream().collect(Collectors.toSet());
+                        Set<MerchCatgReplPack> merchCatgReplPacksSet = new HashSet<>(calculateBuyQtyResponse.getMerchCatgReplPacks());
+                        deleteReplnOrphanCatgRecords(merchCatgReplPacksSet);
                         return calculateBuyQtyResponse ;
 
                     } catch (Exception e) {
@@ -130,6 +133,7 @@ public class CalculateBuyQuantityService {
                     }
                 })
         ).collect(Collectors.toList());
+
         CompletableFuture.allOf(completableFutures.toArray(new CompletableFuture[calculateBuyQtyParallelRequests.size()]));
         List<CalculateBuyQtyResponse> responses = completableFutures
                 .stream()
@@ -145,11 +149,8 @@ public class CalculateBuyQuantityService {
                     throw new CustomException("Failed to Execute calculate buy quantity");
                 }
                 	 return null;
-                	 
-                
-                })
+                }).collect(Collectors.toList());
 
-              .collect(Collectors.toList());
         if (completableFutures.size() != calculateBuyQtyParallelRequests.size()) {
             throw new CustomException("Not All finelines complted successfully");
         }
@@ -171,10 +172,40 @@ public class CalculateBuyQuantityService {
         replenishmentCommonRepository.getMerchCatgReplPackRepository().saveAll(allMerchCatReplns);
     }
 
+    private void deleteFinelineOrphanRecords(Set<SpFineLineChannelFixture> spFineLineChannelFixturesSet) {
+        if (!CollectionUtils.isEmpty(spFineLineChannelFixturesSet)) {
+            log.info("Deleting Fineline Buy Qty Orphan records");
+            spFineLineChannelFixturesSet.removeIf(spFineLineChannelFixture -> CollectionUtils.isEmpty(spFineLineChannelFixture.getSpStyleChannelFixtures()));
+        }
+    }
+
     private void deleteExistingReplnValues(CalculateBuyQtyRequest calculateBuyQtyRequest, Set<Integer> replFinelinesToDelete) {
         replenishmentCommonRepository.getCcSpReplnPkConsRepository().deleteByPlanIdFinelineIdChannelId(calculateBuyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(calculateBuyQtyRequest.getChannel()), replFinelinesToDelete);
         replenishmentCommonRepository.getCcMmReplnPkConsRepository().deleteByPlanIdFinelineIdChannelId(calculateBuyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(calculateBuyQtyRequest.getChannel()), replFinelinesToDelete);
         replenishmentCommonRepository.getCcReplnPkConsRepository().deleteByPlanIdFinelineIdChannelId(calculateBuyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(calculateBuyQtyRequest.getChannel()), replFinelinesToDelete);
         replenishmentCommonRepository.getStyleReplenishmentRepository().deleteByPlanIdFinelineIdChannelId(calculateBuyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(calculateBuyQtyRequest.getChannel()), replFinelinesToDelete);
+    }
+
+    private void deleteReplnOrphanCatgRecords(Set<MerchCatgReplPack> merchCatgReplPacks) {
+        if (!CollectionUtils.isEmpty(merchCatgReplPacks)) {
+            log.info("Deleting Catg Replenishment Orphan records");
+            deleteReplnOrphanSubCatgRecords(merchCatgReplPacks);
+            merchCatgReplPacks.removeIf(merchCatgReplPack -> CollectionUtils.isEmpty(merchCatgReplPack.getSubReplPack()));
+        }
+    }
+
+    private void deleteReplnOrphanSubCatgRecords(Set<MerchCatgReplPack> merchCatgReplPacks) {
+        if (!CollectionUtils.isEmpty(merchCatgReplPacks)) {
+            log.info("Deleting Sub Catg Replenishment Orphan records");
+            merchCatgReplPacks.forEach(merchCatgReplPack -> deleteReplnOrphanFlRecords(merchCatgReplPack.getSubReplPack()));
+            merchCatgReplPacks.forEach(merchCatgReplPack -> merchCatgReplPack.getSubReplPack().removeIf(subCatgReplPack ->  CollectionUtils.isEmpty(subCatgReplPack.getFinelineReplPack())));
+        }
+    }
+
+    private void deleteReplnOrphanFlRecords(Set<SubCatgReplPack> subCatgReplPacks) {
+        if (!CollectionUtils.isEmpty(subCatgReplPacks)) {
+            log.info("Deleting Fineline Replenishment Orphan records");
+            subCatgReplPacks.forEach(subCatgReplPack -> subCatgReplPack.getFinelineReplPack().removeIf(finelineReplPack ->  CollectionUtils.isEmpty(finelineReplPack.getStyleReplPack())));
+        }
     }
 }
