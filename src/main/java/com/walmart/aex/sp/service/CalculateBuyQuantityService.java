@@ -7,7 +7,7 @@ import com.walmart.aex.sp.entity.MerchCatgReplPack;
 import com.walmart.aex.sp.entity.SpFineLineChannelFixture;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.exception.CustomException;
-import com.walmart.aex.sp.repository.SpFineLineChannelFixtureRepository;
+import com.walmart.aex.sp.repository.common.BuyQuantityCommonRepository;
 import com.walmart.aex.sp.repository.common.ReplenishmentCommonRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,18 +27,17 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class CalculateBuyQuantityService {
-
-    private final CalculateFinelineBuyQuantity calculateFinelineBuyQuantity;
-    private final SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository;
-
+    private final BuyQuantityCommonRepository buyQuantityCommonRepository;
     private final ReplenishmentCommonRepository replenishmentCommonRepository;
 
-    public CalculateBuyQuantityService(CalculateFinelineBuyQuantity calculateFinelineBuyQuantity,
-                                       SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository,
-                                       ReplenishmentCommonRepository replenishmentCommonRepository) {
-        this.calculateFinelineBuyQuantity = calculateFinelineBuyQuantity;
-        this.spFineLineChannelFixtureRepository = spFineLineChannelFixtureRepository;
+    private final CalculateFinelineBuyQuantity calculateFinelineBuyQuantity;
+
+    public CalculateBuyQuantityService(BuyQuantityCommonRepository buyQuantityCommonRepository,
+                                       ReplenishmentCommonRepository replenishmentCommonRepository,
+                                       CalculateFinelineBuyQuantity calculateFinelineBuyQuantity) {
+        this.buyQuantityCommonRepository = buyQuantityCommonRepository;
         this.replenishmentCommonRepository = replenishmentCommonRepository;
+        this.calculateFinelineBuyQuantity = calculateFinelineBuyQuantity;
     }
 
     @Transactional
@@ -87,7 +86,7 @@ public class CalculateBuyQuantityService {
         deleteExistingReplnValues(calculateBuyQtyRequest, finelinesToDelete);
         deleteExistingBuyQuantityValues(calculateBuyQtyRequest, finelinesToDelete);
 
-        List<SpFineLineChannelFixture> spFineLineChannelFixtures1 = spFineLineChannelFixtureRepository.findSpFineLineChannelFixtureBySpFineLineChannelFixtureId_planIdAndSpFineLineChannelFixtureId_channelId(calculateBuyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(calculateBuyQtyRequest.getChannel())).orElse(new ArrayList<>());
+        List<SpFineLineChannelFixture> spFineLineChannelFixtures1 = buyQuantityCommonRepository.getSpFineLineChannelFixtureRepository().findSpFineLineChannelFixtureBySpFineLineChannelFixtureId_planIdAndSpFineLineChannelFixtureId_channelId(calculateBuyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(calculateBuyQtyRequest.getChannel())).orElse(new ArrayList<>());
 
         List<MerchCatgReplPack> merchCatgReplPacks = replenishmentCommonRepository.getMerchCatgReplPackRepository().findMerchCatgReplPackByMerchCatgReplPackId_planIdAndMerchCatgReplPackId_channelId(calculateBuyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(calculateBuyQtyRequest.getChannel())).orElse(new ArrayList<>());
 
@@ -159,7 +158,7 @@ public class CalculateBuyQuantityService {
               .flatMap(Collection::stream)
               .collect(Collectors.toSet());
 
-        spFineLineChannelFixtureRepository.saveAll(allSPFinelineChannelFixtures);
+        buyQuantityCommonRepository.getSpFineLineChannelFixtureRepository().saveAll(allSPFinelineChannelFixtures);
         replenishmentCommonRepository.getMerchCatgReplPackRepository().saveAll(allMerchCatReplns);
     }
 
@@ -171,9 +170,9 @@ public class CalculateBuyQuantityService {
     }
 
     private void deleteExistingBuyQuantityValues(CalculateBuyQtyRequest calculateBuyQtyRequest, Set<Integer> replFinelinesToDelete) {
-        replenishmentCommonRepository.getSpCustomerChoiceChannelFixtureSizeRepository().deleteByPlanIdFinelineIdChannelId(calculateBuyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(calculateBuyQtyRequest.getChannel()), replFinelinesToDelete);
-        replenishmentCommonRepository.getSpCustomerChoiceChannelFixtureRepository().deleteByPlanIdFinelineIdChannelId(calculateBuyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(calculateBuyQtyRequest.getChannel()), replFinelinesToDelete);
-        replenishmentCommonRepository.getSpStyleChannelFixtureRepository().deleteByPlanIdFinelineIdChannelId(calculateBuyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(calculateBuyQtyRequest.getChannel()), replFinelinesToDelete);
+        buyQuantityCommonRepository.getSpCustomerChoiceChannelFixtureSizeRepository().deleteByPlanIdFinelineIdChannelId(calculateBuyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(calculateBuyQtyRequest.getChannel()), replFinelinesToDelete);
+        buyQuantityCommonRepository.getSpCustomerChoiceChannelFixtureRepository().deleteByPlanIdFinelineIdChannelId(calculateBuyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(calculateBuyQtyRequest.getChannel()), replFinelinesToDelete);
+        buyQuantityCommonRepository.getSpStyleChannelFixtureRepository().deleteByPlanIdFinelineIdChannelId(calculateBuyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(calculateBuyQtyRequest.getChannel()), replFinelinesToDelete);
         replenishmentCommonRepository.getSpFineLineChannelFixtureRepository().deleteByPlanIdFinelineIdChannelId(calculateBuyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(calculateBuyQtyRequest.getChannel()), replFinelinesToDelete);
     }
 }
