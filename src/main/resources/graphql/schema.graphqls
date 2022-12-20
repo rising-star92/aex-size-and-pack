@@ -322,6 +322,7 @@ type CustomerChoiceDto {
     ccId: String
     channelId: Int
     colorName: String
+    colorFamilyDesc: String
     metrics: MetricsDto
     clusters: [ClustersDto]
     merchMethods : [MerchMethodsDto]
