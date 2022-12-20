@@ -80,14 +80,12 @@ public class CalculateBuyQuantityService {
 
     private void calculateFinelinesParallel(CalculateBuyQtyRequest calculateBuyQtyRequest, List<CalculateBuyQtyParallelRequest> calculateBuyQtyParallelRequests) {
 
-        Set<Integer> replFinelinesToDelete = new HashSet<>();
+        Set<Integer> finelinesToDelete = calculateBuyQtyParallelRequests.stream()
+              .map(CalculateBuyQtyParallelRequest::getFinelineNbr)
+              .collect(Collectors.toSet());
 
-        calculateBuyQtyParallelRequests.forEach(parallelRequest -> {
-            replFinelinesToDelete.add(parallelRequest.getFinelineNbr());
-        });
-
-        deleteExistingReplnValues(calculateBuyQtyRequest, replFinelinesToDelete);
-        deleteExistingData(calculateBuyQtyRequest, replFinelinesToDelete);
+        deleteExistingReplnValues(calculateBuyQtyRequest, finelinesToDelete);
+        deleteExistingBuyQuantityValues(calculateBuyQtyRequest, finelinesToDelete);
 
         List<SpFineLineChannelFixture> spFineLineChannelFixtures1 = spFineLineChannelFixtureRepository.findSpFineLineChannelFixtureBySpFineLineChannelFixtureId_planIdAndSpFineLineChannelFixtureId_channelId(calculateBuyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(calculateBuyQtyRequest.getChannel())).orElse(new ArrayList<>());
 
@@ -172,7 +170,7 @@ public class CalculateBuyQuantityService {
         replenishmentCommonRepository.getStyleReplenishmentRepository().deleteByPlanIdFinelineIdChannelId(calculateBuyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(calculateBuyQtyRequest.getChannel()), replFinelinesToDelete);
     }
 
-    private void deleteExistingData(CalculateBuyQtyRequest calculateBuyQtyRequest, Set<Integer> replFinelinesToDelete) {
+    private void deleteExistingBuyQuantityValues(CalculateBuyQtyRequest calculateBuyQtyRequest, Set<Integer> replFinelinesToDelete) {
         replenishmentCommonRepository.getSpCustomerChoiceChannelFixtureSizeRepository().deleteByPlanIdFinelineIdChannelId(calculateBuyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(calculateBuyQtyRequest.getChannel()), replFinelinesToDelete);
         replenishmentCommonRepository.getSpCustomerChoiceChannelFixtureRepository().deleteByPlanIdFinelineIdChannelId(calculateBuyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(calculateBuyQtyRequest.getChannel()), replFinelinesToDelete);
         replenishmentCommonRepository.getSpStyleChannelFixtureRepository().deleteByPlanIdFinelineIdChannelId(calculateBuyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(calculateBuyQtyRequest.getChannel()), replFinelinesToDelete);
