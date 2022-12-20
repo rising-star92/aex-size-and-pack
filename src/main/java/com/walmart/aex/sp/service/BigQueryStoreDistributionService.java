@@ -75,7 +75,7 @@ public class BigQueryStoreDistributionService {
 		return "WITH MyTable AS ((select distinct RFA.finelineNbr, RFA.styleNbr,RFA.inStoreWeek, SP.packId, SP.store, (SP.initialPackMultiplier) AS initialPackMultiplier from "
 				+ "(select fineline as finelineNbr, reverse( SUBSTR(REVERSE(trim(cc)), STRPOS(REVERSE(trim(cc)), \"_\")+1)) as styleNbr,trim(cc) as cc, CAST(store AS INTEGER) as store, min(week) as inStoreWeek "
 				+ "from `" + parquetTableName + "` as RFA where plan_id_partition=" + planId + " and fineline="
-				+ fineline + " and final_alloc_space>0"
+				+ fineline + " and final_alloc_space>0 and week=" + inStoreWeek
 				+ " group by finelineNbr, styleNbr,cc,store "
 				+ "order by finelineNbr, styleNbr,cc, inStoreWeek, store ) as RFA " + "join "
 				+ "(SELECT trim(SP.ProductCustomerChoice)as cc,SP.store, SP.SPPackID as packId, SP.MerchMethod as merch_method, SP.size, "
