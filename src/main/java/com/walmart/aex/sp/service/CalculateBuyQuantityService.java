@@ -121,10 +121,7 @@ public class CalculateBuyQuantityService {
                         calculateBuyQtyResponse =  calculateFinelineBuyQuantity.calculateFinelineBuyQty(calculateBuyQtyRequest, calculateBuyQtyParallelRequest, calculateBuyQtyResponse);
 
                         Set<SpFineLineChannelFixture> spFineLineChannelFixturesSet = new HashSet<>(calculateBuyQtyResponse.getSpFineLineChannelFixtures());
-                        deleteFinelineOrphanRecords(spFineLineChannelFixturesSet);
-
                         Set<MerchCatgReplPack> merchCatgReplPacksSet = new HashSet<>(calculateBuyQtyResponse.getMerchCatgReplPacks());
-                        deleteReplnOrphanCatgRecords(merchCatgReplPacksSet);
                         return calculateBuyQtyResponse ;
 
                     } catch (Exception e) {
@@ -161,12 +158,14 @@ public class CalculateBuyQuantityService {
               .map(CalculateBuyQtyResponse::getMerchCatgReplPacks)
               .flatMap(Collection::stream)
               .collect(Collectors.toSet());
+        deleteReplnOrphanCatgRecords(allMerchCatReplns);
 
         Set<SpFineLineChannelFixture> allSPFinelineChannelFixtures = responses
               .stream()
               .map(CalculateBuyQtyResponse::getSpFineLineChannelFixtures)
               .flatMap(Collection::stream)
               .collect(Collectors.toSet());
+        deleteFinelineOrphanRecords(allSPFinelineChannelFixtures);
 
         spFineLineChannelFixtureRepository.saveAll(allSPFinelineChannelFixtures);
         replenishmentCommonRepository.getMerchCatgReplPackRepository().saveAll(allMerchCatReplns);
