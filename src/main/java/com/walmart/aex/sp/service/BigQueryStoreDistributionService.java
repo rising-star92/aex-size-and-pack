@@ -72,7 +72,7 @@ public class BigQueryStoreDistributionService {
 
 	private String getStoreDistributionQuery(String parquetTableName, String packOptOutputTableName,
 			String planAndFineline, Long planId, Integer fineline, Long inStoreWeek, String packId) {
-		return "WITH MyTable AS (select distinct RFA.finelineNbr, RFA.styleNbr,RFA.inStoreWeek, SP.packId, SP.store, (SP.initialPackMultiplier) AS initialPackMultiplier from "
+		return "WITH MyTable AS ((select distinct RFA.finelineNbr, RFA.styleNbr,RFA.inStoreWeek, SP.packId, SP.store, (SP.initialPackMultiplier) AS initialPackMultiplier from "
 				+ "(select fineline as finelineNbr, reverse( SUBSTR(REVERSE(trim(cc)), STRPOS(REVERSE(trim(cc)), \"_\")+1)) as styleNbr,trim(cc) as cc, CAST(store AS INTEGER) as store, min(week) as inStoreWeek "
 				+ "from `" + parquetTableName + "` as RFA where plan_id_partition=" + planId + " and fineline="
 				+ fineline + " and final_alloc_space>0 and week=" + inStoreWeek
@@ -84,7 +84,21 @@ public class BigQueryStoreDistributionService {
 				+ "SPInitialSetPackMultiplier>0 and SP.SPPackID='" + packId
 				+ "') as SP on RFA.store = SP.store and RFA.cc = SP.cc "
 				+ "group by RFA.finelineNbr, RFA.styleNbr,RFA.inStoreWeek,SP.packId ,SP.store,initialPackMultiplier "
-				+ "order by RFA.finelineNbr, RFA.styleNbr,RFA.inStoreWeek,SP.packId ,SP.store,initialPackMultiplier) "
+				+ "order by RFA.finelineNbr, RFA.styleNbr,RFA.inStoreWeek,SP.packId ,SP.store,initialPackMultiplier) "		
+				+ "UNION ALL" +
+				" (select distinct RFA.finelineNbr, RFA.styleNbr,RFA.inStoreWeek, SP.packId, SP.store, (SP.initialPackMultiplier) AS initialPackMultiplier from "
+						+ "(select fineline as finelineNbr, reverse( SUBSTR(REVERSE(trim(cc)), STRPOS(REVERSE(trim(cc)), \"_\")+1)) as styleNbr,trim(cc) as cc, CAST(store AS INTEGER) as store, min(week) as inStoreWeek "
+						+ "from `" + parquetTableName + "` as RFA where plan_id_partition=" + planId + " and fineline="
+						+ fineline + " and final_alloc_space>0"
+						+ " group by finelineNbr, styleNbr,cc,store "
+						+ "order by finelineNbr, styleNbr,cc, inStoreWeek, store ) as RFA " + "join "
+						+ "(SELECT trim(SP.ProductCustomerChoice)as cc,SP.store, SP.SPPackID as packId, SP.MerchMethod as merch_method, SP.size, "
+						+ "SP.SPBumpSetPackMultiplier as initialPackMultiplier from `" + packOptOutputTableName
+						+ "` as SP where ProductFineline='" + planAndFineline + "' and "
+						+ "SPBumpSetPackMultiplier>0 and SP.SPPackID='" + packId
+						+ "') as SP on RFA.store = SP.store and RFA.cc = SP.cc "
+						+ "group by RFA.finelineNbr, RFA.styleNbr,RFA.inStoreWeek,SP.packId ,SP.store,initialPackMultiplier "
+						+ "order by RFA.finelineNbr, RFA.styleNbr,RFA.inStoreWeek,SP.packId ,SP.store,initialPackMultiplier)) "						
 				+ "SELECT TO_JSON_STRING(gcpTable) AS json FROM MyTable AS gcpTable";
 	}
 }
