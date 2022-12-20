@@ -5,7 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.assortproduct.APRequest;
 import com.walmart.aex.sp.dto.assortproduct.APResponse;
 import com.walmart.aex.sp.dto.assortproduct.RFASizePackData;
-import com.walmart.aex.sp.dto.bqfp.*;
+import com.walmart.aex.sp.dto.bqfp.BQFPRequest;
+import com.walmart.aex.sp.dto.bqfp.BQFPResponse;
+import com.walmart.aex.sp.dto.bqfp.Replenishment;
 import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
 import com.walmart.aex.sp.entity.*;
@@ -15,7 +17,6 @@ import com.walmart.aex.sp.enums.VdLevelCode;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.exception.SizeAndPackException;
 import com.walmart.aex.sp.repository.FineLineReplenishmentRepository;
-import com.walmart.aex.sp.repository.MerchCatgReplPackRepository;
 import com.walmart.aex.sp.repository.SpFineLineChannelFixtureRepository;
 import com.walmart.aex.sp.repository.StyleReplenishmentRepository;
 import com.walmart.aex.sp.util.BuyQtyCommonUtil;
@@ -25,7 +26,15 @@ import org.slf4j.helpers.BasicMarkerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -89,7 +98,6 @@ public class CalculateFinelineBuyQuantity {
 
             FinelineDto finelineDto = getFineline(buyQtyResponse);
             if (finelineDto != null) {
-                deleteExistingFinelineIsBsBuyQty(calculateBuyQtyParallelRequest, calculateBuyQtyResponse);
                 if (!CollectionUtils.isEmpty(finelineDto.getMerchMethods()) && ChannelType.STORE.getDescription().equalsIgnoreCase(calculateBuyQtyParallelRequest.getChannel())) {
                     getMerchMethod(calculateBuyQtyParallelRequest, finelineDto, apResponse, bqfpResponseCompletableFuture.get(), calculateBuyQtyResponse, calculateBuyQtyRequest);
                 } else if (ChannelType.ONLINE.getDescription().equalsIgnoreCase(calculateBuyQtyParallelRequest.getChannel())) {
@@ -127,60 +135,24 @@ public class CalculateFinelineBuyQuantity {
         });
     }
 
-    private void deleteExistingFinelineIsBsBuyQty(CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, CalculateBuyQtyResponse calculateBuyQtyResponse) {
-        List<SpFineLineChannelFixture> spFineLineChannelFixtures = calculateBuyQtyResponse.getSpFineLineChannelFixtures().stream()
-                .filter(spFineLineChannelFixture -> spFineLineChannelFixture.getSpFineLineChannelFixtureId()
-                        .getFineLineNbr().equals(calculateBuyQtyParallelRequest.getFinelineNbr())).collect(Collectors.toList());
-        if (!CollectionUtils.isEmpty(spFineLineChannelFixtures)) {
-            log.info("Deleteing IS BS Buy Qty data for Fineline: {}", calculateBuyQtyParallelRequest.getFinelineNbr());
-            spFineLineChannelFixtureRepository.deleteAll(spFineLineChannelFixtures);
-            spFineLineChannelFixtureRepository.flush();
-        }
-
-        Set<StyleReplPack> styleReplPacks = Optional.ofNullable(calculateBuyQtyResponse.getMerchCatgReplPacks())
-                .stream()
-                .flatMap(Collection::stream)
-                .filter(merchCatgReplPack -> merchCatgReplPack.getMerchCatgReplPackId().getRepTLvl3().equals(calculateBuyQtyParallelRequest.getLvl3Nbr()))
-                .map(MerchCatgReplPack::getSubReplPack)
-                .flatMap(Collection::stream)
-                .filter(subCatgReplPack -> subCatgReplPack.getSubCatgReplPackId().getRepTLvl4().equals(calculateBuyQtyParallelRequest.getLvl4Nbr()))
-                .map(SubCatgReplPack::getFinelineReplPack)
-                .flatMap(Collection::stream)
-                .filter(finelineReplPack -> finelineReplPack.getFinelineReplPackId().getFinelineNbr().equals(calculateBuyQtyParallelRequest.getFinelineNbr()))
-                .map(FinelineReplPack::getStyleReplPack)
-                .flatMap(Collection::stream)
-                .filter(styleReplPack ->
-                        styleReplPack.getStyleReplPackId().getFinelineReplPackId().getFinelineNbr().equals(calculateBuyQtyParallelRequest.getFinelineNbr())
-                )
-                .collect(Collectors.toSet());
-        if (!CollectionUtils.isEmpty(styleReplPacks)) {
-            log.info("Delete replenishment buy qty for fineline: {}", calculateBuyQtyParallelRequest.getFinelineNbr());
-            styleReplenishmentRepository.deleteAll(styleReplPacks);
-            styleReplenishmentRepository.flush();
-        }
-    }
-
     private void getMerchMethod(CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, FinelineDto finelineDto, APResponse apResponse, BQFPResponse bqfpResponse,
                                 CalculateBuyQtyResponse calculateBuyQtyResponse, CalculateBuyQtyRequest calculateBuyQtyRequest) {
-        List<SpFineLineChannelFixture> spFineLineChannelFixtures = calculateBuyQtyResponse.getSpFineLineChannelFixtures();
+        List<SpFineLineChannelFixture> spFineLineChannelFixtures = new ArrayList<>();
         Map<Integer, List<MerchMethodsDto>> merchCodeMap = new HashMap<>();
         finelineDto.getMerchMethods().stream().filter(mm -> mm != null && mm.getMerchMethodCode() != null).forEach(merch -> {
             if (!merchCodeMap.containsKey(merch.getMerchMethodCode()))
                 merchCodeMap.put(merch.getMerchMethodCode(), new ArrayList<>());
             merchCodeMap.get(merch.getMerchMethodCode()).add(merch);
         });
+
         merchCodeMap.forEach((merchMethodCode, merchMethodsDtos) -> {
             // Hard coded for temporary testing of calculating InitialSet, BumpSet and Replenishment
             FixtureTypeRollUpId fixtureTypeRollUpId = new FixtureTypeRollUpId(merchMethodCode);
             SpFineLineChannelFixtureId spFineLineChannelFixtureId = new SpFineLineChannelFixtureId(fixtureTypeRollUpId, calculateBuyQtyRequest.getPlanId(), calculateBuyQtyRequest.getLvl0Nbr(),
                     calculateBuyQtyRequest.getLvl1Nbr(), calculateBuyQtyRequest.getLvl2Nbr(), calculateBuyQtyParallelRequest.getLvl3Nbr(), calculateBuyQtyParallelRequest.getLvl4Nbr(), finelineDto.getFinelineNbr(), ChannelType.getChannelIdFromName(calculateBuyQtyRequest.getChannel()));
             log.info("Checking if Fineline Chan Fixture Id is existing: {}", spFineLineChannelFixtureId);
-            SpFineLineChannelFixture spFineLineChannelFixture = Optional.of(spFineLineChannelFixtures)
-                    .stream()
-                    .flatMap(Collection::stream)
-                    .filter(spFineLineChannelFixture1 -> spFineLineChannelFixture1.getSpFineLineChannelFixtureId().equals(spFineLineChannelFixtureId))
-                    .findFirst()
-                    .orElse(new SpFineLineChannelFixture());
+
+            SpFineLineChannelFixture spFineLineChannelFixture = new SpFineLineChannelFixture();
 
             if (spFineLineChannelFixture.getSpFineLineChannelFixtureId() == null) {
                 spFineLineChannelFixture.setSpFineLineChannelFixtureId(spFineLineChannelFixtureId);
