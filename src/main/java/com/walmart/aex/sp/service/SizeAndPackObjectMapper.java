@@ -157,6 +157,7 @@ public class SizeAndPackObjectMapper {
                     custChoicePlan.setCustChoicePlanId(custChoicePlanId);
                 }
                 custChoicePlan.setColorName(customerChoice.getColorName());
+                custChoicePlan.setColorFamilyDesc(customerChoice.getColorFamily());
                 custChoicePlanSet.add(custChoicePlan);
             }
         }
