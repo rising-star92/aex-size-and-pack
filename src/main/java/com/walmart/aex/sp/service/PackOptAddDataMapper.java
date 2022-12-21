@@ -24,7 +24,6 @@ import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.repository.MerchPackOptimizationRepository;
 import com.walmart.aex.sp.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -202,9 +201,5 @@ public class PackOptAddDataMapper {
 
         }
         return ccPackOptimizationSet;
-    }
-
-    private void test(CcPackOptimization ccPackOptimization, Constraints constraints){
-
     }
 }
