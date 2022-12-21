@@ -1,17 +1,17 @@
 package com.walmart.aex.sp.repository;
 
 import com.walmart.aex.sp.dto.packoptimization.DCInboundResponse;
+import com.walmart.aex.sp.entity.CcSpMmReplPack;
+import com.walmart.aex.sp.entity.CcSpMmReplPackId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.walmart.aex.sp.entity.CcSpMmReplPack;
-import com.walmart.aex.sp.entity.CcSpMmReplPackId;
-
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface CcSpReplnPkConsRepository extends JpaRepository<CcSpMmReplPack, CcSpMmReplPackId> {
 
@@ -96,4 +96,9 @@ public interface CcSpReplnPkConsRepository extends JpaRepository<CcSpMmReplPack,
             " csmrp.merchMethodDesc , " +
             " csmrp.replenObj")
     List<DCInboundResponse> getDCInboundsByPlanIdAndChannelId(@Param("planId") Long planId ,@Param("channelId") Integer channelId);
+
+   @Transactional
+   @Modifying(clearAutomatically = true, flushAutomatically = true)
+   @Query(value = "delete from rc_cc_sp_mm_replpk_fixtr_cons where plan_id = :planId and channel_id = :channelId and fineline_nbr in (:finelineNbrs)", nativeQuery = true)
+   void deleteByPlanIdFinelineIdChannelId(@Param("planId") Long planId, @Param("channelId") Integer channelId, @Param("finelineNbrs") Set<Integer> finelineNbrs);
 }

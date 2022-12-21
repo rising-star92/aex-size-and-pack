@@ -4,11 +4,14 @@ import com.walmart.aex.sp.dto.buyquantity.BuyQntyResponseDTO;
 import com.walmart.aex.sp.entity.SpFineLineChannelFixture;
 import com.walmart.aex.sp.entity.SpFineLineChannelFixtureId;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface SpFineLineChannelFixtureRepository extends JpaRepository<SpFineLineChannelFixture, SpFineLineChannelFixtureId> {
 
@@ -72,5 +75,11 @@ public interface SpFineLineChannelFixtureRepository extends JpaRepository<SpFine
     Optional<List<SpFineLineChannelFixture>> findSpFineLineChannelFixtureBySpFineLineChannelFixtureId_planIdAndSpFineLineChannelFixtureId_channelId(Long planId, Integer channelId);
 
     void deleteBySpFineLineChannelFixtureId_planIdAndSpFineLineChannelFixtureId_lvl3NbrAndSpFineLineChannelFixtureId_lvl4NbrAndSpFineLineChannelFixtureId_fineLineNbr(Long planId, Integer lvl3Nbr, Integer lvl4Nbr,Integer fineLineNbr);
+
+    @Transactional
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query(value = "delete from dbo.sp_fl_chan_fixtr where plan_id = :planId and channel_id = :channelId and fineline_nbr in (:finelineNbrs)", nativeQuery = true)
+    void deleteByPlanIdFinelineIdChannelId(@Param("planId") Long planId, @Param("channelId") Integer channelId, @Param("finelineNbrs") Set<Integer> finelineNbrs);
+
 
 }
