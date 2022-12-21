@@ -2,12 +2,16 @@ package com.walmart.aex.sp.repository;
 
 import com.walmart.aex.sp.dto.buyquantity.BuyQntyResponseDTO;
 import com.walmart.aex.sp.dto.replenishment.ReplenishmentResponseDTO;
-import com.walmart.aex.sp.entity.*;
+import com.walmart.aex.sp.entity.FinelineReplPack;
+import com.walmart.aex.sp.entity.FinelineReplPackId;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 public interface FineLineReplenishmentRepository extends JpaRepository<FinelineReplPack, FinelineReplPackId> {
 
@@ -152,4 +156,8 @@ public interface FineLineReplenishmentRepository extends JpaRepository<FinelineR
             "where ((fp.finelinePlanId.subCatPlanId.merchCatPlanId.channelId in (:channelId,3) or :channelId is NULL) and msp.merchCatPlanId.planId = :planId and (frp.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId is NULL or frp.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId = :channelId or :channelId is NULL)) ")
     List<BuyQntyResponseDTO> getBuyQntyByPlanChannelOnline(@Param("planId") Long planId, @Param("channelId") Integer channelId);
 
+    @Transactional
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query(value = "delete from dbo.rc_fl_replpk_fixtr_cons where plan_id = :planId and channel_id = :channelId and fineline_nbr in (:finelineNbrs)", nativeQuery = true)
+    void deleteByPlanIdFinelineIdChannelId(@Param("planId") Long planId, @Param("channelId") Integer channelId, @Param("finelineNbrs") Set<Integer> finelineNbrs);
 }
