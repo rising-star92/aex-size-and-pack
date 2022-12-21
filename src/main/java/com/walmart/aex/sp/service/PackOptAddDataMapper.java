@@ -3,6 +3,7 @@ package com.walmart.aex.sp.service;
 import com.walmart.aex.sp.dto.packoptimization.Constraints;
 import com.walmart.aex.sp.dto.packoptimization.CustomerChoice;
 import com.walmart.aex.sp.dto.packoptimization.Fineline;
+import com.walmart.aex.sp.dto.packoptimization.Supplier;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl1;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl2;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
@@ -182,10 +183,13 @@ public class PackOptAddDataMapper {
                 Constraints constraints = customerChoice.getConstraints();
                 if (constraints.getColorCombinationConstraints() != null) {
                     ccPackOptimization.setOriginCountryName(constraints.getColorCombinationConstraints().getCountryOfOrigin());
-                    ccPackOptimization.setVendorName(constraints.getColorCombinationConstraints().getSuppliers().get(0).getSupplierName());
-                    ccPackOptimization.setVendorNbr6(constraints.getColorCombinationConstraints().getSuppliers().get(0).getSupplierId());
-                    ccPackOptimization.setVendorNbr9(constraints.getColorCombinationConstraints().getSuppliers().get(0).getSupplierNumber());
-                    ccPackOptimization.setGsmSupplierId(constraints.getColorCombinationConstraints().getSuppliers().get(0).getSupplier8Number());
+                    List<Supplier> suppliers = constraints.getColorCombinationConstraints().getSuppliers();
+                    if (!CollectionUtils.isEmpty(suppliers)) {
+                        ccPackOptimization.setVendorName(suppliers.get(0).getSupplierName());
+                        ccPackOptimization.setVendorNbr6(suppliers.get(0).getSupplierId());
+                        ccPackOptimization.setVendorNbr9(suppliers.get(0).getSupplierNumber());
+                        ccPackOptimization.setGsmSupplierId(suppliers.get(0).getSupplier8Number());
+                    }
                 }
                 if (constraints.getFinelineLevelConstraints() != null) {
                     ccPackOptimization.setMaxNbrOfPacks(constraints.getFinelineLevelConstraints().getMaxPacks());
