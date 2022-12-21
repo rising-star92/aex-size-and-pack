@@ -10,18 +10,30 @@ import com.walmart.aex.sp.dto.packoptimization.isbpqty.ISAndBPQtyDTO;
 import com.walmart.aex.sp.dto.packoptimization.isbpqty.Size;
 import com.walmart.aex.sp.entity.CcMmReplPack;
 import com.walmart.aex.sp.entity.CcReplPack;
+import com.walmart.aex.sp.entity.CcSpMmReplPack;
 import com.walmart.aex.sp.entity.FinelineReplPack;
 import com.walmart.aex.sp.entity.MerchCatgReplPack;
 import com.walmart.aex.sp.entity.StyleReplPack;
 import com.walmart.aex.sp.entity.SubCatgReplPack;
 import com.walmart.aex.sp.enums.MerchMethod;
-import com.walmart.aex.sp.repository.*;
-import com.walmart.aex.sp.util.CommonUtil;
+import com.walmart.aex.sp.repository.CcMmReplnPkConsRepository;
+import com.walmart.aex.sp.repository.CcReplnPkConsRepository;
+import com.walmart.aex.sp.repository.CcSpReplnPkConsRepository;
+import com.walmart.aex.sp.repository.FinelineReplnPkConsRepository;
+import com.walmart.aex.sp.repository.MerchCatgReplPackRepository;
+import com.walmart.aex.sp.repository.StyleReplnPkConsRepository;
+import com.walmart.aex.sp.repository.SubCatgReplnPkConsRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -81,34 +93,60 @@ public class PostPackOptimizationService {
             //updateRCMerchCatg(planId, finelineNbr, rollUpDifferenceByMerchMethod);
             //updateRCMerchSubCatg(planId, finelineNbr, rollUpDifferenceByMerchMethod);
             //updateRCStyleAndCustomerChoice(planId, finelineNbr, isAndBPQtyDTO);
-            updateRCMerchMethodCCFixture(planId, finelineNbr, isAndBPQtyDTO);
-//            updateRCMerchMethodCCFixtureSize(planId, finelineNbr, isAndBPQtyDTO);
+            //updateRCMerchMethodCCFixture(planId, finelineNbr, isAndBPQtyDTO);
+            updateRCMerchMethodCCFixtureSize(planId, finelineNbr, isAndBPQtyDTO);
         }
 
     }
 
     private void updateRCMerchMethodCCFixtureSize(Long planId, Integer finelineNbr, ISAndBPQtyDTO isAndBPQtyDTO) {
-        isAndBPQtyDTO.getCustomerChoices().forEach(cc -> cc.getFixtures().forEach(fixtures -> fixtures.getSizes().forEach(size -> {
-            ccSpReplnPkConsRepository.findCcSpMmReplnPkConsData(planId, finelineNbr, cc.getCcId(), CommonUtil.getMerchMethod(fixtures.getMerchMethod()), CommonUtil.getFixtureRollUpId(fixtures.getFixtureType()), size.getSizeDesc()).ifPresent( ccSpMmReplPack ->{
-                Integer updatedReplenishmentQty = ccSpMmReplPack.getFinalBuyUnits() - size.getOptFinalBuyQty();
-                ccSpMmReplPack.setReplUnits(updatedReplenishmentQty);
-                String replObjJson = ccSpMmReplPack.getReplenObj();
-                if(replObjJson!= null && !replObjJson.isEmpty()){
-                    try {
-                        List<Replenishment> replObj = objectMapper.readValue(replObjJson, new TypeReference<>() {});
-                        Long total = replObj.stream().mapToLong(ru->ru.getAdjReplnUnits()).sum();
-                        List<Replenishment> updateReplObj = replObj.stream()
-                                .peek(replenishment -> replenishment.setAdjReplnUnits((updatedReplenishmentQty*((replenishment.getAdjReplnUnits()*100)/total)/100)))
-                                .collect(Collectors.toList());
-                        List<Replenishment> updatedReplenishmentsPack = replenishmentsOptimizationServices.getUpdatedReplenishmentsPack(updateReplObj,ccSpMmReplPack.getVendorPackCnt());
-                        ccSpMmReplPack.setReplenObj(objectMapper.writeValueAsString(updatedReplenishmentsPack));
-                    } catch (JsonProcessingException e) {
-                       log.error("Could not convert Replenishment Object Json for week disaggregation ",e );
-                    }
-                }
-                ccSpReplnPkConsRepository.save(ccSpMmReplPack);
-            } );
+
+        isAndBPQtyDTO.getCustomerChoices().forEach(cc -> cc.getFixtures().forEach(fixture -> fixture.getSizes().forEach(size -> {
+            List<CcSpMmReplPack> ccSpMmReplPacks = ccSpReplnPkConsRepository.findCcSpMmReplnPkConsData(planId, finelineNbr, cc.getCcId(), size.getSizeDesc()).orElse(Collections.emptyList());
+            ccSpMmReplPacks.forEach(ccSpMmReplPack -> {
+                //Original final buy units (w/o repln) - Optimized final buy units (w/o repln) == replenishment units
+               Integer updatedReplnQty = ccSpMmReplPack.getFinalBuyUnits() - size.getOptFinalBuyQty();
+               ccSpMmReplPack.setReplUnits(updatedReplnQty);
+               ccSpMmReplPack.setReplPackCnt(UpdateReplnConfigMapper.getReplenishmentPackCount(ccSpMmReplPack.getReplUnits(), ccSpMmReplPack.getVendorPackCnt()));
+               String replnWeeksObj = ccSpMmReplPack.getReplenObj();
+               if (StringUtils.isNotEmpty(replnWeeksObj)) {
+
+                   try {
+                       List<Replenishment> replObj = objectMapper.readValue(replnWeeksObj, new TypeReference<>() {});
+                       Long totalReplnUnits = replObj.stream().mapToLong(Replenishment::getAdjReplnUnits).sum();
+                       replObj.forEach(replWeekObj -> replWeekObj.setAdjReplnUnits((updatedReplnQty*((replWeekObj.getAdjReplnUnits()*100)/totalReplnUnits)/100)));
+//                               List<Replenishment> updateReplObj = replObj.stream()
+//                                     .peek(replenishment -> replenishment.setAdjReplnUnits((updatedReplnQty*((replenishment.getAdjReplnUnits()*100)/totalReplnUnits)/100)))
+//                                     .collect(Collectors.toList());
+                       List<Replenishment> updatedReplenishmentsPack = replenishmentsOptimizationServices.getUpdatedReplenishmentsPack(replObj,ccSpMmReplPack.getVendorPackCnt());
+                       ccSpMmReplPack.setReplenObj(objectMapper.writeValueAsString(updatedReplenishmentsPack));
+                   } catch (JsonProcessingException jpe) {
+                       log.error("Could not convert Replenishment Object Json for week disaggregation ", jpe);
+                   }
+               }
+            });
         })));
+//        isAndBPQtyDTO.getCustomerChoices().forEach(cc -> cc.getFixtures().forEach(fixtures -> fixtures.getSizes().forEach(size -> {
+//            ccSpReplnPkConsRepository.findCcSpMmReplnPkConsData(planId, finelineNbr, cc.getCcId(), CommonUtil.getMerchMethod(fixtures.getMerchMethod()), CommonUtil.getFixtureRollUpId(fixtures.getFixtureType()), size.getSizeDesc()).ifPresent( ccSpMmReplPack ->{
+//                Integer updatedReplenishmentQty = ccSpMmReplPack.getFinalBuyUnits() - size.getOptFinalBuyQty();
+//                ccSpMmReplPack.setReplUnits(updatedReplenishmentQty);
+//                String replObjJson = ccSpMmReplPack.getReplenObj();
+//                if(replObjJson!= null && !replObjJson.isEmpty()){
+//                    try {
+//                        List<Replenishment> replObj = objectMapper.readValue(replObjJson, new TypeReference<>() {});
+//                        Long total = replObj.stream().mapToLong(ru->ru.getAdjReplnUnits()).sum();
+//                        List<Replenishment> updateReplObj = replObj.stream()
+//                                .peek(replenishment -> replenishment.setAdjReplnUnits((updatedReplenishmentQty*((replenishment.getAdjReplnUnits()*100)/total)/100)))
+//                                .collect(Collectors.toList());
+//                        List<Replenishment> updatedReplenishmentsPack = replenishmentsOptimizationServices.getUpdatedReplenishmentsPack(updateReplObj,ccSpMmReplPack.getVendorPackCnt());
+//                        ccSpMmReplPack.setReplenObj(objectMapper.writeValueAsString(updatedReplenishmentsPack));
+//                    } catch (JsonProcessingException e) {
+//                       log.error("Could not convert Replenishment Object Json for week disaggregation ",e );
+//                    }
+//                }
+//                ccSpReplnPkConsRepository.save(ccSpMmReplPack);
+//            } );
+//        })));
     }
 
     private void updateRCMerchMethodCCFixture(Long planId, Integer finelineNbr, ISAndBPQtyDTO isAndBPQtyDTO) {
@@ -117,8 +155,7 @@ public class PostPackOptimizationService {
 
             List<String> merchMethods = cc.getFixtures().stream().map(Fixtures::getMerchMethod).distinct().collect(Collectors.toList());
             merchMethods.forEach(merchMethod -> {
-                Integer merchMethodCode = MerchMethod.getMerchMethodIdFromDescription(merchMethod);
-                List<CcMmReplPack> ccMmReplPacks = ccMmReplnPkConsRepository.findCcMmReplnPkConsData(planId, finelineNbr, cc.getCcId(), merchMethodCode, merchMethodCode).orElse(Collections.emptyList());
+                List<CcMmReplPack> ccMmReplPacks = ccMmReplnPkConsRepository.findCcMmReplnPkConsData(planId, finelineNbr, cc.getCcId()).orElse(Collections.emptyList());
 
                 ccMmReplPacks.forEach(ccMmReplPack -> {
                     int updatedTotal = cc.getFixtures().stream().filter(ccFix -> ccFix.getMerchMethod().equalsIgnoreCase(merchMethod))
