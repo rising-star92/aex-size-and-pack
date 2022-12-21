@@ -7,6 +7,7 @@ public class CustomerChoice {
     private String ccId;
     private String altCcDesc;
     private String colorName;
+    private String colorFamily;
     private String channel;
     private Constraints constraints;
 }
