@@ -1,17 +1,14 @@
 package com.walmart.aex.sp.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.walmart.aex.sp.dto.buyquantity.SizeDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -43,6 +40,8 @@ import com.walmart.aex.sp.repository.StyleReplnPkConsRepository;
 import com.walmart.aex.sp.repository.SubCatgReplnPkConsRepository;
 import com.walmart.aex.sp.util.BuyQtyCommonUtil;
 import com.walmart.aex.sp.util.BuyQtyResponseInputs;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ReplenishmentServiceTest {
@@ -101,16 +100,53 @@ public class ReplenishmentServiceTest {
     private BuyQtyResponseInputs buyQtyInputs;
 
     @Mock
-    CcMmReplnPkConsRepository ccMmReplnPkConsRepository;
+    private CcMmReplnPkConsRepository ccMmReplnPkConsRepository;
 
     List<ReplenishmentResponseDTO> replenishmentResponseDTOS = new ArrayList<>();
     @Mock
-    ReplenishmentRequest replenishmentRequest;
+    private ReplenishmentRequest replenishmentRequest;
 
     @Mock
-    SizeLevelReplenishmentRepository sizeLevelReplenishmentRepository;
+    private SizeLevelReplenishmentRepository sizeLevelReplenishmentRepository;
     @Mock
-    SizeLevelReplenishmentMapper sizeLevelReplenishmentMapper;
+    private SizeLevelReplenishmentMapper sizeLevelReplenishmentMapper;
+
+    @Captor
+    ArgumentCaptor<List<BuyQntyResponseDTO>> buyQntyResponseDTOCaptor;
+
+    @Captor
+    ArgumentCaptor<SizeDto> sizeDtoArgumentCaptor;
+
+    @Captor
+    ArgumentCaptor<List<MerchCatgReplPack>> merchCatgReplPackCaptor;
+
+    @Captor
+    ArgumentCaptor<List<SubCatgReplPack>> listArgumentCaptor;
+
+    @Captor
+    ArgumentCaptor<Integer> vnpkArgumentCaptor;
+
+    @Captor
+    ArgumentCaptor<Integer> whpkArgumentCaptor;
+    @Captor
+    ArgumentCaptor<ReplenishmentResponseDTO> replenishmentResponseDTOArgumentCaptor;
+    @Captor
+    ArgumentCaptor<ReplenishmentResponse> replenishmentResponseArgumentCaptor;
+    @Captor
+    ArgumentCaptor<Integer> finelineNbrCaptor;
+    @Captor
+    ArgumentCaptor<List<StyleReplPack>> styleReplListCaptor;
+    @Captor
+    ArgumentCaptor<List<FinelineReplPack>> fineLineListcaptor;
+    @Captor
+    ArgumentCaptor<List<CcReplPack>> ccReplPackLisrcaptor;
+
+    @Captor
+    ArgumentCaptor<List<CcMmReplPack>> ccMmReplPackLisrcaptor;
+
+    @Captor
+    ArgumentCaptor<List<CcSpMmReplPack>> ccSpMmReplPackList;
+
 
     @BeforeEach
     public void init() {
@@ -119,7 +155,7 @@ public class ReplenishmentServiceTest {
 
 
     @Test
-    public void updateVnpkWhpkForCatgReplnConsTest() {
+    void updateVnpkWhpkForCatgReplnConsTest() {
         UpdateVnPkWhPkReplnRequest request = new UpdateVnPkWhPkReplnRequest();
         request.setPlanId(1L);
         request.setChannel("Store");
@@ -128,10 +164,11 @@ public class ReplenishmentServiceTest {
         request.setWhpk(1);
         replenishmentService.updateVnpkWhpkForCatgReplnCons(request);
         Mockito.verify(replenishmentService, Mockito.times(1)).updateVnpkWhpkForCatgReplnCons(request);
+
     }
 
     @Test
-    public void fetchFinelineBuyQtyTest() throws IOException, SizeAndPackException {
+    void fetchFinelineBuyQtyTest() throws IOException, SizeAndPackException {
 
         List<BuyQntyResponseDTO> buyQntyResponseDTOS = BuyQtyResponseInputs.buyQtyFinelineInput();
         Mockito.when(fineLineReplenishmentRepository.getBuyQntyByPlanChannelOnline(471l, 2)).thenReturn(buyQntyResponseDTOS);
@@ -146,7 +183,7 @@ public class ReplenishmentServiceTest {
     }
 
     @Test
-    public void fetchCcBuyQtyTest() throws IOException, SizeAndPackException {
+    void fetchCcBuyQtyTest() throws IOException, SizeAndPackException {
         List<BuyQntyResponseDTO> buyQntyResponseDTOS = BuyQtyResponseInputs.buyQtyStyleCcInput();
         Mockito.when(spCustomerChoiceReplenishmentRepository.getBuyQntyByPlanChannelOnlineFineline(471l, 2,
                 2855)).thenReturn(buyQntyResponseDTOS);
@@ -158,10 +195,11 @@ public class ReplenishmentServiceTest {
         Mockito.when(strategyFetchService.getBuyQtyDetailsForStylesCc(buyQtyRequest, 2855)).thenReturn(buyQtyResponse1);
         BuyQtyResponse buyQtyResponse = replenishmentService1.fetchOnlineCcBuyQnty(buyQtyRequest, 2855);
         assertEquals(471, buyQtyRequest.getPlanId());
+
     }
 
     @Test
-    public void fetchSizeBuyQtyTest() throws IOException, SizeAndPackException {
+    void fetchSizeBuyQtyTest() throws IOException, SizeAndPackException {
 
         BuyQntyResponseDTO buyQntyResponseDTO = new BuyQntyResponseDTO(88L, 50000, 34, 6420,
                 12238, 31526, 5471, "34_5471_3_24_001", "34_5471_3_24_001_CHINO TAN", 3174, "L",
@@ -183,10 +221,11 @@ public class ReplenishmentServiceTest {
         BuyQtyResponse buyQtyResponse1 = replenishmentService1.fetchOnlineSizeBuyQnty(buyQtyRequest);
 
         Mockito.verify(buyQuantityMapper, Mockito.times(5)).mapBuyQntySizeSp(Mockito.any(), Mockito.any());
+
     }
 
     @Test
-    public void testUpdateVnpkWhpkForCatgReplnCons() {
+    void testUpdateVnpkWhpkForCatgReplnCons() {
         UpdateVnPkWhPkReplnRequest updateVnPkWhPkReplnRequest = new UpdateVnPkWhPkReplnRequest();
         List<MerchCatgReplPack> catgReplnPkConsList = new ArrayList<>();
         updateVnPkWhPkReplnRequest.setPlanId(12l);
@@ -197,10 +236,14 @@ public class ReplenishmentServiceTest {
         Mockito.when(catgReplnPkConsRepository.getCatgReplnConsData(12l, 2, 3)).thenReturn(catgReplnPkConsList);
         replenishmentService1.updateVnpkWhpkForCatgReplnCons(updateVnPkWhPkReplnRequest);
         Mockito.verify(updateReplnConfigMapper, Mockito.times(1)).updateVnpkWhpkForCatgReplnConsMapper(Mockito.any(), Mockito.any(), Mockito.any());
+        Mockito.verify(updateReplnConfigMapper).updateVnpkWhpkForCatgReplnConsMapper(merchCatgReplPackCaptor.capture(), vnpkArgumentCaptor.capture(), whpkArgumentCaptor.capture());
+        List<MerchCatgReplPack> merchCatgReplPacks = merchCatgReplPackCaptor.getValue();
+        Integer vnpk = vnpkArgumentCaptor.getValue();
+        Integer whpk = whpkArgumentCaptor.getValue();
     }
 
     @Test
-    public void testUpdateVnpkWhpkForSubCatgReplnCons() {
+    void testUpdateVnpkWhpkForSubCatgReplnCons() {
         UpdateVnPkWhPkReplnRequest updateVnPkWhPkReplnRequest = new UpdateVnPkWhPkReplnRequest();
         List<SubCatgReplPack> subCatgReplnPkConsList = new ArrayList<>();
         updateVnPkWhPkReplnRequest.setPlanId(12l);
@@ -212,11 +255,20 @@ public class ReplenishmentServiceTest {
         Mockito.when(subCatgReplnPkConsRepository.getSubCatgReplnConsData(12l, 1, 12231, 31516)).thenReturn(subCatgReplnPkConsList);
         replenishmentService1.updateVnpkWhpkForSubCatgReplnCons(updateVnPkWhPkReplnRequest);
         Mockito.verify(updateReplnConfigMapper, Mockito.times(1)).updateVnpkWhpkForSubCatgReplnConsMapper(Mockito.any(), Mockito.any(), Mockito.any());
-
+        Mockito.verify(updateReplnConfigMapper).updateVnpkWhpkForSubCatgReplnConsMapper(listArgumentCaptor.capture(), vnpkArgumentCaptor.capture(), whpkArgumentCaptor.capture());
+        List<SubCatgReplPack> subCatgReplPackList = listArgumentCaptor.getValue();
+        Integer vnpk = vnpkArgumentCaptor.getValue();
+        Integer whpk = whpkArgumentCaptor.getValue();
+        assertNotNull(subCatgReplPackList);
+        assertNotNull(vnpk);
+        assertNotNull(whpk);
+        assertEquals(vnpk, 2);
+        assertEquals(whpk, 1);
     }
 
+
     @Test
-    public void testUpdateVnpkWhpkForFinelineReplnCons() {
+    void testUpdateVnpkWhpkForFinelineReplnCons() {
         UpdateVnPkWhPkReplnRequest updateVnPkWhPkReplnRequest = new UpdateVnPkWhPkReplnRequest();
         List<FinelineReplPack> finelineReplnPkConsList = new ArrayList<>();
         updateVnPkWhPkReplnRequest.setPlanId(12l);
@@ -229,10 +281,19 @@ public class ReplenishmentServiceTest {
         Mockito.when(finelineReplnPkConsRepository.getFinelineReplnConsData(12l, 1, 12231, 31516, 1021)).thenReturn(finelineReplnPkConsList);
         replenishmentService1.updateVnpkWhpkForFinelineReplnCons(updateVnPkWhPkReplnRequest);
         Mockito.verify(updateReplnConfigMapper, Mockito.times(1)).updateVnpkWhpkForFinelineReplnConsMapper(Mockito.any(), Mockito.any(), Mockito.any());
+        Mockito.verify(updateReplnConfigMapper).updateVnpkWhpkForFinelineReplnConsMapper(fineLineListcaptor.capture(), vnpkArgumentCaptor.capture(), whpkArgumentCaptor.capture());
+        List<FinelineReplPack> finelineReplPacks = fineLineListcaptor.getValue();
+        assertEquals(finelineReplPacks.size(), 0);
+        Integer vnpk = vnpkArgumentCaptor.getValue();
+        Integer whpk = whpkArgumentCaptor.getValue();
+        assertNotNull(finelineReplPacks);
+        assertNotNull(vnpk);
+        assertNotNull(whpk);
     }
 
+
     @Test
-    public void testUpdateVnpkWhpkForStyleReplnCons() {
+    void testUpdateVnpkWhpkForStyleReplnCons() {
         UpdateVnPkWhPkReplnRequest updateVnPkWhPkReplnRequest = new UpdateVnPkWhPkReplnRequest();
         List<StyleReplPack> styleReplnPkConsList = new ArrayList<>();
         updateVnPkWhPkReplnRequest.setPlanId(12l);
@@ -246,12 +307,18 @@ public class ReplenishmentServiceTest {
         Mockito.when(styleReplnConsRepository.getStyleReplnConsData(12l, 1, 12231, 31516, 1021, "34_1021_2_21_2")).thenReturn(styleReplnPkConsList);
         replenishmentService1.updateVnpkWhpkForStyleReplnCons(updateVnPkWhPkReplnRequest);
         Mockito.verify(updateReplnConfigMapper, Mockito.times(1)).updateVnpkWhpkForStyleReplnConsMapper(Mockito.any(), Mockito.any(), Mockito.any());
-
+        Mockito.verify(updateReplnConfigMapper).updateVnpkWhpkForStyleReplnConsMapper(styleReplListCaptor.capture(), vnpkArgumentCaptor.capture(), whpkArgumentCaptor.capture());
+        List<StyleReplPack> styleReplPacks = styleReplListCaptor.getValue();
+        Integer vnpk = vnpkArgumentCaptor.getValue();
+        Integer whpk = whpkArgumentCaptor.getValue();
+        assertNotNull(styleReplPacks);
+        assertNotNull(vnpk);
+        assertNotNull(whpk);
     }
 
 
     @Test
-    public void testUpdateVnpkWhpkForCcReplnPkCons() {
+    void testUpdateVnpkWhpkForCcReplnPkCons() {
         UpdateVnPkWhPkReplnRequest updateVnPkWhPkReplnRequest = new UpdateVnPkWhPkReplnRequest();
         List<CcReplPack> ccReplnPkConsList1 = new ArrayList<>();
         updateVnPkWhPkReplnRequest.setPlanId(12l);
@@ -266,12 +333,18 @@ public class ReplenishmentServiceTest {
         Mockito.when(ccReplnConsRepository.getCcReplnConsData(12l, 1, 12231, 31516, 1021, "34_1021_2_21_2", "34_1021_2_21_2_AURA ORANGE STENCIL")).thenReturn(ccReplnPkConsList1);
         replenishmentService1.updateVnpkWhpkForCcReplnPkCons(updateVnPkWhPkReplnRequest);
         Mockito.verify(updateReplnConfigMapper, Mockito.times(1)).updateVnpkWhpkForCcReplnPkConsMapper(Mockito.any(), Mockito.any(), Mockito.any());
-
+        Mockito.verify(updateReplnConfigMapper).updateVnpkWhpkForCcReplnPkConsMapper(ccReplPackLisrcaptor.capture(), vnpkArgumentCaptor.capture(), whpkArgumentCaptor.capture());
+        List<CcReplPack> ccReplPacks = ccReplPackLisrcaptor.getValue();
+        Integer vnpk = vnpkArgumentCaptor.getValue();
+        Integer whpk = whpkArgumentCaptor.getValue();
+        assertNotNull(ccReplPacks);
+        assertNotNull(vnpk);
+        assertNotNull(whpk);
     }
 
 
     @Test
-    public void testUpdateVnPkWhPkCcMerchMethodReplnCon() {
+    void testUpdateVnPkWhPkCcMerchMethodReplnCon() {
         UpdateVnPkWhPkReplnRequest updateVnPkWhPkReplnRequest = new UpdateVnPkWhPkReplnRequest();
         List<CcMmReplPack> ccMmReplnPkConsList = new ArrayList<>();
         updateVnPkWhPkReplnRequest.setPlanId(12l);
@@ -287,10 +360,18 @@ public class ReplenishmentServiceTest {
         Mockito.when(ccMmReplnPkConsRepository.getCcMmReplnPkConsData(12l, 1, 12231, 31516, 1021, "34_1021_2_21_2", "34_1021_2_21_2_AURA ORANGE STENCIL", "folded")).thenReturn(ccMmReplnPkConsList);
         replenishmentService1.updateVnPkWhPkCcMerchMethodReplnCon(updateVnPkWhPkReplnRequest);
         Mockito.verify(updateReplnConfigMapper, Mockito.times(1)).updateVnpkWhpkForCcMmReplnPkConsMapper(Mockito.any(), Mockito.any(), Mockito.any());
+        Mockito.verify(updateReplnConfigMapper).updateVnpkWhpkForCcMmReplnPkConsMapper(ccMmReplPackLisrcaptor.capture(), vnpkArgumentCaptor.capture(), whpkArgumentCaptor.capture());
+        List<CcMmReplPack> ccMmReplPacks = ccMmReplPackLisrcaptor.getValue();
+        Integer vnpk = vnpkArgumentCaptor.getValue();
+        Integer whpk = whpkArgumentCaptor.getValue();
+        assertNotNull(ccMmReplPacks);
+        assertNotNull(vnpk);
+        assertNotNull(whpk);
     }
 
+
     @Test
-    public void testUpdateVnPkWhPkCcSpSizeReplnCon() {
+    void testUpdateVnPkWhPkCcSpSizeReplnCon() {
         UpdateVnPkWhPkReplnRequest updateVnPkWhPkReplnRequest = new UpdateVnPkWhPkReplnRequest();
         List<CcSpMmReplPack> ccSpReplnPkConsList = new ArrayList<>();
         updateVnPkWhPkReplnRequest.setPlanId(12l);
@@ -307,10 +388,17 @@ public class ReplenishmentServiceTest {
         Mockito.when(ccSpReplnPkConsRepository.getCcSpMmReplnPkConsData(12l, 1, 12231, 31516, 1021, "34_1021_2_21_2", "34_1021_2_21_2_AURA ORANGE STENCIL", "folded", 246)).thenReturn(ccSpReplnPkConsList);
         replenishmentService1.updateVnPkWhPkCcSpSizeReplnCon(updateVnPkWhPkReplnRequest);
         Mockito.verify(updateReplnConfigMapper, Mockito.times(1)).updateVnpkWhpkForCcSpMmReplnPkConsMapper(Mockito.any(), Mockito.any(), Mockito.any());
+        Mockito.verify(updateReplnConfigMapper).updateVnpkWhpkForCcSpMmReplnPkConsMapper(ccSpMmReplPackList.capture(), vnpkArgumentCaptor.capture(), whpkArgumentCaptor.capture());
+        List<CcSpMmReplPack> ccMmReplPacks = ccSpMmReplPackList.getValue();
+        Integer vnpk = vnpkArgumentCaptor.getValue();
+        Integer whpk = whpkArgumentCaptor.getValue();
+        assertNotNull(ccMmReplPacks);
+        assertNotNull(vnpk);
+        assertNotNull(whpk);
     }
 
     @Test
-    public void testfetchSizeListReplenishment() {
+    void testfetchSizeListReplenishment() {
         replenishmentRequest = new ReplenishmentRequest();
         ReplenishmentResponseDTO replenishmentResponseDTO1 = new ReplenishmentResponseDTO(88L, 50000, null, 34, "123", 6420,
                 "folded", 12238, "wall", 31526, "rack", 5471, "34_5471_3_24_001", "34_5471_3_24_001_CHINO TAN", "4321", 3174, 543, 12, 45, 54.0, 34, "L",
@@ -325,10 +413,17 @@ public class ReplenishmentServiceTest {
         Mockito.when(sizeListReplenishmentRepository.getReplenishmentPlanChannelFinelineCc(12l, 1, 1021, "34_1021_2_21_2", "34_1021_2_21_2_AURA ORANGE STENCIL")).thenReturn(replenishmentResponseDTOS);
         ReplenishmentResponse replenishmentResponse = replenishmentService1.fetchSizeListReplenishment(replenishmentRequest);
         Mockito.verify(replenishmentMapper, Mockito.times(1)).mapReplenishmentLvl2Sp(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+        Mockito.verify(replenishmentMapper).mapReplenishmentLvl2Sp(replenishmentResponseDTOArgumentCaptor.capture(), replenishmentResponseArgumentCaptor.capture(), finelineNbrCaptor.capture(), Mockito.any());
+        ReplenishmentResponseDTO replenishmentResponseDTO = replenishmentResponseDTOArgumentCaptor.getValue();
+        ReplenishmentResponse replenishmentResponse1 = replenishmentResponseArgumentCaptor.getValue();
+        Integer fineLineNbr = finelineNbrCaptor.getValue();
+        assertNotNull(replenishmentResponseDTO);
+        assertNotNull(replenishmentResponse1);
+        assertNotNull(fineLineNbr);
     }
 
     @Test
-    public void testFetchFinelineReplenishment() {
+    void testFetchFinelineReplenishment() {
         replenishmentRequest = new ReplenishmentRequest();
         ReplenishmentResponseDTO replenishmentResponseDTO1 = new ReplenishmentResponseDTO(88L, 50000, null, 34, "123", 6420,
                 "folded", 12238, "wall", 31526, "rack", 5471, "34_5471_3_24_001", "34_5471_3_24_001_CHINO TAN", "4321", 3174, 543, 12, 45, 54.0, 34, "L",
@@ -341,11 +436,18 @@ public class ReplenishmentServiceTest {
                 .getByPlanChannel(12l, 1)).thenReturn(replenishmentResponseDTOS);
         ReplenishmentResponse replenishmentResponse = replenishmentService1.fetchFinelineReplenishment(replenishmentRequest);
         Mockito.verify(replenishmentMapper, Mockito.times(1)).mapReplenishmentLvl2Sp(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
-
+        Mockito.verify(replenishmentMapper).mapReplenishmentLvl2Sp(replenishmentResponseDTOArgumentCaptor.capture(), replenishmentResponseArgumentCaptor.capture(), finelineNbrCaptor.capture(), Mockito.any());
+        ReplenishmentResponseDTO replenishmentResponseDTO = replenishmentResponseDTOArgumentCaptor.getValue();
+        ReplenishmentResponse replenishmentResponse1 = replenishmentResponseArgumentCaptor.getValue();
+        Integer fineLineNbr = finelineNbrCaptor.getValue();
+        assertNotNull(replenishmentResponseDTO);
+        assertNotNull(replenishmentResponse1);
+        assertNull(fineLineNbr);
     }
 
+
     @Test
-    public void testFetchCcReplenishment() {
+    void testFetchCcReplenishment() {
         replenishmentRequest = new ReplenishmentRequest();
         ReplenishmentResponseDTO replenishmentResponseDTO1 = new ReplenishmentResponseDTO(88L, 50000, null, 34, "123", 6420,
                 "folded", 12238, "wall", 31526, "rack", 5471, "34_5471_3_24_001", "34_5471_3_24_001_CHINO TAN", "4321", 3174, 543, 12, 45, 54.0, 34, "L",
@@ -359,7 +461,15 @@ public class ReplenishmentServiceTest {
                 .getReplenishmentByPlanChannelFineline(12l, 1, 1021)).thenReturn(replenishmentResponseDTOS);
         ReplenishmentResponse replenishmentResponse = replenishmentService1.fetchCcReplenishment(replenishmentRequest);
         Mockito.verify(replenishmentMapper, Mockito.times(1)).mapReplenishmentLvl2Sp(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+        Mockito.verify(replenishmentMapper).mapReplenishmentLvl2Sp(replenishmentResponseDTOArgumentCaptor.capture(), replenishmentResponseArgumentCaptor.capture(), finelineNbrCaptor.capture(), Mockito.any());
+        ReplenishmentResponseDTO replenishmentResponseDTO = replenishmentResponseDTOArgumentCaptor.getValue();
+        ReplenishmentResponse replenishmentResponse1 = replenishmentResponseArgumentCaptor.getValue();
+        Integer fineLineNbr = finelineNbrCaptor.getValue();
+        assertNotNull(replenishmentResponseDTO);
+        assertNotNull(replenishmentResponse1);
+        assertNotNull(fineLineNbr);
     }
+
 
     @Test
     public void testFetchSizeListReplenishmentFullHierarchy() {
@@ -376,6 +486,12 @@ public class ReplenishmentServiceTest {
                 .getReplnFullHierarchyByPlanFineline(12l, 1, 1021)).thenReturn(replenishmentResponseDTOS);
         ReplenishmentResponse replenishmentResponse = replenishmentService1.fetchSizeListReplenishmentFullHierarchy(replenishmentRequest);
         Mockito.verify(sizeLevelReplenishmentMapper, Mockito.times(1)).mapReplenishmentLvl2Sp(Mockito.any(), Mockito.any(), Mockito.any());
-
+        Mockito.verify(sizeLevelReplenishmentMapper).mapReplenishmentLvl2Sp(replenishmentResponseDTOArgumentCaptor.capture(), replenishmentResponseArgumentCaptor.capture(), finelineNbrCaptor.capture());
+        ReplenishmentResponseDTO replenishmentResponseDTO = replenishmentResponseDTOArgumentCaptor.getValue();
+        ReplenishmentResponse replenishmentResponse1 = replenishmentResponseArgumentCaptor.getValue();
+        Integer fineLineNbr = finelineNbrCaptor.getValue();
+        assertNotNull(replenishmentResponseDTO);
+        assertNotNull(replenishmentResponse1);
+        assertNotNull(fineLineNbr);
     }
 }
