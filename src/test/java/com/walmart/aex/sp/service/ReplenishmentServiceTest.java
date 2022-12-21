@@ -128,16 +128,22 @@ public class ReplenishmentServiceTest {
 
     @Captor
     ArgumentCaptor<Integer> whpkArgumentCaptor;
+
     @Captor
     ArgumentCaptor<ReplenishmentResponseDTO> replenishmentResponseDTOArgumentCaptor;
+
     @Captor
     ArgumentCaptor<ReplenishmentResponse> replenishmentResponseArgumentCaptor;
+
     @Captor
     ArgumentCaptor<Integer> finelineNbrCaptor;
+
     @Captor
     ArgumentCaptor<List<StyleReplPack>> styleReplListCaptor;
+
     @Captor
     ArgumentCaptor<List<FinelineReplPack>> fineLineListcaptor;
+
     @Captor
     ArgumentCaptor<List<CcReplPack>> ccReplPackLisrcaptor;
 
@@ -147,12 +153,10 @@ public class ReplenishmentServiceTest {
     @Captor
     ArgumentCaptor<List<CcSpMmReplPack>> ccSpMmReplPackList;
 
-
     @BeforeEach
     public void init() {
         replenishmentResponseDTOS.clear();
     }
-
 
     @Test
     void updateVnpkWhpkForCatgReplnConsTest() {
