@@ -242,7 +242,7 @@ public class PostPackOptimizationService {
         //subCatgReplnPkConsRepository.saveAll(subCatgReplPacks);
     }
 
-    private Map<Integer, Integer> updateRCMerchFineline(Long planId, Integer finelineNbr, ISAndBPQtyDTO isAndBPQtyDTO) {
+    public Map<Integer, Integer> updateRCMerchFineline(Long planId, Integer finelineNbr, ISAndBPQtyDTO isAndBPQtyDTO) {
         Map<Integer, Integer> replnDifferenceByMerchMethod = new HashMap<>();
         List<FinelineReplPack> finelines = finelineReplnPkConsRepository.findByPlanIdAndFinelineNbr(planId, finelineNbr).orElse(Collections.emptyList());
 

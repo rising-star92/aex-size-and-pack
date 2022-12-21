@@ -1,16 +1,15 @@
 package com.walmart.aex.sp.repository;
 
-import java.util.List;
-import java.util.Optional;
-
+import com.walmart.aex.sp.entity.CcMmReplPack;
+import com.walmart.aex.sp.entity.CcMmReplPackId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.walmart.aex.sp.entity.CcMmReplPack;
-import com.walmart.aex.sp.entity.CcMmReplPackId;
+import java.util.List;
+import java.util.Optional;
 
 public interface CcMmReplnPkConsRepository extends JpaRepository <CcMmReplPack, CcMmReplPackId>{
 
@@ -26,10 +25,7 @@ public interface CcMmReplnPkConsRepository extends JpaRepository <CcMmReplPack, 
 			"csmrp.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.planId=:planId " +
 			"and  csmrp.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.finelineNbr=:fineline " +
 			"and  csmrp.ccMmReplPackId.ccReplPackId.customerChoice=:customerChoice " +
-			"and  csmrp.ccMmReplPackId.merchMethodCode=:merchMethodDesc " +
-			"and  csmrp.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.fixtureTypeRollupId=:fixtureId " +
 			"and csmrp.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId=1" +
 			"")
-	Optional<List<CcMmReplPack>> findCcMmReplnPkConsData(@Param("planId")Long planId, @Param("fineline") Integer fineline, @Param("customerChoice") String customerChoice,
-												  @Param("merchMethodDesc") Integer merchMethodDesc, @Param("fixtureId") Integer fixtureId);
+	Optional<List<CcMmReplPack>> findCcMmReplnPkConsData(@Param("planId")Long planId, @Param("fineline") Integer fineline, @Param("customerChoice") String customerChoice);
 }

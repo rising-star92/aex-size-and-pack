@@ -1,14 +1,13 @@
 package com.walmart.aex.sp.repository;
 
 import com.walmart.aex.sp.dto.packoptimization.DCInboundResponse;
+import com.walmart.aex.sp.entity.CcSpMmReplPack;
+import com.walmart.aex.sp.entity.CcSpMmReplPackId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.walmart.aex.sp.entity.CcSpMmReplPack;
-import com.walmart.aex.sp.entity.CcSpMmReplPackId;
 
 import java.util.List;
 import java.util.Optional;
@@ -38,13 +37,11 @@ public interface CcSpReplnPkConsRepository extends JpaRepository<CcSpMmReplPack,
             "csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.planId=:planId " +
             "and  csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.finelineNbr=:fineline " +
             "and  csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.customerChoice=:customerChoice " +
-            "and  csmrp.ccSpReplPackId.ccMmReplPackId.merchMethodCode=:merchMethodDesc " +
-            "and  csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.fixtureTypeRollupId=:fixtureId " +
             "and  csmrp.sizeDesc=:sizeDesc " +
             "and csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId=1" +
             "")
-    Optional<CcSpMmReplPack> findCcSpMmReplnPkConsData(@Param("planId")Long planId, @Param("fineline") Integer fineline, @Param("customerChoice") String customerChoice,
-                                                       @Param("merchMethodDesc") Integer merchMethodDesc, @Param("fixtureId") Integer fixtureId, @Param("sizeDesc") String sizeDesc);
+    Optional<List<CcSpMmReplPack>> findCcSpMmReplnPkConsData(@Param("planId")Long planId, @Param("fineline") Integer fineline, @Param("customerChoice") String customerChoice,
+                                                       @Param("sizeDesc") String sizeDesc);
 
     @Query(value = "select new com.walmart.aex.sp.dto.packoptimization.DCInboundResponse(scp.subCatPlanId.merchCatPlanId.planId, scp.subCatPlanId.merchCatPlanId.lvl0Nbr, " +
             " scp.lvl0Desc , " +
