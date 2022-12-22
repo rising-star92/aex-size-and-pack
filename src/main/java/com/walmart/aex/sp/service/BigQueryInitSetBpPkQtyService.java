@@ -33,14 +33,13 @@ public class BigQueryInitSetBpPkQtyService {
 		List<InitSetBumpPackDTO> initSetBpPkDTOList = new ArrayList<>();
 
 		try {
-			String projectId = bigQueryConnectionProperties.getMLProjectId();
-			String datasetName = bigQueryConnectionProperties.getMLDataSetName();
-			String tableName = bigQueryConnectionProperties.getRFASPPackOptTableName();
-			String projectIdDatasetNameTableName = projectId + "." + datasetName + "." + tableName;
+			String projectIdDatasetNameTableNameSp = getProjectIdSp();
+			String projectIdDatasetNameTableNameRFA = getProjectIdCc();
+
 			Long planId = request.getPlanId();
 			Integer finelineNbr = request.getFinelineNbr();
 			String planAndFineline = String.valueOf(planId) + "_" + String.valueOf(finelineNbr);
-			String initSetBpPkQtyRFAQuery = getInitSetBpPkGCPQuery(projectIdDatasetNameTableName, planAndFineline);
+			String initSetBpPkQtyRFAQuery = getInitSetBpPkGCPQuery(projectIdDatasetNameTableNameRFA,projectIdDatasetNameTableNameSp, planId,finelineNbr);
 			BigQuery bigQuery = BigQueryOptions.getDefaultInstance().getService();
 			QueryJobConfiguration queryConfig = QueryJobConfiguration.newBuilder(initSetBpPkQtyRFAQuery).build();
 			TableResult results = bigQuery.query(queryConfig);
@@ -62,13 +61,31 @@ public class BigQueryInitSetBpPkQtyService {
 		return initSetBpPkData;
 	}
 
-	private String getInitSetBpPkGCPQuery(String projectIdDatasetNameTableName, String planAndFineline) {
-		return "WITH MyTable AS ( SELECT ProductFineline as planAndFineline, reverse( SUBSTR(REVERSE(ProductCustomerChoice), STRPOS(REVERSE(ProductCustomerChoice), \"_\")+1)) as styleNbr,ProductCustomerChoice as customerChoice, "
-				+ "MerchMethod as merchMethodDesc, size, sum(SPPackInitialSetOutput)+sum(SPPackBumpOutput) as finalInitialSetQty, sum(SPPackBumpOutput) as bumpPackQty  FROM `"
-				+ projectIdDatasetNameTableName + "`"
-				+ " group by planAndFineline, styleNbr, customerChoice, merchMethodDesc, size "
-				+ "order by planAndFineline, styleNbr, customerChoice, merchMethodDesc, size) "
-				+ "SELECT TO_JSON_STRING(gcpTable) AS json FROM MyTable AS gcpTable where gcpTable.planAndFineline = '"
-				+ planAndFineline + "'";
+	private String getInitSetBpPkGCPQuery(String rfaTableName,String projectIdDatasetNameTableName,Long planId, Integer finelineNbr) {
+
+		// TODO: Find a way to not use RFA for getting style_nbr. This is temporary
+		return "WITH MyTable AS (select PackOpt.*, RFA.style_nbr as styleNbr from (select distinct trim(style_nbr) as style_nbr, trim(cc) as cc FROM " +
+				"`"+ rfaTableName +"` " +
+				"where season = "+String.valueOf(planId)+" and fineline="+String.valueOf(finelineNbr)+") as RFA " +
+				"join " +
+				"(SELECT ProductFineline as planAndFineline,trim(ProductCustomerChoice) as customerChoice, MerchMethod as merchMethodDesc, size, sum(SPPackInitialSetOutput)+sum(SPPackBumpOutput) as finalInitialSetQty, sum(SPPackBumpOutput) as bumpPackQty  FROM" +
+				"`"+projectIdDatasetNameTableName+"` sp where sp.ProductFineline='"+String.valueOf(planId) + "_" + String.valueOf(finelineNbr) +"' " +
+				"group by planAndFineline, customerChoice, merchMethodDesc, size ) as PackOpt on PackOpt.customerChoice=RFA.cc order by planAndFineline, style, customerChoice, merchMethodDesc, size )" +
+				"SELECT TO_JSON_STRING(gcpTable) AS json FROM MyTable AS gcpTable";
+
+
+	}
+	private String getProjectIdSp() {
+		String projectId = bigQueryConnectionProperties.getMLProjectId();
+		String datasetName = bigQueryConnectionProperties.getMLDataSetName();
+		String tableNameSp = bigQueryConnectionProperties.getRFASPPackOptTableName();
+		return projectId + "." + datasetName + "." + tableNameSp;
+	}
+
+	private String getProjectIdCc() {
+		String rfaProjectId = bigQueryConnectionProperties.getRFAProjectId();
+		String rfaDatasetName = bigQueryConnectionProperties.getRFADataSetName();
+		String tableNameCc = bigQueryConnectionProperties.getRFACCStageTable();
+		return rfaProjectId + "." + rfaDatasetName + "." + tableNameCc;
 	}
 }
