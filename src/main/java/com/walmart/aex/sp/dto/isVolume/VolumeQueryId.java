@@ -9,6 +9,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode
 public class VolumeQueryId {
     private String cc;
+    private String styleNbr;
     private int clusterId;
     private int inStoreWeek;
     private String fixtureType;
