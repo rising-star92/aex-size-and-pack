@@ -121,22 +121,28 @@ public class BigQueryInitialSetPlanService {
         bqfpRequest.setChannel("1");
 
         BQFPResponse response = requireNonNull(bqfpService.getBuyQuantityUnits(bqfpRequest), "flow plan response can't be null or empty");
-        List<BumpSet> bumpList = Optional.ofNullable(response)
-                .map(styles -> styles.getStyles())
-                .map(style -> style.get(0))
-                .map(cc -> cc.getCustomerChoices())
-                .map(customerChoice -> customerChoice.get(0))
-                .map(fixtures -> fixtures.getFixtures())
-                .map(fixture -> fixture.get(0))
-                .map(clusters -> clusters.getClusters())
-                .map(cluster -> cluster.get(0))
-                .map(Cluster::getBumpList)
-                .orElse(Collections.emptyList());
-
-        if (null != bumpList && !bumpList.isEmpty()) {
-            if (null != bumpList.get(0)) {
-                return formatWeekDesc(bumpList.get(0).getWeekDesc());
-            }
+//        List<BumpSet> bumpList = Optional.ofNullable(response)
+//                .map(styles -> styles.getStyles())
+//                .map(style -> style.get(0))
+//                .map(cc -> cc.getCustomerChoices())
+//                .map(customerChoice -> customerChoice.get(0))
+//                .map(fixtures -> fixtures.getFixtures())
+//                .map(fixture -> fixture.get(0))
+//                .map(clusters -> clusters.getClusters())
+//                .map(cluster -> cluster.get(0))
+//                .map(Cluster::getBumpList)
+//                .orElse(Collections.emptyList());
+        // look for the first bump set. this would be replaced by muliple bump pack for S4.
+        BumpSet bp = Optional.ofNullable(response).stream().
+                flatMap( styles -> styles.getStyles().stream())
+                .flatMap( ccs -> ccs.getCustomerChoices().stream())
+                .flatMap(fixtures -> fixtures.getFixtures().stream())
+                .flatMap(clusters -> clusters.getClusters().stream())
+                .flatMap(bump -> bump.getBumpList().stream())
+                .filter(bump -> null != bump && bump.getWeekDesc()!=null)
+                .findFirst().get();
+        if (null != bp ) {
+                return formatWeekDesc(bp.getWeekDesc());
         }
         return null;
     }
