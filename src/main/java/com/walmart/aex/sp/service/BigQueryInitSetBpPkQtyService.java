@@ -70,8 +70,8 @@ public class BigQueryInitSetBpPkQtyService {
 				"join " +
 				"(SELECT ProductFineline as planAndFineline,trim(ProductCustomerChoice) as customerChoice, MerchMethod as merchMethodDesc, size, sum(SPPackInitialSetOutput)+sum(SPPackBumpOutput) as finalInitialSetQty, sum(SPPackBumpOutput) as bumpPackQty  FROM" +
 				"`"+projectIdDatasetNameTableName+"` sp where sp.ProductFineline='"+String.valueOf(planId) + "_" + String.valueOf(finelineNbr) +"' " +
-				"group by planAndFineline, customerChoice, merchMethodDesc, size ) as PackOpt on PackOpt.customerChoice=RFA.cc order by planAndFineline, style, customerChoice, merchMethodDesc, size )" +
-				"SELECT TO_JSON_STRING(gcpTable) AS json FROM MyTable AS gcpTable";
+				"group by planAndFineline, customerChoice, merchMethodDesc, size ) as PackOpt on PackOpt.customerChoice=RFA.cc order by planAndFineline, style_nbr, customerChoice, merchMethodDesc, size )" +
+				"SELECT TO_JSON_STRING(gcpTable) AS json FROM MyTable AS gcpTable;";
 
 
 	}
