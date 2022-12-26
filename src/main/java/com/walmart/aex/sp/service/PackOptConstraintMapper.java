@@ -318,6 +318,8 @@ public class PackOptConstraintMapper {
 
         CustomerChoice customerChoiceDto = new CustomerChoice();
         customerChoiceDto.setCcId(fineLineMapperDto.getCcId());
+        customerChoiceDto.setColorName(fineLineMapperDto.getColorName());
+        customerChoiceDto.setColorFamily(fineLineMapperDto.getColorFamilyDesc());
         customerChoiceDto.setConstraints(getConstraints(fineLineMapperDto, CategoryType.CUSTOMER_CHOICE));
         customerChoiceDtoList.add(customerChoiceDto);
     }

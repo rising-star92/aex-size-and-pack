@@ -259,6 +259,7 @@ type Style {
 type CustomerChoice {
     ccId: String
     colorName: String
+    colorFamily: String
     constraints:Constraints
     
 }
