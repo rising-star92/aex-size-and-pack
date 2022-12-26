@@ -33,6 +33,8 @@ public class PackOptConstraintResponseDTO {
     private Integer styleMaxUnitsPerPack;
     private Integer styleMaxPacks;
     private String ccId;
+    private String colorName;
+    private String colorFamilyDesc;
     private String ccSupplierName;
     private Integer ccVendorNumber6;
     private Integer ccGsmSupplierNumber;

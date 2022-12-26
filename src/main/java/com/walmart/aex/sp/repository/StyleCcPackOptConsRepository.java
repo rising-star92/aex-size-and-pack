@@ -35,6 +35,8 @@ public interface StyleCcPackOptConsRepository extends JpaRepository<CcPackOptimi
             "spk.maxUnitsPerPack as styleMaxUnitsPerPack , " +
             "spk.maxNbrOfPacks as styleMaxPacks , " +
             "ccp.custChoicePlanId.ccId , " +
+            "ccp.colorName , " +
+            "ccp.colorFamilyDesc , " +
             "cpk.vendorName as ccSupplierName , " +
             "cpk.vendorNbr6 as ccVendorNumber6 , " +
             "cpk.gsmSupplierId as ccGsmSupplierNumber , " +
