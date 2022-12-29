@@ -130,6 +130,7 @@ type InitialSetPlan{
 
 type PackDetails{
 	packId: String
+	uuId: String
 	metrics: [Metrics]
 }
 
