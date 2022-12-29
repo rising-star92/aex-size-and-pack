@@ -9,5 +9,6 @@ import lombok.Data;
 public class PackDetails {
 	  private String packId;
 	  private List<Metrics> metrics;
+	  private String uuId;
 	
 }

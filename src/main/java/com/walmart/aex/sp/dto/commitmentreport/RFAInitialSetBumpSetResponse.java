@@ -16,5 +16,6 @@ public class RFAInitialSetBumpSetResponse {
 	private Integer store;
 	private Integer is_quantity;
 	private Integer bs_quantity;
+	private String uuid;
 
 }
