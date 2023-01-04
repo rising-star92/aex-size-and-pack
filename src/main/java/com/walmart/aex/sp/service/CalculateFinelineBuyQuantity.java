@@ -537,7 +537,7 @@ public class CalculateFinelineBuyQuantity {
     }
 
     private Long getReplenishmentUnits(Replenishment replenishment) {
-        if (replenishment.getDcInboundAdjUnits() != null && replenishment.getDcInboundAdjUnits() != 0) {
+        if (replenishment.getDcInboundAdjUnits() != null) {
             return replenishment.getDcInboundAdjUnits();
         } else if (replenishment.getDcInboundUnits() != null) {
             return replenishment.getDcInboundUnits();
