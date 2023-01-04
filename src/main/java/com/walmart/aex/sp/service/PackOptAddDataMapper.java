@@ -1,37 +1,18 @@
 package com.walmart.aex.sp.service;
 
-import com.walmart.aex.sp.dto.packoptimization.Constraints;
-import com.walmart.aex.sp.dto.packoptimization.CustomerChoice;
-import com.walmart.aex.sp.dto.packoptimization.Fineline;
-import com.walmart.aex.sp.dto.packoptimization.Supplier;
-import com.walmart.aex.sp.dto.planhierarchy.Lvl1;
-import com.walmart.aex.sp.dto.planhierarchy.Lvl2;
-import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
-import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
-import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDTO;
-import com.walmart.aex.sp.dto.planhierarchy.Style;
-import com.walmart.aex.sp.entity.CcPackOptimization;
-import com.walmart.aex.sp.entity.CcPackOptimizationID;
-import com.walmart.aex.sp.entity.FineLinePackOptimization;
-import com.walmart.aex.sp.entity.FineLinePackOptimizationID;
-import com.walmart.aex.sp.entity.MerchantPackOptimization;
-import com.walmart.aex.sp.entity.MerchantPackOptimizationID;
-import com.walmart.aex.sp.entity.StylePackOptimization;
-import com.walmart.aex.sp.entity.StylePackOptimizationID;
-import com.walmart.aex.sp.entity.SubCatgPackOptimization;
-import com.walmart.aex.sp.entity.SubCatgPackOptimizationID;
+import com.walmart.aex.sp.dto.packoptimization.*;
+import com.walmart.aex.sp.dto.planhierarchy.*;
+import com.walmart.aex.sp.entity.*;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.repository.MerchPackOptimizationRepository;
 import com.walmart.aex.sp.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -54,7 +35,7 @@ public class PackOptAddDataMapper {
 
         if (!CollectionUtils.isEmpty(channelList)) {
             channelList.forEach(channel -> {
-                MerchantPackOptimizationID merchantPackOptimizationID = new MerchantPackOptimizationID(request.getPlanId(), request.getLvl0Nbr(), lvl1.getLvl1Nbr(), lvl2.getLvl2Nbr(), lvl3.getLvl3Nbr(),channel);
+                MerchantPackOptimizationID merchantPackOptimizationID = new MerchantPackOptimizationID(request.getPlanId(), request.getLvl0Nbr(), lvl1.getLvl1Nbr(), lvl2.getLvl2Nbr(), lvl3.getLvl3Nbr(), channel);
                 MerchantPackOptimization merchantPackOptimization = merchPackOptimizationRepository.findById(merchantPackOptimizationID).orElse(new MerchantPackOptimization());
                 if (merchantPackOptimization.getMerchantPackOptimizationID() == null) {
                     merchantPackOptimization.setMerchantPackOptimizationID(merchantPackOptimizationID);
@@ -123,14 +104,17 @@ public class PackOptAddDataMapper {
 
 
             if (!CollectionUtils.isEmpty(fineline.getStyles())) {
-                fineLinePackOptimization.setStylePackOptimization(setStylesPackOpt(fineLinePackOptimization, fineline.getStyles()));
+                Set<String> colorCombinationSets = new HashSet<>();
+                fineLinePackOptimization.setStylePackOptimization(setStylesPackOpt(fineLinePackOptimization, fineline.getStyles(), colorCombinationSets));
+                /**Reset the color combination if there is change in Country of Origin or Supplier Name */
+                resetColorCombination(colorCombinationSets, fineLinePackOptimization);
             }
             fineLinePackOptimizationSet.add(fineLinePackOptimization);
         }
         return fineLinePackOptimizationSet;
     }
 
-    public Set<StylePackOptimization> setStylesPackOpt(FineLinePackOptimization fineLinePackOptimization, List<Style> styles) {
+    public Set<StylePackOptimization> setStylesPackOpt(FineLinePackOptimization fineLinePackOptimization, List<Style> styles, Set<String> colorCombinationSets) {
         Set<StylePackOptimization> stylePackOptimizationSet = Optional.ofNullable(fineLinePackOptimization.getStylePackOptimization())
                 .orElse(new HashSet<>());
         for (Style style : styles) {
@@ -151,7 +135,7 @@ public class PackOptAddDataMapper {
             stylePackOptimization.setSinglePackInd(DEFAULT_SINGLE_PACK_INDICATOR);
 
             if (!CollectionUtils.isEmpty(style.getCustomerChoices())) {
-                stylePackOptimization.setCcPackOptimization(setCustChoicePackOpt(stylePackOptimization, style.getCustomerChoices()));
+                stylePackOptimization.setCcPackOptimization(setCustChoicePackOpt(stylePackOptimization, style.getCustomerChoices(), colorCombinationSets));
             }
             stylePackOptimizationSet.add(stylePackOptimization);
 
@@ -159,7 +143,7 @@ public class PackOptAddDataMapper {
         return stylePackOptimizationSet;
     }
 
-    public Set<CcPackOptimization> setCustChoicePackOpt(StylePackOptimization stylePackOptimization, List<CustomerChoice> customerChoices) {
+    public Set<CcPackOptimization> setCustChoicePackOpt(StylePackOptimization stylePackOptimization, List<CustomerChoice> customerChoices, Set<String> colorCombinationSets) {
         Set<CcPackOptimization> ccPackOptimizationSet = Optional.ofNullable(stylePackOptimization.getCcPackOptimization())
                 .orElse(new HashSet<>());
         for (CustomerChoice customerChoice : customerChoices) {
@@ -167,7 +151,7 @@ public class PackOptAddDataMapper {
             CcPackOptimizationID ccPackOptimizationID = new CcPackOptimizationID(stylePackOptimization.getStylePackoptimizationId(), customerChoice.getCcId());
             CcPackOptimization ccPackOptimization = Optional.of(ccPackOptimizationSet)
                     .stream()
-                    .flatMap(Collection::stream).filter(ccPackOptimization1  -> ccPackOptimization1.getCcPackOptimizationId().equals(ccPackOptimizationID))
+                    .flatMap(Collection::stream).filter(ccPackOptimization1 -> ccPackOptimization1.getCcPackOptimizationId().equals(ccPackOptimizationID))
                     .findFirst()
                     .orElse(new CcPackOptimization());
             if (ccPackOptimization.getCcPackOptimizationId() == null) {
@@ -181,25 +165,64 @@ public class PackOptAddDataMapper {
 
             if (customerChoice.getConstraints() != null) {
                 Constraints constraints = customerChoice.getConstraints();
-                if (constraints.getColorCombinationConstraints() != null) {
-                    ccPackOptimization.setOriginCountryName(constraints.getColorCombinationConstraints().getCountryOfOrigin());
-                    List<Supplier> suppliers = constraints.getColorCombinationConstraints().getSuppliers();
-                    if (!CollectionUtils.isEmpty(suppliers)) {
-                        ccPackOptimization.setVendorName(suppliers.get(0).getSupplierName());
-                        ccPackOptimization.setVendorNbr6(suppliers.get(0).getSupplierId());
-                        ccPackOptimization.setVendorNbr9(suppliers.get(0).getSupplierNumber());
-                        ccPackOptimization.setGsmSupplierId(suppliers.get(0).getSupplier8Number());
-                    }
-                }
-                if (constraints.getFinelineLevelConstraints() != null) {
-                    ccPackOptimization.setMaxNbrOfPacks(constraints.getFinelineLevelConstraints().getMaxPacks());
-                    ccPackOptimization.setMaxUnitsPerPack(constraints.getFinelineLevelConstraints().getMaxUnitsPerPack());
-                }
+                updateCcColorCombinationConstraint(ccPackOptimization, constraints, colorCombinationSets);
             }
-
             ccPackOptimizationSet.add(ccPackOptimization);
-
         }
         return ccPackOptimizationSet;
+    }
+
+    private void updateCcColorCombinationConstraint(CcPackOptimization ccPackOptimization, Constraints constraints, Set<String> colorCombinationSets) {
+        ColorCombinationConstraints colorCombinationConstraints = constraints.getColorCombinationConstraints();
+        if (colorCombinationConstraints != null) {
+            String countryOfOrigin = colorCombinationConstraints.getCountryOfOrigin();
+            String countryOfOriginFromDB = ccPackOptimization.getOriginCountryName();
+            ccPackOptimization.setOriginCountryName(countryOfOrigin);
+            /**Comparing Country of origin. If there is a change in country of origin then reset all color combination constraints (Supplier, Factory, Color Combination and Port of Origin)*/
+            if (!StringUtils.isEmpty(countryOfOrigin) && !StringUtils.isEmpty(countryOfOriginFromDB) && !countryOfOrigin.equalsIgnoreCase(countryOfOriginFromDB)) {
+                if (!StringUtils.isEmpty(ccPackOptimization.getColorCombination())) {
+                    colorCombinationSets.add(ccPackOptimization.getColorCombination());
+                }
+            } else {
+                setCcSupplierConstraints(colorCombinationConstraints, ccPackOptimization, colorCombinationSets);
+            }
+        }
+        if (constraints.getFinelineLevelConstraints() != null) {
+            ccPackOptimization.setMaxNbrOfPacks(constraints.getFinelineLevelConstraints().getMaxPacks());
+            ccPackOptimization.setMaxUnitsPerPack(constraints.getFinelineLevelConstraints().getMaxUnitsPerPack());
+        }
+    }
+
+    private void setCcSupplierConstraints(ColorCombinationConstraints colorCombinationConstraints, CcPackOptimization ccPackOptimization, Set<String> colorCombinationSets) {
+        List<Supplier> suppliers = colorCombinationConstraints.getSuppliers();
+        if (!CollectionUtils.isEmpty(suppliers)) {
+            String supplierName = StringEscapeUtils.unescapeHtml(suppliers.get(0).getSupplierName());
+            /**Comparing Supplier Name. If there is a change in supplier name then reset all color combination constraints (Country of origin, Factory, Color Combination and Port of Origin)*/
+            if (!StringUtils.isEmpty(supplierName) && !StringUtils.isEmpty(ccPackOptimization.getVendorName()) && !supplierName.equalsIgnoreCase(ccPackOptimization.getVendorName())) {
+                ccPackOptimization.setOriginCountryName(null);
+                ccPackOptimization.setFactoryId(null);
+                ccPackOptimization.setFactoryName(null);
+                ccPackOptimization.setPortOfOriginName(null);
+                if (!StringUtils.isEmpty(ccPackOptimization.getColorCombination())) {
+                    colorCombinationSets.add(ccPackOptimization.getColorCombination());
+                }
+            }
+            ccPackOptimization.setVendorName(supplierName);
+            ccPackOptimization.setVendorNbr6(suppliers.get(0).getSupplierId());
+            ccPackOptimization.setVendorNbr9(suppliers.get(0).getSupplierNumber());
+            ccPackOptimization.setGsmSupplierId(suppliers.get(0).getSupplier8Number());
+        }
+    }
+
+    private void resetColorCombination(Set<String> colorCombinationSets, FineLinePackOptimization fineLinePackOptimization) {
+        if (!CollectionUtils.isEmpty(colorCombinationSets)) {
+            for (StylePackOptimization stylePackOptimization : fineLinePackOptimization.getStylePackOptimization()) {
+                for (CcPackOptimization ccPackOptimization : stylePackOptimization.getCcPackOptimization()) {
+                    if (colorCombinationSets.contains(ccPackOptimization.getColorCombination())) {
+                        ccPackOptimization.setColorCombination(null);
+                    }
+                }
+            }
+        }
     }
 }

@@ -121,7 +121,7 @@ public class CommonUtil {
     }
 
     public PlanSizeAndPackDTO cleanSPRequest(PlanSizeAndPackDTO planSizeAndPackDTO) throws IOException {
-        return objectMapper.readValue(Jsoup.clean(StringEscapeUtils.escapeHtml(StringEscapeUtils.escapeSql(objectMapper.writeValueAsString(planSizeAndPackDTO))),
+        return objectMapper.readValue(Jsoup.clean(StringEscapeUtils.unescapeHtml(StringEscapeUtils.escapeSql(objectMapper.writeValueAsString(planSizeAndPackDTO))),
                 Whitelist.basic()), PlanSizeAndPackDTO.class);
     }
 }
