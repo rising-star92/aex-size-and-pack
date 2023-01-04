@@ -12,7 +12,6 @@ import com.walmart.aex.sp.entity.SpStyleChannelFixture;
 import com.walmart.aex.sp.exception.SizeAndPackException;
 import com.walmart.aex.sp.properties.BuyQtyProperties;
 import com.walmart.aex.sp.repository.FineLineReplenishmentRepository;
-import com.walmart.aex.sp.repository.MerchCatgReplPackRepository;
 import com.walmart.aex.sp.repository.SpFineLineChannelFixtureRepository;
 import com.walmart.aex.sp.repository.StyleReplenishmentRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -20,14 +19,23 @@ import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -408,14 +416,14 @@ class CalculateFinelineBuyQuantityTest {
 
    @Test
    public void test() throws IOException, SizeAndPackException {
-      final String path = "/plan68fineline2742";
+      final String path = "/plan72fineline203";
       BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
       APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
       BuyQtyResponse buyQtyResponse = buyQtyResponseFromJson(path.concat("/BuyQtyResponse"));
       Mockito.when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
       Mockito.when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
       Mockito.when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
-      CalculateBuyQtyRequest request = create("store", 50000, 34, 6419, 12228, 31510, 2742);
+      CalculateBuyQtyRequest request = create("store", 50000, 23, 3669, 8244, 16906, 203);
       CalculateBuyQtyParallelRequest pRequest = createFromRequest(request);
 
       CalculateBuyQtyResponse r = new CalculateBuyQtyResponse();
