@@ -1,6 +1,11 @@
 package com.walmart.aex.sp.entity;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -21,4 +26,8 @@ public class FinelineReplPackId implements Serializable
 
     @Column(name="fineline_nbr",nullable = false)
     private Integer finelineNbr;
+
+    public FinelineReplPackId(SubCatgReplPackId subCatgReplPackId) {
+        this.subCatgReplPackId = subCatgReplPackId;
+    }
 }

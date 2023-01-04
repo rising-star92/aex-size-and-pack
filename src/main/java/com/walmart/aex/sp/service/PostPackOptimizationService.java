@@ -8,13 +8,7 @@ import com.walmart.aex.sp.dto.packoptimization.isbpqty.CustomerChoices;
 import com.walmart.aex.sp.dto.packoptimization.isbpqty.Fixtures;
 import com.walmart.aex.sp.dto.packoptimization.isbpqty.ISAndBPQtyDTO;
 import com.walmart.aex.sp.dto.packoptimization.isbpqty.Size;
-import com.walmart.aex.sp.entity.CcMmReplPack;
-import com.walmart.aex.sp.entity.CcReplPack;
-import com.walmart.aex.sp.entity.CcSpMmReplPack;
-import com.walmart.aex.sp.entity.FinelineReplPack;
-import com.walmart.aex.sp.entity.MerchCatgReplPack;
-import com.walmart.aex.sp.entity.StyleReplPack;
-import com.walmart.aex.sp.entity.SubCatgReplPack;
+import com.walmart.aex.sp.entity.*;
 import com.walmart.aex.sp.enums.MerchMethod;
 import com.walmart.aex.sp.repository.CcMmReplnPkConsRepository;
 import com.walmart.aex.sp.repository.CcReplnPkConsRepository;
@@ -87,24 +81,25 @@ public class PostPackOptimizationService {
     public void updateInitialSetAndBumpPackAty(Long planId, Integer finelineNbr, ISAndBPQtyDTO isAndBPQtyDTO) {
         log.info("Update Replenishment qty {}", isAndBPQtyDTO);
 
-        //Map<Integer, Integer> rollUpDifferenceByMerchMethod = updateRCMerchFineline(planId, finelineNbr, isAndBPQtyDTO);
-        //int totalRollupDiff = rollUpDifferenceByMerchMethod.values().stream().mapToInt(Integer::intValue).sum();
-        if (true) {
-            //updateRCMerchCatg(planId, finelineNbr, rollUpDifferenceByMerchMethod);
-            //updateRCMerchSubCatg(planId, finelineNbr, rollUpDifferenceByMerchMethod);
-            //updateRCStyleAndCustomerChoice(planId, finelineNbr, isAndBPQtyDTO);
-            //updateRCMerchMethodCCFixture(planId, finelineNbr, isAndBPQtyDTO);
+        Map<Integer, Integer> rollUpDifferenceByMerchMethod = updateRCMerchFineline(planId, finelineNbr, isAndBPQtyDTO);
+        final int totalRollupDiff = rollUpDifferenceByMerchMethod.values().stream().mapToInt(Integer::intValue).sum();
+        if (totalRollupDiff != 0) {
+            updateRCMerchCatg(planId, finelineNbr, rollUpDifferenceByMerchMethod);
+            updateRCMerchSubCatg(planId, finelineNbr, rollUpDifferenceByMerchMethod);
+            updateRCStyleAndCustomerChoice(planId, finelineNbr, isAndBPQtyDTO);
+            updateRCMerchMethodCCFixture(planId, finelineNbr, isAndBPQtyDTO);
             updateRCMerchMethodCCFixtureSize(planId, finelineNbr, isAndBPQtyDTO);
         }
 
     }
 
-    private void updateRCMerchMethodCCFixtureSize(Long planId, Integer finelineNbr, ISAndBPQtyDTO isAndBPQtyDTO) {
+    public void updateRCMerchMethodCCFixtureSize(Long planId, Integer finelineNbr, ISAndBPQtyDTO isAndBPQtyDTO) {
 
         isAndBPQtyDTO.getCustomerChoices().forEach(cc -> cc.getFixtures().forEach(fixture -> fixture.getSizes().forEach(size -> {
             List<CcSpMmReplPack> ccSpMmReplPacks = ccSpReplnPkConsRepository.findCcSpMmReplnPkConsData(planId, finelineNbr, cc.getCcId(), size.getSizeDesc()).orElse(Collections.emptyList());
-            ccSpMmReplPacks.forEach(ccSpMmReplPack -> {
-                //Original final buy units (w/o repln) - Optimized final buy units (w/o repln) == replenishment units
+            ccSpMmReplPacks.stream().filter(ccSpMmReplPack -> getMerchMethodCode(ccSpMmReplPack.getCcSpReplPackId())
+                  .equals(MerchMethod.getMerchMethodIdFromDescription(fixture.getMerchMethod()))).forEach(ccSpMmReplPack -> {
+
                Integer updatedReplnQty = ccSpMmReplPack.getFinalBuyUnits() - size.getOptFinalBuyQty();
                ccSpMmReplPack.setReplUnits(updatedReplnQty);
                ccSpMmReplPack.setReplPackCnt(UpdateReplnConfigMapper.getReplenishmentPackCount(ccSpMmReplPack.getReplUnits(), ccSpMmReplPack.getVendorPackCnt()));
@@ -115,9 +110,6 @@ public class PostPackOptimizationService {
                        List<Replenishment> replObj = objectMapper.readValue(replnWeeksObj, new TypeReference<>() {});
                        Long totalReplnUnits = replObj.stream().mapToLong(Replenishment::getAdjReplnUnits).sum();
                        replObj.forEach(replWeekObj -> replWeekObj.setAdjReplnUnits((updatedReplnQty*((replWeekObj.getAdjReplnUnits()*100)/totalReplnUnits)/100)));
-//                               List<Replenishment> updateReplObj = replObj.stream()
-//                                     .peek(replenishment -> replenishment.setAdjReplnUnits((updatedReplnQty*((replenishment.getAdjReplnUnits()*100)/totalReplnUnits)/100)))
-//                                     .collect(Collectors.toList());
                        List<Replenishment> updatedReplenishmentsPack = replenishmentsOptimizationServices.getUpdatedReplenishmentsPack(replObj,ccSpMmReplPack.getVendorPackCnt());
                        ccSpMmReplPack.setReplenObj(objectMapper.writeValueAsString(updatedReplenishmentsPack));
                    } catch (JsonProcessingException jpe) {
@@ -125,28 +117,8 @@ public class PostPackOptimizationService {
                    }
                }
             });
+            ccSpReplnPkConsRepository.saveAll(ccSpMmReplPacks);
         })));
-//        isAndBPQtyDTO.getCustomerChoices().forEach(cc -> cc.getFixtures().forEach(fixtures -> fixtures.getSizes().forEach(size -> {
-//            ccSpReplnPkConsRepository.findCcSpMmReplnPkConsData(planId, finelineNbr, cc.getCcId(), CommonUtil.getMerchMethod(fixtures.getMerchMethod()), CommonUtil.getFixtureRollUpId(fixtures.getFixtureType()), size.getSizeDesc()).ifPresent( ccSpMmReplPack ->{
-//                Integer updatedReplenishmentQty = ccSpMmReplPack.getFinalBuyUnits() - size.getOptFinalBuyQty();
-//                ccSpMmReplPack.setReplUnits(updatedReplenishmentQty);
-//                String replObjJson = ccSpMmReplPack.getReplenObj();
-//                if(replObjJson!= null && !replObjJson.isEmpty()){
-//                    try {
-//                        List<Replenishment> replObj = objectMapper.readValue(replObjJson, new TypeReference<>() {});
-//                        Long total = replObj.stream().mapToLong(ru->ru.getAdjReplnUnits()).sum();
-//                        List<Replenishment> updateReplObj = replObj.stream()
-//                                .peek(replenishment -> replenishment.setAdjReplnUnits((updatedReplenishmentQty*((replenishment.getAdjReplnUnits()*100)/total)/100)))
-//                                .collect(Collectors.toList());
-//                        List<Replenishment> updatedReplenishmentsPack = replenishmentsOptimizationServices.getUpdatedReplenishmentsPack(updateReplObj,ccSpMmReplPack.getVendorPackCnt());
-//                        ccSpMmReplPack.setReplenObj(objectMapper.writeValueAsString(updatedReplenishmentsPack));
-//                    } catch (JsonProcessingException e) {
-//                       log.error("Could not convert Replenishment Object Json for week disaggregation ",e );
-//                    }
-//                }
-//                ccSpReplnPkConsRepository.save(ccSpMmReplPack);
-//            } );
-//        })));
     }
 
     private void updateRCMerchMethodCCFixture(Long planId, Integer finelineNbr, ISAndBPQtyDTO isAndBPQtyDTO) {
@@ -167,27 +139,19 @@ public class PostPackOptimizationService {
                     Integer updatedTotalReplnQty = ccMmReplPack.getFinalBuyUnits() - updatedTotal;
                     ccMmReplPack.setReplUnits(updatedTotalReplnQty);
                     ccMmReplPack.setReplPackCnt(UpdateReplnConfigMapper.getReplenishmentPackCount(ccMmReplPack.getReplUnits(), ccMmReplPack.getVendorPackCnt()));
-                    //ccMmReplnPkConsRepository.save(ccMmReplPack);
+                    ccMmReplnPkConsRepository.save(ccMmReplPack);
                 });
             });
         });
-
-//        isAndBPQtyDTO.getCustomerChoices().forEach(cc -> cc.getFixtures().forEach(fixtures -> ccMmReplnPkConsRepository.findCcMmReplnPkConsData(planId, finelineNbr, cc.getCcId(), CommonUtil.getMerchMethod(fixtures.getMerchMethod()), CommonUtil.getFixtureRollUpId(fixtures.getFixtureType())).ifPresent(ccMmReplPack -> {
-//            Integer total = fixtures.getSizes().stream()
-//                    .mapToInt(Size::getOptFinalBuyQty).sum();
-//
-//            Integer updatedReplenishmentQty = ccMmReplPack.getFinalBuyUnits() - total;
-//            ccMmReplPack.setReplUnits(updatedReplenishmentQty);
-//            ccMmReplnPkConsRepository.save(ccMmReplPack);
-//        })));
     }
 
-    private void updateRCStyleAndCustomerChoice(Long planId, Integer finelineNbr, ISAndBPQtyDTO isAndBPQtyDTO) {
+    public void updateRCStyleAndCustomerChoice(Long planId, Integer finelineNbr, ISAndBPQtyDTO isAndBPQtyDTO) {
 
         isAndBPQtyDTO.getCustomerChoices().forEach(cc -> {
+            List<StyleReplPack> styleReplPacks = styleReplnPkConsRepository.findByPlanIdAndCCId(planId, finelineNbr, cc.getCcId()).orElse(Collections.emptyList());
             List<CcReplPack> ccReplPacks = ccReplnPkConsRepository.findByPlanIdAndCCId(planId, finelineNbr, cc.getCcId()).orElse(Collections.emptyList());
             ccReplPacks.forEach(ccReplPack -> {
-                Integer merchMethodCode = getMerchMethodCode(ccReplPack);
+                Integer merchMethodCode = getMerchMethodCode(ccReplPack.getCcReplPackId());
                 Integer totalUpdatedFinalBuyQty = cc.getFixtures().stream()
                       .filter(ccFix -> MerchMethod.getMerchMethodIdFromDescription(ccFix.getMerchMethod()).equals(merchMethodCode))
                       .map(Fixtures::getSizes)
@@ -195,51 +159,35 @@ public class PostPackOptimizationService {
                       .mapToInt(Size::getOptFinalBuyQty)
                       .sum();
 
-                Integer rollupDifference = totalUpdatedFinalBuyQty - ccReplPack.getReplUnits();
-                ccReplPack.setReplUnits(totalUpdatedFinalBuyQty);
-                ccReplnPkConsRepository.save(ccReplPack);
+                Integer rollupDifference = ccReplPack.getFinalBuyUnits() - totalUpdatedFinalBuyQty;
+                Integer updatedReplnQty = ccReplPack.getReplUnits() + rollupDifference;
+                ccReplPack.setReplUnits(updatedReplnQty);
+                //ccReplnPkConsRepository.save(ccReplPack);
 
-                List<StyleReplPack> styleReplPacks = styleReplnPkConsRepository.findByPlanIdAndCCId(planId, finelineNbr, cc.getCcId()).orElse(Collections.emptyList());
                 styleReplPacks.stream()
-                      .filter(styleReplPack -> styleReplPack.getStyleReplPackId().getFinelineReplPackId().getSubCatgReplPackId().getMerchCatgReplPackId().getFixtureTypeRollupId().equals(merchMethodCode))
+                      .filter(styleReplPack -> getMerchMethodCode(styleReplPack.getStyleReplPackId()).equals(merchMethodCode))
                       .forEach(styleReplPack -> {
                           styleReplPack.setReplUnits(styleReplPack.getReplUnits() + rollupDifference);
                           styleReplPack.setReplPackCnt(UpdateReplnConfigMapper.getReplenishmentPackCount(styleReplPack.getReplUnits(), styleReplPack.getVendorPackCnt()));
+                          //styleReplnPkConsRepository.save(styleReplPack);
                       });
-
             });
+            ccReplnPkConsRepository.saveAll(ccReplPacks);
+            styleReplnPkConsRepository.saveAll(styleReplPacks);
         });
-
-
-//        isAndBPQtyDTO.getCustomerChoices().forEach(cc -> ccReplnPkConsRepository.findByPlanIdAndCCId(planId, finelineNbr, cc.getCcId()).ifPresent(ccReplPack -> {
-//            Integer total = cc.getFixtures().stream()
-//                    .mapToInt(fixtures -> fixtures.getSizes().stream()
-//                            .mapToInt(Size::getOptFinalBuyQty).sum()).sum();
-//
-//
-//            Integer updatedReplenishmentQty = ccReplPack.getFinalBuyUnits() - total;
-//            Integer rollUpDifference = updatedReplenishmentQty - ccReplPack.getReplUnits();
-//
-//            ccReplPack.setReplUnits(updatedReplenishmentQty);
-//            ccReplnPkConsRepository.save(ccReplPack);
-//            styleReplnPkConsRepository.findByPlanIdAndCCId(planId, finelineNbr, cc.getCcId()).ifPresent(styleReplPack -> {
-//                styleReplPack.setReplUnits(styleReplPack.getReplUnits() + rollUpDifference);
-//                styleReplnPkConsRepository.save(styleReplPack);
-//            });
-//        }));
     }
 
 
-    private void updateRCMerchSubCatg(Long planId, Integer finelineNbr, Map<Integer, Integer> rollupDiffByMerchMethod) {
+    public void updateRCMerchSubCatg(Long planId, Integer finelineNbr, Map<Integer, Integer> rollupDiffByMerchMethod) {
         List<SubCatgReplPack> subCatgReplPacks = subCatgReplnPkConsRepository.findByPlanIdAndFinelineNbr(planId, finelineNbr).orElse(Collections.emptyList());
 
         subCatgReplPacks.forEach(subCatgReplPack -> {
-            Integer merchMethodCode = subCatgReplPack.getSubCatgReplPackId().getMerchCatgReplPackId().getFixtureTypeRollupId();
+            Integer merchMethodCode = getMerchMethodCode(subCatgReplPack.getSubCatgReplPackId());
             subCatgReplPack.setReplUnits(subCatgReplPack.getReplUnits() + rollupDiffByMerchMethod.getOrDefault(merchMethodCode, 0));
             subCatgReplPack.setReplPackCnt(UpdateReplnConfigMapper.getReplenishmentPackCount(subCatgReplPack.getReplUnits(), subCatgReplPack.getVendorPackCnt()));
         });
 
-        //subCatgReplnPkConsRepository.saveAll(subCatgReplPacks);
+        subCatgReplnPkConsRepository.saveAll(subCatgReplPacks);
     }
 
     public Map<Integer, Integer> updateRCMerchFineline(Long planId, Integer finelineNbr, ISAndBPQtyDTO isAndBPQtyDTO) {
@@ -247,8 +195,7 @@ public class PostPackOptimizationService {
         List<FinelineReplPack> finelines = finelineReplnPkConsRepository.findByPlanIdAndFinelineNbr(planId, finelineNbr).orElse(Collections.emptyList());
 
         for (FinelineReplPack finelineMerchMethod : finelines) {
-            final Integer merchMethodCode = finelineMerchMethod.getFinelineReplPackId()
-                  .getSubCatgReplPackId().getMerchCatgReplPackId().getFixtureTypeRollupId();
+            final Integer merchMethodCode = getMerchMethodCode(finelineMerchMethod.getFinelineReplPackId());
 
             if (!replnDifferenceByMerchMethod.containsKey(merchMethodCode))
                 replnDifferenceByMerchMethod.put(merchMethodCode, 0);
@@ -256,7 +203,7 @@ public class PostPackOptimizationService {
             int updatedTotalBuyQty = isAndBPQtyDTO.getCustomerChoices().stream()
                   .map(CustomerChoices::getFixtures)
                   .flatMap(Collection::stream)
-                  .filter(merchMethod -> MerchMethod.getMerchMethodIdFromDescription(merchMethod.getMerchMethod()).equals(merchMethodCode)) // need to fix
+                  .filter(merchMethod -> MerchMethod.getMerchMethodIdFromDescription(merchMethod.getMerchMethod()).equals(merchMethodCode))
                   .map(Fixtures::getSizes)
                   .flatMap(Collection::stream)
                   .mapToInt(Size::getOptFinalBuyQty)
@@ -269,11 +216,11 @@ public class PostPackOptimizationService {
 
         }
 
-        //finelineReplnPkConsRepository.saveAll(finelines);
+        finelineReplnPkConsRepository.saveAll(finelines);
         return replnDifferenceByMerchMethod;
     }
 
-    private void updateRCMerchCatg(Long planId, Integer finelineNbr, Map<Integer, Integer> rollupDiffByMerchMethod) {
+    public void updateRCMerchCatg(Long planId, Integer finelineNbr, Map<Integer, Integer> rollupDiffByMerchMethod) {
         List<MerchCatgReplPack> merchCatgReplPacks = merchCatgReplPackRepository.findByPlanIdAndFinelineNbr(planId, finelineNbr).orElse(Collections.emptyList());
 
         merchCatgReplPacks.forEach(merchCatgReplPack -> {
@@ -281,17 +228,26 @@ public class PostPackOptimizationService {
             merchCatgReplPack.setReplUnits(merchCatgReplPack.getReplUnits() + rollupDiffByMerchMethod.getOrDefault(merchMethodCode, 0));
             merchCatgReplPack.setReplPackCnt(UpdateReplnConfigMapper.getReplenishmentPackCount(merchCatgReplPack.getReplUnits(), merchCatgReplPack.getVendorPackCnt()));
         });
-
-        //merchCatgReplPackRepository.saveAll(merchCatgReplPacks);
-
+        merchCatgReplPackRepository.saveAll(merchCatgReplPacks);
     }
 
-    private Integer getMerchMethodCode(CcReplPack ccReplPack) {
-        return ccReplPack.getCcReplPackId().getStyleReplPackId()
-              .getFinelineReplPackId().getSubCatgReplPackId().getMerchCatgReplPackId().getFixtureTypeRollupId();
+    private Integer getMerchMethodCode(SubCatgReplPackId subCatgReplPackId) {
+        return subCatgReplPackId.getMerchCatgReplPackId().getFixtureTypeRollupId();
     }
-
-
-
+    private Integer getMerchMethodCode(FinelineReplPackId finelineReplPackId) {
+        return getMerchMethodCode(finelineReplPackId.getSubCatgReplPackId());
+    }
+    private Integer getMerchMethodCode(StyleReplPackId styleReplPackId) {
+        return getMerchMethodCode(styleReplPackId.getFinelineReplPackId());
+    }
+    private Integer getMerchMethodCode(CcReplPackId ccReplPackId) {
+        return getMerchMethodCode(ccReplPackId.getStyleReplPackId());
+    }
+    private Integer getMerchMethodCode(CcMmReplPackId ccMmReplPackId) {
+        return getMerchMethodCode(ccMmReplPackId.getCcReplPackId());
+    }
+    private Integer getMerchMethodCode(CcSpMmReplPackId ccSpMmReplPackId) {
+        return getMerchMethodCode(ccSpMmReplPackId.getCcMmReplPackId());
+    }
 
 }

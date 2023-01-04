@@ -1,6 +1,11 @@
 package com.walmart.aex.sp.entity;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -23,4 +28,8 @@ public class StyleReplPackId implements Serializable
     @Column(name="style_nbr",nullable = false)
     @Convert( converter = CharConverter.class)
     private String styleNbr;
+
+    public StyleReplPackId(FinelineReplPackId finelineReplPackId) {
+        this.finelineReplPackId = finelineReplPackId;
+    }
 }
