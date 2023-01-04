@@ -175,11 +175,13 @@ public class PackOptAddDataMapper {
     private void updateCcColorCombinationConstraint(CcPackOptimization ccPackOptimization, Constraints constraints, Set<String> colorCombinationSets) {
         ColorCombinationConstraints colorCombinationConstraints = constraints.getColorCombinationConstraints();
         if (colorCombinationConstraints != null) {
-            String countryOfOrigin = colorCombinationConstraints.getCountryOfOrigin();
-            String countryOfOriginFromDB = ccPackOptimization.getOriginCountryName();
-            ccPackOptimization.setOriginCountryName(countryOfOrigin);
+            String countryOfOriginFromLP = colorCombinationConstraints.getCountryOfOrigin();
+            String countryOfOriginFromSP = ccPackOptimization.getOriginCountryName();
+            ccPackOptimization.setOriginCountryName(countryOfOriginFromLP);
+            log.info("LP:Country of Origin {} SP:Country of Origin {}", countryOfOriginFromLP, countryOfOriginFromSP);
             /**Comparing Country of origin. If there is a change in country of origin then reset all color combination constraints (Supplier, Factory, Color Combination and Port of Origin)*/
-            if (!StringUtils.isEmpty(countryOfOrigin) && !StringUtils.isEmpty(countryOfOriginFromDB) && !countryOfOrigin.equalsIgnoreCase(countryOfOriginFromDB)) {
+            if (!StringUtils.isEmpty(countryOfOriginFromLP) && !StringUtils.isEmpty(countryOfOriginFromSP) && !countryOfOriginFromLP.equalsIgnoreCase(countryOfOriginFromSP)) {
+                log.info("Received Country of Origin update event from LP and removing color combination for CC {}  ",ccPackOptimization.getCcPackOptimizationId());
                 if (!StringUtils.isEmpty(ccPackOptimization.getColorCombination())) {
                     colorCombinationSets.add(ccPackOptimization.getColorCombination());
                 }
@@ -199,6 +201,7 @@ public class PackOptAddDataMapper {
             String supplierName = StringEscapeUtils.unescapeHtml(suppliers.get(0).getSupplierName());
             /**Comparing Supplier Name. If there is a change in supplier name then reset all color combination constraints (Country of origin, Factory, Color Combination and Port of Origin)*/
             if (!StringUtils.isEmpty(supplierName) && !StringUtils.isEmpty(ccPackOptimization.getVendorName()) && !supplierName.equalsIgnoreCase(ccPackOptimization.getVendorName())) {
+                log.info("Received Supplier Name update event from LP. Removing Country of Origin, FactoryId, Port of Origin and Color Combination for CC {}  ",ccPackOptimization.getCcPackOptimizationId());
                 ccPackOptimization.setOriginCountryName(null);
                 ccPackOptimization.setFactoryId(null);
                 ccPackOptimization.setFactoryName(null);
