@@ -527,21 +527,13 @@ public class CalculateFinelineBuyQuantity {
 
             replenishments.forEach(replenishment -> {
                 Replenishment replenishment1 = new Replenishment(replenishment.getReplnWeek(), replenishment.getReplnWeekDesc());
-                //Updating to use the dcInboundAdjUnits if set or dcInboundUnits from BQFP service
-                Long units = getReplenishmentUnits(replenishment);
+
+                Long units = replenishment.getDcInboundUnits();
                 replenishment1.setAdjReplnUnits(Math.round((units * getAvgSizePct(sizeDto)) / 100));
                 replObj.add(replenishment1);
             });
             buyQtyObj.setReplenishments(replObj);
         });
-    }
-
-    private Long getReplenishmentUnits(Replenishment replenishment) {
-        if (replenishment.getDcInboundAdjUnits() != null) {
-            return replenishment.getDcInboundAdjUnits();
-        } else if (replenishment.getDcInboundUnits() != null) {
-            return replenishment.getDcInboundUnits();
-        } else return 0L;
     }
 
     private void logExtResponse(String title, Object response) {
