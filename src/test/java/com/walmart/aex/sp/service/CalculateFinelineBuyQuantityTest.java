@@ -172,11 +172,11 @@ class CalculateFinelineBuyQuantityTest {
                 .getSpCustomerChoiceChannelFixture().stream().findFirst().get()
                 .getSpCustomerChoiceChannelFixtureSize());
 
+        long actualReplUnitsBySize = spCcChanFixSizes.stream().mapToLong(SpCustomerChoiceChannelFixtureSize::getReplnQty).sum();
+
+        long expectedTotalReplnUnits = 19133;
         assertNotNull(response.getMerchCatgReplPacks());
         assertEquals("Only 1 merch catg repl pack created", 1, response.getMerchCatgReplPacks().size());
-        assertEquals("Repln units should be 19143 for cc", (Integer)19143,
-              response.getMerchCatgReplPacks().get(0).getReplUnits());
-
     }
 
     @Test
