@@ -172,11 +172,11 @@ class CalculateFinelineBuyQuantityTest {
                 .getSpCustomerChoiceChannelFixture().stream().findFirst().get()
                 .getSpCustomerChoiceChannelFixtureSize());
 
-        long actualReplUnitsBySize = spCcChanFixSizes.stream().mapToLong(SpCustomerChoiceChannelFixtureSize::getReplnQty).sum();
-
-        long expectedTotalReplnUnits = 19133;
         assertNotNull(response.getMerchCatgReplPacks());
         assertEquals("Only 1 merch catg repl pack created", 1, response.getMerchCatgReplPacks().size());
+        assertEquals("Repln units should be 19143 for cc", (Integer)19143,
+              response.getMerchCatgReplPacks().get(0).getReplUnits());
+
     }
 
     @Test
@@ -413,23 +413,4 @@ class CalculateFinelineBuyQuantityTest {
         assertUnitValueBySize(fixture1Sizes, "32X30", fix32x30, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
         assertEquals("Fixture 1 Initial Set Qty rollup should be sum of all size values", expectedTotalFix1InitialSetQty, (int) fixture1.getInitialSetQty());
     }
-
-   @Test
-   public void test() throws IOException, SizeAndPackException {
-      final String path = "/plan72fineline203";
-      BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
-      APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
-      BuyQtyResponse buyQtyResponse = buyQtyResponseFromJson(path.concat("/BuyQtyResponse"));
-      Mockito.when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
-      Mockito.when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
-      Mockito.when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
-      CalculateBuyQtyRequest request = create("store", 50000, 23, 3669, 8244, 16906, 203);
-      CalculateBuyQtyParallelRequest pRequest = createFromRequest(request);
-
-      CalculateBuyQtyResponse r = new CalculateBuyQtyResponse();
-      r.setMerchCatgReplPacks(new ArrayList<>());
-      r.setSpFineLineChannelFixtures(new ArrayList<>());
-
-      CalculateBuyQtyResponse response = calculateFinelineBuyQuantity.calculateFinelineBuyQty(request, pRequest, r);
-   }
 }
