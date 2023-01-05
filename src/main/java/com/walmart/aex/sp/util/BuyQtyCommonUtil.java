@@ -1,14 +1,24 @@
 package com.walmart.aex.sp.util;
 
 import com.walmart.aex.sp.dto.assortproduct.RFASizePackData;
-import com.walmart.aex.sp.dto.bqfp.*;
+import com.walmart.aex.sp.dto.bqfp.BQFPResponse;
+import com.walmart.aex.sp.dto.bqfp.Cluster;
+import com.walmart.aex.sp.dto.bqfp.CustomerChoice;
+import com.walmart.aex.sp.dto.bqfp.Fixture;
+import com.walmart.aex.sp.dto.bqfp.Replenishment;
+import com.walmart.aex.sp.dto.bqfp.Style;
 import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
 import com.walmart.aex.sp.service.BuyQuantityMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -120,13 +130,13 @@ public class BuyQtyCommonUtil {
                 replnMap.put(rep.getReplnWeek(), new Replenishment(rep.getReplnWeek(), rep.getReplnWeekDesc(), 0L, 0L, 0L, 0L, 0L));
             }
             Replenishment replnObjectMap = replnMap.get(rep.getReplnWeek());
-            replnObjectMap.setAdjReplnUnits(replnObjectMap.getAdjReplnUnits() + Optional.ofNullable(rep.getAdjReplnUnits()).orElse(0L));
-            replnObjectMap.setReplnUnits(replnObjectMap.getReplnUnits() + Optional.ofNullable(rep.getReplnUnits()).orElse(0L));
-            replnObjectMap.setRemainingUnits(replnObjectMap.getRemainingUnits() + Optional.ofNullable(rep.getRemainingUnits()).orElse(0L));
-            replnObjectMap.setDcInboundUnits(replnObjectMap.getDcInboundUnits() + Optional.ofNullable(rep.getDcInboundUnits()).orElse(0L));
-            replnObjectMap.setDcInboundAdjUnits(replnObjectMap.getDcInboundAdjUnits() + Optional.ofNullable(rep.getDcInboundAdjUnits()).orElse(0L));
+            //We only need DC Inbound Units from here for downstream calculation.  Will use DcInboundAdjUnits if present or else DcInboundUnits
+
+            Long units = Optional.ofNullable(rep.getDcInboundAdjUnits())
+                  .orElse(Optional.ofNullable(rep.getDcInboundUnits()).orElse(0L));
+            replnObjectMap.setDcInboundUnits(replnObjectMap.getDcInboundUnits() + units);
         });
-        return replnMap.values().stream().collect(Collectors.toList());
+        return new ArrayList<>(replnMap.values());
     }
 
     public static StoreQuantity createStoreQuantity(RFASizePackData rfaSizePackData, double perStoreQty, List<Integer> storeListWithOldQty, double totalUnits, Cluster volumeCluster) {
