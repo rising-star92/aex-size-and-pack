@@ -528,7 +528,7 @@ public class CalculateFinelineBuyQuantity {
             replenishments.forEach(replenishment -> {
                 Replenishment replenishment1 = new Replenishment(replenishment.getReplnWeek(), replenishment.getReplnWeekDesc());
 
-                Long units = replenishment.getDcInboundUnits();
+                Long units = Optional.ofNullable(replenishment.getDcInboundUnits()).orElse(0L);
                 replenishment1.setAdjReplnUnits(Math.round((units * getAvgSizePct(sizeDto)) / 100));
                 replObj.add(replenishment1);
             });
