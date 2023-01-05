@@ -30,6 +30,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -163,7 +165,7 @@ public class PostPackOptimizationServiceTest {
 		Map<Integer, Integer> replnRollupDifferenceByMerchMethod = Map.of(1,0, 2, -3833);
 		postPackOptimizationService.updateRCMerchCatg(34L, 2852, replnRollupDifferenceByMerchMethod);
 		ArgumentCaptor<List<MerchCatgReplPack>> merchCatgCaptor = ArgumentCaptor.forClass(List.class);
-		Mockito.verify(merchCatgReplPackRepository).saveAll(merchCatgCaptor.capture());
+		verify(merchCatgReplPackRepository).saveAll(merchCatgCaptor.capture());
 		List<MerchCatgReplPack> merchCatgReplns = merchCatgCaptor.getValue();
 
 		assertEquals(merchCatgReplns.stream()
@@ -187,7 +189,7 @@ public class PostPackOptimizationServiceTest {
 		Map<Integer, Integer> replnRollupDifferenceByMerchMethod = Map.of(1,0, 2, -3833);
 		postPackOptimizationService.updateRCMerchSubCatg(34L, 2852, replnRollupDifferenceByMerchMethod);
 		ArgumentCaptor<List<SubCatgReplPack>> subcatgCaptor = ArgumentCaptor.forClass(List.class);
-		Mockito.verify(subCatgReplnPkConsRepository).saveAll(subcatgCaptor.capture());
+		verify(subCatgReplnPkConsRepository).saveAll(subcatgCaptor.capture());
 		List<SubCatgReplPack> merchCatgReplns = subcatgCaptor.getValue();
 
 		assertEquals(merchCatgReplns.stream()
@@ -211,7 +213,7 @@ public class PostPackOptimizationServiceTest {
 		postPackOptimizationService.updateRCMerchMethodCCFixtureSize(34L, 2852, createPostPackDto(1112, 1112));
 
 		ArgumentCaptor<List<CcSpMmReplPack>> ccspCaptor = ArgumentCaptor.forClass(List.class);
-		Mockito.verify(ccSpReplnPkConsRepository, Mockito.times(2)).saveAll(ccspCaptor.capture());
+		verify(ccSpReplnPkConsRepository, times(2)).saveAll(ccspCaptor.capture());
 		List<CcSpMmReplPack> ccSpMmRepls = ccspCaptor.getValue();
 		assertEquals(518, ccSpMmRepls.get(0).getReplUnits(), "Repln units should be reduced to 518 for 0X Hanging");
 
@@ -237,6 +239,7 @@ public class PostPackOptimizationServiceTest {
 		Optional<List<StyleReplPack>> optionalStyleReplPacks = Optional.of(List.of(styleReplPackHanging, styleReplPackFolded));
 
 		Mockito.when(ccReplnPkConsRepository.findByPlanIdAndCCId(34L, 2852, "34_2852_4_19_2_GEMSLT")).thenReturn(optionalCcReplPacks);
+		Mockito.when(ccReplnPkConsRepository.findByPlanIdAndCCId(34L, 2852, "34_2852_4_19_2_PURPRL")).thenReturn(optionalCcReplPacks);
 		Mockito.when(styleReplnPkConsRepository.findByPlanIdAndCCId(34L,2852,"34_2852_4_19_2_GEMSLT")).thenReturn(optionalStyleReplPacks);
 		Mockito.when(styleReplnPkConsRepository.findByPlanIdAndCCId(34L,2852,"34_2852_4_19_2_PURPRL")).thenReturn(optionalStyleReplPacks);
 
@@ -244,10 +247,11 @@ public class PostPackOptimizationServiceTest {
 		CustomerChoices cc2 = new CustomerChoices();
 		cc2.setCcId("34_2852_4_19_2_PURPRL");
 		Fixtures f2 = new Fixtures();
+		f2.setMerchMethod("HANGING");
 		f2.setSizes(new ArrayList<>());
 		Size size = new Size();
 		size.setSizeDesc("0X");
-		size.setOptFinalBuyQty(10000);
+		size.setOptFinalBuyQty(1500);
 		f2.getSizes().add(size);
 		cc2.setFixtures(new ArrayList<>());
 		cc2.getFixtures().add(f2);
@@ -256,20 +260,26 @@ public class PostPackOptimizationServiceTest {
 		postPackOptimizationService.updateRCStyleAndCustomerChoice(34L, 2852, isAndBPQtyDTO);
 
 		ArgumentCaptor<List<CcReplPack>> ccCaptor = ArgumentCaptor.forClass(List.class);
-		Mockito.verify(ccReplnPkConsRepository, Mockito.times(2)).saveAll(ccCaptor.capture());
+		verify(ccReplnPkConsRepository, times(2)).saveAll(ccCaptor.capture());
 		List<CcReplPack> ccReplPacks = ccCaptor.getValue();
 
 		assertEquals(3000, ccReplPacks.stream().filter(ccReplPack -> ccReplPack.getCcReplPackId()
 				.getStyleReplPackId().getFinelineReplPackId().getSubCatgReplPackId().getMerchCatgReplPackId().getFixtureTypeRollupId().equals(MerchMethod.HANGING.getId()))
 				.findFirst()
 				.get()
-				.getReplUnits(), "Should be 3000 units");
+				.getReplUnits(), "Should be 3000 repln units");
 
 		assertEquals(10000, ccReplPacks.stream().filter(ccReplPack -> ccReplPack.getCcReplPackId()
-						.getStyleReplPackId().getFinelineReplPackId().getSubCatgReplPackId().getMerchCatgReplPackId().getFixtureTypeRollupId().equals(MerchMethod.FOLDED.getId()))
+				.getStyleReplPackId().getFinelineReplPackId().getSubCatgReplPackId().getMerchCatgReplPackId().getFixtureTypeRollupId().equals(MerchMethod.FOLDED.getId()))
 				.findFirst()
 				.get()
-				.getReplUnits(), "Should be 10000 units");
+				.getReplUnits(), "Should be 10000 repln units");
+
+		CcReplPack ccReplPack_PURPL = ccReplPacks.stream().filter(cc -> cc.getCcReplPackId().getCustomerChoice().equalsIgnoreCase("34_2852_4_19_2_PURPRL")).filter(ccReplPack -> ccReplPack.getCcReplPackId()
+						.getStyleReplPackId().getFinelineReplPackId().getSubCatgReplPackId().getMerchCatgReplPackId().getFixtureTypeRollupId().equals(MerchMethod.HANGING.getId()))
+				.findFirst()
+				.get();
+		assertEquals(0, ccReplPack_PURPL.getReplUnits(), "Should be 0 repln units");
 	}
 
 	private CcReplPack ccReplPack(int fixtureTypeId, int finalBuyUnits, int replUnits) {

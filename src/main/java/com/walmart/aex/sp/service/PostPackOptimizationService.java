@@ -150,7 +150,7 @@ public class PostPackOptimizationService {
         isAndBPQtyDTO.getCustomerChoices().forEach(cc -> {
             List<StyleReplPack> styleReplPacks = styleReplnPkConsRepository.findByPlanIdAndCCId(planId, finelineNbr, cc.getCcId()).orElse(Collections.emptyList());
             List<CcReplPack> ccReplPacks = ccReplnPkConsRepository.findByPlanIdAndCCId(planId, finelineNbr, cc.getCcId()).orElse(Collections.emptyList());
-            ccReplPacks.forEach(ccReplPack -> {
+            ccReplPacks.stream().filter(ccRpk -> ccRpk.getCcReplPackId().getCustomerChoice().equalsIgnoreCase(cc.getCcId())).forEach(ccReplPack -> {
                 Integer merchMethodCode = getMerchMethodCode(ccReplPack.getCcReplPackId());
                 Integer totalUpdatedFinalBuyQty = cc.getFixtures().stream()
                       .filter(ccFix -> MerchMethod.getMerchMethodIdFromDescription(ccFix.getMerchMethod()).equals(merchMethodCode))
@@ -194,7 +194,7 @@ public class PostPackOptimizationService {
         Map<Integer, Integer> replnDifferenceByMerchMethod = new HashMap<>();
         List<FinelineReplPack> finelines = finelineReplnPkConsRepository.findByPlanIdAndFinelineNbr(planId, finelineNbr).orElse(Collections.emptyList());
 
-        for (FinelineReplPack finelineMerchMethod : finelines) {
+        finelines.forEach(finelineMerchMethod -> {
             final Integer merchMethodCode = getMerchMethodCode(finelineMerchMethod.getFinelineReplPackId());
 
             if (!replnDifferenceByMerchMethod.containsKey(merchMethodCode))
@@ -213,8 +213,7 @@ public class PostPackOptimizationService {
             int replnDifference = (updatedReplnQty - Optional.ofNullable(finelineMerchMethod.getReplUnits()).orElse(0));
             replnDifferenceByMerchMethod.put(merchMethodCode, replnDifference);
             finelineMerchMethod.setReplUnits(updatedReplnQty);
-
-        }
+        });
 
         finelineReplnPkConsRepository.saveAll(finelines);
         return replnDifferenceByMerchMethod;
