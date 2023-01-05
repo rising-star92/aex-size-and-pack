@@ -89,6 +89,7 @@ public class BigQueryInitialSetPlanService {
                 rfaRes.setSize(rfaBumpSetResponse.getSize());
                 rfaRes.setBumppack_ratio(rfaBumpSetResponse.getBumppack_ratio());
                 rfaRes.setBs_quantity(rfaBumpSetResponse.getBs_quantity());
+                rfaRes.setUuid(rfaBumpSetResponse.getUuid());
                 rfaBsRes.add(rfaRes);
             }
             rfaInitialSetBumpSetResponses.addAll(rfaBsRes);
@@ -121,22 +122,28 @@ public class BigQueryInitialSetPlanService {
         bqfpRequest.setChannel("1");
 
         BQFPResponse response = requireNonNull(bqfpService.getBuyQuantityUnits(bqfpRequest), "flow plan response can't be null or empty");
-        List<BumpSet> bumpList = Optional.ofNullable(response)
-                .map(styles -> styles.getStyles())
-                .map(style -> style.get(0))
-                .map(cc -> cc.getCustomerChoices())
-                .map(customerChoice -> customerChoice.get(0))
-                .map(fixtures -> fixtures.getFixtures())
-                .map(fixture -> fixture.get(0))
-                .map(clusters -> clusters.getClusters())
-                .map(cluster -> cluster.get(0))
-                .map(Cluster::getBumpList)
-                .orElse(Collections.emptyList());
-
-        if (null != bumpList && !bumpList.isEmpty()) {
-            if (null != bumpList.get(0)) {
-                return formatWeekDesc(bumpList.get(0).getWeekDesc());
-            }
+//        List<BumpSet> bumpList = Optional.ofNullable(response)
+//                .map(styles -> styles.getStyles())
+//                .map(style -> style.get(0))
+//                .map(cc -> cc.getCustomerChoices())
+//                .map(customerChoice -> customerChoice.get(0))
+//                .map(fixtures -> fixtures.getFixtures())
+//                .map(fixture -> fixture.get(0))
+//                .map(clusters -> clusters.getClusters())
+//                .map(cluster -> cluster.get(0))
+//                .map(Cluster::getBumpList)
+//                .orElse(Collections.emptyList());
+        // look for the first bump set. this would be replaced by muliple bump pack for S4.
+        BumpSet bp = Optional.ofNullable(response).stream().
+                flatMap( styles -> styles.getStyles().stream())
+                .flatMap( ccs -> ccs.getCustomerChoices().stream())
+                .flatMap(fixtures -> fixtures.getFixtures().stream())
+                .flatMap(clusters -> clusters.getClusters().stream())
+                .flatMap(bump -> bump.getBumpList().stream())
+                .filter(bump -> null != bump && bump.getWeekDesc()!=null)
+                .findFirst().get();
+        if (null != bp ) {
+                return formatWeekDesc(bp.getWeekDesc());
         }
         return null;
     }
@@ -156,12 +163,12 @@ public class BigQueryInitialSetPlanService {
 
     private String getSizePackIntialSetQueryString(String ccTableName, String spTableName, Integer planId, Integer finelineNbr) {
         String prodFineline = planId + "_" + finelineNbr;
-        return "WITH MyTable AS ( select distinct reverse( SUBSTR(REVERSE(RFA.cc), STRPOS(REVERSE(RFA.cc), \"_\")+1)) as style_id,RFA.in_store_week, RFA.cc, SP.merch_method, SP.pack_id,SP.size, (SP.initialpack_ratio) AS initialpack_ratio, SUM(SP.is_quantity) AS is_quantity from (select trim(cc) as cc,CAST(store AS INTEGER) as store,min(week) as in_store_week FROM `" + ccTableName + "`as RFA where plan_id_partition=" + planId + " and fineline=" + finelineNbr + " and final_alloc_space>0 group by cc,store order by cc, in_store_week, store )as RFA join (SELECT trim(SP.ProductCustomerChoice) as cc,SP.store, SP.SPPackID as pack_id, SP.MerchMethod as merch_method, SP.size, SP.SPBumpSetPackSizeRatio as bumppack_ratio, SP.SPInitialSetPackSizeRatio as initialpack_ratio, SP.SPPackInitialSetOutput as is_quantity, SP.SPPackBumpOutput as bs_quantity FROM `" + spTableName + "` AS SP where ProductFineline = '" + prodFineline + "' and SPInitialSetPackSizeRatio >0 ) as SP on RFA.store = SP.store and RFA.cc = SP.cc GROUP BY RFA.in_store_week,RFA.cc,SP.merch_method,SP.size,SP.pack_id ,initialpack_ratio order by RFA.in_store_week,RFA.cc,SP.merch_method,SP.size,SP.pack_id,initialpack_ratio ) SELECT TO_JSON_STRING(rfaTable) AS json FROM MyTable AS rfaTable";
+        return "WITH MyTable AS ( select distinct reverse( SUBSTR(REVERSE(RFA.cc), STRPOS(REVERSE(RFA.cc), \"_\")+1)) as style_id,RFA.in_store_week, RFA.cc, SP.merch_method, SP.pack_id, SP.UUID AS uuid, SP.size, (SP.initialpack_ratio) AS initialpack_ratio, SUM(SP.is_quantity) AS is_quantity from (select trim(cc) as cc,CAST(store AS INTEGER) as store,min(week) as in_store_week FROM `" + ccTableName + "`as RFA where plan_id_partition=" + planId + " and fineline=" + finelineNbr + " and final_alloc_space>0 group by cc,store order by cc, in_store_week, store )as RFA join (SELECT trim(SP.ProductCustomerChoice) as cc,SP.store, SP.SPPackID as pack_id, SP.MerchMethod as merch_method, SP.UUID as uuid, SP.size, SP.SPBumpSetPackSizeRatio as bumppack_ratio, SP.SPInitialSetPackSizeRatio as initialpack_ratio, SP.SPPackInitialSetOutput as is_quantity, SP.SPPackBumpOutput as bs_quantity FROM `" + spTableName + "` AS SP where ProductFineline = '" + prodFineline + "' and SPInitialSetPackSizeRatio >0 ) as SP on RFA.store = SP.store and RFA.cc = SP.cc GROUP BY RFA.in_store_week,RFA.cc,SP.merch_method, uuid, SP.size,SP.pack_id ,initialpack_ratio order by RFA.in_store_week,RFA.cc,SP.merch_method,SP.size, uuid, SP.pack_id,initialpack_ratio ) SELECT TO_JSON_STRING(rfaTable) AS json FROM MyTable AS rfaTable";
     }
 
     private String getSizePackBumpSetQueryString(String spTableName, Integer planId, Integer finelineNbr) {
         String prodFineline = planId + "_" + finelineNbr;
-        return "WITH MyTable AS ( select distinct reverse( SUBSTR(REVERSE(ProductCustomerChoice), STRPOS(REVERSE(ProductCustomerChoice), \"_\")+1)) as style_id, SP.ProductCustomerChoice as cc, SP.MerchMethod AS merch_method, SP.SPPackID as pack_id,SP.Size as size, (SP.SPBumpSetPackSizeRatio) AS bumppack_ratio, SUM(SP.SPPackBumpOutput) AS bs_quantity FROM `" + spTableName + "` AS SP where ProductFineline = '" + prodFineline + "' and SPBumpSetPackSizeRatio>0 GROUP BY style_id,cc,merch_method,size,pack_id,bumppack_ratio order by style_id,cc,merch_method,size,pack_id,bumppack_ratio ) SELECT TO_JSON_STRING(rfaTable) AS json FROM MyTable AS rfaTable";
+        return "WITH MyTable AS ( select distinct reverse( SUBSTR(REVERSE(ProductCustomerChoice), STRPOS(REVERSE(ProductCustomerChoice), \"_\")+1)) as style_id, SP.ProductCustomerChoice as cc, SP.MerchMethod AS merch_method, SP.UUID AS uuid, SP.SPPackID as pack_id,SP.Size as size, (SP.SPBumpSetPackSizeRatio) AS bumppack_ratio, SUM(SP.SPPackBumpOutput) AS bs_quantity FROM `" + spTableName + "` AS SP where ProductFineline = '" + prodFineline + "' and SPBumpSetPackSizeRatio>0 GROUP BY style_id,cc,merch_method,size,pack_id,uuid,bumppack_ratio order by style_id,cc,merch_method,size,pack_id,uuid, bumppack_ratio ) SELECT TO_JSON_STRING(rfaTable) AS json FROM MyTable AS rfaTable";
     }
 
     private String getISByVolumeFinelineClusterQuery(String ccTableName, String spTableName, Integer planId, Integer finelineNbr, String analyticsData,String interval, Integer fiscalYear) {
@@ -175,22 +182,23 @@ public class BigQueryInitialSetPlanService {
                 "select distinct\n" +
                 "RFA.in_store_week,\n" +
                 "RFA.cc,\n" +
+                "RFA.style_nbr,\n" +
                 "SUM(SP.is_quantity) AS is_quantity ,\n" +
                 "CL.store,\n" +
                 "CL.clusterId,\n" +
                 "RFA.fixtureAllocation,\n" +
                 "RFA.fixtureType\n" +
                 "from (\n" +                               
-				 " select distinct trim(cc_week.cc) as cc, cast (cc_week.store as INT64) as store,cc_week.in_store_week,  allocated as fixtureAllocation,  final_pref as fixtureType from (" +
+				 " select distinct trim(cc_week.cc) as cc, trim(cc_week.style_nbr) as style_nbr, cast (cc_week.store as INT64) as store,cc_week.in_store_week,  allocated as fixtureAllocation,  final_pref as fixtureType from (" +
 					"(select fineline, store, allocated, final_pref from ("+
 					"select fineline, store, week, allocated, final_pref, row_number() over(PARTITION BY fineline, store order by week) as rw_nbr from "+
 					"(select * from " + ccTableName  +
 					" where plan_id_partition =" +planId+ " and final_alloc_space > 0 and fineline =" + finelineNbr +"))" +
 					" where rw_nbr = 1) fl_alloc" +
 					" inner join " +
-					" (select store, fineline, cc, min(week) as in_store_week" +
+					" (select store, fineline, style_nbr,cc, min(week) as in_store_week" +
 					" FROM " + ccTableName+
-					" where plan_id_partition =" + planId+ " and final_alloc_space > 0 and fineline=" +finelineNbr + " group by store, fineline, cc) cc_week" + 
+					" where plan_id_partition =" + planId+ " and final_alloc_space > 0 and fineline=" +finelineNbr + " group by store, fineline, style_nbr,cc) cc_week" + 
 					" on fl_alloc.fineline = cc_week.fineline" + 
 					" and fl_alloc.store = cc_week.store )" +
 					")"+
@@ -204,7 +212,7 @@ public class BigQueryInitialSetPlanService {
                 "select store_nbr as store,cluster_id  as clusterId from `" + analyticsData + ".svg_fl_cluster` where fineline_nbr = " + finelineNbr + " and season = '"+interval+"' and fiscal_year = " +fiscalYear + " \n" +
                 ") as CL\n" +
                 "on RFA.store = CL.store\n" +
-                "GROUP BY RFA.in_store_week,RFA.cc, CL.clusterId,CL.store ,RFA.fixtureAllocation, RFA.fixtureType order by RFA.in_store_week,RFA.cc,CL.clusterId,CL.store, RFA.fixtureAllocation, RFA.fixtureType\n" +
+                "GROUP BY RFA.in_store_week,RFA.style_nbr, RFA.cc, CL.clusterId,CL.store ,RFA.fixtureAllocation, RFA.fixtureType order by RFA.in_store_week,RFA.style_nbr,RFA.cc,CL.clusterId,CL.store, RFA.fixtureAllocation, RFA.fixtureType\n" +
                 ") SELECT TO_JSON_STRING(rfaTable) AS json FROM MyTable AS rfaTable\n";
     }
 
@@ -219,22 +227,23 @@ public class BigQueryInitialSetPlanService {
                 "select distinct\n" +
                 "RFA.in_store_week,\n" +
                 "RFA.cc,\n" +
+                "RFA.style_nbr,\n" +
                 "SUM(SP.is_quantity) AS is_quantity ,\n" +
                 "CL.store,\n" +
                 "CL.clusterId,\n" +
                 "RFA.fixtureAllocation,\n" +
                 "RFA.fixtureType\n" +
                 "from (\n" +          
-                " select distinct trim(cc_week.cc) as cc, cast (cc_week.store as INT64) as store,cc_week.in_store_week,  allocated as fixtureAllocation,  final_pref as fixtureType from (" +
+                " select distinct trim(cc_week.cc) as cc, trim(cc_week.style_nbr) as style_nbr, cast (cc_week.store as INT64) as store,cc_week.in_store_week,  allocated as fixtureAllocation,  final_pref as fixtureType from (" +
         		"(select fineline, store, allocated, final_pref from ("+
         		"select fineline, store, week, allocated, final_pref, row_number() over(PARTITION BY fineline, store order by week) as rw_nbr from "+
         		"(select * from " + ccTableName  +
         		" where plan_id_partition =" +planId+ " and final_alloc_space > 0 and fineline =" + finelineNbr +"))" +
         		" where rw_nbr = 1) fl_alloc" +
         		" inner join " +
-        		" (select store, fineline, cc, min(week) as in_store_week" +
+        		" (select store, fineline, style_nbr,cc, min(week) as in_store_week" +
         		" FROM " + ccTableName+
-        		" where plan_id_partition =" + planId+ " and final_alloc_space > 0 and fineline=" +finelineNbr + " group by store, fineline, cc) cc_week" + 
+        		" where plan_id_partition =" + planId+ " and final_alloc_space > 0 and fineline=" +finelineNbr + " group by store, fineline, style_nbr, cc) cc_week" + 
         		" on fl_alloc.fineline = cc_week.fineline" + 
         		" and fl_alloc.store = cc_week.store )" +
         		")"+
@@ -248,7 +257,7 @@ public class BigQueryInitialSetPlanService {
                 "select distinct scc.store_nbr as store,scc.cluster_id  as clusterId  from `" + analyticsData + ".svg_subcategory_cluster` scc join `"+analyticsData+".svg_subcategory` sc on sc.cluster_id = scc.cluster_id and sc.dept_nbr = scc.dept_nbr and sc.dept_catg_nbr = scc.dept_catg_nbr and sc.dept_subcatg_nbr = scc.dept_subcatg_nbr and sc.season = scc.season and sc.fiscal_year = scc.fiscal_year where sc.dept_subcatg_nbr = " + subCatNbr + " and  sc.season = '"+interval+"' and sc.fiscal_year = " +fiscalYear + " \n" +
                 ") as CL\n" +
                 "on RFA.store = CL.store\n" +
-                "GROUP BY RFA.in_store_week,RFA.cc, CL.clusterId,CL.store ,RFA.fixtureAllocation, RFA.fixtureType order by RFA.in_store_week,RFA.cc,CL.clusterId,CL.store, RFA.fixtureAllocation, RFA.fixtureType\n" +
+                "GROUP BY RFA.in_store_week, RFA.style_nbr, RFA.cc, CL.clusterId,CL.store ,RFA.fixtureAllocation, RFA.fixtureType order by RFA.in_store_week, RFA.style_nbr, RFA.cc,CL.clusterId,CL.store, RFA.fixtureAllocation, RFA.fixtureType\n" +
                 ") SELECT TO_JSON_STRING(rfaTable) AS json FROM MyTable AS rfaTable\n";
     }
 
@@ -262,6 +271,7 @@ public class BigQueryInitialSetPlanService {
         return "WITH MyTable AS (\n" +
                 "select distinct\n" +
                 "RFA.in_store_week,\n" +
+                "RFA.style_nbr,\n" +
                 "RFA.cc,\n" +
                 "SUM(SP.is_quantity) AS is_quantity ,\n" +
                 "CL.store,\n" +
@@ -269,16 +279,16 @@ public class BigQueryInitialSetPlanService {
                 "RFA.fixtureAllocation,\n" +
                 "RFA.fixtureType\n" +  
                 "from (\n" +  
-                " select distinct trim(cc_week.cc) as cc, cast (cc_week.store as INT64) as store,cc_week.in_store_week,  allocated as fixtureAllocation,  final_pref as fixtureType from (" +
+                " select distinct trim(cc_week.cc) as cc, trim(cc_week.style_nbr) as style_nbr, cast (cc_week.store as INT64) as store,cc_week.in_store_week,  allocated as fixtureAllocation,  final_pref as fixtureType from (" +
                 		"(select fineline, store, allocated, final_pref from ("+
                 		"select fineline, store, week, allocated, final_pref, row_number() over(PARTITION BY fineline, store order by week) as rw_nbr from "+
                 		"(select * from " + ccTableName  +
                 		" where plan_id_partition =" +planId+ " and final_alloc_space > 0 and fineline =" + finelineNbr +"))" +
                 		" where rw_nbr = 1) fl_alloc" +
                 		" inner join " +
-                		" (select store, fineline, cc, min(week) as in_store_week" +
+                		" (select store, fineline, style_nbr, cc, min(week) as in_store_week" +
                 		" FROM " + ccTableName+
-                		" where plan_id_partition =" + planId+ " and final_alloc_space > 0 and fineline=" +finelineNbr + " group by store, fineline, cc) cc_week" + 
+                		" where plan_id_partition =" + planId+ " and final_alloc_space > 0 and fineline=" +finelineNbr + " group by store, fineline, style_nbr, cc) cc_week" + 
                 		" on fl_alloc.fineline = cc_week.fineline" + 
                 		" and fl_alloc.store = cc_week.store )" +
                 		")"+
@@ -292,7 +302,7 @@ public class BigQueryInitialSetPlanService {
                 "select scc.store_nbr as store,scc.cluster_id  as clusterId  from `" + analyticsData + ".svg_category_cluster` scc join `"+analyticsData+".svg_category` sc on sc.cluster_id = scc.cluster_id and sc.dept_nbr = scc.dept_nbr and sc.dept_catg_nbr = scc.dept_catg_nbr and sc.season = scc.season and sc.fiscal_year = scc.fiscal_year where sc.dept_catg_nbr = " + catNbr +" and  sc.season = '"+interval+"' and sc.fiscal_year = " +fiscalYear + " \n" +
                 ") as CL\n" +
                 "on RFA.store = CL.store\n" +
-                "GROUP BY RFA.in_store_week,RFA.cc, CL.clusterId,CL.store ,RFA.fixtureAllocation, RFA.fixtureType order by RFA.in_store_week,RFA.cc,CL.clusterId,CL.store, RFA.fixtureAllocation, RFA.fixtureType\n" +
+                "GROUP BY RFA.in_store_week, RFA.style_nbr, RFA.cc, CL.clusterId,CL.store ,RFA.fixtureAllocation, RFA.fixtureType order by RFA.in_store_week,RFA.style_nbr, RFA.cc,CL.clusterId,CL.store, RFA.fixtureAllocation, RFA.fixtureType\n" +
                 ") SELECT TO_JSON_STRING(rfaTable) AS json FROM MyTable AS rfaTable\n";
     }
     /*
@@ -306,22 +316,23 @@ public class BigQueryInitialSetPlanService {
                 "select distinct\n" +
                 week + " as in_store_week,\n" +
                 "RFA.cc,\n" +
+                "RFA.style_nbr,\n" +
                 "SUM(SP.bs_quantity) AS bs_quantity ,\n" +
                 "CL.store,\n" +
                 "CL.clusterId,\n" +
                 "RFA.fixtureAllocation,\n" +
                 "RFA.fixtureType\n" +
                 "from (\n" +
-           	    " select distinct trim(cc_week.cc) as cc, cast (cc_week.store as INT64) as store,cc_week.in_store_week,  allocated as fixtureAllocation,  final_pref as fixtureType from (" +
+           	    " select distinct trim(cc_week.cc) as cc, trim(cc_week.style_nbr) as style_nbr,cast (cc_week.store as INT64) as store,cc_week.in_store_week,  allocated as fixtureAllocation,  final_pref as fixtureType from (" +
 				"(select fineline, store, allocated, final_pref from ("+
 				"select fineline, store, week, allocated, final_pref, row_number() over(PARTITION BY fineline, store order by week) as rw_nbr from "+
 				"(select * from " + ccTableName  +
 				" where plan_id_partition =" +planId+ " and final_alloc_space > 0 and fineline =" + finelineNbr +"))" +
 				" where rw_nbr = 1) fl_alloc" +
 				" inner join " +
-				" (select store, fineline, cc, min(week) as in_store_week" +
+				" (select store, fineline, style_nbr, cc, min(week) as in_store_week" +
 				" FROM " + ccTableName+
-				" where plan_id_partition =" + planId+ " and final_alloc_space > 0 and fineline=" +finelineNbr + " group by store, fineline, cc) cc_week" + 
+				" where plan_id_partition =" + planId+ " and final_alloc_space > 0 and fineline=" +finelineNbr + " group by store, fineline, style_nbr, cc) cc_week" + 
 				" on fl_alloc.fineline = cc_week.fineline" + 
 				" and fl_alloc.store = cc_week.store )" +
 				")"+
@@ -335,7 +346,7 @@ public class BigQueryInitialSetPlanService {
                 "select distinct scc.store_nbr as store,scc.cluster_id  as clusterId  from `" + analyticsData + ".svg_subcategory_cluster` scc join `"+analyticsData+".svg_subcategory` sc on sc.cluster_id = scc.cluster_id and sc.dept_nbr = scc.dept_nbr and sc.dept_catg_nbr = scc.dept_catg_nbr and sc.dept_subcatg_nbr = scc.dept_subcatg_nbr and sc.season = scc.season and sc.fiscal_year = scc.fiscal_year where sc.dept_subcatg_nbr = " + subCatNbr + " and  sc.season = '"+interval+"' and sc.fiscal_year = " +fiscalYear + " \n" +
                 ") as CL\n" +
                 "on RFA.store = CL.store\n" +
-                "GROUP BY RFA.in_store_week,RFA.cc, CL.clusterId,CL.store ,RFA.fixtureAllocation, RFA.fixtureType order by RFA.cc,CL.clusterId,CL.store, RFA.fixtureAllocation, RFA.fixtureType\n" +
+                "GROUP BY RFA.in_store_week,RFA.style_nbr,RFA.cc, CL.clusterId,CL.store ,RFA.fixtureAllocation, RFA.fixtureType order by RFA.style_nbr,RFA.cc,CL.clusterId,CL.store, RFA.fixtureAllocation, RFA.fixtureType\n" +
                 ") SELECT TO_JSON_STRING(rfaTable) AS json FROM MyTable AS rfaTable\n";
     }
     /*
@@ -349,22 +360,23 @@ public class BigQueryInitialSetPlanService {
                 "select distinct\n" +
                 week + " as in_store_week,\n" +
                 "RFA.cc,\n" +
+                "RFA.style_nbr,\n" +
                 "SUM(SP.bs_quantity) AS bs_quantity ,\n" +
                 "CL.store,\n" +
                 "CL.clusterId,\n" +
                 "RFA.fixtureAllocation,\n" +
                 "RFA.fixtureType\n" +
                 "from (\n" +
-           	    " select distinct trim(cc_week.cc) as cc, cast (cc_week.store as INT64) as store,cc_week.in_store_week,  allocated as fixtureAllocation,  final_pref as fixtureType from (" +
+           	    " select distinct trim(cc_week.cc) as cc,trim(cc_week.style_nbr) as style_nbr, cast (cc_week.store as INT64) as store,cc_week.in_store_week,  allocated as fixtureAllocation,  final_pref as fixtureType from (" +
 				"(select fineline, store, allocated, final_pref from ("+
 				"select fineline, store, week, allocated, final_pref, row_number() over(PARTITION BY fineline, store order by week) as rw_nbr from "+
 				"(select * from " + ccTableName  +
 				" where plan_id_partition =" +planId+ " and final_alloc_space > 0 and fineline =" + finelineNbr +"))" +
 				" where rw_nbr = 1) fl_alloc" +
 				" inner join " +
-				" (select store, fineline, cc, min(week) as in_store_week" +
+				" (select store, fineline, style_nbr, cc, min(week) as in_store_week" +
 				" FROM " + ccTableName+
-				" where plan_id_partition =" + planId+ " and final_alloc_space > 0 and fineline=" +finelineNbr + " group by store, fineline, cc) cc_week" + 
+				" where plan_id_partition =" + planId+ " and final_alloc_space > 0 and fineline=" +finelineNbr + " group by store, fineline, style_nbr, cc) cc_week" + 
 				" on fl_alloc.fineline = cc_week.fineline" + 
 				" and fl_alloc.store = cc_week.store )" +
 				")"+
@@ -378,7 +390,7 @@ public class BigQueryInitialSetPlanService {
                 "select scc.store_nbr as store,scc.cluster_id  as clusterId  from `" + analyticsData + ".svg_category_cluster` scc join `"+analyticsData+".svg_category` sc on sc.cluster_id = scc.cluster_id and sc.dept_nbr = scc.dept_nbr and sc.dept_catg_nbr = scc.dept_catg_nbr and sc.season = scc.season and sc.fiscal_year = scc.fiscal_year where sc.dept_catg_nbr = " + catNbr +" and  sc.season = '"+interval+"' and sc.fiscal_year = " +fiscalYear + " \n" +
                 ") as CL\n" +
                 "on RFA.store = CL.store\n" +
-                "GROUP BY RFA.in_store_week,RFA.cc, CL.clusterId,CL.store ,RFA.fixtureAllocation, RFA.fixtureType order by RFA.cc,CL.clusterId,CL.store, RFA.fixtureAllocation, RFA.fixtureType\n" +
+                "GROUP BY RFA.in_store_week,RFA.style_nbr,RFA.cc, CL.clusterId,CL.store ,RFA.fixtureAllocation, RFA.fixtureType order by RFA.style_nbr,RFA.cc,CL.clusterId,CL.store, RFA.fixtureAllocation, RFA.fixtureType\n" +
                 ") SELECT TO_JSON_STRING(rfaTable) AS json FROM MyTable AS rfaTable\n";
     }
 
@@ -393,22 +405,23 @@ public class BigQueryInitialSetPlanService {
                 "select distinct\n" +
                 week + " as in_store_week,\n" +
                 "RFA.cc,\n" +
+                "RFA.style_nbr,\n" +
                 "SUM(SP.bs_quantity) AS bs_quantity ,\n" +
                 "CL.store,\n" +
                 "CL.clusterId,\n" +
                 "RFA.fixtureAllocation,\n" +
                 "RFA.fixtureType\n" +
                 "from (\n" +
-           	 	" select distinct trim(cc_week.cc) as cc, cast (cc_week.store as INT64) as store,cc_week.in_store_week,  allocated as fixtureAllocation,  final_pref as fixtureType from (" +
+           	 	" select distinct trim(cc_week.cc) as cc, trim(cc_week.style_nbr) as style_nbr,cast (cc_week.store as INT64) as store,cc_week.in_store_week,  allocated as fixtureAllocation,  final_pref as fixtureType from (" +
 				"(select fineline, store, allocated, final_pref from ("+
 				"select fineline, store, week, allocated, final_pref, row_number() over(PARTITION BY fineline, store order by week) as rw_nbr from "+
 				"(select * from " + ccTableName  +
 				" where plan_id_partition =" +planId+ " and final_alloc_space > 0 and fineline =" + finelineNbr +"))" +
 				" where rw_nbr = 1) fl_alloc" +
 				" inner join " +
-				" (select store, fineline, cc, min(week) as in_store_week" +
+				" (select store, fineline, style_nbr,cc, min(week) as in_store_week" +
 				" FROM " + ccTableName+
-				" where plan_id_partition =" + planId+ " and final_alloc_space > 0 and fineline=" +finelineNbr + " group by store, fineline, cc) cc_week" + 
+				" where plan_id_partition =" + planId+ " and final_alloc_space > 0 and fineline=" +finelineNbr + " group by store, fineline,style_nbr, cc) cc_week" + 
 				" on fl_alloc.fineline = cc_week.fineline" + 
 				" and fl_alloc.store = cc_week.store )" +
 				")"+
@@ -422,7 +435,7 @@ public class BigQueryInitialSetPlanService {
                 "select store_nbr as store,cluster_id  as clusterId from `" + analyticsData + ".svg_fl_cluster` where fineline_nbr = " + finelineNbr + " and season = '"+interval+"' and fiscal_year = " +fiscalYear + " \n" +
                 ") as CL\n" +
                 "on RFA.store = CL.store\n" +
-                "GROUP BY RFA.in_store_week,RFA.cc, CL.clusterId,CL.store ,RFA.fixtureAllocation, RFA.fixtureType order by RFA.cc,CL.clusterId,CL.store, RFA.fixtureAllocation, RFA.fixtureType\n" +
+                "GROUP BY RFA.in_store_week,RFA.style_nbr,RFA.cc, CL.clusterId,CL.store ,RFA.fixtureAllocation, RFA.fixtureType order by RFA.style_nbr,RFA.cc,CL.clusterId,CL.store, RFA.fixtureAllocation, RFA.fixtureType\n" +
                 ") SELECT TO_JSON_STRING(rfaTable) AS json FROM MyTable AS rfaTable\n";
     }
 
@@ -436,7 +449,7 @@ public class BigQueryInitialSetPlanService {
         resultsIs.iterateAll().forEach(rows -> rows.forEach(row -> {
             try {
                 JsonNode node = objectMapper.readTree(row.getStringValue());
-                VolumeQueryId nodeId = new VolumeQueryId(node.get("cc").textValue(), node.get("clusterId").intValue(), node.get("in_store_week").intValue(),node.get("fixtureType").textValue(),node.get("fixtureAllocation").floatValue());
+                VolumeQueryId nodeId = new VolumeQueryId(node.get("cc").textValue(),node.get("style_nbr").textValue(), node.get("clusterId").intValue(), node.get("in_store_week").intValue(),node.get("fixtureType").textValue(),node.get("fixtureAllocation").floatValue());
                 if (uniqueRows.containsKey(nodeId)) {
                     uniqueRows.get(nodeId).add(node);
                 } else {
@@ -459,7 +472,7 @@ public class BigQueryInitialSetPlanService {
             resultsIs.iterateAll().forEach(rows -> rows.forEach(row -> {
                 try {
                     JsonNode node = objectMapper.readTree(row.getStringValue());
-                    VolumeQueryId nodeId = new VolumeQueryId(node.get("cc").textValue(), node.get("clusterId").intValue(), node.get("in_store_week").intValue(),node.get("fixtureType").textValue(),node.get("fixtureAllocation").floatValue());
+                    VolumeQueryId nodeId = new VolumeQueryId(node.get("cc").textValue(), node.get("style_nbr").textValue(),node.get("clusterId").intValue(), node.get("in_store_week").intValue(),node.get("fixtureType").textValue(),node.get("fixtureAllocation").floatValue());
                     if (uniqueRows.containsKey(nodeId)) {
                         uniqueRows.get(nodeId).add(node);
                     } else {
@@ -494,7 +507,7 @@ public class BigQueryInitialSetPlanService {
     private List<InitialSetVolumeResponse> formatUniqueRows(FinelineVolume request, HashMap<VolumeQueryId, List<JsonNode>> uniqueRows) {
         List<InitialSetVolumeResponse> initialSetVolumeResponseList = new ArrayList<>();
         uniqueRows.keySet().forEach(key -> {
-            String styleId = key.getCc().substring(0, key.getCc().lastIndexOf("_"));
+            String styleId = key.getStyleNbr();
             InitialSetVolumeResponse initialSetVolume = initialSetVolumeResponseList.stream().filter(initialSetVolumeResponse -> initialSetVolumeResponse.getStyleId().equals(styleId) && initialSetVolumeResponse.getFinelineNbr() == request.getFinelineNbr()).findFirst().orElse(new InitialSetVolumeResponse());
             if (initialSetVolume.getStyleId() == null) {
                 initialSetVolume.setStyleId(styleId);

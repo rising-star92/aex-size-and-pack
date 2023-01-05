@@ -49,6 +49,8 @@ public class BuyQntyResponseDTO {
     private Integer ccReplnQty;
     private Integer ccAdjReplnQty;
     private String altFineLineDesc;
+    private String colorFamilyDesc;
+    private String colorName;
 
     public BuyQntyResponseDTO(Long planId, Integer channelId, Integer lvl0Nbr, String lvl0Desc, Integer lvl1Nbr, String lvl1Desc, Integer lvl2Nbr,
                               String lvl2Desc, Integer lvl3Nbr, String lvl3Desc, Integer lvl4Nbr, String lvl4Desc, Integer finelineNbr,
@@ -83,7 +85,7 @@ public class BuyQntyResponseDTO {
                               String styleNbr, String ccId,Integer styleFlowStrategy, Integer styleMerchCode, String styleMerchDesc, Integer styleBumpQty,
                               Integer styleIsQty, Integer styleBuyQty, Integer styleReplnQty, Integer styleAdjReplnQty,
                               Integer ccFlowStrategy, Integer ccMerchCode, String ccMerchDesc, Integer ccBumpQty,
-                              Integer ccIsQty, Integer ccBuyQty, Integer ccReplnQty, Integer ccAdjReplnQty, Integer channelId) {
+                              Integer ccIsQty, Integer ccBuyQty, Integer ccReplnQty, Integer ccAdjReplnQty, Integer channelId, String colorFamilyDesc, String colorName ) {
         this.planId=planId;
         this.lvl0Nbr=lvl0Nbr;
         this.lvl1Nbr=lvl1Nbr;
@@ -110,6 +112,8 @@ public class BuyQntyResponseDTO {
         this.ccReplnQty=ccReplnQty;
         this.ccAdjReplnQty=ccAdjReplnQty;
         this.channelId = channelId;
+        this.colorFamilyDesc= colorFamilyDesc;
+        this.colorName=colorName;
     }
 
     public BuyQntyResponseDTO(Long planId, Integer lvl0Nbr, Integer lvl1Nbr, Integer lvl2Nbr,
@@ -162,7 +166,7 @@ public class BuyQntyResponseDTO {
 
     public BuyQntyResponseDTO(Long planId, Integer lvl0Nbr, Integer lvl1Nbr, Integer lvl2Nbr, Integer lvl3Nbr, Integer lvl4Nbr, Integer finelineNbr,
                               String styleNbr, String ccId,Integer styleBuyQty, Integer styleReplnQty, Integer styleAdjReplnQty,
-                              Integer ccBuyQty, Integer ccReplnQty, Integer ccAdjReplnQty, Integer channelId) {
+                              Integer ccBuyQty, Integer ccReplnQty, Integer ccAdjReplnQty, Integer channelId, String colorFamilyDesc, String colorName) {
         this.planId=planId;
         this.lvl0Nbr=lvl0Nbr;
         this.lvl1Nbr=lvl1Nbr;
@@ -179,6 +183,8 @@ public class BuyQntyResponseDTO {
         this.ccReplnQty=ccReplnQty;
         this.ccAdjReplnQty=ccAdjReplnQty;
         this.channelId = channelId;
+        this.colorFamilyDesc = colorFamilyDesc;
+        this.colorName=colorName;
     }
 
     public BuyQntyResponseDTO(Long planId, Integer lvl0Nbr, Integer lvl1Nbr, Integer lvl2Nbr,

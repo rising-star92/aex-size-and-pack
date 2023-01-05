@@ -291,7 +291,7 @@ public class SizeAndPackService {
     public SizeAndPackResponse updateSizeAndPackData(PlanSizeAndPackDTO planSizeAndPackDTO) {
         SizeAndPackResponse sizeAndPackResponse = new SizeAndPackResponse();
         try {
-            log.info("Received the Updated payload from strategy listener for CLP & Analytics: {}", objectMapper.writeValueAsString(planSizeAndPackDTO));
+            log.info("Received the Updated payload from Size and Pack listener for CLP: {}", objectMapper.writeValueAsString(planSizeAndPackDTO));
         } catch (JsonProcessingException exp) {
             sizeAndPackResponse.setStatus(FAILED_STATUS);
             log.error("Couldn't parse the payload sent to Size and Pack. Error: {}", exp.toString());

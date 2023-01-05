@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface CcSpReplnPkConsRepository extends JpaRepository<CcSpMmReplPack, CcSpMmReplPackId> {
 
@@ -93,4 +94,9 @@ public interface CcSpReplnPkConsRepository extends JpaRepository<CcSpMmReplPack,
             " csmrp.merchMethodDesc , " +
             " csmrp.replenObj")
     List<DCInboundResponse> getDCInboundsByPlanIdAndChannelId(@Param("planId") Long planId ,@Param("channelId") Integer channelId);
+
+   @Transactional
+   @Modifying(clearAutomatically = true, flushAutomatically = true)
+   @Query(value = "delete from rc_cc_sp_mm_replpk_fixtr_cons where plan_id = :planId and channel_id = :channelId and fineline_nbr in (:finelineNbrs)", nativeQuery = true)
+   void deleteByPlanIdFinelineIdChannelId(@Param("planId") Long planId, @Param("channelId") Integer channelId, @Param("finelineNbrs") Set<Integer> finelineNbrs);
 }

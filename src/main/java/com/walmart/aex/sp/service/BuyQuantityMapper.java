@@ -361,6 +361,8 @@ public class BuyQuantityMapper {
         metricsDto.setFinalBuyQty(buyQty + metricsDto.getBuyQty());
         metricsDto.setBumpPackQty(bumpQty + metricsDto.getBumpPackQty());
         metricsDto.setBuyQty(buyQty + metricsDto.getBuyQty());
+        customerChoiceDto.setColorFamilyDesc(buyQntyResponseDTO.getColorFamilyDesc());
+        customerChoiceDto.setColorName(buyQntyResponseDTO.getColorName());
         customerChoiceDto.setMetrics(metricsDto);
     }
 
@@ -368,6 +370,8 @@ public class BuyQuantityMapper {
         CustomerChoiceDto customerChoiceDto = new CustomerChoiceDto();
         customerChoiceDto.setCcId(buyQntyResponseDTO.getCcId());
         customerChoiceDto.setChannelId(buyQntyResponseDTO.getChannelId());
+        customerChoiceDto.setColorName(buyQntyResponseDTO.getColorName());
+        customerChoiceDto.setColorFamilyDesc(buyQntyResponseDTO.getColorFamilyDesc());
         BuyQtyResponse sizeLevelData = null;
         try {
             BuyQtyRequest newBuyReq = new BuyQtyRequest();

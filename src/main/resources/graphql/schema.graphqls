@@ -130,6 +130,7 @@ type InitialSetPlan{
 
 type PackDetails{
 	packId: String
+	uuId: String
 	metrics: [Metrics]
 }
 
@@ -259,6 +260,7 @@ type Style {
 type CustomerChoice {
     ccId: String
     colorName: String
+    colorFamily: String
     constraints:Constraints
     
 }
@@ -322,6 +324,7 @@ type CustomerChoiceDto {
     ccId: String
     channelId: Int
     colorName: String
+    colorFamilyDesc: String
     metrics: MetricsDto
     clusters: [ClustersDto]
     merchMethods : [MerchMethodsDto]
