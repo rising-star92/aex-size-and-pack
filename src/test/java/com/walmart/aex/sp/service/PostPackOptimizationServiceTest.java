@@ -221,31 +221,34 @@ public class PostPackOptimizationServiceTest {
 
 	@Test
 	public void ccStylePostPackOptTest() {
+		final String ccReplPack_GEMSLT = "34_2852_4_19_2_GEMSLT";
+		final String ccReplPack_PURPRL = "34_2852_4_19_2_PURPRL";
+		final String styleNbr_19_2 = "34_2852_4_19_2";
 		CcReplPack ccReplPackHanging = ccReplPack(1, 10000, 4000);
-		ccReplPackHanging.getCcReplPackId().setCustomerChoice("34_2852_4_19_2_GEMSLT");
-		ccReplPackHanging.getCcReplPackId().getStyleReplPackId().setStyleNbr("34_2852_4_19_2");
+		ccReplPackHanging.getCcReplPackId().setCustomerChoice(ccReplPack_GEMSLT);
+		ccReplPackHanging.getCcReplPackId().getStyleReplPackId().setStyleNbr(styleNbr_19_2);
 		CcReplPack ccReplPackHanging2 = ccReplPack(1, 1000, 500);
-		ccReplPackHanging2.getCcReplPackId().setCustomerChoice("34_2852_4_19_2_PURPRL");
-		ccReplPackHanging2.getCcReplPackId().getStyleReplPackId().setStyleNbr("34_2852_4_19_2");
+		ccReplPackHanging2.getCcReplPackId().setCustomerChoice(ccReplPack_PURPRL);
+		ccReplPackHanging2.getCcReplPackId().getStyleReplPackId().setStyleNbr(styleNbr_19_2);
 		CcReplPack ccReplPackFolded = ccReplPack(2,47000,13000);
-		ccReplPackFolded.getCcReplPackId().setCustomerChoice("34_2852_4_19_2_GEMSLT");
-		ccReplPackFolded.getCcReplPackId().getStyleReplPackId().setStyleNbr("34_2852_4_19_2");
+		ccReplPackFolded.getCcReplPackId().setCustomerChoice(ccReplPack_GEMSLT);
+		ccReplPackFolded.getCcReplPackId().getStyleReplPackId().setStyleNbr(styleNbr_19_2);
 		Optional<List<CcReplPack>> optionalCcReplPacks = Optional.of(List.of(ccReplPackHanging, ccReplPackFolded, ccReplPackHanging2));
 
-		StyleReplPack styleReplPackHanging = styleReplPack(1, 21182, 7976);
-		styleReplPackHanging.getStyleReplPackId().setStyleNbr("34_2852_4_19_2");
-		StyleReplPack styleReplPackFolded = styleReplPack(2, 99632, 30820);
-		styleReplPackFolded.getStyleReplPackId().setStyleNbr("34_2852_4_19_2");
+		StyleReplPack styleReplPackHanging = styleReplPack(1, 11000, 4500);
+		styleReplPackHanging.getStyleReplPackId().setStyleNbr(styleNbr_19_2);
+		StyleReplPack styleReplPackFolded = styleReplPack(2, 47000, 13000);
+		styleReplPackFolded.getStyleReplPackId().setStyleNbr(styleNbr_19_2);
 		Optional<List<StyleReplPack>> optionalStyleReplPacks = Optional.of(List.of(styleReplPackHanging, styleReplPackFolded));
 
-		Mockito.when(ccReplnPkConsRepository.findByPlanIdAndCCId(34L, 2852, "34_2852_4_19_2_GEMSLT")).thenReturn(optionalCcReplPacks);
-		Mockito.when(ccReplnPkConsRepository.findByPlanIdAndCCId(34L, 2852, "34_2852_4_19_2_PURPRL")).thenReturn(optionalCcReplPacks);
-		Mockito.when(styleReplnPkConsRepository.findByPlanIdAndCCId(34L,2852,"34_2852_4_19_2_GEMSLT")).thenReturn(optionalStyleReplPacks);
-		Mockito.when(styleReplnPkConsRepository.findByPlanIdAndCCId(34L,2852,"34_2852_4_19_2_PURPRL")).thenReturn(optionalStyleReplPacks);
+		Mockito.when(ccReplnPkConsRepository.findByPlanIdAndCCId(34L, 2852, ccReplPack_GEMSLT)).thenReturn(optionalCcReplPacks);
+		Mockito.when(ccReplnPkConsRepository.findByPlanIdAndCCId(34L, 2852, ccReplPack_PURPRL)).thenReturn(optionalCcReplPacks);
+		Mockito.when(styleReplnPkConsRepository.findByPlanIdAndCCId(34L,2852,ccReplPack_GEMSLT)).thenReturn(optionalStyleReplPacks);
+		Mockito.when(styleReplnPkConsRepository.findByPlanIdAndCCId(34L,2852,ccReplPack_PURPRL)).thenReturn(optionalStyleReplPacks);
 
 		ISAndBPQtyDTO isAndBPQtyDTO = createPostPackDto(11000, 50000);
 		CustomerChoices cc2 = new CustomerChoices();
-		cc2.setCcId("34_2852_4_19_2_PURPRL");
+		cc2.setCcId(ccReplPack_PURPRL);
 		Fixtures f2 = new Fixtures();
 		f2.setMerchMethod("HANGING");
 		f2.setSizes(new ArrayList<>());
@@ -263,23 +266,20 @@ public class PostPackOptimizationServiceTest {
 		verify(ccReplnPkConsRepository, times(2)).saveAll(ccCaptor.capture());
 		List<CcReplPack> ccReplPacks = ccCaptor.getValue();
 
-		assertEquals(3000, ccReplPacks.stream().filter(ccReplPack -> ccReplPack.getCcReplPackId()
-				.getStyleReplPackId().getFinelineReplPackId().getSubCatgReplPackId().getMerchCatgReplPackId().getFixtureTypeRollupId().equals(MerchMethod.HANGING.getId()))
-				.findFirst()
-				.get()
-				.getReplUnits(), "Should be 3000 repln units");
+		assertEquals(3000, getFromCCReplPacks(ccReplPack_GEMSLT, MerchMethod.HANGING.getId(), ccReplPacks).getReplUnits(), "Should be 3000 repln units");
+		assertEquals(10000, getFromCCReplPacks(ccReplPack_GEMSLT, MerchMethod.FOLDED.getId(), ccReplPacks).getReplUnits(), "Should be 10000 repln units");
+		assertEquals(0, getFromCCReplPacks(ccReplPack_PURPRL, MerchMethod.HANGING.getId(), ccReplPacks).getReplUnits(), "Should be 0 repln units");
 
-		assertEquals(10000, ccReplPacks.stream().filter(ccReplPack -> ccReplPack.getCcReplPackId()
-				.getStyleReplPackId().getFinelineReplPackId().getSubCatgReplPackId().getMerchCatgReplPackId().getFixtureTypeRollupId().equals(MerchMethod.FOLDED.getId()))
-				.findFirst()
-				.get()
-				.getReplUnits(), "Should be 10000 repln units");
+		assertEquals(3000, styleReplPackHanging.getReplUnits(), "Hanging should be reduced by 1500");
+		assertEquals(10000, styleReplPackFolded.getReplUnits(), "Folded should be reduced by 3000");
+	}
 
-		CcReplPack ccReplPack_PURPL = ccReplPacks.stream().filter(cc -> cc.getCcReplPackId().getCustomerChoice().equalsIgnoreCase("34_2852_4_19_2_PURPRL")).filter(ccReplPack -> ccReplPack.getCcReplPackId()
-						.getStyleReplPackId().getFinelineReplPackId().getSubCatgReplPackId().getMerchCatgReplPackId().getFixtureTypeRollupId().equals(MerchMethod.HANGING.getId()))
+	private CcReplPack getFromCCReplPacks(String ccId, int merchMethodCode, List<CcReplPack> ccReplPacks) {
+		return ccReplPacks.stream()
+				.filter(ccReplPack -> ccReplPack.getCcReplPackId().getCustomerChoice().equalsIgnoreCase(ccId))
+				.filter(ccReplPack -> ccReplPack.getCcReplPackId().getStyleReplPackId().getFinelineReplPackId().getSubCatgReplPackId().getMerchCatgReplPackId().getFixtureTypeRollupId().equals(merchMethodCode))
 				.findFirst()
 				.get();
-		assertEquals(0, ccReplPack_PURPL.getReplUnits(), "Should be 0 repln units");
 	}
 
 	private CcReplPack ccReplPack(int fixtureTypeId, int finalBuyUnits, int replUnits) {
