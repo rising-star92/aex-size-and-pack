@@ -14,7 +14,6 @@ import com.walmart.aex.sp.repository.FinelineReplnPkConsRepository;
 import com.walmart.aex.sp.repository.MerchCatgReplPackRepository;
 import com.walmart.aex.sp.repository.StyleReplnPkConsRepository;
 import com.walmart.aex.sp.repository.SubCatgReplnPkConsRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -62,91 +61,12 @@ public class PostPackOptimizationServiceTest {
 	@Mock
 	CcSpReplnPkConsRepository ccSpReplnPkConsRepository;
 
-	@InjectMocks
-	ReplenishmentsOptimizationService replenishmentsOptimizationService;
-
-
-	Optional<List<FinelineReplPack>> optional;
-	Optional<List<MerchCatgReplPack>> optional1;
-	Optional<List<SubCatgReplPack>> optional2;
-	Optional<List<CcReplPack>> optional3;
-	Optional<List<StyleReplPack>> optional4;
-	Optional<List<CcMmReplPack>> optional5;
-	Optional<List<CcSpMmReplPack>> optional6;
-
-	@BeforeEach
-	void testUpdateInitialSetAndBumpPackAty() {
-//
-//		 List<CustomerChoices> customerChoices = new ArrayList<>();
-//		 List<Fixtures> fixtures = new ArrayList<>();
-//		 List<Size> sizes = new ArrayList<>();
-//
-//
-//		 Size sz = new Size();
-//		 sz.setSizeDesc("SMALL");
-//		 sz.setOptFinalBuyQty(5000);
-//		 sz.setOptFinalInitialSetQty(13000);
-//		 sz.setOptFinalBumpSetQty(13000);
-//		 sizes.add(sz);
-//
-//		 Fixtures fix = new Fixtures();
-//		 fix.setFixtureType("ENDCAPS");
-//		 fix.setMerchMethod("HANGING");
-//		 fix.setSizes(sizes);
-//		 fixtures.add(fix);
-//
-//		 CustomerChoices ccs = new CustomerChoices();
-//		 ccs.setCcId("34_1021_2_21_2_AURA ORANGE STENCIL");
-//		 ccs.setFixtures(fixtures);
-//		 customerChoices.add(ccs);
-//
-//		isAndBPQtyDTO = new ISAndBPQtyDTO();
-//		isAndBPQtyDTO.setCustomerChoices(customerChoices);
-//
-//
-//		MerchCatgReplPack merchCatgReplPack = new MerchCatgReplPack();
-//		merchCatgReplPack.setReplUnits(2000);
-//		optional1 = Optional.of(List.of(merchCatgReplPack));
-//		SubCatgReplPack subCatgReplPack = new SubCatgReplPack();
-//		subCatgReplPack.setReplUnits(2000);
-//		optional2 = Optional.of(List.of(subCatgReplPack));
-//		CcReplPack ccReplPack = new CcReplPack();
-//		ccReplPack.setFinalBuyUnits(12000);
-//		ccReplPack.setReplUnits(8000);
-//		optional3 = Optional.of(List.of(ccReplPack));
-//		StyleReplPack styleReplPack = new StyleReplPack();
-//		styleReplPack.setReplUnits(8000);
-//		optional4 = Optional.of(List.of(styleReplPack));
-//		CcMmReplPack ccMmReplPack = new CcMmReplPack();
-//		ccMmReplPack.setFinalBuyUnits(12000);
-//		optional5 = Optional.of(List.of(ccMmReplPack));
-//		CcSpMmReplPack ccSpMmReplPack = new CcSpMmReplPack();
-//		ccSpMmReplPack.setFinalBuyUnits(12000);
-//		ccSpMmReplPack.setReplenObj("[{\"replnWeek\":12244,\"replnWeekDesc\":\"FYE2023WK44\",\"replnUnits\":null,\"adjReplnUnits\":4000,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null},{\"replnWeek\":12245,\"replnWeekDesc\":\"FYE2023WK45\",\"replnUnits\":null,\"adjReplnUnits\":4000,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null}]");
-//		ccSpMmReplPack.setVendorPackCnt(2);
-//		optional6 = Optional.of(List.of(ccSpMmReplPack));
-//
-//		//Mockito.when(merchCatgReplPackRepository.findByPlanIdAndFinelineNbr(471l, 1021)).thenReturn(optional1);
-//		Mockito.when(subCatgReplnPkConsRepository.findByPlanIdAndFinelineNbr(471l, 1021)).thenReturn(optional2);
-//		Mockito.when(ccReplnPkConsRepository.findByPlanIdAndCCId(471l, 1021,"34_1021_2_21_2_AURA ORANGE STENCIL")).thenReturn(optional3);
-//		Mockito.when(styleReplnPkConsRepository.findByPlanIdAndCCId(471l, 1021,"34_1021_2_21_2_AURA ORANGE STENCIL")).thenReturn(optional4);
-//		Mockito.when(ccMmReplnPkConsRepository.findCcMmReplnPkConsData(471l, 1021,"34_1021_2_21_2_AURA ORANGE STENCIL")).thenReturn(optional5);
-//		Mockito.when(ccSpReplnPkConsRepository.findCcSpMmReplnPkConsData(471l, 1021,"34_1021_2_21_2_AURA ORANGE STENCIL","SMALL")).thenReturn(optional6);
-//		objectMapper = new ObjectMapper();
-//		postPackOptimizationService = new PostPackOptimizationService(merchCatgReplPackRepository,finelineReplnPkConsRepository,subCatgReplnPkConsRepository,styleReplnPkConsRepository,ccReplnPkConsRepository,ccMmReplnPkConsRepository,ccSpReplnPkConsRepository,objectMapper,replenishmentsOptimizationService);
-//		postPackOptimizationService.updateInitialSetAndBumpPackAty(471l, 1021, isAndBPQtyDTO);
-//
-//		String resJson = "[{\"replnWeek\":12244,\"replnWeekDesc\":\"FYE2023WK44\",\"replnUnits\":null,\"adjReplnUnits\":3500,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null},{\"replnWeek\":12245,\"replnWeekDesc\":\"FYE2023WK45\",\"replnUnits\":null,\"adjReplnUnits\":3500,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null}]";
-//		assertEquals(resJson,ccSpMmReplPack.getReplenObj());
-
-	}
-
 	@Test
 	public void finelinePostPackOptTest() {
 		//what exists in db
 		FinelineReplPack finelineReplPackHanging = finelineReplPack(1, 1630,618);
 		FinelineReplPack finelineReplPackFolded = finelineReplPack(2, 7279,2023);
-		optional = Optional.of(List.of(finelineReplPackHanging, finelineReplPackFolded));
+		Optional<List<FinelineReplPack>> optional = Optional.of(List.of(finelineReplPackHanging, finelineReplPackFolded));
 
 		Mockito.when(finelineReplnPkConsRepository.findByPlanIdAndFinelineNbr(34L, 2852)).thenReturn(optional);
 		Map<Integer, Integer> replnDifferenceByMerchMethod = postPackOptimizationService.updateRCMerchFineline(34L, 2852, createPostPackDto(1012, 5356));
