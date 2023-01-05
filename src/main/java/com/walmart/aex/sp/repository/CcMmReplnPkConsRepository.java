@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface CcMmReplnPkConsRepository extends JpaRepository <CcMmReplPack, CcMmReplPackId>{
 
@@ -28,4 +29,9 @@ public interface CcMmReplnPkConsRepository extends JpaRepository <CcMmReplPack, 
 			"and csmrp.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId=1" +
 			"")
 	Optional<List<CcMmReplPack>> findCcMmReplnPkConsData(@Param("planId")Long planId, @Param("fineline") Integer fineline, @Param("customerChoice") String customerChoice);
+
+	@Transactional
+	@Modifying(clearAutomatically = true, flushAutomatically = true)
+	@Query(value = "delete from dbo.rc_cc_mm_replpk_fixtr_cons where plan_id = :planId and channel_id = :channelId and fineline_nbr in (:finelineNbrs)", nativeQuery = true)
+	void deleteByPlanIdFinelineIdChannelId(@Param("planId") Long planId, @Param("channelId") Integer channelId, @Param("finelineNbrs") Set<Integer> finelineNbrs);
 }
