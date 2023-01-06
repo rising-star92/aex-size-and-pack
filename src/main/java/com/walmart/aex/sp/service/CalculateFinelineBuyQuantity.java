@@ -26,6 +26,7 @@ import org.slf4j.helpers.BasicMarkerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -86,6 +87,11 @@ public class CalculateFinelineBuyQuantity {
             combinedFuture.join();
             final BuyQtyResponse buyQtyResponse = buyQtyResponseCompletableFuture.get();
             final BQFPResponse bqfpResponse = bqfpResponseCompletableFuture.get();
+            //Set Volume Deviation from Strategy
+            StrategyVolumeDeviationResponse strategyVolumeDeviationResponse = getStrategyVolumeDeviation(calculateBuyQtyRequest, calculateBuyQtyParallelRequest);
+            if (null != strategyVolumeDeviationResponse) {
+                setStrategyVolumeDeviation(bqfpResponse, strategyVolumeDeviationResponse);
+            }
             APResponse apResponse = null;
             if (ChannelType.STORE.getDescription().equalsIgnoreCase(calculateBuyQtyParallelRequest.getChannel()))
                 apResponse = getRfaSpResponse(calculateBuyQtyRequest, calculateBuyQtyParallelRequest.getFinelineNbr(), bqfpResponse);
@@ -119,6 +125,15 @@ public class CalculateFinelineBuyQuantity {
                     calculateBuyQtyRequest.getPlanId(), calculateBuyQtyParallelRequest.getFinelineNbr(), e);
             throw new CustomException("CalculateBuyQty failed");
         }
+    }
+
+    private void setStrategyVolumeDeviation(BQFPResponse bqfpResponse, StrategyVolumeDeviationResponse strategyVolumeDeviationResponse) {
+        Optional.ofNullable(strategyVolumeDeviationResponse)
+                .map(StrategyVolumeDeviationResponse::getFinelines)
+                .stream()
+                .flatMap(Collection::stream)
+                .findFirst()
+                .map(FinelineVolumeDeviationDto::getVolumeDeviationLevel).ifPresent(volumeDeviationLevel -> bqfpResponse.setVolumeDeviationStrategyLevelSelection(BigDecimal.valueOf(VdLevelCode.getVdLevelCodeIdFromName(volumeDeviationLevel))));
     }
 
     private CompletableFuture<BQFPResponse> getBqfpResponseCompletableFuture(CalculateBuyQtyRequest calculateBuyQtyRequest, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest) {
@@ -367,6 +382,17 @@ public class CalculateFinelineBuyQuantity {
         buyQtyRequest.setLvl4Nbr(calculateBuyQtyParallelRequest.getLvl4Nbr());
         buyQtyRequest.setFinelineNbr(calculateBuyQtyParallelRequest.getFinelineNbr());
         return strategyFetchService.getAllCcSizeProfiles(buyQtyRequest);
+    }
+
+    private StrategyVolumeDeviationResponse getStrategyVolumeDeviation(CalculateBuyQtyRequest calculateBuyQtyRequest, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest) throws SizeAndPackException {
+        List<StrategyVolumeDeviationRequest> strategyVolumeDeviationRequests = new ArrayList<>();
+        StrategyVolumeDeviationRequest strategyVolumeDeviationRequest = new StrategyVolumeDeviationRequest();
+        strategyVolumeDeviationRequest.setPlanId(calculateBuyQtyRequest.getPlanId());
+        List<Integer> finelines = new ArrayList<>();
+        finelines.add(calculateBuyQtyParallelRequest.getFinelineNbr());
+        strategyVolumeDeviationRequest.setFinelineNbrs(finelines);
+        strategyVolumeDeviationRequests.add(strategyVolumeDeviationRequest);
+        return strategyFetchService.getStrategyVolumeDeviation(strategyVolumeDeviationRequests);
     }
 
     private APResponse getRfaSpResponse(CalculateBuyQtyRequest calculateBuyQtyRequest, Integer finelineNbr, BQFPResponse bqfpResponse) {

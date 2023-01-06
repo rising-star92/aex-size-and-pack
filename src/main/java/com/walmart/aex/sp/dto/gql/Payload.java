@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.walmart.aex.sp.dto.assortproduct.APResponse;
 import com.walmart.aex.sp.dto.bqfp.RfaWeeksResponse;
 import com.walmart.aex.sp.dto.buyquantity.BuyQtyResponse;
+import com.walmart.aex.sp.dto.buyquantity.StrategyVolumeDeviationResponse;
 import com.walmart.aex.sp.dto.currentlineplan.Lvl3;
 import lombok.Data;
 
@@ -19,4 +20,5 @@ public class Payload {
     private BuyQtyResponse getStylesCCsWithSizeAssociation;
     private RfaWeeksResponse getRFAWeeksByFineline;
     private List<Lvl3> getLinePlanFinelines;
+    private StrategyVolumeDeviationResponse getVolumeDeviationStrategySelection;
 }
