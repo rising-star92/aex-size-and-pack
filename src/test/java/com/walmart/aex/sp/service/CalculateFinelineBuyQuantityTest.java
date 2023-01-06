@@ -28,6 +28,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -229,6 +230,84 @@ class CalculateFinelineBuyQuantityTest {
         assertEquals("Total of all size bump pack qtys should match", expectedTotalBumpPackQtySize, actualTotalBumpPackQty);
         assertBumpSetStoreObject(spCCFixSizes, expectedTotalBumpPackQtySize);
     }
+
+    @Test
+    void strategyVolumeDeviationLevelCategoryTest() throws SizeAndPackException, IOException {
+        final String path = "/plan72fineline1500";
+        BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
+        APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
+        BuyQtyResponse buyQtyResponse = buyQtyResponseFromJson(path.concat("/BuyQtyResponse"));
+        StrategyVolumeDeviationResponse strategyVolumeDeviationResponse = strategyVolumeDeviationResponseFromJsonFromJson(path.concat("/StrategyVolumeDeviationCategoryResponse"));
+        Mockito.when(buyQtyProperties.getInitialThreshold()).thenReturn(2);
+        Mockito.when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
+        Mockito.when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
+        Mockito.when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
+        Mockito.when(strategyFetchService.getStrategyVolumeDeviation(any())).thenReturn(strategyVolumeDeviationResponse);
+        Mockito.when(buyQtyProperties.getInitialThreshold()).thenReturn(2);
+        CalculateBuyQtyRequest request = create("store", 50000, 34, 1488, 9071, 7205, 1500);
+        CalculateBuyQtyParallelRequest pRequest = createFromRequest(request);
+
+        CalculateBuyQtyResponse r = new CalculateBuyQtyResponse();
+        r.setMerchCatgReplPacks(new ArrayList<>());
+        r.setSpFineLineChannelFixtures(new ArrayList<>());
+
+        CalculateBuyQtyResponse response = calculateFinelineBuyQuantity.calculateFinelineBuyQty(request, pRequest, r);
+        assertEquals(bqfpResponse.getVolumeDeviationStrategyLevelSelection(), BigDecimal.valueOf(3));
+    }
+
+    @Test
+    void strategyVolumeDeviationLevelSubCategoryTest() throws SizeAndPackException, IOException {
+        final String path = "/plan72fineline1500";
+        BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
+        APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
+        BuyQtyResponse buyQtyResponse = buyQtyResponseFromJson(path.concat("/BuyQtyResponse"));
+        StrategyVolumeDeviationResponse strategyVolumeDeviationResponse = strategyVolumeDeviationResponseFromJsonFromJson(path.concat("/StrategyVolumeDeviationSubCategoryResponse"));
+        Mockito.when(buyQtyProperties.getInitialThreshold()).thenReturn(2);
+        Mockito.when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
+        Mockito.when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
+        Mockito.when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
+        Mockito.when(strategyFetchService.getStrategyVolumeDeviation(any())).thenReturn(strategyVolumeDeviationResponse);
+        Mockito.when(buyQtyProperties.getInitialThreshold()).thenReturn(2);
+        CalculateBuyQtyRequest request = create("store", 50000, 34, 1488, 9071, 7205, 1500);
+        CalculateBuyQtyParallelRequest pRequest = createFromRequest(request);
+
+        CalculateBuyQtyResponse r = new CalculateBuyQtyResponse();
+        r.setMerchCatgReplPacks(new ArrayList<>());
+        r.setSpFineLineChannelFixtures(new ArrayList<>());
+
+        CalculateBuyQtyResponse response = calculateFinelineBuyQuantity.calculateFinelineBuyQty(request, pRequest, r);
+        assertEquals(bqfpResponse.getVolumeDeviationStrategyLevelSelection(), BigDecimal.valueOf(2));
+    }
+
+    @Test
+    void strategyVolumeDeviationLevelFinelineTest() throws SizeAndPackException, IOException {
+        final String path = "/plan72fineline1500";
+        BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
+        APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
+        BuyQtyResponse buyQtyResponse = buyQtyResponseFromJson(path.concat("/BuyQtyResponse"));
+        StrategyVolumeDeviationResponse strategyVolumeDeviationResponse = strategyVolumeDeviationResponseFromJsonFromJson(path.concat("/StrategyVolumeDeviationFinelineResponse"));
+        Mockito.when(buyQtyProperties.getInitialThreshold()).thenReturn(2);
+        Mockito.when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
+        Mockito.when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
+        Mockito.when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
+        Mockito.when(strategyFetchService.getStrategyVolumeDeviation(any())).thenReturn(strategyVolumeDeviationResponse);
+        Mockito.when(buyQtyProperties.getInitialThreshold()).thenReturn(2);
+        CalculateBuyQtyRequest request = create("store", 50000, 34, 1488, 9071, 7205, 1500);
+        CalculateBuyQtyParallelRequest pRequest = createFromRequest(request);
+
+        CalculateBuyQtyResponse r = new CalculateBuyQtyResponse();
+        r.setMerchCatgReplPacks(new ArrayList<>());
+        r.setSpFineLineChannelFixtures(new ArrayList<>());
+
+        CalculateBuyQtyResponse response = calculateFinelineBuyQuantity.calculateFinelineBuyQty(request, pRequest, r);
+        assertEquals(bqfpResponse.getVolumeDeviationStrategyLevelSelection(), BigDecimal.valueOf(1));
+    }
+
+    private StrategyVolumeDeviationResponse strategyVolumeDeviationResponseFromJsonFromJson(String path) throws IOException {
+        return mapper.readValue(readJsonFileAsString(path), StrategyVolumeDeviationResponse.class);
+    }
+
+
     private SizeDto size48() {
         return createSize(4042, "48", 0.0, 0.024999);
     }

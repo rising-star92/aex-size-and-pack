@@ -4,6 +4,8 @@ import com.walmart.aex.sp.dto.assortproduct.APRequest;
 import com.walmart.aex.sp.dto.assortproduct.APResponse;
 import com.walmart.aex.sp.dto.buyquantity.BuyQtyRequest;
 import com.walmart.aex.sp.dto.buyquantity.BuyQtyResponse;
+import com.walmart.aex.sp.dto.buyquantity.StrategyVolumeDeviationRequest;
+import com.walmart.aex.sp.dto.buyquantity.StrategyVolumeDeviationResponse;
 import com.walmart.aex.sp.dto.gql.GraphQLResponse;
 import com.walmart.aex.sp.dto.gql.Payload;
 import com.walmart.aex.sp.exception.SizeAndPackException;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
@@ -87,6 +90,14 @@ public class StrategyFetchService {
         Map<String, Object> data = new HashMap<>();
         data.put("sizeProfileRequest", buyQtyRequest);
         return (BuyQtyResponse) post(graphQLProperties.getSizeProfileUrl(), graphQLProperties.getAllCcSizeProfileQuery(), headers, data, Payload::getGetAllCcSizeClus);
+    }
+
+    public StrategyVolumeDeviationResponse getStrategyVolumeDeviation(List<StrategyVolumeDeviationRequest> strategyVolumeDeviationRequests) throws SizeAndPackException
+    {
+        Map<String, String> headers = getHeaderForStrategy();
+        Map<String, Object> data = new HashMap<>();
+        data.put("volumeDeviationRequests", strategyVolumeDeviationRequests);
+        return (StrategyVolumeDeviationResponse) post(graphQLProperties.getSizeProfileUrl(), graphQLProperties.getStrategyVolumeDeviationLevel(), headers, data, Payload::getGetVolumeDeviationStrategySelection);
     }
 
     public Map<String, String> getHeaderForStrategy() {

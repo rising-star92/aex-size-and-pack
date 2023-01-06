@@ -312,6 +312,11 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "http://current-line-plan.aex.prod.walmart.net/graphql"
+      "strategy.vg.deviation.level":
+        description: "Get Volume Deviation level fro strategy db"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "query($volumeDeviationRequests:[VolumeDeviationRequests]) {getVolumeDeviationStrategySelection (request: {volumeDeviationRequestsList: $volumeDeviationRequests }) { finelines { finelineId finelineName lvl0Nbr lvl1Nbr lvl2Nbr lvl3Nbr lvl4Nbr planId volumeDeviationLevel } } }"
   bigQueryConfig:
     description: "Big Query Config to connect with GCP tables"
     resolutionPaths:

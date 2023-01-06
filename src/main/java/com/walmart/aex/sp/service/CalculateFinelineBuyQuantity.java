@@ -26,6 +26,7 @@ import org.slf4j.helpers.BasicMarkerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -80,12 +81,20 @@ public class CalculateFinelineBuyQuantity {
     public CalculateBuyQtyResponse calculateFinelineBuyQty(CalculateBuyQtyRequest calculateBuyQtyRequest, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, CalculateBuyQtyResponse calculateBuyQtyResponse) throws CustomException {
         CompletableFuture<BuyQtyResponse> buyQtyResponseCompletableFuture = getBuyQtyResponseCompletableFuture(calculateBuyQtyRequest, calculateBuyQtyParallelRequest);
         CompletableFuture<BQFPResponse> bqfpResponseCompletableFuture = getBqfpResponseCompletableFuture(calculateBuyQtyRequest, calculateBuyQtyParallelRequest);
+
+        //Set Volume Deviation from Strategy
+        CompletableFuture<StrategyVolumeDeviationResponse> strategyVolumeDeviationResponseCompletableFuture = getStrategyVolumeDeviationCompletableFuture(calculateBuyQtyRequest.getPlanId(), calculateBuyQtyParallelRequest.getFinelineNbr());
+
         //wrapper future completes when all futures have completed
-        CompletableFuture<Void> combinedFuture = CompletableFuture.allOf(buyQtyResponseCompletableFuture, bqfpResponseCompletableFuture);
+        CompletableFuture<Void> combinedFuture = CompletableFuture.allOf(buyQtyResponseCompletableFuture, bqfpResponseCompletableFuture, strategyVolumeDeviationResponseCompletableFuture);
         try {
             combinedFuture.join();
             final BuyQtyResponse buyQtyResponse = buyQtyResponseCompletableFuture.get();
             final BQFPResponse bqfpResponse = bqfpResponseCompletableFuture.get();
+            final StrategyVolumeDeviationResponse strategyVolumeDeviationResponse = strategyVolumeDeviationResponseCompletableFuture.get();
+            if (null != strategyVolumeDeviationResponse) {
+                setStrategyVolumeDeviation(bqfpResponse, strategyVolumeDeviationResponse);
+            }
             APResponse apResponse = null;
             if (ChannelType.STORE.getDescription().equalsIgnoreCase(calculateBuyQtyParallelRequest.getChannel()))
                 apResponse = getRfaSpResponse(calculateBuyQtyRequest, calculateBuyQtyParallelRequest.getFinelineNbr(), bqfpResponse);
@@ -121,8 +130,30 @@ public class CalculateFinelineBuyQuantity {
         }
     }
 
+    private void setStrategyVolumeDeviation(BQFPResponse bqfpResponse, StrategyVolumeDeviationResponse strategyVolumeDeviationResponse) {
+        Optional.ofNullable(strategyVolumeDeviationResponse)
+                .map(StrategyVolumeDeviationResponse::getFinelines)
+                .stream()
+                .flatMap(Collection::stream)
+                .findFirst()
+                .map(FinelineVolumeDeviationDto::getVolumeDeviationLevel).ifPresent(volumeDeviationLevel -> {
+                    log.info("Strategy Volume Deviation for plan: {} : fineline: {} is : {}", bqfpResponse.getPlanId(),bqfpResponse.getFinelineNbr(),volumeDeviationLevel);
+                    bqfpResponse.setVolumeDeviationStrategyLevelSelection(BigDecimal.valueOf(VdLevelCode.getVdLevelCodeIdFromName(volumeDeviationLevel)));
+        });
+    }
+
     private CompletableFuture<BQFPResponse> getBqfpResponseCompletableFuture(CalculateBuyQtyRequest calculateBuyQtyRequest, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest) {
         return CompletableFuture.supplyAsync(() -> getBqfpResponse(calculateBuyQtyRequest, calculateBuyQtyParallelRequest.getFinelineNbr()));
+    }
+
+    private CompletableFuture<StrategyVolumeDeviationResponse> getStrategyVolumeDeviationCompletableFuture(Long planId, Integer finelineNbr) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return getStrategyVolumeDeviation(planId, finelineNbr);
+            } catch (SizeAndPackException e) {
+                throw new CustomException("Failed to fetch buyQtyResponse");
+            }
+        });
     }
 
     private CompletableFuture<BuyQtyResponse> getBuyQtyResponseCompletableFuture(CalculateBuyQtyRequest calculateBuyQtyRequest, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest) {
@@ -367,6 +398,17 @@ public class CalculateFinelineBuyQuantity {
         buyQtyRequest.setLvl4Nbr(calculateBuyQtyParallelRequest.getLvl4Nbr());
         buyQtyRequest.setFinelineNbr(calculateBuyQtyParallelRequest.getFinelineNbr());
         return strategyFetchService.getAllCcSizeProfiles(buyQtyRequest);
+    }
+
+    private StrategyVolumeDeviationResponse getStrategyVolumeDeviation(Long planId, Integer finelineNbr) throws SizeAndPackException {
+        List<StrategyVolumeDeviationRequest> strategyVolumeDeviationRequests = new ArrayList<>();
+        StrategyVolumeDeviationRequest strategyVolumeDeviationRequest = new StrategyVolumeDeviationRequest();
+        strategyVolumeDeviationRequest.setPlanId(planId);
+        List<Integer> finelines = new ArrayList<>();
+        finelines.add(finelineNbr);
+        strategyVolumeDeviationRequest.setFinelineNbrs(finelines);
+        strategyVolumeDeviationRequests.add(strategyVolumeDeviationRequest);
+        return strategyFetchService.getStrategyVolumeDeviation(strategyVolumeDeviationRequests);
     }
 
     private APResponse getRfaSpResponse(CalculateBuyQtyRequest calculateBuyQtyRequest, Integer finelineNbr, BQFPResponse bqfpResponse) {
