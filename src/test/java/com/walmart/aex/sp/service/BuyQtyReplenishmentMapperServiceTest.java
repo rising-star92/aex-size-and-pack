@@ -162,4 +162,61 @@ public class BuyQtyReplenishmentMapperServiceTest {
 		assertEquals(4, catgReplPacks.get(0).getVendorPackCnt());	
 		
 	}
+
+	@Test
+	void testSetAllReplenishmentsDefaultValues() {
+		calculateBuyQtyParallelRequest = new CalculateBuyQtyParallelRequest();
+		calculateBuyQtyParallelRequest.setPlanId(12l);
+		calculateBuyQtyParallelRequest.setChannel("store");
+		calculateBuyQtyParallelRequest.setFinelineNbr(2968);
+		calculateBuyQtyParallelRequest.setLvl0Nbr(50000);
+		calculateBuyQtyParallelRequest.setLvl1Nbr(34);
+		calculateBuyQtyParallelRequest.setLvl2Nbr(6419);
+		calculateBuyQtyParallelRequest.setLvl3Nbr(1652);
+
+		List<MerchCatgReplPack> merchCatgReplPacks  = new ArrayList<>();
+		calculateBuyQtyResponse =  new CalculateBuyQtyResponse();
+		calculateBuyQtyResponse.setMerchCatgReplPacks(merchCatgReplPacks);
+
+		List<MerchCatgReplPack> catgReplPacks=buyQtyReplenishmentMapperService.setAllReplenishments(styleDto, merchMethodsDto, calculateBuyQtyParallelRequest, calculateBuyQtyResponse, customerChoiceDto, ccSpMmReplPacks);
+
+		assertNotNull(catgReplPacks);
+		assertEquals(12, catgReplPacks.get(0).getVendorPackCnt());
+		assertEquals(2, catgReplPacks.get(0).getWhsePackCnt());
+		assertEquals(6, catgReplPacks.get(0).getVnpkWhpkRatio());
+		assertEquals(12, catgReplPacks.get(0).getSubReplPack().iterator().next().getVendorPackCnt());
+		assertEquals(2, catgReplPacks.get(0).getSubReplPack().iterator().next().getWhsePackCnt());
+		assertEquals(6, catgReplPacks.get(0).getSubReplPack().iterator().next().getVnpkWhpkRatio());
+		assertEquals(12, catgReplPacks.get(0).getSubReplPack().iterator().next().getFinelineReplPack()
+				.iterator().next().getVendorPackCnt());
+		assertEquals(2, catgReplPacks.get(0).getSubReplPack().iterator().next().getFinelineReplPack()
+				.iterator().next().getWhsePackCnt());
+		assertEquals(6, catgReplPacks.get(0).getSubReplPack().iterator().next().getFinelineReplPack()
+				.iterator().next().getVnpkWhpkRatio());
+		assertEquals(12, catgReplPacks.get(0).getSubReplPack().iterator().next().getFinelineReplPack()
+				.iterator().next().getStyleReplPack().iterator().next().getVendorPackCnt());
+		assertEquals(2, catgReplPacks.get(0).getSubReplPack().iterator().next().getFinelineReplPack()
+				.iterator().next().getStyleReplPack().iterator().next().getWhsePackCnt());
+		assertEquals(6, catgReplPacks.get(0).getSubReplPack().iterator().next().getFinelineReplPack()
+				.iterator().next().getStyleReplPack().iterator().next().getVnpkWhpkRatio());
+		assertEquals(12, catgReplPacks.get(0).getSubReplPack().iterator().next().getFinelineReplPack()
+				.iterator().next().getStyleReplPack().iterator().next().getCcReplPack().iterator().next()
+				.getVendorPackCnt());
+		assertEquals(2, catgReplPacks.get(0).getSubReplPack().iterator().next().getFinelineReplPack()
+				.iterator().next().getStyleReplPack().iterator().next().getCcReplPack().iterator().next()
+				.getWhsePackCnt());
+		assertEquals(6, catgReplPacks.get(0).getSubReplPack().iterator().next().getFinelineReplPack()
+				.iterator().next().getStyleReplPack().iterator().next().getCcReplPack().iterator().next()
+				.getVnpkWhpkRatio());
+		assertEquals(12, catgReplPacks.get(0).getSubReplPack().iterator().next().getFinelineReplPack()
+				.iterator().next().getStyleReplPack().iterator().next().getCcReplPack().iterator().next()
+				.getCcMmReplPack().iterator().next().getVendorPackCnt());
+		assertEquals(2, catgReplPacks.get(0).getSubReplPack().iterator().next().getFinelineReplPack()
+				.iterator().next().getStyleReplPack().iterator().next().getCcReplPack().iterator().next()
+				.getCcMmReplPack().iterator().next().getWhsePackCnt());
+		assertEquals(6, catgReplPacks.get(0).getSubReplPack().iterator().next().getFinelineReplPack()
+				.iterator().next().getStyleReplPack().iterator().next().getCcReplPack().iterator().next()
+				.getCcMmReplPack().iterator().next().getVnpkWhpkRatio());
+
+	}
 }

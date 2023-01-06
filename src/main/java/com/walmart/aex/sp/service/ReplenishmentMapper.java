@@ -164,7 +164,9 @@ public class ReplenishmentMapper {
         metrics.setFinalReplenishmentQty(Optional.ofNullable(metrics.getFinalReplenishmentQty()).orElse(0)
                 + Optional.ofNullable(replenishmentResponseDTO.getFinelineReplQty()).orElse(0));
         metrics.setFinalBuyQty(Optional.ofNullable(metrics.getFinalBuyQty()).orElse(0)
-                + Optional.ofNullable(replenishmentResponseDTO.getFinelineFinalBuyUnits()).orElse(0)); }
+                + Optional.ofNullable(replenishmentResponseDTO.getFinelineFinalBuyUnits()).orElse(0));
+        metrics.setReplenishmentPacks(metrics.getFinalReplenishmentQty() / metrics.getVendorPack());
+        }
     }
 
     private List<StyleDto> mapReplenishmentStyles(ReplenishmentResponseDTO replenishmentResponseDTO, FinelineDto fineline, Integer finelineNbr, String ccId) {
@@ -223,7 +225,9 @@ public class ReplenishmentMapper {
         metrics.setFinalReplenishmentQty(Optional.ofNullable(metrics.getFinalReplenishmentQty()).orElse(0)
                 + Optional.ofNullable(replenishmentResponseDTO.getCcReplQty()).orElse(0));
         metrics.setFinalBuyQty(Optional.ofNullable(metrics.getFinalBuyQty()).orElse(0)
-                + Optional.ofNullable(replenishmentResponseDTO.getCcFinalBuyUnits()).orElse(0));}
+                + Optional.ofNullable(replenishmentResponseDTO.getCcFinalBuyUnits()).orElse(0));
+        metrics.setReplenishmentPacks(metrics.getFinalReplenishmentQty() / metrics.getVendorPack());
+        }
     }
 
     private void setCcSP(ReplenishmentResponseDTO replenishmentResponseDTO, List<CustomerChoiceDto> customerChoiceDtoList, Integer finelineNbr, String ccId) {
