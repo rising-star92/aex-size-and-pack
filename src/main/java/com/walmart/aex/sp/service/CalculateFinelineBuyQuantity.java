@@ -406,7 +406,7 @@ public class CalculateFinelineBuyQuantity {
         strategyVolumeDeviationRequest.setPlanId(planId);
         List<Integer> finelines = new ArrayList<>();
         finelines.add(finelineNbr);
-        strategyVolumeDeviationRequest.setFinelineNbrs(finelines);
+        strategyVolumeDeviationRequest.setFinelineNbr(finelines);
         strategyVolumeDeviationRequests.add(strategyVolumeDeviationRequest);
         return strategyFetchService.getStrategyVolumeDeviation(strategyVolumeDeviationRequests);
     }
