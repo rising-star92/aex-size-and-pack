@@ -81,14 +81,17 @@ public class CalculateFinelineBuyQuantity {
     public CalculateBuyQtyResponse calculateFinelineBuyQty(CalculateBuyQtyRequest calculateBuyQtyRequest, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, CalculateBuyQtyResponse calculateBuyQtyResponse) throws CustomException {
         CompletableFuture<BuyQtyResponse> buyQtyResponseCompletableFuture = getBuyQtyResponseCompletableFuture(calculateBuyQtyRequest, calculateBuyQtyParallelRequest);
         CompletableFuture<BQFPResponse> bqfpResponseCompletableFuture = getBqfpResponseCompletableFuture(calculateBuyQtyRequest, calculateBuyQtyParallelRequest);
+
+        //Set Volume Deviation from Strategy
+        CompletableFuture<StrategyVolumeDeviationResponse> strategyVolumeDeviationResponseCompletableFuture = getStrategyVolumeDeviationCompletableFuture(calculateBuyQtyRequest.getPlanId(), calculateBuyQtyParallelRequest.getFinelineNbr());
+
         //wrapper future completes when all futures have completed
-        CompletableFuture<Void> combinedFuture = CompletableFuture.allOf(buyQtyResponseCompletableFuture, bqfpResponseCompletableFuture);
+        CompletableFuture<Void> combinedFuture = CompletableFuture.allOf(buyQtyResponseCompletableFuture, bqfpResponseCompletableFuture, strategyVolumeDeviationResponseCompletableFuture);
         try {
             combinedFuture.join();
             final BuyQtyResponse buyQtyResponse = buyQtyResponseCompletableFuture.get();
             final BQFPResponse bqfpResponse = bqfpResponseCompletableFuture.get();
-            //Set Volume Deviation from Strategy
-            StrategyVolumeDeviationResponse strategyVolumeDeviationResponse = getStrategyVolumeDeviation(calculateBuyQtyRequest, calculateBuyQtyParallelRequest);
+            final StrategyVolumeDeviationResponse strategyVolumeDeviationResponse = strategyVolumeDeviationResponseCompletableFuture.get();
             if (null != strategyVolumeDeviationResponse) {
                 setStrategyVolumeDeviation(bqfpResponse, strategyVolumeDeviationResponse);
             }
@@ -138,6 +141,16 @@ public class CalculateFinelineBuyQuantity {
 
     private CompletableFuture<BQFPResponse> getBqfpResponseCompletableFuture(CalculateBuyQtyRequest calculateBuyQtyRequest, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest) {
         return CompletableFuture.supplyAsync(() -> getBqfpResponse(calculateBuyQtyRequest, calculateBuyQtyParallelRequest.getFinelineNbr()));
+    }
+
+    private CompletableFuture<StrategyVolumeDeviationResponse> getStrategyVolumeDeviationCompletableFuture(Long planId, Integer finelineNbr) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return getStrategyVolumeDeviation(planId, finelineNbr);
+            } catch (SizeAndPackException e) {
+                throw new CustomException("Failed to fetch buyQtyResponse");
+            }
+        });
     }
 
     private CompletableFuture<BuyQtyResponse> getBuyQtyResponseCompletableFuture(CalculateBuyQtyRequest calculateBuyQtyRequest, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest) {
@@ -384,12 +397,12 @@ public class CalculateFinelineBuyQuantity {
         return strategyFetchService.getAllCcSizeProfiles(buyQtyRequest);
     }
 
-    private StrategyVolumeDeviationResponse getStrategyVolumeDeviation(CalculateBuyQtyRequest calculateBuyQtyRequest, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest) throws SizeAndPackException {
+    private StrategyVolumeDeviationResponse getStrategyVolumeDeviation(Long planId, Integer finelineNbr) throws SizeAndPackException {
         List<StrategyVolumeDeviationRequest> strategyVolumeDeviationRequests = new ArrayList<>();
         StrategyVolumeDeviationRequest strategyVolumeDeviationRequest = new StrategyVolumeDeviationRequest();
-        strategyVolumeDeviationRequest.setPlanId(calculateBuyQtyRequest.getPlanId());
+        strategyVolumeDeviationRequest.setPlanId(planId);
         List<Integer> finelines = new ArrayList<>();
-        finelines.add(calculateBuyQtyParallelRequest.getFinelineNbr());
+        finelines.add(finelineNbr);
         strategyVolumeDeviationRequest.setFinelineNbrs(finelines);
         strategyVolumeDeviationRequests.add(strategyVolumeDeviationRequest);
         return strategyFetchService.getStrategyVolumeDeviation(strategyVolumeDeviationRequests);
