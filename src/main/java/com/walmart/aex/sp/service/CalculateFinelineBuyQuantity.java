@@ -136,7 +136,10 @@ public class CalculateFinelineBuyQuantity {
                 .stream()
                 .flatMap(Collection::stream)
                 .findFirst()
-                .map(FinelineVolumeDeviationDto::getVolumeDeviationLevel).ifPresent(volumeDeviationLevel -> bqfpResponse.setVolumeDeviationStrategyLevelSelection(BigDecimal.valueOf(VdLevelCode.getVdLevelCodeIdFromName(volumeDeviationLevel))));
+                .map(FinelineVolumeDeviationDto::getVolumeDeviationLevel).ifPresent(volumeDeviationLevel -> {
+                    log.info("Strategy Volume Deviation for plan: {} : fineline: {} is : {}", bqfpResponse.getPlanId(),bqfpResponse.getFinelineNbr(),volumeDeviationLevel);
+                    bqfpResponse.setVolumeDeviationStrategyLevelSelection(BigDecimal.valueOf(VdLevelCode.getVdLevelCodeIdFromName(volumeDeviationLevel)));
+        });
     }
 
     private CompletableFuture<BQFPResponse> getBqfpResponseCompletableFuture(CalculateBuyQtyRequest calculateBuyQtyRequest, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest) {
