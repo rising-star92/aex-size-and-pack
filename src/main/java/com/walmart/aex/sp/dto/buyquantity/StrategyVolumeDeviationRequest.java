@@ -7,5 +7,5 @@ import java.util.List;
 @Data
 public class StrategyVolumeDeviationRequest {
     private Long planId;
-    private List<Integer> finelineNbrs;
+    private List<Integer> finelineNbr;
 }
