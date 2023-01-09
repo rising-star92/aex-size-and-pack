@@ -56,9 +56,12 @@ import com.walmart.aex.sp.util.BuyQtyResponseInputs;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -185,7 +188,7 @@ class ReplenishmentServiceTest {
         request.setVnpk(1);
         request.setWhpk(1);
         replenishmentService.updateVnpkWhpkForCatgReplnCons(request);
-        Mockito.verify(replenishmentService, Mockito.times(1)).updateVnpkWhpkForCatgReplnCons(request);
+        verify(replenishmentService, Mockito.times(1)).updateVnpkWhpkForCatgReplnCons(request);
 
     }
 
@@ -242,7 +245,7 @@ class ReplenishmentServiceTest {
 
         BuyQtyResponse buyQtyResponse1 = replenishmentService1.fetchOnlineSizeBuyQnty(buyQtyRequest);
 
-        Mockito.verify(buyQuantityMapper, Mockito.times(5)).mapBuyQntySizeSp(Mockito.any(), Mockito.any());
+        verify(buyQuantityMapper, Mockito.times(5)).mapBuyQntySizeSp(Mockito.any(), Mockito.any());
 
     }
 
@@ -257,8 +260,8 @@ class ReplenishmentServiceTest {
         updateVnPkWhPkReplnRequest.setWhpk(1);
         when(catgReplnPkConsRepository.getCatgReplnConsData(12l, 2, 3)).thenReturn(catgReplnPkConsList);
         replenishmentService1.updateVnpkWhpkForCatgReplnCons(updateVnPkWhPkReplnRequest);
-        Mockito.verify(updateReplnConfigMapper, Mockito.times(1)).updateVnpkWhpkForCatgReplnConsMapper(Mockito.any(), Mockito.any(), Mockito.any());
-        Mockito.verify(updateReplnConfigMapper).updateVnpkWhpkForCatgReplnConsMapper(merchCatgReplPackCaptor.capture(), vnpkArgumentCaptor.capture(), whpkArgumentCaptor.capture());
+        verify(updateReplnConfigMapper, Mockito.times(1)).updateVnpkWhpkForCatgReplnConsMapper(Mockito.any(), Mockito.any(), Mockito.any());
+        verify(updateReplnConfigMapper).updateVnpkWhpkForCatgReplnConsMapper(merchCatgReplPackCaptor.capture(), vnpkArgumentCaptor.capture(), whpkArgumentCaptor.capture());
         List<MerchCatgReplPack> merchCatgReplPacks = merchCatgReplPackCaptor.getValue();
         Integer vnpk = vnpkArgumentCaptor.getValue();
         Integer whpk = whpkArgumentCaptor.getValue();
@@ -276,8 +279,9 @@ class ReplenishmentServiceTest {
         updateVnPkWhPkReplnRequest.setWhpk(1);
         when(subCatgReplnPkConsRepository.getSubCatgReplnConsData(12l, 1, 12231, 31516)).thenReturn(subCatgReplnPkConsList);
         replenishmentService1.updateVnpkWhpkForSubCatgReplnCons(updateVnPkWhPkReplnRequest);
-        Mockito.verify(updateReplnConfigMapper, Mockito.times(1)).updateVnpkWhpkForSubCatgReplnConsMapper(Mockito.any(), Mockito.any(), Mockito.any());
-        Mockito.verify(updateReplnConfigMapper).updateVnpkWhpkForSubCatgReplnConsMapper(listArgumentCaptor.capture(), vnpkArgumentCaptor.capture(), whpkArgumentCaptor.capture());
+        verify(updateReplnConfigMapper, Mockito.times(1)).updateVnpkWhpkForSubCatgReplnConsMapper(Mockito.any(), Mockito.any(), Mockito.any());
+        verify(updateReplnConfigMapper).updateVnpkWhpkForSubCatgReplnConsMapper(listArgumentCaptor.capture(), vnpkArgumentCaptor.capture(), whpkArgumentCaptor.capture());
+        verify(updateReplnConfigMapper, times(1)).updateVnpkWhpkForCatgReplnConsMapper(anyList(),any(),any());
         List<SubCatgReplPack> subCatgReplPackList = listArgumentCaptor.getValue();
         Integer vnpk = vnpkArgumentCaptor.getValue();
         Integer whpk = whpkArgumentCaptor.getValue();
@@ -302,8 +306,9 @@ class ReplenishmentServiceTest {
         updateVnPkWhPkReplnRequest.setWhpk(1);
         when(finelineReplnPkConsRepository.getFinelineReplnConsData(12l, 1, 12231, 31516, 1021)).thenReturn(finelineReplnPkConsList);
         replenishmentService1.updateVnpkWhpkForFinelineReplnCons(updateVnPkWhPkReplnRequest);
-        Mockito.verify(updateReplnConfigMapper, Mockito.times(1)).updateVnpkWhpkForFinelineReplnConsMapper(Mockito.any(), Mockito.any(), Mockito.any());
-        Mockito.verify(updateReplnConfigMapper).updateVnpkWhpkForFinelineReplnConsMapper(fineLineListcaptor.capture(), vnpkArgumentCaptor.capture(), whpkArgumentCaptor.capture());
+        verify(updateReplnConfigMapper, Mockito.times(1)).updateVnpkWhpkForFinelineReplnConsMapper(Mockito.any(), Mockito.any(), Mockito.any());
+        verify(updateReplnConfigMapper).updateVnpkWhpkForFinelineReplnConsMapper(fineLineListcaptor.capture(), vnpkArgumentCaptor.capture(), whpkArgumentCaptor.capture());
+        verify(updateReplnConfigMapper, times(1)).updateVnpkWhpkForCatgReplnConsMapper(anyList(),any(),any());
         List<FinelineReplPack> finelineReplPacks = fineLineListcaptor.getValue();
         assertEquals(finelineReplPacks.size(), 0);
         Integer vnpk = vnpkArgumentCaptor.getValue();
@@ -328,8 +333,9 @@ class ReplenishmentServiceTest {
         updateVnPkWhPkReplnRequest.setWhpk(1);
         when(styleReplnConsRepository.getStyleReplnConsData(12l, 1, 12231, 31516, 1021, "34_1021_2_21_2")).thenReturn(styleReplnPkConsList);
         replenishmentService1.updateVnpkWhpkForStyleReplnCons(updateVnPkWhPkReplnRequest);
-        Mockito.verify(updateReplnConfigMapper, Mockito.times(1)).updateVnpkWhpkForStyleReplnConsMapper(Mockito.any(), Mockito.any(), Mockito.any());
-        Mockito.verify(updateReplnConfigMapper).updateVnpkWhpkForStyleReplnConsMapper(styleReplListCaptor.capture(), vnpkArgumentCaptor.capture(), whpkArgumentCaptor.capture());
+        verify(updateReplnConfigMapper, Mockito.times(1)).updateVnpkWhpkForStyleReplnConsMapper(Mockito.any(), Mockito.any(), Mockito.any());
+        verify(updateReplnConfigMapper).updateVnpkWhpkForStyleReplnConsMapper(styleReplListCaptor.capture(), vnpkArgumentCaptor.capture(), whpkArgumentCaptor.capture());
+        verify(updateReplnConfigMapper, times(1)).updateVnpkWhpkForCatgReplnConsMapper(anyList(),any(),any());
         List<StyleReplPack> styleReplPacks = styleReplListCaptor.getValue();
         Integer vnpk = vnpkArgumentCaptor.getValue();
         Integer whpk = whpkArgumentCaptor.getValue();
@@ -354,8 +360,9 @@ class ReplenishmentServiceTest {
         updateVnPkWhPkReplnRequest.setWhpk(1);
         when(ccReplnConsRepository.getCcReplnConsData(12l, 1, 12231, 31516, 1021, "34_1021_2_21_2", "34_1021_2_21_2_AURA ORANGE STENCIL")).thenReturn(ccReplnPkConsList1);
         replenishmentService1.updateVnpkWhpkForCcReplnPkCons(updateVnPkWhPkReplnRequest);
-        Mockito.verify(updateReplnConfigMapper, Mockito.times(1)).updateVnpkWhpkForCcReplnPkConsMapper(Mockito.any(), Mockito.any(), Mockito.any());
-        Mockito.verify(updateReplnConfigMapper).updateVnpkWhpkForCcReplnPkConsMapper(ccReplPackLisrcaptor.capture(), vnpkArgumentCaptor.capture(), whpkArgumentCaptor.capture());
+        verify(updateReplnConfigMapper, Mockito.times(1)).updateVnpkWhpkForCcReplnPkConsMapper(Mockito.any(), Mockito.any(), Mockito.any());
+        verify(updateReplnConfigMapper).updateVnpkWhpkForCcReplnPkConsMapper(ccReplPackLisrcaptor.capture(), vnpkArgumentCaptor.capture(), whpkArgumentCaptor.capture());
+        verify(updateReplnConfigMapper, times(1)).updateVnpkWhpkForCatgReplnConsMapper(anyList(),any(),any());
         List<CcReplPack> ccReplPacks = ccReplPackLisrcaptor.getValue();
         Integer vnpk = vnpkArgumentCaptor.getValue();
         Integer whpk = whpkArgumentCaptor.getValue();
@@ -381,8 +388,9 @@ class ReplenishmentServiceTest {
         updateVnPkWhPkReplnRequest.setWhpk(1);
         when(ccMmReplnPkConsRepository.getCcMmReplnPkConsData(12l, 1, 12231, 31516, 1021, "34_1021_2_21_2", "34_1021_2_21_2_AURA ORANGE STENCIL", "folded")).thenReturn(ccMmReplnPkConsList);
         replenishmentService1.updateVnPkWhPkCcMerchMethodReplnCon(updateVnPkWhPkReplnRequest);
-        Mockito.verify(updateReplnConfigMapper, Mockito.times(1)).updateVnpkWhpkForCcMmReplnPkConsMapper(Mockito.any(), Mockito.any(), Mockito.any());
-        Mockito.verify(updateReplnConfigMapper).updateVnpkWhpkForCcMmReplnPkConsMapper(ccMmReplPackLisrcaptor.capture(), vnpkArgumentCaptor.capture(), whpkArgumentCaptor.capture());
+        verify(updateReplnConfigMapper, Mockito.times(1)).updateVnpkWhpkForCcMmReplnPkConsMapper(Mockito.any(), Mockito.any(), Mockito.any());
+        verify(updateReplnConfigMapper).updateVnpkWhpkForCcMmReplnPkConsMapper(ccMmReplPackLisrcaptor.capture(), vnpkArgumentCaptor.capture(), whpkArgumentCaptor.capture());
+        verify(updateReplnConfigMapper, times(1)).updateVnpkWhpkForCatgReplnConsMapper(anyList(),any(),any());
         List<CcMmReplPack> ccMmReplPacks = ccMmReplPackLisrcaptor.getValue();
         Integer vnpk = vnpkArgumentCaptor.getValue();
         Integer whpk = whpkArgumentCaptor.getValue();
@@ -409,8 +417,9 @@ class ReplenishmentServiceTest {
         updateVnPkWhPkReplnRequest.setWhpk(1);
         when(ccSpReplnPkConsRepository.getCcSpMmReplnPkConsData(12l, 1, 12231, 31516, 1021, "34_1021_2_21_2", "34_1021_2_21_2_AURA ORANGE STENCIL", "folded", 246)).thenReturn(ccSpReplnPkConsList);
         replenishmentService1.updateVnPkWhPkCcSpSizeReplnCon(updateVnPkWhPkReplnRequest);
-        Mockito.verify(updateReplnConfigMapper, Mockito.times(1)).updateVnpkWhpkForCcSpMmReplnPkConsMapper(Mockito.any(), Mockito.any(), Mockito.any());
-        Mockito.verify(updateReplnConfigMapper).updateVnpkWhpkForCcSpMmReplnPkConsMapper(ccSpMmReplPackList.capture(), vnpkArgumentCaptor.capture(), whpkArgumentCaptor.capture());
+        verify(updateReplnConfigMapper, Mockito.times(1)).updateVnpkWhpkForCcSpMmReplnPkConsMapper(Mockito.any(), Mockito.any(), Mockito.any());
+        verify(updateReplnConfigMapper).updateVnpkWhpkForCcSpMmReplnPkConsMapper(ccSpMmReplPackList.capture(), vnpkArgumentCaptor.capture(), whpkArgumentCaptor.capture());
+        verify(updateReplnConfigMapper, times(1)).updateVnpkWhpkForCatgReplnConsMapper(anyList(),any(),any());
         List<CcSpMmReplPack> ccMmReplPacks = ccSpMmReplPackList.getValue();
         Integer vnpk = vnpkArgumentCaptor.getValue();
         Integer whpk = whpkArgumentCaptor.getValue();
@@ -435,8 +444,8 @@ class ReplenishmentServiceTest {
         when(sizeListReplenishmentRepository.getReplenishmentPlanChannelFinelineCc(12l, 1, 1021, "34_1021_2_21_2", "34_1021_2_21_2_AURA ORANGE STENCIL")).thenReturn(replenishmentResponseDTOS);
         doNothing().when(replenishmentMapper).mapReplenishmentLvl2Sp(any(), any(), any(), any());
         ReplenishmentResponse replenishmentResponse = replenishmentService1.fetchSizeListReplenishment(replenishmentRequest);
-        Mockito.verify(replenishmentMapper, Mockito.times(1)).mapReplenishmentLvl2Sp(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
-        Mockito.verify(replenishmentMapper).mapReplenishmentLvl2Sp(replenishmentResponseDTOArgumentCaptor.capture(), replenishmentResponseArgumentCaptor.capture(), finelineNbrCaptor.capture(), Mockito.any());
+        verify(replenishmentMapper, Mockito.times(1)).mapReplenishmentLvl2Sp(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+        verify(replenishmentMapper).mapReplenishmentLvl2Sp(replenishmentResponseDTOArgumentCaptor.capture(), replenishmentResponseArgumentCaptor.capture(), finelineNbrCaptor.capture(), Mockito.any());
         ReplenishmentResponseDTO replenishmentResponseDTO = replenishmentResponseDTOArgumentCaptor.getValue();
         ReplenishmentResponse replenishmentResponse1 = replenishmentResponseArgumentCaptor.getValue();
         Integer fineLineNbr = finelineNbrCaptor.getValue();
@@ -458,8 +467,8 @@ class ReplenishmentServiceTest {
         when(fineLineReplenishmentRepository
                 .getByPlanChannel(12l, 1)).thenReturn(replenishmentResponseDTOS);
         ReplenishmentResponse replenishmentResponse = replenishmentService1.fetchFinelineReplenishment(replenishmentRequest);
-        Mockito.verify(replenishmentMapper, Mockito.times(1)).mapReplenishmentLvl2Sp(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
-        Mockito.verify(replenishmentMapper).mapReplenishmentLvl2Sp(replenishmentResponseDTOArgumentCaptor.capture(), replenishmentResponseArgumentCaptor.capture(), finelineNbrCaptor.capture(), Mockito.any());
+        verify(replenishmentMapper, Mockito.times(1)).mapReplenishmentLvl2Sp(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+        verify(replenishmentMapper).mapReplenishmentLvl2Sp(replenishmentResponseDTOArgumentCaptor.capture(), replenishmentResponseArgumentCaptor.capture(), finelineNbrCaptor.capture(), Mockito.any());
         ReplenishmentResponseDTO replenishmentResponseDTO = replenishmentResponseDTOArgumentCaptor.getValue();
         ReplenishmentResponse replenishmentResponse1 = replenishmentResponseArgumentCaptor.getValue();
         Integer fineLineNbr = finelineNbrCaptor.getValue();
@@ -483,8 +492,8 @@ class ReplenishmentServiceTest {
         when(spCustomerChoiceReplenishmentRepository
                 .getReplenishmentByPlanChannelFineline(12l, 1, 1021)).thenReturn(replenishmentResponseDTOS);
         ReplenishmentResponse replenishmentResponse = replenishmentService1.fetchCcReplenishment(replenishmentRequest);
-        Mockito.verify(replenishmentMapper, Mockito.times(1)).mapReplenishmentLvl2Sp(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
-        Mockito.verify(replenishmentMapper).mapReplenishmentLvl2Sp(replenishmentResponseDTOArgumentCaptor.capture(), replenishmentResponseArgumentCaptor.capture(), finelineNbrCaptor.capture(), Mockito.any());
+        verify(replenishmentMapper, Mockito.times(1)).mapReplenishmentLvl2Sp(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+        verify(replenishmentMapper).mapReplenishmentLvl2Sp(replenishmentResponseDTOArgumentCaptor.capture(), replenishmentResponseArgumentCaptor.capture(), finelineNbrCaptor.capture(), Mockito.any());
         ReplenishmentResponseDTO replenishmentResponseDTO = replenishmentResponseDTOArgumentCaptor.getValue();
         ReplenishmentResponse replenishmentResponse1 = replenishmentResponseArgumentCaptor.getValue();
         Integer fineLineNbr = finelineNbrCaptor.getValue();
@@ -508,8 +517,8 @@ class ReplenishmentServiceTest {
         when(sizeLevelReplenishmentRepository
                 .getReplnFullHierarchyByPlanFineline(12l, 1, 1021)).thenReturn(replenishmentResponseDTOS);
         ReplenishmentResponse replenishmentResponse = replenishmentService1.fetchSizeListReplenishmentFullHierarchy(replenishmentRequest);
-        Mockito.verify(sizeLevelReplenishmentMapper, Mockito.times(1)).mapReplenishmentLvl2Sp(Mockito.any(), Mockito.any(), Mockito.any());
-        Mockito.verify(sizeLevelReplenishmentMapper).mapReplenishmentLvl2Sp(replenishmentResponseDTOArgumentCaptor.capture(), replenishmentResponseArgumentCaptor.capture(), finelineNbrCaptor.capture());
+        verify(sizeLevelReplenishmentMapper, Mockito.times(1)).mapReplenishmentLvl2Sp(Mockito.any(), Mockito.any(), Mockito.any());
+        verify(sizeLevelReplenishmentMapper).mapReplenishmentLvl2Sp(replenishmentResponseDTOArgumentCaptor.capture(), replenishmentResponseArgumentCaptor.capture(), finelineNbrCaptor.capture());
         ReplenishmentResponseDTO replenishmentResponseDTO = replenishmentResponseDTOArgumentCaptor.getValue();
         ReplenishmentResponse replenishmentResponse1 = replenishmentResponseArgumentCaptor.getValue();
         Integer fineLineNbr = finelineNbrCaptor.getValue();
