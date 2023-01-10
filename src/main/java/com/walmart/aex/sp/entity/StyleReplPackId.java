@@ -23,4 +23,8 @@ public class StyleReplPackId implements Serializable
     @Column(name="style_nbr",nullable = false)
     @Convert( converter = CharConverter.class)
     private String styleNbr;
+
+    public StyleReplPackId(FinelineReplPackId finelineReplPackId) {
+        this.finelineReplPackId = finelineReplPackId;
+    }
 }

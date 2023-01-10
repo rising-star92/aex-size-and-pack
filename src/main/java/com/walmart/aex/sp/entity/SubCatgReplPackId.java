@@ -21,4 +21,8 @@ public class SubCatgReplPackId implements Serializable
 
     @Column(name="rpt_lvl_4_nbr",nullable = false)
     private Integer repTLvl4;
+
+    public SubCatgReplPackId(MerchCatgReplPackId merchCatgReplPackId) {
+        this.merchCatgReplPackId = merchCatgReplPackId;
+    }
 }

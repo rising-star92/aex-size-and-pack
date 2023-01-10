@@ -230,14 +230,13 @@ public class UpdateReplnConfigMapper {
 		return totalReplUnits;
 	}
 
-	private Integer getReplenishmentPackCount(Long replenishmentUnits, Integer vnpk) {
-		Integer replenishmentPackCount = null;
-		if (replenishmentUnits != null && replenishmentUnits != 0 && vnpk != null && vnpk != 0) {
-			replenishmentPackCount = Math.toIntExact((replenishmentUnits / vnpk));
-		}
-		return replenishmentPackCount;
-	}
-
+  public static Integer getReplenishmentPackCount(Integer replenishmentUnits, Integer vnpk) {
+    Integer replenishmentPackCount = null;
+      if (replenishmentUnits != null && replenishmentUnits != 0 && vnpk != null && vnpk != 0) {
+        replenishmentPackCount = (replenishmentUnits / vnpk);
+      }
+    return replenishmentPackCount;
+  }
 
 	private Double getVnpkWhpkRatio(Integer vnpk, Integer whpk) {
 		Double vnwhpkRatio = null;
