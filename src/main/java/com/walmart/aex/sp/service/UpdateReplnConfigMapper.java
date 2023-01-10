@@ -68,7 +68,7 @@ public class UpdateReplnConfigMapper {
 
 			catgReplnPkCons.setVnpkWhpkRatio(getVnpkWhpkRatio(catgReplnPkCons.getVendorPackCnt(), catgReplnPkCons.getWhsePackCnt()));
 			catgReplnPkCons.setReplUnits(Math.toIntExact(replUnits));
-			catgReplnPkCons.setReplPackCnt(getReplenishmentPackCount(replUnits, catgReplnPkCons.getVendorPackCnt()));
+			catgReplnPkCons.setReplPackCnt(getReplenishmentPackCount((int)replUnits, catgReplnPkCons.getVendorPackCnt()));
 			udpatedMerchCatgReplPack.add(catgReplnPkCons);
 		});
 
@@ -90,7 +90,7 @@ public class UpdateReplnConfigMapper {
 
 			subCatgReplnPkCons.setVnpkWhpkRatio(getVnpkWhpkRatio(subCatgReplnPkCons.getVendorPackCnt(), subCatgReplnPkCons.getWhsePackCnt()));
 			subCatgReplnPkCons.setReplUnits(Math.toIntExact(replUnits));
-			subCatgReplnPkCons.setReplPackCnt(getReplenishmentPackCount(replUnits, subCatgReplnPkCons.getVendorPackCnt()));
+			subCatgReplnPkCons.setReplPackCnt(getReplenishmentPackCount((int)replUnits, subCatgReplnPkCons.getVendorPackCnt()));
 			updatedSubCatgReplPack.add(subCatgReplnPkCons);
 			totalReplUnits += replUnits;
 		}
@@ -114,7 +114,7 @@ public class UpdateReplnConfigMapper {
 
 			finelieneReplnPkCons.setVnpkWhpkRatio(getVnpkWhpkRatio(finelieneReplnPkCons.getVendorPackCnt(), finelieneReplnPkCons.getWhsePackCnt()));
 			finelieneReplnPkCons.setReplUnits(Math.toIntExact(replUnits));
-			finelieneReplnPkCons.setReplPackCnt(getReplenishmentPackCount(replUnits, finelieneReplnPkCons.getVendorPackCnt()));
+			finelieneReplnPkCons.setReplPackCnt(getReplenishmentPackCount((int)replUnits, finelieneReplnPkCons.getVendorPackCnt()));
 			updatedFinelineReplPack.add(finelieneReplnPkCons);
 			totalReplUnits += replUnits;
 		}
@@ -140,7 +140,7 @@ public class UpdateReplnConfigMapper {
 
 			styleReplnPkCons.setVnpkWhpkRatio(getVnpkWhpkRatio(styleReplnPkCons.getVendorPackCnt(), styleReplnPkCons.getWhsePackCnt()));
 			styleReplnPkCons.setReplUnits(Math.toIntExact(replUnits));
-			styleReplnPkCons.setReplPackCnt(getReplenishmentPackCount(replUnits, styleReplnPkCons.getVendorPackCnt()));
+			styleReplnPkCons.setReplPackCnt(getReplenishmentPackCount((int)replUnits, styleReplnPkCons.getVendorPackCnt()));
 			updatedStyleReplPack.add(styleReplnPkCons);
 			totalReplUnits += replUnits;
 		}
@@ -164,7 +164,7 @@ public class UpdateReplnConfigMapper {
 
 			ccReplnPkCons.setVnpkWhpkRatio(getVnpkWhpkRatio(ccReplnPkCons.getVendorPackCnt(), ccReplnPkCons.getWhsePackCnt()));
 			ccReplnPkCons.setReplUnits(Math.toIntExact(replUnits));
-			ccReplnPkCons.setReplPackCnt(getReplenishmentPackCount(replUnits, ccReplnPkCons.getVendorPackCnt()));
+			ccReplnPkCons.setReplPackCnt(getReplenishmentPackCount((int)replUnits, ccReplnPkCons.getVendorPackCnt()));
 			updatedCcReplPack.add(ccReplnPkCons);
 			totalReplUnits += replUnits;
 		}
@@ -188,7 +188,7 @@ public class UpdateReplnConfigMapper {
 
 			ccMmReplnPkCons.setVnpkWhpkRatio(getVnpkWhpkRatio(ccMmReplnPkCons.getVendorPackCnt(), ccMmReplnPkCons.getWhsePackCnt()));
 			ccMmReplnPkCons.setReplUnits(Math.toIntExact(replUnits));
-			ccMmReplnPkCons.setReplPackCnt(getReplenishmentPackCount(replUnits, ccMmReplnPkCons.getVendorPackCnt()));
+			ccMmReplnPkCons.setReplPackCnt(getReplenishmentPackCount((int)replUnits, ccMmReplnPkCons.getVendorPackCnt()));
 			updatedCcMmReplPack.add(ccMmReplnPkCons);
 			totalReplUnits += replUnits;
 		}
@@ -221,7 +221,7 @@ public class UpdateReplnConfigMapper {
 
 			ccSpReplnCons.setVnpkWhpkRatio(getVnpkWhpkRatio(ccSpReplnCons.getVendorPackCnt(), ccSpReplnCons.getWhsePackCnt()));
 			ccSpReplnCons.setReplUnits(Math.toIntExact(replUnits));
-			ccSpReplnCons.setReplPackCnt(getReplenishmentPackCount(replUnits, ccSpReplnCons.getVendorPackCnt()));
+			ccSpReplnCons.setReplPackCnt(getReplenishmentPackCount((int)replUnits, ccSpReplnCons.getVendorPackCnt()));
 			updatedCcSpMmReplPack.add(ccSpReplnCons);
 			totalReplUnits += replUnits;
 		}
