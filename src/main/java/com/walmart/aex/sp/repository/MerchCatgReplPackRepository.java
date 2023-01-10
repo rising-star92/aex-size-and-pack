@@ -18,8 +18,9 @@ public interface MerchCatgReplPackRepository extends JpaRepository<MerchCatgRepl
             "And crp.merchCatgReplPackId.repTLvl0 = frp.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.repTLvl0 " +
             "And crp.merchCatgReplPackId.repTLvl1 = frp.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.repTLvl1 " +
             "And crp.merchCatgReplPackId.repTLvl2 = frp.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.repTLvl2 " +
+            "And crp.merchCatgReplPackId.fixtureTypeRollupId = frp.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.fixtureTypeRollupId " +
             "where frp.finelineReplPackId.finelineNbr=:finelineNbr and crp.merchCatgReplPackId.planId=:planId " +
             "and crp.merchCatgReplPackId.channelId=1")
-    Optional<MerchCatgReplPack> findByPlanIdAndFinelineNbr(@Param("planId") Long planId,@Param("finelineNbr") Integer finelineNbr);
+    Optional<List<MerchCatgReplPack>> findByPlanIdAndFinelineNbr(@Param("planId") Long planId,@Param("finelineNbr") Integer finelineNbr);
 
 }

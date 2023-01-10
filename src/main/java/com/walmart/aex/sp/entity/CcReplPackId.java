@@ -23,4 +23,8 @@ public class CcReplPackId implements Serializable
     @Column(name="customer_choice",nullable = false)
     @Convert( converter = CharConverter.class)
     private String customerChoice;
+
+   public CcReplPackId(StyleReplPackId styleReplPackId) {
+      this.styleReplPackId = styleReplPackId;
+   }
 }
