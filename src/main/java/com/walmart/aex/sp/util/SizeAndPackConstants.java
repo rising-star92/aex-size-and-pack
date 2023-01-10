@@ -31,5 +31,5 @@ public class SizeAndPackConstants {
     public static final String INCORRECT_ACTION_MSG = "Incorrect Action passed";
     public static final String COLOR_COMBINATION_MISSING_MSG = "Color Combinations are missing";
     public static final String COLOR_COMBINATION_EXIST_MSG = "Color Combination already exist";
-
+    public static final String API_TOKEN_KEY ="ApiTokenKey";
 }
