@@ -21,4 +21,8 @@ public class FinelineReplPackId implements Serializable
 
     @Column(name="fineline_nbr",nullable = false)
     private Integer finelineNbr;
+
+    public FinelineReplPackId(SubCatgReplPackId subCatgReplPackId) {
+        this.subCatgReplPackId = subCatgReplPackId;
+    }
 }

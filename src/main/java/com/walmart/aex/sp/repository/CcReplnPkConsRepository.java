@@ -1,7 +1,9 @@
 package com.walmart.aex.sp.repository;
 
-import com.walmart.aex.sp.entity.CcReplPack;
-import com.walmart.aex.sp.entity.CcReplPackId;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -9,9 +11,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import com.walmart.aex.sp.entity.CcReplPack;
+import com.walmart.aex.sp.entity.CcReplPackId;
 
 @Repository
 public interface CcReplnPkConsRepository extends JpaRepository <CcReplPack, CcReplPackId> {
@@ -29,7 +30,7 @@ public interface CcReplnPkConsRepository extends JpaRepository <CcReplPack, CcRe
 			"and crp.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.planId=:planId " +
 			"and crp.ccReplPackId.customerChoice=:ccId " +
 			"and crp.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId=1")
-	Optional<CcReplPack> findByPlanIdAndCCId(@Param("planId")  Long planId, @Param("finelineNbr")  Integer finelineNbr,@Param("ccId")  String ccId);
+	Optional<List<CcReplPack>> findByPlanIdAndCCId(@Param("planId")  Long planId, @Param("finelineNbr")  Integer finelineNbr,@Param("ccId")  String ccId);
 
 	@Transactional
 	@Modifying(clearAutomatically = true, flushAutomatically = true)

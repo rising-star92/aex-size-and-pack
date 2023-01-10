@@ -26,12 +26,9 @@ public interface CcMmReplnPkConsRepository extends JpaRepository <CcMmReplPack, 
 			"csmrp.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.planId=:planId " +
 			"and  csmrp.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.finelineNbr=:fineline " +
 			"and  csmrp.ccMmReplPackId.ccReplPackId.customerChoice=:customerChoice " +
-			"and  csmrp.ccMmReplPackId.merchMethodCode=:merchMethodDesc " +
-			"and  csmrp.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.fixtureTypeRollupId=:fixtureId " +
 			"and csmrp.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId=1" +
 			"")
-	Optional<CcMmReplPack> findCcMmReplnPkConsData(@Param("planId")Long planId, @Param("fineline") Integer fineline, @Param("customerChoice") String customerChoice,
-												  @Param("merchMethodDesc") Integer merchMethodDesc, @Param("fixtureId") Integer fixtureId);
+	Optional<List<CcMmReplPack>> findCcMmReplnPkConsData(@Param("planId")Long planId, @Param("fineline") Integer fineline, @Param("customerChoice") String customerChoice);
 
 	@Transactional
 	@Modifying(clearAutomatically = true, flushAutomatically = true)

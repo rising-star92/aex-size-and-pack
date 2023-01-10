@@ -38,13 +38,11 @@ public interface CcSpReplnPkConsRepository extends JpaRepository<CcSpMmReplPack,
             "csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.planId=:planId " +
             "and  csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.finelineNbr=:fineline " +
             "and  csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.customerChoice=:customerChoice " +
-            "and  csmrp.ccSpReplPackId.ccMmReplPackId.merchMethodCode=:merchMethodDesc " +
-            "and  csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.fixtureTypeRollupId=:fixtureId " +
             "and  csmrp.sizeDesc=:sizeDesc " +
             "and csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId=1" +
             "")
-    Optional<CcSpMmReplPack> findCcSpMmReplnPkConsData(@Param("planId")Long planId, @Param("fineline") Integer fineline, @Param("customerChoice") String customerChoice,
-                                                       @Param("merchMethodDesc") Integer merchMethodDesc, @Param("fixtureId") Integer fixtureId, @Param("sizeDesc") String sizeDesc);
+    Optional<List<CcSpMmReplPack>> findCcSpMmReplnPkConsData(@Param("planId")Long planId, @Param("fineline") Integer fineline, @Param("customerChoice") String customerChoice,
+                                                       @Param("sizeDesc") String sizeDesc);
 
     @Query(value = "select new com.walmart.aex.sp.dto.packoptimization.DCInboundResponse(scp.subCatPlanId.merchCatPlanId.planId, scp.subCatPlanId.merchCatPlanId.lvl0Nbr, " +
             " scp.lvl0Desc , " +

@@ -28,6 +28,7 @@ public interface SubCatgReplnPkConsRepository extends JpaRepository<SubCatgReplP
             "And crp.subCatgReplPackId.merchCatgReplPackId.repTLvl0 = frp.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.repTLvl0 " +
             "And crp.subCatgReplPackId.merchCatgReplPackId.repTLvl1 = frp.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.repTLvl1 " +
             "And crp.subCatgReplPackId.merchCatgReplPackId.repTLvl2 = frp.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.repTLvl2 " +
+            "And crp.subCatgReplPackId.merchCatgReplPackId.fixtureTypeRollupId = frp.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.fixtureTypeRollupId " +
             "where frp.finelineReplPackId.finelineNbr=:finelineNbr and crp.subCatgReplPackId.merchCatgReplPackId.planId=:planId and crp.subCatgReplPackId.merchCatgReplPackId.channelId=1")
-    Optional<SubCatgReplPack> findByPlanIdAndFinelineNbr(@Param("planId")  Long planId, @Param("finelineNbr")  Integer finelineNbr);
+    Optional<List<SubCatgReplPack>> findByPlanIdAndFinelineNbr(@Param("planId")  Long planId, @Param("finelineNbr")  Integer finelineNbr);
 }

@@ -24,5 +24,5 @@ public interface FinelineReplnPkConsRepository extends JpaRepository <FinelineRe
                                                     @Param("lvl4Nbr") Integer lvl4Nbr, @Param("fineline") Integer fineline);
     @Query(value="select frp from FinelineReplPack frp " +
             "where frp.finelineReplPackId.finelineNbr=:finelineNbr and frp.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.planId=:planId and frp.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId=1")
-    Optional<FinelineReplPack> findByPlanIdAndFinelineNbr(@Param("planId") Long planId,@Param("finelineNbr") Integer finelineNbr);
+    Optional<List<FinelineReplPack>> findByPlanIdAndFinelineNbr(@Param("planId") Long planId,@Param("finelineNbr") Integer finelineNbr);
 }
