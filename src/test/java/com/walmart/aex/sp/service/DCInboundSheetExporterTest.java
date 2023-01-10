@@ -1,26 +1,22 @@
 package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.packoptimization.DCInboundExcelResponse;
-import com.walmart.aex.sp.dto.packoptimization.DCInboundResponse;
 import com.walmart.aex.sp.dto.packoptimization.DCinboundReplenishment;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@ExtendWith(MockitoExtension.class)
 public class DCInboundSheetExporterTest {
 
     @InjectMocks
@@ -31,6 +27,11 @@ public class DCInboundSheetExporterTest {
     CellStyle cellStyle;
     @Mock
     Row row;
+
+    @BeforeEach
+    public void init() {
+        MockitoAnnotations.openMocks(this);
+    }
 
     @Test
     void testAddReplenishmentUnitsCell() {
@@ -44,7 +45,7 @@ public class DCInboundSheetExporterTest {
         Mockito.doReturn("FYE2023WK44").when(dcInboundSheetExporter).getHeaderName(++currColCount);
         Mockito.doNothing().when(dcInboundSheetExporter).createCell(row,1,100,cellStyle);
         dcInboundSheetExporter.addReplenishmentUnitsCell(cellStyle,getDCInboundExcelResponseDTO(),row,columnCount);
-        assertTrue(currColCount==1);
+        assertEquals(1, currColCount);
     }
     private List<DCInboundExcelResponse> getDCInboundExcelResponseList(){
         List<DCInboundExcelResponse> dcInboundExcelResponseList = new ArrayList<>();

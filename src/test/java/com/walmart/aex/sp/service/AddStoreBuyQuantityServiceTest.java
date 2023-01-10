@@ -3,22 +3,35 @@ package com.walmart.aex.sp.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.assortproduct.RFASizePackData;
-import com.walmart.aex.sp.dto.bqfp.*;
-import com.walmart.aex.sp.dto.buyquantity.*;
+import com.walmart.aex.sp.dto.bqfp.BQFPResponse;
+import com.walmart.aex.sp.dto.buyquantity.AddStoreBuyQuantity;
+import com.walmart.aex.sp.dto.buyquantity.BumpSetQuantity;
+import com.walmart.aex.sp.dto.buyquantity.BuyQtyObj;
+import com.walmart.aex.sp.dto.buyquantity.BuyQtyStoreObj;
+import com.walmart.aex.sp.dto.buyquantity.CustomerChoiceDto;
+import com.walmart.aex.sp.dto.buyquantity.SizeDto;
+import com.walmart.aex.sp.dto.buyquantity.StoreQuantity;
+import com.walmart.aex.sp.dto.buyquantity.StyleDto;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
 import com.walmart.aex.sp.properties.BuyQtyProperties;
-import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
 class AddStoreBuyQuantityServiceTest {
@@ -63,8 +76,8 @@ class AddStoreBuyQuantityServiceTest {
         Mockito.when(buyQtyProperties.getInitialThreshold()).thenReturn(2);
         addStoreBuyQuantityService.addStoreBuyQuantities(addStoreBuyQuantity,buyQtyObj);
         StoreQuantity storeQuantity = buyQtyObj.getBuyQtyStoreObj().getBuyQuantities().get(0);
-        Assertions.assertEquals(1050.0, storeQuantity.getTotalUnits());
-        Assertions.assertEquals(10.0, storeQuantity.getIsUnits());
+        assertEquals(1050.0, storeQuantity.getTotalUnits());
+        assertEquals(10.0, storeQuantity.getIsUnits());
     }
 
     @Test
@@ -78,7 +91,7 @@ class AddStoreBuyQuantityServiceTest {
         AddStoreBuyQuantity addStoreBuyQuantity = getAddStoreBuyQuantities(bqfpResponse, getStyleDTO(), getMerchMethodsDto(), getSizeDTO(), rfaSizePackDataList, getCustomerChoiceDTO());
         addStoreBuyQuantityService.addStoreBuyQuantities(addStoreBuyQuantity, buyQtyObj);
         BuyQtyStoreObj buyQtyStoreObj = buyQtyObj.getBuyQtyStoreObj();
-        Assert.assertEquals(0, buyQtyStoreObj.getBuyQuantities().size());
+        assertEquals(0, buyQtyStoreObj.getBuyQuantities().size());
     }
 
 
@@ -95,8 +108,8 @@ class AddStoreBuyQuantityServiceTest {
         Mockito.when(buyQtyProperties.getInitialThreshold()).thenReturn(2);
         addStoreBuyQuantityService.addStoreBuyQuantities(addStoreBuyQuantity,buyQtyObj);
         StoreQuantity storeQuantity = buyQtyObj.getBuyQtyStoreObj().getBuyQuantities().get(0);
-        Assertions.assertEquals(4.0, storeQuantity.getTotalUnits());
-        Assertions.assertEquals(2.0, storeQuantity.getIsUnits());
+        assertEquals(4.0, storeQuantity.getTotalUnits());
+        assertEquals(2.0, storeQuantity.getIsUnits());
     }
 
     @Test
@@ -112,8 +125,8 @@ class AddStoreBuyQuantityServiceTest {
         Mockito.when(buyQtyProperties.getInitialThreshold()).thenReturn(2);
         addStoreBuyQuantityService.addStoreBuyQuantities(addStoreBuyQuantity,buyQtyObj);
         StoreQuantity storeQuantity = buyQtyObj.getBuyQtyStoreObj().getBuyQuantities().get(1);
-        Assertions.assertEquals(2.0, storeQuantity.getTotalUnits());
-        Assertions.assertEquals(2.0, storeQuantity.getIsUnits());
+        assertEquals(2.0, storeQuantity.getTotalUnits());
+        assertEquals(2.0, storeQuantity.getIsUnits());
     }
 
     @Test
@@ -129,8 +142,8 @@ class AddStoreBuyQuantityServiceTest {
         Mockito.when(buyQtyProperties.getInitialThreshold()).thenReturn(2);
         addStoreBuyQuantityService.addStoreBuyQuantities(addStoreBuyQuantity,buyQtyObj);
         StoreQuantity storeQuantity = buyQtyObj.getBuyQtyStoreObj().getBuyQuantities().get(0);
-        Assertions.assertEquals(0.0, storeQuantity.getTotalUnits());
-        Assertions.assertEquals(0.0, storeQuantity.getIsUnits());
+        assertEquals(0.0, storeQuantity.getTotalUnits());
+        assertEquals(0.0, storeQuantity.getIsUnits());
     }
 
     @Test
@@ -146,8 +159,8 @@ class AddStoreBuyQuantityServiceTest {
         Mockito.when(buyQtyProperties.getInitialThreshold()).thenReturn(2);
         addStoreBuyQuantityService.addStoreBuyQuantities(addStoreBuyQuantity,buyQtyObj);
         StoreQuantity storeQuantity = buyQtyObj.getBuyQtyStoreObj().getBuyQuantities().get(0);
-        Assertions.assertEquals(0.0, storeQuantity.getTotalUnits());
-        Assertions.assertEquals(0.0, storeQuantity.getIsUnits());
+        assertEquals(0.0, storeQuantity.getTotalUnits());
+        assertEquals(0.0, storeQuantity.getIsUnits());
     }
 
     @Test
@@ -163,11 +176,11 @@ class AddStoreBuyQuantityServiceTest {
         Mockito.when(buyQtyProperties.getInitialThreshold()).thenReturn(2);
         addStoreBuyQuantityService.addStoreBuyQuantities(addStoreBuyQuantity,buyQtyObj);
         StoreQuantity storeQuantity = buyQtyObj.getBuyQtyStoreObj().getBuyQuantities().get(0);
-        Assertions.assertEquals(6.0, storeQuantity.getTotalUnits());
-        Assertions.assertEquals(3.0, storeQuantity.getIsUnits());
+        assertEquals(6.0, storeQuantity.getTotalUnits());
+        assertEquals(3.0, storeQuantity.getIsUnits());
         BumpSetQuantity bumpSetQuantity = storeQuantity.getBumpSets().get(0);
-        Assertions.assertEquals(9062.0, bumpSetQuantity.getBsUnits());
-        Assertions.assertEquals(18124.0, bumpSetQuantity.getTotalUnits());
+        assertEquals(9062.0, bumpSetQuantity.getBsUnits());
+        assertEquals(18124.0, bumpSetQuantity.getTotalUnits());
     }
 
     private AddStoreBuyQuantity getAddStoreBuyQuantities(BQFPResponse bqfpResponse, StyleDto styleDto, MerchMethodsDto merchMethodsDto, SizeDto sizeDto, List<RFASizePackData> rfaSizePackDataList, CustomerChoiceDto customerChoiceDto) throws IOException {
@@ -187,7 +200,7 @@ class AddStoreBuyQuantityServiceTest {
             return objectMapper.readValue(json, CustomerChoiceDto.class);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
-            Assert.fail("Something happened deserializing store object");
+            Assertions.fail("Something happened deserializing store object");
         }
         return null;
     }
@@ -197,7 +210,7 @@ class AddStoreBuyQuantityServiceTest {
             return objectMapper.readValue(json, BuyQtyObj.class);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
-            Assert.fail("Something happened deserializing store object");
+            Assertions.fail("Something happened deserializing store object");
         }
         return null;
     }
@@ -220,7 +233,7 @@ class AddStoreBuyQuantityServiceTest {
             return objectMapper.readValue(sizeJson, SizeDto.class);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
-            Assert.fail("Something happened deserializing store object");
+            Assertions.fail("Something happened deserializing store object");
         }
         return null;
     }
@@ -239,7 +252,7 @@ class AddStoreBuyQuantityServiceTest {
             return objectMapper.readValue(styleJson, StyleDto.class);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
-            Assert.fail("Something happened deserializing store object");
+            Assertions.fail("Something happened deserializing store object");
         }
         return null;
     }
@@ -256,7 +269,7 @@ class AddStoreBuyQuantityServiceTest {
             return objectMapper.readValue(json, RFASizePackData.class);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
-            Assert.fail("Something happened deserializing store object");
+            Assertions.fail("Something happened deserializing store object");
         }
         return null;
     }

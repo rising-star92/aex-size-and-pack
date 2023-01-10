@@ -2,23 +2,29 @@ package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.packoptimization.CustomerChoice;
 import com.walmart.aex.sp.dto.packoptimization.Fineline;
-import com.walmart.aex.sp.dto.planhierarchy.*;
+import com.walmart.aex.sp.dto.planhierarchy.Lvl1;
+import com.walmart.aex.sp.dto.planhierarchy.Lvl2;
+import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
+import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
+import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDTO;
+import com.walmart.aex.sp.dto.planhierarchy.Style;
 import com.walmart.aex.sp.entity.MerchCatPlan;
 import com.walmart.aex.sp.repository.MerchCatPlanRepository;
 import com.walmart.aex.sp.util.SizeAndPackTest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.MockitoAnnotations;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doReturn;
 
-@ExtendWith(MockitoExtension.class)
 public class SizeAndPackDeletePlanServiceTest {
 
     @InjectMocks
@@ -26,6 +32,11 @@ public class SizeAndPackDeletePlanServiceTest {
 
     @Mock
     private MerchCatPlanRepository merchCatPlanRepository;
+
+    @BeforeEach
+    public void init() {
+        MockitoAnnotations.openMocks(this);
+    }
 
     @Test
     void testUpdateMerchCatPlan() {
@@ -74,7 +85,7 @@ public class SizeAndPackDeletePlanServiceTest {
                 .when(merchCatPlanRepository).findMerchCatPlanByMerchCatPlanId_planIdAndMerchCatPlanId_lvl0NbrAndMerchCatPlanId_lvl1NbrAndMerchCatPlanId_lvl2NbrAndMerchCatPlanId_lvl3Nbr(471l, 50000, 34,6419,12228);
         //Act
         Set<MerchCatPlan> merchCatPlanSet= sizeAndPackDeletePlanService.updateMerchCatPlan(request,lvl1,lvl2,lvl3,fineline,merchCatPlanRepository);
-        assertTrue(merchCatPlanSet.size()==0);
+        assertEquals(0, merchCatPlanSet.size());
     }
 
 

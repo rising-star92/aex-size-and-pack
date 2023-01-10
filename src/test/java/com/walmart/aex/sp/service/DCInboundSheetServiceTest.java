@@ -4,23 +4,23 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.walmart.aex.sp.dto.packoptimization.DCInboundExcelResponse;
 import com.walmart.aex.sp.dto.packoptimization.DCInboundResponse;
 import com.walmart.aex.sp.repository.CcSpReplnPkConsRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
 public class DCInboundSheetServiceTest {
     @InjectMocks
     private DCInboundSheetService dcInboundSheetService;
@@ -30,6 +30,11 @@ public class DCInboundSheetServiceTest {
     private CcSpReplnPkConsRepository ccSpReplnPkConsRepository;
     private static final Long planId=471l;
     private static final String channelDesc="Store";
+
+    @BeforeEach
+    public void init() {
+        MockitoAnnotations.openMocks(this);
+    }
     @Test
     void testGetDCInboundExcelSheet() throws JsonProcessingException {
         //Arrange
@@ -43,8 +48,8 @@ public class DCInboundSheetServiceTest {
 
         // Assert
         assertNotNull(dcInboundExcelData);
-        assertTrue(dcInboundExcelData.size()==1);
-        assertTrue(dcInboundExcelData.get(0).getReplenishment().size()==1);
+        assertEquals(1, dcInboundExcelData.size());
+        assertEquals(1, dcInboundExcelData.get(0).getReplenishment().size());
     }
 
     @Test
@@ -77,7 +82,7 @@ public class DCInboundSheetServiceTest {
 
         // Assert
         assertNotNull(dcInboundExcelData);
-        assertTrue(dcInboundExcelData.size()==1);
+        assertEquals(1, dcInboundExcelData.size());
         assertNull(dcInboundExcelData.get(0).getReplenishment());
     }
 

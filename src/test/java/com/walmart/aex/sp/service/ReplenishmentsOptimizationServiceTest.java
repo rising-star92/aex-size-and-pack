@@ -2,26 +2,23 @@ package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.bqfp.Replenishment;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@RunWith(SpringJUnit4ClassRunner.class)
 @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
 @Slf4j
 public class ReplenishmentsOptimizationServiceTest {
 
     private ReplenishmentsOptimizationService replenishmentsOptimizationService;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         replenishmentsOptimizationService = new ReplenishmentsOptimizationService();
     }

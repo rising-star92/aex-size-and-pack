@@ -1,26 +1,37 @@
 package com.walmart.aex.sp.service;
 
-import static org.junit.Assert.*;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.walmart.aex.sp.entity.*;
-import com.walmart.aex.sp.repository.*;
+import com.walmart.aex.sp.dto.packoptimization.isbpqty.CustomerChoices;
+import com.walmart.aex.sp.dto.packoptimization.isbpqty.Fixtures;
+import com.walmart.aex.sp.dto.packoptimization.isbpqty.ISAndBPQtyDTO;
+import com.walmart.aex.sp.dto.packoptimization.isbpqty.Size;
+import com.walmart.aex.sp.entity.CcMmReplPack;
+import com.walmart.aex.sp.entity.CcReplPack;
+import com.walmart.aex.sp.entity.CcSpMmReplPack;
+import com.walmart.aex.sp.entity.FinelineReplPack;
+import com.walmart.aex.sp.entity.MerchCatgReplPack;
+import com.walmart.aex.sp.entity.StyleReplPack;
+import com.walmart.aex.sp.entity.SubCatgReplPack;
+import com.walmart.aex.sp.repository.CcMmReplnPkConsRepository;
+import com.walmart.aex.sp.repository.CcReplnPkConsRepository;
+import com.walmart.aex.sp.repository.CcSpReplnPkConsRepository;
+import com.walmart.aex.sp.repository.FinelineReplnPkConsRepository;
+import com.walmart.aex.sp.repository.MerchCatgReplPackRepository;
+import com.walmart.aex.sp.repository.StyleReplnPkConsRepository;
+import com.walmart.aex.sp.repository.SubCatgReplnPkConsRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
-
-import com.walmart.aex.sp.dto.packoptimization.isbpqty.CustomerChoices;
-import com.walmart.aex.sp.dto.packoptimization.isbpqty.Fixtures;
-import com.walmart.aex.sp.dto.packoptimization.isbpqty.ISAndBPQtyDTO;
-import com.walmart.aex.sp.dto.packoptimization.isbpqty.Size;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
 public class PostPackOptimizationServiceTest {
