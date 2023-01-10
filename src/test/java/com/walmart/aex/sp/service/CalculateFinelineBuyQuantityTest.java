@@ -492,22 +492,4 @@ class CalculateFinelineBuyQuantityTest {
         assertEquals(expectedTotalFix1InitialSetQty, (int) fixture1.getInitialSetQty(), "Fixture 1 Initial Set Qty rollup should be sum of all size values");
     }
 
-   @Test
-   public void test() throws IOException, SizeAndPackException {
-      final String path = "/plan12fineline2839";
-      BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
-      APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
-      BuyQtyResponse buyQtyResponse = buyQtyResponseFromJson(path.concat("/BuyQtyResponse"));
-      Mockito.when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
-      Mockito.when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
-      Mockito.when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
-      CalculateBuyQtyRequest request = create("store", 50000, 34, 6419, 12228, 31508, 2839);
-      CalculateBuyQtyParallelRequest pRequest = createFromRequest(request);
-
-      CalculateBuyQtyResponse r = new CalculateBuyQtyResponse();
-      r.setMerchCatgReplPacks(new ArrayList<>());
-      r.setSpFineLineChannelFixtures(new ArrayList<>());
-
-      CalculateBuyQtyResponse response = calculateFinelineBuyQuantity.calculateFinelineBuyQty(request, pRequest, r);
-   }
 }
