@@ -15,10 +15,10 @@ import com.walmart.aex.sp.repository.FineLineReplenishmentRepository;
 import com.walmart.aex.sp.repository.SpFineLineChannelFixtureRepository;
 import com.walmart.aex.sp.repository.StyleReplenishmentRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -41,8 +41,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
@@ -133,7 +133,7 @@ class CalculateFinelineBuyQuantityTest {
                 .get().getSpCustomerChoiceChannelFixture().stream().findFirst()
                 .get().getSpCustomerChoiceChannelFixtureSize();
 
-        assertEquals("Fixture 1 Should have 6 sizes present", 6, fixture1Sizes.size());
+        assertEquals(6, fixture1Sizes.size(), "Fixture 1 Should have 6 sizes present");
         int fix1xs = 6593;
         int fix1s = 17556;
         int fix1m = 30790;
@@ -147,7 +147,7 @@ class CalculateFinelineBuyQuantityTest {
         assertUnitValueBySize(fixture1Sizes, "L", fix1l, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
         assertUnitValueBySize(fixture1Sizes, "XL", fix1xl, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
         assertUnitValueBySize(fixture1Sizes, "XXL", fix1xxl, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
-        assertEquals("Fixture 1 Initial Set Qty rollup should be sum of all size values", expectedTotalFix1InitialSetQty, (int) fixture1.getInitialSetQty());
+        assertEquals(expectedTotalFix1InitialSetQty, (int) fixture1.getInitialSetQty(), "Fixture 1 Initial Set Qty rollup should be sum of all size values");
     }
 
     @Test
@@ -174,9 +174,9 @@ class CalculateFinelineBuyQuantityTest {
                 .getSpCustomerChoiceChannelFixtureSize());
 
         assertNotNull(response.getMerchCatgReplPacks());
-        assertEquals("Only 1 merch catg repl pack created", 1, response.getMerchCatgReplPacks().size());
-        assertEquals("Repln units should be 19143 for cc", (Integer)19143,
-              response.getMerchCatgReplPacks().get(0).getReplUnits());
+        assertEquals(1, response.getMerchCatgReplPacks().size(), "Only 1 merch catg repl pack created");
+        assertEquals((Integer)19143,
+              response.getMerchCatgReplPacks().get(0).getReplUnits(), "Repln units should be 19143 for cc");
 
     }
 
@@ -209,7 +209,7 @@ class CalculateFinelineBuyQuantityTest {
 
         Set<SpCustomerChoiceChannelFixtureSize> spCCFixSizes = spCCChFix.getSpCustomerChoiceChannelFixtureSize();
 
-        assertEquals("Should have 7 sizes", 7, spCCFixSizes.size());
+        assertEquals(7, spCCFixSizes.size(), "Should have 7 sizes");
         int fix1xs = 786;
         int fix1s = 2004;
         int fix1m = 3544;
@@ -227,7 +227,7 @@ class CalculateFinelineBuyQuantityTest {
         assertUnitValueBySize(spCCFixSizes, "XXXL", fix1xxxl, SpCustomerChoiceChannelFixtureSize::getBumpPackQty);
 
         long actualTotalBumpPackQty = spCCFixSizes.stream().mapToLong(SpCustomerChoiceChannelFixtureSize::getBumpPackQty).sum();
-        assertEquals("Total of all size bump pack qtys should match", expectedTotalBumpPackQtySize, actualTotalBumpPackQty);
+        assertEquals(expectedTotalBumpPackQtySize, actualTotalBumpPackQty, "Total of all size bump pack qtys should match");
         assertBumpSetStoreObject(spCCFixSizes, expectedTotalBumpPackQtySize);
     }
 
@@ -338,8 +338,7 @@ class CalculateFinelineBuyQuantityTest {
                 .mapToLong(value -> (long) value)
                 .sum();
 
-        assertEquals("All bump qtys in store object should total up to expected total",
-                expectedTotalBumpPackUnits, totalBumpPackStoreObjUnits);
+        assertEquals(expectedTotalBumpPackUnits, totalBumpPackStoreObjUnits, "All bump qtys in store object should total up to expected total");
     }
 
     private BuyQtyStoreObj deserialize(String json) {
@@ -347,7 +346,7 @@ class CalculateFinelineBuyQuantityTest {
             return mapper.readValue(json, BuyQtyStoreObj.class);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
-            Assert.fail("Something happened deserializing store object");
+            Assertions.fail("Something happened deserializing store object");
         }
         return null;
     }
@@ -357,18 +356,18 @@ class CalculateFinelineBuyQuantityTest {
             return mapper.readValue(json, BuyQtyObj.class);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
-            Assert.fail("Something happened deserializing store object");
+           Assertions.fail("Something happened deserializing store object");
         }
         return null;
     }
 
     private void assertUnitValueBySize(Set<SpCustomerChoiceChannelFixtureSize> sizes, String sizeDesc, int expectedISQty, Function<SpCustomerChoiceChannelFixtureSize, Integer> unitsFunc) {
         sizes.stream().filter(spccFix -> spccFix.getAhsSizeDesc().equalsIgnoreCase(sizeDesc))
-                .findFirst().ifPresentOrElse(spccFix -> assertFixtureSizeInitialSetValues(spccFix, expectedISQty, unitsFunc), () -> Assert.fail(sizeDesc));
+                .findFirst().ifPresentOrElse(spccFix -> assertFixtureSizeInitialSetValues(spccFix, expectedISQty, unitsFunc), () -> Assertions.fail(sizeDesc));
     }
 
     private void assertFixtureSizeInitialSetValues(SpCustomerChoiceChannelFixtureSize actual, int expectedISQty, Function<SpCustomerChoiceChannelFixtureSize, Integer> unitsFunc) {
-        assertEquals(String.format("Size %s should have correct value", actual.getAhsSizeDesc()), expectedISQty, (int) unitsFunc.apply(actual));
+        assertEquals(expectedISQty, (int) unitsFunc.apply(actual), String.format("Size %s should have correct value", actual.getAhsSizeDesc()));
     }
 
     BQFPResponse bqfpResponseFromJson(String path) throws IOException {
@@ -455,7 +454,7 @@ class CalculateFinelineBuyQuantityTest {
                                                 .findFirst().get();
         Set<SpCustomerChoiceChannelFixtureSize> fixture1Sizes = fixture1.getSpCustomerChoiceChannelFixtureSize();
 
-        assertEquals("Fixture 1 Should have 16 sizes present", 16, fixture1Sizes.size());
+        assertEquals(16, fixture1Sizes.size(), "Fixture 1 Should have 16 sizes present");
         int fix30x30 = 11791;
         int fix40x32 = 11448;
         int fix36x30 = 17443;
@@ -490,6 +489,7 @@ class CalculateFinelineBuyQuantityTest {
         assertUnitValueBySize(fixture1Sizes, "30X32", fix30x32, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
         assertUnitValueBySize(fixture1Sizes, "33X30", fix33x30, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
         assertUnitValueBySize(fixture1Sizes, "32X30", fix32x30, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
-        assertEquals("Fixture 1 Initial Set Qty rollup should be sum of all size values", expectedTotalFix1InitialSetQty, (int) fixture1.getInitialSetQty());
+        assertEquals(expectedTotalFix1InitialSetQty, (int) fixture1.getInitialSetQty(), "Fixture 1 Initial Set Qty rollup should be sum of all size values");
     }
+
 }

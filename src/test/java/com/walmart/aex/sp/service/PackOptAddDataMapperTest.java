@@ -2,22 +2,33 @@ package com.walmart.aex.sp.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.walmart.aex.sp.dto.planhierarchy.*;
+import com.walmart.aex.sp.dto.planhierarchy.Lvl1;
+import com.walmart.aex.sp.dto.planhierarchy.Lvl2;
+import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
+import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDTO;
 import com.walmart.aex.sp.entity.*;
 import com.walmart.aex.sp.repository.MerchCatPlanRepository;
 import com.walmart.aex.sp.repository.MerchPackOptimizationRepository;
-import org.junit.Assert;
-import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-@ExtendWith(MockitoExtension.class)
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 class PackOptAddDataMapperTest {
 
     @InjectMocks
@@ -58,10 +69,10 @@ class PackOptAddDataMapperTest {
         Set<MerchantPackOptimization> merchantPackOptimizationSet = packOptAddDataMapper.setMerchCatPackOpt(planSizeAndPackDTO, lvl1, lvl2, lvl3);
         List<CcPackOptimization> ccPackOptimizations = getCcPackOptimization(merchantPackOptimizationSet);
         CcPackOptimization ccPackOptimization = ccPackOptimizations.get(0);
-        Assert.assertNull(ccPackOptimization.getColorCombination());
-        Assert.assertNull(ccPackOptimization.getOriginCountryName());
-        Assert.assertNull(ccPackOptimization.getFactoryName());
-        Assert.assertNull(ccPackOptimization.getPortOfOriginName());
+        assertNull(ccPackOptimization.getColorCombination());
+        assertNull(ccPackOptimization.getOriginCountryName());
+        assertNull(ccPackOptimization.getFactoryName());
+        assertNull(ccPackOptimization.getPortOfOriginName());
     }
 
     @Test
@@ -76,7 +87,7 @@ class PackOptAddDataMapperTest {
         Set<MerchantPackOptimization> merchantPackOptimizationSet = packOptAddDataMapper.setMerchCatPackOpt(planSizeAndPackDTO, lvl1, lvl2, lvl3);
         List<CcPackOptimization> ccPackOptimizations = getCcPackOptimization(merchantPackOptimizationSet);
         CcPackOptimization ccPackOptimization = ccPackOptimizations.get(0);
-        Assert.assertNull(ccPackOptimization.getColorCombination());
+        assertNull(ccPackOptimization.getColorCombination());
     }
 
     private List<CcPackOptimization> getCcPackOptimization(Set<MerchantPackOptimization> merchantPackOptimizationSet) {

@@ -3,13 +3,15 @@ package com.walmart.aex.sp.service;
 import com.walmart.aex.sp.dto.packoptimization.UpdatePackOptConstraintRequestDTO;
 import com.walmart.aex.sp.entity.*;
 import com.walmart.aex.sp.enums.SinglePackIndicator;
-import com.walmart.aex.sp.repository.*;
+import com.walmart.aex.sp.repository.CcPackOptimizationRepository;
+import com.walmart.aex.sp.repository.FinelinePackOptConsRepository;
+import com.walmart.aex.sp.repository.MerchPackOptimizationRepository;
+import com.walmart.aex.sp.repository.StylePackOptimizationRepository;
+import com.walmart.aex.sp.repository.SubCatgPackOptimizationRepository;
 import com.walmart.aex.sp.repository.common.PackOptimizationCommonRepository;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -18,8 +20,9 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
+import org.junit.jupiter.api.Test;
+import org.mockito.MockitoAnnotations;
 
-@RunWith(MockitoJUnitRunner.class)
 public class UpdatePackOptimizationMapperTest {
     @InjectMocks
     UpdatePackOptimizationMapper pkOptConstMapper;
@@ -35,6 +38,11 @@ public class UpdatePackOptimizationMapperTest {
     StylePackOptimizationRepository stylePackOptimizationRepository;
     @Mock
     FinelinePackOptConsRepository finelinePackOptConsRepository;
+
+    @BeforeEach
+    public void init() {
+        MockitoAnnotations.openMocks(this);
+    }
 
     @Test
     public void testUpdateCategoryPackOptCons() {
