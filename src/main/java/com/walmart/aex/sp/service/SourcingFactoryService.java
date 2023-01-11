@@ -48,7 +48,6 @@ public class SourcingFactoryService {
                     factoryDetailsResponse.setFactoryName(factoryDetailsDTO.getFactoryName());
                     factoryDetailsResponse.setCountry(factoryDetailsDTO.getAddress().getCountry());
                     factoryDetailsResponse.setCountryCode(factoryDetailsDTO.getAddress().getCountryCode());
-                    return factoryDetailsResponse;
                 }
             }
 
@@ -56,7 +55,7 @@ public class SourcingFactoryService {
             log.error("Error connecting with Sourcing Factory service: {}", rce.getMessage());
             throw new CustomException("Unable to reach Sourcing Factory service");
         }
-        return null;
+        return factoryDetailsResponse;
     }
 
     private HttpHeaders getHeaders() {

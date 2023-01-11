@@ -66,7 +66,9 @@ public class SourcingFactoryServiceTest {
         when(properties.getApiTokenKey()).thenReturn("V29vUGlnU29vaWUh");
         when(restTemplate.exchange(anyString(), eq(HttpMethod.GET), any(), eq(FactoryDetailsDTO.class))).thenReturn(response);
         FactoryDetailsResponse result = sourcingFactoryService.callSourcingFactoryForFactoryDetails("36161325");
-        assertNull(result);
+        assertNull(result.getCountry());
+        assertNull(result.getCountryCode());
+        assertNull(result.getFactoryName());
     }
     private FactoryDetailsDTO getFactoryDetails() {
         FactoryDetailsDTO factoryDetailsDTO = new FactoryDetailsDTO();
