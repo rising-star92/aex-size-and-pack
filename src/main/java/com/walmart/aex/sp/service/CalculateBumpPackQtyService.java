@@ -25,6 +25,9 @@ public class CalculateBumpPackQtyService {
             double roundedBSQty = bsPerStoreQty * storeCnt;
             bumpSetQuantity.setTotalUnits(roundedBSQty);
             bumpSetQuantity.setBsUnits(bsPerStoreQty);
+            bumpSetQuantity.setSetNbr(bumpSet.getBumpPackNbr());
+            bumpSetQuantity.setWeekDesc(bumpSet.getWeekDesc());
+            bumpSetQuantity.setWmYearWeek(String.valueOf(bumpSet.getWmYearWeek()));
             bumpPackQuantities.add(bumpSetQuantity);
         });
         return bumpPackQuantities;
