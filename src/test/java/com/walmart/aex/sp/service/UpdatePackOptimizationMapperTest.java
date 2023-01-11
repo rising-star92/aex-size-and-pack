@@ -1,7 +1,6 @@
 package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.packoptimization.UpdatePackOptConstraintRequestDTO;
-import com.walmart.aex.sp.dto.packoptimization.sourcingFactory.Address;
 import com.walmart.aex.sp.dto.packoptimization.sourcingFactory.FactoryDetailsResponse;
 import com.walmart.aex.sp.entity.*;
 import com.walmart.aex.sp.enums.SinglePackIndicator;
