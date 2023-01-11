@@ -1,7 +1,5 @@
 package com.walmart.aex.sp.service;
 
-import com.walmart.aex.sp.dto.packoptimization.RunPackOptRequest;
-import com.walmart.aex.sp.dto.packoptimization.RunPackOptResponse;
 import com.walmart.aex.sp.dto.packoptimization.sourcingFactory.FactoryDetailsDTO;
 import com.walmart.aex.sp.dto.packoptimization.sourcingFactory.FactoryDetailsResponse;
 import com.walmart.aex.sp.exception.CustomException;
