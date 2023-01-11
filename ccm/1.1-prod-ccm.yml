@@ -192,6 +192,36 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "prod"
+  sourcingFactoryServiceConfig:
+    description: "Sourcing Factory Service Config"
+    resolutionPaths:
+      - default: "/envProfile/envName"
+    properties:
+      "sourcingFactory.url":
+        description: "Sourcing Factory Service URL"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "https://gs-factory-api.prod.us.walmart.net/factory.service.Api/Factorydetails/"
+      "sourcingFactory.consumerId":
+        description: "Sourcing Factory Service consumerId"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "ea60868e-72a3-49cd-8f5a-bfabc98c9d3a"
+      "sourcingFactory.name":
+        description: "Sourcing Factory Service name"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "SOURCING_FACTORY_API"
+      "sourcingFactory.apiTokenKey":
+        description: "Sourcing Factory Service API Token Key"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "V29vUGlnU29vaWUh"
+      "sourcingFactory.env":
+        description: "Env for which we want to run the Sourcing Factory Service URL"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "prod"
   graphQlConfig:
     description: "GraphQL Config"
     resolutionPaths:
