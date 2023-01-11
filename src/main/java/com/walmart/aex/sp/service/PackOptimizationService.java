@@ -11,6 +11,7 @@ import com.walmart.aex.sp.dto.packoptimization.PackOptConstraintRequest;
 import com.walmart.aex.sp.dto.packoptimization.PackOptConstraintResponseDTO;
 import com.walmart.aex.sp.dto.packoptimization.PackOptimizationResponse;
 import com.walmart.aex.sp.dto.packoptimization.UpdatePackOptConstraintRequestDTO;
+import com.walmart.aex.sp.dto.packoptimization.sourcingFactory.FactoryDetailsResponse;
 import com.walmart.aex.sp.entity.CcPackOptimization;
 import com.walmart.aex.sp.entity.MerchantPackOptimization;
 import com.walmart.aex.sp.enums.ChannelType;
@@ -23,6 +24,7 @@ import com.walmart.aex.sp.repository.MerchPackOptimizationRepository;
 import com.walmart.aex.sp.repository.StyleCcPackOptConsRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -47,6 +49,7 @@ public class PackOptimizationService {
     private final StyleCcPackOptConsRepository styleCcPackOptConsRepository;
     private final PackOptConstraintMapper packOptConstraintMapper;
     private final CcPackOptimizationRepository ccPackOptimizationRepository;
+    private final SourcingFactoryService sourcingFactoryService;
     private static final String DEFAULT_COLOR_COMBINATION_ID = "0";
     private static final int COLOR_COMBINATION_INCREMENT_VALUE = 1;
 
@@ -58,7 +61,8 @@ public class PackOptimizationService {
                                    PackOptConstraintMapper packOptConstraintMapper,
                                    MerchPackOptimizationRepository merchPackOptimizationRepository,
                                    UpdatePackOptimizationMapper updatePackOptimizationMapper,
-                                   CcPackOptimizationRepository ccPackOptimizationRepository) {
+                                   CcPackOptimizationRepository ccPackOptimizationRepository,
+                                   SourcingFactoryService sourcingFactoryService) {
         this.finelinePackOptimizationRepository = finelinePackOptimizationRepository;
         this.packOptfineplanRepo = packOptfineplanRepo;
         this.packOptimizationMapper = packOptimizationMapper;
@@ -68,6 +72,7 @@ public class PackOptimizationService {
         this.styleCcPackOptConsRepository = styleCcPackOptConsRepository;
         this.packOptConstraintMapper = packOptConstraintMapper;
         this.ccPackOptimizationRepository = ccPackOptimizationRepository;
+        this.sourcingFactoryService = sourcingFactoryService;
     }
 
     public PackOptimizationResponse getPackOptDetails(Long planId, Integer channelId) {
@@ -112,7 +117,8 @@ public class PackOptimizationService {
             log.debug("Check if a MerchCatPackOptimization for planID : {} already exists or not", request.getPlanId().toString());
             List<MerchantPackOptimization> merchantPackOptimizationList = merchPackOptimizationRepository.findMerchantPackOptimizationByMerchantPackOptimizationID_planIdAndMerchantPackOptimizationID_repTLvl3AndChannelText_channelId(request.getPlanId(), request.getLvl3Nbr(), channelId);
             if (!CollectionUtils.isEmpty(merchantPackOptimizationList)) {
-                updatePackOptimizationMapper.updateCategoryPackOptCons(request, merchantPackOptimizationList);
+                FactoryDetailsResponse factoryDetails = getFactoryDetails(request);
+                updatePackOptimizationMapper.updateCategoryPackOptCons(request, merchantPackOptimizationList,factoryDetails);
                 response.setStatus(SUCCESS_STATUS);
             } else {
                 log.warn("MerchCatPackOptimization for planID : {} doesn't exists and therefore cannot update", request.getPlanId().toString());
@@ -124,6 +130,13 @@ public class PackOptimizationService {
         return response;
     }
 
+    private FactoryDetailsResponse getFactoryDetails(UpdatePackOptConstraintRequestDTO request) {
+        FactoryDetailsResponse factoryDetails = null;
+        if(request.getFactoryId()!=null || !request.getFactoryId().isEmpty()){
+            factoryDetails = sourcingFactoryService.callSourcingFactoryForFactoryDetails(request.getFactoryId());
+        }
+        return factoryDetails;
+    }
     private boolean isRequestValid(UpdatePackOptConstraintRequestDTO request) {
         if (request.getLvl3Nbr() == null) {
             log.warn("Invalid Request: Lvl3Nbr cannot be NULL in the request {}", request.toString());

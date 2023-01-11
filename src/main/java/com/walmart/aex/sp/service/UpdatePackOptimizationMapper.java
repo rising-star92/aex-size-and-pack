@@ -20,18 +20,15 @@ public class UpdatePackOptimizationMapper {
     @Autowired
     private final PackOptimizationCommonRepository packOptimizationCommonRepository;
 
-    @Autowired
-    private final SourcingFactoryService sourcingFactoryService;
 
-    public UpdatePackOptimizationMapper(PackOptimizationCommonRepository packOptimizationCommonRepository, SourcingFactoryService sourcingFactoryService) {
+
+    public UpdatePackOptimizationMapper(PackOptimizationCommonRepository packOptimizationCommonRepository) {
         this.packOptimizationCommonRepository = packOptimizationCommonRepository;
-        this.sourcingFactoryService = sourcingFactoryService;
     }
 
-    public void updateCategoryPackOptCons(UpdatePackOptConstraintRequestDTO request, List<MerchantPackOptimization> merchantPackOptimizationList) {
+    public void updateCategoryPackOptCons(UpdatePackOptConstraintRequestDTO request, List<MerchantPackOptimization> merchantPackOptimizationList,FactoryDetailsResponse factoryDetails) {
         log.info("Updating Category pack optimization constraint for lvl3Nbr {} ", request.getLvl3Nbr().toString());
         if (request.getLvl3Nbr()!=null && request.getLvl4Nbr() == null) {
-            FactoryDetailsResponse factoryDetails = getFactoryDetails(request);
             for (MerchantPackOptimization merchantPackOpt : merchantPackOptimizationList) {
                 updateMerchCatgPackOptConstFields(request, merchantPackOpt,factoryDetails);
             }
@@ -41,26 +38,18 @@ public class UpdatePackOptimizationMapper {
                 .stream()
                 .flatMap(catgPackOptCons -> catgPackOptCons.getSubCatgPackOptimization().stream()).collect(Collectors.toList());
         if(!CollectionUtils.isEmpty(subCatgPkOptPkConsList)){
-            updateSubCategoryPackOptCons(request, subCatgPkOptPkConsList,merchantPackOptimizationList);
+            updateSubCategoryPackOptCons(request, subCatgPkOptPkConsList,merchantPackOptimizationList,factoryDetails);
         }
 
     }
 
-    private FactoryDetailsResponse getFactoryDetails(UpdatePackOptConstraintRequestDTO request) {
-        FactoryDetailsResponse factoryDetails = null;
-        if(request.getFactoryId()!=null || !request.getFactoryId().isEmpty()){
-            factoryDetails = sourcingFactoryService.callSourcingFactoryForFactoryDetails(request.getFactoryId());
-        }
-        return factoryDetails;
-    }
 
-    private void updateSubCategoryPackOptCons(UpdatePackOptConstraintRequestDTO request, List<SubCatgPackOptimization> subCatgReplnPkConsList,List<MerchantPackOptimization> merchantPackOptimizationList) {
+    private void updateSubCategoryPackOptCons(UpdatePackOptConstraintRequestDTO request, List<SubCatgPackOptimization> subCatgReplnPkConsList,List<MerchantPackOptimization> merchantPackOptimizationList,FactoryDetailsResponse factoryDetails) {
         log.info("Updating Sub Category pack optimization constraint for planId {} ", request.getPlanId().toString());
         if(request.getLvl4Nbr()!=null){
             subCatgReplnPkConsList = subCatgReplnPkConsList.stream().filter(subCatg-> subCatg.getSubCatgPackOptimizationID().getRepTLvl4().equals(request.getLvl4Nbr())).collect(Collectors.toList());
         }
         if (request.getFinelineNbr() == null) {
-            FactoryDetailsResponse factoryDetails = getFactoryDetails(request);
             for (SubCatgPackOptimization lvl4PackOptCons : subCatgReplnPkConsList) {
                 updateSubCatgPackOptConstFields(request, lvl4PackOptCons,factoryDetails);
             }
@@ -71,16 +60,15 @@ public class UpdatePackOptimizationMapper {
                 .stream()
                 .flatMap(subCatgPackOptCons -> subCatgPackOptCons.getFinelinepackOptimization().stream()).collect(Collectors.toList());
         if(!CollectionUtils.isEmpty(fineLinePkOptPkConsList)){
-            updateFinelinePackOptCons(request, fineLinePkOptPkConsList,merchantPackOptimizationList);
+            updateFinelinePackOptCons(request, fineLinePkOptPkConsList,merchantPackOptimizationList,factoryDetails);
         }
     }
 
-    private void updateFinelinePackOptCons(UpdatePackOptConstraintRequestDTO request, List<FineLinePackOptimization> fineLinePackOptimizationList,List<MerchantPackOptimization> merchantPackOptimizationList) {
+    private void updateFinelinePackOptCons(UpdatePackOptConstraintRequestDTO request, List<FineLinePackOptimization> fineLinePackOptimizationList,List<MerchantPackOptimization> merchantPackOptimizationList,FactoryDetailsResponse factoryDetails) {
         log.info("Updating Fine Line pack optimization constraint for planId {} ", request.getPlanId().toString());
         if(request.getFinelineNbr()!=null){
             fineLinePackOptimizationList = fineLinePackOptimizationList.stream().filter(flPkOpt-> flPkOpt.getFinelinePackOptId().getFinelineNbr().equals(request.getFinelineNbr())).collect(Collectors.toList());
         }
-        FactoryDetailsResponse factoryDetails = getFactoryDetails(request);
         if (request.getStyleNbr() == null) {
             for (FineLinePackOptimization fl : fineLinePackOptimizationList) {
                 updateFlPackOptConstFields(request, fl,factoryDetails);
@@ -92,16 +80,15 @@ public class UpdatePackOptimizationMapper {
                 .stream()
                 .flatMap(fineLinePackOptCons -> fineLinePackOptCons.getStylePackOptimization().stream()).collect(Collectors.toList());
         if(!CollectionUtils.isEmpty(stylePackOptimizationList)){
-            updateStylePackOptCons(request, stylePackOptimizationList,merchantPackOptimizationList);
+            updateStylePackOptCons(request, stylePackOptimizationList,merchantPackOptimizationList,factoryDetails);
         }
     }
 
-    private void updateStylePackOptCons(UpdatePackOptConstraintRequestDTO request, List<StylePackOptimization> stylePackOptimizationList,List<MerchantPackOptimization> merchantPackOptimizationList) {
+    private void updateStylePackOptCons(UpdatePackOptConstraintRequestDTO request, List<StylePackOptimization> stylePackOptimizationList,List<MerchantPackOptimization> merchantPackOptimizationList,FactoryDetailsResponse factoryDetails) {
         log.info("Updating Style pack optimization constraint for planId {} ", request.getPlanId().toString());
         if(request.getStyleNbr()!=null && !request.getStyleNbr().isEmpty()){
             stylePackOptimizationList=stylePackOptimizationList.stream().filter(stPkOpt-> stPkOpt.getStylePackoptimizationId().getStyleNbr().trim().equalsIgnoreCase(request.getStyleNbr().trim())).collect(Collectors.toList());
         }
-        FactoryDetailsResponse factoryDetails = getFactoryDetails(request);
         if (request.getCcId() == null) {
             for (StylePackOptimization st : stylePackOptimizationList) {
                 updateStPackOptConstFields(request, st,factoryDetails);
@@ -114,16 +101,15 @@ public class UpdatePackOptimizationMapper {
                 .stream()
                 .flatMap(stylePackOptCons -> stylePackOptCons.getCcPackOptimization().stream()).collect(Collectors.toList());
         if(!CollectionUtils.isEmpty(ccPackOptimizationList)){
-            updateCcPackOptCons(request, ccPackOptimizationList,merchantPackOptimizationList);
+            updateCcPackOptCons(request, ccPackOptimizationList,merchantPackOptimizationList,factoryDetails);
         }
     }
 
-    private void updateCcPackOptCons(UpdatePackOptConstraintRequestDTO request, List<CcPackOptimization> ccPackOptimizationList,List<MerchantPackOptimization> merchantPackOptimizationList) {
+    private void updateCcPackOptCons(UpdatePackOptConstraintRequestDTO request, List<CcPackOptimization> ccPackOptimizationList,List<MerchantPackOptimization> merchantPackOptimizationList,FactoryDetailsResponse factoryDetails) {
         log.info("Updating Customer choice pack optimization constraint for planId {} ", request.getPlanId().toString());
         if(request.getCcId()!=null && !request.getCcId().isEmpty()){
             ccPackOptimizationList=ccPackOptimizationList.stream().filter(stPkOpt-> stPkOpt.getCcPackOptimizationId().getCustomerChoice().trim().equalsIgnoreCase(request.getCcId().trim())).collect(Collectors.toList());
         }
-        FactoryDetailsResponse factoryDetails = getFactoryDetails(request);
         for (CcPackOptimization cc : ccPackOptimizationList) {
             updateCcPackOptConstFields(request,cc,factoryDetails);
         }

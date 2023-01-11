@@ -1,6 +1,8 @@
 package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.packoptimization.UpdatePackOptConstraintRequestDTO;
+import com.walmart.aex.sp.dto.packoptimization.sourcingFactory.Address;
+import com.walmart.aex.sp.dto.packoptimization.sourcingFactory.FactoryDetailsResponse;
 import com.walmart.aex.sp.entity.*;
 import com.walmart.aex.sp.enums.SinglePackIndicator;
 import com.walmart.aex.sp.repository.*;
@@ -42,8 +44,8 @@ public class UpdatePackOptimizationMapperTest {
         request.setPlanId(12L);
         request.setChannel("store");
         request.setLvl3Nbr(12228);
-
         request.setOriginCountryCode("US");
+
         ChannelText channelText = new ChannelText();
         channelText.setChannelId(1);
         channelText.setChannelDesc("store");
@@ -106,12 +108,17 @@ public class UpdatePackOptimizationMapperTest {
 
         merchantPackOptimization.setSubCatgPackOptimization(subCatgPkOptPkConsList);
         merchantPackOptimizationList.add(merchantPackOptimization);
+
+        FactoryDetailsResponse factoryDetails = new FactoryDetailsResponse();
+        factoryDetails.setCountry("UNITED STATES OF AMERICA");
+        factoryDetails.setCountryCode("US");
+        factoryDetails.setFactoryName("PKG--LA BC");
         when(packOptimizationCommonRepository.getMerchPackOptimizationRepository()).thenReturn(merchPackOptimizationRepository);
         when(packOptimizationCommonRepository.getSubCatgPackOptimizationRepository()).thenReturn(subCatgPackOptimizationRepository);
         when(packOptimizationCommonRepository.getFinelinePackOptConsRepository()).thenReturn(finelinePackOptConsRepository);
         when(packOptimizationCommonRepository.getStylePackOptimizationRepository()).thenReturn(stylePackOptimizationRepository);
         when(packOptimizationCommonRepository.getCcPackOptimizationRepository()).thenReturn(ccPackOptimizationRepository);
-        pkOptConstMapper.updateCategoryPackOptCons(request,merchantPackOptimizationList);
+        pkOptConstMapper.updateCategoryPackOptCons(request,merchantPackOptimizationList,factoryDetails);
         assertEquals("US",merchantPackOptimizationList.get(0).getOriginCountryCode());
         for (SubCatgPackOptimization subcatgOptCons :merchantPackOptimizationList.get(0).getSubCatgPackOptimization()){
             assertEquals("US",subcatgOptCons.getOriginCountryCode());
