@@ -131,7 +131,7 @@ public class PackOptimizationService {
 
     private FactoryDetailsResponse getFactoryDetails(UpdatePackOptConstraintRequestDTO request) {
         FactoryDetailsResponse factoryDetails = null;
-        if(StringUtils.isNotEmpty(request.getFactoryId().trim())){
+        if(StringUtils.isNotEmpty(request.getFactoryId())){
             factoryDetails = sourcingFactoryService.callSourcingFactoryForFactoryDetails(request.getFactoryId());
         }
         return factoryDetails;
