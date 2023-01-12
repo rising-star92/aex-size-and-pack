@@ -85,7 +85,7 @@ public class PackOptimizationService {
 
     }
 
-    public FineLinePackOptimizationResponse getPackOptFinelineDetails(Long planId, Integer finelineNbr) {
+    public FineLinePackOptimizationResponse getPackOptFinelineDetails(Long planId, Integer finelineNbr, Integer bumpPackNbr) {
         FineLinePackOptimizationResponse finelinePackOptimizationResponse = new FineLinePackOptimizationResponse();
 
         try {
@@ -94,7 +94,7 @@ public class PackOptimizationService {
                     .stream()
                     .flatMap(Collection::stream)
                     .forEach(finelinePackOptimizationResponseDTO -> packOptimizationMapper.
-                            mapPackOptimizationFineline(finelinePackOptimizationResponseDTO, finelinePackOptimizationResponse, planId));
+                            mapPackOptimizationFineline(finelinePackOptimizationResponseDTO, finelinePackOptimizationResponse, planId, bumpPackNbr));
 
 
         } catch (Exception e) {

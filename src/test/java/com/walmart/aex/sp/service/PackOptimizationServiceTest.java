@@ -236,12 +236,12 @@ class PackOptimizationServiceTest {
 		fineLinePackOptimizationResponse.setPlanDesc("Black");
 		finelinePackOptimizationResponseList.add(fineLinePackOptimizationResponse);
 		lenient().doNothing().when(packOptimizationMapper).mapPackOptimizationFineline(fineLinePackOptimizationResponse,
-				finelinePackOptimizationResponse, 483l);
+				finelinePackOptimizationResponse, 483l, 1);
 		when(finelinePackOptimizationRepository.getPackOptByFineline(483l, 5147))
 				.thenReturn(finelinePackOptimizationResponseList);
-		finelinePackOptimizationResponse = packOptimizationService.getPackOptFinelineDetails(483l, 5147);
+		finelinePackOptimizationResponse = packOptimizationService.getPackOptFinelineDetails(483l, 5147, 1);
 		Mockito.verify(packOptimizationMapper, Mockito.times(1)).mapPackOptimizationFineline(Mockito.any(),
-				Mockito.any(), Mockito.any());
+				Mockito.any(), Mockito.any(), Mockito.any());
 		assertNotNull(fineLinePackOptimizationResponse);
 	}
 
