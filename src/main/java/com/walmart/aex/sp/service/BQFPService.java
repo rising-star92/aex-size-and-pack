@@ -1,5 +1,6 @@
 package com.walmart.aex.sp.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.bqfp.BQFPRequest;
 import com.walmart.aex.sp.dto.bqfp.BQFPResponse;
 import com.walmart.aex.sp.dto.gql.GraphQLResponse;
@@ -53,6 +54,7 @@ public class BQFPService {
          log.info("BQFP Request: {}", uri);
          final HttpHeaders headers = getHeaders();
          final ResponseEntity<BQFPResponse> respEntity = restTemplate.exchange(uri, HttpMethod.GET, new HttpEntity<>(null, headers), BQFPResponse.class);
+         String message = new ObjectMapper().writeValueAsString(respEntity.getBody());
          if (respEntity.getStatusCode().is2xxSuccessful())
             return respEntity.getBody();
 
@@ -62,6 +64,8 @@ public class BQFPService {
       } catch (RestClientException rce) {
          log.error("Error consuming BQFP service: {}", rce.getMessage());
          throw new CustomException("Unable to reach BQFP Service");
+      } catch (Exception ex) {
+         log.error("Error consuming BQFP service: {}", ex.getMessage());
       }
       return null;
    }

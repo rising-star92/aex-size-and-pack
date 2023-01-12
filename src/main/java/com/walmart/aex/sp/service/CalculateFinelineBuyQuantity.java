@@ -7,7 +7,12 @@ import com.walmart.aex.sp.dto.assortproduct.APResponse;
 import com.walmart.aex.sp.dto.assortproduct.RFASizePackData;
 import com.walmart.aex.sp.dto.bqfp.BQFPRequest;
 import com.walmart.aex.sp.dto.bqfp.BQFPResponse;
+import com.walmart.aex.sp.dto.bqfp.BumpSet;
+import com.walmart.aex.sp.dto.bqfp.Cluster;
+import com.walmart.aex.sp.dto.bqfp.CustomerChoice;
+import com.walmart.aex.sp.dto.bqfp.Fixture;
 import com.walmart.aex.sp.dto.bqfp.Replenishment;
+import com.walmart.aex.sp.dto.bqfp.Style;
 import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
 import com.walmart.aex.sp.entity.*;
@@ -29,8 +34,10 @@ import org.springframework.util.CollectionUtils;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -39,6 +46,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -50,9 +58,6 @@ public class CalculateFinelineBuyQuantity {
     private final StrategyFetchService strategyFetchService;
     private final BuyQtyReplenishmentMapperService buyQtyReplenishmentMapperService;
     private final CalculateOnlineFinelineBuyQuantity calculateOnlineFinelineBuyQuantity;
-    private final SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository;
-    private final StyleReplenishmentRepository styleReplenishmentRepository;
-    private final FineLineReplenishmentRepository fineLineReplenishmentRepository;
     private final AddStoreBuyQuantityService addStoreBuyQuantityService;
     private final BuyQuantityConstraintService buyQuantityConstraintService;
 
@@ -61,9 +66,6 @@ public class CalculateFinelineBuyQuantity {
                                         BuyQtyReplenishmentMapperService buyQtyReplenishmentMapperService,
                                         CalculateOnlineFinelineBuyQuantity calculateOnlineFinelineBuyQuantity,
                                         StrategyFetchService strategyFetchService,
-                                        SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository,
-                                        StyleReplenishmentRepository styleReplenishmentRepository,
-                                        FineLineReplenishmentRepository fineLineReplenishmentRepository,
                                         AddStoreBuyQuantityService addStoreBuyQuantityService,
                                         BuyQuantityConstraintService buyQuantityConstraintService) {
         this.bqfpService = bqfpService;
@@ -71,9 +73,6 @@ public class CalculateFinelineBuyQuantity {
         this.strategyFetchService = strategyFetchService;
         this.buyQtyReplenishmentMapperService = buyQtyReplenishmentMapperService;
         this.calculateOnlineFinelineBuyQuantity = calculateOnlineFinelineBuyQuantity;
-        this.spFineLineChannelFixtureRepository = spFineLineChannelFixtureRepository;
-        this.styleReplenishmentRepository = styleReplenishmentRepository;
-        this.fineLineReplenishmentRepository = fineLineReplenishmentRepository;
         this.addStoreBuyQuantityService = addStoreBuyQuantityService;
         this.buyQuantityConstraintService = buyQuantityConstraintService;
     }
@@ -195,7 +194,69 @@ public class CalculateFinelineBuyQuantity {
             } else log.info("Styles Size Profiles are empty to calculate buy Qty: {}", finelineDto);
             spFineLineChannelFixtures.add(spFineLineChannelFixture);
         });
+        updateSpFineLineChannelFixturesBumpCount(spFineLineChannelFixtures, bqfpResponse, merchCodeMap);
         calculateBuyQtyResponse.setSpFineLineChannelFixtures(spFineLineChannelFixtures);
+    }
+
+    private void updateSpFineLineChannelFixturesBumpCount(List<SpFineLineChannelFixture> spFineLineChannelFixtures,
+                                                          BQFPResponse bqfpResponse,
+                                                          Map<Integer, List<MerchMethodsDto>> merchCodeMap) {
+        Map<Integer, Integer> bumpCountMap = new HashMap<>();
+        Map<Set<Integer>, Integer> merchCodeWithFixtureRollUpMap = new HashMap<>();
+
+        Set<Integer> fixtureTypeRollupIdSet = fetchFixtureRollUps(merchCodeMap.values().stream()
+                .flatMap(Collection::stream));
+
+        for(Map.Entry<Integer, List<MerchMethodsDto>> entry: merchCodeMap.entrySet()) {
+            Set<Integer> merchMethodsDto = fetchFixtureRollUps(merchCodeMap.get(entry.getKey()).stream());
+            merchCodeWithFixtureRollUpMap.put(merchMethodsDto, entry.getKey());
+        }
+
+        for(Integer fixtureTypeRollupId: fixtureTypeRollupIdSet) {
+            int fixtureId = getFixtureValue(merchCodeWithFixtureRollUpMap, fixtureTypeRollupId);
+            int bumpPackCount = getMaxBumpPackCount(bqfpResponse, fixtureTypeRollupId);
+            bumpCountMap.put(fixtureId, bumpPackCount);
+        }
+
+        for (SpFineLineChannelFixture spFineLineChannelFixture: spFineLineChannelFixtures) {
+            spFineLineChannelFixture.setBumpPackCount(bumpCountMap.get(spFineLineChannelFixture
+                    .getSpFineLineChannelFixtureId().getFixtureTypeRollUpId()
+                    .getFixtureTypeRollupId()));
+        }
+    }
+
+    private static int getFixtureValue(Map<Set<Integer>, Integer> merchCodeFixtureRollUpMap, Integer fixtureTypeRollupId) {
+        int fixtureValue = 0;
+        for (Map.Entry<Set<Integer>, Integer> entry: merchCodeFixtureRollUpMap.entrySet()) {
+            if(entry.getKey().contains(fixtureTypeRollupId)) {
+                fixtureValue = entry.getValue();
+                break;
+            }
+        }
+        return fixtureValue;
+    }
+
+    private static int getMaxBumpPackCount(BQFPResponse bqfpResponse, Integer fixtureTypeRollupId) {
+        int bumpPackCount = 0;
+        Optional<Cluster> first = bqfpResponse.getStyles().stream().map(Style::getCustomerChoices)
+                .flatMap(Collection::stream)
+                .map(CustomerChoice::getFixtures)
+                .flatMap(Collection::stream)
+                .filter(val -> val.getFixtureTypeRollupId().equals(fixtureTypeRollupId))
+                .map(Fixture::getClusters)
+                .flatMap(Collection::stream)
+                .max(Comparator.comparing(cluster -> cluster.getBumpList().size()))
+                .stream().findFirst();
+        if(first.isPresent()) {
+            bumpPackCount = first.get().getBumpList().size();
+        }
+        return bumpPackCount;
+    }
+
+    private static Set<Integer> fetchFixtureRollUps(Stream<MerchMethodsDto> merchCodeMap) {
+        return merchCodeMap
+                .map(MerchMethodsDto::getFixtureTypeRollupId)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     private void getStyles(List<StyleDto> styles, List<MerchMethodsDto> merchMethodsDtos, APResponse apResponse, BQFPResponse bqfpResponse, SpFineLineChannelFixture spFineLineChannelFixture,
@@ -246,7 +307,8 @@ public class CalculateFinelineBuyQuantity {
             }
             spCustomerChoiceChannelFixture.setMerchMethodCode(spStyleChannelFixture.getMerchMethodCode());
             if (!CollectionUtils.isEmpty(customerChoiceDto.getClusters())) {
-                getCcClusters(styleDto, customerChoiceDto, merchMethodsDtos, apResponse, bqfpResponse, spCustomerChoiceChannelFixture, calculateBuyQtyResponse, calculateBuyQtyParallelRequest);
+                getCcClusters(styleDto, customerChoiceDto, merchMethodsDtos, apResponse, bqfpResponse,
+                        spCustomerChoiceChannelFixture, calculateBuyQtyResponse, calculateBuyQtyParallelRequest);
             }
             spCustomerChoiceChannelFixtures.add(spCustomerChoiceChannelFixture);
         });

@@ -92,7 +92,32 @@
                     "totalInitialSetUnits": 15804,
                     "totalInitialSetPerStore": null
                   },
-                  "bumpList": []
+                  "bumpList": [
+                    {
+                      "unitPct": null,
+                      "units": 1447,
+                      "weekDesc": "FYE2024WK01    ",
+                      "weeksOfSale": null,
+                      "wmYearWeek": 12301,
+                      "bumpPackNbr": 1
+                    },
+                    {
+                      "unitPct": null,
+                      "units": 1447,
+                      "weekDesc": "FYE2024WK03    ",
+                      "weeksOfSale": null,
+                      "wmYearWeek": 12303,
+                      "bumpPackNbr": 2
+                    },
+                    {
+                      "unitPct": null,
+                      "units": 1241,
+                      "weekDesc": "FYE2024WK04    ",
+                      "weeksOfSale": null,
+                      "wmYearWeek": 12304,
+                      "bumpPackNbr": 3
+                    }
+                  ]
                 }
               ],
               "replenishments": [],
@@ -161,7 +186,40 @@
                     "totalInitialSetUnits": 10692,
                     "totalInitialSetPerStore": null
                   },
-                  "bumpList": []
+                  "bumpList": [
+                    {
+                      "unitPct": null,
+                      "units": 1447,
+                      "weekDesc": "FYE2024WK01    ",
+                      "weeksOfSale": null,
+                      "wmYearWeek": 12301,
+                      "bumpPackNbr": 1
+                    },
+                    {
+                      "unitPct": null,
+                      "units": 1447,
+                      "weekDesc": "FYE2024WK03    ",
+                      "weeksOfSale": null,
+                      "wmYearWeek": 12303,
+                      "bumpPackNbr": 2
+                    },
+                    {
+                      "unitPct": null,
+                      "units": 1241,
+                      "weekDesc": "FYE2024WK04    ",
+                      "weeksOfSale": null,
+                      "wmYearWeek": 12304,
+                      "bumpPackNbr": 3
+                    },
+                    {
+                      "unitPct": null,
+                      "units": 0,
+                      "weekDesc": "    ",
+                      "weeksOfSale": null,
+                      "wmYearWeek": null,
+                      "bumpPackNbr": 4
+                    }
+                  ]
                 },
                 {
                   "analyticsClusterId": 5,
@@ -176,7 +234,32 @@
                     "totalInitialSetUnits": 18504,
                     "totalInitialSetPerStore": null
                   },
-                  "bumpList": []
+                  "bumpList": [
+                    {
+                      "unitPct": null,
+                      "units": 1447,
+                      "weekDesc": "FYE2024WK01    ",
+                      "weeksOfSale": null,
+                      "wmYearWeek": 12301,
+                      "bumpPackNbr": 1
+                    },
+                    {
+                      "unitPct": null,
+                      "units": 1447,
+                      "weekDesc": "FYE2024WK03    ",
+                      "weeksOfSale": null,
+                      "wmYearWeek": 12303,
+                      "bumpPackNbr": 2
+                    },
+                    {
+                      "unitPct": null,
+                      "units": 1241,
+                      "weekDesc": "FYE2024WK04    ",
+                      "weeksOfSale": null,
+                      "wmYearWeek": 12304,
+                      "bumpPackNbr": 3
+                    }
+                  ]
                 }
               ],
               "replenishments": [],
