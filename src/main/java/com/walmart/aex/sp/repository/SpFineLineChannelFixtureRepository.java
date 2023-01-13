@@ -1,6 +1,7 @@
 package com.walmart.aex.sp.repository;
 
 import com.walmart.aex.sp.dto.buyquantity.BuyQntyResponseDTO;
+import com.walmart.aex.sp.dto.buyquantity.FineLineBumpPackCntDto;
 import com.walmart.aex.sp.entity.SpFineLineChannelFixture;
 import com.walmart.aex.sp.entity.SpFineLineChannelFixtureId;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -81,5 +82,12 @@ public interface SpFineLineChannelFixtureRepository extends JpaRepository<SpFine
     @Query(value = "delete from dbo.sp_fl_chan_fixtr where plan_id = :planId and channel_id = :channelId and fineline_nbr in (:finelineNbrs)", nativeQuery = true)
     void deleteByPlanIdFinelineIdChannelId(@Param("planId") Long planId, @Param("channelId") Integer channelId, @Param("finelineNbrs") Set<Integer> finelineNbrs);
 
+    @Query(value = "select new com.walmart.aex.sp.dto.buyquantity.FineLineBumpPackCntDto(" +
+            "sfcf.spFineLineChannelFixtureId.fineLineNbr as fineLineNbr, " +
+            "max(sfcf.bumpPackCount) as bumpPackCount) " +
+            "from SpFineLineChannelFixture as sfcf " +
+            "where sfcf.spFineLineChannelFixtureId.fineLineNbr in (:finelineNbrs) " +
+            "group by sfcf.spFineLineChannelFixtureId.fineLineNbr")
+    List<FineLineBumpPackCntDto> getFineLineBumpPackCntByFineLines(@Param("finelineNbrs") Set<Integer> finelineNbrs);
 
 }
