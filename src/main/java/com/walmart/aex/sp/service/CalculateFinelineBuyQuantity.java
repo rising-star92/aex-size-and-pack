@@ -201,9 +201,18 @@ public class CalculateFinelineBuyQuantity {
     private void updateSpFineLineChannelFixturesBumpCount(List<SpFineLineChannelFixture> spFineLineChannelFixtures,
                                                           BQFPResponse bqfpResponse,
                                                           Map<Integer, List<MerchMethodsDto>> merchCodeMap) {
+
+        Map<Integer, Integer> bumpCountMap = prepareBumpCountMap(bqfpResponse, merchCodeMap);
+        for (SpFineLineChannelFixture spFineLineChannelFixture: spFineLineChannelFixtures) {
+            spFineLineChannelFixture.setBumpPackCount(bumpCountMap.get(spFineLineChannelFixture
+                    .getSpFineLineChannelFixtureId().getFixtureTypeRollUpId()
+                    .getFixtureTypeRollupId()));
+        }
+    }
+
+    private static Map<Integer, Integer> prepareBumpCountMap(BQFPResponse bqfpResponse, Map<Integer, List<MerchMethodsDto>> merchCodeMap) {
         Map<Integer, Integer> bumpCountMap = new HashMap<>();
         Map<Set<Integer>, Integer> merchCodeWithFixtureRollUpMap = new HashMap<>();
-
         Set<Integer> fixtureTypeRollupIdSet = fetchFixtureRollUps(merchCodeMap.values().stream()
                 .flatMap(Collection::stream));
 
@@ -217,12 +226,7 @@ public class CalculateFinelineBuyQuantity {
             int bumpPackCount = getMaxBumpPackCount(bqfpResponse, fixtureTypeRollupId);
             bumpCountMap.put(fixtureId, bumpPackCount);
         }
-
-        for (SpFineLineChannelFixture spFineLineChannelFixture: spFineLineChannelFixtures) {
-            spFineLineChannelFixture.setBumpPackCount(bumpCountMap.get(spFineLineChannelFixture
-                    .getSpFineLineChannelFixtureId().getFixtureTypeRollUpId()
-                    .getFixtureTypeRollupId()));
-        }
+        return bumpCountMap;
     }
 
     private static int getFixtureValue(Map<Set<Integer>, Integer> merchCodeFixtureRollUpMap, Integer fixtureTypeRollupId) {
