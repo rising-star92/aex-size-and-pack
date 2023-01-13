@@ -154,8 +154,11 @@ public class PackOptimizationMapperTest {
 		fineLinePackOptimizationResponseDTO.setColorCombination("offWhite");
 		fineLinePackOptimizationResponseDTO.setSinglePackInd(1);
 		packOptimizationMapper.mapPackOptimizationFineline(fineLinePackOptimizationResponseDTO,fineLinePackOptimizationResponse,471l, 2);
+		log.info("test: {}",fineLinePackOptimizationResponse);
 		assertEquals(123456,fineLinePackOptimizationResponse.getFinelines().get(0).getCustomerChoices().get(0).getFixtures().get(0).getSizes().get(0)
 				.getMetrics().stream().filter(metricsPackDto -> metricsPackDto.getStoreList().contains(0)
 						&& metricsPackDto.getStoreList().contains(8) && metricsPackDto.getStoreList().contains(9)).findFirst().orElse(null).getBumpSet());
+		assertEquals(0,fineLinePackOptimizationResponse.getFinelines().get(0).getCustomerChoices().get(0).getFixtures().get(0).getSizes().get(0)
+				.getMetrics().get(0).getInitialSet());
 	}
 }

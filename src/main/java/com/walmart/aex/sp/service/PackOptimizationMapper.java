@@ -137,6 +137,7 @@ public class PackOptimizationMapper {
 		MetricsPackDto metricsObj = new MetricsPackDto();
 		metricsObj.setClusterId(stObj.getSizeCluster());
 		metricsObj.setStoreList(stObj.getStoreList());
+		metricsObj.setBumpSet(0);
 		if (null!=bumpPackNbr && bumpPackNbr>1) {
 			metricsObj.setInitialSet(0);
 		}
@@ -150,7 +151,9 @@ public class PackOptimizationMapper {
 				metricsObj.setBumpSet(bumpSetDto.getBsUnits());
 			}
 		}
-		metricsDtoList.add(metricsObj);
+		if (metricsObj.getInitialSet() > 0 || metricsObj.getBumpSet() > 0) {
+			metricsDtoList.add(metricsObj);
+		}
 	}
 
 	private BumpSetDto getBumpPackByNbr(BuyQuantitiesDto stObj, Integer bumpPackNbr) {
