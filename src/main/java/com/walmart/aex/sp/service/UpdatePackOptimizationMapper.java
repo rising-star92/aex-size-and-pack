@@ -129,9 +129,9 @@ public class UpdatePackOptimizationMapper {
         setIfNotNull(request.getVendorNbr9(), () -> merchantPackOpt.setVendorNbr9(request.getVendorNbr9()));
         setIfNotNull(request.getFactoryId(), () -> merchantPackOpt.setFactoryId(request.getFactoryId()));
         if(null!=factoryDetails){
-            setIfNotNull(factoryDetails.getFactoryName(), () -> merchantPackOpt.setFactoryName(factoryDetails.getFactoryName()));
-            setIfNotNull(factoryDetails.getCountryCode(), () -> merchantPackOpt.setOriginCountryCode(factoryDetails.getCountryCode()));
-            setIfNotNull(factoryDetails.getCountry(), () -> merchantPackOpt.setOriginCountryName(factoryDetails.getCountry()));
+            merchantPackOpt.setFactoryName(factoryDetails.getFactoryName());
+            merchantPackOpt.setOriginCountryCode(factoryDetails.getCountryCode());
+            merchantPackOpt.setOriginCountryName(factoryDetails.getCountry());
         }
     }
 
@@ -148,9 +148,9 @@ public class UpdatePackOptimizationMapper {
         // Fetch factory details from sourcing factory service call and set to the fineLinePackOpt
         setIfNotNull(request.getFactoryId(), () -> subCatgPackOpt.setFactoryId(request.getFactoryId()));
         if(null!=factoryDetails){
-            setIfNotNull(factoryDetails.getFactoryName(), () -> subCatgPackOpt.setFactoryName(factoryDetails.getFactoryName()));
-            setIfNotNull(factoryDetails.getCountryCode(), () -> subCatgPackOpt.setOriginCountryCode(factoryDetails.getCountryCode()));
-            setIfNotNull(factoryDetails.getCountry(), () -> subCatgPackOpt.setOriginCountryName(factoryDetails.getCountry()));
+            subCatgPackOpt.setFactoryName(factoryDetails.getFactoryName());
+            subCatgPackOpt.setOriginCountryCode(factoryDetails.getCountryCode());
+            subCatgPackOpt.setOriginCountryName(factoryDetails.getCountry());
         }
     }
 
@@ -167,9 +167,9 @@ public class UpdatePackOptimizationMapper {
         // Fetch factory details from sourcing factory service call and set to the fineLinePackOpt
         setIfNotNull(request.getFactoryId(), () -> fineLinePackOpt.setFactoryId(request.getFactoryId()));
         if(null!=factoryDetails){
-            setIfNotNull(factoryDetails.getFactoryName(), () -> fineLinePackOpt.setFactoryName(factoryDetails.getFactoryName()));
-            setIfNotNull(factoryDetails.getCountryCode(), () -> fineLinePackOpt.setOriginCountryCode(factoryDetails.getCountryCode()));
-            setIfNotNull(factoryDetails.getCountry(), () -> fineLinePackOpt.setOriginCountryName(factoryDetails.getCountry()));
+            fineLinePackOpt.setFactoryName(factoryDetails.getFactoryName());
+            fineLinePackOpt.setOriginCountryCode(factoryDetails.getCountryCode());
+            fineLinePackOpt.setOriginCountryName(factoryDetails.getCountry());
         }
     }
 
@@ -186,9 +186,9 @@ public class UpdatePackOptimizationMapper {
         // Fetch factory details from sourcing factory service call and set to the stylePackOpt
         setIfNotNull(request.getFactoryId(), () -> stylePackOpt.setFactoryId(request.getFactoryId()));
         if(null!=factoryDetails){
-            setIfNotNull(factoryDetails.getFactoryName(), () -> stylePackOpt.setFactoryName(factoryDetails.getFactoryName()));
-            setIfNotNull(factoryDetails.getCountryCode(), () -> stylePackOpt.setOriginCountryCode(factoryDetails.getCountryCode()));
-            setIfNotNull(factoryDetails.getCountry(), () -> stylePackOpt.setOriginCountryName(factoryDetails.getCountry()));
+            stylePackOpt.setFactoryName(factoryDetails.getFactoryName());
+            stylePackOpt.setOriginCountryCode(factoryDetails.getCountryCode());
+            stylePackOpt.setOriginCountryName(factoryDetails.getCountry());
         }
     }
 
@@ -205,9 +205,9 @@ public class UpdatePackOptimizationMapper {
         // Fetch factory details from sourcing factory service call and set to the ccPackOpt
         setIfNotNull(request.getFactoryId(), () -> ccPackOpt.setFactoryId(request.getFactoryId()));
         if(null!=factoryDetails){
-            setIfNotNull(factoryDetails.getFactoryName(), () -> ccPackOpt.setFactoryName(factoryDetails.getFactoryName()));
-            setIfNotNull(factoryDetails.getCountryCode(), () -> ccPackOpt.setOriginCountryCode(factoryDetails.getCountryCode()));
-            setIfNotNull(factoryDetails.getCountry(), () -> ccPackOpt.setOriginCountryName(factoryDetails.getCountry()));
+            ccPackOpt.setFactoryName(factoryDetails.getFactoryName());
+            ccPackOpt.setOriginCountryCode(factoryDetails.getCountryCode());
+            ccPackOpt.setOriginCountryName(factoryDetails.getCountry());
         }
     }
 
