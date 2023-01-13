@@ -3,6 +3,7 @@ package com.walmart.aex.sp.service;
 import com.walmart.aex.sp.dto.StatusResponse;
 import com.walmart.aex.sp.dto.mapper.FineLineMapperDto;
 import com.walmart.aex.sp.dto.packoptimization.*;
+import com.walmart.aex.sp.dto.packoptimization.sourcingFactory.FactoryDetailsResponse;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
 import com.walmart.aex.sp.dto.planhierarchy.Style;
@@ -60,6 +61,8 @@ class PackOptimizationServiceTest {
     private CcPackOptimizationRepository ccPackOptimizationRepository;
    @Mock
    private StyleCcPackOptConsRepository styleCcPackOptConsRepository;
+   @Mock
+   private SourcingFactoryService sourcingFactoryService;
 
 	@Test
 	void testGetPackOptDetails() {
@@ -401,6 +404,32 @@ class PackOptimizationServiceTest {
 
         assertEquals(SizeAndPackConstants.FAILED_STATUS, response.getStatus());
     }
+
+	@Test
+	void testGetFactoryDetailsWhenFactoryIdIsNotZero() {
+		UpdatePackOptConstraintRequestDTO request = new UpdatePackOptConstraintRequestDTO();
+		request.setFactoryId("123456");
+		FactoryDetailsResponse factoryDetails = new FactoryDetailsResponse();
+		factoryDetails.setFactoryName("WALMART");
+		factoryDetails.setCountry("UNITED STATES");
+		factoryDetails.setCountryCode("US");
+		when(sourcingFactoryService.callSourcingFactoryForFactoryDetails(request.getFactoryId())).thenReturn(factoryDetails);
+		FactoryDetailsResponse response = packOptimizationService.getFactoryDetails(request);
+		assertEquals("WALMART",response.getFactoryName());
+		assertEquals("UNITED STATES",response.getCountry());
+		assertEquals("US",response.getCountryCode());
+	}
+
+	@Test
+	void testGetFactoryDetailsWhenFactoryIdIsZero() {
+		UpdatePackOptConstraintRequestDTO request = new UpdatePackOptConstraintRequestDTO();
+		request.setFactoryId("0");
+		FactoryDetailsResponse response = packOptimizationService.getFactoryDetails(request);
+		assertEquals("DEFAULT",response.getFactoryName());
+		assertNull(response.getCountry());
+		assertNull(response.getCountryCode());
+	}
+
 
 
 }

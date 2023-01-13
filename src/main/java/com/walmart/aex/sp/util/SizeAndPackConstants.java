@@ -18,6 +18,7 @@ public class SizeAndPackConstants {
     public static final Integer HEADER_FONT_HEIGHT = 14;
     public static final Integer ROW_FONT_HEIGHT = 14;
     public static final Integer ZERO = 0;
+    public static final String ZERO_STRING = "0";
     public static final String DC_INBOUND_EXCEL_SHEET_NAME = "DCInboundData";
     public static final String DC_INBOUND_HEADER_KEY = "Content-Disposition";
     public static final String DC_INBOUND_REPORT_NAME = "DC_Inbound_Report";
@@ -32,4 +33,5 @@ public class SizeAndPackConstants {
     public static final String COLOR_COMBINATION_MISSING_MSG = "Color Combinations are missing";
     public static final String COLOR_COMBINATION_EXIST_MSG = "Color Combination already exist";
     public static final String API_TOKEN_KEY ="ApiTokenKey";
+    public static final String DEFAULT_FACTORY ="DEFAULT";
 }

@@ -30,10 +30,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.walmart.aex.sp.util.SizeAndPackConstants.COLOR_COMBINATION_EXIST_MSG;
-import static com.walmart.aex.sp.util.SizeAndPackConstants.COLOR_COMBINATION_MISSING_MSG;
-import static com.walmart.aex.sp.util.SizeAndPackConstants.FAILED_STATUS;
-import static com.walmart.aex.sp.util.SizeAndPackConstants.SUCCESS_STATUS;
+import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
 
 @Service
 @Slf4j
@@ -129,10 +126,15 @@ public class PackOptimizationService {
         return response;
     }
 
-    private FactoryDetailsResponse getFactoryDetails(UpdatePackOptConstraintRequestDTO request) {
-        FactoryDetailsResponse factoryDetails = null;
+    public FactoryDetailsResponse getFactoryDetails(UpdatePackOptConstraintRequestDTO request) {
+        FactoryDetailsResponse factoryDetails = new FactoryDetailsResponse();
         if(StringUtils.isNotEmpty(request.getFactoryId())){
-            factoryDetails = sourcingFactoryService.callSourcingFactoryForFactoryDetails(request.getFactoryId());
+            if(request.getFactoryId().trim().equals(ZERO_STRING)){
+                log.info("Pack Optimization update request has factory Id as ZERO, therefore not calling Sourcing API");
+                factoryDetails.setFactoryName(DEFAULT_FACTORY);
+            }else{
+                factoryDetails = sourcingFactoryService.callSourcingFactoryForFactoryDetails(request.getFactoryId());
+            }
         }
         return factoryDetails;
     }
