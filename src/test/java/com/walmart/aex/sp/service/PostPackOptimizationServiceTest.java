@@ -1,19 +1,18 @@
 package com.walmart.aex.sp.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.packoptimization.isbpqty.CustomerChoices;
 import com.walmart.aex.sp.dto.packoptimization.isbpqty.Fixtures;
 import com.walmart.aex.sp.dto.packoptimization.isbpqty.ISAndBPQtyDTO;
 import com.walmart.aex.sp.dto.packoptimization.isbpqty.Size;
-import com.walmart.aex.sp.entity.*;
-import com.walmart.aex.sp.enums.MerchMethod;
-import com.walmart.aex.sp.repository.CcMmReplnPkConsRepository;
-import com.walmart.aex.sp.repository.CcReplnPkConsRepository;
+import com.walmart.aex.sp.entity.CcMmReplPackId;
+import com.walmart.aex.sp.entity.CcReplPackId;
+import com.walmart.aex.sp.entity.CcSpMmReplPack;
+import com.walmart.aex.sp.entity.CcSpMmReplPackId;
+import com.walmart.aex.sp.entity.FinelineReplPackId;
+import com.walmart.aex.sp.entity.MerchCatgReplPackId;
+import com.walmart.aex.sp.entity.StyleReplPackId;
+import com.walmart.aex.sp.entity.SubCatgReplPackId;
 import com.walmart.aex.sp.repository.CcSpReplnPkConsRepository;
-import com.walmart.aex.sp.repository.FinelineReplnPkConsRepository;
-import com.walmart.aex.sp.repository.MerchCatgReplPackRepository;
-import com.walmart.aex.sp.repository.StyleReplnPkConsRepository;
-import com.walmart.aex.sp.repository.SubCatgReplnPkConsRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -25,10 +24,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -42,9 +41,6 @@ public class PostPackOptimizationServiceTest {
 
 	@Mock
 	ISAndBPQtyDTO isAndBPQtyDTO;
-
-	@Mock
-	private ObjectMapper objectMapper;
 	@Mock
 	CcSpReplnPkConsRepository ccSpReplnPkConsRepository;
 
@@ -65,6 +61,7 @@ public class PostPackOptimizationServiceTest {
 
 		ArgumentCaptor<List<CcSpMmReplPack>> ccspCaptor = ArgumentCaptor.forClass(List.class);
 		verify(updateReplnConfigMapper, times(1)).updateVnpkWhpkForCcSpMmReplnPkConsMapper(ccspCaptor.capture());
+		verify(replenishmentService, times(1)).updateVnpkWhpkForCatgReplnCons(any(), any(), any());
 		List<CcSpMmReplPack> ccSpMmRepls = ccspCaptor.getValue();
 		assertEquals(518, ccSpMmRepls.get(0).getReplUnits(), "Repln units should be reduced to 518 for 0X Hanging");
 
