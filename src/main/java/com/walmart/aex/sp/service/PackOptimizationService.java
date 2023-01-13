@@ -130,6 +130,7 @@ public class PackOptimizationService {
         FactoryDetailsResponse factoryDetails = new FactoryDetailsResponse();
         if(StringUtils.isNotEmpty(request.getFactoryId())){
             if(request.getFactoryId().trim().equals(ZERO_STRING)){
+                log.info("Pack Optimization update request has factory Id as ZERO, therefore not calling Sourcing API");
                 factoryDetails.setFactoryName(DEFAULT_FACTORY);
             }else{
                 factoryDetails = sourcingFactoryService.callSourcingFactoryForFactoryDetails(request.getFactoryId());
