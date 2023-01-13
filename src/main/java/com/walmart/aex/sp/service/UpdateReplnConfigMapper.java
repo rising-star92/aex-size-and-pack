@@ -197,6 +197,9 @@ public class UpdateReplnConfigMapper {
 		return totalReplUnits;
 	}
 
+	public long updateVnpkWhpkForCcSpMmReplnPkConsMapper(List<CcSpMmReplPack> ccSpReplnPkConsList) {
+		return updateVnpkWhpkForCcSpMmReplnPkConsMapper(ccSpReplnPkConsList, null, null);
+	}
 	public long updateVnpkWhpkForCcSpMmReplnPkConsMapper(List<CcSpMmReplPack> ccSpReplnPkConsList, Integer vnpk, Integer whpk) {
 		long totalReplUnits = 0L;
 		List<CcSpMmReplPack> updatedCcSpMmReplPack = new ArrayList<>();
@@ -206,18 +209,15 @@ public class UpdateReplnConfigMapper {
 			if (replObjJson != null && !replObjJson.isEmpty()) {
 				try {
 					List<Replenishment> replObj = objectMapper.readValue(replObjJson, new TypeReference<>() {});
-					replObj = replenishmentsOptimizationService.getUpdatedReplenishmentsPack(replObj, vnpk);
+					ccSpReplnCons.setVendorPackCnt(vnpk == null ? ccSpReplnCons.getVendorPackCnt() : vnpk);
+					ccSpReplnCons.setWhsePackCnt(whpk == null ? ccSpReplnCons.getWhsePackCnt() : whpk);
+					replObj = replenishmentsOptimizationService.getUpdatedReplenishmentsPack(replObj, ccSpReplnCons.getVendorPackCnt());
 					replUnits = replObj.stream().mapToLong(Replenishment::getAdjReplnUnits).sum();
 					ccSpReplnCons.setReplenObj(objectMapper.writeValueAsString(replObj));
 				} catch (JsonProcessingException e) {
 					log.error("Could not convert Replenishment Object Json for week disaggregation ", e);
 				}
 			}
-			if (vnpk != null)
-				ccSpReplnCons.setVendorPackCnt(vnpk);
-
-			if (whpk != null)
-				ccSpReplnCons.setWhsePackCnt(whpk);
 
 			ccSpReplnCons.setVnpkWhpkRatio(getVnpkWhpkRatio(ccSpReplnCons.getVendorPackCnt(), ccSpReplnCons.getWhsePackCnt()));
 			ccSpReplnCons.setReplUnits(Math.toIntExact(replUnits));
