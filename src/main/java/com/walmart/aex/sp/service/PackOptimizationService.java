@@ -1,10 +1,5 @@
 package com.walmart.aex.sp.service;
 
-import com.google.api.gax.paging.Page;
-import com.google.cloud.storage.Blob;
-import com.google.cloud.storage.Bucket;
-import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.StorageOptions;
 import com.walmart.aex.sp.dto.StatusResponse;
 import com.walmart.aex.sp.dto.mapper.FineLineMapper;
 import com.walmart.aex.sp.dto.mapper.FineLineMapperDto;
@@ -21,14 +16,12 @@ import com.walmart.aex.sp.entity.CcPackOptimization;
 import com.walmart.aex.sp.entity.MerchantPackOptimization;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.exception.CustomException;
-import com.walmart.aex.sp.properties.BigQueryConnectionProperties;
 import com.walmart.aex.sp.repository.AnalyticsMlSendRepository;
 import com.walmart.aex.sp.repository.CcPackOptimizationRepository;
 import com.walmart.aex.sp.repository.FineLinePackOptimizationRepository;
 import com.walmart.aex.sp.repository.FinelinePackOptRepository;
 import com.walmart.aex.sp.repository.MerchPackOptimizationRepository;
 import com.walmart.aex.sp.repository.StyleCcPackOptConsRepository;
-import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -55,8 +48,7 @@ public class PackOptimizationService {
     private final SourcingFactoryService sourcingFactoryService;
     private static final String DEFAULT_COLOR_COMBINATION_ID = "0";
     private static final int COLOR_COMBINATION_INCREMENT_VALUE = 1;
-    @ManagedConfiguration
-    BigQueryConnectionProperties bigQueryConnectionProperties;
+
     public PackOptimizationService(FineLinePackOptimizationRepository finelinePackOptimizationRepository,
                                    FinelinePackOptRepository packOptfineplanRepo,
                                    AnalyticsMlSendRepository analyticsMlSendRepository,
@@ -252,28 +244,5 @@ public class PackOptimizationService {
                 .mapToInt(Integer::valueOf)
                 .max().orElse(Integer.parseInt(DEFAULT_COLOR_COMBINATION_ID)) + COLOR_COMBINATION_INCREMENT_VALUE;
         return String.valueOf(nextColorCombinationId);
-    }
-    public String deletePackOptFilesFromGCPStorage() {
-        // The ID of your GCP project
-         String projectId = "wmt-mtech-assortment-ml-prod";
-//                 bigQueryConnectionProperties.getMLProjectId();;
-
-        // The ID of your GCS bucket
-         String bucketName = "aex_pack_opt_non_prod";
-
-        // The ID of your GCS object
-         String objectName = "dev";
-
-        Storage storage =
-                StorageOptions.newBuilder().setProjectId(projectId).build().getService();
-        Page<Blob> list = storage.list(bucketName,
-                Storage.BlobListOption.prefix(objectName));
-
-        for (Blob blob: list.getValues()) {
-            // Read all files
-            String fileData =  new String(blob.getContent());
-            System.out.println(fileData);
-        }
-        return "success";
     }
 }
