@@ -59,9 +59,10 @@ public class PackOptimizationController {
         return packOptService.getPackOptDetails(planid, channelid);
     }
 
-    @GetMapping("/api/packOptimization/plan/{planId}/fineline/{finelineNbr}")
-    public FineLinePackOptimizationResponse getPackOptFinelineDetails(@PathVariable Long planId, @PathVariable Integer finelineNbr) {
-        return packOptService.getPackOptFinelineDetails(planId, finelineNbr);
+    @GetMapping("/api/packOptimization/plan/{planId}/fineline/{finelineNbr}/bumppack/{bumpPackNbr}")
+    public FineLinePackOptimizationResponse getPackOptFinelineDetails(@PathVariable Long planId, @PathVariable Integer finelineNbr, @PathVariable Integer bumpPackNbr) {
+        log.info("Pack Optimization execution for BumpPackNbr: {}", bumpPackNbr);
+        return packOptService.getPackOptFinelineDetails(planId, finelineNbr, bumpPackNbr);
     }
 
 
