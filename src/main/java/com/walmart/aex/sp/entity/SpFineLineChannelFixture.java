@@ -40,9 +40,6 @@ public class SpFineLineChannelFixture {
     @Column(name = "bump_pack_qty")
     private Integer bumpPackQty;
 
-    @Column(name = "bump_pack_cnt")
-    private Integer bumpPackCount;
-
     @Column(name = "initial_set_qty")
     private Integer initialSetQty;
 

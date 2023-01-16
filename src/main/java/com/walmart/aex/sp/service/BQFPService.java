@@ -2,6 +2,7 @@ package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.bqfp.BQFPRequest;
 import com.walmart.aex.sp.dto.bqfp.BQFPResponse;
+import com.walmart.aex.sp.dto.gql.GraphQLResponse;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.properties.BQFPServiceProperties;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
