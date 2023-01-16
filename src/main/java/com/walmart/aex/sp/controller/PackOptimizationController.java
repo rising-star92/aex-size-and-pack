@@ -63,7 +63,6 @@ public class PackOptimizationController {
 
     @GetMapping("/api/packOptimization/plan/{planId}/fineline/{finelineNbr}")
     public FineLinePackOptimizationResponse getPackOptFinelineDetails(@PathVariable Long planId, @PathVariable Integer finelineNbr) {
-        log.info("Pack Optimization execution for BumpPackNbr: 1");
         return packOptService.getPackOptFinelineDetails(planId, finelineNbr, DEFAULT_BUMPPACK);
     }
 
