@@ -169,6 +169,7 @@ public class CalculateFinelineBuyQuantity {
                                 CalculateBuyQtyResponse calculateBuyQtyResponse, CalculateBuyQtyRequest calculateBuyQtyRequest) {
         List<SpFineLineChannelFixture> spFineLineChannelFixtures = new ArrayList<>();
         Map<Integer, List<MerchMethodsDto>> merchCodeMap = new HashMap<>();
+        Integer maxBumpCount = getMaxBumpCountVal(bqfpResponse);
         finelineDto.getMerchMethods().stream().filter(mm -> mm != null && mm.getMerchMethodCode() != null).forEach(merch -> {
             if (!merchCodeMap.containsKey(merch.getMerchMethodCode()))
                 merchCodeMap.put(merch.getMerchMethodCode(), new ArrayList<>());
@@ -192,75 +193,29 @@ public class CalculateFinelineBuyQuantity {
             if (!CollectionUtils.isEmpty(finelineDto.getStyles())) {
                 getStyles(finelineDto.getStyles(), merchMethodsDtos, apResponse, bqfpResponse, spFineLineChannelFixture, calculateBuyQtyParallelRequest, calculateBuyQtyResponse);
             } else log.info("Styles Size Profiles are empty to calculate buy Qty: {}", finelineDto);
+            spFineLineChannelFixture.setBumpPackCount(maxBumpCount);
             spFineLineChannelFixtures.add(spFineLineChannelFixture);
         });
-        updateSpFineLineChannelFixturesBumpCount(spFineLineChannelFixtures, bqfpResponse, merchCodeMap);
         calculateBuyQtyResponse.setSpFineLineChannelFixtures(spFineLineChannelFixtures);
     }
 
-    private void updateSpFineLineChannelFixturesBumpCount(List<SpFineLineChannelFixture> spFineLineChannelFixtures,
-                                                          BQFPResponse bqfpResponse,
-                                                          Map<Integer, List<MerchMethodsDto>> merchCodeMap) {
-
-        Map<Integer, Integer> bumpCountMap = prepareBumpCountMap(bqfpResponse, merchCodeMap);
-        for (SpFineLineChannelFixture spFineLineChannelFixture: spFineLineChannelFixtures) {
-            spFineLineChannelFixture.setBumpPackCount(bumpCountMap.get(spFineLineChannelFixture
-                    .getSpFineLineChannelFixtureId().getFixtureTypeRollUpId()
-                    .getFixtureTypeRollupId()));
-        }
-    }
-
-    private static Map<Integer, Integer> prepareBumpCountMap(BQFPResponse bqfpResponse, Map<Integer, List<MerchMethodsDto>> merchCodeMap) {
-        Map<Integer, Integer> bumpCountMap = new HashMap<>();
-        Map<Set<Integer>, Integer> merchCodeWithFixtureRollUpMap = new HashMap<>();
-        Set<Integer> fixtureTypeRollupIdSet = fetchFixtureRollUps(merchCodeMap.values().stream()
-                .flatMap(Collection::stream));
-
-        for(Map.Entry<Integer, List<MerchMethodsDto>> entry: merchCodeMap.entrySet()) {
-            Set<Integer> merchMethodsDto = fetchFixtureRollUps(merchCodeMap.get(entry.getKey()).stream());
-            merchCodeWithFixtureRollUpMap.put(merchMethodsDto, entry.getKey());
-        }
-
-        for(Integer fixtureTypeRollupId: fixtureTypeRollupIdSet) {
-            int fixtureId = getFixtureValue(merchCodeWithFixtureRollUpMap, fixtureTypeRollupId);
-            int bumpPackCount = getMaxBumpPackCount(bqfpResponse, fixtureTypeRollupId);
-            bumpCountMap.put(fixtureId, bumpPackCount);
-        }
-        return bumpCountMap;
-    }
-
-    private static int getFixtureValue(Map<Set<Integer>, Integer> merchCodeFixtureRollUpMap, Integer fixtureTypeRollupId) {
-        int fixtureValue = 0;
-        for (Map.Entry<Set<Integer>, Integer> entry: merchCodeFixtureRollUpMap.entrySet()) {
-            if(entry.getKey().contains(fixtureTypeRollupId)) {
-                fixtureValue = entry.getValue();
-                break;
-            }
-        }
-        return fixtureValue;
-    }
-
-    private static int getMaxBumpPackCount(BQFPResponse bqfpResponse, Integer fixtureTypeRollupId) {
-        int bumpPackCount = 0;
-        Optional<Cluster> first = bqfpResponse.getStyles().stream().map(Style::getCustomerChoices)
+    private Integer getMaxBumpCountVal(BQFPResponse bqfpResponse) {
+        int max = 0;
+        Optional<Cluster> res = bqfpResponse.getStyles().stream().map(Style::getCustomerChoices)
                 .flatMap(Collection::stream)
                 .map(CustomerChoice::getFixtures)
                 .flatMap(Collection::stream)
-                .filter(val -> val.getFixtureTypeRollupId().equals(fixtureTypeRollupId))
                 .map(Fixture::getClusters)
                 .flatMap(Collection::stream)
+                .filter(Objects::nonNull)
+                .filter(cluster -> Objects.nonNull(cluster.getBumpList()))
                 .max(Comparator.comparing(cluster -> cluster.getBumpList().size()))
                 .stream().findFirst();
-        if(first.isPresent()) {
-            bumpPackCount = first.get().getBumpList().size();
-        }
-        return bumpPackCount;
-    }
 
-    private static Set<Integer> fetchFixtureRollUps(Stream<MerchMethodsDto> merchCodeMap) {
-        return merchCodeMap
-                .map(MerchMethodsDto::getFixtureTypeRollupId)
-                .collect(Collectors.toCollection(LinkedHashSet::new));
+        if(res.isPresent()) {
+            max = res.get().getBumpList().size();
+        }
+        return max;
     }
 
     private void getStyles(List<StyleDto> styles, List<MerchMethodsDto> merchMethodsDtos, APResponse apResponse, BQFPResponse bqfpResponse, SpFineLineChannelFixture spFineLineChannelFixture,
