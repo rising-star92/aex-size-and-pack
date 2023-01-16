@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class PackOptimizationMapper {
 	private static final ObjectMapper objectMapper = new ObjectMapper();
+	private static final Integer DEFAULT_BUMPPACK = 1;
 
 
 	public void mapPackOptimizationFineline(FineLinePackOptimizationResponseDTO finelinePackOptimizationResponseDTO, FineLinePackOptimizationResponse response,Long planId, Integer bumpPackNbr ) {
@@ -161,7 +162,7 @@ public class PackOptimizationMapper {
 				.map(BuyQuantitiesDto::getBumpSets)
 				.stream()
 				.flatMap(Collection::stream)
-				.filter(bumpSetDto -> bumpPackNbr.equals(bumpSetDto.getSetNbr()))
+				.filter(bumpSetDto -> (bumpPackNbr.equals(DEFAULT_BUMPPACK) && null==bumpSetDto.getSetNbr()) || bumpPackNbr.equals(bumpSetDto.getSetNbr()))
 				.findFirst()
 				.orElse(null);
 	}
