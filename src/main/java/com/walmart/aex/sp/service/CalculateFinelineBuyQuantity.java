@@ -207,8 +207,7 @@ public class CalculateFinelineBuyQuantity {
                 .flatMap(Collection::stream)
                 .map(Fixture::getClusters)
                 .flatMap(Collection::stream)
-                .filter(Objects::nonNull)
-                .filter(cluster -> Objects.nonNull(cluster.getBumpList()))
+                .filter(cluster -> cluster != null && cluster.getBumpList() != null)
                 .max(Comparator.comparing(cluster -> cluster.getBumpList().size()))
                 .stream().findFirst();
 
