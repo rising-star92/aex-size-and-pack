@@ -162,7 +162,7 @@ public class PackOptimizationMapper {
 				.map(BuyQuantitiesDto::getBumpSets)
 				.stream()
 				.flatMap(Collection::stream)
-				.filter(bumpSetDto -> bumpPackNbr.equals(DEFAULT_BUMPPACK) || bumpPackNbr.equals(bumpSetDto.getSetNbr()))
+				.filter(bumpSetDto -> (bumpPackNbr.equals(DEFAULT_BUMPPACK) && null==bumpSetDto.getSetNbr()) || bumpPackNbr.equals(bumpSetDto.getSetNbr()))
 				.findFirst()
 				.orElse(null);
 	}
