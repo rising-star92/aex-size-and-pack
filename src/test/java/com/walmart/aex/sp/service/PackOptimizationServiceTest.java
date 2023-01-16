@@ -369,7 +369,6 @@ class PackOptimizationServiceTest {
 
         assertEquals(SizeAndPackConstants.SUCCESS_STATUS, response.getStatus());
         assertEquals(SizeAndPackConstants.SUCCESS_STATUS, response.getMessage());
-        System.out.println(ccPackOptimization.getColorCombination());
         assertNotNull(ccPackOptimization.getColorCombination());
     }
 
