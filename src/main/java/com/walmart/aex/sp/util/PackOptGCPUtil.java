@@ -20,8 +20,8 @@ public class PackOptGCPUtil {
         try {
             String storagePathInput = env + "/input/" + planId;
             String storagePathOutput = env + "/output/" + planId;
-            String multiBumpSetInputFolderPrefix = storagePathInput + '/' + finelineNbr + "_BP";
-            String multiBumpSetOutputFolderPrefix = storagePathOutput + '/' + finelineNbr + "_BP";
+            String multiBumpSetInputFolderPrefix = storagePathInput + '/' + finelineNbr + "-BP";
+            String multiBumpSetOutputFolderPrefix = storagePathOutput + '/' + finelineNbr + "-BP";
             boolean isDeletedAllInputFolders = delete(storagePathInput, multiBumpSetInputFolderPrefix, planId.toString(), finelineNbr.toString());
             boolean isdDeletedAllOutputFolders = delete(storagePathOutput, multiBumpSetOutputFolderPrefix, planId.toString(), finelineNbr.toString());
 
