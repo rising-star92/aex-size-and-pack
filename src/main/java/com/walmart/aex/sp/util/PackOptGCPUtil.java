@@ -13,20 +13,17 @@ import org.springframework.stereotype.Component;
 public class PackOptGCPUtil {
     @ManagedConfiguration
     BigQueryConnectionProperties bigQueryConnectionProperties;
-    @ManagedConfiguration
-    IntegrationHubServiceProperties integrationHubServiceProperties;
     private final String projectId = bigQueryConnectionProperties.getMLProjectId();
     private final String bucketName = bigQueryConnectionProperties.getMLDataSetName();
 
-    public void deleteMultiBumpPackDataSet(Long planId, Integer finelineNbr) {
+    public void deleteMultiBumpPackDataSet(Long planId, Integer finelineNbr, String env) {
         try {
-            Storage storage = StorageOptions.newBuilder().setProjectId(projectId).build().getService();
-            String storagePathInput = integrationHubServiceProperties.getEnv() + "/input/" + planId;
-            String storagePathOutput = integrationHubServiceProperties.getEnv() + "/output/" + planId;
+            String storagePathInput = env + "/input/" + planId;
+            String storagePathOutput = env + "/output/" + planId;
             String multiBumpSetInputFolderPrefix = storagePathInput + '/' + finelineNbr + "_BP";
             String multiBumpSetOutputFolderPrefix = storagePathOutput + '/' + finelineNbr + "_BP";
-            boolean isDeletedAllInputFolders = isBumpPackDataSetDeleted(storage, storagePathInput, multiBumpSetInputFolderPrefix, planId.toString(), finelineNbr.toString());
-            boolean isdDeletedAllOutputFolders = isBumpPackDataSetDeleted(storage, storagePathOutput, multiBumpSetOutputFolderPrefix, planId.toString(), finelineNbr.toString());
+            boolean isDeletedAllInputFolders = delete(storagePathInput, multiBumpSetInputFolderPrefix, planId.toString(), finelineNbr.toString());
+            boolean isdDeletedAllOutputFolders = delete(storagePathOutput, multiBumpSetOutputFolderPrefix, planId.toString(), finelineNbr.toString());
 
             if (isDeletedAllInputFolders && isdDeletedAllOutputFolders) {
                 log.info("Bump Pack dataset cleanup for planId {} and finelineNbr {} completed successfully !", planId, finelineNbr);
@@ -40,8 +37,9 @@ public class PackOptGCPUtil {
 
     }
 
-    private boolean isBumpPackDataSetDeleted(Storage storage, String storagePath, String multiBumpSetFolderPrefix, String planId, String finelineNbr) {
+    private boolean delete(String storagePath, String multiBumpSetFolderPrefix, String planId, String finelineNbr) {
         boolean deleted = false;
+        Storage storage = StorageOptions.newBuilder().setProjectId(projectId).build().getService();
         Page<Blob> blobs =
                 storage.list(
                         bucketName,
@@ -51,7 +49,7 @@ public class PackOptGCPUtil {
             if (blob.getName().startsWith(multiBumpSetFolderPrefix)) {
                 deleted = blob.delete(Blob.BlobSourceOption.generationMatch());
                 if (deleted) {
-                    log.info("Deleted Bump pack dataset for planId {} and finelineNbr {} : gs://{}", planId, finelineNbr, blob.getName());
+                    log.info("Deleted Bump pack dataset for planId {} and finelineNbr {} : gs://{}", planId, finelineNbr, bucketName + '/' + blob.getName());
                 }
             }
         }
