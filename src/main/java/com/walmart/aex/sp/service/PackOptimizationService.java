@@ -250,8 +250,8 @@ public class PackOptimizationService {
         try {
             String storagePathInput = env + "/input/" + planId;
             String storagePathOutput = env + "/output/" + planId;
-            String multiBumpSetInputFolderPrefix = storagePathInput + '/' + finelineNbr + MULTI_BUMP_PACK_PREFIX;
-            String multiBumpSetOutputFolderPrefix = storagePathOutput + '/' + finelineNbr + MULTI_BUMP_PACK_PREFIX;
+            String multiBumpSetInputFolderPrefix = storagePathInput + '/' + finelineNbr + MULTI_BUMP_PACK_SUFFIX;
+            String multiBumpSetOutputFolderPrefix = storagePathOutput + '/' + finelineNbr + MULTI_BUMP_PACK_SUFFIX;
             boolean isDeletedAllInputFolders = commonGCPUtil.delete(storagePathInput, multiBumpSetInputFolderPrefix);
             boolean isDeletedAllOutputFolders = commonGCPUtil.delete(storagePathOutput, multiBumpSetOutputFolderPrefix);
 
