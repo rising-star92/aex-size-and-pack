@@ -31,10 +31,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.walmart.aex.sp.util.SizeAndPackConstants.COLOR_COMBINATION_EXIST_MSG;
-import static com.walmart.aex.sp.util.SizeAndPackConstants.COLOR_COMBINATION_MISSING_MSG;
-import static com.walmart.aex.sp.util.SizeAndPackConstants.FAILED_STATUS;
-import static com.walmart.aex.sp.util.SizeAndPackConstants.SUCCESS_STATUS;
+import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
 
 @Service
 @Slf4j
@@ -253,12 +250,12 @@ public class PackOptimizationService {
         try {
             String storagePathInput = env + "/input/" + planId;
             String storagePathOutput = env + "/output/" + planId;
-            String multiBumpSetInputFolderPrefix = storagePathInput + '/' + finelineNbr + "-BP";
-            String multiBumpSetOutputFolderPrefix = storagePathOutput + '/' + finelineNbr + "-BP";
+            String multiBumpSetInputFolderPrefix = storagePathInput + '/' + finelineNbr + MULTI_BUMP_PACK_PREFIX;
+            String multiBumpSetOutputFolderPrefix = storagePathOutput + '/' + finelineNbr + MULTI_BUMP_PACK_PREFIX;
             boolean isDeletedAllInputFolders = commonGCPUtil.delete(storagePathInput, multiBumpSetInputFolderPrefix);
-            boolean isdDeletedAllOutputFolders = commonGCPUtil.delete(storagePathOutput, multiBumpSetOutputFolderPrefix);
+            boolean isDeletedAllOutputFolders = commonGCPUtil.delete(storagePathOutput, multiBumpSetOutputFolderPrefix);
 
-            if (isDeletedAllInputFolders && isdDeletedAllOutputFolders) {
+            if (isDeletedAllInputFolders && isDeletedAllOutputFolders) {
                 log.info("Bump Pack dataset cleanup for planId {} and finelineNbr {} completed successfully !", planId, finelineNbr);
             } else {
                 log.info("Bump Pack dataset cleanup for planId {} and finelineNbr {} not completed successfully !", planId, finelineNbr);
