@@ -7,7 +7,7 @@ public class BumpSetDto {
 
 	private Integer setNbr;
 	private Integer wmYearWeek;
-	private Integer weekDesc;
+	private String weekDesc;
 	private Integer bsUnits;
 	private Integer totalUnits;
 

@@ -44,6 +44,8 @@ public class PackOptimizationController {
 
     private final IntegrationHubService integrationHubService;
 
+    private static final Integer DEFAULT_BUMPPACK = 1;
+
     public PackOptimizationController(PackOptimizationService packOptService, IntegrationHubService integrationHubService, PostPackOptimizationService postPackOptimizationService) {
 
         this.packOptService = packOptService;
@@ -61,7 +63,13 @@ public class PackOptimizationController {
 
     @GetMapping("/api/packOptimization/plan/{planId}/fineline/{finelineNbr}")
     public FineLinePackOptimizationResponse getPackOptFinelineDetails(@PathVariable Long planId, @PathVariable Integer finelineNbr) {
-        return packOptService.getPackOptFinelineDetails(planId, finelineNbr);
+        return packOptService.getPackOptFinelineDetails(planId, finelineNbr, DEFAULT_BUMPPACK);
+    }
+
+    @GetMapping("/api/packOptimization/plan/{planId}/fineline/{finelineNbr}/bumppack/{bumpPackNbr}")
+    public FineLinePackOptimizationResponse getPackOptFinelineDetails(@PathVariable Long planId, @PathVariable Integer finelineNbr, @PathVariable Integer bumpPackNbr) {
+        log.info("Pack Optimization execution for BumpPackNbr: {}", bumpPackNbr);
+        return packOptService.getPackOptFinelineDetails(planId, finelineNbr, bumpPackNbr);
     }
 
 

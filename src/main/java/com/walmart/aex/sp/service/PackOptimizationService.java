@@ -86,7 +86,7 @@ public class PackOptimizationService {
 
     }
 
-    public FineLinePackOptimizationResponse getPackOptFinelineDetails(Long planId, Integer finelineNbr) {
+    public FineLinePackOptimizationResponse getPackOptFinelineDetails(Long planId, Integer finelineNbr, Integer bumpPackNbr) {
         FineLinePackOptimizationResponse finelinePackOptimizationResponse = new FineLinePackOptimizationResponse();
 
         try {
@@ -95,7 +95,7 @@ public class PackOptimizationService {
                     .stream()
                     .flatMap(Collection::stream)
                     .forEach(finelinePackOptimizationResponseDTO -> packOptimizationMapper.
-                            mapPackOptimizationFineline(finelinePackOptimizationResponseDTO, finelinePackOptimizationResponse, planId));
+                            mapPackOptimizationFineline(finelinePackOptimizationResponseDTO, finelinePackOptimizationResponse, planId, bumpPackNbr));
 
 
         } catch (Exception e) {
@@ -130,10 +130,15 @@ public class PackOptimizationService {
         return response;
     }
 
-    private FactoryDetailsResponse getFactoryDetails(UpdatePackOptConstraintRequestDTO request) {
-        FactoryDetailsResponse factoryDetails = null;
+    public FactoryDetailsResponse getFactoryDetails(UpdatePackOptConstraintRequestDTO request) {
+        FactoryDetailsResponse factoryDetails = new FactoryDetailsResponse();
         if(StringUtils.isNotEmpty(request.getFactoryId())){
-            factoryDetails = sourcingFactoryService.callSourcingFactoryForFactoryDetails(request.getFactoryId());
+            if(request.getFactoryId().trim().equals(ZERO_STRING)){
+                log.info("Pack Optimization update request has factory Id as ZERO, therefore not calling Sourcing API");
+                factoryDetails.setFactoryName(DEFAULT_FACTORY);
+            }else{
+                factoryDetails = sourcingFactoryService.callSourcingFactoryForFactoryDetails(request.getFactoryId());
+            }
         }
         return factoryDetails;
     }
