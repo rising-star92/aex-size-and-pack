@@ -22,6 +22,7 @@ import com.walmart.aex.sp.repository.FineLinePackOptimizationRepository;
 import com.walmart.aex.sp.repository.FinelinePackOptRepository;
 import com.walmart.aex.sp.repository.MerchPackOptimizationRepository;
 import com.walmart.aex.sp.repository.StyleCcPackOptConsRepository;
+import com.walmart.aex.sp.util.CommonGCPUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -49,6 +50,8 @@ public class PackOptimizationService {
     private final PackOptConstraintMapper packOptConstraintMapper;
     private final CcPackOptimizationRepository ccPackOptimizationRepository;
     private final SourcingFactoryService sourcingFactoryService;
+
+    private final CommonGCPUtil commonGCPUtil;
     private static final String DEFAULT_COLOR_COMBINATION_ID = "0";
     private static final int COLOR_COMBINATION_INCREMENT_VALUE = 1;
 
@@ -61,7 +64,7 @@ public class PackOptimizationService {
                                    MerchPackOptimizationRepository merchPackOptimizationRepository,
                                    UpdatePackOptimizationMapper updatePackOptimizationMapper,
                                    CcPackOptimizationRepository ccPackOptimizationRepository,
-                                   SourcingFactoryService sourcingFactoryService) {
+                                   SourcingFactoryService sourcingFactoryService, CommonGCPUtil commonGCPUtil) {
         this.finelinePackOptimizationRepository = finelinePackOptimizationRepository;
         this.packOptfineplanRepo = packOptfineplanRepo;
         this.packOptimizationMapper = packOptimizationMapper;
@@ -72,6 +75,7 @@ public class PackOptimizationService {
         this.packOptConstraintMapper = packOptConstraintMapper;
         this.ccPackOptimizationRepository = ccPackOptimizationRepository;
         this.sourcingFactoryService = sourcingFactoryService;
+        this.commonGCPUtil = commonGCPUtil;
     }
 
     public PackOptimizationResponse getPackOptDetails(Long planId, Integer channelId) {
@@ -244,4 +248,26 @@ public class PackOptimizationService {
                 .max().orElse(Integer.parseInt(DEFAULT_COLOR_COMBINATION_ID)) + COLOR_COMBINATION_INCREMENT_VALUE;
         return String.valueOf(nextColorCombinationId);
     }
+
+    public void deleteMultiBumpPackDataSet(Long planId, Integer finelineNbr, String env) {
+        try {
+            String storagePathInput = env + "/input/" + planId;
+            String storagePathOutput = env + "/output/" + planId;
+            String multiBumpSetInputFolderPrefix = storagePathInput + '/' + finelineNbr + "-BP";
+            String multiBumpSetOutputFolderPrefix = storagePathOutput + '/' + finelineNbr + "-BP";
+            boolean isDeletedAllInputFolders = commonGCPUtil.delete(storagePathInput, multiBumpSetInputFolderPrefix);
+            boolean isdDeletedAllOutputFolders = commonGCPUtil.delete(storagePathOutput, multiBumpSetOutputFolderPrefix);
+
+            if (isDeletedAllInputFolders && isdDeletedAllOutputFolders) {
+                log.info("Bump Pack dataset cleanup for planId {} and finelineNbr {} completed successfully !", planId, finelineNbr);
+            } else {
+                log.info("Bump Pack dataset cleanup for planId {} and finelineNbr {} not completed successfully !", planId, finelineNbr);
+            }
+
+        } catch (Exception e) {
+            log.error("An error occurred while deleting GCP bump pack dataset for planId {} and finelineNbr {}. Exception: ", planId, finelineNbr, e);
+        }
+
+    }
+
 }
