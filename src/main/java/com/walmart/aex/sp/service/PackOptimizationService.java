@@ -53,9 +53,6 @@ public class PackOptimizationService {
     private static final String DEFAULT_COLOR_COMBINATION_ID = "0";
     private static final int COLOR_COMBINATION_INCREMENT_VALUE = 1;
 
-    @ManagedConfiguration
-    BigQueryConnectionProperties bigQueryConnectionProperties;
-
     public PackOptimizationService(FineLinePackOptimizationRepository finelinePackOptimizationRepository,
                                    FinelinePackOptRepository packOptfineplanRepo,
                                    AnalyticsMlSendRepository analyticsMlSendRepository,
@@ -261,10 +258,8 @@ public class PackOptimizationService {
             String storagePathOutput = env + "/output/" + planId;
             String multiBumpSetInputFolderPrefix = storagePathInput + '/' + finelineNbr + MULTI_BUMP_PACK_SUFFIX;
             String multiBumpSetOutputFolderPrefix = storagePathOutput + '/' + finelineNbr + MULTI_BUMP_PACK_SUFFIX;
-            final String projectId = bigQueryConnectionProperties.getMLProjectId();
-            final String bucketName = bigQueryConnectionProperties.getMLDataSetName();
-            boolean isDeletedAllInputFolders = commonGCPUtil.delete(storagePathInput, multiBumpSetInputFolderPrefix,projectId,bucketName);
-            boolean isDeletedAllOutputFolders = commonGCPUtil.delete(storagePathOutput, multiBumpSetOutputFolderPrefix,projectId,bucketName);
+            boolean isDeletedAllInputFolders = commonGCPUtil.delete(storagePathInput, multiBumpSetInputFolderPrefix);
+            boolean isDeletedAllOutputFolders = commonGCPUtil.delete(storagePathOutput, multiBumpSetOutputFolderPrefix);
 
             if (isDeletedAllInputFolders && isDeletedAllOutputFolders) {
                 log.info("Bump Pack dataset cleanup for planId {} and finelineNbr {} completed successfully !", planId, finelineNbr);
