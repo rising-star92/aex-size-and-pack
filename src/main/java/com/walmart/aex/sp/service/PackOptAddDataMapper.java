@@ -175,6 +175,7 @@ public class PackOptAddDataMapper {
     private void updateCcColorCombinationConstraint(CcPackOptimization ccPackOptimization, Constraints constraints, Set<String> colorCombinationSets) {
         ColorCombinationConstraints colorCombinationConstraints = constraints.getColorCombinationConstraints();
         if (colorCombinationConstraints != null) {
+            ccPackOptimization.setFactoryId(colorCombinationConstraints.getFactoryId());
             String countryOfOriginFromLP = colorCombinationConstraints.getCountryOfOrigin();
             String countryOfOriginFromSP = ccPackOptimization.getOriginCountryName();
             ccPackOptimization.setOriginCountryName(countryOfOriginFromLP);
