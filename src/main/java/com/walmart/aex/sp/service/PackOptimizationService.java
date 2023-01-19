@@ -16,6 +16,7 @@ import com.walmart.aex.sp.entity.CcPackOptimization;
 import com.walmart.aex.sp.entity.MerchantPackOptimization;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.exception.CustomException;
+import com.walmart.aex.sp.properties.BigQueryConnectionProperties;
 import com.walmart.aex.sp.repository.AnalyticsMlSendRepository;
 import com.walmart.aex.sp.repository.CcPackOptimizationRepository;
 import com.walmart.aex.sp.repository.FineLinePackOptimizationRepository;
@@ -23,6 +24,7 @@ import com.walmart.aex.sp.repository.FinelinePackOptRepository;
 import com.walmart.aex.sp.repository.MerchPackOptimizationRepository;
 import com.walmart.aex.sp.repository.StyleCcPackOptConsRepository;
 import com.walmart.aex.sp.util.CommonGCPUtil;
+import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -47,10 +49,12 @@ public class PackOptimizationService {
     private final PackOptConstraintMapper packOptConstraintMapper;
     private final CcPackOptimizationRepository ccPackOptimizationRepository;
     private final SourcingFactoryService sourcingFactoryService;
-
     private final CommonGCPUtil commonGCPUtil;
     private static final String DEFAULT_COLOR_COMBINATION_ID = "0";
     private static final int COLOR_COMBINATION_INCREMENT_VALUE = 1;
+
+    @ManagedConfiguration
+    BigQueryConnectionProperties bigQueryConnectionProperties;
 
     public PackOptimizationService(FineLinePackOptimizationRepository finelinePackOptimizationRepository,
                                    FinelinePackOptRepository packOptfineplanRepo,
@@ -252,8 +256,10 @@ public class PackOptimizationService {
             String storagePathOutput = env + "/output/" + planId;
             String multiBumpSetInputFolderPrefix = storagePathInput + '/' + finelineNbr + MULTI_BUMP_PACK_SUFFIX;
             String multiBumpSetOutputFolderPrefix = storagePathOutput + '/' + finelineNbr + MULTI_BUMP_PACK_SUFFIX;
-            boolean isDeletedAllInputFolders = commonGCPUtil.delete(storagePathInput, multiBumpSetInputFolderPrefix);
-            boolean isDeletedAllOutputFolders = commonGCPUtil.delete(storagePathOutput, multiBumpSetOutputFolderPrefix);
+            final String projectId = bigQueryConnectionProperties.getMLProjectId();
+            final String bucketName = bigQueryConnectionProperties.getMLDataSetName();
+            boolean isDeletedAllInputFolders = commonGCPUtil.delete(storagePathInput, multiBumpSetInputFolderPrefix,projectId,bucketName);
+            boolean isDeletedAllOutputFolders = commonGCPUtil.delete(storagePathOutput, multiBumpSetOutputFolderPrefix,projectId,bucketName);
 
             if (isDeletedAllInputFolders && isDeletedAllOutputFolders) {
                 log.info("Bump Pack dataset cleanup for planId {} and finelineNbr {} completed successfully !", planId, finelineNbr);
