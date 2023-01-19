@@ -50,7 +50,6 @@ public class PackOptimizationService {
     private final CommonGCPUtil commonGCPUtil;
     private static final String DEFAULT_COLOR_COMBINATION_ID = "0";
     private static final int COLOR_COMBINATION_INCREMENT_VALUE = 1;
-
     public PackOptimizationService(FineLinePackOptimizationRepository finelinePackOptimizationRepository,
                                    FinelinePackOptRepository packOptfineplanRepo,
                                    AnalyticsMlSendRepository analyticsMlSendRepository,
