@@ -144,5 +144,11 @@ public class PackOptimizationController {
         }
         return response;
     }
+
+    @MutationMapping
+    public StatusResponse updateFromQuote(@Argument RunPackOptRequest request) {
+        //return packOptService.updatePackOptConstraints(request);
+        return null;
+    }
 }
 
