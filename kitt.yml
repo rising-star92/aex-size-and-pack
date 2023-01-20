@@ -32,6 +32,7 @@ deploy:
     deployTimeout: 300
   helm:
     values:
+      DYNATRACE_ENABLED: true
       env:
         GOOGLE_APPLICATION_CREDENTIALS: /etc/secrets/gcp_creds.json
       secrets:
@@ -77,7 +78,6 @@ deploy:
           - eus2-dev-a2
       helm:
         values:
-          DYNATRACE_ENABLED: true
           min:
             cpu: 800m
             memory: 600Mi
@@ -112,7 +112,6 @@ deploy:
           - scus-stage-a4
       helm:
         values:
-          DYNATRACE_ENABLED: true
           min:
             cpu: 800m
             memory: 600Mi

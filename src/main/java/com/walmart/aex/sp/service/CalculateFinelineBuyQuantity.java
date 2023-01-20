@@ -79,6 +79,7 @@ public class CalculateFinelineBuyQuantity {
     }
 
     public CalculateBuyQtyResponse calculateFinelineBuyQty(CalculateBuyQtyRequest calculateBuyQtyRequest, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, CalculateBuyQtyResponse calculateBuyQtyResponse) throws CustomException {
+        log.info("Calculating buy quantity for planId: {}, finelineNbr: {}, channel: {}", calculateBuyQtyParallelRequest.getPlanId(), calculateBuyQtyParallelRequest.getFinelineNbr(), calculateBuyQtyParallelRequest.getChannel());
         CompletableFuture<BuyQtyResponse> buyQtyResponseCompletableFuture = getBuyQtyResponseCompletableFuture(calculateBuyQtyRequest, calculateBuyQtyParallelRequest);
         CompletableFuture<BQFPResponse> bqfpResponseCompletableFuture = getBqfpResponseCompletableFuture(calculateBuyQtyRequest, calculateBuyQtyParallelRequest);
 
