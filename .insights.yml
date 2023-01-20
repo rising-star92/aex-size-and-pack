@@ -1,0 +1,9 @@
+---
+team:
+- id: 3140
+product:
+- {}
+cloud:
+- autoRestart: false
+ignoreNotify: false
+productionRepo: true
