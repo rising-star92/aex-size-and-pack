@@ -432,7 +432,7 @@ public class CalculateFinelineBuyQuantity {
         bqfpRequest.setPlanId(calculateBuyQtyRequest.getPlanId());
         bqfpRequest.setChannel(ChannelType.getChannelIdFromName(calculateBuyQtyRequest.getChannel()).toString());
         bqfpRequest.setFinelineNbr(finelineNbr);
-
+        log.info("BQFPRequest payload for planId {} : {}", bqfpRequest, calculateBuyQtyRequest.getPlanId());
         return bqfpService.getBuyQuantityUnits(bqfpRequest);
     }
 
