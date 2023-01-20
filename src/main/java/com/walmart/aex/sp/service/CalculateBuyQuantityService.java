@@ -42,6 +42,7 @@ public class CalculateBuyQuantityService {
     @Transactional
     public void calculateBuyQuantity(CalculateBuyQtyRequest calculateBuyQtyRequest) {
         List<CalculateBuyQtyParallelRequest> calculateBuyQtyParallelRequests = new ArrayList<>();
+        log.info("Received calculateBuyQtyRequest payload to calculate buy quantity: {} ",calculateBuyQtyRequest);
         try {
             if (!CollectionUtils.isEmpty(calculateBuyQtyRequest.getLvl3List())) {
                 calculateBuyQtyRequest.getLvl3List().forEach(lvl3Dto -> {
