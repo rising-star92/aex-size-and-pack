@@ -3,14 +3,7 @@ package com.walmart.aex.sp.service;
 import com.walmart.aex.sp.dto.StatusResponse;
 import com.walmart.aex.sp.dto.mapper.FineLineMapper;
 import com.walmart.aex.sp.dto.mapper.FineLineMapperDto;
-import com.walmart.aex.sp.dto.packoptimization.ColorCombinationRequest;
-import com.walmart.aex.sp.dto.packoptimization.ColorCombinationStyle;
-import com.walmart.aex.sp.dto.packoptimization.FineLinePackOptimizationResponse;
-import com.walmart.aex.sp.dto.packoptimization.FineLinePackOptimizationResponseDTO;
-import com.walmart.aex.sp.dto.packoptimization.PackOptConstraintRequest;
-import com.walmart.aex.sp.dto.packoptimization.PackOptConstraintResponseDTO;
-import com.walmart.aex.sp.dto.packoptimization.PackOptimizationResponse;
-import com.walmart.aex.sp.dto.packoptimization.UpdatePackOptConstraintRequestDTO;
+import com.walmart.aex.sp.dto.packoptimization.*;
 import com.walmart.aex.sp.dto.packoptimization.sourcingFactory.FactoryDetailsResponse;
 import com.walmart.aex.sp.entity.CcPackOptimization;
 import com.walmart.aex.sp.entity.MerchantPackOptimization;
@@ -272,7 +265,7 @@ public class PackOptimizationService {
 
     }
 
-    public StatusResponse updateFromQuote(PackOptConstraintRequest request) {
+    public StatusResponse updateFactoryFromApprovedQuotes(RunPackOptRequest request) {
         StatusResponse response = new StatusResponse();
         if (isRequestValid(request)) {
             Integer channelId = ChannelType.getChannelIdFromName(request.getChannel());
