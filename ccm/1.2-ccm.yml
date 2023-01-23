@@ -483,7 +483,7 @@ configOverrides:
           "integrationhub.sizeAndPackBaseUrl": "http://aex-size-and-pack.aex.stg.walmart.net"
   bigQueryConfig:
     - name: "stage"
-      description: "Big Query config override for STAGE profile"
+      description: "Big Query config override for STAGE profile "
       pathElements:
         envProfile: "stage"
         envName: "stage"
