@@ -91,7 +91,7 @@ deploy:
           metadata:
             labels:
               ccm.serviceId: AEX_SIZE_AND_PACK
-              ccm.serviceConfigVersion: "1.2"
+              ccm.serviceConfigVersion: "1.3"
           env:
             JAVA_OPTS: "-Dspring.profiles.active=dev
                         -Dccm.configs.dir=/etc/config
@@ -125,7 +125,7 @@ deploy:
           metadata:
             labels:
               ccm.serviceId: AEX_SIZE_AND_PACK
-              ccm.serviceConfigVersion: "1.2"
+              ccm.serviceConfigVersion: "1.3"
           env:
             JAVA_OPTS: "-Dspring.profiles.active=stg
                           -Dccm.configs.dir=/etc/config
