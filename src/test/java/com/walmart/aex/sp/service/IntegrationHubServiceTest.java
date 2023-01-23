@@ -3,12 +3,14 @@ package com.walmart.aex.sp.service;
 import com.walmart.aex.sp.dto.buyquantity.FinelineDto;
 import com.walmart.aex.sp.dto.buyquantity.Lvl3Dto;
 import com.walmart.aex.sp.dto.buyquantity.Lvl4Dto;
+import com.walmart.aex.sp.dto.integrationhub.IntegrationHubRequestDTO;
 import com.walmart.aex.sp.dto.integrationhub.IntegrationHubResponseDTO;
 import com.walmart.aex.sp.dto.packoptimization.InputRequest;
 import com.walmart.aex.sp.dto.packoptimization.RunPackOptRequest;
 import com.walmart.aex.sp.dto.packoptimization.RunPackOptResponse;
 import com.walmart.aex.sp.properties.IntegrationHubServiceProperties;
 import com.walmart.aex.sp.repository.AnalyticsMlSendRepository;
+import com.walmart.aex.sp.repository.SpFineLineChannelFixtureRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,6 +46,9 @@ class IntegrationHubServiceTest {
     @Mock
     private AnalyticsMlSendRepository analyticsMlSendRepository;
 
+    @Mock
+    private SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository;
+
     @BeforeEach
     void init() {
         MockitoAnnotations.openMocks(this);
@@ -55,9 +60,9 @@ class IntegrationHubServiceTest {
         MockitoAnnotations.openMocks(this);
         ResponseEntity<IntegrationHubResponseDTO> response = ResponseEntity.status(HttpStatus.OK).body(successResponse());
         when(properties.getUrl()).thenReturn("http://10.22.137.216/api/packopt?scenario=pack_optimization_dataproc");
-        when(properties.getSizeAndPackUrl()).thenReturn("http://aex-size-and-pack.aex.dev.walmart.net");
         when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(), eq(IntegrationHubResponseDTO.class))).thenReturn(response);
-        RunPackOptResponse result = integrationHubService.callIntegrationHubForPackOpt(getRequest());
+        IntegrationHubRequestDTO integrationHubRequestDTO = new IntegrationHubRequestDTO();
+        RunPackOptResponse result = integrationHubService.callIntegrationHubForPackOpt(getRequest(),integrationHubRequestDTO);
         assertNotNull(result);
     }
 

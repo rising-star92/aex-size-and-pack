@@ -2,6 +2,7 @@ package com.walmart.aex.sp.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.walmart.aex.sp.dto.buyquantity.BuyQntyResponseDTO;
 import com.walmart.aex.sp.dto.buyquantity.FinelineDto;
 import com.walmart.aex.sp.dto.buyquantity.Lvl3Dto;
 import com.walmart.aex.sp.dto.buyquantity.Lvl4Dto;
@@ -18,6 +19,7 @@ import com.walmart.aex.sp.enums.RunStatusCodeType;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.properties.IntegrationHubServiceProperties;
 import com.walmart.aex.sp.repository.AnalyticsMlSendRepository;
+import com.walmart.aex.sp.repository.SpFineLineChannelFixtureRepository;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +59,9 @@ public class IntegrationHubService {
     @Autowired
     private AnalyticsMlSendRepository analyticsMlSendRepository;
 
+    @Autowired
+    private SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository;
+
     public IntegrationHubService() {
 
     }
@@ -69,12 +74,39 @@ public class IntegrationHubService {
         this.analyticsMlSendRepository = analyticsMlSendRepository;
     }
 
-    @Retryable(backoff = @Backoff(delay = 3000))
-    public RunPackOptResponse callIntegrationHubForPackOpt(RunPackOptRequest request) {
-        RunPackOptResponse runPackOptResponse = null;
+    public List<RunPackOptResponse> callIntegrationHubForPackOptByFineline(RunPackOptRequest request) {
+        List<RunPackOptResponse> runPackOptResponseList = new ArrayList<>();
         try {
             InputRequest inputRequest = request.getInputRequest();
-            IntegrationHubRequestDTO integrationHubRequestDTO = getIntegrationHubRequest(request, inputRequest);
+            List<Integer> finelinesList = new ArrayList<>();
+            List<String> finelineIsBsList = new ArrayList<>();
+            if (inputRequest != null) {
+                for (Lvl3Dto lvl3 : inputRequest.getLvl3List()) {
+                    for (Lvl4Dto lv4 : lvl3.getLvl4List()) {
+                        for (FinelineDto finelines : lv4.getFinelines()) {
+                            finelinesList.add(finelines.getFinelineNbr());
+                        }
+                    }
+                }
+                setFinelineIsBSList(request, finelinesList, finelineIsBsList);
+            }
+
+            finelineIsBsList.forEach(finelineNbr -> {
+                IntegrationHubRequestDTO integrationHubRequestDTO = getIntegrationHubRequest(request.getPlanId(), finelineNbr);
+                runPackOptResponseList.add(callIntegrationHubForPackOpt(request, integrationHubRequestDTO));
+            });
+            return runPackOptResponseList;
+        }
+        catch (RestClientException rce) {
+            log.error("Error connecting with Integration Hub service: {}", rce.getMessage());
+            return runPackOptResponseList;
+        }
+    }
+
+    @Retryable(backoff = @Backoff(delay = 3000))
+    public RunPackOptResponse callIntegrationHubForPackOpt(RunPackOptRequest request, IntegrationHubRequestDTO integrationHubRequestDTO) {
+        RunPackOptResponse runPackOptResponse = null;
+        try {
             final HttpHeaders headers = getHeaders();
             String url = integrationHubServiceProperties.getUrl();
             final ResponseEntity<IntegrationHubResponseDTO> respEntity = restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(integrationHubRequestDTO, headers), IntegrationHubResponseDTO.class);
@@ -109,29 +141,41 @@ public class IntegrationHubService {
         return headers;
     }
 
-    private IntegrationHubRequestDTO getIntegrationHubRequest(RunPackOptRequest request, InputRequest inputRequest) {
-        List<Integer> finelinesList = new ArrayList<>();
-        if (inputRequest != null) {
-            for (Lvl3Dto lvl3 : inputRequest.getLvl3List()) {
-                for (Lvl4Dto lv4 : lvl3.getLvl4List()) {
-                    for (FinelineDto finelines : lv4.getFinelines()) {
-                        finelinesList.add(finelines.getFinelineNbr());
-                    }
-                }
-            }
-        }
+    private IntegrationHubRequestDTO getIntegrationHubRequest(Long planId, String finelineNbr) {
+        List<String> finelineIsBsList = new ArrayList<>();
+        finelineIsBsList.add(finelineNbr);
         IntegrationHubRequestDTO integrationHubRequestDTO = new IntegrationHubRequestDTO();
         IntegrationHubRequestContextDTO integrationHubRequestContextDTO = new IntegrationHubRequestContextDTO();
         final String packOptFinelineDetailsSuffix = "/api/packOptimization/plan/{planId}/fineline/{finelineNbr}";
         final String packOptFinelineStatusSuffix = "/api/packOptimization/plan/{planId}/fineline/{finelineNbr}/status/{status}";
         String sizeAndPackSvcUrl = integrationHubServiceProperties.getSizeAndPackUrl();
-        integrationHubRequestContextDTO.setGetPackOptFinelineDetails(sizeAndPackSvcUrl + packOptFinelineDetailsSuffix);
+        if (finelineNbr.contains("-BP")) {
+            integrationHubRequestContextDTO.setGetPackOptFinelineDetails(sizeAndPackSvcUrl + packOptFinelineDetailsSuffix + "/bumppack/{bumpPackNbr}");
+        }
+        else {
+            integrationHubRequestContextDTO.setGetPackOptFinelineDetails(sizeAndPackSvcUrl + packOptFinelineDetailsSuffix);
+        }
         integrationHubRequestContextDTO.setUpdatePackOptFinelineStatus(sizeAndPackSvcUrl  + packOptFinelineStatusSuffix);
-        integrationHubRequestContextDTO.setPlanId(request.getPlanId());
-        integrationHubRequestContextDTO.setFinelineNbrs(finelinesList);
+        integrationHubRequestContextDTO.setPlanId(planId);
+        integrationHubRequestContextDTO.setFinelineNbrs(finelineIsBsList);
         integrationHubRequestContextDTO.setEnv(integrationHubServiceProperties.getEnv());
         integrationHubRequestDTO.setContext(integrationHubRequestContextDTO);
         return integrationHubRequestDTO;
+    }
+
+    private void setFinelineIsBSList(RunPackOptRequest request, List<Integer> finelinesList, List<String> finelineIsBsList) {
+        List<BuyQntyResponseDTO> bumpPackCntByFinelines = spFineLineChannelFixtureRepository.getBumpPackCntByFinelines(request.getPlanId(), finelinesList);
+        bumpPackCntByFinelines.forEach(bumpPackCntByFineline -> {
+            if (bumpPackCntByFineline.getBumpPackCnt() > 1) {
+                int bumpPackCntFlag = 1;
+                while (bumpPackCntFlag <= bumpPackCntByFineline.getBumpPackCnt()) {
+                    finelineIsBsList.add(bumpPackCntByFineline.getFinelineNbr().toString() + "-BP" + bumpPackCntByFineline.getBumpPackCnt().toString());
+                    bumpPackCntFlag++;
+                }
+            }
+            else finelineIsBsList.add(bumpPackCntByFineline.getFinelineNbr().toString());
+        });
+
     }
 
     private Set<AnalyticsMlSend> createAnalyticsMlSendEntry(RunPackOptRequest request, IntegrationHubRequestDTO integrationHubRequestDTO, String analysticsJobId, String startDateStr) {

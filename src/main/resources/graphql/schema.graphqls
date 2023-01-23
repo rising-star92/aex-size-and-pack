@@ -26,7 +26,7 @@ type Mutation {
 	updateReplnConfigByCcMerchMethod(request: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse
 	updateReplnConfigByCcSpMmSize(request: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse
     calculateBuyQty(calculateBuyQtyRequest: CalculateBuyQtyRequest!): StatusResponse!
-    createRunPackOptExecution(request: RunPackOptRequest!): RunPackOptResponse
+    createRunPackOptExecution(request: RunPackOptRequest!): [RunPackOptResponse]
     updatePackOptConstraints(request:UpdatePackOptConstraintRequestDTO!):StatusResponse
     updateColorCombination(request: ColorCombinationRequest!): StatusResponse!
 }

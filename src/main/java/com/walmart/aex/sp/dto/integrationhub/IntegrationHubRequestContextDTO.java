@@ -10,6 +10,6 @@ public class IntegrationHubRequestContextDTO {
     private String getPackOptFinelineDetails;
     private String updatePackOptFinelineStatus;
     private Long planId;
-    private List<Integer> finelineNbrs;
+    private List<String> finelineNbrs;
     private String env;
 }

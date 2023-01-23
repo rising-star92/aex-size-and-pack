@@ -81,5 +81,11 @@ public interface SpFineLineChannelFixtureRepository extends JpaRepository<SpFine
     @Query(value = "delete from dbo.sp_fl_chan_fixtr where plan_id = :planId and channel_id = :channelId and fineline_nbr in (:finelineNbrs)", nativeQuery = true)
     void deleteByPlanIdFinelineIdChannelId(@Param("planId") Long planId, @Param("channelId") Integer channelId, @Param("finelineNbrs") Set<Integer> finelineNbrs);
 
+    @Query(value="select new com.walmart.aex.sp.dto.buyquantity.BuyQntyResponseDTO( " +
+            "sfcf.spFineLineChannelFixtureId.fineLineNbr, " +
+            "sfcf.bumpPackCnt ) " +
+            "from SpFineLineChannelFixture sfcf " +
+            "where ( sfcf.spFineLineChannelFixtureId.planId = :planId and sfcf.spFineLineChannelFixtureId.fineLineNbr in (:finelinesList) ) ")
+    List<BuyQntyResponseDTO> getBumpPackCntByFinelines(@Param("planId") Long planId, @Param("finelinesList") List<Integer> finelinesList);
 
 }
