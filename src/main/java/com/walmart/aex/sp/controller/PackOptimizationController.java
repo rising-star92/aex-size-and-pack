@@ -77,16 +77,14 @@ public class PackOptimizationController {
 
 
     @MutationMapping
-    public List<RunPackOptResponse> createRunPackOptExecution(@Argument RunPackOptRequest request) {
-        List<RunPackOptResponse> responseList;
-        responseList = integrationHubService.callIntegrationHubForPackOptByFineline(request);
-        if (!CollectionUtils.isEmpty(responseList)) {
-            return responseList;
+    public RunPackOptResponse createRunPackOptExecution(@Argument RunPackOptRequest request) {
+        RunPackOptResponse response = packOptService.callIntegrationHubForPackOptByFineline(request);
+        if (response != null) {
+            return response;
         } else {
             BigInteger bigInteger = BigInteger.ONE;
-            RunPackOptResponse response = new RunPackOptResponse(new Execution(bigInteger, 0, "NOT SENT TO ANALYTICS", "Error connecting with Integration Hub service"));
-            responseList.add(response);
-            return responseList;
+            response = new RunPackOptResponse(new Execution(bigInteger, 0, "NOT SENT TO ANALYTICS", "Error connecting with Integration Hub service"));
+            return response;
         }
     }
 

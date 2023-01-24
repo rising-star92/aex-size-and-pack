@@ -1,33 +1,35 @@
 package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.StatusResponse;
+import com.walmart.aex.sp.dto.buyquantity.BuyQntyResponseDTO;
+import com.walmart.aex.sp.dto.buyquantity.FinelineDto;
+import com.walmart.aex.sp.dto.buyquantity.Lvl3Dto;
+import com.walmart.aex.sp.dto.buyquantity.Lvl4Dto;
+import com.walmart.aex.sp.dto.integrationhub.IntegrationHubRequestContextDTO;
+import com.walmart.aex.sp.dto.integrationhub.IntegrationHubRequestDTO;
+import com.walmart.aex.sp.dto.integrationhub.IntegrationHubResponseDTO;
 import com.walmart.aex.sp.dto.mapper.FineLineMapper;
 import com.walmart.aex.sp.dto.mapper.FineLineMapperDto;
-import com.walmart.aex.sp.dto.packoptimization.ColorCombinationRequest;
-import com.walmart.aex.sp.dto.packoptimization.ColorCombinationStyle;
-import com.walmart.aex.sp.dto.packoptimization.FineLinePackOptimizationResponse;
-import com.walmart.aex.sp.dto.packoptimization.FineLinePackOptimizationResponseDTO;
-import com.walmart.aex.sp.dto.packoptimization.PackOptConstraintRequest;
-import com.walmart.aex.sp.dto.packoptimization.PackOptConstraintResponseDTO;
-import com.walmart.aex.sp.dto.packoptimization.PackOptimizationResponse;
-import com.walmart.aex.sp.dto.packoptimization.UpdatePackOptConstraintRequestDTO;
+import com.walmart.aex.sp.dto.packoptimization.*;
 import com.walmart.aex.sp.dto.packoptimization.sourcingFactory.FactoryDetailsResponse;
+import com.walmart.aex.sp.entity.AnalyticsMlSend;
 import com.walmart.aex.sp.entity.CcPackOptimization;
 import com.walmart.aex.sp.entity.MerchantPackOptimization;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.exception.CustomException;
-import com.walmart.aex.sp.repository.AnalyticsMlSendRepository;
-import com.walmart.aex.sp.repository.CcPackOptimizationRepository;
-import com.walmart.aex.sp.repository.FineLinePackOptimizationRepository;
-import com.walmart.aex.sp.repository.FinelinePackOptRepository;
-import com.walmart.aex.sp.repository.MerchPackOptimizationRepository;
-import com.walmart.aex.sp.repository.StyleCcPackOptConsRepository;
+import com.walmart.aex.sp.properties.IntegrationHubServiceProperties;
+import com.walmart.aex.sp.repository.*;
 import com.walmart.aex.sp.util.CommonGCPUtil;
+import com.walmart.aex.sp.util.PackOptimizationUtil;
+import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -47,6 +49,18 @@ public class PackOptimizationService {
     private final PackOptConstraintMapper packOptConstraintMapper;
     private final CcPackOptimizationRepository ccPackOptimizationRepository;
     private final SourcingFactoryService sourcingFactoryService;
+
+    @Autowired
+    private SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository;
+
+    @Autowired
+    private IntegrationHubService integrationHubService;
+
+    @ManagedConfiguration
+    private IntegrationHubServiceProperties integrationHubServiceProperties;
+
+    @Autowired
+    private PackOptimizationUtil packOptimizationUtil;
 
     private final CommonGCPUtil commonGCPUtil;
     private static final String DEFAULT_COLOR_COMBINATION_ID = "0";
@@ -118,7 +132,7 @@ public class PackOptimizationService {
             List<MerchantPackOptimization> merchantPackOptimizationList = merchPackOptimizationRepository.findMerchantPackOptimizationByMerchantPackOptimizationID_planIdAndMerchantPackOptimizationID_repTLvl3AndChannelText_channelId(request.getPlanId(), request.getLvl3Nbr(), channelId);
             if (!CollectionUtils.isEmpty(merchantPackOptimizationList)) {
                 FactoryDetailsResponse factoryDetails = getFactoryDetails(request);
-                updatePackOptimizationMapper.updateCategoryPackOptCons(request, merchantPackOptimizationList,factoryDetails);
+                updatePackOptimizationMapper.updateCategoryPackOptCons(request, merchantPackOptimizationList, factoryDetails);
                 response.setStatus(SUCCESS_STATUS);
             } else {
                 log.warn("MerchCatPackOptimization for planID : {} doesn't exists and therefore cannot update", request.getPlanId().toString());
@@ -132,16 +146,17 @@ public class PackOptimizationService {
 
     public FactoryDetailsResponse getFactoryDetails(UpdatePackOptConstraintRequestDTO request) {
         FactoryDetailsResponse factoryDetails = new FactoryDetailsResponse();
-        if(StringUtils.isNotEmpty(request.getFactoryId())){
-            if(request.getFactoryId().trim().equals(ZERO_STRING)){
+        if (StringUtils.isNotEmpty(request.getFactoryId())) {
+            if (request.getFactoryId().trim().equals(ZERO_STRING)) {
                 log.info("Pack Optimization update request has factory Id as ZERO, therefore not calling Sourcing API");
                 factoryDetails.setFactoryName(DEFAULT_FACTORY);
-            }else{
+            } else {
                 factoryDetails = sourcingFactoryService.callSourcingFactoryForFactoryDetails(request.getFactoryId());
             }
         }
         return factoryDetails;
     }
+
     private boolean isRequestValid(UpdatePackOptConstraintRequestDTO request) {
         if (request.getLvl3Nbr() == null) {
             log.warn("Invalid Request: Lvl3Nbr cannot be NULL in the request {}", request.toString());
@@ -168,7 +183,7 @@ public class PackOptimizationService {
             List<PackOptConstraintResponseDTO> packOptConstraintResponseDTO = styleCcPackOptConsRepository
                     .findByFinePlanPackOptimizationIDPlanIdAndChannelTextChannelId(request.getPlanId(), ChannelType.getChannelIdFromName(request.getChannel()), request.getFinelineNbr());
             List<FineLineMapperDto> fineLineMapperDtoList = new ArrayList<>();
-            for (PackOptConstraintResponseDTO packOptConstraintResponseDTO1: packOptConstraintResponseDTO) {
+            for (PackOptConstraintResponseDTO packOptConstraintResponseDTO1 : packOptConstraintResponseDTO) {
                 FineLineMapperDto fineLineMapperDto = FineLineMapper.fineLineMapper.packOptConstraintResponseDTOToFineLineMapperDto(packOptConstraintResponseDTO1);
                 fineLineMapperDtoList.add(fineLineMapperDto);
             }
@@ -243,8 +258,8 @@ public class PackOptimizationService {
     }
 
     private String getColorCombinationId(Set<String> colorCombinationIds) {
-        if(CollectionUtils.isEmpty(colorCombinationIds)) return DEFAULT_COLOR_COMBINATION_ID;
-        int nextColorCombinationId =  colorCombinationIds.stream()
+        if (CollectionUtils.isEmpty(colorCombinationIds)) return DEFAULT_COLOR_COMBINATION_ID;
+        int nextColorCombinationId = colorCombinationIds.stream()
                 .filter(StringUtils::isNumeric)
                 .mapToInt(Integer::valueOf)
                 .max().orElse(Integer.parseInt(DEFAULT_COLOR_COMBINATION_ID)) + COLOR_COMBINATION_INCREMENT_VALUE;
@@ -272,4 +287,84 @@ public class PackOptimizationService {
 
     }
 
+    public RunPackOptResponse callIntegrationHubForPackOptByFineline(RunPackOptRequest request) {
+        RunPackOptResponse runPackOptResponse = null;
+        try {
+            List<String> finelineIsBsList = getFinelineIsBsList(request);
+            finelineIsBsList.forEach(finelineNbr -> {
+                IntegrationHubRequestDTO integrationHubRequestDTO = getIntegrationHubRequest(request.getPlanId(), finelineNbr);
+                if (!finelineNbr.contains("-BP")) {
+                    deleteMultiBumpPackDataSet(request.getPlanId(), Integer.valueOf(finelineNbr), integrationHubServiceProperties.getEnv());
+                }
+                ResponseEntity<IntegrationHubResponseDTO> respEntity = integrationHubService.callIntegrationHubForPackOpt(integrationHubRequestDTO);
+                IntegrationHubResponseDTO integrationHubResponseDTO = respEntity.getBody();
+                if (integrationHubResponseDTO != null) {
+                    Set<AnalyticsMlSend> analyticsMlSendSet = packOptimizationUtil.createAnalyticsMlSendEntry(request, integrationHubRequestDTO, integrationHubResponseDTO.getWf_running_id(), integrationHubResponseDTO.getStarted_time());
+                    analyticsMlSendRepository.saveAll(analyticsMlSendSet);
+                    log.info("Done creating the entries in analytics_ml_send for plan_id : {}", request.getPlanId());
+                } else {
+                    throw new CustomException("Unable to reach Integration Hub service");
+                }
+            });
+            //todo - for now, sending the Execution id as 1 in the response
+            BigInteger bigInteger = BigInteger.ONE;
+            runPackOptResponse = new RunPackOptResponse(new Execution(bigInteger, 200, "SUCCESS", null));
+            return runPackOptResponse;
+        } catch (Exception ex) {
+            log.error("Error connecting with Integration Hub service: ", ex);
+            return null;
+        }
+    }
+
+    private List<String> getFinelineIsBsList(RunPackOptRequest request) {
+        InputRequest inputRequest = request.getInputRequest();
+        List<Integer> finelinesList = new ArrayList<>();
+        List<String> finelineIsBsList = new ArrayList<>();
+        if (inputRequest != null) {
+            for (Lvl3Dto lvl3 : inputRequest.getLvl3List()) {
+                for (Lvl4Dto lv4 : lvl3.getLvl4List()) {
+                    for (FinelineDto finelines : lv4.getFinelines()) {
+                        finelinesList.add(finelines.getFinelineNbr());
+                    }
+                }
+            }
+            setFinelineIsBSList(request, finelinesList, finelineIsBsList);
+        }
+        return finelineIsBsList;
+    }
+
+    private void setFinelineIsBSList(RunPackOptRequest request, List<Integer> finelinesList, List<String> finelineIsBsList) {
+        List<BuyQntyResponseDTO> bumpPackCntByFinelines = spFineLineChannelFixtureRepository.getBumpPackCntByFinelines(request.getPlanId(), finelinesList);
+        bumpPackCntByFinelines.forEach(bumpPackCntByFineline -> {
+            if (bumpPackCntByFineline.getBumpPackCnt() > 1) {
+                int bumpPackCntFlag = 1;
+                while (bumpPackCntFlag <= bumpPackCntByFineline.getBumpPackCnt()) {
+                    finelineIsBsList.add(bumpPackCntByFineline.getFinelineNbr().toString() + "-BP" + bumpPackCntByFineline.getBumpPackCnt().toString());
+                    bumpPackCntFlag++;
+                }
+            } else finelineIsBsList.add(bumpPackCntByFineline.getFinelineNbr().toString());
+        });
+
+    }
+
+    private IntegrationHubRequestDTO getIntegrationHubRequest(Long planId, String finelineNbr) {
+        List<String> finelineIsBsList = new ArrayList<>();
+        finelineIsBsList.add(finelineNbr);
+        IntegrationHubRequestDTO integrationHubRequestDTO = new IntegrationHubRequestDTO();
+        IntegrationHubRequestContextDTO integrationHubRequestContextDTO = new IntegrationHubRequestContextDTO();
+        final String packOptFinelineDetailsSuffix = "/api/packOptimization/plan/{planId}/fineline/{finelineNbr}";
+        final String packOptFinelineStatusSuffix = "/api/packOptimization/plan/{planId}/fineline/{finelineNbr}/status/{status}";
+        String sizeAndPackSvcUrl = integrationHubServiceProperties.getSizeAndPackUrl();
+        if (finelineNbr.contains("-BP")) {
+            integrationHubRequestContextDTO.setGetPackOptFinelineDetails(sizeAndPackSvcUrl + packOptFinelineDetailsSuffix + "/bumppack/{bumpPackNbr}");
+        } else {
+            integrationHubRequestContextDTO.setGetPackOptFinelineDetails(sizeAndPackSvcUrl + packOptFinelineDetailsSuffix);
+        }
+        integrationHubRequestContextDTO.setUpdatePackOptFinelineStatus(sizeAndPackSvcUrl + packOptFinelineStatusSuffix);
+        integrationHubRequestContextDTO.setPlanId(planId);
+        integrationHubRequestContextDTO.setFinelineNbrs(finelineIsBsList);
+        integrationHubRequestContextDTO.setEnv(integrationHubServiceProperties.getEnv());
+        integrationHubRequestDTO.setContext(integrationHubRequestContextDTO);
+        return integrationHubRequestDTO;
+    }
 }
