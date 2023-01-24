@@ -175,6 +175,7 @@ public class PackOptAddDataMapper {
     private void updateCcColorCombinationConstraint(CcPackOptimization ccPackOptimization, Constraints constraints, Set<String> colorCombinationSets) {
         ColorCombinationConstraints colorCombinationConstraints = constraints.getColorCombinationConstraints();
         if (colorCombinationConstraints != null) {
+            ccPackOptimization.setFactoryId(colorCombinationConstraints.getFactoryId());
             String countryOfOriginFromLP = colorCombinationConstraints.getCountryOfOrigin();
             String countryOfOriginFromSP = ccPackOptimization.getOriginCountryName();
             ccPackOptimization.setOriginCountryName(countryOfOriginFromLP);
@@ -203,7 +204,6 @@ public class PackOptAddDataMapper {
             if (!StringUtils.isEmpty(supplierName) && !StringUtils.isEmpty(ccPackOptimization.getVendorName()) && !supplierName.equalsIgnoreCase(ccPackOptimization.getVendorName())) {
                 log.info("Received Supplier Name update event from LP. Removing Country of Origin, FactoryId, Port of Origin and Color Combination for CC {}  ",ccPackOptimization.getCcPackOptimizationId());
                 ccPackOptimization.setOriginCountryName(null);
-                ccPackOptimization.setFactoryId(null);
                 ccPackOptimization.setFactoryName(null);
                 ccPackOptimization.setPortOfOriginName(null);
                 if (!StringUtils.isEmpty(ccPackOptimization.getColorCombination())) {

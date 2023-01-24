@@ -1,7 +1,7 @@
 apiVersion: "2.0"
 kind: "ServiceConfig"
 metadata:
-  serviceConfigVersion: 1.2
+  serviceConfigVersion: 1.3
   serviceId: AEX_SIZE_AND_PACK
   authzPolicies:
     adminUI:
@@ -490,7 +490,7 @@ configOverrides:
       value:
         properties:
           "rfa.projectId": "wmt-e12743607538928aa17e0e22f9"
-          "rfa.datasetName": "commitment_report_rfa_output_stg" 
+          "rfa.datasetName": "commitment_report_rfa_output_stg"
           "rfa.table.sp.cc.output": "rfa_cc_out_parquet"
           "ml.projectId": "wmt-mtech-assortment-ml-prod"
           "ml.datasetName": "aex_pack_opt_non_prod"
