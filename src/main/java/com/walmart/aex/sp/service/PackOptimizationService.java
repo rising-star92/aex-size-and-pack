@@ -353,15 +353,13 @@ public class PackOptimizationService {
         finelineIsBsList.add(finelineNbr);
         IntegrationHubRequestDTO integrationHubRequestDTO = new IntegrationHubRequestDTO();
         IntegrationHubRequestContextDTO integrationHubRequestContextDTO = new IntegrationHubRequestContextDTO();
-        final String packOptFinelineDetailsSuffix = "/api/packOptimization/plan/{planId}/fineline/{finelineNbr}";
-        final String packOptFinelineStatusSuffix = "/api/packOptimization/plan/{planId}/fineline/{finelineNbr}/status/{status}";
         String sizeAndPackSvcUrl = integrationHubServiceProperties.getSizeAndPackUrl();
         if (finelineNbr.contains(MULTI_BUMP_PACK_SUFFIX)) {
-            integrationHubRequestContextDTO.setGetPackOptFinelineDetails(sizeAndPackSvcUrl + packOptFinelineDetailsSuffix + "/bumppack/{bumpPackNbr}");
+            integrationHubRequestContextDTO.setGetPackOptFinelineDetails(sizeAndPackSvcUrl + PACKOPT_FINELINE_DETAILS_SUFFIX + BUMPPACK_DETAILS_SUFFIX);
         } else {
-            integrationHubRequestContextDTO.setGetPackOptFinelineDetails(sizeAndPackSvcUrl + packOptFinelineDetailsSuffix);
+            integrationHubRequestContextDTO.setGetPackOptFinelineDetails(sizeAndPackSvcUrl + PACKOPT_FINELINE_DETAILS_SUFFIX);
         }
-        integrationHubRequestContextDTO.setUpdatePackOptFinelineStatus(sizeAndPackSvcUrl + packOptFinelineStatusSuffix);
+        integrationHubRequestContextDTO.setUpdatePackOptFinelineStatus(sizeAndPackSvcUrl + PACKOPT_FINELINE_STATUS_SUFFIX);
         integrationHubRequestContextDTO.setPlanId(planId);
         integrationHubRequestContextDTO.setFinelineNbrs(finelineIsBsList);
         integrationHubRequestContextDTO.setEnv(integrationHubServiceProperties.getEnv());

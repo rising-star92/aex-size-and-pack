@@ -35,4 +35,7 @@ public class SizeAndPackConstants {
     public static final String API_TOKEN_KEY ="ApiTokenKey";
     public static  final String MULTI_BUMP_PACK_SUFFIX = "-BP";
     public static final String DEFAULT_FACTORY ="DEFAULT";
+    public static final String PACKOPT_FINELINE_DETAILS_SUFFIX = "/api/packOptimization/plan/{planId}/fineline/{finelineNbr}";
+    public static final String PACKOPT_FINELINE_STATUS_SUFFIX = "/api/packOptimization/plan/{planId}/fineline/{finelineNbr}/status/{status}";
+    public static final String BUMPPACK_DETAILS_SUFFIX = "/bumppack/{bumpPackNbr}";
 }
