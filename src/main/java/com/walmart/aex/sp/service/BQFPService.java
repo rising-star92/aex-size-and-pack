@@ -53,8 +53,10 @@ public class BQFPService {
          log.info("BQFP Request: {}", uri);
          final HttpHeaders headers = getHeaders();
          final ResponseEntity<BQFPResponse> respEntity = restTemplate.exchange(uri, HttpMethod.GET, new HttpEntity<>(null, headers), BQFPResponse.class);
-         if (respEntity.getStatusCode().is2xxSuccessful())
+         if (respEntity.getStatusCode().is2xxSuccessful()) {
+            log.info("Received successful response from BQFP!");
             return respEntity.getBody();
+         }
 
       } catch (URISyntaxException|NullPointerException e) {
          log.error("Error constructing BQFP service url: {}", e.getMessage());
