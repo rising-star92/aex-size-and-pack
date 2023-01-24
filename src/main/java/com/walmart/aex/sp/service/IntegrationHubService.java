@@ -43,17 +43,17 @@ public class IntegrationHubService {
     }
 
     @Retryable(backoff = @Backoff(delay = 3000))
-    public ResponseEntity<IntegrationHubResponseDTO> callIntegrationHubForPackOpt(IntegrationHubRequestDTO integrationHubRequestDTO) {
+    public IntegrationHubResponseDTO callIntegrationHubForPackOpt(IntegrationHubRequestDTO integrationHubRequestDTO) {
         try {
             final HttpHeaders headers = getHeaders();
             String url = integrationHubServiceProperties.getUrl();
             final ResponseEntity<IntegrationHubResponseDTO> respEntity = restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(integrationHubRequestDTO, headers), IntegrationHubResponseDTO.class);
             if (respEntity.getStatusCode().is2xxSuccessful()) {
-                return respEntity;
+                return respEntity.getBody();
             }
         }  catch (RestClientException rce) {
-            log.error("Error connecting with Integration Hub service: {}", rce.getMessage());
-            throw new CustomException("Unable to reach Integration Hub service");
+            log.error("Error connecting with Integration Hub service for planId : {} ", integrationHubRequestDTO.getContext().getPlanId(),rce);
+            throw new CustomException("Unable to reach Integration Hub service for plan_id :" + integrationHubRequestDTO.getContext().getPlanId() + "finelineNbr: " + integrationHubRequestDTO.getContext().getFinelineNbrs());
         }
         return null;
     }
@@ -70,15 +70,8 @@ public class IntegrationHubService {
     }
 
     @Recover
-    public RunPackOptResponse recover(Exception e, RunPackOptRequest request) {
-        RunPackOptResponse response = createDefaultResponse();
-        log.error("IntegrationHub service call failed after 3 retries for url : " + request, e);
-        return response;
+    public IntegrationHubResponseDTO recover(Exception e, IntegrationHubRequestDTO integrationHubRequestDTO) {
+        log.error("IntegrationHub service call failed after 3 retries for url : " + integrationHubRequestDTO, e);
+        return null;
     }
-
-    private RunPackOptResponse createDefaultResponse() {
-        return new RunPackOptResponse();
-    }
-
-
 }

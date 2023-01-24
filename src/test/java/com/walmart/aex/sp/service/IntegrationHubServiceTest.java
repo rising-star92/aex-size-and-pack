@@ -62,7 +62,7 @@ class IntegrationHubServiceTest {
         when(properties.getUrl()).thenReturn("http://10.22.137.216/api/packopt?scenario=pack_optimization_dataproc");
         when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), any(), eq(IntegrationHubResponseDTO.class))).thenReturn(response);
         IntegrationHubRequestDTO integrationHubRequestDTO = new IntegrationHubRequestDTO();
-        ResponseEntity<IntegrationHubResponseDTO> result = integrationHubService.callIntegrationHubForPackOpt(integrationHubRequestDTO);
+        IntegrationHubResponseDTO result = integrationHubService.callIntegrationHubForPackOpt(integrationHubRequestDTO);
         assertNotNull(result);
     }
 

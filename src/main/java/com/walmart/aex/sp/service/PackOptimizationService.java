@@ -21,10 +21,12 @@ import com.walmart.aex.sp.properties.IntegrationHubServiceProperties;
 import com.walmart.aex.sp.repository.*;
 import com.walmart.aex.sp.util.CommonGCPUtil;
 import com.walmart.aex.sp.util.PackOptimizationUtil;
+import com.walmart.aex.sp.util.SizeAndPackConstants;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -293,25 +295,24 @@ public class PackOptimizationService {
             List<String> finelineIsBsList = getFinelineIsBsList(request);
             finelineIsBsList.forEach(finelineNbr -> {
                 IntegrationHubRequestDTO integrationHubRequestDTO = getIntegrationHubRequest(request.getPlanId(), finelineNbr);
-                if (!finelineNbr.contains("-BP")) {
+                if (!finelineNbr.contains(MULTI_BUMP_PACK_SUFFIX)) {
                     deleteMultiBumpPackDataSet(request.getPlanId(), Integer.valueOf(finelineNbr), integrationHubServiceProperties.getEnv());
                 }
-                ResponseEntity<IntegrationHubResponseDTO> respEntity = integrationHubService.callIntegrationHubForPackOpt(integrationHubRequestDTO);
-                IntegrationHubResponseDTO integrationHubResponseDTO = respEntity.getBody();
-                if (integrationHubResponseDTO != null) {
+                IntegrationHubResponseDTO integrationHubResponseDTO = integrationHubService.callIntegrationHubForPackOpt(integrationHubRequestDTO);
+                if (null != integrationHubResponseDTO) {
                     Set<AnalyticsMlSend> analyticsMlSendSet = packOptimizationUtil.createAnalyticsMlSendEntry(request, integrationHubRequestDTO, integrationHubResponseDTO.getWf_running_id(), integrationHubResponseDTO.getStarted_time());
                     analyticsMlSendRepository.saveAll(analyticsMlSendSet);
-                    log.info("Done creating the entries in analytics_ml_send for plan_id : {}", request.getPlanId());
+                    log.info("Done creating the entries in analytics_ml_send for plan_id : {}, finelineNbr: {}", request.getPlanId(), finelineNbr);
                 } else {
-                    throw new CustomException("Unable to reach Integration Hub service");
+                    throw new CustomException("Unable to reach Integration Hub service for plan_id :" + request.getPlanId() + "finelineNbr: " + finelineNbr);
                 }
             });
             //todo - for now, sending the Execution id as 1 in the response
             BigInteger bigInteger = BigInteger.ONE;
-            runPackOptResponse = new RunPackOptResponse(new Execution(bigInteger, 200, "SUCCESS", null));
+            runPackOptResponse = new RunPackOptResponse(new Execution(bigInteger, HttpStatus.OK.value(), SUCCESS_STATUS, null));
             return runPackOptResponse;
         } catch (Exception ex) {
-            log.error("Error connecting with Integration Hub service: ", ex);
+            log.error("Error connecting with Integration Hub service for request: {} ", request,ex);
             return null;
         }
     }
@@ -339,7 +340,7 @@ public class PackOptimizationService {
             if (bumpPackCntByFineline.getBumpPackCnt() > 1) {
                 int bumpPackCntFlag = 1;
                 while (bumpPackCntFlag <= bumpPackCntByFineline.getBumpPackCnt()) {
-                    finelineIsBsList.add(bumpPackCntByFineline.getFinelineNbr().toString() + "-BP" + bumpPackCntByFineline.getBumpPackCnt().toString());
+                    finelineIsBsList.add(bumpPackCntByFineline.getFinelineNbr().toString() + MULTI_BUMP_PACK_SUFFIX + bumpPackCntByFineline.getBumpPackCnt().toString());
                     bumpPackCntFlag++;
                 }
             } else finelineIsBsList.add(bumpPackCntByFineline.getFinelineNbr().toString());
@@ -355,7 +356,7 @@ public class PackOptimizationService {
         final String packOptFinelineDetailsSuffix = "/api/packOptimization/plan/{planId}/fineline/{finelineNbr}";
         final String packOptFinelineStatusSuffix = "/api/packOptimization/plan/{planId}/fineline/{finelineNbr}/status/{status}";
         String sizeAndPackSvcUrl = integrationHubServiceProperties.getSizeAndPackUrl();
-        if (finelineNbr.contains("-BP")) {
+        if (finelineNbr.contains(MULTI_BUMP_PACK_SUFFIX)) {
             integrationHubRequestContextDTO.setGetPackOptFinelineDetails(sizeAndPackSvcUrl + packOptFinelineDetailsSuffix + "/bumppack/{bumpPackNbr}");
         } else {
             integrationHubRequestContextDTO.setGetPackOptFinelineDetails(sizeAndPackSvcUrl + packOptFinelineDetailsSuffix);

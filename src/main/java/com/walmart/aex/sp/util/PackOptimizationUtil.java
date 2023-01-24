@@ -5,16 +5,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.buyquantity.FinelineDto;
 import com.walmart.aex.sp.dto.buyquantity.Lvl3Dto;
 import com.walmart.aex.sp.dto.buyquantity.Lvl4Dto;
-import com.walmart.aex.sp.dto.integrationhub.IntegrationHubRequestContextDTO;
 import com.walmart.aex.sp.dto.integrationhub.IntegrationHubRequestDTO;
 import com.walmart.aex.sp.dto.packoptimization.InputRequest;
 import com.walmart.aex.sp.dto.packoptimization.RunPackOptRequest;
 import com.walmart.aex.sp.entity.AnalyticsMlSend;
 import com.walmart.aex.sp.enums.RunStatusCodeType;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.time.Instant;
 import java.util.*;
 
 @Component
@@ -22,6 +21,9 @@ import java.util.*;
 public class PackOptimizationUtil {
 
     final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Autowired
+    private CommonUtil commonUtil;
 
     public Set<AnalyticsMlSend> createAnalyticsMlSendEntry(RunPackOptRequest request, IntegrationHubRequestDTO integrationHubRequestDTO, String analysticsJobId, String startDateStr) {
         Set<AnalyticsMlSend> analyticsMlSendSet = new HashSet<>();
@@ -46,7 +48,7 @@ public class PackOptimizationUtil {
                         analyticsMlSend.setRunStatusCode(RunStatusCodeType.SENT_TO_ANALYTICS.getId());
                         //todo - hard coding values as its non null property
                         analyticsMlSend.setAnalyticsSendDesc("analytics Desc");
-                        Date startDate = getStartDate(startDateStr);
+                        Date startDate = commonUtil.getStartDate(startDateStr);
                         analyticsMlSend.setStartTs(startDate);
                         analyticsMlSend.setEndTs(null);
                         analyticsMlSend.setRetryCnt(0);
@@ -68,20 +70,5 @@ public class PackOptimizationUtil {
         }
 
         return analyticsMlSendSet;
-    }
-
-    private Date getStartDate(String startDateStr) {
-        Date date = null;
-        if (startDateStr != null && !startDateStr.isEmpty()) {
-            try {
-                Instant startDateInstant = Instant.parse(startDateStr);
-                if (startDateInstant != null) {
-                    date = Date.from(startDateInstant);
-                }
-            } catch (Exception ex) {
-                log.info("Error converting the start Date string: {}", ex.getMessage());
-            }
-        }
-        return date;
     }
 }
