@@ -1,6 +1,7 @@
 package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.packoptimization.*;
+import com.walmart.aex.sp.dto.packoptimization.sourcingFactory.FactoryDetailsResponse;
 import com.walmart.aex.sp.dto.planhierarchy.*;
 import com.walmart.aex.sp.entity.*;
 import com.walmart.aex.sp.enums.ChannelType;
@@ -22,10 +23,12 @@ public class PackOptAddDataMapper {
     private final SizeAndPackObjectMapper sizeAndPackObjectMapper;
     private final MerchPackOptimizationRepository merchPackOptimizationRepository;
     private static final Integer DEFAULT_SINGLE_PACK_INDICATOR = 0;
+    private final SourcingFactoryService sourcingFactoryService;
 
-    public PackOptAddDataMapper(SizeAndPackObjectMapper sizeAndPackObjectMapper, MerchPackOptimizationRepository merchPackOptimizationRepository) {
+    public PackOptAddDataMapper(SizeAndPackObjectMapper sizeAndPackObjectMapper, MerchPackOptimizationRepository merchPackOptimizationRepository, SourcingFactoryService sourcingFactoryService) {
         this.sizeAndPackObjectMapper = sizeAndPackObjectMapper;
         this.merchPackOptimizationRepository = merchPackOptimizationRepository;
+        this.sourcingFactoryService = sourcingFactoryService;
     }
 
     public Set<MerchantPackOptimization> setMerchCatPackOpt(PlanSizeAndPackDTO request, Lvl1 lvl1, Lvl2 lvl2, Lvl3 lvl3) {
@@ -176,6 +179,9 @@ public class PackOptAddDataMapper {
         ColorCombinationConstraints colorCombinationConstraints = constraints.getColorCombinationConstraints();
         if (colorCombinationConstraints != null) {
             ccPackOptimization.setFactoryId(colorCombinationConstraints.getFactoryId());
+            log.info("Update CC pack Optimization Factory Name for Factory ID {}",colorCombinationConstraints.getFactoryId());
+            FactoryDetailsResponse factoryDetails = sourcingFactoryService.getFactoryDetails(colorCombinationConstraints.getFactoryId());
+            ccPackOptimization.setFactoryName(factoryDetails.getFactoryName());
             String countryOfOriginFromLP = colorCombinationConstraints.getCountryOfOrigin();
             String countryOfOriginFromSP = ccPackOptimization.getOriginCountryName();
             ccPackOptimization.setOriginCountryName(countryOfOriginFromLP);
@@ -204,7 +210,6 @@ public class PackOptAddDataMapper {
             if (!StringUtils.isEmpty(supplierName) && !StringUtils.isEmpty(ccPackOptimization.getVendorName()) && !supplierName.equalsIgnoreCase(ccPackOptimization.getVendorName())) {
                 log.info("Received Supplier Name update event from LP. Removing Country of Origin, FactoryId, Port of Origin and Color Combination for CC {}  ",ccPackOptimization.getCcPackOptimizationId());
                 ccPackOptimization.setOriginCountryName(null);
-                ccPackOptimization.setFactoryName(null);
                 ccPackOptimization.setPortOfOriginName(null);
                 if (!StringUtils.isEmpty(ccPackOptimization.getColorCombination())) {
                     colorCombinationSets.add(ccPackOptimization.getColorCombination());

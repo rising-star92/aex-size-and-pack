@@ -1,14 +1,10 @@
 package com.walmart.aex.sp.service;
 
-import com.walmart.aex.sp.dto.integrationhub.IntegrationHubResponseDTO;
-import com.walmart.aex.sp.dto.packoptimization.RunPackOptResponse;
+import com.walmart.aex.sp.dto.packoptimization.UpdatePackOptConstraintRequestDTO;
 import com.walmart.aex.sp.dto.packoptimization.sourcingFactory.Address;
 import com.walmart.aex.sp.dto.packoptimization.sourcingFactory.FactoryDetailsDTO;
 import com.walmart.aex.sp.dto.packoptimization.sourcingFactory.FactoryDetailsResponse;
-import com.walmart.aex.sp.properties.IntegrationHubServiceProperties;
 import com.walmart.aex.sp.properties.SourcingFactoryServiceProperties;
-import com.walmart.aex.sp.repository.AnalyticsMlSendRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,6 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -79,5 +77,28 @@ class SourcingFactoryServiceTest {
         factoryDetailsDTO.setFactoryName("PKG--LA BC");
         factoryDetailsDTO.setAddress(address);
         return factoryDetailsDTO;
+    }
+
+    @Test
+    void testGetFactoryDetailsWhenFactoryIdIsNotZero() {
+        UpdatePackOptConstraintRequestDTO request = new UpdatePackOptConstraintRequestDTO();
+        request.setFactoryId("123456");
+        FactoryDetailsDTO factoryDetails = getFactoryDetails();
+        ResponseEntity<FactoryDetailsDTO> responseEntity = ResponseEntity.status(HttpStatus.OK).body(factoryDetails);;
+        when(restTemplate.exchange(anyString(), eq(HttpMethod.GET), any(), eq(FactoryDetailsDTO.class))).thenReturn(responseEntity);
+        FactoryDetailsResponse response = sourcingFactoryService.getFactoryDetails(request.getFactoryId());
+        assertEquals("PKG--LA BC",response.getFactoryName());
+        assertEquals("FRANCE",response.getCountry());
+        assertEquals("FR",response.getCountryCode());
+    }
+
+    @Test
+    void testGetFactoryDetailsWhenFactoryIdIsZero() {
+        UpdatePackOptConstraintRequestDTO request = new UpdatePackOptConstraintRequestDTO();
+        request.setFactoryId("0");
+        FactoryDetailsResponse response = sourcingFactoryService.getFactoryDetails(request.getFactoryId());
+        assertEquals("DEFAULT",response.getFactoryName());
+        assertNull(response.getCountry());
+        assertNull(response.getCountryCode());
     }
 }

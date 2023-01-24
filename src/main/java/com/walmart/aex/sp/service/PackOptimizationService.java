@@ -47,7 +47,6 @@ public class PackOptimizationService {
     private final PackOptConstraintMapper packOptConstraintMapper;
     private final CcPackOptimizationRepository ccPackOptimizationRepository;
     private final SourcingFactoryService sourcingFactoryService;
-
     private final CommonGCPUtil commonGCPUtil;
     private static final String DEFAULT_COLOR_COMBINATION_ID = "0";
     private static final int COLOR_COMBINATION_INCREMENT_VALUE = 1;
@@ -117,7 +116,12 @@ public class PackOptimizationService {
             log.debug("Check if a MerchCatPackOptimization for planID : {} already exists or not", request.getPlanId().toString());
             List<MerchantPackOptimization> merchantPackOptimizationList = merchPackOptimizationRepository.findMerchantPackOptimizationByMerchantPackOptimizationID_planIdAndMerchantPackOptimizationID_repTLvl3AndChannelText_channelId(request.getPlanId(), request.getLvl3Nbr(), channelId);
             if (!CollectionUtils.isEmpty(merchantPackOptimizationList)) {
-                FactoryDetailsResponse factoryDetails = getFactoryDetails(request);
+                FactoryDetailsResponse factoryDetails = new FactoryDetailsResponse();
+                if(request.getFactoryId()!=null && request.getFactoryName()==null){
+                    factoryDetails = sourcingFactoryService.getFactoryDetails(request.getFactoryId());
+                }else if(request.getFactoryId()!=null && request.getFactoryName()!=null){
+                    factoryDetails.setFactoryName(request.getFactoryName().trim());
+                }
                 updatePackOptimizationMapper.updateCategoryPackOptCons(request, merchantPackOptimizationList,factoryDetails);
                 response.setStatus(SUCCESS_STATUS);
             } else {
@@ -130,18 +134,6 @@ public class PackOptimizationService {
         return response;
     }
 
-    public FactoryDetailsResponse getFactoryDetails(UpdatePackOptConstraintRequestDTO request) {
-        FactoryDetailsResponse factoryDetails = new FactoryDetailsResponse();
-        if(StringUtils.isNotEmpty(request.getFactoryId())){
-            if(request.getFactoryId().trim().equals(ZERO_STRING)){
-                log.info("Pack Optimization update request has factory Id as ZERO, therefore not calling Sourcing API");
-                factoryDetails.setFactoryName(DEFAULT_FACTORY);
-            }else{
-                factoryDetails = sourcingFactoryService.callSourcingFactoryForFactoryDetails(request.getFactoryId());
-            }
-        }
-        return factoryDetails;
-    }
     private boolean isRequestValid(UpdatePackOptConstraintRequestDTO request) {
         if (request.getLvl3Nbr() == null) {
             log.warn("Invalid Request: Lvl3Nbr cannot be NULL in the request {}", request.toString());
