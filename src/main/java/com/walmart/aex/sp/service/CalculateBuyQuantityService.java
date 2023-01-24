@@ -89,7 +89,7 @@ public class CalculateBuyQuantityService {
         List<SpFineLineChannelFixture> spFineLineChannelFixtures1 = buyQuantityCommonRepository.getSpFineLineChannelFixtureRepository().findSpFineLineChannelFixtureBySpFineLineChannelFixtureId_planIdAndSpFineLineChannelFixtureId_channelId(calculateBuyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(calculateBuyQtyRequest.getChannel())).orElse(new ArrayList<>());
 
         List<MerchCatgReplPack> merchCatgReplPacks = replenishmentCommonRepository.getMerchCatgReplPackRepository().findMerchCatgReplPackByMerchCatgReplPackId_planIdAndMerchCatgReplPackId_channelId(calculateBuyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(calculateBuyQtyRequest.getChannel())).orElse(new ArrayList<>());
-
+        log.info("Started Executing Calculate Buy Quantity Parallel Requests : {}", calculateBuyQtyParallelRequests);
         List<CompletableFuture<CalculateBuyQtyResponse>> completableFutures = calculateBuyQtyParallelRequests.stream().map(calculateBuyQtyParallelRequest -> CompletableFuture.supplyAsync(() -> {
                     List<SpFineLineChannelFixture> spFineLineChannelFixtures2 = Optional.of(spFineLineChannelFixtures1)
                             .stream()

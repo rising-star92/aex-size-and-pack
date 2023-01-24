@@ -1,8 +1,10 @@
 package com.walmart.aex.sp.dto.buyquantity;
 
 import lombok.Data;
+import lombok.ToString;
 
 @Data
+@ToString
 public class CalculateBuyQtyParallelRequest {
     private Long planId;
     private String channel;
