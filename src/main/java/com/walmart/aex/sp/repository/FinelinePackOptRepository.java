@@ -66,7 +66,7 @@ public interface FinelinePackOptRepository
             "cpk.vendorNbr6 as ccVendorNumber6 , " +
             "cpk.gsmSupplierId as ccGsmSupplierNumber , " +
             "cpk.vendorNbr9 as ccVendorNumber9 , " +
-            "cpk.factoryId as ccFactoryIds , " +
+            "COALESCE(cpk.overrideFactoryId, cpk.factoryId) as ccFactoryId , " +
             "cpk.originCountryName as ccCountryOfOrigin , " +
             "cpk.portOfOriginName as ccPortOfOrigin , " +
             "cpk.singlePackInd as ccSinglePackIndicator , " +

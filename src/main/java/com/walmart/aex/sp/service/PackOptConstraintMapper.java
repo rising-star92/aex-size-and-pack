@@ -50,7 +50,7 @@ public class PackOptConstraintMapper {
         supplierMap = new LinkedHashMap<>();
         List<FineLineMapperDto> fineLineMapperDtoList;
         fineLineMapperDtoList = updateFineLineLevelSuppliers(finePlanPackOptimizationList);
-        if (fineLineMapperDtoList.stream().filter(fineLineMapperDto -> fineLineMapperDto.getStyleNbr() != null).count() > 0)
+        if (fineLineMapperDtoList.stream().anyMatch(fineLineMapperDto -> fineLineMapperDto.getStyleNbr() != null))
             fineLineMapperDtoList = updateStyleLevelSuppliers(fineLineMapperDtoList);
         return fineLineMapperDtoList;
     }
@@ -76,7 +76,7 @@ public class PackOptConstraintMapper {
             if(StringUtils.isNotEmpty(fineLineMapperDto.getCcPortOfOrigin())) {
                 addValue(fineLinePortOfOrigin, fineLineMapperDto.getFineLineNbr(), fineLineMapperDto.getCcPortOfOrigin());
             }
-            if(StringUtils.isNotEmpty(fineLineMapperDto.getCcFactoryIds())) {
+            if(StringUtils.isNotEmpty(fineLineMapperDto.getCcFactoryId())) {
                 String newFactoryId = getFactoryId(fineLineMapperDto);
                 addValue(fineLineFactoryId, fineLineMapperDto.getFineLineNbr(), newFactoryId);
             }
@@ -94,10 +94,10 @@ public class PackOptConstraintMapper {
 
     private String getFactoryId(FineLineMapperDto fineLineMapperDto) {
         StringBuilder sb = new StringBuilder();
-        if(StringUtils.isNotEmpty(fineLineMapperDto.getCcFactoryIds()) && StringUtils.isNotEmpty(fineLineMapperDto.getCcFactoryName())) {
-            sb.append(fineLineMapperDto.getCcFactoryIds()).append(" - ").append(fineLineMapperDto.getCcFactoryName());
-        } else if(StringUtils.isNotEmpty(fineLineMapperDto.getCcFactoryIds())) {
-            sb.append(fineLineMapperDto.getCcFactoryIds());
+        if(StringUtils.isNotEmpty(fineLineMapperDto.getCcFactoryId()) && StringUtils.isNotEmpty(fineLineMapperDto.getCcFactoryName())) {
+            sb.append(fineLineMapperDto.getCcFactoryId()).append(" - ").append(fineLineMapperDto.getCcFactoryName());
+        } else if(StringUtils.isNotEmpty(fineLineMapperDto.getCcFactoryId())) {
+            sb.append(fineLineMapperDto.getCcFactoryId());
         }
         return sb.toString();
     }
@@ -157,7 +157,7 @@ public class PackOptConstraintMapper {
             if(StringUtils.isNotEmpty(fineLineMapperDto.getCcPortOfOrigin())) {
                 addValue(stylePortOfOrigin, fineLineMapperDto.getStyleNbr(), fineLineMapperDto.getCcPortOfOrigin());
             }
-            if(StringUtils.isNotEmpty(fineLineMapperDto.getCcFactoryIds())) {
+            if(StringUtils.isNotEmpty(fineLineMapperDto.getCcFactoryId())) {
                 String newFactoryId = getFactoryId(fineLineMapperDto);
                 addValue(styleFactoryId, fineLineMapperDto.getStyleNbr(), newFactoryId);
             }
