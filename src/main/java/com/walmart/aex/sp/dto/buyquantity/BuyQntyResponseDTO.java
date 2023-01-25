@@ -51,6 +51,7 @@ public class BuyQntyResponseDTO {
     private String altFineLineDesc;
     private String colorFamilyDesc;
     private String colorName;
+    private Integer bumpPackCnt;
 
     public BuyQntyResponseDTO(Long planId, Integer channelId, Integer lvl0Nbr, String lvl0Desc, Integer lvl1Nbr, String lvl1Desc, Integer lvl2Nbr,
                               String lvl2Desc, Integer lvl3Nbr, String lvl3Desc, Integer lvl4Nbr, String lvl4Desc, Integer finelineNbr,
@@ -204,5 +205,10 @@ public class BuyQntyResponseDTO {
         this.buyQty=buyQty;
         this.replnQty=replnQty;
         this.adjReplnQty=adjReplnQty;
+    }
+
+    public BuyQntyResponseDTO(Integer finelineNbr, Integer bumpPackCnt) {
+        this.finelineNbr=finelineNbr;
+        this.bumpPackCnt=bumpPackCnt;
     }
 }

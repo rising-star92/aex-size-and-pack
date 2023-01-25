@@ -9,6 +9,7 @@ import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import com.walmart.aex.sp.dto.packoptimization.FineLinePackOptimizationResponse;
@@ -28,6 +29,8 @@ import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
 
@@ -75,7 +78,7 @@ public class PackOptimizationController {
 
     @MutationMapping
     public RunPackOptResponse createRunPackOptExecution(@Argument RunPackOptRequest request) {
-        RunPackOptResponse response = integrationHubService.callIntegrationHubForPackOpt(request);
+        RunPackOptResponse response = packOptService.callIntegrationHubForPackOptByFineline(request);
         if (response != null) {
             return response;
         } else {
