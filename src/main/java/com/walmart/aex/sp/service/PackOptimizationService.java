@@ -333,8 +333,14 @@ public class PackOptimizationService {
             if (bumpPackCntByFineline.getBumpPackCnt() > 1) {
                 int bumpPackCntFlag = 1;
                 while (bumpPackCntFlag <= bumpPackCntByFineline.getBumpPackCnt()) {
-                    finelineIsBsList.add(bumpPackCntByFineline.getFinelineNbr().toString() + MULTI_BUMP_PACK_SUFFIX + bumpPackCntByFineline.getBumpPackCnt().toString());
-                    bumpPackCntFlag++;
+                    if (bumpPackCntFlag > 1) {
+                        finelineIsBsList.add(bumpPackCntByFineline.getFinelineNbr().toString() + MULTI_BUMP_PACK_SUFFIX + bumpPackCntFlag);
+                        bumpPackCntFlag++;
+                    }
+                    else {
+                        finelineIsBsList.add(bumpPackCntByFineline.getFinelineNbr().toString());
+                        bumpPackCntFlag++;
+                    }
                 }
             } else finelineIsBsList.add(bumpPackCntByFineline.getFinelineNbr().toString());
         });
