@@ -10,7 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class WFAttributes {
-    private List<Integer> context_finelineNbrs;
+    private List<String> context_finelineNbrs;
     private String context_getPackOptFinelineDetails;
     private Long context_planId;
     private String context_updatePackOptFinelineStatus;
