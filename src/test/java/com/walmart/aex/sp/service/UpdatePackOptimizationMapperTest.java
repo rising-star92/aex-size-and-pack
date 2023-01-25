@@ -250,7 +250,7 @@ public class UpdatePackOptimizationMapperTest {
                     assertNull(stPackOptimization.getOriginCountryCode());
                     assertNull(stPackOptimization.getOriginCountryName());
                     for (CcPackOptimization ccPkOptimization :stPackOptimization.getCcPackOptimization()){
-                        assertEquals("DEFAULT",ccPkOptimization.getFactoryName());
+                        assertEquals("DEFAULT",ccPkOptimization.getOverrideFactoryName());
                         assertNull(ccPkOptimization.getOriginCountryCode());
                         assertNull(ccPkOptimization.getOriginCountryName());
                     }
