@@ -12,11 +12,10 @@ import org.springframework.stereotype.Component;
 public class CommonGCPUtil {
     @ManagedConfiguration
     BigQueryConnectionProperties bigQueryConnectionProperties;
-    private final String projectId = bigQueryConnectionProperties.getMLProjectId();
-    private final String bucketName = bigQueryConnectionProperties.getMLDataSetName();
-
     public boolean delete(String storagePath, String folderPrefix) {
         boolean deleted = false;
+        final String projectId = bigQueryConnectionProperties.getMLProjectId();
+        final String bucketName = bigQueryConnectionProperties.getMLDataSetName();
         Storage storage = StorageOptions.newBuilder().setProjectId(projectId).build().getService();
         Page<Blob> blobs =
                 storage.list(

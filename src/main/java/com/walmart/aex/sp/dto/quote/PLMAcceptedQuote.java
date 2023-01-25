@@ -19,4 +19,6 @@ public class PLMAcceptedQuote {
     private Long supplier9Nbr;
     private String supplierName;
     private String supplierType;
+    private String countryOfOrigin;
+    private String portOfOrigin;
 }

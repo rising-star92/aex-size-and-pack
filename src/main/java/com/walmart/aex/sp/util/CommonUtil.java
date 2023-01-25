@@ -14,7 +14,9 @@ import org.jsoup.safety.Whitelist;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Optional;
 
 @Component
@@ -123,5 +125,20 @@ public class CommonUtil {
     public PlanSizeAndPackDTO cleanSPRequest(PlanSizeAndPackDTO planSizeAndPackDTO) throws IOException {
         return objectMapper.readValue(Jsoup.clean(StringEscapeUtils.escapeHtml(StringEscapeUtils.escapeSql(objectMapper.writeValueAsString(planSizeAndPackDTO))),
                 Whitelist.basic()), PlanSizeAndPackDTO.class);
+    }
+
+    public Date getStartDate(String startDateStr) {
+        Date date = null;
+        if (startDateStr != null && !startDateStr.isEmpty()) {
+            try {
+                Instant startDateInstant = Instant.parse(startDateStr);
+                if (startDateInstant != null) {
+                    date = Date.from(startDateInstant);
+                }
+            } catch (Exception ex) {
+                log.info("Error converting the start Date string: {}", ex.getMessage());
+            }
+        }
+        return date;
     }
 }

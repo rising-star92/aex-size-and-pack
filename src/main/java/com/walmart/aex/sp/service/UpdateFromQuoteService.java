@@ -57,7 +57,8 @@ public class UpdateFromQuoteService {
             processInputRequestForFactoryUpdate(planId, inputRequest, plmAcceptedQuoteFineLines);
             response.setStatus(SUCCESS_STATUS);
         }catch (Exception e){
-            log.error("Error while processing the cccc.....");
+            log.error("UpdateFromQuote failed: ",e);
+            response.setStatus(FAILED_STATUS);
         }
         return response;
     }
@@ -163,7 +164,7 @@ public class UpdateFromQuoteService {
         return Optional.ofNullable(plmAcceptedQuoteFineLines)
                 .stream()
                 .flatMap(Collection::stream)
-                .filter(plmFl -> (plmFl.getFinelineNbr() == fineLinenbr && plmFl.getLvl4Nbr() == lv4nbr && plmFl.getLvl3Nbr() == lv3Nbr))
+                .filter(plmFl -> (plmFl.getFinelineNbr().equals(fineLinenbr) && plmFl.getLvl4Nbr().equals(lv4nbr) && plmFl.getLvl3Nbr().equals(lv3Nbr)))
                 .findFirst().orElse(null);
     }
 

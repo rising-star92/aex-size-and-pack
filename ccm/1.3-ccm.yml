@@ -1,7 +1,7 @@
 apiVersion: "2.0"
 kind: "ServiceConfig"
 metadata:
-  serviceConfigVersion: 1.2
+  serviceConfigVersion: 1.3
   serviceId: AEX_SIZE_AND_PACK
   authzPolicies:
     adminUI:
@@ -481,29 +481,6 @@ configOverrides:
         properties:
           "integrationhub.env": "stage"
           "integrationhub.sizeAndPackBaseUrl": "http://aex-size-and-pack.aex.stg.walmart.net"
-  plmApiConfig:
-    - name: "dev"
-      description: "PLM Config override for DEV profile"
-      pathElements:
-        envName: "dev"
-        envProfile: "dev"
-      value:
-        properties:
-          "plm.baseUrl": "https://plm-services.aex.dev.walmart.net/"
-          "plm.consumerId": "ba539c67-5318-4b68-967b-930c767b2dc0"
-          "plm.appKey": "AEX_PLM_SERVICES"
-          "plm.env": "dev"
-    - name: "stage"
-      description: "Flow Plan override for STAGE profile"
-      pathElements:
-        envName: "stage"
-        envProfile: "stage"
-      value:
-        properties:
-          "plm.baseUrl": "https://plm-services.aex.stg.walmart.net/"
-          "plm.consumerId": "2e89ee47-4879-475a-a01b-1995123df8fe"
-          "plm.appKey": "AEX_PLM_SERVICES"
-          "plm.env": "stg"
   bigQueryConfig:
     - name: "stage"
       description: "Big Query config override for STAGE profile "
@@ -513,7 +490,7 @@ configOverrides:
       value:
         properties:
           "rfa.projectId": "wmt-e12743607538928aa17e0e22f9"
-          "rfa.datasetName": "commitment_report_rfa_output_stg" 
+          "rfa.datasetName": "commitment_report_rfa_output_stg"
           "rfa.table.sp.cc.output": "rfa_cc_out_parquet"
           "ml.projectId": "wmt-mtech-assortment-ml-prod"
           "ml.datasetName": "aex_pack_opt_non_prod"

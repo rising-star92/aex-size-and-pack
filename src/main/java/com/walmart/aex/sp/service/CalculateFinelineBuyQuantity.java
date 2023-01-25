@@ -79,6 +79,7 @@ public class CalculateFinelineBuyQuantity {
     }
 
     public CalculateBuyQtyResponse calculateFinelineBuyQty(CalculateBuyQtyRequest calculateBuyQtyRequest, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, CalculateBuyQtyResponse calculateBuyQtyResponse) throws CustomException {
+        log.info("Calculating buy quantity for planId: {}, finelineNbr: {}, channel: {}", calculateBuyQtyParallelRequest.getPlanId(), calculateBuyQtyParallelRequest.getFinelineNbr(), calculateBuyQtyParallelRequest.getChannel());
         CompletableFuture<BuyQtyResponse> buyQtyResponseCompletableFuture = getBuyQtyResponseCompletableFuture(calculateBuyQtyRequest, calculateBuyQtyParallelRequest);
         CompletableFuture<BQFPResponse> bqfpResponseCompletableFuture = getBqfpResponseCompletableFuture(calculateBuyQtyRequest, calculateBuyQtyParallelRequest);
 
@@ -432,7 +433,7 @@ public class CalculateFinelineBuyQuantity {
         bqfpRequest.setPlanId(calculateBuyQtyRequest.getPlanId());
         bqfpRequest.setChannel(ChannelType.getChannelIdFromName(calculateBuyQtyRequest.getChannel()).toString());
         bqfpRequest.setFinelineNbr(finelineNbr);
-
+        log.info("BQFPRequest payload for planId {} : {}", bqfpRequest, calculateBuyQtyRequest.getPlanId());
         return bqfpService.getBuyQuantityUnits(bqfpRequest);
     }
 

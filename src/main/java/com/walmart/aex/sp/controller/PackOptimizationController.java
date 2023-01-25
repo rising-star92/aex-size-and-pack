@@ -5,10 +5,12 @@ import com.walmart.aex.sp.dto.StatusResponse;
 import com.walmart.aex.sp.dto.packoptimization.isbpqty.ISAndBPQtyDTO;
 import com.walmart.aex.sp.enums.Action;
 import com.walmart.aex.sp.service.PostPackOptimizationService;
+import com.walmart.aex.sp.service.UpdateFromQuoteService;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import com.walmart.aex.sp.dto.packoptimization.FineLinePackOptimizationResponse;
@@ -28,6 +30,8 @@ import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
 
@@ -44,13 +48,16 @@ public class PackOptimizationController {
 
     private final IntegrationHubService integrationHubService;
 
+    private final UpdateFromQuoteService updateFromQuoteService;
+
     private static final Integer DEFAULT_BUMPPACK = 1;
 
-    public PackOptimizationController(PackOptimizationService packOptService, IntegrationHubService integrationHubService, PostPackOptimizationService postPackOptimizationService) {
+    public PackOptimizationController(PackOptimizationService packOptService, IntegrationHubService integrationHubService, PostPackOptimizationService postPackOptimizationService, UpdateFromQuoteService updateFromQuoteService) {
 
         this.packOptService = packOptService;
         this.integrationHubService = integrationHubService;
         this.postPackOptimizationService = postPackOptimizationService;
+        this.updateFromQuoteService = updateFromQuoteService;
     }
 
     public static final String SUCCESS_STATUS = "Success";
@@ -75,7 +82,7 @@ public class PackOptimizationController {
 
     @MutationMapping
     public RunPackOptResponse createRunPackOptExecution(@Argument RunPackOptRequest request) {
-        RunPackOptResponse response = integrationHubService.callIntegrationHubForPackOpt(request);
+        RunPackOptResponse response = packOptService.callIntegrationHubForPackOptByFineline(request);
         if (response != null) {
             return response;
         } else {
@@ -147,8 +154,7 @@ public class PackOptimizationController {
 
     @MutationMapping
     public StatusResponse updateFromQuote(@Argument RunPackOptRequest request) {
-        //return packOptService.updatePackOptConstraints(request);
-        return null;
+        return updateFromQuoteService.updateFactoryFromApproveQuotes(request);
     }
 }
 
