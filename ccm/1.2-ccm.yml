@@ -481,29 +481,6 @@ configOverrides:
         properties:
           "integrationhub.env": "stage"
           "integrationhub.sizeAndPackBaseUrl": "http://aex-size-and-pack.aex.stg.walmart.net"
-  plmApiConfig:
-    - name: "dev"
-      description: "PLM Config override for DEV profile"
-      pathElements:
-        envName: "dev"
-        envProfile: "dev"
-      value:
-        properties:
-          "plm.baseUrl": "https://plm-services.aex.dev.walmart.net/"
-          "plm.consumerId": "ba539c67-5318-4b68-967b-930c767b2dc0"
-          "plm.appKey": "AEX_PLM_SERVICES"
-          "plm.env": "dev"
-    - name: "stage"
-      description: "Flow Plan override for STAGE profile"
-      pathElements:
-        envName: "stage"
-        envProfile: "stage"
-      value:
-        properties:
-          "plm.baseUrl": "https://plm-services.aex.stg.walmart.net/"
-          "plm.consumerId": "2e89ee47-4879-475a-a01b-1995123df8fe"
-          "plm.appKey": "AEX_PLM_SERVICES"
-          "plm.env": "stg"
   bigQueryConfig:
     - name: "stage"
       description: "Big Query config override for STAGE profile "
