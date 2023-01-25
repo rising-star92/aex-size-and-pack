@@ -82,6 +82,31 @@ configDefinitions:
         type: "INTEGER"
         kind: "SINGLE"
         defaultValue: 18000
+  plmApiConfig:
+    description: "PLM Configurations"
+    resolutionPaths:
+      - default: "/envProfile/envName"
+    properties:
+      "plm.baseUrl":
+        description: "Plm Base URL"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "https://plm-services.aex.walmart.net/"
+      "plm.consumerId":
+        description: "Plm Consumer Id"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "3796c2db-e916-4669-9e3b-60a4ddd52de1"
+      "plm.appKey":
+        description: "Plm App Key"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "AEX_PLM_SERVICES"
+      "plm.env":
+        description: "Plm Env"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "prod"
   midasConfig:
     description: "Midas Data API Service to Service Authentication"
     resolutionPaths:

@@ -264,25 +264,4 @@ public class PackOptimizationService {
         }
 
     }
-
-    public StatusResponse updateFactoryFromApprovedQuotes(RunPackOptRequest request) {
-        StatusResponse response = new StatusResponse();
-        if (isRequestValid(request)) {
-            Integer channelId = ChannelType.getChannelIdFromName(request.getChannel());
-            log.debug("Check if a MerchCatPackOptimization for planID : {} already exists or not", request.getPlanId().toString());
-            List<MerchantPackOptimization> merchantPackOptimizationList = merchPackOptimizationRepository.findMerchantPackOptimizationByMerchantPackOptimizationID_planIdAndMerchantPackOptimizationID_repTLvl3AndChannelText_channelId(request.getPlanId(), request.getLvl3Nbr(), channelId);
-            if (!CollectionUtils.isEmpty(merchantPackOptimizationList)) {
-                FactoryDetailsResponse factoryDetails = getFactoryDetails(request);
-                updatePackOptimizationMapper.updateCategoryPackOptCons(request, merchantPackOptimizationList,factoryDetails);
-                response.setStatus(SUCCESS_STATUS);
-            } else {
-                log.warn("MerchCatPackOptimization for planID : {} doesn't exists and therefore cannot update", request.getPlanId().toString());
-                response.setStatus(FAILED_STATUS);
-            }
-        } else {
-            response.setStatus(FAILED_STATUS);
-        }
-        return response;
-    }
-
 }
