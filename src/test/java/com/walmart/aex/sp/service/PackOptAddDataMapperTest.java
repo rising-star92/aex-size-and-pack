@@ -2,6 +2,7 @@ package com.walmart.aex.sp.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.walmart.aex.sp.dto.packoptimization.sourcingFactory.FactoryDetailsResponse;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl1;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl2;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
@@ -11,13 +12,11 @@ import com.walmart.aex.sp.repository.MerchCatPlanRepository;
 import com.walmart.aex.sp.repository.MerchPackOptimizationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,7 +26,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.when;
 
 class PackOptAddDataMapperTest {
 
@@ -48,12 +49,13 @@ class PackOptAddDataMapperTest {
 
     @Mock
     MerchCatPlanRepository merchCatPlanRepository;
-
+    @Mock
+    SourcingFactoryService sourcingFactoryService;
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         sizeAndPackObjectMapper = new SizeAndPackObjectMapper(merchCatPlanRepository);
-        packOptAddDataMapper = new PackOptAddDataMapper(sizeAndPackObjectMapper, merchPackOptimizationRepository);
+        packOptAddDataMapper = new PackOptAddDataMapper(sizeAndPackObjectMapper, merchPackOptimizationRepository, sourcingFactoryService);
         merchantPackOptimization = new MerchantPackOptimization();
     }
 
@@ -65,13 +67,18 @@ class PackOptAddDataMapperTest {
         Lvl3 lvl3 = lvl2.getLvl3List().get(0);
         List<Integer> channelList = new ArrayList<>();
         channelList.add(1);
+        FactoryDetailsResponse factoryDetails = new FactoryDetailsResponse();
+        factoryDetails.setFactoryName("WALMART");
+        factoryDetails.setCountry("UNITED STATES");
+        factoryDetails.setCountryCode("US");
+        when(sourcingFactoryService.getFactoryDetails(Mockito.anyString())).thenReturn(factoryDetails);
         Mockito.when(merchPackOptimizationRepository.findById(Mockito.any(MerchantPackOptimizationID.class))).thenReturn(java.util.Optional.ofNullable(getMerchantPackOptimization()));
         Set<MerchantPackOptimization> merchantPackOptimizationSet = packOptAddDataMapper.setMerchCatPackOpt(planSizeAndPackDTO, lvl1, lvl2, lvl3);
         List<CcPackOptimization> ccPackOptimizations = getCcPackOptimization(merchantPackOptimizationSet);
         CcPackOptimization ccPackOptimization = ccPackOptimizations.get(0);
         assertNull(ccPackOptimization.getColorCombination());
         assertNull(ccPackOptimization.getOriginCountryName());
-        assertNull(ccPackOptimization.getFactoryName());
+        assertEquals("WALMART",ccPackOptimization.getFactoryName());
         assertNull(ccPackOptimization.getPortOfOriginName());
     }
 
@@ -83,6 +90,11 @@ class PackOptAddDataMapperTest {
         Lvl3 lvl3 = lvl2.getLvl3List().get(0);
         List<Integer> channelList = new ArrayList<>();
         channelList.add(1);
+        FactoryDetailsResponse factoryDetails = new FactoryDetailsResponse();
+        factoryDetails.setFactoryName("WALMART");
+        factoryDetails.setCountry("UNITED STATES");
+        factoryDetails.setCountryCode("US");
+        when(sourcingFactoryService.getFactoryDetails(Mockito.anyString())).thenReturn(factoryDetails);
         Mockito.when(merchPackOptimizationRepository.findById(Mockito.any(MerchantPackOptimizationID.class))).thenReturn(java.util.Optional.ofNullable(getMerchantPackOptimization()));
         Set<MerchantPackOptimization> merchantPackOptimizationSet = packOptAddDataMapper.setMerchCatPackOpt(planSizeAndPackDTO, lvl1, lvl2, lvl3);
         List<CcPackOptimization> ccPackOptimizations = getCcPackOptimization(merchantPackOptimizationSet);
@@ -105,9 +117,9 @@ class PackOptAddDataMapperTest {
     }
 
     private PlanSizeAndPackDTO getRequestPayload(boolean isSupplierChangePayload) throws JsonProcessingException {
-        String json = "{\"planId\":12,\"planDesc\":\"S3 - FYE 2024\",\"lvl0Nbr\":50000,\"lvl0Name\":\"Apparel\",\"lvl1List\":[{\"lvl1Nbr\":34,\"lvl1Name\":\"D34 - Womens Apparel\",\"lvl2List\":[{\"lvl2Nbr\":6419,\"lvl2Name\":\"Plus Womens\",\"lvl3List\":[{\"lvl0Nbr\":null,\"lvl1Nbr\":null,\"lvl2Nbr\":null,\"lvl3Nbr\":12231,\"lvl3Name\":\"Dresses And Rompers Plus Womens\",\"constraints\":null,\"lvl4List\":[{\"lvl4Nbr\":31516,\"lvl4Name\":\"Rompers And Jumpsuits Plus Womens\",\"constraints\":null,\"finelines\":[{\"finelineNbr\":5160,\"finelineName\":\"5160 - TS SS SWEATSHIRT PANT SET\",\"altFinelineName\":null,\"channel\":\"Store\",\"packOptimizationStatus\":null,\"constraints\":null,\"styles\":[{\"styleNbr\":\"34_5160_2_22_5\",\"altStyleDesc\":null,\"channel\":\"Store\",\"constraints\":null,\"customerChoices\":[{\"ccId\":\"34_5160_2_22_5_ORCHID BLOOM\",\"altCcDesc\":null,\"colorName\":\"ALEUTIAN\",\"colorFamily\":\"Blue\",\"channel\":\"Store\",\"constraints\":{\"supplierConstraints\":null,\"ccLevelConstraints\":null,\"colorCombinationConstraints\":{\"suppliers\":[{\"supplierId\":737873341,\"vendorNumber6\":null,\"supplier8Number\":28021452,\"gsmSupplierNumber\":null,\"supplierName\":\"737873341 - LEVI STRAUSS &amp; CO\",\"supplierType\":\"Domestic Buy\",\"supplierNumber\":737873,\"vendorNumber9\":null}],\"factoryId\":null,\"countryOfOrigin\":\"Canada\",\"portOfOrigin\":null,\"singlePackIndicator\":null,\"colorCombination\":null},\"finelineLevelConstraints\":{\"maxPacks\":null,\"maxUnitsPerPack\":null}}}]}],\"optimizationDetails\":null}]}]}]}]}]}";
+        String json = "{\"planId\":12,\"planDesc\":\"S3 - FYE 2024\",\"lvl0Nbr\":50000,\"lvl0Name\":\"Apparel\",\"lvl1List\":[{\"lvl1Nbr\":34,\"lvl1Name\":\"D34 - Womens Apparel\",\"lvl2List\":[{\"lvl2Nbr\":6419,\"lvl2Name\":\"Plus Womens\",\"lvl3List\":[{\"lvl0Nbr\":null,\"lvl1Nbr\":null,\"lvl2Nbr\":null,\"lvl3Nbr\":12231,\"lvl3Name\":\"Dresses And Rompers Plus Womens\",\"constraints\":null,\"lvl4List\":[{\"lvl4Nbr\":31516,\"lvl4Name\":\"Rompers And Jumpsuits Plus Womens\",\"constraints\":null,\"finelines\":[{\"finelineNbr\":5160,\"finelineName\":\"5160 - TS SS SWEATSHIRT PANT SET\",\"altFinelineName\":null,\"channel\":\"Store\",\"packOptimizationStatus\":null,\"constraints\":null,\"styles\":[{\"styleNbr\":\"34_5160_2_22_5\",\"altStyleDesc\":null,\"channel\":\"Store\",\"constraints\":null,\"customerChoices\":[{\"ccId\":\"34_5160_2_22_5_ORCHID BLOOM\",\"altCcDesc\":null,\"colorName\":\"ALEUTIAN\",\"colorFamily\":\"Blue\",\"channel\":\"Store\",\"constraints\":{\"supplierConstraints\":null,\"ccLevelConstraints\":null,\"colorCombinationConstraints\":{\"suppliers\":[{\"supplierId\":737873341,\"vendorNumber6\":null,\"supplier8Number\":28021452,\"gsmSupplierNumber\":null,\"supplierName\":\"737873341 - LEVI STRAUSS &amp; CO\",\"supplierType\":\"Domestic Buy\",\"supplierNumber\":737873,\"vendorNumber9\":null}],\"factoryId\":\"311112\",\"countryOfOrigin\":\"Canada\",\"portOfOrigin\":null,\"singlePackIndicator\":null,\"colorCombination\":null},\"finelineLevelConstraints\":{\"maxPacks\":null,\"maxUnitsPerPack\":null}}}]}],\"optimizationDetails\":null}]}]}]}]}]}";
         if(isSupplierChangePayload) {
-            json = "{\"planId\":12,\"planDesc\":\"S3 - FYE 2024\",\"lvl0Nbr\":50000,\"lvl0Name\":\"Apparel\",\"lvl1List\":[{\"lvl1Nbr\":34,\"lvl1Name\":\"D34 - Womens Apparel\",\"lvl2List\":[{\"lvl2Nbr\":6419,\"lvl2Name\":\"Plus Womens\",\"lvl3List\":[{\"lvl0Nbr\":null,\"lvl1Nbr\":null,\"lvl2Nbr\":null,\"lvl3Nbr\":12231,\"lvl3Name\":\"Dresses And Rompers Plus Womens\",\"constraints\":null,\"lvl4List\":[{\"lvl4Nbr\":31516,\"lvl4Name\":\"Rompers And Jumpsuits Plus Womens\",\"constraints\":null,\"finelines\":[{\"finelineNbr\":5160,\"finelineName\":\"5160 - TS SS SWEATSHIRT PANT SET\",\"altFinelineName\":null,\"channel\":\"Store\",\"packOptimizationStatus\":null,\"constraints\":null,\"styles\":[{\"styleNbr\":\"34_5160_2_22_5\",\"altStyleDesc\":null,\"channel\":\"Store\",\"constraints\":null,\"customerChoices\":[{\"ccId\":\"34_5160_2_22_5_ORCHID BLOOM\",\"altCcDesc\":null,\"colorName\":\"ALEUTIAN\",\"colorFamily\":\"Blue\",\"channel\":\"Store\",\"constraints\":{\"supplierConstraints\":null,\"ccLevelConstraints\":null,\"colorCombinationConstraints\":{\"suppliers\":[{\"supplierId\":2178340,\"vendorNumber6\":null,\"supplier8Number\":20005669,\"gsmSupplierNumber\":null,\"supplierName\":\"2178340 - RICHA &amp; CO\",\"supplierType\":\"Direct Import\",\"supplierNumber\":2178,\"vendorNumber9\":null}],\"factoryId\":null,\"countryOfOrigin\":\"Haiti\",\"portOfOrigin\":null,\"singlePackIndicator\":null,\"colorCombination\":null},\"finelineLevelConstraints\":{\"maxPacks\":null,\"maxUnitsPerPack\":null}}}]}],\"optimizationDetails\":null}]}]}]}]}]}";
+            json = "{\"planId\":12,\"planDesc\":\"S3 - FYE 2024\",\"lvl0Nbr\":50000,\"lvl0Name\":\"Apparel\",\"lvl1List\":[{\"lvl1Nbr\":34,\"lvl1Name\":\"D34 - Womens Apparel\",\"lvl2List\":[{\"lvl2Nbr\":6419,\"lvl2Name\":\"Plus Womens\",\"lvl3List\":[{\"lvl0Nbr\":null,\"lvl1Nbr\":null,\"lvl2Nbr\":null,\"lvl3Nbr\":12231,\"lvl3Name\":\"Dresses And Rompers Plus Womens\",\"constraints\":null,\"lvl4List\":[{\"lvl4Nbr\":31516,\"lvl4Name\":\"Rompers And Jumpsuits Plus Womens\",\"constraints\":null,\"finelines\":[{\"finelineNbr\":5160,\"finelineName\":\"5160 - TS SS SWEATSHIRT PANT SET\",\"altFinelineName\":null,\"channel\":\"Store\",\"packOptimizationStatus\":null,\"constraints\":null,\"styles\":[{\"styleNbr\":\"34_5160_2_22_5\",\"altStyleDesc\":null,\"channel\":\"Store\",\"constraints\":null,\"customerChoices\":[{\"ccId\":\"34_5160_2_22_5_ORCHID BLOOM\",\"altCcDesc\":null,\"colorName\":\"ALEUTIAN\",\"colorFamily\":\"Blue\",\"channel\":\"Store\",\"constraints\":{\"supplierConstraints\":null,\"ccLevelConstraints\":null,\"colorCombinationConstraints\":{\"suppliers\":[{\"supplierId\":2178340,\"vendorNumber6\":null,\"supplier8Number\":20005669,\"gsmSupplierNumber\":null,\"supplierName\":\"2178340 - RICHA &amp; CO\",\"supplierType\":\"Direct Import\",\"supplierNumber\":2178,\"vendorNumber9\":null}],\"factoryId\":\"311112\",\"countryOfOrigin\":\"Haiti\",\"portOfOrigin\":null,\"singlePackIndicator\":null,\"colorCombination\":null},\"finelineLevelConstraints\":{\"maxPacks\":null,\"maxUnitsPerPack\":null}}}]}],\"optimizationDetails\":null}]}]}]}]}]}";
         }
         return objectMapper.readValue(json, PlanSizeAndPackDTO.class);
     }
