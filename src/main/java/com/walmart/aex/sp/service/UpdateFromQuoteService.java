@@ -83,7 +83,7 @@ public class UpdateFromQuoteService {
     }
 
     private void updateFactoryFromMappedPLMQuote(List<PLMAcceptedQuoteStyle> plmAcceptedQuoteStyles, List<CcPackOptimization> ccPackOptimizations) {
-        Map<String, PLMFactory> ccFactoryMap = new HashMap<>();
+        Map<String, Factory> ccFactoryMap = new HashMap<>();
         for (PLMAcceptedQuoteStyle plmAcceptedQuoteStyle : plmAcceptedQuoteStyles) {
             getPLMCCFactoryMap(plmAcceptedQuoteStyle.getPlmAcceptedQuoteCcs(), ccPackOptimizations, ccFactoryMap);
         }
@@ -91,7 +91,7 @@ public class UpdateFromQuoteService {
             for (CcPackOptimization ccPackOptimization : ccPackOptimizations) {
                 String customerChoice = ccPackOptimization.getCcPackOptimizationId().getCustomerChoice();
                 if (ccFactoryMap.containsKey(customerChoice)) {
-                    PLMFactory plmFactory = ccFactoryMap.get(customerChoice);
+                    Factory plmFactory = ccFactoryMap.get(customerChoice);
                     ccPackOptimization.setFactoryId(plmFactory.getFactoryId());
                     ccPackOptimization.setFactoryName(plmFactory.getFactoryName());
                     ccPackOptimization.setOverrideFactoryId(null);
@@ -101,7 +101,7 @@ public class UpdateFromQuoteService {
         }
     }
 
-    private void getPLMCCFactoryMap(List<PLMAcceptedQuoteCc> plmAcceptedQuoteCcs, List<CcPackOptimization> ccPackOptimizations, Map<String, PLMFactory> ccFactoryMap) {
+    private void getPLMCCFactoryMap(List<PLMAcceptedQuoteCc> plmAcceptedQuoteCcs, List<CcPackOptimization> ccPackOptimizations, Map<String, Factory> ccFactoryMap) {
         List<PLMAcceptedQuoteCc> matchingPLMCCs = getQuoteMappedPLMCCs(plmAcceptedQuoteCcs, ccPackOptimizations);
         for (PLMAcceptedQuoteCc plmAcceptedQuoteCc : matchingPLMCCs) {
             String customerChoice = plmAcceptedQuoteCc.getCustomerChoice();
@@ -113,17 +113,17 @@ public class UpdateFromQuoteService {
         }
     }
 
-    private void getPLMFactoryMap(PLMAcceptedQuote plmAcceptedQuote, String customerChoice, Map<String, PLMFactory> ccFactoryMap) {
+    private void getPLMFactoryMap(PLMAcceptedQuote plmAcceptedQuote, String customerChoice, Map<String, Factory> ccFactoryMap) {
         BigInteger plmFactoryId = plmAcceptedQuote.getFactoryId();
         if (plmFactoryId != null) {
             String factoryId = String.valueOf(plmFactoryId);
             factoryMap.computeIfAbsent(factoryId, k -> getFactoryName(k));
-            PLMFactory plmFactory = new PLMFactory();
-            plmFactory.setFactoryId(factoryId);
+            Factory factory = new Factory();
+            factory.setFactoryId(factoryId);
             if (factoryMap.containsKey(factoryId)) {
-                plmFactory.setFactoryName(factoryMap.get(factoryId));
+                factory.setFactoryName(factoryMap.get(factoryId));
             }
-            ccFactoryMap.put(customerChoice, plmFactory);
+            ccFactoryMap.put(customerChoice, factory);
         }
     }
 

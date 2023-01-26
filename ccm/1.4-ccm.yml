@@ -188,6 +188,31 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "dev"
+  plmApiConfig:
+    description: "PLM Configurations"
+    resolutionPaths:
+      - default: "/envProfile/envName"
+    properties:
+      "plm.baseUrl":
+        description: "Plm Base URL"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "https://plm-services.aex.dev.walmart.net/"
+      "plm.consumerId":
+        description: "Plm Consumer Id"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "ba539c67-5318-4b68-967b-930c767b2dc0"
+      "plm.appKey":
+        description: "Plm App Key"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "AEX_PLM_SERVICES"
+      "plm.env":
+        description: "Plm Env"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "dev"
   sourcingFactoryServiceConfig:
     description: "Sourcing Factory Service Config"
     resolutionPaths:

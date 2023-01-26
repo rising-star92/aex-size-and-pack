@@ -3,6 +3,7 @@ package com.walmart.aex.sp.service;
 import com.walmart.aex.sp.dto.quote.PLMAcceptedQuoteFineline;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.properties.PLMServiceProperties;
+import com.walmart.aex.sp.util.CommonUtil;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ public class PLMQuoteService {
     public List<PLMAcceptedQuoteFineline> getApprovedQuoteFromPlm(Long planId, HttpMethod httpMethod) {
         List<PLMAcceptedQuoteFineline> responseMsg = null;
         try {
-            HttpHeaders headers = getHttpHeaders(plmServiceProperties.getPlmConsumerId(),
+            HttpHeaders headers = CommonUtil.getHttpHeaders(plmServiceProperties.getPlmConsumerId(),
                     plmServiceProperties.getPlmAppKey(), plmServiceProperties.getPlmEnv());
             HttpEntity<String> entity = new HttpEntity<>(null, headers);
             log.info("Calling AEX_PLM_SERVICES API to retrieve approvedQuotes : {}", httpMethod.name());
@@ -60,16 +61,6 @@ public class PLMQuoteService {
     @Recover
     public String recover(Exception e, Long planId, HttpMethod httpMethod) {
         throw new CustomException(ERROR + planId);
-    }
-
-    private static HttpHeaders getHttpHeaders(String consumerId, String name, String env) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("Accept", "*/*");
-        headers.set("WM_CONSUMER.ID", consumerId);
-        headers.set("WM_SVC.NAME", name);
-        headers.set("WM_SVC.ENV", env);
-        return headers;
     }
 
 }

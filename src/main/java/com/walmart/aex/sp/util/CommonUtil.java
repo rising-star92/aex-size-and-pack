@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -140,5 +142,15 @@ public class CommonUtil {
             }
         }
         return date;
+    }
+
+    public static HttpHeaders getHttpHeaders(String consumerId, String name, String env) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Accept", "*/*");
+        headers.set("WM_CONSUMER.ID", consumerId);
+        headers.set("WM_SVC.NAME", name);
+        headers.set("WM_SVC.ENV", env);
+        return headers;
     }
 }

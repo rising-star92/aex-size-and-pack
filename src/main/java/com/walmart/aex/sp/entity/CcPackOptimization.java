@@ -53,12 +53,6 @@ public class CcPackOptimization {
     @Column(name="factory_name")
     private String factoryName;
 
-    @Column(name="override_factory_id")
-    private String overrideFactoryId;
-
-    @Column(name="override_factory_name")
-    private String overrideFactoryName;
-
     @Column(name="select_status_id")
     private Integer singlePackInd;
 
