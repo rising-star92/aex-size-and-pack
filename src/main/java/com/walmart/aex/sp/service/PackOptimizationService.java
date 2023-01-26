@@ -154,26 +154,26 @@ public class PackOptimizationService {
     }
     private boolean isRequestValid(UpdatePackOptConstraintRequestDTO request) {
         if (request.getLvl3Nbr() == null) {
-            log.warn("Invalid Request: Lvl3Nbr cannot be NULL in the request {}", request.toString());
+            log.warn("Invalid Request: Lvl3Nbr cannot be NULL in the request {}", request);
             return false;
         } else if (request.getLvl4Nbr() != null && request.getLvl3Nbr() == null) {
-            log.warn("Invalid Request: Lvl3Nbr cannot be NULL when lvl4Nbr is not NULL in the request {}", request.toString());
+            log.warn("Invalid Request: Lvl3Nbr cannot be NULL when lvl4Nbr is not NULL in the request {}", request);
             return false;
         } else if (request.getLvl4Nbr() == null && request.getFinelineNbr() != null) {
-            log.warn("Invalid Request: Lvl4Nbr cannot be NULL when finelineNbr is not NULL in the request {}", request.toString());
+            log.warn("Invalid Request: Lvl4Nbr cannot be NULL when finelineNbr is not NULL in the request {}", request);
             return false;
         } else if (request.getFinelineNbr() == null && request.getStyleNbr() != null) {
-            log.warn("Invalid Request: finelineNbr cannot be NULL when styleNbr is not NULL in the request {}", request.toString());
+            log.warn("Invalid Request: finelineNbr cannot be NULL when styleNbr is not NULL in the request {}", request);
             return false;
         } else if (request.getStyleNbr() == null && request.getCcId() != null) {
-            log.warn("Invalid Request: styleNbr cannot be NULL when ccId is not NULL in the request {}", request.toString());
+            log.warn("Invalid Request: styleNbr cannot be NULL when ccId is not NULL in the request {}", request);
             return false;
         }
         return true;
     }
 
     public PackOptimizationResponse getPackOptConstraintDetails(PackOptConstraintRequest request) {
-        PackOptimizationResponse packOptimizationResponse = new PackOptimizationResponse();
+        PackOptimizationResponse packOptimizationResponse;
         try {
             List<PackOptConstraintResponseDTO> packOptConstraintResponseDTO = styleCcPackOptConsRepository
                     .findByFinePlanPackOptimizationIDPlanIdAndChannelTextChannelId(request.getPlanId(), ChannelType.getChannelIdFromName(request.getChannel()), request.getFinelineNbr());

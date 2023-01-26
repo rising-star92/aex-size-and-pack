@@ -66,14 +66,14 @@ public interface FinelinePackOptRepository
             "cpk.vendorNbr6 as ccVendorNumber6 , " +
             "cpk.gsmSupplierId as ccGsmSupplierNumber , " +
             "cpk.vendorNbr9 as ccVendorNumber9 , " +
-            "cpk.factoryId as ccFactoryIds , " +
+            "COALESCE(cpk.overrideFactoryId, cpk.factoryId) as ccFactoryId , " +
             "cpk.originCountryName as ccCountryOfOrigin , " +
             "cpk.portOfOriginName as ccPortOfOrigin , " +
             "cpk.singlePackInd as ccSinglePackIndicator , " +
             "cpk.colorCombination as ccColorCombination , " +
             "cpk.maxUnitsPerPack as ccMaxUnitsPerPack , " +
             "cpk.maxNbrOfPacks as ccMaxPacks , " +
-            "cpk.factoryName as ccFactoryName , " +
+            "COALESCE(cpk.overrideFactoryName, cpk.factoryName) as ccFactoryName , " +
             "analytic.startTs,\n" +
             "analytic.endTs,\n" +
             "r.runStatusCode,\n" +
