@@ -35,6 +35,7 @@ public interface SpCustomerChoiceReplenishmentRepository extends JpaRepository<C
             "srp.replPackCnt as styleReplPack, " +
             "ccp.custChoicePlanId.ccId, " +
             "ccp.colorName as colorName, " +
+            "ccp.colorFamilyDesc as colorFamilyDesc, " +
             "crp.finalBuyUnits as ccFinalBuyUnits, " +
             "crp.replUnits as ccReplQty, " +
             "crp.vendorPackCnt as ccVenderPackCount, " +
