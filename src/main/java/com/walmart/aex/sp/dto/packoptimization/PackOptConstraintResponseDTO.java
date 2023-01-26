@@ -26,7 +26,6 @@ public class PackOptConstraintResponseDTO {
     private Integer styleGsmSupplierNumber;
     private Integer styleVendorNumber9;
     private String styleFactoryIds;
-    private String styleCountryOfOrigin;
     private String stylePortOfOrigin;
     private Integer styleSinglePackIndicator;
     private String styleColorCombination;
@@ -40,7 +39,6 @@ public class PackOptConstraintResponseDTO {
     private Integer ccGsmSupplierNumber;
     private Integer ccVendorNumber9;
     private String ccFactoryIds;
-    private String ccCountryOfOrigin;
     private String ccPortOfOrigin;
     private Integer ccSinglePackIndicator;
     private String ccColorCombination;

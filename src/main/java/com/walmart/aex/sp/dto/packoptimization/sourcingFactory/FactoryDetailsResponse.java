@@ -4,8 +4,7 @@ import lombok.Data;
 
 @Data
 public class FactoryDetailsResponse {
+
     private String factoryName;
-    private String country;
-    private String countryCode;
 
 }

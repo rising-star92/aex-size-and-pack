@@ -12,7 +12,6 @@ import java.util.List;
 public class ColorCombinationConstraints {
     private List<Supplier> suppliers;
     private String factoryId;
-    private String countryOfOrigin;
     private String portOfOrigin;
     private Integer singlePackIndicator;
     private String colorCombination;

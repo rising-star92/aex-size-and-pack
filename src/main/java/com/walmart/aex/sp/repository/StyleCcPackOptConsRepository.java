@@ -28,7 +28,6 @@ public interface StyleCcPackOptConsRepository extends JpaRepository<CcPackOptimi
             "spk.gsmSupplierId as styleGsmSupplierNumber , " +
             "spk.vendorNbr9 as styleVendorNumber9 , " +
             "spk.factoryId as styleFactoryIds , " +
-            "spk.originCountryName as styleCountryOfOrigin , " +
             "spk.portOfOriginName as stylePortOfOrigin , " +
             "spk.singlePackInd as styleSinglePackIndicator , " +
             "spk.colorCombination as styleColorCombination , " +
@@ -42,7 +41,6 @@ public interface StyleCcPackOptConsRepository extends JpaRepository<CcPackOptimi
             "cpk.gsmSupplierId as ccGsmSupplierNumber , " +
             "cpk.vendorNbr9 as ccVendorNumber9 , " +
             "COALESCE(cpk.overrideFactoryId, cpk.factoryId) as ccFactoryId , " +
-            "cpk.originCountryName as ccCountryOfOrigin , " +
             "cpk.portOfOriginName as ccPortOfOrigin , " +
             "cpk.singlePackInd as ccSinglePackIndicator , " +
             "cpk.colorCombination as ccColorCombination , " +

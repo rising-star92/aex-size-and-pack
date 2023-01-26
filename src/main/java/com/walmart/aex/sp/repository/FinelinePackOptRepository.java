@@ -35,7 +35,6 @@ public interface FinelinePackOptRepository
             "merchPackOpt.maxUnitsPerPack,\n" +
             "merchPackOpt.maxNbrOfPacks,\n" +
             "merchPackOpt.factoryId,\n" +
-            "merchPackOpt.originCountryName,\n" +
             "merchPackOpt.portOfOriginName,\n" +
             "merchPackOpt.singlePackInd,\n" +
             "merchPackOpt.colorCombination,\n" +
@@ -46,7 +45,6 @@ public interface FinelinePackOptRepository
             "subCatPackOpt.maxUnitsPerPack,\n" +
             "subCatPackOpt.maxNbrOfPacks,\n" +
             "subCatPackOpt.factoryId,\n" +
-            "subCatPackOpt.originCountryName,\n" +
             "subCatPackOpt.portOfOriginName,\n" +
             "subCatPackOpt.singlePackInd,\n" +
             "subCatPackOpt.colorCombination,\n" +
@@ -57,7 +55,6 @@ public interface FinelinePackOptRepository
             "fineLinePackOpt.maxUnitsPerPack,\n" +
             "fineLinePackOpt.maxNbrOfPacks,\n" +
             "fineLinePackOpt.factoryId,\n" +
-            "fineLinePackOpt.originCountryName,\n" +
             "fineLinePackOpt.portOfOriginName,\n" +
             "fineLinePackOpt.singlePackInd,\n" +
             "fineLinePackOpt.colorCombination,\n" +
@@ -67,7 +64,6 @@ public interface FinelinePackOptRepository
             "cpk.gsmSupplierId as ccGsmSupplierNumber , " +
             "cpk.vendorNbr9 as ccVendorNumber9 , " +
             "COALESCE(cpk.overrideFactoryId, cpk.factoryId) as ccFactoryId , " +
-            "cpk.originCountryName as ccCountryOfOrigin , " +
             "cpk.portOfOriginName as ccPortOfOrigin , " +
             "cpk.singlePackInd as ccSinglePackIndicator , " +
             "cpk.colorCombination as ccColorCombination , " +

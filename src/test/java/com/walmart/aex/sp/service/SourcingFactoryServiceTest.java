@@ -48,8 +48,6 @@ class SourcingFactoryServiceTest {
         when(restTemplate.exchange(anyString(), eq(HttpMethod.GET), any(), eq(FactoryDetailsDTO.class))).thenReturn(response);
         FactoryDetailsResponse result = sourcingFactoryService.callSourcingFactoryForFactoryDetails("36161325");
         assertNotNull(result);
-        assertEquals("FR",result.getCountryCode());
-        assertEquals("FRANCE",result.getCountry());
         assertEquals("PKG--LA BC",result.getFactoryName());
     }
 
@@ -64,8 +62,6 @@ class SourcingFactoryServiceTest {
         when(properties.getApiTokenKey()).thenReturn("V29vUGlnU29vaWUh");
         when(restTemplate.exchange(anyString(), eq(HttpMethod.GET), any(), eq(FactoryDetailsDTO.class))).thenReturn(response);
         FactoryDetailsResponse result = sourcingFactoryService.callSourcingFactoryForFactoryDetails("36161325");
-        assertNull(result.getCountry());
-        assertNull(result.getCountryCode());
         assertNull(result.getFactoryName());
     }
     private FactoryDetailsDTO getFactoryDetails() {
@@ -88,8 +84,6 @@ class SourcingFactoryServiceTest {
         when(restTemplate.exchange(anyString(), eq(HttpMethod.GET), any(), eq(FactoryDetailsDTO.class))).thenReturn(responseEntity);
         FactoryDetailsResponse response = sourcingFactoryService.getFactoryDetails(request.getFactoryId());
         assertEquals("PKG--LA BC",response.getFactoryName());
-        assertEquals("FRANCE",response.getCountry());
-        assertEquals("FR",response.getCountryCode());
     }
 
     @Test
@@ -98,7 +92,5 @@ class SourcingFactoryServiceTest {
         request.setFactoryId("0");
         FactoryDetailsResponse response = sourcingFactoryService.getFactoryDetails(request.getFactoryId());
         assertEquals("DEFAULT",response.getFactoryName());
-        assertNull(response.getCountry());
-        assertNull(response.getCountryCode());
     }
 }

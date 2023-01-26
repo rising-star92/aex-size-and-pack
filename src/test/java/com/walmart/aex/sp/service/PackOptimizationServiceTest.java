@@ -99,7 +99,6 @@ class PackOptimizationServiceTest {
 		merchpackOptObj.setMerchColorCombination("Merch Color Combination");
 		merchpackOptObj.setMerchSinglePackInd(1);
 		merchpackOptObj.setMerchSupplierName("Vendor Name");
-		merchpackOptObj.setMerchOriginCountryName("USA");
 		merchpackOptObj.setMerchPortOfOriginName("Texas");
 		merchpackOptObj.setSubCatFactoryId("120");
 		merchpackOptObj.setSubCatMaxNbrOfPacks(20);
@@ -107,7 +106,6 @@ class PackOptimizationServiceTest {
 		merchpackOptObj.setSubCatColorCombination("Sub Category Color Combination");
 		merchpackOptObj.setSubCatSinglePackInd(1);
 		merchpackOptObj.setSubCatSupplierName("Supplier Vendor Name");
-		merchpackOptObj.setSubCatOriginCountryName("USA");
 		merchpackOptObj.setSubCatPortOfOriginName("Texas");
 		merchpackOptObj.setFineLineFactoryId("120");
 		merchpackOptObj.setFineLineMaxNbrOfPacks(5);
@@ -115,7 +113,6 @@ class PackOptimizationServiceTest {
 		merchpackOptObj.setFineLineColorCombination("FineLine Color Combination");
 		merchpackOptObj.setFineLineSinglePackInd(1);
 		merchpackOptObj.setFineLineSupplierName("FineLine Vendor Name");
-		merchpackOptObj.setFineLineOriginCountryName("USA");
 		merchpackOptObj.setFineLinePortOfOriginName("Texas");
 
 		merchantPackOptimizationlist.add(merchpackOptObj);
@@ -416,9 +413,6 @@ class PackOptimizationServiceTest {
 
         assertEquals(SizeAndPackConstants.FAILED_STATUS, response.getStatus());
     }
-
-
-
 
 
 }

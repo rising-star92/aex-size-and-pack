@@ -43,8 +43,6 @@ input UpdatePackOptConstraintRequestDTO {
 	vendorNbr6: Int
 	vendorNbr9: Int
 	vendorName: String
-	originCountryCode: String
-	originCountryName: String
 	factoryId: String
 	factoryName: String
 	singlePackInd: Int
@@ -189,7 +187,6 @@ type Constraints {
 
 type SupplierConstraints {
     factoryIds: String
-    countryOfOrigin: String
     portOfOrigin: String
     supplierName: String
     maxUnitsPerPack: Int
@@ -198,7 +195,6 @@ type SupplierConstraints {
 
 type CcLevelConstraints {
     factoryIds: String
-    countryOfOrigin: String
     portOfOrigin: String
     singlePackIndicator: Int
     colorCombination: String
@@ -209,7 +205,6 @@ type CcLevelConstraints {
 type ColorCombinationConstraints {
     suppliers: [Supplier]
     factoryId: String
-    countryOfOrigin: String
     portOfOrigin: String
     singlePackIndicator: Int
     colorCombination: String
