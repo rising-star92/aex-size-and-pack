@@ -93,6 +93,9 @@ public class PackOptimizationService {
     public PackOptimizationResponse getPackOptDetails(Long planId, Integer channelId) {
         try {
             List<FineLineMapperDto> finePlanPackOptimizationList = packOptfineplanRepo.findByFinePlanPackOptimizationIDPlanIdAndChannelTextChannelId(planId, channelId);
+            if(CollectionUtils.isEmpty(finePlanPackOptimizationList)) {
+                return new PackOptimizationResponse();
+            }
             return packOptConstraintMapper.packOptDetails(finePlanPackOptimizationList);
         } catch (Exception e) {
             log.error("Error Occurred while fetching Pack Opt", e);
@@ -103,16 +106,16 @@ public class PackOptimizationService {
 
     public FineLinePackOptimizationResponse getPackOptFinelineDetails(Long planId, Integer finelineNbr, Integer bumpPackNbr) {
         FineLinePackOptimizationResponse finelinePackOptimizationResponse = new FineLinePackOptimizationResponse();
-
         try {
             List<FineLinePackOptimizationResponseDTO> finelinePackOptimizationResponseDTOS = finelinePackOptimizationRepository.getPackOptByFineline(planId, finelineNbr);
+            if(CollectionUtils.isEmpty(finelinePackOptimizationResponseDTOS)) {
+                return finelinePackOptimizationResponse;
+            }
             Optional.of(finelinePackOptimizationResponseDTOS)
                     .stream()
                     .flatMap(Collection::stream)
                     .forEach(finelinePackOptimizationResponseDTO -> packOptimizationMapper.
                             mapPackOptimizationFineline(finelinePackOptimizationResponseDTO, finelinePackOptimizationResponse, planId, bumpPackNbr));
-
-
         } catch (Exception e) {
             log.error("Exception While fetching Fineline pack Optimization :", e);
             throw new CustomException("Failed to fetch Fineline Pack Optimization , due to" + e);
@@ -151,26 +154,26 @@ public class PackOptimizationService {
     }
     private boolean isRequestValid(UpdatePackOptConstraintRequestDTO request) {
         if (request.getLvl3Nbr() == null) {
-            log.warn("Invalid Request: Lvl3Nbr cannot be NULL in the request {}", request.toString());
+            log.warn("Invalid Request: Lvl3Nbr cannot be NULL in the request {}", request);
             return false;
         } else if (request.getLvl4Nbr() != null && request.getLvl3Nbr() == null) {
-            log.warn("Invalid Request: Lvl3Nbr cannot be NULL when lvl4Nbr is not NULL in the request {}", request.toString());
+            log.warn("Invalid Request: Lvl3Nbr cannot be NULL when lvl4Nbr is not NULL in the request {}", request);
             return false;
         } else if (request.getLvl4Nbr() == null && request.getFinelineNbr() != null) {
-            log.warn("Invalid Request: Lvl4Nbr cannot be NULL when finelineNbr is not NULL in the request {}", request.toString());
+            log.warn("Invalid Request: Lvl4Nbr cannot be NULL when finelineNbr is not NULL in the request {}", request);
             return false;
         } else if (request.getFinelineNbr() == null && request.getStyleNbr() != null) {
-            log.warn("Invalid Request: finelineNbr cannot be NULL when styleNbr is not NULL in the request {}", request.toString());
+            log.warn("Invalid Request: finelineNbr cannot be NULL when styleNbr is not NULL in the request {}", request);
             return false;
         } else if (request.getStyleNbr() == null && request.getCcId() != null) {
-            log.warn("Invalid Request: styleNbr cannot be NULL when ccId is not NULL in the request {}", request.toString());
+            log.warn("Invalid Request: styleNbr cannot be NULL when ccId is not NULL in the request {}", request);
             return false;
         }
         return true;
     }
 
     public PackOptimizationResponse getPackOptConstraintDetails(PackOptConstraintRequest request) {
-        PackOptimizationResponse packOptimizationResponse = new PackOptimizationResponse();
+        PackOptimizationResponse packOptimizationResponse;
         try {
             List<PackOptConstraintResponseDTO> packOptConstraintResponseDTO = styleCcPackOptConsRepository
                     .findByFinePlanPackOptimizationIDPlanIdAndChannelTextChannelId(request.getPlanId(), ChannelType.getChannelIdFromName(request.getChannel()), request.getFinelineNbr());
@@ -330,8 +333,14 @@ public class PackOptimizationService {
             if (bumpPackCntByFineline.getBumpPackCnt() > 1) {
                 int bumpPackCntFlag = 1;
                 while (bumpPackCntFlag <= bumpPackCntByFineline.getBumpPackCnt()) {
-                    finelineIsBsList.add(bumpPackCntByFineline.getFinelineNbr().toString() + MULTI_BUMP_PACK_SUFFIX + bumpPackCntByFineline.getBumpPackCnt().toString());
-                    bumpPackCntFlag++;
+                    if (bumpPackCntFlag > 1) {
+                        finelineIsBsList.add(bumpPackCntByFineline.getFinelineNbr().toString() + MULTI_BUMP_PACK_SUFFIX + bumpPackCntFlag);
+                        bumpPackCntFlag++;
+                    }
+                    else {
+                        finelineIsBsList.add(bumpPackCntByFineline.getFinelineNbr().toString());
+                        bumpPackCntFlag++;
+                    }
                 }
             } else finelineIsBsList.add(bumpPackCntByFineline.getFinelineNbr().toString());
         });

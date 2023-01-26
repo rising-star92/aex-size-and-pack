@@ -159,8 +159,8 @@ type UpdateVnPkWhPkResponse {
 }
 
 type PackOptimizationResponse {
-    planId: Int!
-    channel:String!
+    planId: Int
+    channel:String
     planDesc: String
     lvl0Nbr: Int
     lvl0Desc: String

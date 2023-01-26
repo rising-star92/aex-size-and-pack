@@ -144,14 +144,14 @@ class PackOptConstraintMapperTest {
         fineLineMapperDto.setStyleMaxPacks(43);
         fineLineMapperDto.setStyleColorCombination(colorCombination);
         fineLineMapperDto.setCcColorCombination(colorCombination);
-        fineLineMapperDto.setCcFactoryIds(factoryId);
+        fineLineMapperDto.setCcFactoryId(factoryId);
         fineLineMapperDto.setCcSinglePackIndicator(1);
         fineLineMapperDto.setStyleSinglePackIndicator(1);
         fineLineMapperDto.setCcSupplierName("PUMA");
         fineLineMapperDto.setCcVendorNumber9(vendorNbr9);
         fineLineMapperDto.setCcVendorNumber6(vendorNbr6);
         fineLineMapperDto.setCcGsmSupplierNumber(gsmSupplierId);
-        fineLineMapperDto.setCcFactoryIds("123");
+        fineLineMapperDto.setCcFactoryId("123");
         fineLineMapperDto.setCcCountryOfOrigin("INDIA");
         fineLineMapperDto.setCcPortOfOrigin("INDIA");
 
@@ -167,7 +167,7 @@ class PackOptConstraintMapperTest {
         fineLineMapperDto1.setStyleNbr(styleNbr);
         fineLineMapperDto1.setCcId(ccId_2);
         fineLineMapperDto1.setCcSupplierName("NIKE");
-        fineLineMapperDto1.setCcFactoryIds("234");
+        fineLineMapperDto1.setCcFactoryId("234");
         fineLineMapperDto1.setCcCountryOfOrigin("USA");
         fineLineMapperDto1.setCcPortOfOrigin("USA");
         return Arrays.asList(fineLineMapperDto, fineLineMapperDto1);
@@ -189,14 +189,14 @@ class PackOptConstraintMapperTest {
         fineLineMapperDto.setStyleMaxPacks(43);
         fineLineMapperDto.setStyleColorCombination(colorCombination);
         fineLineMapperDto.setCcColorCombination(colorCombination);
-        fineLineMapperDto.setCcFactoryIds(factoryId);
+        fineLineMapperDto.setCcFactoryId(factoryId);
         fineLineMapperDto.setCcSinglePackIndicator(1);
         fineLineMapperDto.setStyleSinglePackIndicator(1);
         fineLineMapperDto.setCcSupplierName("PUMA");
         fineLineMapperDto.setCcVendorNumber9(vendorNbr9);
         fineLineMapperDto.setCcVendorNumber6(vendorNbr6);
         fineLineMapperDto.setCcGsmSupplierNumber(gsmSupplierId);
-        fineLineMapperDto.setCcFactoryIds("123");
+        fineLineMapperDto.setCcFactoryId("123");
         fineLineMapperDto.setCcFactoryName("XYZ");
         fineLineMapperDto.setCcCountryOfOrigin("INDIA");
         fineLineMapperDto.setCcPortOfOrigin("INDIA");
@@ -213,7 +213,7 @@ class PackOptConstraintMapperTest {
         fineLineMapperDto1.setStyleNbr(styleNbr);
         fineLineMapperDto1.setCcId(ccId_2);
         fineLineMapperDto1.setCcSupplierName("NIKE");
-        fineLineMapperDto1.setCcFactoryIds("234");
+        fineLineMapperDto1.setCcFactoryId("234");
         fineLineMapperDto1.setCcFactoryName("ABC");
         fineLineMapperDto1.setCcCountryOfOrigin("USA");
         fineLineMapperDto1.setCcPortOfOrigin("USA");

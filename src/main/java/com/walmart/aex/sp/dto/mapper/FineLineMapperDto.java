@@ -90,7 +90,7 @@ public class FineLineMapperDto {
     private Integer ccVendorNumber6;
     private Integer ccGsmSupplierNumber;
     private Integer ccVendorNumber9;
-    private String ccFactoryIds;
+    private String ccFactoryId;
     private String ccCountryOfOrigin;
     private String ccPortOfOrigin;
     private Integer ccSinglePackIndicator;
@@ -114,7 +114,7 @@ public class FineLineMapperDto {
             Integer fineLineVendorNumber9, Integer fineLineMaxUnitsPerPack, Integer fineLineMaxNbrOfPacks,
             String fineLineFactoryId, String fineLineOriginCountryName, String fineLinePortOfOriginName,
             Integer fineLineSinglePackInd, String fineLineColorCombination, String ccId, String ccSupplierName,
-            Integer ccVendorNumber6, Integer ccGsmSupplierNumber, Integer ccVendorNumber9, String ccFactoryIds,
+            Integer ccVendorNumber6, Integer ccGsmSupplierNumber, Integer ccVendorNumber9, String ccFactoryId,
             String ccCountryOfOrigin, String ccPortOfOrigin, Integer ccSinglePackIndicator, String ccColorCombination,
             Integer ccMaxUnitsPerPack, Integer ccMaxPacks, String ccFactoryName, Date startTs, Date endTs, Integer runStatusCode,
             String runStatusDesc, String firstName, String lastName, String returnMessage) {
@@ -178,7 +178,7 @@ public class FineLineMapperDto {
         this.ccGsmSupplierNumber = ccGsmSupplierNumber;
         this.ccVendorNumber6 = ccVendorNumber6;
         this.ccVendorNumber9 = ccVendorNumber9;
-        this.ccFactoryIds = ccFactoryIds;
+        this.ccFactoryId = ccFactoryId;
         this.ccCountryOfOrigin = ccCountryOfOrigin;
         this.ccPortOfOrigin = ccPortOfOrigin;
         this.ccSinglePackIndicator = ccSinglePackIndicator;

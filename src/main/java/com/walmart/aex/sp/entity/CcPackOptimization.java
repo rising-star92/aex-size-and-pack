@@ -80,6 +80,12 @@ public class CcPackOptimization {
     @Column(name="color_combination")
     private String colorCombination;
 
+    @Column(name="override_factory_id")
+    private String overrideFactoryId;
+
+    @Column(name="override_factory_name")
+    private String overrideFactoryName;
+
     @JoinColumn(name = "channel_id", insertable = false, updatable = false)
     @ManyToOne(targetEntity = ChannelText.class, fetch = FetchType.LAZY)
     private ChannelText channelText;
