@@ -203,8 +203,8 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "ba539c67-5318-4b68-967b-930c767b2dc0"
-      "plm.appKey":
-        description: "Plm App Key"
+      "plm.svcName":
+        description: "Plm Service Name"
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "AEX_PLM_SERVICES"
@@ -516,7 +516,7 @@ configOverrides:
         properties:
           "plm.baseUrl": "https://plm-services.aex.dev.walmart.net/"
           "plm.consumerId": "ba539c67-5318-4b68-967b-930c767b2dc0"
-          "plm.appKey": "AEX_PLM_SERVICES"
+          "plm.svcName": "AEX_PLM_SERVICES"
           "plm.env": "dev"
     - name: "stage"
       description: "Flow Plan override for STAGE profile"
@@ -527,7 +527,7 @@ configOverrides:
         properties:
           "plm.baseUrl": "https://plm-services.aex.stg.walmart.net/"
           "plm.consumerId": "2e89ee47-4879-475a-a01b-1995123df8fe"
-          "plm.appKey": "AEX_PLM_SERVICES"
+          "plm.svcName": "AEX_PLM_SERVICES"
           "plm.env": "stg"
   bigQueryConfig:
     - name: "stage"

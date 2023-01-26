@@ -12,8 +12,8 @@ public interface PLMServiceProperties {
     @Property(propertyName = "plm.consumerId")
     String getPlmConsumerId();
 
-    @Property(propertyName = "plm.appKey")
-    String getPlmAppKey();
+    @Property(propertyName = "plm.svcName")
+    String getPlmServiceName();
 
     @Property(propertyName = "plm.env")
     String getPlmEnv();

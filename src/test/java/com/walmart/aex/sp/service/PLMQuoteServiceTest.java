@@ -46,7 +46,7 @@ class PLMQuoteServiceTest {
         when(plmServiceProperties.getPlmApiBaseURL()).thenReturn("https://walmart.com/");
         when(plmServiceProperties.getPlmEnv()).thenReturn("stage");
         when(plmServiceProperties.getPlmConsumerId()).thenReturn("121123123");
-        when(plmServiceProperties.getPlmAppKey()).thenReturn("test");
+        when(plmServiceProperties.getPlmServiceName()).thenReturn("test");
     }
 
     @Test

@@ -16,7 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -34,8 +36,11 @@ public class PLMQuoteService {
     public List<PLMAcceptedQuoteFineline> getApprovedQuoteFromPlm(Long planId, HttpMethod httpMethod) {
         List<PLMAcceptedQuoteFineline> responseMsg = null;
         try {
-            HttpHeaders headers = CommonUtil.getHttpHeaders(plmServiceProperties.getPlmConsumerId(),
-                    plmServiceProperties.getPlmAppKey(), plmServiceProperties.getPlmEnv());
+            Map<String, String> headerMap = new HashMap<>();
+            headerMap.put("WM_CONSUMER.ID", plmServiceProperties.getPlmConsumerId());
+            headerMap.put("WM_SVC.NAME", plmServiceProperties.getPlmServiceName());
+            headerMap.put("WM_SVC.ENV", plmServiceProperties.getPlmEnv());
+            HttpHeaders headers = CommonUtil.getHttpHeaders(headerMap);
             HttpEntity<String> entity = new HttpEntity<>(null, headers);
             log.info("Calling AEX_PLM_SERVICES API to retrieve approvedQuotes : {}", httpMethod.name());
             ResponseEntity<List<PLMAcceptedQuoteFineline>> responseEntity = restTemplate.exchange(
