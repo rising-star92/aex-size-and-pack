@@ -51,6 +51,7 @@ public class ReplenishmentResponseDTO {
     private Integer styleReplPack;
     private String ccId;
     private String colorName;
+    private String colorFamilyDesc;
     private Integer ccFinalBuyUnits;
     private Integer ccReplQty;
     private Integer ccVenderPackCount;
@@ -151,6 +152,45 @@ public class ReplenishmentResponseDTO {
         this.styleReplPack = styleReplPack;
         this.ccId = ccId;
         this.colorName = colorName;
+        this.ccFinalBuyUnits = ccFinalBuyUnits;
+        this.ccReplQty = ccReplQty;
+        this.ccVenderPackCount = ccVenderPackCount;
+        this.ccWhsePackCount = ccWhsePackCount;
+        this.ccVnpkWhpkRatio = ccVnpkWhpkRatio;
+        this.ccReplPack = ccReplPack;
+    }
+
+    public ReplenishmentResponseDTO(Long planId, Integer lvl0Nbr, String lvl0Desc, Integer lvl1Nbr, String lvl1Desc,
+                                    Integer lvl2Nbr, String lvl2Desc, Integer lvl3Nbr, String lvl3Desc, Integer lvl4Nbr,
+                                    String lvl4Desc, Integer finelineNbr, String finelineDesc, String finelineAltDesc  , String styleNbr,
+                                    Integer styleFinalBuyUnits, Integer styleReplQty, Integer styleVenderPackCount,
+                                    Integer styleWhsePackCount, Double styleVnpkWhpkRatio, Integer styleReplPack,
+                                    String ccId,String colorName, String colorFamilyDesc, Integer ccFinalBuyUnits, Integer ccReplQty, Integer ccVenderPackCount,
+                                    Integer ccWhsePackCount, Double ccVnpkWhpkRatio, Integer ccReplPack) {
+        this.planId = planId;
+        this.lvl0Nbr = lvl0Nbr;
+        this.lvl0Desc = lvl0Desc;
+        this.lvl1Nbr = lvl1Nbr;
+        this.lvl1Desc = lvl1Desc;
+        this.lvl2Nbr = lvl2Nbr;
+        this.lvl2Desc = lvl2Desc;
+        this.lvl3Nbr = lvl3Nbr;
+        this.lvl3Desc = lvl3Desc;
+        this.lvl4Nbr = lvl4Nbr;
+        this.lvl4Desc = lvl4Desc;
+        this.finelineNbr = finelineNbr;
+        this.finelineDesc = finelineDesc;
+        this.finelineAltDesc=finelineAltDesc;
+        this.styleNbr = styleNbr;
+        this.styleFinalBuyUnits = styleFinalBuyUnits;
+        this.styleReplQty = styleReplQty;
+        this.styleVenderPackCount = styleVenderPackCount;
+        this.styleWhsePackCount = styleWhsePackCount;
+        this.styleVnpkWhpkRatio = styleVnpkWhpkRatio;
+        this.styleReplPack = styleReplPack;
+        this.ccId = ccId;
+        this.colorName = colorName;
+        this.colorFamilyDesc = colorFamilyDesc;
         this.ccFinalBuyUnits = ccFinalBuyUnits;
         this.ccReplQty = ccReplQty;
         this.ccVenderPackCount = ccVenderPackCount;

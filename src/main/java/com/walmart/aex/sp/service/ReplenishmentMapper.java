@@ -236,6 +236,8 @@ public class ReplenishmentMapper {
 
         CustomerChoiceDto customerChoiceDto = new CustomerChoiceDto();
         customerChoiceDto.setCcId(replenishmentResponseDTO.getCcId());
+        customerChoiceDto.setColorName(replenishmentResponseDTO.getColorName());
+        customerChoiceDto.setColorFamilyDesc(replenishmentResponseDTO.getColorFamilyDesc());
         if (ccId == null) {
             MetricsDto metricsDto = new MetricsDto();
             metricsDto.setFinalBuyQty(replenishmentResponseDTO.getCcFinalBuyUnits());
