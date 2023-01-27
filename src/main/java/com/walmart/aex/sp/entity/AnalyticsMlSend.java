@@ -1,12 +1,11 @@
 package com.walmart.aex.sp.entity;
 
-
-
 import lombok.*;
 
 import javax.persistence.*;
 import java.math.BigInteger;
 import java.util.Date;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -79,7 +78,8 @@ public class AnalyticsMlSend {
     @Column(name="return_message")
     private String returnMessage;
 
-    @Column(name="analytics_job_id")
-    private String analyticsJobId;
+    @OneToMany(mappedBy = "analyticsMlSend", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<AnalyticsMlChildSend> analyticsMlChildSend;
 
 }
