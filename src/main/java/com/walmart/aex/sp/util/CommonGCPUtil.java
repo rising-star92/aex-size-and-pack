@@ -1,7 +1,9 @@
 package com.walmart.aex.sp.util;
 
 import com.google.api.gax.paging.Page;
-import com.google.cloud.storage.*;
+import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
 import com.walmart.aex.sp.properties.BigQueryConnectionProperties;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class CommonGCPUtil {
     @ManagedConfiguration
-    BigQueryConnectionProperties bigQueryConnectionProperties;
+    private BigQueryConnectionProperties bigQueryConnectionProperties;
     public boolean delete(String storagePath, String folderPrefix) {
         boolean deleted = false;
         final String projectId = bigQueryConnectionProperties.getMLProjectId();
