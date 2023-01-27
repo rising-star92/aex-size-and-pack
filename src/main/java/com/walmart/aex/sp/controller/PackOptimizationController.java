@@ -5,6 +5,7 @@ import com.walmart.aex.sp.dto.StatusResponse;
 import com.walmart.aex.sp.dto.packoptimization.isbpqty.ISAndBPQtyDTO;
 import com.walmart.aex.sp.enums.Action;
 import com.walmart.aex.sp.service.PostPackOptimizationService;
+import com.walmart.aex.sp.service.UpdateFromQuoteService;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.http.MediaType;
@@ -47,13 +48,16 @@ public class PackOptimizationController {
 
     private final IntegrationHubService integrationHubService;
 
+    private final UpdateFromQuoteService updateFromQuoteService;
+
     private static final Integer DEFAULT_BUMPPACK = 1;
 
-    public PackOptimizationController(PackOptimizationService packOptService, IntegrationHubService integrationHubService, PostPackOptimizationService postPackOptimizationService) {
+    public PackOptimizationController(PackOptimizationService packOptService, IntegrationHubService integrationHubService, PostPackOptimizationService postPackOptimizationService, UpdateFromQuoteService updateFromQuoteService) {
 
         this.packOptService = packOptService;
         this.integrationHubService = integrationHubService;
         this.postPackOptimizationService = postPackOptimizationService;
+        this.updateFromQuoteService = updateFromQuoteService;
     }
 
     public static final String SUCCESS_STATUS = "Success";
@@ -146,6 +150,11 @@ public class PackOptimizationController {
             response.setStatus(FAILURE_STATUS);
         }
         return response;
+    }
+
+    @MutationMapping
+    public StatusResponse updateFromQuote(@Argument RunPackOptRequest request) {
+        return updateFromQuoteService.updateFactoryFromApproveQuotes(request);
     }
 }
 

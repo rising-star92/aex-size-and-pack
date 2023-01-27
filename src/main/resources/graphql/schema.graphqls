@@ -29,6 +29,7 @@ type Mutation {
     createRunPackOptExecution(request: RunPackOptRequest!): RunPackOptResponse
     updatePackOptConstraints(request:UpdatePackOptConstraintRequestDTO!):StatusResponse
     updateColorCombination(request: ColorCombinationRequest!): StatusResponse!
+    updateFromQuote(request: RunPackOptRequest!): StatusResponse
 }
 
 input UpdatePackOptConstraintRequestDTO {

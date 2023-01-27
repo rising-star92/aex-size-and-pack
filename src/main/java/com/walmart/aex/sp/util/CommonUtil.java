@@ -11,13 +11,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
+import org.springframework.http.CacheControl;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Optional;
+import java.util.*;
 
 @Component
 @Slf4j
@@ -140,5 +141,16 @@ public class CommonUtil {
             }
         }
         return date;
+    }
+
+    public static HttpHeaders getHttpHeaders(Map<String, String> headers) {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        httpHeaders.setAccept(List.of(MediaType.APPLICATION_JSON));
+        httpHeaders.setCacheControl(CacheControl.noCache());
+        if (headers != null && !headers.isEmpty()) {
+            headers.forEach(httpHeaders::add);
+        }
+        return httpHeaders;
     }
 }
