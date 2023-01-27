@@ -325,9 +325,9 @@ public class PackOptimizationService {
                 if (null != integrationHubResponseDTO) {
                     fineLineWithIntegrationHubResponseDTOMap.put(finelineNbr, integrationHubResponseDTO);
                     fineLineWithIntegrationHubRequestDTOMap.put(finelineNbr, integrationHubRequestDTO);
-                    log.info("Done creating the entries in analytics_ml_send for plan_id : {}, finelineNbr: {}", request.getPlanId(), finelineNbr);
+                    log.info("Successfully processed request to IntegrationHub. PlanId:"+request.getPlanId()+ " & fineLineNbr: "+ finelineNbr);
                 } else {
-                    throw new CustomException("Unable to reach Integration Hub service for plan_id :" + request.getPlanId() + "finelineNbr: " + finelineNbr);
+                    throw new CustomException("Unable to process the request to IntegrationHub. PlanId:"+request.getPlanId()+ " & fineLineNbr: "+ finelineNbr);
                 }
             });
             saveAnalyticDataInDB(request, fineLineWithIntegrationHubResponseDTOMap, fineLineWithIntegrationHubRequestDTOMap);
@@ -343,22 +343,23 @@ public class PackOptimizationService {
     }
 
     private void saveAnalyticDataInDB(RunPackOptRequest request, Map<String, IntegrationHubResponseDTO> fineLineWithIntegrationHubResponseDTOMap, Map<String, IntegrationHubRequestDTO> fineLineWithIntegrationHubRequestDTOMap) {
-        Set<AnalyticsMlSend> analyticsMlSendSet = createAnalyticsMlSendEntry(request, fineLineWithIntegrationHubRequestDTOMap, fineLineWithIntegrationHubResponseDTOMap);
+        Set<AnalyticsMlSend> analyticsMlSendSet = createAnalyticsMlSendEntry(request, fineLineWithIntegrationHubResponseDTOMap);
         if (!CollectionUtils.isEmpty(analyticsMlSendSet)) {
             analyticsMlSendSet = updateAnalyticsMlSendWithAnalyticsChildData(analyticsMlSendSet,
-                    fineLineWithIntegrationHubResponseDTOMap);
+                    fineLineWithIntegrationHubResponseDTOMap, fineLineWithIntegrationHubRequestDTOMap);
             analyticsMlSendRepository.saveAll(analyticsMlSendSet);
         }
     }
 
     private Set<AnalyticsMlSend> updateAnalyticsMlSendWithAnalyticsChildData(Set<AnalyticsMlSend> analyticsMlSendSet,
-                                                                             Map<String, IntegrationHubResponseDTO> flWithIHResMap) {
+                                    Map<String, IntegrationHubResponseDTO> flWithIHResMap,
+                                    Map<String, IntegrationHubRequestDTO> flWithIHReqMap) {
         Set<AnalyticsMlSend> res = new HashSet<>();
         Long planId = analyticsMlSendSet.iterator().next().getPlanId();
         List<Integer> fineLines = analyticsMlSendSet.stream().map(AnalyticsMlSend::getFinelineNbr).collect(Collectors.toList());
         Map<Integer, Integer> fineLineWithBumpCntMap = getBumpPackByFineLineMap(planId, fineLines);
         for (AnalyticsMlSend analyticsMlSend : analyticsMlSendSet) {
-            Set<AnalyticsMlChildSend> analyticsMlChildSendSet = setAnalyticsChildDataToAnalyticsMlSend(flWithIHResMap, fineLineWithBumpCntMap, analyticsMlSend);
+            Set<AnalyticsMlChildSend> analyticsMlChildSendSet = setAnalyticsChildDataToAnalyticsMlSend(flWithIHResMap, fineLineWithBumpCntMap, analyticsMlSend, flWithIHReqMap);
             analyticsMlSend.setAnalyticsMlChildSend(analyticsMlChildSendSet);
             res.add(analyticsMlSend);
         }

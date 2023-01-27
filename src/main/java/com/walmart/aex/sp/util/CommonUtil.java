@@ -9,6 +9,7 @@ import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDeleteDTO;
 import com.walmart.aex.sp.exception.CustomException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 import org.springframework.http.CacheControl;
@@ -137,7 +138,7 @@ public class CommonUtil {
 
     public static Date getDateFromString(String dateStr) {
         Date date = null;
-        if (dateStr != null && !dateStr.isEmpty()) {
+        if (StringUtils.isNotEmpty(dateStr)) {
             try {
                 Instant startDateInstant = Instant.parse(dateStr);
                 if (startDateInstant != null) {
