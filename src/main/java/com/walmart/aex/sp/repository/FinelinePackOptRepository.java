@@ -35,7 +35,6 @@ public interface FinelinePackOptRepository
             "merchPackOpt.maxUnitsPerPack,\n" +
             "merchPackOpt.maxNbrOfPacks,\n" +
             "merchPackOpt.factoryId,\n" +
-            "merchPackOpt.originCountryName,\n" +
             "merchPackOpt.portOfOriginName,\n" +
             "merchPackOpt.singlePackInd,\n" +
             "merchPackOpt.colorCombination,\n" +
@@ -46,7 +45,6 @@ public interface FinelinePackOptRepository
             "subCatPackOpt.maxUnitsPerPack,\n" +
             "subCatPackOpt.maxNbrOfPacks,\n" +
             "subCatPackOpt.factoryId,\n" +
-            "subCatPackOpt.originCountryName,\n" +
             "subCatPackOpt.portOfOriginName,\n" +
             "subCatPackOpt.singlePackInd,\n" +
             "subCatPackOpt.colorCombination,\n" +
@@ -57,7 +55,6 @@ public interface FinelinePackOptRepository
             "fineLinePackOpt.maxUnitsPerPack,\n" +
             "fineLinePackOpt.maxNbrOfPacks,\n" +
             "fineLinePackOpt.factoryId,\n" +
-            "fineLinePackOpt.originCountryName,\n" +
             "fineLinePackOpt.portOfOriginName,\n" +
             "fineLinePackOpt.singlePackInd,\n" +
             "fineLinePackOpt.colorCombination,\n" +
@@ -66,14 +63,13 @@ public interface FinelinePackOptRepository
             "cpk.vendorNbr6 as ccVendorNumber6 , " +
             "cpk.gsmSupplierId as ccGsmSupplierNumber , " +
             "cpk.vendorNbr9 as ccVendorNumber9 , " +
-            "cpk.factoryId as ccFactoryIds , " +
-            "cpk.originCountryName as ccCountryOfOrigin , " +
+            "COALESCE(cpk.overrideFactoryId, cpk.factoryId) as ccFactoryId , " +
             "cpk.portOfOriginName as ccPortOfOrigin , " +
             "cpk.singlePackInd as ccSinglePackIndicator , " +
             "cpk.colorCombination as ccColorCombination , " +
             "cpk.maxUnitsPerPack as ccMaxUnitsPerPack , " +
             "cpk.maxNbrOfPacks as ccMaxPacks , " +
-            "cpk.factoryName as ccFactoryName , " +
+            "COALESCE(cpk.overrideFactoryName, cpk.factoryName) as ccFactoryName , " +
             "analytic.startTs,\n" +
             "analytic.endTs,\n" +
             "r.runStatusCode,\n" +

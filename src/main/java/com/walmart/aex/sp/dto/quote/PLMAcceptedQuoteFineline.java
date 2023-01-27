@@ -1,17 +1,17 @@
-package com.walmart.aex.sp.dto.buyquantity;
+package com.walmart.aex.sp.dto.quote;
 
 import lombok.Data;
-import lombok.ToString;
+
+import java.util.List;
 
 @Data
-@ToString
-public class CalculateBuyQtyParallelRequest {
+public class PLMAcceptedQuoteFineline {
     private Long planId;
-    private String channel;
     private Integer lvl0Nbr;
     private Integer lvl1Nbr;
     private Integer lvl2Nbr;
     private Integer lvl3Nbr;
     private Integer lvl4Nbr;
     private Integer finelineNbr;
+    private List<PLMAcceptedQuoteStyle> plmAcceptedQuoteStyles;
 }

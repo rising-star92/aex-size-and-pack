@@ -51,6 +51,7 @@ public class ReplenishmentResponseDTO {
     private Integer styleReplPack;
     private String ccId;
     private String colorName;
+    private String colorFamilyDesc;
     private Integer ccFinalBuyUnits;
     private Integer ccReplQty;
     private Integer ccVenderPackCount;
@@ -126,7 +127,7 @@ public class ReplenishmentResponseDTO {
                                     String lvl4Desc, Integer finelineNbr, String finelineDesc, String finelineAltDesc  , String styleNbr,
                                     Integer styleFinalBuyUnits, Integer styleReplQty, Integer styleVenderPackCount,
                                     Integer styleWhsePackCount, Double styleVnpkWhpkRatio, Integer styleReplPack,
-                                    String ccId,String colorName, Integer ccFinalBuyUnits, Integer ccReplQty, Integer ccVenderPackCount,
+                                    String ccId,String colorName, String colorFamilyDesc, Integer ccFinalBuyUnits, Integer ccReplQty, Integer ccVenderPackCount,
                                     Integer ccWhsePackCount, Double ccVnpkWhpkRatio, Integer ccReplPack) {
         this.planId = planId;
         this.lvl0Nbr = lvl0Nbr;
@@ -151,6 +152,7 @@ public class ReplenishmentResponseDTO {
         this.styleReplPack = styleReplPack;
         this.ccId = ccId;
         this.colorName = colorName;
+        this.colorFamilyDesc = colorFamilyDesc;
         this.ccFinalBuyUnits = ccFinalBuyUnits;
         this.ccReplQty = ccReplQty;
         this.ccVenderPackCount = ccVenderPackCount;
@@ -158,6 +160,7 @@ public class ReplenishmentResponseDTO {
         this.ccVnpkWhpkRatio = ccVnpkWhpkRatio;
         this.ccReplPack = ccReplPack;
     }
+
 
     public ReplenishmentResponseDTO(Long planId, Integer lvl0Nbr, String lvl0Desc, Integer lvl1Nbr,
                                     String lvl1Desc, Integer lvl2Nbr, String lvl2Desc, Integer lvl3Nbr, String lvl3Desc,

@@ -109,7 +109,7 @@ public class PackOptAddDataMapper {
             if (!CollectionUtils.isEmpty(fineline.getStyles())) {
                 Set<String> colorCombinationSets = new HashSet<>();
                 fineLinePackOptimization.setStylePackOptimization(setStylesPackOpt(fineLinePackOptimization, fineline.getStyles(), colorCombinationSets));
-                /**Reset the color combination if there is change in Country of Origin or Supplier Name */
+                /**Reset the color combination if there is change in Supplier Name */
                 resetColorCombination(colorCombinationSets, fineLinePackOptimization);
             }
             fineLinePackOptimizationSet.add(fineLinePackOptimization);
@@ -182,19 +182,7 @@ public class PackOptAddDataMapper {
             log.info("Update CC pack Optimization Factory Name for Factory ID {}",colorCombinationConstraints.getFactoryId());
             FactoryDetailsResponse factoryDetails = sourcingFactoryService.getFactoryDetails(colorCombinationConstraints.getFactoryId());
             ccPackOptimization.setFactoryName(factoryDetails.getFactoryName());
-            String countryOfOriginFromLP = colorCombinationConstraints.getCountryOfOrigin();
-            String countryOfOriginFromSP = ccPackOptimization.getOriginCountryName();
-            ccPackOptimization.setOriginCountryName(countryOfOriginFromLP);
-            log.info("LP:Country of Origin {} SP:Country of Origin {}", countryOfOriginFromLP, countryOfOriginFromSP);
-            /**Comparing Country of origin. If there is a change in country of origin then reset all color combination constraints (Supplier, Factory, Color Combination and Port of Origin)*/
-            if (!StringUtils.isEmpty(countryOfOriginFromLP) && !StringUtils.isEmpty(countryOfOriginFromSP) && !countryOfOriginFromLP.equalsIgnoreCase(countryOfOriginFromSP)) {
-                log.info("Received Country of Origin update event from LP and removing color combination for CC {}  ",ccPackOptimization.getCcPackOptimizationId());
-                if (!StringUtils.isEmpty(ccPackOptimization.getColorCombination())) {
-                    colorCombinationSets.add(ccPackOptimization.getColorCombination());
-                }
-            } else {
-                setCcSupplierConstraints(colorCombinationConstraints, ccPackOptimization, colorCombinationSets);
-            }
+            setCcSupplierConstraints(colorCombinationConstraints, ccPackOptimization, colorCombinationSets);
         }
         if (constraints.getFinelineLevelConstraints() != null) {
             ccPackOptimization.setMaxNbrOfPacks(constraints.getFinelineLevelConstraints().getMaxPacks());
@@ -206,10 +194,9 @@ public class PackOptAddDataMapper {
         List<Supplier> suppliers = colorCombinationConstraints.getSuppliers();
         if (!CollectionUtils.isEmpty(suppliers)) {
             String supplierName = StringEscapeUtils.unescapeHtml(suppliers.get(0).getSupplierName());
-            /**Comparing Supplier Name. If there is a change in supplier name then reset all color combination constraints (Country of origin, Factory, Color Combination and Port of Origin)*/
+            /**Comparing Supplier Name. If there is a change in supplier name then reset all color combination constraints (Factory, Color Combination and Port of Origin)*/
             if (!StringUtils.isEmpty(supplierName) && !StringUtils.isEmpty(ccPackOptimization.getVendorName()) && !supplierName.equalsIgnoreCase(ccPackOptimization.getVendorName())) {
-                log.info("Received Supplier Name update event from LP. Removing Country of Origin, FactoryId, Port of Origin and Color Combination for CC {}  ",ccPackOptimization.getCcPackOptimizationId());
-                ccPackOptimization.setOriginCountryName(null);
+                log.info("Received Supplier Name update event from LP. Removing FactoryId, Port of Origin and Color Combination for CC {}  ",ccPackOptimization.getCcPackOptimizationId());
                 ccPackOptimization.setPortOfOriginName(null);
                 if (!StringUtils.isEmpty(ccPackOptimization.getColorCombination())) {
                     colorCombinationSets.add(ccPackOptimization.getColorCombination());

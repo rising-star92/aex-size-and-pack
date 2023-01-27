@@ -53,7 +53,6 @@ public class UpdatePackOptimizationMapperTest {
         request.setPlanId(12L);
         request.setChannel("store");
         request.setLvl3Nbr(12228);
-        request.setOriginCountryCode("US");
 
         ChannelText channelText = new ChannelText();
         channelText.setChannelId(1);
@@ -69,8 +68,6 @@ public class UpdatePackOptimizationMapperTest {
         merchantPackOptimizationID.setRepTLvl3(12228);
         merchantPackOptimization.setMerchantPackOptimizationID(merchantPackOptimizationID);
         merchantPackOptimization.setVendorName("NIKE");
-        merchantPackOptimization.setOriginCountryName("United States of America");
-        merchantPackOptimization.setOriginCountryCode("USA");
         merchantPackOptimization.setFactoryName("Nike Manufacture");
 
         Set<SubCatgPackOptimization> subCatgPkOptPkConsList = new HashSet<>();
@@ -119,25 +116,20 @@ public class UpdatePackOptimizationMapperTest {
         merchantPackOptimizationList.add(merchantPackOptimization);
 
         FactoryDetailsResponse factoryDetails = new FactoryDetailsResponse();
-        factoryDetails.setCountry("UNITED STATES OF AMERICA");
-        factoryDetails.setCountryCode("US");
-        factoryDetails.setFactoryName("PKG--LA BC");
+        factoryDetails.setFactoryName(DEFAULT_FACTORY);
         when(packOptimizationCommonRepository.getMerchPackOptimizationRepository()).thenReturn(merchPackOptimizationRepository);
         when(packOptimizationCommonRepository.getSubCatgPackOptimizationRepository()).thenReturn(subCatgPackOptimizationRepository);
         when(packOptimizationCommonRepository.getFinelinePackOptConsRepository()).thenReturn(finelinePackOptConsRepository);
         when(packOptimizationCommonRepository.getStylePackOptimizationRepository()).thenReturn(stylePackOptimizationRepository);
         when(packOptimizationCommonRepository.getCcPackOptimizationRepository()).thenReturn(ccPackOptimizationRepository);
         pkOptConstMapper.updateCategoryPackOptCons(request,merchantPackOptimizationList,factoryDetails);
-        assertEquals("US",merchantPackOptimizationList.get(0).getOriginCountryCode());
+        assertEquals("DEFAULT",merchantPackOptimizationList.get(0).getFactoryName());
         for (SubCatgPackOptimization subcatgOptCons :merchantPackOptimizationList.get(0).getSubCatgPackOptimization()){
-            assertEquals("US",subcatgOptCons.getOriginCountryCode());
+            assertEquals("DEFAULT",subcatgOptCons.getFactoryName());
             for (FineLinePackOptimization flPackOptimization :subcatgOptCons.getFinelinepackOptimization()){
-                assertEquals("US",flPackOptimization.getOriginCountryCode());
+                assertEquals("DEFAULT",flPackOptimization.getFactoryName());
                 for (StylePackOptimization stPackOptimization :flPackOptimization.getStylePackOptimization()){
-                    assertEquals("US",stPackOptimization.getOriginCountryCode());
-                    for (CcPackOptimization ccPkOptimization :stPackOptimization.getCcPackOptimization()){
-                        assertEquals("US",ccPkOptimization.getOriginCountryCode());
-                    }
+                    assertEquals("DEFAULT",stPackOptimization.getFactoryName());
                 }
             }
         }
@@ -164,8 +156,6 @@ public class UpdatePackOptimizationMapperTest {
         merchantPackOptimizationID.setRepTLvl3(12228);
         merchantPackOptimization.setMerchantPackOptimizationID(merchantPackOptimizationID);
         merchantPackOptimization.setVendorName("NIKE");
-        merchantPackOptimization.setOriginCountryName("United States of America");
-        merchantPackOptimization.setOriginCountryCode("USA");
         merchantPackOptimization.setFactoryName("Nike Manufacture");
 
         Set<SubCatgPackOptimization> subCatgPkOptPkConsList = new HashSet<>();
@@ -175,8 +165,6 @@ public class UpdatePackOptimizationMapperTest {
         subCatgPackOptimizationID.setRepTLvl4(31507);
         subCatgPackOptimization.setSubCatgPackOptimizationID(subCatgPackOptimizationID);
         subCatgPackOptimization.setChannelText(channelText);
-        subCatgPackOptimization.setOriginCountryCode("US");
-        subCatgPackOptimization.setOriginCountryName("UNITED STATES");
         subCatgPackOptimization.setFactoryName("Nike Manufacturing");
 
         Set<FineLinePackOptimization> fineLinePackOptimizationList = new HashSet<>();
@@ -186,8 +174,6 @@ public class UpdatePackOptimizationMapperTest {
         fineLinePackOptimizationID.setFinelineNbr(2702);
         fineLinePackOptimization.setFinelinePackOptId(fineLinePackOptimizationID);
         fineLinePackOptimization.setChannelText(channelText);
-        fineLinePackOptimization.setOriginCountryCode("US");
-        fineLinePackOptimization.setOriginCountryName("UNITED STATES");
         fineLinePackOptimization.setFactoryName("Nike Manufacturing");
 
         Set<StylePackOptimization> stylePackOptimizationList = new HashSet<>();
@@ -197,8 +183,6 @@ public class UpdatePackOptimizationMapperTest {
         stylePackOptimizationID.setStyleNbr("34_2839_2_22_6");
         stylePackOptimization.setStylePackoptimizationId(stylePackOptimizationID);
         stylePackOptimization.setChannelText(channelText);
-        stylePackOptimization.setOriginCountryCode("US");
-        stylePackOptimization.setOriginCountryName("UNITED STATES");
         stylePackOptimization.setFactoryName("Nike Manufacturing");
 
         Set<CcPackOptimization> ccPackOptimizationList = new HashSet<>();
@@ -208,8 +192,6 @@ public class UpdatePackOptimizationMapperTest {
         CcPackOptimizationId.setCustomerChoice("34_2839_2_22_6_VIVID WHITE");
         ccPackOptimization.setCcPackOptimizationId(CcPackOptimizationId);
         ccPackOptimization.setChannelText(channelText);
-        ccPackOptimization.setOriginCountryCode("US");
-        ccPackOptimization.setOriginCountryName("UNITED STATES");
         ccPackOptimization.setFactoryName("Nike Manufacturing");
         ccPackOptimizationList.add(ccPackOptimization);
 
@@ -235,24 +217,15 @@ public class UpdatePackOptimizationMapperTest {
         when(packOptimizationCommonRepository.getCcPackOptimizationRepository()).thenReturn(ccPackOptimizationRepository);
         pkOptConstMapper.updateCategoryPackOptCons(request,merchantPackOptimizationList,factoryDetails);
         assertEquals("DEFAULT",merchantPackOptimizationList.get(0).getFactoryName());
-        assertNull(merchantPackOptimizationList.get(0).getOriginCountryCode());
-        assertNull(merchantPackOptimizationList.get(0).getOriginCountryName());
         for (SubCatgPackOptimization subcatgOptCons :merchantPackOptimizationList.get(0).getSubCatgPackOptimization()){
             assertEquals("DEFAULT",subcatgOptCons.getFactoryName());
-            assertNull(subcatgOptCons.getOriginCountryCode());
-            assertNull(subcatgOptCons.getOriginCountryName());
             for (FineLinePackOptimization flPackOptimization :subcatgOptCons.getFinelinepackOptimization()){
                 assertEquals("DEFAULT",flPackOptimization.getFactoryName());
-                assertNull(flPackOptimization.getOriginCountryCode());
-                assertNull(flPackOptimization.getOriginCountryName());
                 for (StylePackOptimization stPackOptimization :flPackOptimization.getStylePackOptimization()){
                     assertEquals("DEFAULT",stPackOptimization.getFactoryName());
-                    assertNull(stPackOptimization.getOriginCountryCode());
-                    assertNull(stPackOptimization.getOriginCountryName());
                     for (CcPackOptimization ccPkOptimization :stPackOptimization.getCcPackOptimization()){
                         assertEquals("DEFAULT",ccPkOptimization.getOverrideFactoryName());
-                        assertNull(ccPkOptimization.getOriginCountryCode());
-                        assertNull(ccPkOptimization.getOriginCountryName());
+
                     }
                 }
             }

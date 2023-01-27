@@ -1,7 +1,8 @@
----
+apiVersion: "2.0"
+kind: "ServiceConfig"
 metadata:
-  serviceId: "AEX_SIZE_AND_PACK"
-  serviceConfigVersion: "1.1-PROD"
+  serviceConfigVersion: 1.3
+  serviceId: AEX_SIZE_AND_PACK
   authzPolicies:
     adminUI:
       adminGroups:
@@ -11,104 +12,79 @@ metadata:
       repo: "aex-size-and-pack"
       branch: "main"
   externallyReferencedServiceConfig:
-    -
-      serviceId: "AEX_SECURITY_COMMON"
-      serviceConfigVersion: "1.4"
+    - serviceId: AEX_SECURITY_COMMON
+      serviceConfigVersion: 1.4
   notifications:
     slack:
-      channel: "apparel-precision-ops"
-  deliveryEnvironment: "PROD"
-  locked: false
+      channel: apparel-precision-ops
 configDefinitions:
   databaseConfig:
     description: ""
     resolutionPaths:
-      -
-        default: "/envProfile/envName"
+      - default: "/envProfile/envName"
     properties:
-      sqlServer.connection.idle.timeout.ms:
-        description: "Idle connection timeout in milliseconds"
-        type: "INTEGER"
+      "sqlServer.url":
+        description: "SP SQL Server DB URL"
+        type: "STRING"
         kind: "SINGLE"
-        defaultValue: 30000
-      sqlServer.connection.max.active:
-        description: "Max Active Connections"
-        type: "INTEGER"
-        kind: "SINGLE"
-        defaultValue: 5
-      sqlServer.connection.max.life.time.ms:
-        description: "Max connection lifetime in milliseconds"
-        type: "INTEGER"
-        kind: "SINGLE"
-        defaultValue: 180000
-      sqlServer.connection.pool.initial.size:
-        description: "Connection Pool Initial Size"
-        type: "INTEGER"
-        kind: "SINGLE"
-        defaultValue: 3
-      sqlServer.connection.timeout.ms:
-        description: "Connection Timeout in milliseconds"
-        type: "INTEGER"
-        kind: "SINGLE"
-        defaultValue: 30000
-      sqlServer.driverClassName:
+        defaultValue: "jdbc:sqlserver://us-wm-aex-dev-spo-nonprod-625febf5.database.windows.net:1433;database=us_wm_aex_spo;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;authentication=ActiveDirectoryPassword"
+      "sqlServer.driverClassName":
         description: "SQL Server Driver Class Name"
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "com.microsoft.sqlserver.jdbc.SQLServerDriver"
-      sqlServer.url:
-        description: "SP SQL Server DB URL"
-        type: "STRING"
-        kind: "SINGLE"
-        defaultValue: "jdbc:sqlserver://us-wm-aex-prod-spo-prod-632b6149-failover-group.database.windows.net:1433;database=us_wm_aex_spo;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;authentication=ActiveDirectoryPassword"
-  httpConfig:
-    description: "HTTP Configurations"
-    resolutionPaths:
-      -
-        default: "/envProfile/envName"
-    properties:
-      http.connectTimeout:
-        description: "Connection Timeout for HTTP Calls"
+      "sqlServer.connection.pool.initial.size":
+        description: "Connection Pool Initial Size"
         type: "INTEGER"
         kind: "SINGLE"
-        defaultValue: 18000
-      http.connectionRequestTimeout:
-        description: "Connection Request Timeout for HTTP Calls"
+        defaultValue: 3
+      "sqlServer.connection.max.active":
+        description: "Max Active Connections"
         type: "INTEGER"
         kind: "SINGLE"
-        defaultValue: 18000
-      http.readTimeout:
-        description: "Read Timeout for HTTP calls"
+        defaultValue: 5
+      "sqlServer.connection.timeout.ms":
+        description: "Connection Timeout in milliseconds"
         type: "INTEGER"
         kind: "SINGLE"
-        defaultValue: 18000
+        defaultValue: 30000
+      "sqlServer.connection.max.life.time.ms":
+        description: "Max connection lifetime in milliseconds"
+        type: "INTEGER"
+        kind: "SINGLE"
+        defaultValue: 180000
+      "sqlServer.connection.idle.timeout.ms":
+        description: "Idle connection timeout in milliseconds"
+        type: "INTEGER"
+        kind: "SINGLE"
+        defaultValue: 30000
   midasConfig:
     description: "Midas Data API Service to Service Authentication"
     resolutionPaths:
       - default: "/envProfile/envName"
     properties:
-      midas.header.consumer:
+      "midas.header.consumer":
         description: "Midas api header consumer Id"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "c8c76594-5e94-49fd-b485-0589fc284f95"
-      midas.header.signatureAuthFlag:
+        defaultValue: "13705f9d-3eb8-46b5-b2c1-63a1b569af4c"
+      "midas.header.signatureAuthFlag":
         description: "Midas api header signature Auth Flag"
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "true"
-      midas.header.signatureKeyVersion:
+      "midas.header.signatureKeyVersion":
         description: "Midas api header signature Key Version"
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "1"
-      midas.header.signatureTS:
-        description: "Midas header signature TS"
+      "midas.header.signatureTS":
+        description: "Midas api header signature TS"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "1646847828093"
-      midas.header.tenant:
-        description: "Midas header tenant"
+        defaultValue: "1639068838648"
+      "midas.header.tenant":
+        description: "Midas api header tenant"
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "aex"
@@ -116,12 +92,32 @@ configDefinitions:
         description: "Midas api base url"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "http://midas-data-api.prod.midas-api.catdev.prod.us.walmart.net/api/workflow/v1/execute"
+        defaultValue: "http://midas-data-api.stg.midas-api.catdev.prod.us.walmart.net/api/workflow/v1/execute"
       "midas.historicalSizeMetricsQuery":
         description: "JSON query for historical size metrics"
         type: "STRING"
         kind: "SINGLE"
         defaultValue: '{"query":{"select":[{"field":"*"}],"from":"get_historical_size_metrics_fineline_cc","params":{"finelineNbr":%d,"lyCompWeekStart":%d,"lyCompWeekEnd":%d,"lvl0Nbr":%d,"lvl1Nbr":%d,"lvl2Nbr":%d,"lvl3Nbr":%d,"lvl4Nbr":%d,"channel":"%s"}}}'
+  httpConfig:
+    description: "HTTP Configurations"
+    resolutionPaths:
+      - default: "/envProfile/envName"
+    properties:
+      "http.connectTimeout":
+        description: "Connection Timeout for HTTP Calls"
+        type: "INTEGER"
+        kind: "SINGLE"
+        defaultValue: 18000
+      "http.connectionRequestTimeout":
+        description: "Connection Request Timeout for HTTP Calls"
+        type: "INTEGER"
+        kind: "SINGLE"
+        defaultValue: 18000
+      "http.readTimeout":
+        description: "Read Timeout for HTTP calls"
+        type: "INTEGER"
+        kind: "SINGLE"
+        defaultValue: 18000
   buyQtyConfig:
     description: "Buy Quantity Constants Config"
     resolutionPaths:
@@ -146,12 +142,12 @@ configDefinitions:
         description: "BQFP Service URL"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "https://flow-plan.aex.prod.walmart.net/flow-plan/v1/getBuyQtyFromFlowPlan"
+        defaultValue: "https://flow-plan.aex.dev.walmart.net/flow-plan/v1/getBuyQtyFromFlowPlan"
       "flow.plan.url":
         description: "URL to get data from Flow Plan"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "https://flow-plan.aex.prod.walmart.net/graphql"
+        defaultValue: "https://flow-plan.aex.dev.walmart.net/graphql"
       "flow.plan.finelineMetricsWeek.query":
         description: "Query to retrieve bump set in store week"
         type: "STRING"
@@ -161,12 +157,12 @@ configDefinitions:
         description: "BQFP SR Consumer ID"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "80eac37e-62ff-4d41-a106-c5bff13827e9"
+        defaultValue: "19ce2bf5-4c24-4bbf-bee9-84496dd07e3c"
       "bqfp.env":
         description: "BQFP SR Env"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "prod"
+        defaultValue: "dev"
       "bqfp.svcName":
         description: "BQFP SR Service Name"
         type: "STRING"
@@ -181,17 +177,42 @@ configDefinitions:
         description: "IntegrationHub Service URL"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "http://analytics-api.prod.us-central1.walmart.net/api/packopt?scenario=pack_optimization_dataproc"
+        defaultValue: "http://analytics-api.stg.us-central1.walmart.net/api/packopt?scenario=pack_optimization_dataproc"
       "integrationhub.sizeAndPackBaseUrl":
         description: "SizeAndPack Base URL"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "http://aex-size-and-pack.aex.prod.walmart.net"
+        defaultValue: "http://aex-size-and-pack.aex.dev.walmart.net"
       "integrationhub.env":
         description: "Env we want to run the optimization for"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "prod"
+        defaultValue: "dev"
+  plmApiConfig:
+    description: "PLM Configurations"
+    resolutionPaths:
+      - default: "/envProfile/envName"
+    properties:
+      "plm.baseUrl":
+        description: "Plm Base URL"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "https://plm-services.aex.dev.walmart.net/"
+      "plm.consumerId":
+        description: "Plm Consumer Id"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "ba539c67-5318-4b68-967b-930c767b2dc0"
+      "plm.svcName":
+        description: "Plm Service Name"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "AEX_PLM_SERVICES"
+      "plm.env":
+        description: "Plm Env"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "dev"
   sourcingFactoryServiceConfig:
     description: "Sourcing Factory Service Config"
     resolutionPaths:
@@ -231,7 +252,7 @@ configDefinitions:
         description: "Get Size Profile URL from strategy Service"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "https://strategy.aex.prod.walmart.net/graphql"
+        defaultValue: "https://strategy.aex.dev.walmart.net/graphql"
       "size.profile.query":
         description: "Size Profile Query for GraphQL Call"
         type: "STRING"
@@ -256,7 +277,7 @@ configDefinitions:
         description: "Consumer ID to call Strategy Service"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "80eac37e-62ff-4d41-a106-c5bff13827e9"
+        defaultValue: "19ce2bf5-4c24-4bbf-bee9-84496dd07e3c"
       "size.profile.consumer.name":
         description: "Consumer service name"
         type: "STRING"
@@ -266,12 +287,12 @@ configDefinitions:
         description: "Consumer Environment"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "prod"
+        defaultValue: "dev"
       "size.profile.assortproduct.url":
         description: "Get RFA output from Assort Product Service"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "https://assortproduct.aex.prod.walmart.net/graphql"
+        defaultValue: "https://assortproduct.aex.dev.walmart.net/graphql"
       "size.profile.assortproduct.query":
         description: "Query to retrieve RFA output"
         type: "STRING"
@@ -281,7 +302,7 @@ configDefinitions:
         description: "Consumer ID to call Assort Product"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "80eac37e-62ff-4d41-a106-c5bff13827e9"
+        defaultValue: "19ce2bf5-4c24-4bbf-bee9-84496dd07e3c"
       "size.profile.assortproduct.consumer.name":
         description: "Consumer service name"
         type: "STRING"
@@ -291,7 +312,7 @@ configDefinitions:
         description: "Consumer Environment"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "prod"
+        defaultValue: "dev"
       "buy.qty.rfa.weeks.query":
         description: "markDownWeek and inStoreWeek Query for GraphQL Call"
         type: "STRING"
@@ -301,12 +322,12 @@ configDefinitions:
         description: "Get buy quantity rfaweek URL from buy quantity Service"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "http://buy-quantification.aex.prod.walmart.net/graphql"
+        defaultValue: "http://buy-quantification.aex.dev.walmart.net/graphql"
       "buy.qty.rfa.consumer.id":
         description: "Consumer ID to call Assort Product"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "80eac37e-62ff-4d41-a106-c5bff13827e9"
+        defaultValue: "19ce2bf5-4c24-4bbf-bee9-84496dd07e3c"
       "buy.qty.rfa.consumer.name":
         description: "Consumer service name"
         type: "STRING"
@@ -316,12 +337,12 @@ configDefinitions:
         description: "Consumer Environment"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "prod"
+        defaultValue: "dev"
       "buy.qty.line.plan.consumer.id":
         description: "Consumer ID to call Assort Product"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "80eac37e-62ff-4d41-a106-c5bff13827e9"
+        defaultValue: "19ce2bf5-4c24-4bbf-bee9-84496dd07e3c"
       "buy.qty.line.plan.consumer.name":
         description: "Consumer service name"
         type: "STRING"
@@ -331,7 +352,7 @@ configDefinitions:
         description: "Consumer Environment"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "prod"
+        defaultValue: "dev"
       "buy.qty.line.plan.weeks.query":
         description: "markDownWeek and inStoreWeek Query for GraphQL Call"
         type: "STRING"
@@ -341,7 +362,7 @@ configDefinitions:
         description: "Get buy quantity Line Plan URL from buy quantity Service"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "http://current-line-plan.aex.prod.walmart.net/graphql"
+        defaultValue: "http://current-line-plan.aex.dev.walmart.net/graphql"
       "strategy.vg.deviation.level":
         description: "Get Volume Deviation level fro strategy db"
         type: "STRING"
@@ -366,27 +387,160 @@ configDefinitions:
         description: "RFA OUTPUT"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "commitment_report_rfa_output_prod"
+        defaultValue: "commitment_report_rfa_output"
       "ml.datasetName":
         description: "ML OUTPUT"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "aex_pack_opt_prod"
-      "rfa.table.sp.packoptimization.output":
-        description: "RFA Output for SP Pack Optimization for Prod"
+        defaultValue: "aex_pack_opt_non_prod"
+      "rfa.datasetName.stage":
+        description: "RFA OUTPUT"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "output_prod"
+        defaultValue: "rfa_output_stage"
+      "rfa.table.sp.packoptimization.output":
+        description: "RFA Output for SP Pack Optimization for DEV"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "output_dev"
       "rfa.table.sp.cc.output":
         description: "RFA Output for SP Pack Optimization"
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "rfa_cc_out_parquet"
       "analytics_data":
-        description: "Analytics Data Dataset"
+        description: "RFA Output for SP Pack Optimization"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "analytics_data_prod"
-apiVersion: "2.0"
-kind: "ServiceConfig"
-
+        defaultValue: "analytics_data_dev"
+configOverrides:
+  graphQlConfig:
+    - name: "dev"
+      description: "GraphQL override for DEV profile"
+      pathElements:
+        envName: "dev"
+        envProfile: "dev"
+      value:
+        properties:
+          "size.profile.url": "https://strategy.aex.dev.walmart.net/graphql"
+          "size.profile.assortproduct.url": "https://assortproduct.aex.dev.walmart.net/graphql"
+          "size.profile.consumer.id": "19ce2bf5-4c24-4bbf-bee9-84496dd07e3c"
+          "size.profile.consumer.env": "dev"
+          "size.profile.assortproduct.consumer.id": "19ce2bf5-4c24-4bbf-bee9-84496dd07e3c"
+          "size.profile.assortproduct.consumer.env": "dev"
+    - name: "stage"
+      description: "GraphQL override for STAGE profile"
+      pathElements:
+        envProfile: "stage"
+        envName: "stage"
+      value:
+        properties:
+          "size.profile.url": "https://strategy.aex.stg.walmart.net/graphql"
+          "size.profile.assortproduct.url": "https://assortproduct.aex.stg.walmart.net/graphql"
+          "size.profile.consumer.id": "93c617a1-31ec-4333-a819-683ef7514cc0"
+          "size.profile.consumer.env": "stg"
+          "size.profile.assortproduct.consumer.id": "93c617a1-31ec-4333-a819-683ef7514cc0"
+          "size.profile.assortproduct.consumer.env": "stg"
+          "buy.qty.rfa.weeks.url": "http://buy-quantification.aex.stg.walmart.net/graphql"
+          "buy.qty.rfa.consumer.id": "93c617a1-31ec-4333-a819-683ef7514cc0"
+          "buy.qty.rfa.consumer.env": "stg"
+          "buy.qty.line.plan.weeks.url": "http://current-line-plan.aex.stg.walmart.net/graphql"
+          "buy.qty.line.plan.consumer.env": "stg"
+          "buy.qty.line.plan.consumer.id": "93c617a1-31ec-4333-a819-683ef7514cc0"
+  bqfpServiceConfig:
+    - name: "dev"
+      description: "Flow Plan override for DEV profile"
+      pathElements:
+        envName: "dev"
+        envProfile: "dev"
+      value:
+        properties:
+          "flow.plan.url": "https://flow-plan.aex.dev.walmart.net/graphql"
+          "bqfp.url": "https://flow-plan.aex.dev.walmart.net/flow-plan/v1/getBuyQtyFromFlowPlan"
+          "bqfp.consumerId": "19ce2bf5-4c24-4bbf-bee9-84496dd07e3c"
+          "bqfp.env": "dev"
+    - name: "stage"
+      description: "Flow Plan override for STAGE profile"
+      pathElements:
+        envName: "stage"
+        envProfile: "stage"
+      value:
+        properties:
+          "flow.plan.url": "https://flow-plan.aex.stg.walmart.net/graphql"
+          "bqfp.url": "https://flow-plan.aex.stg.walmart.net/flow-plan/v1/getBuyQtyFromFlowPlan"
+          "bqfp.consumerId": "93c617a1-31ec-4333-a819-683ef7514cc0"
+          "bqfp.env": "stg"
+  databaseConfig:
+    - name: "dev"
+      description: "Database Config override for DEV Profile"
+      pathElements:
+        envProfile: "dev"
+        envName: "dev"
+      value:
+        properties:
+          "sqlServer.url": "jdbc:sqlserver://us-wm-aex-dev-spo-nonprod-625febf5.database.windows.net:1433;database=us_wm_aex_spo;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;authentication=ActiveDirectoryPassword"
+    - name: "stage"
+      description: "Database Config override for STAGE Profile"
+      pathElements:
+        envProfile: "stage"
+        envName: "stage"
+      value:
+        properties:
+          "sqlServer.url": "jdbc:sqlserver://us-wm-aex-stg-spo-nonprod-62cd5875-failover-group.database.windows.net:1433;database=us_wm_aex_spo;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;authentication=ActiveDirectoryPassword"
+  integrationHubServiceConfig:
+    - name: "dev"
+      description: "IH override for DEV profile"
+      pathElements:
+        envName: "dev"
+        envProfile: "dev"
+      value:
+        properties:
+          "integrationhub.env": "dev"
+          "integrationhub.sizeAndPackBaseUrl": "http://aex-size-and-pack.aex.dev.walmart.net"
+    - name: "stage"
+      description: "IH override for STAGE profile"
+      pathElements:
+        envName: "stage"
+        envProfile: "stage"
+      value:
+        properties:
+          "integrationhub.env": "stage"
+          "integrationhub.sizeAndPackBaseUrl": "http://aex-size-and-pack.aex.stg.walmart.net"
+  plmApiConfig:
+    - name: "dev"
+      description: "PLM Config override for DEV profile"
+      pathElements:
+        envName: "dev"
+        envProfile: "dev"
+      value:
+        properties:
+          "plm.baseUrl": "https://plm-services.aex.dev.walmart.net/"
+          "plm.consumerId": "ba539c67-5318-4b68-967b-930c767b2dc0"
+          "plm.svcName": "AEX_PLM_SERVICES"
+          "plm.env": "dev"
+    - name: "stage"
+      description: "Flow Plan override for STAGE profile"
+      pathElements:
+        envName: "stage"
+        envProfile: "stage"
+      value:
+        properties:
+          "plm.baseUrl": "https://plm-services.aex.stg.walmart.net/"
+          "plm.consumerId": "2e89ee47-4879-475a-a01b-1995123df8fe"
+          "plm.svcName": "AEX_PLM_SERVICES"
+          "plm.env": "stg"
+  bigQueryConfig:
+    - name: "stage"
+      description: "Big Query config override for STAGE profile "
+      pathElements:
+        envProfile: "stage"
+        envName: "stage"
+      value:
+        properties:
+          "rfa.projectId": "wmt-e12743607538928aa17e0e22f9"
+          "rfa.datasetName": "commitment_report_rfa_output_stg"
+          "rfa.table.sp.cc.output": "rfa_cc_out_parquet"
+          "ml.projectId": "wmt-mtech-assortment-ml-prod"
+          "ml.datasetName": "aex_pack_opt_non_prod"
+          "rfa.table.sp.packoptimization.output": "output_stage"
+          "analytics_data": "analytics_data_stage"

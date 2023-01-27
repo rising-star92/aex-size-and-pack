@@ -45,8 +45,6 @@ public class SourcingFactoryService {
 
                     log.info("Fetching factory details for factory ID : {}", factoryId);
                     factoryDetailsResponse.setFactoryName(factoryDetailsDTO.getFactoryName());
-                    factoryDetailsResponse.setCountry(factoryDetailsDTO.getAddress().getCountry());
-                    factoryDetailsResponse.setCountryCode(factoryDetailsDTO.getAddress().getCountryCode());
                 }
             }
 

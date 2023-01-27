@@ -7,8 +7,6 @@ public class SupplierConstraints {
 
 	private String factoryIds;
 
-	private String countryOfOrigin;
-
 	private String portOfOrigin;
 
 	private String supplierName;

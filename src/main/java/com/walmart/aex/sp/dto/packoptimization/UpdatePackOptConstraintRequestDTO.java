@@ -14,8 +14,6 @@ public class UpdatePackOptConstraintRequestDTO {
     private Integer vendorNbr6;
     private Integer vendorNbr9;
     private String vendorName;
-    private String originCountryCode;
-    private String originCountryName;
     private String factoryId;
     private String factoryName;
     private Integer singlePackInd;

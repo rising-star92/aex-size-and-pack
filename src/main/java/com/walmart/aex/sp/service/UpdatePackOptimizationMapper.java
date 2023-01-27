@@ -130,8 +130,6 @@ public class UpdatePackOptimizationMapper {
         setIfNotNull(request.getFactoryId(), () -> merchantPackOpt.setFactoryId(request.getFactoryId()));
         if(null!=factoryDetails){
             merchantPackOpt.setFactoryName(factoryDetails.getFactoryName());
-            merchantPackOpt.setOriginCountryCode(factoryDetails.getCountryCode());
-            merchantPackOpt.setOriginCountryName(factoryDetails.getCountry());
         }
     }
 
@@ -149,8 +147,6 @@ public class UpdatePackOptimizationMapper {
         setIfNotNull(request.getFactoryId(), () -> subCatgPackOpt.setFactoryId(request.getFactoryId()));
         if(null!=factoryDetails){
             subCatgPackOpt.setFactoryName(factoryDetails.getFactoryName());
-            subCatgPackOpt.setOriginCountryCode(factoryDetails.getCountryCode());
-            subCatgPackOpt.setOriginCountryName(factoryDetails.getCountry());
         }
     }
 
@@ -168,8 +164,6 @@ public class UpdatePackOptimizationMapper {
         setIfNotNull(request.getFactoryId(), () -> fineLinePackOpt.setFactoryId(request.getFactoryId()));
         if(null!=factoryDetails){
             fineLinePackOpt.setFactoryName(factoryDetails.getFactoryName());
-            fineLinePackOpt.setOriginCountryCode(factoryDetails.getCountryCode());
-            fineLinePackOpt.setOriginCountryName(factoryDetails.getCountry());
         }
     }
 
@@ -187,8 +181,6 @@ public class UpdatePackOptimizationMapper {
         setIfNotNull(request.getFactoryId(), () -> stylePackOpt.setFactoryId(request.getFactoryId()));
         if(null!=factoryDetails){
             stylePackOpt.setFactoryName(factoryDetails.getFactoryName());
-            stylePackOpt.setOriginCountryCode(factoryDetails.getCountryCode());
-            stylePackOpt.setOriginCountryName(factoryDetails.getCountry());
         }
     }
 
@@ -206,8 +198,6 @@ public class UpdatePackOptimizationMapper {
         setIfNotNull(request.getFactoryId(), () -> ccPackOpt.setOverrideFactoryId(request.getFactoryId()));
         if(null!=factoryDetails){
             ccPackOpt.setOverrideFactoryName(factoryDetails.getFactoryName());
-            ccPackOpt.setOriginCountryCode(factoryDetails.getCountryCode());
-            ccPackOpt.setOriginCountryName(factoryDetails.getCountry());
         }
     }
 

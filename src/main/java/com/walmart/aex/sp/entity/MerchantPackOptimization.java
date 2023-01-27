@@ -33,12 +33,6 @@ public class MerchantPackOptimization {
 
      @Column(name="vendor_name")
     private String vendorName;
-
-    @Column(name="origin_country_code")
-    private String originCountryCode;
-
-    @Column(name="origin_country_name")
-    private String originCountryName;
     
     @Column(name="factory_id")
     private String factoryId;
