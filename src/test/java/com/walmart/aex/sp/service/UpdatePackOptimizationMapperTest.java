@@ -224,7 +224,8 @@ public class UpdatePackOptimizationMapperTest {
                 for (StylePackOptimization stPackOptimization :flPackOptimization.getStylePackOptimization()){
                     assertEquals("DEFAULT",stPackOptimization.getFactoryName());
                     for (CcPackOptimization ccPkOptimization :stPackOptimization.getCcPackOptimization()){
-                        assertEquals("DEFAULT",ccPkOptimization.getFactoryName());
+                        assertEquals("DEFAULT",ccPkOptimization.getOverrideFactoryName());
+
                     }
                 }
             }

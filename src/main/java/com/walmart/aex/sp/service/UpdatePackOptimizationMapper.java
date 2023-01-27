@@ -195,9 +195,9 @@ public class UpdatePackOptimizationMapper {
         setIfNotNull(request.getVendorNbr6(), () -> ccPackOpt.setVendorNbr6(request.getVendorNbr6()));
         setIfNotNull(request.getVendorNbr9(), () -> ccPackOpt.setVendorNbr9(request.getVendorNbr9()));
         // Fetch factory details from sourcing factory service call and set to the ccPackOpt
-        setIfNotNull(request.getFactoryId(), () -> ccPackOpt.setFactoryId(request.getFactoryId()));
+        setIfNotNull(request.getFactoryId(), () -> ccPackOpt.setOverrideFactoryId(request.getFactoryId()));
         if(null!=factoryDetails){
-            ccPackOpt.setFactoryName(factoryDetails.getFactoryName());
+            ccPackOpt.setOverrideFactoryName(factoryDetails.getFactoryName());
         }
     }
 
