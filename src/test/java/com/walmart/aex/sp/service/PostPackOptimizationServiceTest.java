@@ -7,6 +7,7 @@ import com.walmart.aex.sp.dto.packoptimization.isbpqty.Size;
 import com.walmart.aex.sp.entity.*;
 import com.walmart.aex.sp.repository.CcSpReplnPkConsRepository;
 import com.walmart.aex.sp.repository.SpCustomerChoiceChannelFixtureRepository;
+import com.walmart.aex.sp.repository.SpCustomerChoiceChannelFixtureSizeRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -46,16 +47,24 @@ public class PostPackOptimizationServiceTest {
 
 	@Mock
 	SpCustomerChoiceChannelFixtureRepository spCustomerChoiceChannelFixtureRepository;
-
+	@Mock
+	SpCustomerChoiceChannelFixtureSizeRepository spCustomerChoiceChannelFixtureSizeRepository;
 	@Test
 	public void ccFixSizePostPackOptTest() {
 		//what exists in db
 		CcSpMmReplPack ccSpMmReplPackHanging = ccSpMmReplPack(1, 1630, 618);
 		Optional<List<CcSpMmReplPack>> optional = Optional.of(List.of(ccSpMmReplPackHanging));
+		List<SpCustomerChoiceChannelFixture> spCustomerChoiceChannelFixtureList = new ArrayList<>();
 		SpCustomerChoiceChannelFixture spCustomerChoiceChannelFixture = new SpCustomerChoiceChannelFixture();
 		spCustomerChoiceChannelFixture.setInitialSetQty(600);
+		spCustomerChoiceChannelFixtureList.add(spCustomerChoiceChannelFixture);
+		List<SpCustomerChoiceChannelFixtureSize> spCustomerChoiceChannelFixtureSizeList =  new ArrayList<>();
+		SpCustomerChoiceChannelFixtureSize spCustomerChoiceChannelFixtureSize = new SpCustomerChoiceChannelFixtureSize();
+		spCustomerChoiceChannelFixtureSize.setInitialSetQty(600);
+		spCustomerChoiceChannelFixtureSizeList.add(spCustomerChoiceChannelFixtureSize);
 		Mockito.when(ccSpReplnPkConsRepository.findCcSpMmReplnPkConsData(34L, 2852,"34_2852_4_19_2_GEMSLT", "0X")).thenReturn(optional);
-		Mockito.when(spCustomerChoiceChannelFixtureRepository.findById(Mockito.any())).thenReturn(Optional.of(spCustomerChoiceChannelFixture));
+		Mockito.when(spCustomerChoiceChannelFixtureRepository.getSpChanFixtrDataByPlanFineline(Mockito.any(),Mockito.any())).thenReturn(spCustomerChoiceChannelFixtureList);
+		Mockito.when(spCustomerChoiceChannelFixtureSizeRepository.getSpCcChanFixtrDataByPlanFineline(Mockito.any(),Mockito.any())).thenReturn(spCustomerChoiceChannelFixtureSizeList);
 		postPackOptimizationService.updateInitialSetAndBumpPackAty(34L, 2852, createPostPackDto(1112, 1112));
 
 		ArgumentCaptor<List<CcSpMmReplPack>> ccspCaptor = ArgumentCaptor.forClass(List.class);
