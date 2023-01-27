@@ -4,15 +4,9 @@ import com.walmart.aex.sp.dto.packoptimization.isbpqty.CustomerChoices;
 import com.walmart.aex.sp.dto.packoptimization.isbpqty.Fixtures;
 import com.walmart.aex.sp.dto.packoptimization.isbpqty.ISAndBPQtyDTO;
 import com.walmart.aex.sp.dto.packoptimization.isbpqty.Size;
-import com.walmart.aex.sp.entity.CcMmReplPackId;
-import com.walmart.aex.sp.entity.CcReplPackId;
-import com.walmart.aex.sp.entity.CcSpMmReplPack;
-import com.walmart.aex.sp.entity.CcSpMmReplPackId;
-import com.walmart.aex.sp.entity.FinelineReplPackId;
-import com.walmart.aex.sp.entity.MerchCatgReplPackId;
-import com.walmart.aex.sp.entity.StyleReplPackId;
-import com.walmart.aex.sp.entity.SubCatgReplPackId;
+import com.walmart.aex.sp.entity.*;
 import com.walmart.aex.sp.repository.CcSpReplnPkConsRepository;
+import com.walmart.aex.sp.repository.SpCustomerChoiceChannelFixtureRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -50,13 +44,18 @@ public class PostPackOptimizationServiceTest {
 	@Mock
 	ReplenishmentService replenishmentService;
 
+	@Mock
+	SpCustomerChoiceChannelFixtureRepository spCustomerChoiceChannelFixtureRepository;
+
 	@Test
 	public void ccFixSizePostPackOptTest() {
 		//what exists in db
 		CcSpMmReplPack ccSpMmReplPackHanging = ccSpMmReplPack(1, 1630, 618);
 		Optional<List<CcSpMmReplPack>> optional = Optional.of(List.of(ccSpMmReplPackHanging));
-
+		SpCustomerChoiceChannelFixture spCustomerChoiceChannelFixture = new SpCustomerChoiceChannelFixture();
+		spCustomerChoiceChannelFixture.setInitialSetQty(600);
 		Mockito.when(ccSpReplnPkConsRepository.findCcSpMmReplnPkConsData(34L, 2852,"34_2852_4_19_2_GEMSLT", "0X")).thenReturn(optional);
+		Mockito.when(spCustomerChoiceChannelFixtureRepository.findById(Mockito.any())).thenReturn(Optional.of(spCustomerChoiceChannelFixture));
 		postPackOptimizationService.updateInitialSetAndBumpPackAty(34L, 2852, createPostPackDto(1112, 1112));
 
 		ArgumentCaptor<List<CcSpMmReplPack>> ccspCaptor = ArgumentCaptor.forClass(List.class);
@@ -105,10 +104,11 @@ public class PostPackOptimizationServiceTest {
 		fixtures.setFixtureType("DEFAULT");
 		return fixtures;
 	}
-	private Size size(String sizeDesc, int finalBuyQty) {
+	private Size size(String sizeDesc, int finalBuyQty, int optFinalInitialSetQty) {
 		Size size = new Size();
 		size.setSizeDesc(sizeDesc);
 		size.setOptFinalBuyQty(finalBuyQty);
+		size.setOptFinalInitialSetQty(optFinalInitialSetQty);
 		return size;
 	}
 
@@ -118,12 +118,12 @@ public class PostPackOptimizationServiceTest {
 		ccs.setFixtures(new ArrayList<>());
 		//updated buy qty from pack optimization
 		Fixtures fixHanging = fixture("HANGING");
-		Size szHanging = size("0X", optimizedHangingBuyQty);
+		Size szHanging = size("0X", optimizedHangingBuyQty,82);
 		fixHanging.getSizes().add(szHanging);
 		ccs.getFixtures().add(fixHanging);
 
 		Fixtures fixFolded = fixture("FOLDED");
-		Size szFolded = size("0X", optimizedFoldedBuyQty);
+		Size szFolded = size("0X", optimizedFoldedBuyQty,100);
 		fixFolded.getSizes().add(szFolded);
 		ccs.getFixtures().add(fixFolded);
 
