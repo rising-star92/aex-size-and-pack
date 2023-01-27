@@ -62,7 +62,6 @@ public class PackOptimizationUtil {
 
                         analyticsMlSend.setPayloadObj(reqPayload);
                         analyticsMlSend.setReturnMessage(null);
-                        analyticsMlSend.setAnalyticsJobId(analysticsJobId);
                         analyticsMlSendSet.add(analyticsMlSend);
                     }
                 }
