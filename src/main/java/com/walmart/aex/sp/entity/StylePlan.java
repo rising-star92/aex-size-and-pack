@@ -35,4 +35,7 @@ public class StylePlan {
     @OneToMany(mappedBy = "stylePlan", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CustChoicePlan> custChoicePlans;
+
+    @Column(name="alt_style_desc")
+    private String altStyleDesc;
 }

@@ -40,7 +40,6 @@ class SizeAndPackObjectMapperTest {
         Lvl1 lvl1 = planSizeAndPackDTO.getLvl1List().get(0);
         Lvl2 lvl2 = lvl1.getLvl2List().get(0);
         Lvl3 lvl3 = lvl2.getLvl3List().get(0);
-        String channel = "store";
         Set<MerchCatPlan> merchCatPlanSet = sizeAndPackObjectMapper.setMerchCatPlan(planSizeAndPackDTO, lvl1, lvl2, lvl3);
         assertFalse(merchCatPlanSet.isEmpty());
     }
@@ -51,7 +50,6 @@ class SizeAndPackObjectMapperTest {
         Lvl1 lvl1 = planSizeAndPackDTO.getLvl1List().get(0);
         Lvl2 lvl2 = lvl1.getLvl2List().get(0);
         Lvl3 lvl3 = lvl2.getLvl3List().get(0);
-        String channel = "store";
         MerchCatPlan merchCatPlan1 = new MerchCatPlan();
         MerchCatPlanId merchCatPlanId1 = new MerchCatPlanId(planSizeAndPackDTO.getPlanId(),planSizeAndPackDTO.getLvl0Nbr(), lvl1.getLvl1Nbr(), lvl2.getLvl2Nbr(), lvl3.getLvl3Nbr(), 1);
         merchCatPlan1.setMerchCatPlanId(merchCatPlanId1);
@@ -145,6 +143,7 @@ class SizeAndPackObjectMapperTest {
         List<Style> styles = new ArrayList<>();
         Style style = new Style();
         style.setStyleNbr("1263_20");
+        style.setAltStyleDesc("1263_20 Alt Desc");
         style.setChannel("store");
         style.setCustomerChoices(getCustomerChoices());
         styles.add(style);
@@ -157,6 +156,7 @@ class SizeAndPackObjectMapperTest {
         customerChoice.setChannel("store");
         customerChoice.setCcId("34_4_21");
         customerChoice.setColorName("Red");
+        customerChoice.setAltCcDesc("34_4_21 Alt CC Desc");
         customerChoices.add(customerChoice);
         return customerChoices;
     }

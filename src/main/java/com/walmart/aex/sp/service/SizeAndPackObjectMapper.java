@@ -132,6 +132,7 @@ public class SizeAndPackObjectMapper {
                 if (stylePlan.getStylePlanId() == null) {
                     stylePlan.setStylePlanId(stylePlanId);
                 }
+                stylePlan.setAltStyleDesc(style.getAltStyleDesc());
                 if (!CollectionUtils.isEmpty(style.getCustomerChoices())) {
                     stylePlan.setCustChoicePlans(setCustChoicePlans(stylePlan, style.getCustomerChoices()));
                 }
@@ -158,6 +159,7 @@ public class SizeAndPackObjectMapper {
                 }
                 custChoicePlan.setColorName(customerChoice.getColorName());
                 custChoicePlan.setColorFamilyDesc(customerChoice.getColorFamily());
+                custChoicePlan.setAltCcDesc(customerChoice.getAltCcDesc());
                 custChoicePlanSet.add(custChoicePlan);
             }
         }
