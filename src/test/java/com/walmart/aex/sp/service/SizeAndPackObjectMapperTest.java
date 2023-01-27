@@ -8,9 +8,7 @@ import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
 import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDTO;
 import com.walmart.aex.sp.dto.planhierarchy.Style;
-import com.walmart.aex.sp.entity.MerchCatPlan;
-import com.walmart.aex.sp.entity.MerchCatPlanId;
-import com.walmart.aex.sp.entity.SubCatPlan;
+import com.walmart.aex.sp.entity.*;
 import com.walmart.aex.sp.repository.MerchCatPlanRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 class SizeAndPackObjectMapperTest {
@@ -42,6 +40,10 @@ class SizeAndPackObjectMapperTest {
         Lvl3 lvl3 = lvl2.getLvl3List().get(0);
         Set<MerchCatPlan> merchCatPlanSet = sizeAndPackObjectMapper.setMerchCatPlan(planSizeAndPackDTO, lvl1, lvl2, lvl3);
         assertFalse(merchCatPlanSet.isEmpty());
+        StylePlan stylePlan = merchCatPlanSet.stream().findFirst().orElse(new MerchCatPlan()).getSubCatPlans().stream().findFirst().orElse(new SubCatPlan()).getFinelinePlans().stream().findFirst().orElse(new FinelinePlan()).getStylePlans().stream().findFirst().orElse(new StylePlan());
+        CustChoicePlan custChoicePlan = stylePlan.getCustChoicePlans().stream().findFirst().orElse(new CustChoicePlan());
+        assertEquals(lvl3.getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getAltStyleDesc(), stylePlan.getAltStyleDesc());
+        assertEquals(lvl3.getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getCustomerChoices().get(0).getAltCcDesc(), custChoicePlan.getAltCcDesc());
     }
 
     @Test
@@ -76,6 +78,10 @@ class SizeAndPackObjectMapperTest {
         Mockito.doNothing().when(merchCatPlanRepository).deleteById(merchCatPlanId2);
         Set<MerchCatPlan> merchCatPlanSet = sizeAndPackObjectMapper.updateMerchCatPlan(planSizeAndPackDTO, lvl1, lvl2, lvl3);
         assertFalse(merchCatPlanSet.isEmpty());
+        StylePlan stylePlan = merchCatPlanSet.stream().findFirst().orElse(new MerchCatPlan()).getSubCatPlans().stream().findFirst().orElse(new SubCatPlan()).getFinelinePlans().stream().findFirst().orElse(new FinelinePlan()).getStylePlans().stream().findFirst().orElse(new StylePlan());
+        CustChoicePlan custChoicePlan = stylePlan.getCustChoicePlans().stream().findFirst().orElse(new CustChoicePlan());
+        assertEquals(lvl3.getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getAltStyleDesc(), stylePlan.getAltStyleDesc());
+        assertEquals(lvl3.getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getCustomerChoices().get(0).getAltCcDesc(), custChoicePlan.getAltCcDesc());
     }
 
      PlanSizeAndPackDTO getPlanSizeAndPackDTOObj() {
