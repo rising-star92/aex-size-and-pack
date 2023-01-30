@@ -37,4 +37,7 @@ public class CustChoicePlan {
 
     @Column(name = "color_family_desc")
     private String colorFamilyDesc;
+
+    @Column(name = "alt_cc_desc")
+    private String altCcDesc;
 }

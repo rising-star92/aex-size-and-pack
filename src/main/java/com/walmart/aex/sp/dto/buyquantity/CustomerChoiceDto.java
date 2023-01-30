@@ -11,6 +11,7 @@ public class CustomerChoiceDto {
     private String ccId;
     private String colorName;
     private String colorFamilyDesc;
+    private String altCcDesc;
     private MetricsDto metrics;
     private List<ClustersDto> clusters;
     private List<MerchMethodsDto> merchMethods;

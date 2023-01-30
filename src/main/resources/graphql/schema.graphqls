@@ -249,12 +249,14 @@ type RunOptimization{
 
 type Style {
     styleNbr: String
+    altStyleDesc: String
     constraints:Constraints
     customerChoices:[CustomerChoice]
 }
 
 type CustomerChoice {
     ccId: String
+    altCcDesc: String
     colorName: String
     colorFamily: String
     constraints:Constraints
@@ -310,6 +312,7 @@ type FinelineDto {
 
 type StyleDto {
     styleNbr: String
+    altStyleDesc: String
     channelId: Int
     metrics: MetricsDto
     clusters: [ClustersDto]
@@ -318,6 +321,7 @@ type StyleDto {
 
 type CustomerChoiceDto {
     ccId: String
+    altCcDesc: String
     channelId: Int
     colorName: String
     colorFamilyDesc: String

@@ -41,7 +41,10 @@ public interface SpCustomerChoiceReplenishmentRepository extends JpaRepository<C
             "crp.vendorPackCnt as ccVenderPackCount, " +
             "crp.whsePackCnt as ccWhsePackCount, " +
             "crp.vnpkWhpkRatio as ccVnpkWhpkRatio, " +
-            "crp.replPackCnt as ccReplPack) " +
+            "crp.replPackCnt as ccReplPack," +
+            "sp.altStyleDesc," +
+            "ccp.altCcDesc" +
+            ") " +
             "from MerchCatPlan msp " +
             "inner join " +
             "SubCatPlan ssp " +
@@ -139,7 +142,9 @@ public interface SpCustomerChoiceReplenishmentRepository extends JpaRepository<C
             "crp.replUnits as ccAdjReplnQty, " +
             "msp.merchCatPlanId.channelId as channelId, " +
             "ccp.colorFamilyDesc as colorFamilyDesc, " +
-            "ccp.colorName as colorName " +
+            "ccp.colorName as colorName, " +
+            "sp.altStyleDesc, " +
+            "ccp.altCcDesc " +
             ") " +
             "from MerchCatPlan msp " +
             "inner join " +
