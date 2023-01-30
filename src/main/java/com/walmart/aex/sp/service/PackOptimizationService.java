@@ -181,7 +181,7 @@ public class PackOptimizationService {
         }
     }
 
-    public void updateParentRunStatusCode(AnalyticsMlSend analyticsMlSend) {
+    private void updateParentRunStatusCode(AnalyticsMlSend analyticsMlSend) {
         Set<AnalyticsMlChildSend> analyticsMlChildSendList = analyticsMlSend.getAnalyticsMlChildSend();
         Set<AnalyticsMlChildSend> runStatusSubmittedList = analyticsMlChildSendList.stream().filter(val -> val.getRunStatusCode() == 3).collect(Collectors.toSet());
         Set<AnalyticsMlChildSend> runStatusAnalyticsErrorList = analyticsMlChildSendList.stream().filter(val -> val.getRunStatusCode() == 10).collect(Collectors.toSet());
