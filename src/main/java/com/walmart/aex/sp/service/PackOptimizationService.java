@@ -185,7 +185,8 @@ public class PackOptimizationService {
         Set<AnalyticsMlChildSend> analyticsMlChildSendList = analyticsMlSend.getAnalyticsMlChildSend();
         Set<Integer> runStatusCodeSentAndAnalyticsFailedSet = analyticsMlChildSendList
                 .stream()
-                .filter(val -> val.getRunStatusCode() == 3 || val.getRunStatusCode() == 10)
+                .filter(val -> Objects.equals(val.getRunStatusCode(), RunStatusCodeType.SENT_TO_ANALYTICS.getId()) ||
+                        Objects.equals(val.getRunStatusCode(), RunStatusCodeType.ANALYTICS_ERROR.getId()))
                 .map(AnalyticsMlChildSend::getRunStatusCode)
                 .collect(Collectors.toSet());
 
