@@ -69,7 +69,6 @@ public class PostPackOptimizationServiceTest {
 
 	}
 
-	@NotNull
 	private SpFineLineChannelFixtureId getSpFineLineChannelFixtureId() {
 		SpFineLineChannelFixtureId spFineLineChannelFixtureId = new SpFineLineChannelFixtureId();
 		spFineLineChannelFixtureId.setChannelId(1);
@@ -86,7 +85,6 @@ public class PostPackOptimizationServiceTest {
 		return spFineLineChannelFixtureId;
 	}
 
-	@NotNull
 	private SpCustomerChoiceChannelFixtureId getSpCustomerChoiceChannelFixtureId() {
 		SpCustomerChoiceChannelFixtureId spCustomerChoiceChannelFixtureId = new SpCustomerChoiceChannelFixtureId();
 		spCustomerChoiceChannelFixtureId.setCustomerChoice("34_2852_4_19_2_GEMSLT");

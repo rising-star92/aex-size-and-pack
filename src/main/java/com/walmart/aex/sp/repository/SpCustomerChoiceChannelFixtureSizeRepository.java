@@ -101,7 +101,6 @@ public interface SpCustomerChoiceChannelFixtureSizeRepository extends JpaReposit
     @Query(value = "delete from dbo.sp_cc_chan_fixtr_size where plan_id = :planId and channel_id = :channelId and fineline_nbr in (:finelineNbrs)", nativeQuery = true)
     void deleteByPlanIdFinelineIdChannelId(@Param("planId") Long planId, @Param("channelId") Integer channelId, @Param("finelineNbrs") Set<Integer> finelineNbrs);
 
-    @Transactional
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(value = "select * from dbo.sp_cc_chan_fixtr_size where plan_id = :planId and channel_id = 1 and fineline_nbr=:fineline", nativeQuery = true)
     List<SpCustomerChoiceChannelFixtureSize> getSpCcChanFixtrDataByPlanFineline(@Param("planId")Long planId, @Param("fineline") Integer fineline);
