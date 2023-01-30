@@ -7,7 +7,6 @@ import com.walmart.aex.sp.dto.packoptimization.isbpqty.Size;
 import com.walmart.aex.sp.entity.*;
 import com.walmart.aex.sp.repository.CcSpReplnPkConsRepository;
 import com.walmart.aex.sp.repository.SpCustomerChoiceChannelFixtureSizeRepository;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -32,21 +31,21 @@ public class PostPackOptimizationServiceTest {
 
 	@InjectMocks
 	@Spy
-	PostPackOptimizationService postPackOptimizationService;
+	private PostPackOptimizationService postPackOptimizationService;
 
 	@Mock
-	ISAndBPQtyDTO isAndBPQtyDTO;
+	private ISAndBPQtyDTO isAndBPQtyDTO;
 	@Mock
-	CcSpReplnPkConsRepository ccSpReplnPkConsRepository;
+	private CcSpReplnPkConsRepository ccSpReplnPkConsRepository;
 
 	@Mock
-	UpdateReplnConfigMapper updateReplnConfigMapper;
+	private UpdateReplnConfigMapper updateReplnConfigMapper;
 
 	@Mock
-	ReplenishmentService replenishmentService;
+	private ReplenishmentService replenishmentService;
 
 	@Mock
-	SpCustomerChoiceChannelFixtureSizeRepository spCustomerChoiceChannelFixtureSizeRepository;
+	private SpCustomerChoiceChannelFixtureSizeRepository spCustomerChoiceChannelFixtureSizeRepository;
 
 	private static Integer lvl0Nbr = 50000;
 	private static Integer lvl1Nbr = 34;
