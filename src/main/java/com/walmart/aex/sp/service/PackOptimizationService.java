@@ -100,7 +100,7 @@ public class PackOptimizationService {
                                    MerchPackOptimizationRepository merchPackOptimizationRepository,
                                    UpdatePackOptimizationMapper updatePackOptimizationMapper,
                                    CcPackOptimizationRepository ccPackOptimizationRepository,
-                                   SourcingFactoryService sourcingFactoryService, SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository, IntegrationHubService integrationHubService, IntegrationHubServiceProperties integrationHubServiceProperties, CommonGCPUtil commonGCPUtil) {
+                                   SourcingFactoryService sourcingFactoryService, SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository, IntegrationHubService integrationHubService, CommonGCPUtil commonGCPUtil) {
         this.finelinePackOptimizationRepository = finelinePackOptimizationRepository;
         this.packOptfineplanRepo = packOptfineplanRepo;
         this.packOptimizationMapper = packOptimizationMapper;
@@ -113,7 +113,6 @@ public class PackOptimizationService {
         this.sourcingFactoryService = sourcingFactoryService;
         this.spFineLineChannelFixtureRepository = spFineLineChannelFixtureRepository;
         this.integrationHubService = integrationHubService;
-        this.integrationHubServiceProperties = integrationHubServiceProperties;
         this.commonGCPUtil = commonGCPUtil;
     }
 
