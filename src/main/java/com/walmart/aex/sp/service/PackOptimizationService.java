@@ -28,6 +28,7 @@ import com.walmart.aex.sp.entity.AnalyticsMlSend;
 import com.walmart.aex.sp.entity.CcPackOptimization;
 import com.walmart.aex.sp.entity.MerchantPackOptimization;
 import com.walmart.aex.sp.enums.ChannelType;
+import com.walmart.aex.sp.enums.RunStatusCodeType;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.properties.IntegrationHubServiceProperties;
 import com.walmart.aex.sp.repository.AnalyticsMlSendRepository;
@@ -38,6 +39,7 @@ import com.walmart.aex.sp.repository.MerchPackOptimizationRepository;
 import com.walmart.aex.sp.repository.SpFineLineChannelFixtureRepository;
 import com.walmart.aex.sp.repository.StyleCcPackOptConsRepository;
 import com.walmart.aex.sp.util.CommonGCPUtil;
+import com.walmart.aex.sp.util.CommonUtil;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -52,6 +54,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -100,7 +103,7 @@ public class PackOptimizationService {
                                    MerchPackOptimizationRepository merchPackOptimizationRepository,
                                    UpdatePackOptimizationMapper updatePackOptimizationMapper,
                                    CcPackOptimizationRepository ccPackOptimizationRepository,
-                                   SourcingFactoryService sourcingFactoryService, SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository, IntegrationHubService integrationHubService, IntegrationHubServiceProperties integrationHubServiceProperties, CommonGCPUtil commonGCPUtil) {
+                                   SourcingFactoryService sourcingFactoryService, SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository, IntegrationHubService integrationHubService, CommonGCPUtil commonGCPUtil) {
         this.finelinePackOptimizationRepository = finelinePackOptimizationRepository;
         this.packOptfineplanRepo = packOptfineplanRepo;
         this.packOptimizationMapper = packOptimizationMapper;
@@ -113,7 +116,6 @@ public class PackOptimizationService {
         this.sourcingFactoryService = sourcingFactoryService;
         this.spFineLineChannelFixtureRepository = spFineLineChannelFixtureRepository;
         this.integrationHubService = integrationHubService;
-        this.integrationHubServiceProperties = integrationHubServiceProperties;
         this.commonGCPUtil = commonGCPUtil;
     }
 
@@ -151,8 +153,29 @@ public class PackOptimizationService {
         return finelinePackOptimizationResponse;
     }
 
-    public void updatePackOptServiceStatus(Long planId, Integer finelineNbr, Integer status) {
-        analyticsMlSendRepository.updateStatus(planId, finelineNbr, status);
+    public void updatePackOptServiceStatus(Long planId, String finelineNbr, Integer status) {
+        List<Integer> fineLineAndBumpCount = CommonUtil.getNumbersFromString(finelineNbr);
+        Integer fineLineNumber = !fineLineAndBumpCount.isEmpty() ? fineLineAndBumpCount.get(0) : null;
+        Integer bumpNbr = fineLineAndBumpCount.size() > 1 ? fineLineAndBumpCount.get(1) : 1;
+        if(fineLineNumber != null) {
+            try {
+                Optional<AnalyticsMlSend> analyticsMlSend = analyticsMlSendRepository.findByPlanIdAndFinelineNbrAndRunStatusCode(planId, fineLineNumber, RunStatusCodeType.SENT_TO_ANALYTICS.getId()
+                );
+                if (analyticsMlSend.isPresent()) {
+                    Set<AnalyticsMlChildSend> analyticsMlChildSendList = analyticsMlSend.get().getAnalyticsMlChildSend();
+                    for (AnalyticsMlChildSend analyticsMlChildSend : analyticsMlChildSendList) {
+                        if (Objects.equals(analyticsMlChildSend.getBumpPackNbr(), bumpNbr)) {
+                            analyticsMlChildSend.setRunStatusCode(status);
+                            break;
+                        }
+                    }
+                    analyticsMlSendRepository.save(analyticsMlSend.get());
+                }
+            } catch (Exception ex) {
+                log.info("Failed to update status for planId: {} and fineLineNbr:{} with RunStatusCode:{}",
+                        planId, finelineNbr, RunStatusCodeType.SENT_TO_ANALYTICS.getId());
+            }
+        }
     }
 
     public StatusResponse updatePackOptConstraints(UpdatePackOptConstraintRequestDTO request) {
