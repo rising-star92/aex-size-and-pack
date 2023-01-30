@@ -192,11 +192,11 @@ public class PackOptimizationService {
         if(runStatusCodeSentAndAnalyticsFailedSet.isEmpty()) {
             analyticsMlSend.setRunStatusCode(RunStatusCodeType.ANALYTICS_RUN_COMPLETED.getId());
         }
-        else if (runStatusCodeSentAndAnalyticsFailedSet.contains(RunStatusCodeType.SENT_TO_ANALYTICS.getId())) {
-            analyticsMlSend.setRunStatusCode(RunStatusCodeType.SENT_TO_ANALYTICS.getId());
-        }
         else if (runStatusCodeSentAndAnalyticsFailedSet.contains(RunStatusCodeType.ANALYTICS_ERROR.getId())) {
             analyticsMlSend.setRunStatusCode(RunStatusCodeType.ANALYTICS_ERROR.getId());
+        }
+        else if (runStatusCodeSentAndAnalyticsFailedSet.contains(RunStatusCodeType.SENT_TO_ANALYTICS.getId())) {
+            analyticsMlSend.setRunStatusCode(RunStatusCodeType.SENT_TO_ANALYTICS.getId());
         }
 
     }
