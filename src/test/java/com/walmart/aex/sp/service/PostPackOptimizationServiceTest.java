@@ -6,7 +6,6 @@ import com.walmart.aex.sp.dto.packoptimization.isbpqty.ISAndBPQtyDTO;
 import com.walmart.aex.sp.dto.packoptimization.isbpqty.Size;
 import com.walmart.aex.sp.entity.*;
 import com.walmart.aex.sp.repository.CcSpReplnPkConsRepository;
-import com.walmart.aex.sp.repository.SpCustomerChoiceChannelFixtureRepository;
 import com.walmart.aex.sp.repository.SpCustomerChoiceChannelFixtureSizeRepository;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -47,8 +46,6 @@ public class PostPackOptimizationServiceTest {
 	ReplenishmentService replenishmentService;
 
 	@Mock
-	SpCustomerChoiceChannelFixtureRepository spCustomerChoiceChannelFixtureRepository;
-	@Mock
 	SpCustomerChoiceChannelFixtureSizeRepository spCustomerChoiceChannelFixtureSizeRepository;
 
 	private static Integer lvl0Nbr = 50000;
@@ -62,7 +59,6 @@ public class PostPackOptimizationServiceTest {
 		CcSpMmReplPack ccSpMmReplPackHanging = ccSpMmReplPack(1, 1630, 618);
 		Optional<List<CcSpMmReplPack>> optional = Optional.of(List.of(ccSpMmReplPackHanging));
 		Mockito.when(ccSpReplnPkConsRepository.findCcSpMmReplnPkConsData(34L, 2852,"34_2852_4_19_2_GEMSLT", "0X")).thenReturn(optional);
-		Mockito.when(spCustomerChoiceChannelFixtureRepository.getSpChanFixtrDataByPlanFineline(Mockito.any(),Mockito.any())).thenReturn(getSpCustomerChoiceChannelFixtureList());
 		Mockito.when(spCustomerChoiceChannelFixtureSizeRepository.getSpCcChanFixtrDataByPlanFineline(Mockito.any(),Mockito.any())).thenReturn(getSpCustomerChoiceChannelFixtureSizeList());
 		postPackOptimizationService.updateInitialSetAndBumpPackAty(34L, 2852, createPostPackDto(1112, 1112));
 		ArgumentCaptor<List<CcSpMmReplPack>> ccspCaptor = ArgumentCaptor.forClass(List.class);
@@ -71,19 +67,6 @@ public class PostPackOptimizationServiceTest {
 		List<CcSpMmReplPack> ccSpMmRepls = ccspCaptor.getValue();
 		assertEquals(518, ccSpMmRepls.get(0).getReplUnits(), "Repln units should be reduced to 518 for 0X Hanging");
 
-	}
-
-	private List<SpCustomerChoiceChannelFixture> getSpCustomerChoiceChannelFixtureList() {
-		SpCustomerChoiceChannelFixture spCustomerChoiceChannelFixture = new SpCustomerChoiceChannelFixture();
-		List<SpCustomerChoiceChannelFixture> spCustomerChoiceChannelFixtureList = new ArrayList<>();
-		spCustomerChoiceChannelFixture.setInitialSetQty(600);
-		spCustomerChoiceChannelFixture.setSpCustomerChoiceChannelFixtureId(getSpCustomerChoiceChannelFixtureId());
-		SpStyleChannelFixtureId spStyleChannelFixtureId = new SpStyleChannelFixtureId();
-		spStyleChannelFixtureId.setStyleNbr("34_2852_4_19_2");
-		SpFineLineChannelFixtureId spFineLineChannelFixtureId = getSpFineLineChannelFixtureId();
-		spStyleChannelFixtureId.setSpFineLineChannelFixtureId(spFineLineChannelFixtureId);
-		spCustomerChoiceChannelFixtureList.add(spCustomerChoiceChannelFixture);
-		return spCustomerChoiceChannelFixtureList;
 	}
 
 	@NotNull

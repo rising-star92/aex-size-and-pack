@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -43,7 +44,6 @@ public class PostPackOptimizationService {
     @Transactional
     public void updateInitialSetAndBumpPackAty(Long planId, Integer finelineNbr, ISAndBPQtyDTO isAndBPQtyDTO) {
         log.info("Update Replenishment qty {}", isAndBPQtyDTO);
-        List<SpCustomerChoiceChannelFixture> spCustomerChoiceChannelFixture = spCustomerChoiceChannelFixtureRepository.getSpChanFixtrDataByPlanFineline(planId,finelineNbr);
         List<SpCustomerChoiceChannelFixtureSize> spCustomerChoiceChannelFixtureSize = spCustomerChoiceChannelFixtureSizeRepository.getSpCcChanFixtrDataByPlanFineline(planId,finelineNbr);
 
         List<CcSpMmReplPack> updatedCcSpMmReplPacks = new ArrayList<>();
@@ -55,7 +55,7 @@ public class PostPackOptimizationService {
                         .equals(MerchMethod.getMerchMethodIdFromDescription(fixture.getMerchMethod()))).forEach(ccSpMmReplPack -> {
 
                       if (ccSpMmReplPack.getReplUnits() > 0) {
-                          Integer updatedReplnQty = getUpdatedReplnQty(size.getOptFinalInitialSetQty(),ccSpMmReplPack.getCcSpReplPackId().getCcMmReplPackId().getCcReplPackId(),spCustomerChoiceChannelFixture ,spCustomerChoiceChannelFixtureSize);
+                          Integer updatedReplnQty = getUpdatedReplnQty(size.getOptFinalInitialSetQty(),ccSpMmReplPack.getCcSpReplPackId().getCcMmReplPackId().getCcReplPackId(),spCustomerChoiceChannelFixtureSize);
                           //If optimized buy quantity exceeds replenishment amount, then we'll set the replenishment to 0
                           if(null!=updatedReplnQty){
                               ccSpMmReplPack.setReplUnits(Math.max(updatedReplnQty, 0));
@@ -85,20 +85,8 @@ public class PostPackOptimizationService {
         }
     }
 
-    private Integer getUpdatedReplnQty(Integer optFinalInitialSetQty, CcReplPackId ccReplPackId, List<SpCustomerChoiceChannelFixture> spCustomerChoiceChannelFixture, List<SpCustomerChoiceChannelFixtureSize> spCustomerChoiceChannelFixtureSize) {
-        if (!spCustomerChoiceChannelFixture.isEmpty() && !spCustomerChoiceChannelFixtureSize.isEmpty()) {
-            SpCustomerChoiceChannelFixture spCustomerCCFixtr = spCustomerChoiceChannelFixture.stream()
-                    .filter(spCustChanFixtr -> spCustChanFixtr.getSpCustomerChoiceChannelFixtureId().getCustomerChoice().equals(ccReplPackId.getCustomerChoice()) &&
-                            spCustChanFixtr.getSpCustomerChoiceChannelFixtureId().getSpStyleChannelFixtureId().getStyleNbr().equals(ccReplPackId.getStyleReplPackId().getStyleNbr()) &&
-                            spCustChanFixtr.getSpCustomerChoiceChannelFixtureId().getSpStyleChannelFixtureId().getSpFineLineChannelFixtureId().getFineLineNbr().equals(ccReplPackId.getStyleReplPackId().getFinelineReplPackId().getFinelineNbr()) &&
-                            spCustChanFixtr.getSpCustomerChoiceChannelFixtureId().getSpStyleChannelFixtureId().getSpFineLineChannelFixtureId().getPlanId().equals(ccReplPackId.getStyleReplPackId().getFinelineReplPackId().getSubCatgReplPackId().getMerchCatgReplPackId().getPlanId()) &&
-                            spCustChanFixtr.getSpCustomerChoiceChannelFixtureId().getSpStyleChannelFixtureId().getSpFineLineChannelFixtureId().getFixtureTypeRollUpId().getFixtureTypeRollupId().equals(ccReplPackId.getStyleReplPackId().getFinelineReplPackId().getSubCatgReplPackId().getMerchCatgReplPackId().getFixtureTypeRollupId()) &&
-                            spCustChanFixtr.getSpCustomerChoiceChannelFixtureId().getSpStyleChannelFixtureId().getSpFineLineChannelFixtureId().getLvl0Nbr().equals(ccReplPackId.getStyleReplPackId().getFinelineReplPackId().getSubCatgReplPackId().getMerchCatgReplPackId().getRepTLvl0()) &&
-                            spCustChanFixtr.getSpCustomerChoiceChannelFixtureId().getSpStyleChannelFixtureId().getSpFineLineChannelFixtureId().getLvl1Nbr().equals(ccReplPackId.getStyleReplPackId().getFinelineReplPackId().getSubCatgReplPackId().getMerchCatgReplPackId().getRepTLvl1()) &&
-                            spCustChanFixtr.getSpCustomerChoiceChannelFixtureId().getSpStyleChannelFixtureId().getSpFineLineChannelFixtureId().getLvl2Nbr().equals(ccReplPackId.getStyleReplPackId().getFinelineReplPackId().getSubCatgReplPackId().getMerchCatgReplPackId().getRepTLvl2()) &&
-                            spCustChanFixtr.getSpCustomerChoiceChannelFixtureId().getSpStyleChannelFixtureId().getSpFineLineChannelFixtureId().getLvl3Nbr().equals(ccReplPackId.getStyleReplPackId().getFinelineReplPackId().getSubCatgReplPackId().getMerchCatgReplPackId().getRepTLvl3()) &&
-                            spCustChanFixtr.getSpCustomerChoiceChannelFixtureId().getSpStyleChannelFixtureId().getSpFineLineChannelFixtureId().getLvl4Nbr().equals(ccReplPackId.getStyleReplPackId().getFinelineReplPackId().getSubCatgReplPackId().getRepTLvl4())
-                    ).findFirst().orElse(null);
+    private Integer getUpdatedReplnQty(Integer optFinalInitialSetQty, CcReplPackId ccReplPackId, List<SpCustomerChoiceChannelFixtureSize> spCustomerChoiceChannelFixtureSize) {
+        if (!spCustomerChoiceChannelFixtureSize.isEmpty()) {
             SpCustomerChoiceChannelFixtureSize spCcChanFixtrSize = spCustomerChoiceChannelFixtureSize.stream()
                     .filter(spCcChanFixSize -> spCcChanFixSize.getSpCustomerChoiceChannelFixtureSizeId().getSpCustomerChoiceChannelFixtureId().getCustomerChoice().equals(ccReplPackId.getCustomerChoice()) &&
                             spCcChanFixSize.getSpCustomerChoiceChannelFixtureSizeId().getSpCustomerChoiceChannelFixtureId().getSpStyleChannelFixtureId().getStyleNbr().equals(ccReplPackId.getStyleReplPackId().getStyleNbr()) &&
@@ -111,8 +99,8 @@ public class PostPackOptimizationService {
                             spCcChanFixSize.getSpCustomerChoiceChannelFixtureSizeId().getSpCustomerChoiceChannelFixtureId().getSpStyleChannelFixtureId().getSpFineLineChannelFixtureId().getLvl3Nbr().equals(ccReplPackId.getStyleReplPackId().getFinelineReplPackId().getSubCatgReplPackId().getMerchCatgReplPackId().getRepTLvl3()) &&
                             spCcChanFixSize.getSpCustomerChoiceChannelFixtureSizeId().getSpCustomerChoiceChannelFixtureId().getSpStyleChannelFixtureId().getSpFineLineChannelFixtureId().getLvl4Nbr().equals(ccReplPackId.getStyleReplPackId().getFinelineReplPackId().getSubCatgReplPackId().getRepTLvl4())
                     ).findFirst().orElse(null);
-            if (spCustomerCCFixtr != null && spCcChanFixtrSize != null && spCustomerCCFixtr.getInitialSetQty().equals(spCcChanFixtrSize.getInitialSetQty()))
-                return spCustomerCCFixtr.getInitialSetQty() - optFinalInitialSetQty;
+            if (spCcChanFixtrSize != null && spCcChanFixtrSize.getInitialSetQty()!= null)
+                return spCcChanFixtrSize.getInitialSetQty() - optFinalInitialSetQty;
         }
         return null;
     }
