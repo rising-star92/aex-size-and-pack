@@ -2,38 +2,40 @@ package com.walmart.aex.sp.controller;
 
 
 import com.walmart.aex.sp.dto.StatusResponse;
+import com.walmart.aex.sp.dto.packoptimization.ColorCombinationRequest;
+import com.walmart.aex.sp.dto.packoptimization.Execution;
+import com.walmart.aex.sp.dto.packoptimization.FineLinePackOptimizationResponse;
+import com.walmart.aex.sp.dto.packoptimization.PackOptConstraintRequest;
+import com.walmart.aex.sp.dto.packoptimization.PackOptimizationResponse;
+import com.walmart.aex.sp.dto.packoptimization.RunPackOptRequest;
+import com.walmart.aex.sp.dto.packoptimization.RunPackOptResponse;
+import com.walmart.aex.sp.dto.packoptimization.UpdatePackOptConstraintRequestDTO;
+import com.walmart.aex.sp.dto.packoptimization.UpdatePkOptResponse;
 import com.walmart.aex.sp.dto.packoptimization.isbpqty.ISAndBPQtyDTO;
 import com.walmart.aex.sp.enums.Action;
+import com.walmart.aex.sp.service.IntegrationHubService;
+import com.walmart.aex.sp.service.PackOptimizationService;
 import com.walmart.aex.sp.service.PostPackOptimizationService;
 import com.walmart.aex.sp.service.UpdateFromQuoteService;
+import io.swagger.annotations.Api;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.*;
-
-import com.walmart.aex.sp.dto.packoptimization.FineLinePackOptimizationResponse;
-import com.walmart.aex.sp.dto.packoptimization.PackOptimizationResponse;
-import com.walmart.aex.sp.service.PackOptimizationService;
-import com.walmart.aex.sp.dto.packoptimization.Execution;
-import com.walmart.aex.sp.dto.packoptimization.RunPackOptRequest;
-import com.walmart.aex.sp.dto.packoptimization.RunPackOptResponse;
-
-import com.walmart.aex.sp.dto.packoptimization.*;
-import com.walmart.aex.sp.service.IntegrationHubService;
-import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import io.swagger.annotations.Api;
-import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
 
-import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
+import static com.walmart.aex.sp.util.SizeAndPackConstants.FAILED_STATUS;
+import static com.walmart.aex.sp.util.SizeAndPackConstants.INCORRECT_ACTION_MSG;
+import static com.walmart.aex.sp.util.SizeAndPackConstants.NO_ACTION_MSG;
 
 @Slf4j
 
@@ -93,7 +95,7 @@ public class PackOptimizationController {
     }
 
     @PutMapping(path = "/api/packOptimization/plan/{planId}/fineline/{finelineNbr}/status/{status}")
-    public UpdatePkOptResponse updatePackOptStatus(@PathVariable Long planId, @PathVariable Integer finelineNbr, @PathVariable Integer status) {
+    public UpdatePkOptResponse updatePackOptStatus(@PathVariable Long planId, @PathVariable String finelineNbr, @PathVariable Integer status) {
         UpdatePkOptResponse response = new UpdatePkOptResponse();
         if (status.equals(6) || status.equals(10)) {
             try {

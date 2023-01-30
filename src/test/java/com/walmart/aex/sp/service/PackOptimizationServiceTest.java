@@ -24,8 +24,10 @@ import com.walmart.aex.sp.dto.packoptimization.Supplier;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
 import com.walmart.aex.sp.dto.planhierarchy.Style;
+import com.walmart.aex.sp.entity.AnalyticsMlChildSend;
 import com.walmart.aex.sp.entity.AnalyticsMlSend;
 import com.walmart.aex.sp.entity.CcPackOptimization;
+import com.walmart.aex.sp.enums.RunStatusCodeType;
 import com.walmart.aex.sp.properties.IntegrationHubServiceProperties;
 import com.walmart.aex.sp.repository.AnalyticsMlSendRepository;
 import com.walmart.aex.sp.repository.CcPackOptimizationRepository;
@@ -55,9 +57,11 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.walmart.aex.sp.util.SizeAndPackConstants.MULTI_BUMP_PACK_SUFFIX;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -112,6 +116,9 @@ class PackOptimizationServiceTest {
     private CommonGCPUtil commonGCPUtil;
     @Captor
     private ArgumentCaptor<Set<AnalyticsMlSend>> analyticsMlSendRepoDataCaptor;
+
+    @Captor
+    private ArgumentCaptor<AnalyticsMlSend> analyticsMlSendArgumentCaptor;
 
     @Test
     void test_getPackOptDetailsShouldReturnEmptyResponseWhenDBReturnEmptyList() {
@@ -519,5 +526,139 @@ class PackOptimizationServiceTest {
 
     }
 
+    @Test
+    void test_updatePackOptServiceStatusShouldUpdateRunStatusCodeForBumpPack1() {
+        AnalyticsMlSend analyticsMlSend = new AnalyticsMlSend();
+        AnalyticsMlChildSend analyticsMlChildSend1 = new AnalyticsMlChildSend();
+        analyticsMlChildSend1.setRunStatusCode(3);
+        analyticsMlChildSend1.setBumpPackNbr(1);
+        AnalyticsMlChildSend analyticsMlChildSend2 = new AnalyticsMlChildSend();
+        analyticsMlChildSend2.setRunStatusCode(3);
+        analyticsMlChildSend2.setBumpPackNbr(2);
+        Set<AnalyticsMlChildSend> analyticsMlChildSendList = new HashSet<>(Arrays.asList(analyticsMlChildSend1, analyticsMlChildSend2));
+        analyticsMlSend.setAnalyticsMlChildSend(analyticsMlChildSendList);
+        when(analyticsMlSendRepository.findByPlanIdAndFinelineNbrAndRunStatusCode(anyLong(), anyInt(), anyInt()))
+                .thenReturn(Optional.of(analyticsMlSend));
+        packOptimizationService.updatePackOptServiceStatus(12L, "2828" + MULTI_BUMP_PACK_SUFFIX + 1, RunStatusCodeType.ANALYTICS_RUN_COMPLETED.getId());
+        verify(analyticsMlSendRepository, times(1)).save(analyticsMlSendArgumentCaptor.capture());
+        Set<AnalyticsMlChildSend> actualAnalyticsMlChildSendList = analyticsMlSendArgumentCaptor.getValue().getAnalyticsMlChildSend();
+        assertEquals(2, actualAnalyticsMlChildSendList.size());
+        for (AnalyticsMlChildSend analyticsMlChildSend: actualAnalyticsMlChildSendList) {
+            if (analyticsMlChildSend.getBumpPackNbr() == 1 ) {
+                assertEquals(6, analyticsMlChildSend.getRunStatusCode());
+            } else {
+                assertEquals(3, analyticsMlChildSend.getRunStatusCode());
+            }
+        }
+    }
+
+    @Test
+    void test_updatePackOptServiceStatusShouldThrowExceptionIfDbReturnMultipleRecords() {
+        when(analyticsMlSendRepository.findByPlanIdAndFinelineNbrAndRunStatusCode(anyLong(), anyInt(), anyInt()))
+                .thenThrow(RuntimeException.class);
+        packOptimizationService.updatePackOptServiceStatus(12L, "2828" + MULTI_BUMP_PACK_SUFFIX + 1, RunStatusCodeType.ANALYTICS_RUN_COMPLETED.getId());
+        verify(analyticsMlSendRepository, times(0)).save(any());
+    }
+
+    @Test
+    void test_updatePackOptServiceStatusShouldNotSaveAnyRecordIfDbReturnEmptyData() {
+        when(analyticsMlSendRepository.findByPlanIdAndFinelineNbrAndRunStatusCode(anyLong(), anyInt(), anyInt()))
+                .thenReturn(Optional.empty());
+        packOptimizationService.updatePackOptServiceStatus(12L, "2828" + MULTI_BUMP_PACK_SUFFIX + 1, RunStatusCodeType.ANALYTICS_RUN_COMPLETED.getId());
+        verify(analyticsMlSendRepository, times(0)).save(any());
+    }
+
+    @Test
+    void test_updatePackOptServiceStatusShouldSkipExecutionIfFineLineIsNotCorrect() {
+        packOptimizationService.updatePackOptServiceStatus(12L, "TEST", RunStatusCodeType.ANALYTICS_RUN_COMPLETED.getId());
+        verify(analyticsMlSendRepository, times(0)).save(any());
+    }
+
+    @Test
+    void test_updatePackOptServiceStatusShouldUpdateParentRunStatusToCompletedWhenAllChildStatusIsCompleted() {
+        AnalyticsMlSend analyticsMlSend = new AnalyticsMlSend();
+        AnalyticsMlChildSend analyticsMlChildSend1 = new AnalyticsMlChildSend();
+        analyticsMlChildSend1.setRunStatusCode(3);
+        analyticsMlChildSend1.setBumpPackNbr(1);
+        AnalyticsMlChildSend analyticsMlChildSend2 = new AnalyticsMlChildSend();
+        analyticsMlChildSend2.setRunStatusCode(6);
+        analyticsMlChildSend2.setBumpPackNbr(2);
+        Set<AnalyticsMlChildSend> analyticsMlChildSendList = new HashSet<>(Arrays.asList(analyticsMlChildSend1, analyticsMlChildSend2));
+        analyticsMlSend.setAnalyticsMlChildSend(analyticsMlChildSendList);
+        analyticsMlSend.setRunStatusCode(3);
+        when(analyticsMlSendRepository.findByPlanIdAndFinelineNbrAndRunStatusCode(anyLong(), anyInt(), anyInt()))
+                .thenReturn(Optional.of(analyticsMlSend));
+        packOptimizationService.updatePackOptServiceStatus(12L, "2828" + MULTI_BUMP_PACK_SUFFIX + 1, RunStatusCodeType.ANALYTICS_RUN_COMPLETED.getId());
+        verify(analyticsMlSendRepository, times(1)).save(analyticsMlSendArgumentCaptor.capture());
+        Set<AnalyticsMlChildSend> actualAnalyticsMlChildSendList = analyticsMlSendArgumentCaptor.getValue().getAnalyticsMlChildSend();
+        assertEquals(2, actualAnalyticsMlChildSendList.size());
+        assertEquals(6, analyticsMlSendArgumentCaptor.getValue().getRunStatusCode());
+        for (AnalyticsMlChildSend analyticsMlChildSend: actualAnalyticsMlChildSendList) {
+            if (analyticsMlChildSend.getBumpPackNbr() == 1 ) {
+                assertEquals(6, analyticsMlChildSend.getRunStatusCode());
+            } else {
+                assertEquals(6, analyticsMlChildSend.getRunStatusCode());
+            }
+        }
+    }
+
+    @Test
+    void test_updatePackOptServiceStatusShouldUpdateParentRunStatusToSENT_TO_ANALYTICSWhenAllChildStatusIsNotCompleted() {
+        AnalyticsMlSend analyticsMlSend = new AnalyticsMlSend();
+        AnalyticsMlChildSend analyticsMlChildSend1 = new AnalyticsMlChildSend();
+        analyticsMlChildSend1.setRunStatusCode(3);
+        analyticsMlChildSend1.setBumpPackNbr(1);
+        AnalyticsMlChildSend analyticsMlChildSend2 = new AnalyticsMlChildSend();
+        analyticsMlChildSend2.setRunStatusCode(3);
+        analyticsMlChildSend2.setBumpPackNbr(2);
+        Set<AnalyticsMlChildSend> analyticsMlChildSendList = new HashSet<>(Arrays.asList(analyticsMlChildSend1, analyticsMlChildSend2));
+        analyticsMlSend.setAnalyticsMlChildSend(analyticsMlChildSendList);
+        analyticsMlSend.setRunStatusCode(3);
+        when(analyticsMlSendRepository.findByPlanIdAndFinelineNbrAndRunStatusCode(anyLong(), anyInt(), anyInt()))
+                .thenReturn(Optional.of(analyticsMlSend));
+        packOptimizationService.updatePackOptServiceStatus(12L, "2828" + MULTI_BUMP_PACK_SUFFIX + 1, RunStatusCodeType.ANALYTICS_RUN_COMPLETED.getId());
+        verify(analyticsMlSendRepository, times(1)).save(analyticsMlSendArgumentCaptor.capture());
+        Set<AnalyticsMlChildSend> actualAnalyticsMlChildSendList = analyticsMlSendArgumentCaptor.getValue().getAnalyticsMlChildSend();
+        assertEquals(2, actualAnalyticsMlChildSendList.size());
+        assertEquals(3, analyticsMlSendArgumentCaptor.getValue().getRunStatusCode());
+        for (AnalyticsMlChildSend analyticsMlChildSend: actualAnalyticsMlChildSendList) {
+            if (analyticsMlChildSend.getBumpPackNbr() == 1 ) {
+                assertEquals(6, analyticsMlChildSend.getRunStatusCode());
+            } else {
+                assertEquals(3, analyticsMlChildSend.getRunStatusCode());
+            }
+        }
+    }
+
+    @Test
+    void test_updatePackOptServiceStatusShouldUpdateParentRunStatusToANALYTICS_ERRORWhenAllChildOrAChildStatusIsANALYTICS_ERROR() {
+        AnalyticsMlSend analyticsMlSend = new AnalyticsMlSend();
+        AnalyticsMlChildSend analyticsMlChildSend1 = new AnalyticsMlChildSend();
+        analyticsMlChildSend1.setRunStatusCode(3);
+        analyticsMlChildSend1.setBumpPackNbr(1);
+        AnalyticsMlChildSend analyticsMlChildSend2 = new AnalyticsMlChildSend();
+        analyticsMlChildSend2.setRunStatusCode(10);
+        analyticsMlChildSend2.setBumpPackNbr(2);
+        AnalyticsMlChildSend analyticsMlChildSend3 = new AnalyticsMlChildSend();
+        analyticsMlChildSend3.setRunStatusCode(6);
+        analyticsMlChildSend3.setBumpPackNbr(3);
+        Set<AnalyticsMlChildSend> analyticsMlChildSendList = new HashSet<>(Arrays.asList(analyticsMlChildSend1, analyticsMlChildSend2, analyticsMlChildSend3));
+        analyticsMlSend.setAnalyticsMlChildSend(analyticsMlChildSendList);
+        analyticsMlSend.setRunStatusCode(3);
+        when(analyticsMlSendRepository.findByPlanIdAndFinelineNbrAndRunStatusCode(anyLong(), anyInt(), anyInt()))
+                .thenReturn(Optional.of(analyticsMlSend));
+        packOptimizationService.updatePackOptServiceStatus(12L, "2828" + MULTI_BUMP_PACK_SUFFIX + 1, RunStatusCodeType.ANALYTICS_RUN_COMPLETED.getId());
+        verify(analyticsMlSendRepository, times(1)).save(analyticsMlSendArgumentCaptor.capture());
+        Set<AnalyticsMlChildSend> actualAnalyticsMlChildSendList = analyticsMlSendArgumentCaptor.getValue().getAnalyticsMlChildSend();
+        assertEquals(3, actualAnalyticsMlChildSendList.size());
+        assertEquals(10, analyticsMlSendArgumentCaptor.getValue().getRunStatusCode());
+        for (AnalyticsMlChildSend analyticsMlChildSend: actualAnalyticsMlChildSendList) {
+            if (analyticsMlChildSend.getBumpPackNbr() == 1 || analyticsMlChildSend.getBumpPackNbr() == 3) {
+                assertEquals(6, analyticsMlChildSend.getRunStatusCode());
+            } else {
+                assertEquals(10, analyticsMlChildSend.getRunStatusCode());
+            }
+        }
+    }
 
 }
