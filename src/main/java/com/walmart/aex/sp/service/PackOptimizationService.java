@@ -325,7 +325,7 @@ public class PackOptimizationService {
                 if (null != integrationHubResponseDTO) {
                     fineLineWithIntegrationHubResponseDTOMap.put(finelineNbr, integrationHubResponseDTO);
                     fineLineWithIntegrationHubRequestDTOMap.put(finelineNbr, integrationHubRequestDTO);
-                    log.info("Successfully processed request to IntegrationHub. PlanId:"+request.getPlanId()+ " & fineLineNbr: "+ finelineNbr);
+                    log.info("Successfully processed request to IntegrationHub. PlanId:{} & fineLineNbr: {}", request.getPlanId(), finelineNbr);
                 } else {
                     throw new CustomException("Unable to process the request to IntegrationHub. PlanId:"+request.getPlanId()+ " & fineLineNbr: "+ finelineNbr);
                 }
