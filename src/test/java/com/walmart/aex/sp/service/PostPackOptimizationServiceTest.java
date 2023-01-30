@@ -61,15 +61,10 @@ public class PostPackOptimizationServiceTest {
 		//what exists in db
 		CcSpMmReplPack ccSpMmReplPackHanging = ccSpMmReplPack(1, 1630, 618);
 		Optional<List<CcSpMmReplPack>> optional = Optional.of(List.of(ccSpMmReplPackHanging));
-
-//		SpCustomerChoiceChannelFixtureSize spCustomerChoiceChannelFixtureSize = new SpCustomerChoiceChannelFixtureSize();
-//		spCustomerChoiceChannelFixtureSize.setInitialSetQty(600);
-//		spCustomerChoiceChannelFixtureSizeList.add(spCustomerChoiceChannelFixtureSize);
 		Mockito.when(ccSpReplnPkConsRepository.findCcSpMmReplnPkConsData(34L, 2852,"34_2852_4_19_2_GEMSLT", "0X")).thenReturn(optional);
 		Mockito.when(spCustomerChoiceChannelFixtureRepository.getSpChanFixtrDataByPlanFineline(Mockito.any(),Mockito.any())).thenReturn(getSpCustomerChoiceChannelFixtureList());
-		Mockito.when(spCustomerChoiceChannelFixtureSizeRepository.getSpCcChanFixtrDataByPlanFineline(Mockito.any(),Mockito.any())).thenReturn(spCustomerChoiceChannelFixtureSizeList);
+		Mockito.when(spCustomerChoiceChannelFixtureSizeRepository.getSpCcChanFixtrDataByPlanFineline(Mockito.any(),Mockito.any())).thenReturn(getSpCustomerChoiceChannelFixtureSizeList());
 		postPackOptimizationService.updateInitialSetAndBumpPackAty(34L, 2852, createPostPackDto(1112, 1112));
-
 		ArgumentCaptor<List<CcSpMmReplPack>> ccspCaptor = ArgumentCaptor.forClass(List.class);
 		verify(updateReplnConfigMapper, times(1)).updateVnpkWhpkForCcSpMmReplnPkConsMapper(ccspCaptor.capture());
 		verify(replenishmentService, times(1)).updateVnpkWhpkForCatgReplnCons(any(), any(), any());
@@ -83,10 +78,9 @@ public class PostPackOptimizationServiceTest {
 		SpCustomerChoiceChannelFixture spCustomerChoiceChannelFixture = new SpCustomerChoiceChannelFixture();
 		List<SpCustomerChoiceChannelFixture> spCustomerChoiceChannelFixtureList = new ArrayList<>();
 		spCustomerChoiceChannelFixture.setInitialSetQty(600);
-		SpCustomerChoiceChannelFixtureId spCustomerChoiceChannelFixtureId = getSpCustomerChoiceChannelFixtureId();
+		spCustomerChoiceChannelFixture.setSpCustomerChoiceChannelFixtureId(getSpCustomerChoiceChannelFixtureId());
 		SpStyleChannelFixtureId spStyleChannelFixtureId = new SpStyleChannelFixtureId();
 		spStyleChannelFixtureId.setStyleNbr("34_2852_4_19_2");
-		spCustomerChoiceChannelFixtureId.setSpStyleChannelFixtureId(spStyleChannelFixtureId);
 		SpFineLineChannelFixtureId spFineLineChannelFixtureId = getSpFineLineChannelFixtureId();
 		spStyleChannelFixtureId.setSpFineLineChannelFixtureId(spFineLineChannelFixtureId);
 		spCustomerChoiceChannelFixtureList.add(spCustomerChoiceChannelFixture);
@@ -97,11 +91,11 @@ public class PostPackOptimizationServiceTest {
 	private SpFineLineChannelFixtureId getSpFineLineChannelFixtureId() {
 		SpFineLineChannelFixtureId spFineLineChannelFixtureId = new SpFineLineChannelFixtureId();
 		spFineLineChannelFixtureId.setChannelId(1);
-		spFineLineChannelFixtureId.setFineLineNbr(2702);
+		spFineLineChannelFixtureId.setFineLineNbr(2852);
 		FixtureTypeRollUpId fixtureTypeRollUpId = new FixtureTypeRollUpId();
 		fixtureTypeRollUpId.setFixtureTypeRollupId(1);
 		spFineLineChannelFixtureId.setFixtureTypeRollUpId(fixtureTypeRollUpId);
-		spFineLineChannelFixtureId.setPlanId(12l);
+		spFineLineChannelFixtureId.setPlanId(34L);
 		spFineLineChannelFixtureId.setLvl0Nbr(lvl0Nbr);
 		spFineLineChannelFixtureId.setLvl1Nbr(lvl1Nbr);
 		spFineLineChannelFixtureId.setLvl2Nbr(lvl2Nbr);
@@ -114,6 +108,7 @@ public class PostPackOptimizationServiceTest {
 	private SpCustomerChoiceChannelFixtureId getSpCustomerChoiceChannelFixtureId() {
 		SpCustomerChoiceChannelFixtureId spCustomerChoiceChannelFixtureId = new SpCustomerChoiceChannelFixtureId();
 		spCustomerChoiceChannelFixtureId.setCustomerChoice("34_2852_4_19_2_GEMSLT");
+		spCustomerChoiceChannelFixtureId.setSpStyleChannelFixtureId(getSpStyleChannelFixtureId());
 		return spCustomerChoiceChannelFixtureId;
 	}
 
@@ -126,12 +121,8 @@ public class PostPackOptimizationServiceTest {
 		spCustomerChoiceChannelFixtureSizeId.setSpCustomerChoiceChannelFixtureId(getSpCustomerChoiceChannelFixtureId());
 		spCustomerChoiceChannelFixtureSizeId.setAhsSizeId(234);
 		spCustomerChoiceChannelFixtureSize.setSpCustomerChoiceChannelFixtureSizeId(spCustomerChoiceChannelFixtureSizeId);
-		getSpStyleChannelFixtureId();
-//		spCcChanFixSize.getSpCustomerChoiceChannelFixtureSizeId().getSpCustomerChoiceChannelFixtureId().getSpStyleChannelFixtureId().getStyleNbr().equals(ccReplPackId.getStyleReplPackId().getStyleNbr()) &&
-
-
-		spCustomerChoiceChannelFixtureList.add(spCustomerChoiceChannelFixture);
-		return spCustomerChoiceChannelFixtureList;
+		spCustomerChoiceChannelFixtureSizeList.add(spCustomerChoiceChannelFixtureSize);
+		return spCustomerChoiceChannelFixtureSizeList;
 	}
 
 	private SpStyleChannelFixtureId getSpStyleChannelFixtureId() {
@@ -148,6 +139,16 @@ public class PostPackOptimizationServiceTest {
 		ccId.getCcMmReplPackId().setCcReplPackId(new CcReplPackId());
 		ccId.getCcMmReplPackId().getCcReplPackId().setStyleReplPackId(new StyleReplPackId());
 		ccId.getCcMmReplPackId().getCcReplPackId().getStyleReplPackId().setFinelineReplPackId(finelineReplPackId(fixtureTypeId));
+		ccId.getCcMmReplPackId().getCcReplPackId().setCustomerChoice("34_2852_4_19_2_GEMSLT");
+		ccId.getCcMmReplPackId().getCcReplPackId().getStyleReplPackId().setStyleNbr("34_2852_4_19_2");
+		ccId.getCcMmReplPackId().getCcReplPackId().getStyleReplPackId().getFinelineReplPackId().setFinelineNbr(2852);
+		ccId.getCcMmReplPackId().getCcReplPackId().getStyleReplPackId().getFinelineReplPackId().getSubCatgReplPackId().getMerchCatgReplPackId().setPlanId(34L);
+		ccId.getCcMmReplPackId().getCcReplPackId().getStyleReplPackId().getFinelineReplPackId().getSubCatgReplPackId().getMerchCatgReplPackId().setFixtureTypeRollupId(1);
+		ccId.getCcMmReplPackId().getCcReplPackId().getStyleReplPackId().getFinelineReplPackId().getSubCatgReplPackId().getMerchCatgReplPackId().setRepTLvl0(lvl0Nbr);
+		ccId.getCcMmReplPackId().getCcReplPackId().getStyleReplPackId().getFinelineReplPackId().getSubCatgReplPackId().getMerchCatgReplPackId().setRepTLvl1(lvl1Nbr);
+		ccId.getCcMmReplPackId().getCcReplPackId().getStyleReplPackId().getFinelineReplPackId().getSubCatgReplPackId().getMerchCatgReplPackId().setRepTLvl2(lvl2Nbr);
+		ccId.getCcMmReplPackId().getCcReplPackId().getStyleReplPackId().getFinelineReplPackId().getSubCatgReplPackId().getMerchCatgReplPackId().setRepTLvl3(lvl3Nbr);
+		ccId.getCcMmReplPackId().getCcReplPackId().getStyleReplPackId().getFinelineReplPackId().getSubCatgReplPackId().setRepTLvl4(lvl4Nbr);
 		ccSpMMReplPack.setCcSpReplPackId(ccId);
 		ccSpMMReplPack.setReplUnits(replUnits);
 		ccSpMMReplPack.setFinalBuyUnits(finalBuyUnits);
