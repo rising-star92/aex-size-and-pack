@@ -5,10 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -26,12 +24,12 @@ import java.util.Date;
 @Table(name = "analytics_child_send", schema = "dbo")
 public class AnalyticsMlChildSend {
     @Id
-    @Column(name = "analytics_send_id", nullable = false)
+    @Column(name = "analytics_child_send_id", nullable = false)
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private BigInteger analyticsChildSendId;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "analytics_send_id", referencedColumnName = "analytics_send_id", nullable = false, insertable = false, updatable = false)
+    @ManyToOne
+    @JoinColumn(name = "analytics_send_id")
     private AnalyticsMlSend analyticsMlSend;
 
     @Column(name = "run_status_code", nullable = false)

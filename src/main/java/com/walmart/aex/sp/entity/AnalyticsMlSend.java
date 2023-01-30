@@ -91,8 +91,9 @@ public class AnalyticsMlSend {
     @Column(name="return_message")
     private String returnMessage;
 
-    @OneToMany(mappedBy = "analyticsMlSend", fetch = FetchType.EAGER,
+    @OneToMany(fetch = FetchType.EAGER,
             cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "analytics_send_id")
     private Set<AnalyticsMlChildSend> analyticsMlChildSend;
 
 }
