@@ -116,12 +116,6 @@ public class PostPackOptimizationService {
         return null;
     }
 
-
-    public static void isTrue(Object value1,Object value2, Action action) {
-        if (value1.equals(value2))
-            action.execute();
-    }
-
     private Integer getLvl3Nbr(CcSpMmReplPackId ccSpMmReplPackId) {
         return ccSpMmReplPackId.getCcMmReplPackId()
               .getCcReplPackId()
