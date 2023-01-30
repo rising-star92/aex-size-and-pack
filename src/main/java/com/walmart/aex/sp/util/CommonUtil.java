@@ -9,6 +9,7 @@ import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDeleteDTO;
 import com.walmart.aex.sp.exception.CustomException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 import org.springframework.http.CacheControl;
@@ -18,7 +19,14 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Component
 @Slf4j
@@ -128,11 +136,11 @@ public class CommonUtil {
                 Whitelist.basic()), PlanSizeAndPackDTO.class);
     }
 
-    public Date getStartDate(String startDateStr) {
+    public static Date getDateFromString(String dateStr) {
         Date date = null;
-        if (startDateStr != null && !startDateStr.isEmpty()) {
+        if (StringUtils.isNotEmpty(dateStr)) {
             try {
-                Instant startDateInstant = Instant.parse(startDateStr);
+                Instant startDateInstant = Instant.parse(dateStr);
                 if (startDateInstant != null) {
                     date = Date.from(startDateInstant);
                 }
@@ -152,5 +160,14 @@ public class CommonUtil {
             headers.forEach(httpHeaders::add);
         }
         return httpHeaders;
+    }
+
+    public static List<Integer> getNumbersFromString(String finelineNbr) {
+        Matcher matcher = Pattern.compile("\\d+").matcher(finelineNbr);
+        List<Integer> numbers = new ArrayList<>();
+        while (matcher.find()) {
+            numbers.add(Integer.valueOf(matcher.group()));
+        }
+        return numbers;
     }
 }
