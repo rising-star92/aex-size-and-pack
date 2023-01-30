@@ -72,7 +72,6 @@ public class PostPackOptimizationServiceTest {
 		assertEquals(518, ccSpMmRepls.get(0).getReplUnits(), "Repln units should be reduced to 518 for 0X Hanging");
 
 	}
-//	SpCustomerChoiceChannelFixture spCustomerCCFixtr
 
 	private List<SpCustomerChoiceChannelFixture> getSpCustomerChoiceChannelFixtureList() {
 		SpCustomerChoiceChannelFixture spCustomerChoiceChannelFixture = new SpCustomerChoiceChannelFixture();
