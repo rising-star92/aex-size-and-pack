@@ -183,18 +183,22 @@ public class PackOptimizationService {
 
     private void updateParentRunStatusCode(AnalyticsMlSend analyticsMlSend) {
         Set<AnalyticsMlChildSend> analyticsMlChildSendList = analyticsMlSend.getAnalyticsMlChildSend();
-        Set<AnalyticsMlChildSend> runStatusSubmittedList = analyticsMlChildSendList.stream().filter(val -> val.getRunStatusCode() == 3).collect(Collectors.toSet());
-        Set<AnalyticsMlChildSend> runStatusAnalyticsErrorList = analyticsMlChildSendList.stream().filter(val -> val.getRunStatusCode() == 10).collect(Collectors.toSet());
+        Set<Integer> runStatusCodeSentAndAnalyticsFailedSet = analyticsMlChildSendList
+                .stream()
+                .filter(val -> val.getRunStatusCode() == 3 || val.getRunStatusCode() == 10)
+                .map(AnalyticsMlChildSend::getRunStatusCode)
+                .collect(Collectors.toSet());
 
-        if(runStatusSubmittedList.isEmpty() && runStatusAnalyticsErrorList.isEmpty()) {
+        if(runStatusCodeSentAndAnalyticsFailedSet.isEmpty()) {
             analyticsMlSend.setRunStatusCode(RunStatusCodeType.ANALYTICS_RUN_COMPLETED.getId());
-        } else {
-            if(!runStatusAnalyticsErrorList.isEmpty()) {
-                analyticsMlSend.setRunStatusCode(RunStatusCodeType.ANALYTICS_ERROR.getId());
-            } else {
-                analyticsMlSend.setRunStatusCode(RunStatusCodeType.SENT_TO_ANALYTICS.getId());
-            }
         }
+        else if (runStatusCodeSentAndAnalyticsFailedSet.contains(RunStatusCodeType.SENT_TO_ANALYTICS.getId())) {
+            analyticsMlSend.setRunStatusCode(RunStatusCodeType.SENT_TO_ANALYTICS.getId());
+        }
+        else if (runStatusCodeSentAndAnalyticsFailedSet.contains(RunStatusCodeType.ANALYTICS_ERROR.getId())) {
+            analyticsMlSend.setRunStatusCode(RunStatusCodeType.ANALYTICS_ERROR.getId());
+        }
+
     }
 
     public StatusResponse updatePackOptConstraints(UpdatePackOptConstraintRequestDTO request) {
