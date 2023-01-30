@@ -8,9 +8,7 @@ import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
 import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDTO;
 import com.walmart.aex.sp.dto.planhierarchy.Style;
-import com.walmart.aex.sp.entity.MerchCatPlan;
-import com.walmart.aex.sp.entity.MerchCatPlanId;
-import com.walmart.aex.sp.entity.SubCatPlan;
+import com.walmart.aex.sp.entity.*;
 import com.walmart.aex.sp.repository.MerchCatPlanRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 class SizeAndPackObjectMapperTest {
@@ -40,9 +38,12 @@ class SizeAndPackObjectMapperTest {
         Lvl1 lvl1 = planSizeAndPackDTO.getLvl1List().get(0);
         Lvl2 lvl2 = lvl1.getLvl2List().get(0);
         Lvl3 lvl3 = lvl2.getLvl3List().get(0);
-        String channel = "store";
         Set<MerchCatPlan> merchCatPlanSet = sizeAndPackObjectMapper.setMerchCatPlan(planSizeAndPackDTO, lvl1, lvl2, lvl3);
         assertFalse(merchCatPlanSet.isEmpty());
+        StylePlan stylePlan = merchCatPlanSet.stream().findFirst().orElse(new MerchCatPlan()).getSubCatPlans().stream().findFirst().orElse(new SubCatPlan()).getFinelinePlans().stream().findFirst().orElse(new FinelinePlan()).getStylePlans().stream().findFirst().orElse(new StylePlan());
+        CustChoicePlan custChoicePlan = stylePlan.getCustChoicePlans().stream().findFirst().orElse(new CustChoicePlan());
+        assertEquals(lvl3.getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getAltStyleDesc(), stylePlan.getAltStyleDesc());
+        assertEquals(lvl3.getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getCustomerChoices().get(0).getAltCcDesc(), custChoicePlan.getAltCcDesc());
     }
 
     @Test
@@ -51,7 +52,6 @@ class SizeAndPackObjectMapperTest {
         Lvl1 lvl1 = planSizeAndPackDTO.getLvl1List().get(0);
         Lvl2 lvl2 = lvl1.getLvl2List().get(0);
         Lvl3 lvl3 = lvl2.getLvl3List().get(0);
-        String channel = "store";
         MerchCatPlan merchCatPlan1 = new MerchCatPlan();
         MerchCatPlanId merchCatPlanId1 = new MerchCatPlanId(planSizeAndPackDTO.getPlanId(),planSizeAndPackDTO.getLvl0Nbr(), lvl1.getLvl1Nbr(), lvl2.getLvl2Nbr(), lvl3.getLvl3Nbr(), 1);
         merchCatPlan1.setMerchCatPlanId(merchCatPlanId1);
@@ -78,6 +78,10 @@ class SizeAndPackObjectMapperTest {
         Mockito.doNothing().when(merchCatPlanRepository).deleteById(merchCatPlanId2);
         Set<MerchCatPlan> merchCatPlanSet = sizeAndPackObjectMapper.updateMerchCatPlan(planSizeAndPackDTO, lvl1, lvl2, lvl3);
         assertFalse(merchCatPlanSet.isEmpty());
+        StylePlan stylePlan = merchCatPlanSet.stream().findFirst().orElse(new MerchCatPlan()).getSubCatPlans().stream().findFirst().orElse(new SubCatPlan()).getFinelinePlans().stream().findFirst().orElse(new FinelinePlan()).getStylePlans().stream().findFirst().orElse(new StylePlan());
+        CustChoicePlan custChoicePlan = stylePlan.getCustChoicePlans().stream().findFirst().orElse(new CustChoicePlan());
+        assertEquals(lvl3.getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getAltStyleDesc(), stylePlan.getAltStyleDesc());
+        assertEquals(lvl3.getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getCustomerChoices().get(0).getAltCcDesc(), custChoicePlan.getAltCcDesc());
     }
 
      PlanSizeAndPackDTO getPlanSizeAndPackDTOObj() {
@@ -145,6 +149,7 @@ class SizeAndPackObjectMapperTest {
         List<Style> styles = new ArrayList<>();
         Style style = new Style();
         style.setStyleNbr("1263_20");
+        style.setAltStyleDesc("1263_20 Alt Desc");
         style.setChannel("store");
         style.setCustomerChoices(getCustomerChoices());
         styles.add(style);
@@ -157,6 +162,7 @@ class SizeAndPackObjectMapperTest {
         customerChoice.setChannel("store");
         customerChoice.setCcId("34_4_21");
         customerChoice.setColorName("Red");
+        customerChoice.setAltCcDesc("34_4_21 Alt CC Desc");
         customerChoices.add(customerChoice);
         return customerChoices;
     }

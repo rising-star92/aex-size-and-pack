@@ -38,7 +38,7 @@ public class PackOptConstraintResponseDTO {
     private Integer ccVendorNumber6;
     private Integer ccGsmSupplierNumber;
     private Integer ccVendorNumber9;
-    private String ccFactoryIds;
+    private String ccFactoryId;
     private String ccPortOfOrigin;
     private Integer ccSinglePackIndicator;
     private String ccColorCombination;
