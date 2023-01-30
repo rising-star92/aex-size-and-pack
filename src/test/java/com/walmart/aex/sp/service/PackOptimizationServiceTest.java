@@ -574,4 +574,91 @@ class PackOptimizationServiceTest {
         verify(analyticsMlSendRepository, times(0)).save(any());
     }
 
+    @Test
+    void test_updatePackOptServiceStatusShouldUpdateParentRunStatusToCompletedWhenAllChildStatusIsCompleted() {
+        AnalyticsMlSend analyticsMlSend = new AnalyticsMlSend();
+        AnalyticsMlChildSend analyticsMlChildSend1 = new AnalyticsMlChildSend();
+        analyticsMlChildSend1.setRunStatusCode(3);
+        analyticsMlChildSend1.setBumpPackNbr(1);
+        AnalyticsMlChildSend analyticsMlChildSend2 = new AnalyticsMlChildSend();
+        analyticsMlChildSend2.setRunStatusCode(6);
+        analyticsMlChildSend2.setBumpPackNbr(2);
+        Set<AnalyticsMlChildSend> analyticsMlChildSendList = new HashSet<>(Arrays.asList(analyticsMlChildSend1, analyticsMlChildSend2));
+        analyticsMlSend.setAnalyticsMlChildSend(analyticsMlChildSendList);
+        analyticsMlSend.setRunStatusCode(3);
+        when(analyticsMlSendRepository.findByPlanIdAndFinelineNbrAndRunStatusCode(anyLong(), anyInt(), anyInt()))
+                .thenReturn(Optional.of(analyticsMlSend));
+        packOptimizationService.updatePackOptServiceStatus(12L, "2828" + MULTI_BUMP_PACK_SUFFIX + 1, RunStatusCodeType.ANALYTICS_RUN_COMPLETED.getId());
+        verify(analyticsMlSendRepository, times(1)).save(analyticsMlSendArgumentCaptor.capture());
+        Set<AnalyticsMlChildSend> actualAnalyticsMlChildSendList = analyticsMlSendArgumentCaptor.getValue().getAnalyticsMlChildSend();
+        assertEquals(2, actualAnalyticsMlChildSendList.size());
+        assertEquals(6, analyticsMlSendArgumentCaptor.getValue().getRunStatusCode());
+        for (AnalyticsMlChildSend analyticsMlChildSend: actualAnalyticsMlChildSendList) {
+            if (analyticsMlChildSend.getBumpPackNbr() == 1 ) {
+                assertEquals(6, analyticsMlChildSend.getRunStatusCode());
+            } else {
+                assertEquals(6, analyticsMlChildSend.getRunStatusCode());
+            }
+        }
+    }
+
+    @Test
+    void test_updatePackOptServiceStatusShouldUpdateParentRunStatusToSENT_TO_ANALYTICSWhenAllChildStatusIsNotCompleted() {
+        AnalyticsMlSend analyticsMlSend = new AnalyticsMlSend();
+        AnalyticsMlChildSend analyticsMlChildSend1 = new AnalyticsMlChildSend();
+        analyticsMlChildSend1.setRunStatusCode(3);
+        analyticsMlChildSend1.setBumpPackNbr(1);
+        AnalyticsMlChildSend analyticsMlChildSend2 = new AnalyticsMlChildSend();
+        analyticsMlChildSend2.setRunStatusCode(3);
+        analyticsMlChildSend2.setBumpPackNbr(2);
+        Set<AnalyticsMlChildSend> analyticsMlChildSendList = new HashSet<>(Arrays.asList(analyticsMlChildSend1, analyticsMlChildSend2));
+        analyticsMlSend.setAnalyticsMlChildSend(analyticsMlChildSendList);
+        analyticsMlSend.setRunStatusCode(3);
+        when(analyticsMlSendRepository.findByPlanIdAndFinelineNbrAndRunStatusCode(anyLong(), anyInt(), anyInt()))
+                .thenReturn(Optional.of(analyticsMlSend));
+        packOptimizationService.updatePackOptServiceStatus(12L, "2828" + MULTI_BUMP_PACK_SUFFIX + 1, RunStatusCodeType.ANALYTICS_RUN_COMPLETED.getId());
+        verify(analyticsMlSendRepository, times(1)).save(analyticsMlSendArgumentCaptor.capture());
+        Set<AnalyticsMlChildSend> actualAnalyticsMlChildSendList = analyticsMlSendArgumentCaptor.getValue().getAnalyticsMlChildSend();
+        assertEquals(2, actualAnalyticsMlChildSendList.size());
+        assertEquals(3, analyticsMlSendArgumentCaptor.getValue().getRunStatusCode());
+        for (AnalyticsMlChildSend analyticsMlChildSend: actualAnalyticsMlChildSendList) {
+            if (analyticsMlChildSend.getBumpPackNbr() == 1 ) {
+                assertEquals(6, analyticsMlChildSend.getRunStatusCode());
+            } else {
+                assertEquals(3, analyticsMlChildSend.getRunStatusCode());
+            }
+        }
+    }
+
+    @Test
+    void test_updatePackOptServiceStatusShouldUpdateParentRunStatusToANALYTICS_ERRORWhenAllChildOrAChildStatusIsANALYTICS_ERROR() {
+        AnalyticsMlSend analyticsMlSend = new AnalyticsMlSend();
+        AnalyticsMlChildSend analyticsMlChildSend1 = new AnalyticsMlChildSend();
+        analyticsMlChildSend1.setRunStatusCode(3);
+        analyticsMlChildSend1.setBumpPackNbr(1);
+        AnalyticsMlChildSend analyticsMlChildSend2 = new AnalyticsMlChildSend();
+        analyticsMlChildSend2.setRunStatusCode(10);
+        analyticsMlChildSend2.setBumpPackNbr(2);
+        AnalyticsMlChildSend analyticsMlChildSend3 = new AnalyticsMlChildSend();
+        analyticsMlChildSend3.setRunStatusCode(6);
+        analyticsMlChildSend3.setBumpPackNbr(3);
+        Set<AnalyticsMlChildSend> analyticsMlChildSendList = new HashSet<>(Arrays.asList(analyticsMlChildSend1, analyticsMlChildSend2, analyticsMlChildSend3));
+        analyticsMlSend.setAnalyticsMlChildSend(analyticsMlChildSendList);
+        analyticsMlSend.setRunStatusCode(3);
+        when(analyticsMlSendRepository.findByPlanIdAndFinelineNbrAndRunStatusCode(anyLong(), anyInt(), anyInt()))
+                .thenReturn(Optional.of(analyticsMlSend));
+        packOptimizationService.updatePackOptServiceStatus(12L, "2828" + MULTI_BUMP_PACK_SUFFIX + 1, RunStatusCodeType.ANALYTICS_RUN_COMPLETED.getId());
+        verify(analyticsMlSendRepository, times(1)).save(analyticsMlSendArgumentCaptor.capture());
+        Set<AnalyticsMlChildSend> actualAnalyticsMlChildSendList = analyticsMlSendArgumentCaptor.getValue().getAnalyticsMlChildSend();
+        assertEquals(3, actualAnalyticsMlChildSendList.size());
+        assertEquals(10, analyticsMlSendArgumentCaptor.getValue().getRunStatusCode());
+        for (AnalyticsMlChildSend analyticsMlChildSend: actualAnalyticsMlChildSendList) {
+            if (analyticsMlChildSend.getBumpPackNbr() == 1 || analyticsMlChildSend.getBumpPackNbr() == 3) {
+                assertEquals(6, analyticsMlChildSend.getRunStatusCode());
+            } else {
+                assertEquals(10, analyticsMlChildSend.getRunStatusCode());
+            }
+        }
+    }
+
 }

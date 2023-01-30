@@ -45,6 +45,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigInteger;
@@ -153,11 +154,12 @@ public class PackOptimizationService {
         return finelinePackOptimizationResponse;
     }
 
+    @Transactional
     public void updatePackOptServiceStatus(Long planId, String finelineNbr, Integer status) {
         List<Integer> fineLineAndBumpCount = CommonUtil.getNumbersFromString(finelineNbr);
         Integer fineLineNumber = !fineLineAndBumpCount.isEmpty() ? fineLineAndBumpCount.get(0) : null;
         Integer bumpNbr = fineLineAndBumpCount.size() > 1 ? fineLineAndBumpCount.get(1) : 1;
-        if(fineLineNumber != null) {
+        if (fineLineNumber != null) {
             try {
                 Optional<AnalyticsMlSend> analyticsMlSend = analyticsMlSendRepository.findByPlanIdAndFinelineNbrAndRunStatusCode(planId, fineLineNumber, RunStatusCodeType.SENT_TO_ANALYTICS.getId()
                 );
@@ -166,6 +168,7 @@ public class PackOptimizationService {
                     for (AnalyticsMlChildSend analyticsMlChildSend : analyticsMlChildSendList) {
                         if (Objects.equals(analyticsMlChildSend.getBumpPackNbr(), bumpNbr)) {
                             analyticsMlChildSend.setRunStatusCode(status);
+                            updateParentRunStatusCode(analyticsMlSend.get());
                             break;
                         }
                     }
@@ -174,6 +177,22 @@ public class PackOptimizationService {
             } catch (Exception ex) {
                 log.info("Failed to update status for planId: {} and fineLineNbr:{} with RunStatusCode:{}",
                         planId, finelineNbr, RunStatusCodeType.SENT_TO_ANALYTICS.getId());
+            }
+        }
+    }
+
+    public void updateParentRunStatusCode(AnalyticsMlSend analyticsMlSend) {
+        Set<AnalyticsMlChildSend> analyticsMlChildSendList = analyticsMlSend.getAnalyticsMlChildSend();
+        Set<AnalyticsMlChildSend> runStatusSubmittedList = analyticsMlChildSendList.stream().filter(val -> val.getRunStatusCode() == 3).collect(Collectors.toSet());
+        Set<AnalyticsMlChildSend> runStatusAnalyticsErrorList = analyticsMlChildSendList.stream().filter(val -> val.getRunStatusCode() == 10).collect(Collectors.toSet());
+
+        if(runStatusSubmittedList.isEmpty() && runStatusAnalyticsErrorList.isEmpty()) {
+            analyticsMlSend.setRunStatusCode(RunStatusCodeType.ANALYTICS_RUN_COMPLETED.getId());
+        } else {
+            if(!runStatusAnalyticsErrorList.isEmpty()) {
+                analyticsMlSend.setRunStatusCode(RunStatusCodeType.ANALYTICS_ERROR.getId());
+            } else {
+                analyticsMlSend.setRunStatusCode(RunStatusCodeType.SENT_TO_ANALYTICS.getId());
             }
         }
     }
@@ -350,7 +369,7 @@ public class PackOptimizationService {
                     fineLineWithIntegrationHubRequestDTOMap.put(finelineNbr, integrationHubRequestDTO);
                     log.info("Successfully processed request to IntegrationHub. PlanId:{} & fineLineNbr: {}", request.getPlanId(), finelineNbr);
                 } else {
-                    throw new CustomException("Unable to process the request to IntegrationHub. PlanId:"+request.getPlanId()+ " & fineLineNbr: "+ finelineNbr);
+                    throw new CustomException("Unable to process the request to IntegrationHub. PlanId:" + request.getPlanId() + " & fineLineNbr: " + finelineNbr);
                 }
             });
             saveAnalyticDataInDB(request, fineLineWithIntegrationHubResponseDTOMap, fineLineWithIntegrationHubRequestDTOMap);
@@ -375,8 +394,8 @@ public class PackOptimizationService {
     }
 
     private Set<AnalyticsMlSend> updateAnalyticsMlSendWithAnalyticsChildData(Set<AnalyticsMlSend> analyticsMlSendSet,
-                                    Map<String, IntegrationHubResponseDTO> flWithIHResMap,
-                                    Map<String, IntegrationHubRequestDTO> flWithIHReqMap) {
+                                                                             Map<String, IntegrationHubResponseDTO> flWithIHResMap,
+                                                                             Map<String, IntegrationHubRequestDTO> flWithIHReqMap) {
         Set<AnalyticsMlSend> res = new HashSet<>();
         Long planId = analyticsMlSendSet.iterator().next().getPlanId();
         List<Integer> fineLines = analyticsMlSendSet.stream().map(AnalyticsMlSend::getFinelineNbr).collect(Collectors.toList());
