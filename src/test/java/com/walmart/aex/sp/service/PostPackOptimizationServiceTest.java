@@ -8,6 +8,7 @@ import com.walmart.aex.sp.entity.*;
 import com.walmart.aex.sp.repository.CcSpReplnPkConsRepository;
 import com.walmart.aex.sp.repository.SpCustomerChoiceChannelFixtureRepository;
 import com.walmart.aex.sp.repository.SpCustomerChoiceChannelFixtureSizeRepository;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -49,21 +50,23 @@ public class PostPackOptimizationServiceTest {
 	SpCustomerChoiceChannelFixtureRepository spCustomerChoiceChannelFixtureRepository;
 	@Mock
 	SpCustomerChoiceChannelFixtureSizeRepository spCustomerChoiceChannelFixtureSizeRepository;
+
+	private static Integer lvl0Nbr = 50000;
+	private static Integer lvl1Nbr = 34;
+	private static Integer lvl2Nbr = 6419;
+	private static Integer lvl3Nbr = 12228;
+	private static Integer lvl4Nbr = 31507;
 	@Test
 	public void ccFixSizePostPackOptTest() {
 		//what exists in db
 		CcSpMmReplPack ccSpMmReplPackHanging = ccSpMmReplPack(1, 1630, 618);
 		Optional<List<CcSpMmReplPack>> optional = Optional.of(List.of(ccSpMmReplPackHanging));
-		List<SpCustomerChoiceChannelFixture> spCustomerChoiceChannelFixtureList = new ArrayList<>();
-		SpCustomerChoiceChannelFixture spCustomerChoiceChannelFixture = new SpCustomerChoiceChannelFixture();
-		spCustomerChoiceChannelFixture.setInitialSetQty(600);
-		spCustomerChoiceChannelFixtureList.add(spCustomerChoiceChannelFixture);
-		List<SpCustomerChoiceChannelFixtureSize> spCustomerChoiceChannelFixtureSizeList =  new ArrayList<>();
-		SpCustomerChoiceChannelFixtureSize spCustomerChoiceChannelFixtureSize = new SpCustomerChoiceChannelFixtureSize();
-		spCustomerChoiceChannelFixtureSize.setInitialSetQty(600);
-		spCustomerChoiceChannelFixtureSizeList.add(spCustomerChoiceChannelFixtureSize);
+
+//		SpCustomerChoiceChannelFixtureSize spCustomerChoiceChannelFixtureSize = new SpCustomerChoiceChannelFixtureSize();
+//		spCustomerChoiceChannelFixtureSize.setInitialSetQty(600);
+//		spCustomerChoiceChannelFixtureSizeList.add(spCustomerChoiceChannelFixtureSize);
 		Mockito.when(ccSpReplnPkConsRepository.findCcSpMmReplnPkConsData(34L, 2852,"34_2852_4_19_2_GEMSLT", "0X")).thenReturn(optional);
-		Mockito.when(spCustomerChoiceChannelFixtureRepository.getSpChanFixtrDataByPlanFineline(Mockito.any(),Mockito.any())).thenReturn(spCustomerChoiceChannelFixtureList);
+		Mockito.when(spCustomerChoiceChannelFixtureRepository.getSpChanFixtrDataByPlanFineline(Mockito.any(),Mockito.any())).thenReturn(getSpCustomerChoiceChannelFixtureList());
 		Mockito.when(spCustomerChoiceChannelFixtureSizeRepository.getSpCcChanFixtrDataByPlanFineline(Mockito.any(),Mockito.any())).thenReturn(spCustomerChoiceChannelFixtureSizeList);
 		postPackOptimizationService.updateInitialSetAndBumpPackAty(34L, 2852, createPostPackDto(1112, 1112));
 
@@ -73,6 +76,69 @@ public class PostPackOptimizationServiceTest {
 		List<CcSpMmReplPack> ccSpMmRepls = ccspCaptor.getValue();
 		assertEquals(518, ccSpMmRepls.get(0).getReplUnits(), "Repln units should be reduced to 518 for 0X Hanging");
 
+	}
+//	SpCustomerChoiceChannelFixture spCustomerCCFixtr
+
+	private List<SpCustomerChoiceChannelFixture> getSpCustomerChoiceChannelFixtureList() {
+		SpCustomerChoiceChannelFixture spCustomerChoiceChannelFixture = new SpCustomerChoiceChannelFixture();
+		List<SpCustomerChoiceChannelFixture> spCustomerChoiceChannelFixtureList = new ArrayList<>();
+		spCustomerChoiceChannelFixture.setInitialSetQty(600);
+		SpCustomerChoiceChannelFixtureId spCustomerChoiceChannelFixtureId = getSpCustomerChoiceChannelFixtureId();
+		SpStyleChannelFixtureId spStyleChannelFixtureId = new SpStyleChannelFixtureId();
+		spStyleChannelFixtureId.setStyleNbr("34_2852_4_19_2");
+		spCustomerChoiceChannelFixtureId.setSpStyleChannelFixtureId(spStyleChannelFixtureId);
+		SpFineLineChannelFixtureId spFineLineChannelFixtureId = getSpFineLineChannelFixtureId();
+		spStyleChannelFixtureId.setSpFineLineChannelFixtureId(spFineLineChannelFixtureId);
+		spCustomerChoiceChannelFixtureList.add(spCustomerChoiceChannelFixture);
+		return spCustomerChoiceChannelFixtureList;
+	}
+
+	@NotNull
+	private SpFineLineChannelFixtureId getSpFineLineChannelFixtureId() {
+		SpFineLineChannelFixtureId spFineLineChannelFixtureId = new SpFineLineChannelFixtureId();
+		spFineLineChannelFixtureId.setChannelId(1);
+		spFineLineChannelFixtureId.setFineLineNbr(2702);
+		FixtureTypeRollUpId fixtureTypeRollUpId = new FixtureTypeRollUpId();
+		fixtureTypeRollUpId.setFixtureTypeRollupId(1);
+		spFineLineChannelFixtureId.setFixtureTypeRollUpId(fixtureTypeRollUpId);
+		spFineLineChannelFixtureId.setPlanId(12l);
+		spFineLineChannelFixtureId.setLvl0Nbr(lvl0Nbr);
+		spFineLineChannelFixtureId.setLvl1Nbr(lvl1Nbr);
+		spFineLineChannelFixtureId.setLvl2Nbr(lvl2Nbr);
+		spFineLineChannelFixtureId.setLvl3Nbr(lvl3Nbr);
+		spFineLineChannelFixtureId.setLvl4Nbr(lvl4Nbr);
+		return spFineLineChannelFixtureId;
+	}
+
+	@NotNull
+	private SpCustomerChoiceChannelFixtureId getSpCustomerChoiceChannelFixtureId() {
+		SpCustomerChoiceChannelFixtureId spCustomerChoiceChannelFixtureId = new SpCustomerChoiceChannelFixtureId();
+		spCustomerChoiceChannelFixtureId.setCustomerChoice("34_2852_4_19_2_GEMSLT");
+		return spCustomerChoiceChannelFixtureId;
+	}
+
+
+	private List<SpCustomerChoiceChannelFixtureSize> getSpCustomerChoiceChannelFixtureSizeList() {
+		SpCustomerChoiceChannelFixtureSize spCustomerChoiceChannelFixtureSize = new SpCustomerChoiceChannelFixtureSize();
+		List<SpCustomerChoiceChannelFixtureSize> spCustomerChoiceChannelFixtureSizeList = new ArrayList<>();
+		spCustomerChoiceChannelFixtureSize.setInitialSetQty(600);
+		SpCustomerChoiceChannelFixtureSizeId spCustomerChoiceChannelFixtureSizeId = new SpCustomerChoiceChannelFixtureSizeId();
+		spCustomerChoiceChannelFixtureSizeId.setSpCustomerChoiceChannelFixtureId(getSpCustomerChoiceChannelFixtureId());
+		spCustomerChoiceChannelFixtureSizeId.setAhsSizeId(234);
+		spCustomerChoiceChannelFixtureSize.setSpCustomerChoiceChannelFixtureSizeId(spCustomerChoiceChannelFixtureSizeId);
+		getSpStyleChannelFixtureId();
+//		spCcChanFixSize.getSpCustomerChoiceChannelFixtureSizeId().getSpCustomerChoiceChannelFixtureId().getSpStyleChannelFixtureId().getStyleNbr().equals(ccReplPackId.getStyleReplPackId().getStyleNbr()) &&
+
+
+		spCustomerChoiceChannelFixtureList.add(spCustomerChoiceChannelFixture);
+		return spCustomerChoiceChannelFixtureList;
+	}
+
+	private SpStyleChannelFixtureId getSpStyleChannelFixtureId() {
+		SpStyleChannelFixtureId spStyleChannelFixtureId = new SpStyleChannelFixtureId();
+		spStyleChannelFixtureId.setSpFineLineChannelFixtureId(getSpFineLineChannelFixtureId());
+		spStyleChannelFixtureId.setStyleNbr("34_2852_4_19_2");
+		return spStyleChannelFixtureId;
 	}
 
 	private CcSpMmReplPack ccSpMmReplPack(int fixtureTypeId, int finalBuyUnits, int replUnits) {
