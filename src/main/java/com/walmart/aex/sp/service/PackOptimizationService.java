@@ -28,6 +28,7 @@ import com.walmart.aex.sp.entity.AnalyticsMlSend;
 import com.walmart.aex.sp.entity.CcPackOptimization;
 import com.walmart.aex.sp.entity.MerchantPackOptimization;
 import com.walmart.aex.sp.enums.ChannelType;
+import com.walmart.aex.sp.enums.RunStatusCodeType;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.properties.IntegrationHubServiceProperties;
 import com.walmart.aex.sp.repository.AnalyticsMlSendRepository;
@@ -38,11 +39,13 @@ import com.walmart.aex.sp.repository.MerchPackOptimizationRepository;
 import com.walmart.aex.sp.repository.SpFineLineChannelFixtureRepository;
 import com.walmart.aex.sp.repository.StyleCcPackOptConsRepository;
 import com.walmart.aex.sp.util.CommonGCPUtil;
+import com.walmart.aex.sp.util.CommonUtil;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigInteger;
@@ -52,6 +55,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -150,8 +154,52 @@ public class PackOptimizationService {
         return finelinePackOptimizationResponse;
     }
 
-    public void updatePackOptServiceStatus(Long planId, Integer finelineNbr, Integer status) {
-        analyticsMlSendRepository.updateStatus(planId, finelineNbr, status);
+    @Transactional
+    public void updatePackOptServiceStatus(Long planId, String finelineNbr, Integer status) {
+        List<Integer> fineLineAndBumpCount = CommonUtil.getNumbersFromString(finelineNbr);
+        Integer fineLineNumber = !fineLineAndBumpCount.isEmpty() ? fineLineAndBumpCount.get(0) : null;
+        Integer bumpNbr = fineLineAndBumpCount.size() > 1 ? fineLineAndBumpCount.get(1) : 1;
+        if (fineLineNumber != null) {
+            try {
+                Optional<AnalyticsMlSend> analyticsMlSend = analyticsMlSendRepository.findByPlanIdAndFinelineNbrAndRunStatusCode(planId, fineLineNumber, RunStatusCodeType.SENT_TO_ANALYTICS.getId()
+                );
+                if (analyticsMlSend.isPresent()) {
+                    Set<AnalyticsMlChildSend> analyticsMlChildSendList = analyticsMlSend.get().getAnalyticsMlChildSend();
+                    for (AnalyticsMlChildSend analyticsMlChildSend : analyticsMlChildSendList) {
+                        if (Objects.equals(analyticsMlChildSend.getBumpPackNbr(), bumpNbr)) {
+                            analyticsMlChildSend.setRunStatusCode(status);
+                            updateParentRunStatusCode(analyticsMlSend.get());
+                            break;
+                        }
+                    }
+                    analyticsMlSendRepository.save(analyticsMlSend.get());
+                }
+            } catch (Exception ex) {
+                log.info("Failed to update status for planId: {} and fineLineNbr:{} with RunStatusCode:{}",
+                        planId, finelineNbr, RunStatusCodeType.SENT_TO_ANALYTICS.getId());
+            }
+        }
+    }
+
+    private void updateParentRunStatusCode(AnalyticsMlSend analyticsMlSend) {
+        Set<AnalyticsMlChildSend> analyticsMlChildSendList = analyticsMlSend.getAnalyticsMlChildSend();
+        Set<Integer> runStatusCodeSentAndAnalyticsFailedSet = analyticsMlChildSendList
+                .stream()
+                .filter(val -> Objects.equals(val.getRunStatusCode(), RunStatusCodeType.SENT_TO_ANALYTICS.getId()) ||
+                        Objects.equals(val.getRunStatusCode(), RunStatusCodeType.ANALYTICS_ERROR.getId()))
+                .map(AnalyticsMlChildSend::getRunStatusCode)
+                .collect(Collectors.toSet());
+
+        if(runStatusCodeSentAndAnalyticsFailedSet.isEmpty()) {
+            analyticsMlSend.setRunStatusCode(RunStatusCodeType.ANALYTICS_RUN_COMPLETED.getId());
+        }
+        else if (runStatusCodeSentAndAnalyticsFailedSet.contains(RunStatusCodeType.ANALYTICS_ERROR.getId())) {
+            analyticsMlSend.setRunStatusCode(RunStatusCodeType.ANALYTICS_ERROR.getId());
+        }
+        else if (runStatusCodeSentAndAnalyticsFailedSet.contains(RunStatusCodeType.SENT_TO_ANALYTICS.getId())) {
+            analyticsMlSend.setRunStatusCode(RunStatusCodeType.SENT_TO_ANALYTICS.getId());
+        }
+
     }
 
     public StatusResponse updatePackOptConstraints(UpdatePackOptConstraintRequestDTO request) {
@@ -326,7 +374,7 @@ public class PackOptimizationService {
                     fineLineWithIntegrationHubRequestDTOMap.put(finelineNbr, integrationHubRequestDTO);
                     log.info("Successfully processed request to IntegrationHub. PlanId:{} & fineLineNbr: {}", request.getPlanId(), finelineNbr);
                 } else {
-                    throw new CustomException("Unable to process the request to IntegrationHub. PlanId:"+request.getPlanId()+ " & fineLineNbr: "+ finelineNbr);
+                    throw new CustomException("Unable to process the request to IntegrationHub. PlanId:" + request.getPlanId() + " & fineLineNbr: " + finelineNbr);
                 }
             });
             saveAnalyticDataInDB(request, fineLineWithIntegrationHubResponseDTOMap, fineLineWithIntegrationHubRequestDTOMap);
@@ -351,8 +399,8 @@ public class PackOptimizationService {
     }
 
     private Set<AnalyticsMlSend> updateAnalyticsMlSendWithAnalyticsChildData(Set<AnalyticsMlSend> analyticsMlSendSet,
-                                    Map<String, IntegrationHubResponseDTO> flWithIHResMap,
-                                    Map<String, IntegrationHubRequestDTO> flWithIHReqMap) {
+                                                                             Map<String, IntegrationHubResponseDTO> flWithIHResMap,
+                                                                             Map<String, IntegrationHubRequestDTO> flWithIHReqMap) {
         Set<AnalyticsMlSend> res = new HashSet<>();
         Long planId = analyticsMlSendSet.iterator().next().getPlanId();
         List<Integer> fineLines = analyticsMlSendSet.stream().map(AnalyticsMlSend::getFinelineNbr).collect(Collectors.toList());

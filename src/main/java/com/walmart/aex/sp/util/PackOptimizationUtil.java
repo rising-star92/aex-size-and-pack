@@ -50,6 +50,7 @@ public class PackOptimizationUtil {
                         analyticsMlSend.setFinelineNbr(fineline.getFinelineNbr());
                         analyticsMlSend.setFirstName(request.getRunUser());
                         analyticsMlSend.setLastName(request.getRunUser());
+                        analyticsMlSend.setAnalyticsSendDesc("Sent");
                         //Setting the run status as 3, which is Sent to Analytics
                         analyticsMlSend.setRunStatusCode(RunStatusCodeType.SENT_TO_ANALYTICS.getId());
                         //todo - hard coding values as its non null property
@@ -83,7 +84,9 @@ public class PackOptimizationUtil {
         Integer bumpCount = fineLineWithBumpCntMap.get(analyticsMlSend.getFinelineNbr());
         for (int index = 1; index <= bumpCount; index++) {
             AnalyticsMlChildSend analyticsMlChildSend = new AnalyticsMlChildSend();
+            analyticsMlChildSend.setAnalyticsMlSend(analyticsMlSend);
             analyticsMlChildSend.setRunStatusCode(analyticsMlSend.getRunStatusCode());
+            analyticsMlChildSend.setAnalyticsSendDesc("Sent");
             analyticsMlChildSend.setStartTs(analyticsMlSend.getStartTs());
             analyticsMlChildSend.setEndTs(analyticsMlSend.getEndTs());
             analyticsMlChildSend.setRetryCnt(analyticsMlSend.getRetryCnt());
