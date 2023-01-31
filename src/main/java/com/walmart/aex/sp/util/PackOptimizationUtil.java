@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static com.walmart.aex.sp.util.CommonUtil.getDateFromString;
+import static com.walmart.aex.sp.util.SizeAndPackConstants.MULTI_BUMP_PACK_SUFFIX;
 
 @Component
 @Slf4j
@@ -78,32 +79,42 @@ public class PackOptimizationUtil {
             Map<String, IntegrationHubResponseDTO> flWithIHResMap,
             Map<Integer, Integer> fineLineWithBumpCntMap, AnalyticsMlSend analyticsMlSend,
             Map<String, IntegrationHubRequestDTO> flWithIHReqMap) {
-        IntegrationHubResponseDTO integrationHubResponseDTO = flWithIHResMap.getOrDefault(analyticsMlSend.getFinelineNbr().toString(), null);
-        String analyticsJobId = integrationHubResponseDTO != null ? integrationHubResponseDTO.getWf_running_id() : null;
+
         Set<AnalyticsMlChildSend> analyticsMlChildSendSet = new HashSet<>();
         Integer bumpCount = fineLineWithBumpCntMap.get(analyticsMlSend.getFinelineNbr());
-        for (int index = 1; index <= bumpCount; index++) {
-            AnalyticsMlChildSend analyticsMlChildSend = new AnalyticsMlChildSend();
-            analyticsMlChildSend.setAnalyticsMlSend(analyticsMlSend);
-            analyticsMlChildSend.setRunStatusCode(analyticsMlSend.getRunStatusCode());
-            analyticsMlChildSend.setAnalyticsSendDesc("Sent");
-            analyticsMlChildSend.setStartTs(analyticsMlSend.getStartTs());
-            analyticsMlChildSend.setEndTs(analyticsMlSend.getEndTs());
-            analyticsMlChildSend.setRetryCnt(analyticsMlSend.getRetryCnt());
-            String reqPayload = null;
-            try {
-                reqPayload = objectMapper.writeValueAsString(
-                        flWithIHReqMap.getOrDefault(analyticsMlSend.getFinelineNbr().toString(), null));
-            } catch (JsonProcessingException exp) {
-                log.error("Couldn't parse the payload sent to Integration Hub. Error: {}", exp.toString());
-            }
-            analyticsMlChildSend.setPayloadObj(reqPayload);
-            analyticsMlChildSend.setReturnMessage(analyticsMlSend.getReturnMessage());
-            analyticsMlChildSend.setAnalyticsJobId(analyticsJobId);
-            analyticsMlChildSend.setBumpPackNbr(index);
+        AnalyticsMlChildSend analyticsMlChildSend = getAnalyticsMlChildSend(flWithIHResMap, analyticsMlSend, flWithIHReqMap, 0);
+        analyticsMlChildSendSet.add(analyticsMlChildSend);
+        for (int index = 1; index < bumpCount; index++) {
+            analyticsMlChildSend = getAnalyticsMlChildSend(flWithIHResMap, analyticsMlSend, flWithIHReqMap, index);
             analyticsMlChildSendSet.add(analyticsMlChildSend);
         }
         return analyticsMlChildSendSet;
+    }
+
+    private static AnalyticsMlChildSend getAnalyticsMlChildSend(Map<String, IntegrationHubResponseDTO> flWithIHResMap, AnalyticsMlSend analyticsMlSend, Map<String, IntegrationHubRequestDTO> flWithIHReqMap, int index) {
+        Integer bumpNumber = index + 1;
+        String fineLineNbr = index == 0 ? analyticsMlSend.getFinelineNbr().toString() : analyticsMlSend.getFinelineNbr().toString() + MULTI_BUMP_PACK_SUFFIX + bumpNumber;
+        IntegrationHubResponseDTO integrationHubResponseDTO = flWithIHResMap.getOrDefault(fineLineNbr, null);
+        String analyticsJobId = integrationHubResponseDTO != null ? integrationHubResponseDTO.getWf_running_id() : null;
+        AnalyticsMlChildSend analyticsMlChildSend = new AnalyticsMlChildSend();
+        analyticsMlChildSend.setAnalyticsMlSend(analyticsMlSend);
+        analyticsMlChildSend.setRunStatusCode(analyticsMlSend.getRunStatusCode());
+        analyticsMlChildSend.setAnalyticsSendDesc("Sent");
+        analyticsMlChildSend.setStartTs(analyticsMlSend.getStartTs());
+        analyticsMlChildSend.setEndTs(analyticsMlSend.getEndTs());
+        analyticsMlChildSend.setRetryCnt(analyticsMlSend.getRetryCnt());
+        String reqPayload = null;
+        try {
+            reqPayload = objectMapper.writeValueAsString(
+                    flWithIHReqMap.getOrDefault(fineLineNbr, null));
+        } catch (JsonProcessingException exp) {
+            log.error("Couldn't parse the payload sent to Integration Hub. Error: {}", exp.toString());
+        }
+        analyticsMlChildSend.setPayloadObj(reqPayload);
+        analyticsMlChildSend.setReturnMessage(analyticsMlSend.getReturnMessage());
+        analyticsMlChildSend.setAnalyticsJobId(analyticsJobId);
+        analyticsMlChildSend.setBumpPackNbr(bumpNumber);
+        return analyticsMlChildSend;
     }
 
 }
