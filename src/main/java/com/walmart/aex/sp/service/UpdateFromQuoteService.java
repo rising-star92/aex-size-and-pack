@@ -87,6 +87,7 @@ public class UpdateFromQuoteService {
         for (PLMAcceptedQuoteStyle plmAcceptedQuoteStyle : plmAcceptedQuoteStyles) {
             getPLMCCFactoryMap(plmAcceptedQuoteStyle.getPlmAcceptedQuoteCcs(), ccPackOptimizations, ccFactoryMap);
         }
+
         if (ccFactoryMap.size() > 0) {
             for (CcPackOptimization ccPackOptimization : ccPackOptimizations) {
                 String customerChoice = ccPackOptimization.getCcPackOptimizationId().getCustomerChoice();
@@ -95,7 +96,7 @@ public class UpdateFromQuoteService {
                     ccPackOptimization.setFactoryId(plmFactory.getFactoryId());
                     ccPackOptimization.setFactoryName(plmFactory.getFactoryName());
                     ccPackOptimization.setOverrideFactoryId(null);
-                    ccPackOptimization.setOverrideFactoryId(null);
+                    ccPackOptimization.setOverrideFactoryName(null);
                 }
             }
         }

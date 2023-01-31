@@ -95,7 +95,7 @@ public class PostPackOptimizationServiceTest {
 	private List<SpCustomerChoiceChannelFixtureSize> getSpCustomerChoiceChannelFixtureSizeList() {
 		SpCustomerChoiceChannelFixtureSize spCustomerChoiceChannelFixtureSize = new SpCustomerChoiceChannelFixtureSize();
 		List<SpCustomerChoiceChannelFixtureSize> spCustomerChoiceChannelFixtureSizeList = new ArrayList<>();
-		spCustomerChoiceChannelFixtureSize.setInitialSetQty(600);
+		spCustomerChoiceChannelFixtureSize.setInitialSetQty(1630);
 		SpCustomerChoiceChannelFixtureSizeId spCustomerChoiceChannelFixtureSizeId = new SpCustomerChoiceChannelFixtureSizeId();
 		spCustomerChoiceChannelFixtureSizeId.setSpCustomerChoiceChannelFixtureId(getSpCustomerChoiceChannelFixtureId());
 		spCustomerChoiceChannelFixtureSizeId.setAhsSizeId(234);
@@ -159,11 +159,10 @@ public class PostPackOptimizationServiceTest {
 		fixtures.setFixtureType("DEFAULT");
 		return fixtures;
 	}
-	private Size size(String sizeDesc, int finalBuyQty, int optFinalInitialSetQty) {
+	private Size size(String sizeDesc, int finalBuyQty) {
 		Size size = new Size();
 		size.setSizeDesc(sizeDesc);
 		size.setOptFinalBuyQty(finalBuyQty);
-		size.setOptFinalInitialSetQty(optFinalInitialSetQty);
 		return size;
 	}
 
@@ -173,12 +172,12 @@ public class PostPackOptimizationServiceTest {
 		ccs.setFixtures(new ArrayList<>());
 		//updated buy qty from pack optimization
 		Fixtures fixHanging = fixture("HANGING");
-		Size szHanging = size("0X", optimizedHangingBuyQty,82);
+		Size szHanging = size("0X", optimizedHangingBuyQty);
 		fixHanging.getSizes().add(szHanging);
 		ccs.getFixtures().add(fixHanging);
 
 		Fixtures fixFolded = fixture("FOLDED");
-		Size szFolded = size("0X", optimizedFoldedBuyQty,100);
+		Size szFolded = size("0X", optimizedFoldedBuyQty);
 		fixFolded.getSizes().add(szFolded);
 		ccs.getFixtures().add(fixFolded);
 

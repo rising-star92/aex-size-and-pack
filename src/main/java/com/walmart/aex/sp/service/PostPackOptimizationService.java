@@ -56,7 +56,7 @@ public class PostPackOptimizationService {
                         .equals(MerchMethod.getMerchMethodIdFromDescription(fixture.getMerchMethod()))).forEach(ccSpMmReplPack -> {
 
                       if (ccSpMmReplPack.getReplUnits() > 0) {
-                          Integer updatedReplnQty = getUpdatedReplnQty(size.getOptFinalInitialSetQty(),ccSpMmReplPack.getCcSpReplPackId().getCcMmReplPackId().getCcReplPackId(),spCustomerChoiceChannelFixtureSize);
+                          Integer updatedReplnQty = getUpdatedReplnQty(size.getOptFinalBuyQty(),ccSpMmReplPack.getCcSpReplPackId().getCcMmReplPackId().getCcReplPackId(),spCustomerChoiceChannelFixtureSize);
                           //If optimized buy quantity exceeds replenishment amount, then we'll set the replenishment to 0
                           if(null!=updatedReplnQty){
                               ccSpMmReplPack.setReplUnits(Math.max(updatedReplnQty, 0));
@@ -86,7 +86,7 @@ public class PostPackOptimizationService {
         }
     }
 
-    private Integer getUpdatedReplnQty(Integer optFinalInitialSetQty, CcReplPackId ccReplPackId, List<SpCustomerChoiceChannelFixtureSize> spCustomerChoiceChannelFixtureSize) {
+    private Integer getUpdatedReplnQty(Integer optFinalBuyQty, CcReplPackId ccReplPackId, List<SpCustomerChoiceChannelFixtureSize> spCustomerChoiceChannelFixtureSize) {
         if (!spCustomerChoiceChannelFixtureSize.isEmpty()) {
             SpCustomerChoiceChannelFixtureSize spCcChanFixtrSize = spCustomerChoiceChannelFixtureSize.stream()
                     .filter(spCcChanFixSize -> {
@@ -111,7 +111,7 @@ public class PostPackOptimizationService {
                             }
                     ).findFirst().orElse(null);
             if (spCcChanFixtrSize !=null && spCcChanFixtrSize.getInitialSetQty() != null)
-                return spCcChanFixtrSize.getInitialSetQty() - optFinalInitialSetQty;
+                return spCcChanFixtrSize.getInitialSetQty() - optFinalBuyQty;
         }
         return null;
     }
