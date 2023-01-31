@@ -38,4 +38,5 @@ public class SizeAndPackConstants {
     public static final String PACKOPT_FINELINE_DETAILS_SUFFIX = "/api/packOptimization/plan/{planId}/fineline/{finelineNbr}";
     public static final String PACKOPT_FINELINE_STATUS_SUFFIX = "/api/packOptimization/plan/{planId}/fineline/{finelineNbr}/status/{status}";
     public static final String BUMPPACK_DETAILS_SUFFIX = "/bumppack/{bumpPackNbr}";
+    public static final Integer DEFAULT_SINGLE_PACK_INDICATOR = 1;
 }
