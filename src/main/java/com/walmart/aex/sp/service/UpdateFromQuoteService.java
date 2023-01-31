@@ -87,6 +87,7 @@ public class UpdateFromQuoteService {
         for (PLMAcceptedQuoteStyle plmAcceptedQuoteStyle : plmAcceptedQuoteStyles) {
             getPLMCCFactoryMap(plmAcceptedQuoteStyle.getPlmAcceptedQuoteCcs(), ccPackOptimizations, ccFactoryMap);
         }
+
         if (ccFactoryMap.size() > 0) {
             for (CcPackOptimization ccPackOptimization : ccPackOptimizations) {
                 String customerChoice = ccPackOptimization.getCcPackOptimizationId().getCustomerChoice();
