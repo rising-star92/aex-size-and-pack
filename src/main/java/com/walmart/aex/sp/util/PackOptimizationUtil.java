@@ -82,20 +82,25 @@ public class PackOptimizationUtil {
 
         Set<AnalyticsMlChildSend> analyticsMlChildSendSet = new HashSet<>();
         Integer bumpCount = fineLineWithBumpCntMap.get(analyticsMlSend.getFinelineNbr());
-        AnalyticsMlChildSend analyticsMlChildSend = getAnalyticsMlChildSend(flWithIHResMap, analyticsMlSend, flWithIHReqMap, 0);
+        String fineLineNbr = analyticsMlSend.getFinelineNbr().toString();
+        String analyticsJobId = flWithIHResMap.get(fineLineNbr).getWf_running_id();
+        IntegrationHubRequestDTO integrationHubRequestDTO = flWithIHReqMap.get(fineLineNbr);
+        AnalyticsMlChildSend analyticsMlChildSend = getAnalyticsMlChildSend(analyticsJobId, analyticsMlSend, integrationHubRequestDTO, 1);
         analyticsMlChildSendSet.add(analyticsMlChildSend);
-        for (int index = 1; index < bumpCount; index++) {
-            analyticsMlChildSend = getAnalyticsMlChildSend(flWithIHResMap, analyticsMlSend, flWithIHReqMap, index);
+
+        for (int bumpNumber = 2; bumpNumber <= bumpCount; bumpNumber++) {
+            fineLineNbr = analyticsMlSend.getFinelineNbr().toString() + MULTI_BUMP_PACK_SUFFIX + bumpNumber;
+            analyticsJobId = flWithIHResMap.get(fineLineNbr).getWf_running_id();
+            integrationHubRequestDTO = flWithIHReqMap.get(fineLineNbr);
+            analyticsMlChildSend = getAnalyticsMlChildSend(analyticsJobId, analyticsMlSend, integrationHubRequestDTO, bumpNumber);
             analyticsMlChildSendSet.add(analyticsMlChildSend);
         }
+
         return analyticsMlChildSendSet;
     }
 
-    private static AnalyticsMlChildSend getAnalyticsMlChildSend(Map<String, IntegrationHubResponseDTO> flWithIHResMap, AnalyticsMlSend analyticsMlSend, Map<String, IntegrationHubRequestDTO> flWithIHReqMap, int index) {
-        Integer bumpNumber = index + 1;
-        String fineLineNbr = index == 0 ? analyticsMlSend.getFinelineNbr().toString() : analyticsMlSend.getFinelineNbr().toString() + MULTI_BUMP_PACK_SUFFIX + bumpNumber;
-        IntegrationHubResponseDTO integrationHubResponseDTO = flWithIHResMap.getOrDefault(fineLineNbr, null);
-        String analyticsJobId = integrationHubResponseDTO != null ? integrationHubResponseDTO.getWf_running_id() : null;
+    private static AnalyticsMlChildSend getAnalyticsMlChildSend(String analyticsJobId, AnalyticsMlSend analyticsMlSend,
+               IntegrationHubRequestDTO integrationHubRequestDTO, int bumpNumber) {
         AnalyticsMlChildSend analyticsMlChildSend = new AnalyticsMlChildSend();
         analyticsMlChildSend.setAnalyticsMlSend(analyticsMlSend);
         analyticsMlChildSend.setRunStatusCode(analyticsMlSend.getRunStatusCode());
@@ -105,8 +110,7 @@ public class PackOptimizationUtil {
         analyticsMlChildSend.setRetryCnt(analyticsMlSend.getRetryCnt());
         String reqPayload = null;
         try {
-            reqPayload = objectMapper.writeValueAsString(
-                    flWithIHReqMap.getOrDefault(fineLineNbr, null));
+            reqPayload = objectMapper.writeValueAsString(integrationHubRequestDTO);
         } catch (JsonProcessingException exp) {
             log.error("Couldn't parse the payload sent to Integration Hub. Error: {}", exp.toString());
         }
