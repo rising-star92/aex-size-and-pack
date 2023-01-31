@@ -95,7 +95,7 @@ public class UpdateFromQuoteService {
                     ccPackOptimization.setFactoryId(plmFactory.getFactoryId());
                     ccPackOptimization.setFactoryName(plmFactory.getFactoryName());
                     ccPackOptimization.setOverrideFactoryId(null);
-                    ccPackOptimization.setOverrideFactoryId(null);
+                    ccPackOptimization.setOverrideFactoryName(null);
                 }
             }
         }
