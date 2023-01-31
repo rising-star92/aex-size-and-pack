@@ -93,6 +93,8 @@ public class FineLineMapperDto {
     private Integer ccMaxUnitsPerPack;
     private Integer ccMaxPacks;
     private String ccFactoryName;
+    private String altStyleDesc;
+    private String altCcDesc;
 
     public FineLineMapperDto(
             Long planId, Integer channelId, Integer lvl0Nbr, Integer lvl1Nbr, Integer lvl2Nbr, Integer lvl3Nbr,

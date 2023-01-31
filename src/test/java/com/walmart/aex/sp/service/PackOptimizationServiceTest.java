@@ -7,20 +7,7 @@ import com.walmart.aex.sp.dto.buyquantity.Lvl3Dto;
 import com.walmart.aex.sp.dto.buyquantity.Lvl4Dto;
 import com.walmart.aex.sp.dto.integrationhub.IntegrationHubResponseDTO;
 import com.walmart.aex.sp.dto.mapper.FineLineMapperDto;
-import com.walmart.aex.sp.dto.packoptimization.ColorCombinationConstraints;
-import com.walmart.aex.sp.dto.packoptimization.ColorCombinationRequest;
-import com.walmart.aex.sp.dto.packoptimization.ColorCombinationStyle;
-import com.walmart.aex.sp.dto.packoptimization.Constraints;
-import com.walmart.aex.sp.dto.packoptimization.FineLinePackOptimizationResponse;
-import com.walmart.aex.sp.dto.packoptimization.FineLinePackOptimizationResponseDTO;
-import com.walmart.aex.sp.dto.packoptimization.Fineline;
-import com.walmart.aex.sp.dto.packoptimization.FinelineLevelConstraints;
-import com.walmart.aex.sp.dto.packoptimization.InputRequest;
-import com.walmart.aex.sp.dto.packoptimization.PackOptConstraintRequest;
-import com.walmart.aex.sp.dto.packoptimization.PackOptConstraintResponseDTO;
-import com.walmart.aex.sp.dto.packoptimization.PackOptimizationResponse;
-import com.walmart.aex.sp.dto.packoptimization.RunPackOptRequest;
-import com.walmart.aex.sp.dto.packoptimization.Supplier;
+import com.walmart.aex.sp.dto.packoptimization.*;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
 import com.walmart.aex.sp.dto.planhierarchy.Style;
@@ -235,6 +222,7 @@ class PackOptimizationServiceTest {
 
         packOptConstraintResponseDTOList.add(packOptConstraintResponseDTO);
 
+
         Supplier supplier = new Supplier();
         supplier.setSupplierName("NIKE");
         List<Supplier> suppliers = List.of(supplier);
@@ -245,7 +233,13 @@ class PackOptimizationServiceTest {
         Constraints constraint = new Constraints();
         constraint.setColorCombinationConstraints(colorCombinationConstraint);
         Style style = new Style();
+        style.setStyleNbr("34_2816_2_19_2");
+        style.setAltStyleDesc("Test_34_2816_2_19_2");
         style.setConstraints(constraint);
+        CustomerChoice cc = new CustomerChoice();
+        cc.setCcId("34_2956_1_18_1_BLUE SAPPHIRE");
+        cc.setAltCcDesc("34_2956_1_18_1_BLUETest");
+        style.setCustomerChoices(Collections.singletonList(cc));
         Fineline fineline = new Fineline();
         fineline.setStyles(Collections.singletonList(style));
 
@@ -281,6 +275,8 @@ class PackOptimizationServiceTest {
         assertNotNull(packOptResponse);
         assertEquals(362L, packOptResponse.getPlanId());
         assertEquals("NIKE", packOptResponse.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getConstraints().getColorCombinationConstraints().getSuppliers().get(0).getSupplierName());
+        assertEquals("Test_34_2816_2_19_2", packOptResponse.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getAltStyleDesc());
+        assertEquals("34_2956_1_18_1_BLUETest", packOptResponse.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getCustomerChoices().get(0).getAltCcDesc());
     }
 
     @Test

@@ -433,7 +433,7 @@ class ReplenishmentServiceTest {
         replenishmentRequest = new ReplenishmentRequest();
         ReplenishmentResponseDTO replenishmentResponseDTO1 = new ReplenishmentResponseDTO(88L, 50000, null, 34, "123", 6420,
                 "folded", 12238, "wall", 31526, "rack", 5471, "34_5471_3_24_001", "34_5471_3_24_001_CHINO TAN", "4321", 3174, 543, 12, 45, 54.0, 34, "L",
-                "Black Soot", "Black", 1125, 1125, 1125, 2511, 12.0, 5431);
+                "Black Soot", "Black", 1125, 1125, 1125, 2511, 12.0, 5431,"","");
 
         replenishmentResponseDTOS.add(replenishmentResponseDTO1);
         replenishmentRequest.setPlanId(12l);
@@ -459,7 +459,7 @@ class ReplenishmentServiceTest {
         replenishmentRequest = new ReplenishmentRequest();
         ReplenishmentResponseDTO replenishmentResponseDTO1 = new ReplenishmentResponseDTO(88L, 50000, null, 34, "123", 6420,
                 "folded", 12238, "wall", 31526, "rack", 5471, "34_5471_3_24_001", "34_5471_3_24_001_CHINO TAN", "4321", 3174, 543, 12, 45, 54.0, 34, "L",
-                "Black Soot", "Black", 1125, 1125, 1125, 2511, 12.0, 5431);
+                "Black Soot", "Black", 1125, 1125, 1125, 2511, 12.0, 5431,"","");
 
         replenishmentResponseDTOS.add(replenishmentResponseDTO1);
         replenishmentRequest.setPlanId(12l);
@@ -483,7 +483,7 @@ class ReplenishmentServiceTest {
         replenishmentRequest = new ReplenishmentRequest();
         ReplenishmentResponseDTO replenishmentResponseDTO1 = new ReplenishmentResponseDTO(88L, 50000, null, 34, "123", 6420,
                 "folded", 12238, "wall", 31526, "rack", 5471, "34_5471_3_24_001", "34_5471_3_24_001_CHINO TAN", "4321", 3174, 543, 12, 45, 54.0, 34, "L",
-                "Black Soot", "Black", 1125, 1125, 1125, 2511, 12.0, 5431);
+                "Black Soot", "Black", 1125, 1125, 1125, 2511, 12.0, 5431,"TestStyle","AltCC0001");
 
         replenishmentResponseDTOS.add(replenishmentResponseDTO1);
         replenishmentRequest.setPlanId(12l);
@@ -497,9 +497,13 @@ class ReplenishmentServiceTest {
         ReplenishmentResponseDTO replenishmentResponseDTO = replenishmentResponseDTOArgumentCaptor.getValue();
         ReplenishmentResponse replenishmentResponse1 = replenishmentResponseArgumentCaptor.getValue();
         Integer fineLineNbr = finelineNbrCaptor.getValue();
+        StyleDto styleDTO = replenishmentResponse1.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0);
+        CustomerChoiceDto customerChoiceDto = styleDTO.getCustomerChoices().get(0);
         assertNotNull(replenishmentResponseDTO);
         assertNotNull(replenishmentResponse1);
         assertNotNull(fineLineNbr);
+        assertEquals("TestStyle", styleDTO.getAltStyleDesc());
+        assertEquals("AltCC0001", customerChoiceDto.getAltCcDesc());
     }
 
 
@@ -508,7 +512,7 @@ class ReplenishmentServiceTest {
         replenishmentRequest = new ReplenishmentRequest();
         ReplenishmentResponseDTO replenishmentResponseDTO1 = new ReplenishmentResponseDTO(88L, 50000, null, 34, "123", 6420,
                 "folded", 12238, "wall", 31526, "rack", 5471, "34_5471_3_24_001", "34_5471_3_24_001_CHINO TAN", "4321", 3174, 543, 12, 45, 54.0, 34, "L",
-                "Black Soot", "Black", 1125, 1125, 1125, 2511, 12.0, 5431);
+                "Black Soot", "Black", 1125, 1125, 1125, 2511, 12.0, 5431,null,null);
 
         replenishmentResponseDTOS.add(replenishmentResponseDTO1);
         replenishmentRequest.setPlanId(12l);
