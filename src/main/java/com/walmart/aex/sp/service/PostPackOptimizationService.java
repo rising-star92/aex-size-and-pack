@@ -5,13 +5,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.bqfp.Replenishment;
 import com.walmart.aex.sp.dto.packoptimization.isbpqty.ISAndBPQtyDTO;
+import com.walmart.aex.sp.dto.packoptimization.isbpqty.Size;
 import com.walmart.aex.sp.entity.*;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.enums.MerchMethod;
 import com.walmart.aex.sp.repository.CcSpReplnPkConsRepository;
-import com.walmart.aex.sp.repository.SpCustomerChoiceChannelFixtureRepository;
 import com.walmart.aex.sp.repository.SpCustomerChoiceChannelFixtureSizeRepository;
-import com.walmart.aex.sp.service.helper.Action;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -29,16 +28,13 @@ public class PostPackOptimizationService {
     private final UpdateReplnConfigMapper updateReplnConfigMapper;
     private final ReplenishmentService replenishmentService;
     private final CcSpReplnPkConsRepository ccSpReplnPkConsRepository;
-    private final SpCustomerChoiceChannelFixtureRepository spCustomerChoiceChannelFixtureRepository;
-
     private final SpCustomerChoiceChannelFixtureSizeRepository spCustomerChoiceChannelFixtureSizeRepository;
 
-    public PostPackOptimizationService(ObjectMapper objectMapper, UpdateReplnConfigMapper updateReplnConfigMapper, ReplenishmentService replenishmentService, CcSpReplnPkConsRepository ccSpReplnPkConsRepository, SpCustomerChoiceChannelFixtureRepository spCustomerChoiceChannelFixtureRepository, SpCustomerChoiceChannelFixtureSizeRepository spCustomerChoiceChannelFixtureSizeRepository) {
+    public PostPackOptimizationService(ObjectMapper objectMapper, UpdateReplnConfigMapper updateReplnConfigMapper, ReplenishmentService replenishmentService, CcSpReplnPkConsRepository ccSpReplnPkConsRepository, SpCustomerChoiceChannelFixtureSizeRepository spCustomerChoiceChannelFixtureSizeRepository) {
         this.objectMapper = objectMapper;
         this.updateReplnConfigMapper = updateReplnConfigMapper;
         this.replenishmentService = replenishmentService;
         this.ccSpReplnPkConsRepository = ccSpReplnPkConsRepository;
-        this.spCustomerChoiceChannelFixtureRepository = spCustomerChoiceChannelFixtureRepository;
         this.spCustomerChoiceChannelFixtureSizeRepository = spCustomerChoiceChannelFixtureSizeRepository;
     }
 
@@ -56,7 +52,7 @@ public class PostPackOptimizationService {
                         .equals(MerchMethod.getMerchMethodIdFromDescription(fixture.getMerchMethod()))).forEach(ccSpMmReplPack -> {
 
                       if (ccSpMmReplPack.getReplUnits() > 0) {
-                          Integer updatedReplnQty = getUpdatedReplnQty(size.getOptFinalBuyQty(),ccSpMmReplPack.getCcSpReplPackId().getCcMmReplPackId().getCcReplPackId(),spCustomerChoiceChannelFixtureSize);
+                          Integer updatedReplnQty = getUpdatedReplnQty(size,ccSpMmReplPack.getCcSpReplPackId().getCcMmReplPackId().getCcReplPackId(),spCustomerChoiceChannelFixtureSize);
                           //If optimized buy quantity exceeds replenishment amount, then we'll set the replenishment to 0
                           if(null!=updatedReplnQty){
                               ccSpMmReplPack.setReplUnits(Math.max(updatedReplnQty, 0));
@@ -86,7 +82,7 @@ public class PostPackOptimizationService {
         }
     }
 
-    private Integer getUpdatedReplnQty(Integer optFinalBuyQty, CcReplPackId ccReplPackId, List<SpCustomerChoiceChannelFixtureSize> spCustomerChoiceChannelFixtureSize) {
+    private Integer getUpdatedReplnQty(Size size, CcReplPackId ccReplPackId, List<SpCustomerChoiceChannelFixtureSize> spCustomerChoiceChannelFixtureSize) {
         if (!spCustomerChoiceChannelFixtureSize.isEmpty()) {
             SpCustomerChoiceChannelFixtureSize spCcChanFixtrSize = spCustomerChoiceChannelFixtureSize.stream()
                     .filter(spCcChanFixSize -> {
@@ -98,7 +94,8 @@ public class PostPackOptimizationService {
                                 MerchCatgReplPackId merchCatgReplPackId = finelineReplPackId.getSubCatgReplPackId().getMerchCatgReplPackId();
                                 SubCatgReplPackId subCatgReplPackId = finelineReplPackId.getSubCatgReplPackId();
 
-                                return ccFixtrId.getCustomerChoice().equals(ccReplPackId.getCustomerChoice()) &&
+                                return spCcChanFixSize.getAhsSizeDesc().equalsIgnoreCase(size.getSizeDesc())&&
+                                        ccFixtrId.getCustomerChoice().equals(ccReplPackId.getCustomerChoice()) &&
                                         styleFixtrId.getStyleNbr().equals(ccReplPackId.getStyleReplPackId().getStyleNbr()) &&
                                         finelineFixtrId.getFineLineNbr().equals(finelineReplPackId.getFinelineNbr()) &&
                                         finelineFixtrId.getPlanId().equals(merchCatgReplPackId.getPlanId()) &&
@@ -111,7 +108,7 @@ public class PostPackOptimizationService {
                             }
                     ).findFirst().orElse(null);
             if (spCcChanFixtrSize !=null && spCcChanFixtrSize.getInitialSetQty() != null)
-                return spCcChanFixtrSize.getInitialSetQty() - optFinalBuyQty;
+                return spCcChanFixtrSize.getInitialSetQty() - size.getOptFinalBuyQty();
         }
         return null;
     }

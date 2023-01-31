@@ -93,14 +93,25 @@ public class PostPackOptimizationServiceTest {
 
 
 	private List<SpCustomerChoiceChannelFixtureSize> getSpCustomerChoiceChannelFixtureSizeList() {
-		SpCustomerChoiceChannelFixtureSize spCustomerChoiceChannelFixtureSize = new SpCustomerChoiceChannelFixtureSize();
 		List<SpCustomerChoiceChannelFixtureSize> spCustomerChoiceChannelFixtureSizeList = new ArrayList<>();
+
+		SpCustomerChoiceChannelFixtureSize spCustomerChoiceChannelFixtureSize = new SpCustomerChoiceChannelFixtureSize();
 		spCustomerChoiceChannelFixtureSize.setInitialSetQty(1630);
+		spCustomerChoiceChannelFixtureSize.setAhsSizeDesc("0X");
 		SpCustomerChoiceChannelFixtureSizeId spCustomerChoiceChannelFixtureSizeId = new SpCustomerChoiceChannelFixtureSizeId();
 		spCustomerChoiceChannelFixtureSizeId.setSpCustomerChoiceChannelFixtureId(getSpCustomerChoiceChannelFixtureId());
 		spCustomerChoiceChannelFixtureSizeId.setAhsSizeId(234);
 		spCustomerChoiceChannelFixtureSize.setSpCustomerChoiceChannelFixtureSizeId(spCustomerChoiceChannelFixtureSizeId);
+
+		SpCustomerChoiceChannelFixtureSize spCustomerChoiceChannelFixtureSizeObjDiffSize = new SpCustomerChoiceChannelFixtureSize();
+		spCustomerChoiceChannelFixtureSizeObjDiffSize.setInitialSetQty(1630);
+		spCustomerChoiceChannelFixtureSizeObjDiffSize.setAhsSizeDesc("1X");
+		SpCustomerChoiceChannelFixtureSizeId spCustomerChoiceChannelFixtureSizeIdDiffSize = new SpCustomerChoiceChannelFixtureSizeId();
+		spCustomerChoiceChannelFixtureSizeIdDiffSize.setSpCustomerChoiceChannelFixtureId(getSpCustomerChoiceChannelFixtureId());
+		spCustomerChoiceChannelFixtureSizeObjDiffSize.setSpCustomerChoiceChannelFixtureSizeId(spCustomerChoiceChannelFixtureSizeIdDiffSize);
+
 		spCustomerChoiceChannelFixtureSizeList.add(spCustomerChoiceChannelFixtureSize);
+		spCustomerChoiceChannelFixtureSizeList.add(spCustomerChoiceChannelFixtureSizeObjDiffSize);
 		return spCustomerChoiceChannelFixtureSizeList;
 	}
 
