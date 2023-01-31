@@ -32,10 +32,10 @@ public class StylePlan {
     @JsonIgnore
     private FinelinePlan finelinePlan;
 
+    @Column(name = "alt_style_desc")
+    private String altStyleDesc;
+
     @OneToMany(mappedBy = "stylePlan", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CustChoicePlan> custChoicePlans;
-
-    @Column(name="alt_style_desc")
-    private String altStyleDesc;
 }

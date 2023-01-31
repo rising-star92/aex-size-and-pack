@@ -285,6 +285,7 @@ public class PackOptConstraintMapper {
 
         Style styleDto = new Style();
         styleDto.setStyleNbr(fineLineMapperDto.getStyleNbr());
+        styleDto.setAltStyleDesc(fineLineMapperDto.getAltStyleDesc());
         styleDto.setConstraints(getConstraints(fineLineMapperDto, CategoryType.STYLE));
         styleDto.setCustomerChoices(getPackOptCustomerChoice(fineLineMapperDto, styleDto));
         styleDtoList.add(styleDto);
@@ -306,6 +307,7 @@ public class PackOptConstraintMapper {
 
         CustomerChoice customerChoiceDto = new CustomerChoice();
         customerChoiceDto.setCcId(fineLineMapperDto.getCcId());
+        customerChoiceDto.setAltCcDesc(fineLineMapperDto.getAltCcDesc());
         customerChoiceDto.setColorName(fineLineMapperDto.getColorName());
         customerChoiceDto.setColorFamily(fineLineMapperDto.getColorFamilyDesc());
         customerChoiceDto.setConstraints(getConstraints(fineLineMapperDto, CategoryType.CUSTOMER_CHOICE));

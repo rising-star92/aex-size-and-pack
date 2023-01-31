@@ -42,7 +42,9 @@ public interface SpCustomerChoiceChannelFixtureRepository extends JpaRepository<
             "sccf.adjReplnQty as ccAdjReplnQty, " +
             "msp.merchCatPlanId.channelId as channelId, " +
             "ccp.colorFamilyDesc as colorFamilyDesc, " +
-            "ccp.colorName as colorName " +
+            "ccp.colorName as colorName, " +
+            "sp.altStyleDesc, " +
+            "ccp.altCcDesc " +
             ") " +
             "from MerchCatPlan msp " +
             "inner join " +

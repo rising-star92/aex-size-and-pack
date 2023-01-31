@@ -241,6 +241,7 @@ public class BuyQuantityMapper {
     private void setStyleSP(BuyQntyResponseDTO buyQntyResponseDTO, List<StyleDto> styleDtoList) {
         StyleDto styleDto = new StyleDto();
         styleDto.setStyleNbr(buyQntyResponseDTO.getStyleNbr());
+        styleDto.setAltStyleDesc(buyQntyResponseDTO.getAltStyleDesc());
         styleDto.setChannelId(buyQntyResponseDTO.getChannelId());
         MetricsDto metricsDto = new MetricsDto();
 
@@ -369,6 +370,7 @@ public class BuyQuantityMapper {
     private void setCcSP(BuyQntyResponseDTO buyQntyResponseDTO, List<CustomerChoiceDto> customerChoiceDtoList) {
         CustomerChoiceDto customerChoiceDto = new CustomerChoiceDto();
         customerChoiceDto.setCcId(buyQntyResponseDTO.getCcId());
+        customerChoiceDto.setAltCcDesc(buyQntyResponseDTO.getAltCcDesc());
         customerChoiceDto.setChannelId(buyQntyResponseDTO.getChannelId());
         customerChoiceDto.setColorName(buyQntyResponseDTO.getColorName());
         customerChoiceDto.setColorFamilyDesc(buyQntyResponseDTO.getColorFamilyDesc());

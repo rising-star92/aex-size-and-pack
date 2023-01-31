@@ -50,4 +50,6 @@ public class PackOptConstraintResponseDTO {
     private String lvl2Desc;
     private String lvl3Desc;
     private String lvl4Desc;
+    private String altStyleDesc;
+    private String altCcDesc;
 }

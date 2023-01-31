@@ -189,6 +189,7 @@ public class ReplenishmentMapper {
 
         StyleDto styleDto = new StyleDto();
         styleDto.setStyleNbr(replenishmentResponseDTO.getStyleNbr());
+        styleDto.setAltStyleDesc(replenishmentResponseDTO.getAltStyleDesc());
         if (ccId == null) {
             MetricsDto metricsDto = new MetricsDto();
             metricsDto.setFinalBuyQty(replenishmentResponseDTO.getCcFinalBuyUnits());
@@ -236,6 +237,7 @@ public class ReplenishmentMapper {
 
         CustomerChoiceDto customerChoiceDto = new CustomerChoiceDto();
         customerChoiceDto.setCcId(replenishmentResponseDTO.getCcId());
+        customerChoiceDto.setAltCcDesc(replenishmentResponseDTO.getAltCcDesc());
         customerChoiceDto.setColorName(replenishmentResponseDTO.getColorName());
         customerChoiceDto.setColorFamilyDesc(replenishmentResponseDTO.getColorFamilyDesc());
         if (ccId == null) {

@@ -51,7 +51,10 @@ public interface StyleCcPackOptConsRepository extends JpaRepository<CcPackOptimi
             "merchCatPlan.lvl1Desc,\n" +
             "merchCatPlan.lvl2Desc,\n" +
             "merchCatPlan.lvl3Desc,\n" +
-            "subCatPlan.lvl4Desc ) " +
+            "subCatPlan.lvl4Desc, " +
+            "sp.altStyleDesc, " +
+            "ccp.altCcDesc " +
+            ") " +
             "FROM MerchCatPlan  merchCatPlan \n" +
             "inner JOIN SubCatPlan subCatPlan ON merchCatPlan.merchCatPlanId.lvl3Nbr = subCatPlan.merchCatPlan.merchCatPlanId.lvl3Nbr \n" +
             "AND merchCatPlan.merchCatPlanId.lvl2Nbr = subCatPlan.merchCatPlan.merchCatPlanId.lvl2Nbr \n" +
