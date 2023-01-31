@@ -64,7 +64,7 @@ public class PostPackOptimizationServiceTest {
 		verify(updateReplnConfigMapper, times(1)).updateVnpkWhpkForCcSpMmReplnPkConsMapper(ccspCaptor.capture());
 		verify(replenishmentService, times(1)).updateVnpkWhpkForCatgReplnCons(any(), any(), any());
 		List<CcSpMmReplPack> ccSpMmRepls = ccspCaptor.getValue();
-		assertEquals(518, ccSpMmRepls.get(0).getReplUnits(), "Repln units should be reduced to 518 for 0X Hanging");
+		assertEquals(612, ccSpMmRepls.get(0).getReplUnits(), "Repln units should be reduced to 518 for 0X Hanging");
 
 	}
 
@@ -96,7 +96,8 @@ public class PostPackOptimizationServiceTest {
 		List<SpCustomerChoiceChannelFixtureSize> spCustomerChoiceChannelFixtureSizeList = new ArrayList<>();
 
 		SpCustomerChoiceChannelFixtureSize spCustomerChoiceChannelFixtureSize = new SpCustomerChoiceChannelFixtureSize();
-		spCustomerChoiceChannelFixtureSize.setInitialSetQty(1630);
+		spCustomerChoiceChannelFixtureSize.setInitialSetQty(1000);
+		spCustomerChoiceChannelFixtureSize.setReplnQty(500);
 		spCustomerChoiceChannelFixtureSize.setAhsSizeDesc("0X");
 		SpCustomerChoiceChannelFixtureSizeId spCustomerChoiceChannelFixtureSizeId = new SpCustomerChoiceChannelFixtureSizeId();
 		spCustomerChoiceChannelFixtureSizeId.setSpCustomerChoiceChannelFixtureId(getSpCustomerChoiceChannelFixtureId());
@@ -104,8 +105,9 @@ public class PostPackOptimizationServiceTest {
 		spCustomerChoiceChannelFixtureSize.setSpCustomerChoiceChannelFixtureSizeId(spCustomerChoiceChannelFixtureSizeId);
 
 		SpCustomerChoiceChannelFixtureSize spCustomerChoiceChannelFixtureSizeObjDiffSize = new SpCustomerChoiceChannelFixtureSize();
-		spCustomerChoiceChannelFixtureSizeObjDiffSize.setInitialSetQty(1630);
+		spCustomerChoiceChannelFixtureSizeObjDiffSize.setInitialSetQty(1000);
 		spCustomerChoiceChannelFixtureSizeObjDiffSize.setAhsSizeDesc("1X");
+		spCustomerChoiceChannelFixtureSizeObjDiffSize.setReplnQty(500);
 		SpCustomerChoiceChannelFixtureSizeId spCustomerChoiceChannelFixtureSizeIdDiffSize = new SpCustomerChoiceChannelFixtureSizeId();
 		spCustomerChoiceChannelFixtureSizeIdDiffSize.setSpCustomerChoiceChannelFixtureId(getSpCustomerChoiceChannelFixtureId());
 		spCustomerChoiceChannelFixtureSizeObjDiffSize.setSpCustomerChoiceChannelFixtureSizeId(spCustomerChoiceChannelFixtureSizeIdDiffSize);
