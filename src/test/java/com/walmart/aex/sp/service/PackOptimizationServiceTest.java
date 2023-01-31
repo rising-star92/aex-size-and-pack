@@ -459,12 +459,59 @@ class PackOptimizationServiceTest {
 
 
     @Test
-    void test_callIntegrationHubForPackOptByFineline() throws IllegalAccessException {
+    void test_callIntegrationHubForPackOptByFinelineShouldSaveParentAndChildRecords() throws IllegalAccessException {
 
-        Field field = ReflectionUtils.findField(PackOptimizationService.class, "integrationHubServiceProperties");
-        field.setAccessible(true);
-        field.set(packOptimizationService, integrationHubServiceProperties);
-        when(integrationHubServiceProperties.getSizeAndPackUrl()).thenReturn("testBaseUrl");
+        RunPackOptRequest request = getRunPackOptRequestAndMockCalls();
+        packOptimizationService.callIntegrationHubForPackOptByFineline(request);
+
+        verify(analyticsMlSendRepository, times(1)).saveAll(analyticsMlSendRepoDataCaptor.capture());
+
+        assertEquals(2, analyticsMlSendRepoDataCaptor.getValue().size());
+        LinkedList<Integer> actualFineLines = analyticsMlSendRepoDataCaptor.getValue().stream().map(AnalyticsMlSend::getFinelineNbr).collect(Collectors.toCollection(LinkedList::new));
+        assertTrue(actualFineLines.containsAll(List.of(2829, 2819)));
+
+        for (AnalyticsMlSend analyticsMlSend : analyticsMlSendRepoDataCaptor.getValue()) {
+            if (analyticsMlSend.getFinelineNbr() == 2829) {
+                assertEquals(1, analyticsMlSend.getAnalyticsMlChildSend().size());
+                assertEquals(1, analyticsMlSend.getAnalyticsMlChildSend().iterator().next().getBumpPackNbr());
+                assertEquals("{\"context\":{\"getPackOptFinelineDetails\":\"testBaseUrl/api/packOptimization/plan/{planId}/fineline/{finelineNbr}\",\"updatePackOptFinelineStatus\":\"testBaseUrl/api/packOptimization/plan/{planId}/fineline/{finelineNbr}/status/{status}\",\"planId\":12,\"finelineNbrs\":[\"2829\"],\"env\":null}}", analyticsMlSend.getAnalyticsMlChildSend().iterator().next().getPayloadObj());
+            } else {
+                assertEquals(2, analyticsMlSend.getAnalyticsMlChildSend().size());
+                assertTrue(analyticsMlSend.getAnalyticsMlChildSend().stream().map(AnalyticsMlChildSend::getBumpPackNbr).collect(Collectors.toList()).containsAll(List.of(1, 2)));
+                Set<AnalyticsMlChildSend> analyticsMlChildSendSet = analyticsMlSend.getAnalyticsMlChildSend();
+                for (AnalyticsMlChildSend analyticsMlChildSend : analyticsMlChildSendSet) {
+                    if (analyticsMlChildSend.getBumpPackNbr() == 2) {
+                        assertEquals("{\"context\":{\"getPackOptFinelineDetails\":\"testBaseUrl/api/packOptimization/plan/{planId}/fineline/{finelineNbr}/bumppack/{bumpPackNbr}\",\"updatePackOptFinelineStatus\":\"testBaseUrl/api/packOptimization/plan/{planId}/fineline/{finelineNbr}/status/{status}\",\"planId\":12,\"finelineNbrs\":[\"2819-BP2\"],\"env\":null}}", analyticsMlChildSend.getPayloadObj());
+                        assertEquals("133333", analyticsMlChildSend.getAnalyticsJobId());
+                    } else if (analyticsMlChildSend.getBumpPackNbr() == 1) {
+                        assertEquals("{\"context\":{\"getPackOptFinelineDetails\":\"testBaseUrl/api/packOptimization/plan/{planId}/fineline/{finelineNbr}\",\"updatePackOptFinelineStatus\":\"testBaseUrl/api/packOptimization/plan/{planId}/fineline/{finelineNbr}/status/{status}\",\"planId\":12,\"finelineNbrs\":[\"2819\"],\"env\":null}}", analyticsMlChildSend.getPayloadObj());
+                        assertEquals("122222", analyticsMlChildSend.getAnalyticsJobId());
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    void test_callIntegrationHubForPackOptByFinelineShouldSave1ChildIfBumpCountIs0() throws IllegalAccessException {
+
+        RunPackOptRequest request = getRunPackOptRequestAndMockCallsForZeroBumpPack();
+        packOptimizationService.callIntegrationHubForPackOptByFineline(request);
+
+        verify(analyticsMlSendRepository, times(1)).saveAll(analyticsMlSendRepoDataCaptor.capture());
+
+        assertEquals(1, analyticsMlSendRepoDataCaptor.getValue().size());
+        LinkedList<Integer> actualFineLines = analyticsMlSendRepoDataCaptor.getValue().stream().map(AnalyticsMlSend::getFinelineNbr).collect(Collectors.toCollection(LinkedList::new));
+        assertTrue(actualFineLines.contains(2819));
+
+        for (AnalyticsMlSend analyticsMlSend : analyticsMlSendRepoDataCaptor.getValue()) {
+            assertEquals(1, analyticsMlSend.getAnalyticsMlChildSend().size());
+            assertEquals(1, analyticsMlSend.getAnalyticsMlChildSend().iterator().next().getBumpPackNbr());
+        }
+    }
+
+    private RunPackOptRequest getRunPackOptRequestAndMockCalls() throws IllegalAccessException {
+        mockUrlForIntegrationHubProperties();
 
         InputRequest inputRequest = new InputRequest();
         List<Lvl3Dto> lvl3List = new ArrayList<>();
@@ -490,9 +537,13 @@ class PackOptimizationServiceTest {
         request.setInputRequest(inputRequest);
         request.setRunUser("RandomUser");
 
-        IntegrationHubResponseDTO integrationHubResponseDto = new IntegrationHubResponseDTO();
-        integrationHubResponseDto.setJobId("1234455");
-        integrationHubResponseDto.setWf_running_id("122222");
+        IntegrationHubResponseDTO integrationHubResponseDto1 = new IntegrationHubResponseDTO();
+        integrationHubResponseDto1.setJobId("1234455");
+        integrationHubResponseDto1.setWf_running_id("122222");
+
+        IntegrationHubResponseDTO integrationHubResponseDto2 = new IntegrationHubResponseDTO();
+        integrationHubResponseDto2.setJobId("1234566");
+        integrationHubResponseDto2.setWf_running_id("133333");
 
         BuyQntyResponseDTO buyQntyResponseDTO1 = new BuyQntyResponseDTO();
         buyQntyResponseDTO1.setBumpPackCnt(2);
@@ -502,24 +553,56 @@ class PackOptimizationServiceTest {
         buyQntyResponseDTO2.setFinelineNbr(2829);
         List<BuyQntyResponseDTO> bumpPackCntByFinelines = new ArrayList<>(Arrays.asList(buyQntyResponseDTO1, buyQntyResponseDTO2));
         when(commonGCPUtil.delete(anyString(), anyString())).thenReturn(false);
+        when(integrationHubService.callIntegrationHubForPackOpt(any())).thenReturn(integrationHubResponseDto1).thenReturn(integrationHubResponseDto2);
+        when(spFineLineChannelFixtureRepository.getBumpPackCntByFinelines(anyLong(), anyList())).thenReturn(bumpPackCntByFinelines);
+        return request;
+    }
+
+    private RunPackOptRequest getRunPackOptRequestAndMockCallsForZeroBumpPack() throws IllegalAccessException {
+        mockUrlForIntegrationHubProperties();
+
+        InputRequest inputRequest = new InputRequest();
+        List<Lvl3Dto> lvl3List = new ArrayList<>();
+        Lvl3Dto lvl3Dto = new Lvl3Dto();
+        List<Lvl4Dto> lvl4List = new ArrayList<>();
+        Lvl4Dto lvl4Dto = new Lvl4Dto();
+
+        FinelineDto finelineDto1 = new FinelineDto();
+        finelineDto1.setFinelineNbr(2819);
+
+        List<FinelineDto> fineLines = new ArrayList<>(List.of(finelineDto1));
+
+        lvl4Dto.setFinelines(fineLines);
+        lvl4List.add(lvl4Dto);
+        lvl3Dto.setLvl4List(lvl4List);
+        lvl3List.add(lvl3Dto);
+        inputRequest.setLvl3List(lvl3List);
+
+        RunPackOptRequest request = new RunPackOptRequest();
+        request.setPlanId(12L);
+        request.setInputRequest(inputRequest);
+        request.setRunUser("RandomUser");
+
+        IntegrationHubResponseDTO integrationHubResponseDto = new IntegrationHubResponseDTO();
+        integrationHubResponseDto.setJobId("1234455");
+        integrationHubResponseDto.setWf_running_id("122222");
+
+        BuyQntyResponseDTO buyQntyResponseDTO1 = new BuyQntyResponseDTO();
+        buyQntyResponseDTO1.setBumpPackCnt(0);
+        buyQntyResponseDTO1.setFinelineNbr(2819);
+
+        List<BuyQntyResponseDTO> bumpPackCntByFinelines = new ArrayList<>(List.of(buyQntyResponseDTO1));
+        when(commonGCPUtil.delete(anyString(), anyString())).thenReturn(false);
         when(integrationHubService.callIntegrationHubForPackOpt(any())).thenReturn(integrationHubResponseDto);
         when(spFineLineChannelFixtureRepository.getBumpPackCntByFinelines(anyLong(), anyList())).thenReturn(bumpPackCntByFinelines);
-        packOptimizationService.callIntegrationHubForPackOptByFineline(request);
+        return request;
+    }
 
-        verify(analyticsMlSendRepository, times(1)).saveAll(analyticsMlSendRepoDataCaptor.capture());
-
-        assertEquals(2, analyticsMlSendRepoDataCaptor.getValue().size());
-        LinkedList<Integer> actualFineLines = analyticsMlSendRepoDataCaptor.getValue().stream().map(AnalyticsMlSend::getFinelineNbr).collect(Collectors.toCollection(LinkedList::new));
-        assertTrue(actualFineLines.containsAll(List.of(2829, 2819)));
-
-        for (AnalyticsMlSend analyticsMlSend : analyticsMlSendRepoDataCaptor.getValue()) {
-            if (analyticsMlSend.getFinelineNbr() == 2829) {
-                assertEquals(1, analyticsMlSend.getAnalyticsMlChildSend().size());
-            } else {
-                assertEquals(2, analyticsMlSend.getAnalyticsMlChildSend().size());
-            }
-        }
-
+    private void mockUrlForIntegrationHubProperties() throws IllegalAccessException {
+        Field field = ReflectionUtils.findField(PackOptimizationService.class, "integrationHubServiceProperties");
+        field.setAccessible(true);
+        field.set(packOptimizationService, integrationHubServiceProperties);
+        when(integrationHubServiceProperties.getSizeAndPackUrl()).thenReturn("testBaseUrl");
     }
 
     @Test
@@ -539,8 +622,8 @@ class PackOptimizationServiceTest {
         verify(analyticsMlSendRepository, times(1)).save(analyticsMlSendArgumentCaptor.capture());
         Set<AnalyticsMlChildSend> actualAnalyticsMlChildSendList = analyticsMlSendArgumentCaptor.getValue().getAnalyticsMlChildSend();
         assertEquals(2, actualAnalyticsMlChildSendList.size());
-        for (AnalyticsMlChildSend analyticsMlChildSend: actualAnalyticsMlChildSendList) {
-            if (analyticsMlChildSend.getBumpPackNbr() == 1 ) {
+        for (AnalyticsMlChildSend analyticsMlChildSend : actualAnalyticsMlChildSendList) {
+            if (analyticsMlChildSend.getBumpPackNbr() == 1) {
                 assertEquals(6, analyticsMlChildSend.getRunStatusCode());
             } else {
                 assertEquals(3, analyticsMlChildSend.getRunStatusCode());
@@ -589,8 +672,8 @@ class PackOptimizationServiceTest {
         Set<AnalyticsMlChildSend> actualAnalyticsMlChildSendList = analyticsMlSendArgumentCaptor.getValue().getAnalyticsMlChildSend();
         assertEquals(2, actualAnalyticsMlChildSendList.size());
         assertEquals(6, analyticsMlSendArgumentCaptor.getValue().getRunStatusCode());
-        for (AnalyticsMlChildSend analyticsMlChildSend: actualAnalyticsMlChildSendList) {
-            if (analyticsMlChildSend.getBumpPackNbr() == 1 ) {
+        for (AnalyticsMlChildSend analyticsMlChildSend : actualAnalyticsMlChildSendList) {
+            if (analyticsMlChildSend.getBumpPackNbr() == 1) {
                 assertEquals(6, analyticsMlChildSend.getRunStatusCode());
             } else {
                 assertEquals(6, analyticsMlChildSend.getRunStatusCode());
@@ -617,8 +700,8 @@ class PackOptimizationServiceTest {
         Set<AnalyticsMlChildSend> actualAnalyticsMlChildSendList = analyticsMlSendArgumentCaptor.getValue().getAnalyticsMlChildSend();
         assertEquals(2, actualAnalyticsMlChildSendList.size());
         assertEquals(3, analyticsMlSendArgumentCaptor.getValue().getRunStatusCode());
-        for (AnalyticsMlChildSend analyticsMlChildSend: actualAnalyticsMlChildSendList) {
-            if (analyticsMlChildSend.getBumpPackNbr() == 1 ) {
+        for (AnalyticsMlChildSend analyticsMlChildSend : actualAnalyticsMlChildSendList) {
+            if (analyticsMlChildSend.getBumpPackNbr() == 1) {
                 assertEquals(6, analyticsMlChildSend.getRunStatusCode());
             } else {
                 assertEquals(3, analyticsMlChildSend.getRunStatusCode());
@@ -648,7 +731,7 @@ class PackOptimizationServiceTest {
         Set<AnalyticsMlChildSend> actualAnalyticsMlChildSendList = analyticsMlSendArgumentCaptor.getValue().getAnalyticsMlChildSend();
         assertEquals(3, actualAnalyticsMlChildSendList.size());
         assertEquals(10, analyticsMlSendArgumentCaptor.getValue().getRunStatusCode());
-        for (AnalyticsMlChildSend analyticsMlChildSend: actualAnalyticsMlChildSendList) {
+        for (AnalyticsMlChildSend analyticsMlChildSend : actualAnalyticsMlChildSendList) {
             if (analyticsMlChildSend.getBumpPackNbr() == 1 || analyticsMlChildSend.getBumpPackNbr() == 3) {
                 assertEquals(6, analyticsMlChildSend.getRunStatusCode());
             } else {
