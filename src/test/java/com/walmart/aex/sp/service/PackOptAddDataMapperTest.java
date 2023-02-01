@@ -7,7 +7,16 @@ import com.walmart.aex.sp.dto.planhierarchy.Lvl1;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl2;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
 import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDTO;
-import com.walmart.aex.sp.entity.*;
+import com.walmart.aex.sp.entity.CcPackOptimization;
+import com.walmart.aex.sp.entity.CcPackOptimizationID;
+import com.walmart.aex.sp.entity.FineLinePackOptimization;
+import com.walmart.aex.sp.entity.FineLinePackOptimizationID;
+import com.walmart.aex.sp.entity.MerchantPackOptimization;
+import com.walmart.aex.sp.entity.MerchantPackOptimizationID;
+import com.walmart.aex.sp.entity.StylePackOptimization;
+import com.walmart.aex.sp.entity.StylePackOptimizationID;
+import com.walmart.aex.sp.entity.SubCatgPackOptimization;
+import com.walmart.aex.sp.entity.SubCatgPackOptimizationID;
 import com.walmart.aex.sp.repository.MerchCatPlanRepository;
 import com.walmart.aex.sp.repository.MerchPackOptimizationRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,6 +35,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.walmart.aex.sp.util.SizeAndPackConstants.DEFAULT_SINGLE_PACK_INDICATOR;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.when;
@@ -95,6 +105,55 @@ class PackOptAddDataMapperTest {
         List<CcPackOptimization> ccPackOptimizations = getCcPackOptimization(merchantPackOptimizationSet);
         CcPackOptimization ccPackOptimization = ccPackOptimizations.get(0);
         assertNull(ccPackOptimization.getColorCombination());
+    }
+
+    @Test
+    void test_setMerchCatPackOptShouldSetDefaultSinglePackIndicator() throws JsonProcessingException {
+        PlanSizeAndPackDTO planSizeAndPackDTO = getRequestPayload(false);
+        Lvl1 lvl1= planSizeAndPackDTO.getLvl1List().get(0);
+        Lvl2 lvl2 = lvl1.getLvl2List().get(0);
+        Lvl3 lvl3 = lvl2.getLvl3List().get(0);
+        List<Integer> channelList = new ArrayList<>();
+        channelList.add(1);
+        FactoryDetailsResponse factoryDetails = new FactoryDetailsResponse();
+        factoryDetails.setFactoryName("WALMART");
+        when(sourcingFactoryService.getFactoryDetails(Mockito.anyString())).thenReturn(factoryDetails);
+        Mockito.when(merchPackOptimizationRepository.findById(Mockito.any(MerchantPackOptimizationID.class))).thenReturn(java.util.Optional.ofNullable(getMerchantPackOptimization()));
+        Set<MerchantPackOptimization> merchantPackOptimizationSet = packOptAddDataMapper.setMerchCatPackOpt(planSizeAndPackDTO, lvl1, lvl2, lvl3);
+        List<CcPackOptimization> ccPackOptimizations = getCcPackOptimization(merchantPackOptimizationSet);
+        List<StylePackOptimization> stylePackOptimizationList = getStylePackOptimization(merchantPackOptimizationSet);
+        List<FineLinePackOptimization> fineLinePackOptimizationList = getFineLinePackOptimization(merchantPackOptimizationSet);
+        List<SubCatgPackOptimization> subCatgPackOptimizationList = merchantPackOptimizationSet.stream().map(MerchantPackOptimization::getSubCatgPackOptimization).flatMap(Collection::stream).collect(Collectors.toList());
+
+        assertEquals(DEFAULT_SINGLE_PACK_INDICATOR, ccPackOptimizations.iterator().next().getSinglePackInd());
+        assertEquals(DEFAULT_SINGLE_PACK_INDICATOR, stylePackOptimizationList.iterator().next().getSinglePackInd());
+        assertEquals(DEFAULT_SINGLE_PACK_INDICATOR, fineLinePackOptimizationList.iterator().next().getSinglePackInd());
+        assertEquals(DEFAULT_SINGLE_PACK_INDICATOR, subCatgPackOptimizationList.iterator().next().getSinglePackInd());
+        assertEquals(DEFAULT_SINGLE_PACK_INDICATOR, merchantPackOptimizationSet.iterator().next().getSinglePackInd());
+    }
+
+    private List<FineLinePackOptimization> getFineLinePackOptimization(Set<MerchantPackOptimization> merchantPackOptimizationSet) {
+        return Optional.ofNullable(merchantPackOptimizationSet)
+                .stream()
+                .flatMap(Collection::stream)
+                .map(MerchantPackOptimization::getSubCatgPackOptimization)
+                .flatMap(Collection::stream)
+                .map(SubCatgPackOptimization::getFinelinepackOptimization)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+    }
+
+    private List<StylePackOptimization> getStylePackOptimization(Set<MerchantPackOptimization> merchantPackOptimizationSet) {
+        return Optional.ofNullable(merchantPackOptimizationSet)
+                .stream()
+                .flatMap(Collection::stream)
+                .map(MerchantPackOptimization::getSubCatgPackOptimization)
+                .flatMap(Collection::stream)
+                .map(SubCatgPackOptimization::getFinelinepackOptimization)
+                .flatMap(Collection::stream)
+                .map(FineLinePackOptimization::getStylePackOptimization)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
     }
 
     private List<CcPackOptimization> getCcPackOptimization(Set<MerchantPackOptimization> merchantPackOptimizationSet) {

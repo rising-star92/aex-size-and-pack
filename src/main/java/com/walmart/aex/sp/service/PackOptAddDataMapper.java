@@ -1,9 +1,27 @@
 package com.walmart.aex.sp.service;
 
-import com.walmart.aex.sp.dto.packoptimization.*;
+import com.walmart.aex.sp.dto.packoptimization.ColorCombinationConstraints;
+import com.walmart.aex.sp.dto.packoptimization.Constraints;
+import com.walmart.aex.sp.dto.packoptimization.CustomerChoice;
+import com.walmart.aex.sp.dto.packoptimization.Fineline;
+import com.walmart.aex.sp.dto.packoptimization.Supplier;
 import com.walmart.aex.sp.dto.packoptimization.sourcingFactory.FactoryDetailsResponse;
-import com.walmart.aex.sp.dto.planhierarchy.*;
-import com.walmart.aex.sp.entity.*;
+import com.walmart.aex.sp.dto.planhierarchy.Lvl1;
+import com.walmart.aex.sp.dto.planhierarchy.Lvl2;
+import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
+import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
+import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDTO;
+import com.walmart.aex.sp.dto.planhierarchy.Style;
+import com.walmart.aex.sp.entity.CcPackOptimization;
+import com.walmart.aex.sp.entity.CcPackOptimizationID;
+import com.walmart.aex.sp.entity.FineLinePackOptimization;
+import com.walmart.aex.sp.entity.FineLinePackOptimizationID;
+import com.walmart.aex.sp.entity.MerchantPackOptimization;
+import com.walmart.aex.sp.entity.MerchantPackOptimizationID;
+import com.walmart.aex.sp.entity.StylePackOptimization;
+import com.walmart.aex.sp.entity.StylePackOptimizationID;
+import com.walmart.aex.sp.entity.SubCatgPackOptimization;
+import com.walmart.aex.sp.entity.SubCatgPackOptimizationID;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.repository.MerchPackOptimizationRepository;
 import com.walmart.aex.sp.util.CommonUtil;
@@ -13,7 +31,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+import static com.walmart.aex.sp.util.SizeAndPackConstants.DEFAULT_SINGLE_PACK_INDICATOR;
 
 @Service
 @Slf4j
@@ -22,7 +46,6 @@ public class PackOptAddDataMapper {
 
     private final SizeAndPackObjectMapper sizeAndPackObjectMapper;
     private final MerchPackOptimizationRepository merchPackOptimizationRepository;
-    private static final Integer DEFAULT_SINGLE_PACK_INDICATOR = 0;
     private final SourcingFactoryService sourcingFactoryService;
 
     public PackOptAddDataMapper(SizeAndPackObjectMapper sizeAndPackObjectMapper, MerchPackOptimizationRepository merchPackOptimizationRepository, SourcingFactoryService sourcingFactoryService) {
@@ -76,7 +99,6 @@ public class PackOptAddDataMapper {
             subCatgPackOptimization.setMaxNbrOfPacks(50);
             subCatgPackOptimization.setMaxUnitsPerPack(36);
             subCatgPackOptimization.setSinglePackInd(DEFAULT_SINGLE_PACK_INDICATOR);
-
 
             if (!CollectionUtils.isEmpty(lvl4.getFinelines())) {
                 subCatgPackOptimization.setFinelinepackOptimization(setFinelinePackOpt(subCatgPackOptimization, lvl4.getFinelines()));
