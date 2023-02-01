@@ -2,7 +2,10 @@ package com.walmart.aex.sp.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.walmart.aex.sp.dto.assortproduct.RFASizePackData;
+import com.walmart.aex.sp.dto.bqfp.Replenishment;
 import com.walmart.aex.sp.dto.buyquantity.BuyQtyObj;
+import com.walmart.aex.sp.dto.buyquantity.InitialSetWithReplnsConstraint;
 import com.walmart.aex.sp.dto.buyquantity.MetricsDto;
 import com.walmart.aex.sp.dto.buyquantity.SizeDto;
 import com.walmart.aex.sp.dto.buyquantity.StoreQuantity;
@@ -11,13 +14,19 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.AbstractMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -93,6 +102,19 @@ public class BuyQuantityConstraintServiceTest {
         assertEquals(2.0, entry.getValue()
                 .getBuyQtyStoreObj().getBuyQuantities().stream()
                 .mapToDouble(StoreQuantity::getTotalUnits).sum(), 0.0, "Total Units of StoreQuantity IS Units should equal 2");
+    }
+
+    @Test
+    public void constraintProcessingShouldNotResultInNegativeReplenishmentWeekUnits() {
+        String bqoJson = "{\"replenishments\":[{\"replnWeek\":12327,\"replnWeekDesc\":\"FYE2024WK27\",\"adjReplnUnits\":2375},{\"replnWeek\":12331,\"replnWeekDesc\":\"FYE2024WK31\",\"adjReplnUnits\":2899},{\"replnWeek\":12335,\"replnWeekDesc\":\"FYE2024WK35\",\"adjReplnUnits\":3094},{\"replnWeek\":12339,\"replnWeekDesc\":\"FYE2024WK39\",\"adjReplnUnits\":136}],\"totalReplenishment\":0}";
+        BuyQtyObj bqo = deserializeBuyQtyObj(bqoJson);
+        RFASizePackData rfaSizePackData = new RFASizePackData();
+        rfaSizePackData.setStore_cnt(100);
+        Mockito.when(buyQtyProperties.getReplenishmentThreshold()).thenReturn(500);
+        InitialSetWithReplnsConstraint setWithReplnsConstraint = buyQuantityConstraintService.getISWithMoreReplenConstraint(bqo, 800, rfaSizePackData);
+
+        List<Replenishment> adjustedReplns = setWithReplnsConstraint.getReplnsWithUnits();
+        assertTrue(adjustedReplns.stream().allMatch(replenishment -> replenishment.getAdjReplnUnits() >= 0), "Reduction of all repln units should not produce negative value");
     }
 
     private BuyQtyObj deserializeBuyQtyObj(String json) {
