@@ -65,7 +65,6 @@ public class PackOptimizationUtil {
                         analyticsMlSend.setEndTs(null);
                         analyticsMlSend.setRetryCnt(0);
                         analyticsMlSend.setReturnMessage(null);
-                        analyticsMlSend.setAnalyticsSendDesc("sent");
                         analyticsMlSendSet.add(analyticsMlSend);
                     }
                 }
