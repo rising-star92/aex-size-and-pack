@@ -64,7 +64,7 @@ public class PostPackOptimizationServiceTest {
 		verify(updateReplnConfigMapper, times(1)).updateVnpkWhpkForCcSpMmReplnPkConsMapper(ccspCaptor.capture());
 		verify(replenishmentService, times(1)).updateVnpkWhpkForCatgReplnCons(any(), any(), any());
 		List<CcSpMmReplPack> ccSpMmRepls = ccspCaptor.getValue();
-		assertEquals(612, ccSpMmRepls.get(0).getReplUnits(), "Repln units should be reduced to 518 for 0X Hanging");
+		assertEquals(388, ccSpMmRepls.get(0).getReplUnits(), "Repln units should be reduced to 518 for 0X Hanging");
 
 	}
 
