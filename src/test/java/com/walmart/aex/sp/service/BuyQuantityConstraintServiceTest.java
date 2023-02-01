@@ -110,7 +110,6 @@ public class BuyQuantityConstraintServiceTest {
         BuyQtyObj bqo = deserializeBuyQtyObj(bqoJson);
         RFASizePackData rfaSizePackData = new RFASizePackData();
         rfaSizePackData.setStore_cnt(100);
-        Mockito.when(buyQtyProperties.getReplenishmentThreshold()).thenReturn(500);
         InitialSetWithReplnsConstraint setWithReplnsConstraint = buyQuantityConstraintService.getISWithMoreReplenConstraint(bqo, 800, rfaSizePackData);
 
         List<Replenishment> adjustedReplns = setWithReplnsConstraint.getReplnsWithUnits();
