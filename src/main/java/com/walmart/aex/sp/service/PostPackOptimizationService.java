@@ -108,7 +108,7 @@ public class PostPackOptimizationService {
                             }
                     ).findFirst().orElse(null);
             if (spCcChanFixtrSize !=null && spCcChanFixtrSize.getInitialSetQty() != null)
-                return spCcChanFixtrSize.getReplnQty() - (spCcChanFixtrSize.getInitialSetQty() - size.getOptFinalBuyQty());
+                return spCcChanFixtrSize.getReplnQty() - (size.getOptFinalBuyQty() - spCcChanFixtrSize.getInitialSetQty());
         }
         return null;
     }
