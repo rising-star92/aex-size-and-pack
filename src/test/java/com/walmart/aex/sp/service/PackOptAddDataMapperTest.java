@@ -11,6 +11,8 @@ import com.walmart.aex.sp.entity.*;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.repository.MerchCatPlanRepository;
 import com.walmart.aex.sp.repository.MerchPackOptimizationRepository;
+import com.walmart.aex.sp.util.CommonUtil;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -75,7 +77,6 @@ class PackOptAddDataMapperTest {
         factoryDetails.setFactoryName("WALMART");
         when(sourcingFactoryService.getFactoryDetails(Mockito.anyString())).thenReturn(factoryDetails);
         Mockito.when(merchPackOptimizationRepository.findById(Mockito.any(MerchantPackOptimizationID.class))).thenReturn(java.util.Optional.ofNullable(getMerchantPackOptimization()));
-//        Mockito.when(STORE.getId()).thenReturn(1);
         Set<MerchantPackOptimization> merchantPackOptimizationSet = packOptAddDataMapper.setMerchCatPackOpt(planSizeAndPackDTO, lvl1, lvl2, lvl3);
         List<CcPackOptimization> ccPackOptimizations = getCcPackOptimization(merchantPackOptimizationSet);
         CcPackOptimization ccPackOptimization = ccPackOptimizations.get(0);
@@ -96,11 +97,27 @@ class PackOptAddDataMapperTest {
         factoryDetails.setFactoryName("WALMART");
         when(sourcingFactoryService.getFactoryDetails(Mockito.anyString())).thenReturn(factoryDetails);
         Mockito.when(merchPackOptimizationRepository.findById(Mockito.any(MerchantPackOptimizationID.class))).thenReturn(java.util.Optional.ofNullable(getMerchantPackOptimization()));
-//        Mockito.when(ChannelType.STORE.getId()).thenReturn(1);
         Set<MerchantPackOptimization> merchantPackOptimizationSet = packOptAddDataMapper.setMerchCatPackOpt(planSizeAndPackDTO, lvl1, lvl2, lvl3);
         List<CcPackOptimization> ccPackOptimizations = getCcPackOptimization(merchantPackOptimizationSet);
         CcPackOptimization ccPackOptimization = ccPackOptimizations.get(0);
         assertNull(ccPackOptimization.getColorCombination());
+    }
+
+    @Test
+    void setMerchCatPackOptSupplierNameChangeWhenChannelIsOnlineTest() throws JsonProcessingException {
+        PlanSizeAndPackDTO planSizeAndPackDTO = getRequestPayload(true);
+        Lvl1 lvl1= planSizeAndPackDTO.getLvl1List().get(0);
+        Lvl2 lvl2 = lvl1.getLvl2List().get(0);
+        Lvl3 lvl3 = lvl2.getLvl3List().get(0);
+        lvl3.getLvl4List().get(0).getFinelines().get(0).setChannel("Online");
+        FactoryDetailsResponse factoryDetails = new FactoryDetailsResponse();
+        factoryDetails.setFactoryName("WALMART");
+        when(sourcingFactoryService.getFactoryDetails(Mockito.anyString())).thenReturn(factoryDetails);
+        Mockito.when(merchPackOptimizationRepository.findById(Mockito.any(MerchantPackOptimizationID.class))).thenReturn(java.util.Optional.ofNullable(getMerchantPackOptimization()));
+        Set<MerchantPackOptimization> merchantPackOptimizationSet = packOptAddDataMapper.setMerchCatPackOpt(planSizeAndPackDTO, lvl1, lvl2, lvl3);
+        List<CcPackOptimization> ccPackOptimizations = getCcPackOptimization(merchantPackOptimizationSet);
+        assertEquals(0,merchantPackOptimizationSet.size());
+        assertEquals(0,ccPackOptimizations.size());
     }
 
     private List<CcPackOptimization> getCcPackOptimization(Set<MerchantPackOptimization> merchantPackOptimizationSet) {
@@ -160,6 +177,7 @@ class PackOptAddDataMapperTest {
         cc.setFactoryId("121131");
         cc.setVendorName("2178340 - RICHA &amp; CO");
         cc.setVendorNbr6(2178340);
+        cc.setChannelText(getChannelText("Store",1));
         Set<CcPackOptimization> ccPackOptimizationSet = new HashSet<>();
         ccPackOptimizationSet.add(cc);
 
@@ -167,6 +185,7 @@ class PackOptAddDataMapperTest {
         StylePackOptimization stylePackOpt = new StylePackOptimization();
         stylePackOpt.setStylePackoptimizationId(stylePackOptimizationID);
         stylePackOpt.setCcPackOptimization(ccPackOptimizationSet);
+        stylePackOpt.setChannelText(getChannelText("Store",1));
         Set<StylePackOptimization> stylePackOptimizationSet = new HashSet<>();
         stylePackOptimizationSet.add(stylePackOpt);
 
@@ -174,11 +193,13 @@ class PackOptAddDataMapperTest {
         FineLinePackOptimization fineLinePackOptimization = new FineLinePackOptimization();
         fineLinePackOptimization.setFinelinePackOptId(fineLinePackOptimizationID);
         fineLinePackOptimization.setStylePackOptimization(stylePackOptimizationSet);
+        fineLinePackOptimization.setChannelText(getChannelText("Store",1));
         Set<FineLinePackOptimization> fineLinePackOptimizationSet = new HashSet<>();
         fineLinePackOptimizationSet.add(fineLinePackOptimization);
 
         /*** Subcategory Object **/
         SubCatgPackOptimization subCatgPackOptimization = new SubCatgPackOptimization();
+        subCatgPackOptimization.setChannelText(getChannelText("Store",1));
         subCatgPackOptimization.setSubCatgPackOptimizationID(subCatgPackOptimizationID);
         subCatgPackOptimization.setFinelinepackOptimization(fineLinePackOptimizationSet);
         Set<SubCatgPackOptimization> subCatgPackOptimizationSet = new HashSet<>();
@@ -190,5 +211,12 @@ class PackOptAddDataMapperTest {
         merchantPackOptimization.setSubCatgPackOptimization(subCatgPackOptimizationSet);
         return merchantPackOptimization;
 
+    }
+
+    private ChannelText getChannelText(String channelName , Integer channelId) {
+        ChannelText channelText = new ChannelText();
+        channelText.setChannelDesc(channelName);
+        channelText.setChannelId(channelId);
+        return channelText;
     }
 }
