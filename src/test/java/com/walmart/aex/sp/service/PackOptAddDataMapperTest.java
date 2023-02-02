@@ -8,6 +8,7 @@ import com.walmart.aex.sp.dto.planhierarchy.Lvl2;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
 import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDTO;
 import com.walmart.aex.sp.entity.*;
+import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.repository.MerchCatPlanRepository;
 import com.walmart.aex.sp.repository.MerchPackOptimizationRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,6 +27,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.walmart.aex.sp.enums.ChannelType.STORE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.when;
@@ -51,6 +53,7 @@ class PackOptAddDataMapperTest {
     MerchCatPlanRepository merchCatPlanRepository;
     @Mock
     SourcingFactoryService sourcingFactoryService;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -67,10 +70,12 @@ class PackOptAddDataMapperTest {
         Lvl3 lvl3 = lvl2.getLvl3List().get(0);
         List<Integer> channelList = new ArrayList<>();
         channelList.add(1);
+
         FactoryDetailsResponse factoryDetails = new FactoryDetailsResponse();
         factoryDetails.setFactoryName("WALMART");
         when(sourcingFactoryService.getFactoryDetails(Mockito.anyString())).thenReturn(factoryDetails);
         Mockito.when(merchPackOptimizationRepository.findById(Mockito.any(MerchantPackOptimizationID.class))).thenReturn(java.util.Optional.ofNullable(getMerchantPackOptimization()));
+//        Mockito.when(STORE.getId()).thenReturn(1);
         Set<MerchantPackOptimization> merchantPackOptimizationSet = packOptAddDataMapper.setMerchCatPackOpt(planSizeAndPackDTO, lvl1, lvl2, lvl3);
         List<CcPackOptimization> ccPackOptimizations = getCcPackOptimization(merchantPackOptimizationSet);
         CcPackOptimization ccPackOptimization = ccPackOptimizations.get(0);
@@ -91,6 +96,7 @@ class PackOptAddDataMapperTest {
         factoryDetails.setFactoryName("WALMART");
         when(sourcingFactoryService.getFactoryDetails(Mockito.anyString())).thenReturn(factoryDetails);
         Mockito.when(merchPackOptimizationRepository.findById(Mockito.any(MerchantPackOptimizationID.class))).thenReturn(java.util.Optional.ofNullable(getMerchantPackOptimization()));
+//        Mockito.when(ChannelType.STORE.getId()).thenReturn(1);
         Set<MerchantPackOptimization> merchantPackOptimizationSet = packOptAddDataMapper.setMerchCatPackOpt(planSizeAndPackDTO, lvl1, lvl2, lvl3);
         List<CcPackOptimization> ccPackOptimizations = getCcPackOptimization(merchantPackOptimizationSet);
         CcPackOptimization ccPackOptimization = ccPackOptimizations.get(0);
