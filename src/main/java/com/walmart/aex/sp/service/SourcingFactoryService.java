@@ -49,8 +49,9 @@ public class SourcingFactoryService {
             }
 
         }  catch (RestClientException rce) {
-            log.error("Error connecting with Sourcing Factory service: {}", rce.getMessage());
-            throw new CustomException("Unable to reach Sourcing Factory service");
+            String error = "Error connecting with Sourcing Factory service and failed to fetch factory info for factoryId: "+factoryId+" exception: "+rce.getMessage();
+            log.error(error);
+            throw new CustomException(error);
         }
         return factoryDetailsResponse;
     }
@@ -70,13 +71,18 @@ public class SourcingFactoryService {
 
     public FactoryDetailsResponse getFactoryDetails(String factoryId) {
         FactoryDetailsResponse factoryDetails = new FactoryDetailsResponse();
-        if(StringUtils.isNotEmpty(factoryId)){
-            if(factoryId.trim().equals(ZERO_STRING)){
-                log.info("SourcingFactoryService getFactoryDetails() has factory Id as ZERO, therefore not calling Sourcing API");
-                factoryDetails.setFactoryName(DEFAULT_FACTORY);
-            }else{
-                factoryDetails = callSourcingFactoryForFactoryDetails(factoryId);
+        try {
+            if (StringUtils.isNotEmpty(factoryId)) {
+                if (factoryId.trim().equals(ZERO_STRING)) {
+                    log.info("SourcingFactoryService getFactoryDetails() has factory Id as ZERO, therefore not calling Sourcing API");
+                    factoryDetails.setFactoryName(DEFAULT_FACTORY);
+                } else {
+                    factoryDetails = callSourcingFactoryForFactoryDetails(factoryId);
+                }
             }
+        } catch (Exception e) {
+            log.error("Error while fetching the factoryName for factoryId: {} ", factoryId);
+            return factoryDetails;
         }
         return factoryDetails;
     }
