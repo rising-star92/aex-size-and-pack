@@ -111,7 +111,17 @@ class PackOptAddDataMapperTest {
         Lvl2 lvl2 = lvl1.getLvl2List().get(0);
         Lvl3 lvl3 = lvl2.getLvl3List().get(0);
         lvl3.getLvl4List().get(0).getFinelines().get(0).setChannel("Online");
+        FactoryDetailsResponse factoryDetails = new FactoryDetailsResponse();
+        factoryDetails.setFactoryName("WALMART");
+        when(sourcingFactoryService.getFactoryDetails(Mockito.anyString())).thenReturn(factoryDetails);
+        Mockito.when(merchPackOptimizationRepository.findById(Mockito.any(MerchantPackOptimizationID.class))).thenReturn(java.util.Optional.ofNullable(getMerchantPackOptimization()));
+        Set<MerchantPackOptimization> merchantPackOptimizationSet = packOptAddDataMapper.setMerchCatPackOpt(planSizeAndPackDTO, lvl1, lvl2, lvl3);
+        List<StylePackOptimization> stylePackOptimizationList = getStylePackOptimization(merchantPackOptimizationSet);
+        List<FineLinePackOptimization> fineLinePackOptimizationList = getFineLinePackOptimization(merchantPackOptimizationSet);
+        List<CcPackOptimization> ccPackOptimizations = getCcPackOptimization(merchantPackOptimizationSet);
         assertEquals(0,merchantPackOptimizationSet.size());
+        assertEquals(0,fineLinePackOptimizationList.size());
+        assertEquals(0,stylePackOptimizationList.size());
         assertEquals(0,ccPackOptimizations.size());
     }
   
@@ -162,7 +172,7 @@ class PackOptAddDataMapperTest {
                 .map(FineLinePackOptimization::getStylePackOptimization)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
-
+    }
 
     private List<CcPackOptimization> getCcPackOptimization(Set<MerchantPackOptimization> merchantPackOptimizationSet) {
         return Optional.ofNullable(merchantPackOptimizationSet)
