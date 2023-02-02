@@ -56,7 +56,7 @@ public class SizeAndPackService {
     public static final String FAILED_STATUS = "Failed";
     public static final String SUCCESS_STATUS = "Success";
 
-    public static final String ERROR_MSG_LP = "Failed to save the line plan events to size and pack database. Error: {}";
+    public static final String ERROR_MSG_LP = "Failed to save the line plan events to size and pack database. Request payload: {}. Error: {}";
     private final SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository;
     private final SpCustomerChoiceChannelFixtureRepository spCustomerChoiceChannelFixtureRepository;
     private final SpCustomerChoiceChannelFixtureSizeRepository spCustomerChoiceChannelFixtureSizeRepository;
@@ -281,7 +281,7 @@ public class SizeAndPackService {
             sizeAndPackResponse.setStatus(SUCCESS_STATUS);
         } catch (Exception ex) {
             sizeAndPackResponse.setStatus(FAILED_STATUS);
-            log.error(ERROR_MSG_LP, ex.toString());
+            log.error(ERROR_MSG_LP, planSizeAndPackDTO, ex.toString());
         }
         return sizeAndPackResponse;
     }
@@ -315,7 +315,7 @@ public class SizeAndPackService {
             sizeAndPackResponse.setStatus(SUCCESS_STATUS);
         } catch (Exception ex) {
             sizeAndPackResponse.setStatus(FAILED_STATUS);
-            log.error(ERROR_MSG_LP, ex.toString());
+            log.error(ERROR_MSG_LP, planSizeAndPackDTO, ex.toString());
         }
         return sizeAndPackResponse;
     }
@@ -343,7 +343,7 @@ public class SizeAndPackService {
             }
         } catch (Exception ex) {
             sizeAndPackResponse.setStatus(FAILED_STATUS);
-            log.error(ERROR_MSG_LP, ex.toString());
+            log.error(ERROR_MSG_LP, request, ex.toString());
         }
         return sizeAndPackResponse;
     }
@@ -362,7 +362,7 @@ public class SizeAndPackService {
                 }
             }
         } catch (Exception ex) {
-            log.error(ERROR_MSG_LP, ex.toString());
+            log.error(ERROR_MSG_LP, sizeAndPackPayloadDTO, ex.toString());
         }
     }
     
