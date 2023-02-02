@@ -2,8 +2,6 @@ package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.integrationhub.IntegrationHubRequestDTO;
 import com.walmart.aex.sp.dto.integrationhub.IntegrationHubResponseDTO;
-import com.walmart.aex.sp.dto.packoptimization.RunPackOptRequest;
-import com.walmart.aex.sp.dto.packoptimization.RunPackOptResponse;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.properties.IntegrationHubServiceProperties;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
@@ -52,7 +50,7 @@ public class IntegrationHubService {
                 return respEntity.getBody();
             }
         }  catch (RestClientException rce) {
-            log.error("Error connecting with Integration Hub service for planId : {} ", integrationHubRequestDTO.getContext().getPlanId(),rce);
+            log.error("Error connecting with Integration Hub service for planId : {} and fineLineNumber : {}. Exception : {}", integrationHubRequestDTO.getContext().getPlanId(), integrationHubRequestDTO.getContext().getFinelineNbrs().iterator().next(), rce.getMessage());
             throw new CustomException("Unable to reach Integration Hub service for plan_id :" + integrationHubRequestDTO.getContext().getPlanId() + "finelineNbr: " + integrationHubRequestDTO.getContext().getFinelineNbrs());
         }
         return null;
