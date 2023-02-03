@@ -27,8 +27,8 @@ public class DeptAdminRulesController {
     }
 
     @QueryMapping
-    public List<DeptAdminRuleResponse> getDeptAdminRules(@Argument DeptAdminRuleRequest deptAdminRuleRequest) {
-        return deptAdminRuleService.getDeptAdminRules(deptAdminRuleRequest);
+    public List<DeptAdminRuleResponse> getDeptAdminRules(@Argument List<Integer> deptNumbers) {
+        return deptAdminRuleService.getDeptAdminRules(deptNumbers);
     }
 
     @MutationMapping

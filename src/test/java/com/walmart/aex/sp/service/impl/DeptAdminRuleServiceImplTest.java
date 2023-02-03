@@ -19,11 +19,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
@@ -44,7 +43,7 @@ class DeptAdminRuleServiceImplTest {
     @Captor
     private ArgumentCaptor<List<DeptAdminRule>> deptAdminRuleCaptor;
     @Captor
-    private ArgumentCaptor<Set<Integer>> deptIdCaptor;
+    private ArgumentCaptor<List<Integer>> deptIdCaptor;
 
     @BeforeEach
     void setUp() {
@@ -55,74 +54,17 @@ class DeptAdminRuleServiceImplTest {
     }
 
     @Test
-    void test_getDeptAdminRulesShouldReturnDeptAdminRuleResponsesWhenDeptNbrAndReplItemPieceRuleAndMinReplItemUnitsProvided() {
-        when(deptAdminRuleRepository.findByDeptNbrAndReplItemPieceRuleAndMinReplItemUnits(anyInt(), anyInt(), anyInt())).thenReturn(dbResponse.get(0));
-        deptAdminRuleRequest = DeptAdminRuleRequest.builder().deptNbr(12).minReplItemUnits(22).replItemPieceRule(55).build();
-        actual = deptAdminRuleService.getDeptAdminRules(deptAdminRuleRequest);
-        assertEquals(1, actual.size());
-    }
-
-    @Test
-    void test_getDeptAdminRulesShouldReturnDeptAdminRuleResponsesWhenDeptNbrAndReplItemPieceRuleProvided() {
-        when(deptAdminRuleRepository.findByDeptNbrAndReplItemPieceRule(anyInt(), anyInt())).thenReturn(dbResponse.get(0));
-        deptAdminRuleRequest = DeptAdminRuleRequest.builder().deptNbr(12).replItemPieceRule(55).build();
-        actual = deptAdminRuleService.getDeptAdminRules(deptAdminRuleRequest);
-        assertEquals(1, actual.size());
-    }
-
-    @Test
-    void test_getDeptAdminRulesShouldReturnDeptAdminRuleResponsesWhenDeptNbrAndMinReplItemUnitsProvided() {
-        when(deptAdminRuleRepository.findByDeptNbrAndMinReplItemUnits(anyInt(), anyInt())).thenReturn(dbResponse.get(0));
-        deptAdminRuleRequest = DeptAdminRuleRequest.builder().deptNbr(12).minReplItemUnits(22).build();
-        actual = deptAdminRuleService.getDeptAdminRules(deptAdminRuleRequest);
-        assertEquals(1, actual.size());
-    }
-
-    @Test
-    void test_getDeptAdminRulesShouldReturnDeptAdminRuleResponsesWhenReplItemPieceRuleAndMinReplItemUnitsProvided() {
-        when(deptAdminRuleRepository.findByReplItemPieceRuleAndMinReplItemUnits(anyInt(), anyInt())).thenReturn(dbResponse.get(0));
-        deptAdminRuleRequest = DeptAdminRuleRequest.builder().replItemPieceRule(55).minReplItemUnits(22).build();
-        actual = deptAdminRuleService.getDeptAdminRules(deptAdminRuleRequest);
-        assertEquals(1, actual.size());
-    }
-
-    @Test
-    void test_getDeptAdminRulesShouldReturnDeptAdminRuleResponsesWhenReplItemPieceRuleProvided() {
-        when(deptAdminRuleRepository.findByReplItemPieceRule(anyInt())).thenReturn(dbResponse.get(0));
-        deptAdminRuleRequest = DeptAdminRuleRequest.builder().replItemPieceRule(55).build();
-        actual = deptAdminRuleService.getDeptAdminRules(deptAdminRuleRequest);
-        assertEquals(1, actual.size());
-    }
-
-    @Test
     void test_getDeptAdminRulesShouldReturnDeptAdminRuleResponsesWhenDeptNbrProvided() {
-        when(deptAdminRuleRepository.findByDeptNbr(anyInt())).thenReturn(dbResponse.get(0));
-        deptAdminRuleRequest = DeptAdminRuleRequest.builder().deptNbr(12).build();
-        actual = deptAdminRuleService.getDeptAdminRules(deptAdminRuleRequest);
-        assertEquals(1, actual.size());
-    }
-
-    @Test
-    void test_getDeptAdminRulesShouldReturnDeptAdminRuleResponsesWhenMinReplItemUnitsProvided() {
-        when(deptAdminRuleRepository.findByMinReplItemUnits(anyInt())).thenReturn(dbResponse.get(0));
-        deptAdminRuleRequest = DeptAdminRuleRequest.builder().minReplItemUnits(22).build();
-        actual = deptAdminRuleService.getDeptAdminRules(deptAdminRuleRequest);
+        when(deptAdminRuleRepository.findAllById(anyList())).thenReturn(Collections.singletonList(dbResponse.get(0)));
+        actual = deptAdminRuleService.getDeptAdminRules(Collections.singletonList(12));
         assertEquals(1, actual.size());
     }
 
     @Test
     void test_getDeptAdminRulesShouldReturnAllDeptAdminRuleResponsesWhenRequestIsEmpty() {
         when(deptAdminRuleRepository.findAll()).thenReturn(dbResponse);
-        actual = deptAdminRuleService.getDeptAdminRules(deptAdminRuleRequest);
+        actual = deptAdminRuleService.getDeptAdminRules(Collections.emptyList());
         assertEquals(2, actual.size());
-    }
-
-    @Test
-    void test_getDeptAdminRulesShouldReturnEmptyDeptAdminRuleResponsesWhenMinReplItemUnitsIsNotAvailableInDB() {
-        when(deptAdminRuleRepository.findByMinReplItemUnits(anyInt())).thenReturn(null);
-        deptAdminRuleRequest = DeptAdminRuleRequest.builder().minReplItemUnits(22).build();
-        actual = deptAdminRuleService.getDeptAdminRules(deptAdminRuleRequest);
-        assertEquals(0, actual.size());
     }
 
     @Test
@@ -139,6 +81,21 @@ class DeptAdminRuleServiceImplTest {
         deptAdminRuleRequest = DeptAdminRuleRequest.builder()
                 .deptNbr(12).minReplItemUnits(22).replItemPieceRule(55).build();
         List<DeptAdminRuleRequest> request = new ArrayList<>(Collections.singletonList(deptAdminRuleRequest));
+        when(deptAdminRuleRepository.findByDeptNbr(12)).thenReturn(dbResponse.get(0));
+        deptAdminRuleService.deleteDeptAdminRules(request);
+        verify(deptAdminRuleRepository, Mockito.times(1))
+                .deleteAllById(deptIdCaptor.capture());
+        assertEquals(1, deptIdCaptor.getValue().size());
+    }
+
+    @Test
+    void test_deleteAdminRulesShouldPartialDeleteData() {
+        deptAdminRuleRequest = DeptAdminRuleRequest.builder()
+                .deptNbr(12).minReplItemUnits(22).replItemPieceRule(55).build();
+        DeptAdminRuleRequest deptAdminRuleRequest2 = DeptAdminRuleRequest.builder()
+                .deptNbr(13).minReplItemUnits(22).replItemPieceRule(55).build();
+        List<DeptAdminRuleRequest> request = new ArrayList<>(Arrays.asList(deptAdminRuleRequest, deptAdminRuleRequest2));
+        when(deptAdminRuleRepository.findByDeptNbr(12)).thenReturn(dbResponse.get(0));
         deptAdminRuleService.deleteDeptAdminRules(request);
         verify(deptAdminRuleRepository, Mockito.times(1))
                 .deleteAllById(deptIdCaptor.capture());
