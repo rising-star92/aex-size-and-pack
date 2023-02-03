@@ -8,7 +8,6 @@ import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.repository.DeptAdminRuleRepository;
 import com.walmart.aex.sp.service.DeptAdminRuleService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -33,7 +32,7 @@ public class DeptAdminRuleServiceImpl implements DeptAdminRuleService {
     @Override
     public List<DeptAdminRuleResponse> getDeptAdminRules(List<Integer> deptNumbers) {
         List<DeptAdminRule> deptAdminRuleList;
-        if(ObjectUtils.isEmpty(deptNumbers)) {
+        if(CollectionUtils.isEmpty(deptNumbers)) {
             deptAdminRuleList = deptAdminRuleRepository.findAll();
         } else {
             deptAdminRuleList = deptAdminRuleRepository.findAllById(deptNumbers);
