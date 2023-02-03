@@ -15,6 +15,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -54,8 +55,8 @@ public class DeptAdminRuleServiceImpl implements DeptAdminRuleService {
         if(!CollectionUtils.isEmpty(deptAdminRuleRequests)) {
             List<DeptAdminRule> deptAdminRules = DeptAdminRuleMapper.deptAdminRuleMapper.deptAdminRuleRequestToDeptAdminRules(deptAdminRuleRequests);
             for (DeptAdminRule deptAdminRule : deptAdminRules) {
-                DeptAdminRule existing = deptAdminRuleRepository.findByDeptNbr(deptAdminRule.getDeptNbr());
-                if(!ObjectUtils.isEmpty(existing)) {
+                Optional<DeptAdminRule> existing = deptAdminRuleRepository.findById(deptAdminRule.getDeptNbr());
+                if(existing.isPresent()) {
                     updatedRecords.add(deptAdminRule);
                 }
             }
@@ -73,8 +74,8 @@ public class DeptAdminRuleServiceImpl implements DeptAdminRuleService {
                 List<Integer> recordDoesNotExist = new ArrayList<>();
                 Set<Integer> deptNbrs = deptAdminRuleRequests.stream().map(DeptAdminRuleRequest::getDeptNbr).collect(Collectors.toSet());
                 for (Integer deptNbr: deptNbrs) {
-                    DeptAdminRule existing = deptAdminRuleRepository.findByDeptNbr(deptNbr);
-                    if(!ObjectUtils.isEmpty(existing)) {
+                    Optional<DeptAdminRule> existing = deptAdminRuleRepository.findById(deptNbr);
+                    if(existing.isPresent()) {
                         deletionList.add(deptNbr);
                     } else {
                         recordDoesNotExist.add(deptNbr);

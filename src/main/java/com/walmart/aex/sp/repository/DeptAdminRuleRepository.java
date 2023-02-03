@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DeptAdminRuleRepository extends JpaRepository<DeptAdminRule, Integer> {
-    DeptAdminRule findByDeptNbr(Integer deptNbr);
+
 }
