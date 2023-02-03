@@ -9,6 +9,7 @@ public interface DeptAdminRuleService {
     List<DeptAdminRuleResponse> getDeptAdminRules(DeptAdminRuleRequest deptAdminRuleRequest);
 
     void addAdminRules(List<DeptAdminRuleRequest> deptAdminRuleRequests);
+    void updateAdminRules(List<DeptAdminRuleRequest> deptAdminRuleRequests);
 
     void deleteDeptAdminRules(List<DeptAdminRuleRequest> deptAdminRuleRequests);
 }

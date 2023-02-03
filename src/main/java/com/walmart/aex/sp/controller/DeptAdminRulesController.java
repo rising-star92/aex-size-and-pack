@@ -34,12 +34,29 @@ public class DeptAdminRulesController {
     @MutationMapping
     public StatusResponse addDeptAdminRules(@Argument List<DeptAdminRuleRequest> deptAdminRuleRequests) {
         StatusResponse statusResponse = new StatusResponse();
-        boolean isValid = validateDeptAdminRuleRequestsToAddNewRecord(deptAdminRuleRequests);
+        boolean isValid = validateDeptAdminRuleRequests(deptAdminRuleRequests);
         if(!isValid) {
             statusResponse.setStatus(REQUEST_INVALID);
         } else {
             try {
                 deptAdminRuleService.addAdminRules(deptAdminRuleRequests);
+                statusResponse.setStatus(SUCCESS_STATUS);
+            } catch (Exception e) {
+                statusResponse.setStatus(FAILED_STATUS);
+            }
+        }
+        return statusResponse;
+    }
+
+    @MutationMapping
+    public StatusResponse updateDeptAdminRules(@Argument List<DeptAdminRuleRequest> deptAdminRuleRequests) {
+        StatusResponse statusResponse = new StatusResponse();
+        boolean isValid = validateDeptAdminRuleRequests(deptAdminRuleRequests);
+        if(!isValid) {
+            statusResponse.setStatus(REQUEST_INVALID);
+        } else {
+            try {
+                deptAdminRuleService.updateAdminRules(deptAdminRuleRequests);
                 statusResponse.setStatus(SUCCESS_STATUS);
             } catch (Exception e) {
                 statusResponse.setStatus(FAILED_STATUS);
@@ -74,7 +91,7 @@ public class DeptAdminRulesController {
         return true;
     }
 
-    private boolean validateDeptAdminRuleRequestsToAddNewRecord(List<DeptAdminRuleRequest> deptAdminRuleRequests) {
+    private boolean validateDeptAdminRuleRequests(List<DeptAdminRuleRequest> deptAdminRuleRequests) {
         for (DeptAdminRuleRequest deptAdminRuleRequest: deptAdminRuleRequests) {
             if (deptAdminRuleRequest.getDeptNbr() == null || deptAdminRuleRequest.getReplItemPieceRule() == null || deptAdminRuleRequest.getMinReplItemUnits() == null ) {
                 return false;

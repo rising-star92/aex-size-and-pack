@@ -16,6 +16,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -151,6 +152,21 @@ class DeptAdminRuleServiceImplTest {
         List<DeptAdminRuleRequest> request = new ArrayList<>(Collections.singletonList(deptAdminRuleRequest));
         doThrow(RuntimeException.class).when(deptAdminRuleRepository).deleteAllById(anySet());
         assertThrows(CustomException.class, () -> deptAdminRuleService.deleteDeptAdminRules(request));
+    }
+
+    @Test
+    void test_updateAdminRulesShouldUpdateData() {
+        deptAdminRuleRequest = DeptAdminRuleRequest.builder()
+                .deptNbr(12).minReplItemUnits(22).replItemPieceRule(55).build();
+        DeptAdminRuleRequest deptAdminRuleRequest2 = DeptAdminRuleRequest.builder()
+                .deptNbr(13).minReplItemUnits(22).replItemPieceRule(55).build();
+        List<DeptAdminRuleRequest> request = new ArrayList<>(Arrays.asList(deptAdminRuleRequest, deptAdminRuleRequest2));
+        when(deptAdminRuleRepository.findByDeptNbr(12)).thenReturn(DeptAdminRule.builder().deptNbr(12).minReplItemUnits(11).replItemPieceRule(44).build());
+        deptAdminRuleService.updateAdminRules(request);
+
+        verify(deptAdminRuleRepository, Mockito.times(1))
+                .saveAll(deptAdminRuleCaptor.capture());
+        assertEquals(1, deptAdminRuleCaptor.getValue().size());
     }
 
 }

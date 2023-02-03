@@ -53,6 +53,23 @@ public class DeptAdminRuleServiceImpl implements DeptAdminRuleService {
     }
 
     @Override
+    public void updateAdminRules(List<DeptAdminRuleRequest> deptAdminRuleRequests) {
+        List<DeptAdminRule> updatedRecords = new ArrayList<>();
+        if(!CollectionUtils.isEmpty(deptAdminRuleRequests)) {
+            List<DeptAdminRule> deptAdminRules = DeptAdminRuleMapper.deptAdminRuleMapper.deptAdminRuleRequestToDeptAdminRules(deptAdminRuleRequests);
+            for (DeptAdminRule deptAdminRule : deptAdminRules) {
+                DeptAdminRule existing = deptAdminRuleRepository.findByDeptNbr(deptAdminRule.getDeptNbr());
+                if(!ObjectUtils.isEmpty(existing)) {
+                    updatedRecords.add(deptAdminRule);
+                }
+            }
+            if(!CollectionUtils.isEmpty(updatedRecords)) {
+                deptAdminRuleRepository.saveAll(updatedRecords);
+            }
+        }
+    }
+
+    @Override
     public void deleteDeptAdminRules(List<DeptAdminRuleRequest> deptAdminRuleRequests) {
         try {
             if(!CollectionUtils.isEmpty(deptAdminRuleRequests)) {
