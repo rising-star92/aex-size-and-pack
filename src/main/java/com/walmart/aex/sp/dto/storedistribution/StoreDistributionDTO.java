@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class StoreDistributionDTO {
+	private String productFineline;
 	private Integer finelineNbr;
 	private String styleNbr;
 	private Long inStoreWeek;
