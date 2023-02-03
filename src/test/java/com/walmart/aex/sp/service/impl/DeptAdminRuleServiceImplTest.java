@@ -167,6 +167,8 @@ class DeptAdminRuleServiceImplTest {
         verify(deptAdminRuleRepository, Mockito.times(1))
                 .saveAll(deptAdminRuleCaptor.capture());
         assertEquals(1, deptAdminRuleCaptor.getValue().size());
+        assertEquals(22, deptAdminRuleCaptor.getValue().iterator().next().getMinReplItemUnits());
+        assertEquals(55, deptAdminRuleCaptor.getValue().iterator().next().getReplItemPieceRule());
     }
 
 }
