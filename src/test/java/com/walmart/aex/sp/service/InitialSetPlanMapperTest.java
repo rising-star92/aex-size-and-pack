@@ -8,7 +8,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import com.walmart.aex.sp.dto.commitmentreport.InitialSetPlan;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
-public class InitialSetPlanMapperTest {
+class InitialSetPlanMapperTest {
 
 	@InjectMocks
 	InitialSetPlanMapper initialSetPlanMapper;
@@ -32,7 +34,7 @@ public class InitialSetPlanMapperTest {
 	private final ObjectMapper mapper = new ObjectMapper();
 
 	@Test
-	public void getInitialBumpSetDataTest() {
+	void getInitialBumpSetDataTest() {
 		RFAInitialSetBumpSetResponses rfaInitialSetBumpSetResponses = getInitialBumpSetFromRFAResponse();
 		InitialBumpSetResponse initialBumpSetResponse = new InitialBumpSetResponse();
 		Optional.of(rfaInitialSetBumpSetResponses.getRfaInitialSetBumpSetResponses()).stream().flatMap(Collection::stream).forEach(
@@ -42,9 +44,16 @@ public class InitialSetPlanMapperTest {
 
 		Integer fineline = initialBumpSetResponse.getFinelineNbr();
 		String styleId = initialBumpSetResponse.getIntialSetStyles().get(0).getStyleId();
+		String inStoreWeek = initialBumpSetResponse.getIntialSetStyles().stream()
+				.filter(initialSetStyle -> initialSetStyle.getStyleId().equals("34_5141_4_21_11"))
+				.flatMap(initialSetPlans -> initialSetPlans.getInitialSetPlan().stream())
+				.filter(initialSetPlan1 -> initialSetPlan1.getInStoreWeek().equals("202352"))
+				.map(InitialSetPlan::getInStoreWeek)
+				.collect(Collectors.toList()).get(0);
 
 		assertEquals(5141, fineline);
 		assertEquals("34_5141_4_21_11", styleId);
+		assertEquals("202352", inStoreWeek);
 
 	}
 
