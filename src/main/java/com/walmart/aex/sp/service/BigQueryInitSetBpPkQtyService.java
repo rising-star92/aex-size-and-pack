@@ -3,6 +3,7 @@ package com.walmart.aex.sp.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -61,14 +62,14 @@ public class BigQueryInitSetBpPkQtyService {
 	}
 
 	private String getInitSetBpPkGCPQuery(String rfaTableName,String projectIdDatasetNameTableName,Long planId, Integer finelineNbr) {
-
+		String planAndFineline = String.valueOf(planId) + "_" + String.valueOf(finelineNbr) + PERCENT;
 		// TODO: Find a way to not use RFA for getting style_nbr. This is temporary
 		return "WITH MyTable AS (select PackOpt.*, RFA.style_nbr as styleNbr from (select distinct trim(style_nbr) as style_nbr, trim(cc) as cc FROM " +
 				"`"+ rfaTableName +"` " +
 				"where season = "+String.valueOf(planId)+" and fineline="+String.valueOf(finelineNbr)+") as RFA " +
 				"join " +
 				"(SELECT ProductFineline as planAndFineline,trim(ProductCustomerChoice) as customerChoice, MerchMethod as merchMethodDesc, size, sum(SPPackInitialSetOutput)+sum(SPPackBumpOutput) as finalInitialSetQty, sum(SPPackBumpOutput) as bumpPackQty  FROM" +
-				"`"+projectIdDatasetNameTableName+"` sp where sp.ProductFineline LIKE '"+String.valueOf(planId) + "_" + String.valueOf(finelineNbr) +"%' " +
+				"`"+projectIdDatasetNameTableName+"` sp where sp.ProductFineline LIKE '"+ planAndFineline +"' " +
 				"group by planAndFineline, customerChoice, merchMethodDesc, size ) as PackOpt on PackOpt.customerChoice=RFA.cc order by planAndFineline, style_nbr, customerChoice, merchMethodDesc, size )" +
 				"SELECT TO_JSON_STRING(gcpTable) AS json FROM MyTable AS gcpTable;";
 
