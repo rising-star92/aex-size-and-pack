@@ -11,6 +11,6 @@ public interface BuyQtyProperties {
     @Property(propertyName = "replenishment.constraint")
     Integer getReplenishmentThreshold();
 
-    @Property(propertyName = "s3PlanIds.constraint")
+    @Property(propertyName = "s3Plans2024.constraint")
     String getPlanIds();
 }

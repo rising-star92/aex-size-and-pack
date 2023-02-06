@@ -46,7 +46,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -58,7 +57,8 @@ import java.util.stream.IntStream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -134,8 +134,7 @@ class CalculateFinelineBuyQuantityTest {
        when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
        when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
        when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
-       when(buyQtyProperties.getPlanIds()).thenReturn("22, 33, 44");
-       when(deptAdminRuleService.getDeptAdminRules(anyList())).thenReturn(Collections.emptyList());
+       when(deptAdminRuleService.getInitialThreshold(anyLong(), anyInt())).thenReturn(2);
        CalculateBuyQtyRequest request = create("store", 50000, 34, 1488, 9071, 7205, 1500, 12L);
        CalculateBuyQtyParallelRequest pRequest = createFromRequest(request);
 
@@ -184,8 +183,7 @@ class CalculateFinelineBuyQuantityTest {
         CalculateBuyQtyResponse r = new CalculateBuyQtyResponse();
         r.setMerchCatgReplPacks(new ArrayList<>());
         r.setSpFineLineChannelFixtures(new ArrayList<>());
-        when(buyQtyProperties.getPlanIds()).thenReturn("22, 33, 44");
-        when(deptAdminRuleService.getDeptAdminRules(anyList())).thenReturn(Collections.emptyList());
+        when(deptAdminRuleService.getInitialThreshold(anyLong(), anyInt())).thenReturn(2);
         CalculateBuyQtyResponse response = calculateFinelineBuyQuantity.calculateFinelineBuyQty(request, pRequest, r);
 
         Set<SpCustomerChoiceChannelFixtureSize> spCcChanFixSizes = new HashSet<>(response.getSpFineLineChannelFixtures().get(1)
@@ -195,7 +193,7 @@ class CalculateFinelineBuyQuantityTest {
 
         assertNotNull(response.getMerchCatgReplPacks());
         assertEquals(1, response.getMerchCatgReplPacks().size(), "Only 1 merch catg repl pack created");
-        assertEquals((Integer)12436,
+        assertEquals((Integer)18417,
               response.getMerchCatgReplPacks().get(0).getReplUnits(), "Repln units should be 19143 for cc");
 
     }
@@ -215,8 +213,7 @@ class CalculateFinelineBuyQuantityTest {
         CalculateBuyQtyResponse r = new CalculateBuyQtyResponse();
         r.setMerchCatgReplPacks(new ArrayList<>());
         r.setSpFineLineChannelFixtures(new ArrayList<>());
-        when(buyQtyProperties.getPlanIds()).thenReturn("22, 33, 44");
-        when(deptAdminRuleService.getDeptAdminRules(anyList())).thenReturn(Collections.emptyList());
+        when(deptAdminRuleService.getInitialThreshold(anyLong(), anyInt())).thenReturn(2);
         CalculateBuyQtyResponse response = calculateFinelineBuyQuantity.calculateFinelineBuyQty(request, pRequest, r);
         SpFineLineChannelFixture spflChFix = response.getSpFineLineChannelFixtures().get(1);
         int expectedTotalBumpPackQty = 17361;
@@ -263,8 +260,7 @@ class CalculateFinelineBuyQuantityTest {
         when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
         when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
         when(strategyFetchService.getStrategyVolumeDeviation(any())).thenReturn(strategyVolumeDeviationResponse);
-        when(buyQtyProperties.getPlanIds()).thenReturn("22, 33, 44");
-        when(deptAdminRuleService.getDeptAdminRules(anyList())).thenReturn(Collections.emptyList());
+        when(deptAdminRuleService.getInitialThreshold(anyLong(), anyInt())).thenReturn(2);
         CalculateBuyQtyRequest request = create("store", 50000, 34, 1488, 9071, 7205, 1500, 12L);
         CalculateBuyQtyParallelRequest pRequest = createFromRequest(request);
 
@@ -293,8 +289,7 @@ class CalculateFinelineBuyQuantityTest {
         CalculateBuyQtyResponse r = new CalculateBuyQtyResponse();
         r.setMerchCatgReplPacks(new ArrayList<>());
         r.setSpFineLineChannelFixtures(new ArrayList<>());
-        when(buyQtyProperties.getPlanIds()).thenReturn("22, 33, 44");
-        when(deptAdminRuleService.getDeptAdminRules(anyList())).thenReturn(Collections.emptyList());
+        when(deptAdminRuleService.getInitialThreshold(anyLong(), anyInt())).thenReturn(2);
         CalculateBuyQtyResponse response = calculateFinelineBuyQuantity.calculateFinelineBuyQty(request, pRequest, r);
         assertEquals(bqfpResponse.getVolumeDeviationStrategyLevelSelection(), BigDecimal.valueOf(2));
     }
@@ -310,8 +305,7 @@ class CalculateFinelineBuyQuantityTest {
         when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
         when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
         when(strategyFetchService.getStrategyVolumeDeviation(any())).thenReturn(strategyVolumeDeviationResponse);
-        when(buyQtyProperties.getPlanIds()).thenReturn("22, 33, 44");
-        when(deptAdminRuleService.getDeptAdminRules(anyList())).thenReturn(Collections.emptyList());
+        when(deptAdminRuleService.getInitialThreshold(anyLong(), anyInt())).thenReturn(2);
         CalculateBuyQtyRequest request = create("store", 50000, 34, 1488, 9071, 7205, 1500, 12L);
         CalculateBuyQtyParallelRequest pRequest = createFromRequest(request);
 
@@ -462,8 +456,7 @@ class CalculateFinelineBuyQuantityTest {
         CalculateBuyQtyResponse r = new CalculateBuyQtyResponse();
         r.setMerchCatgReplPacks(new ArrayList<>());
         r.setSpFineLineChannelFixtures(new ArrayList<>());
-        when(buyQtyProperties.getPlanIds()).thenReturn("22, 33, 44");
-        when(deptAdminRuleService.getDeptAdminRules(anyList())).thenReturn(Collections.emptyList());
+        when(deptAdminRuleService.getInitialThreshold(anyLong(), anyInt())).thenReturn(2);
         CalculateBuyQtyResponse response = calculateFinelineBuyQuantity.calculateFinelineBuyQty(request, pRequest, r);
 
         SpCustomerChoiceChannelFixture fixture1 = response.getSpFineLineChannelFixtures()
@@ -523,8 +516,7 @@ class CalculateFinelineBuyQuantityTest {
         when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
         when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
         when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
-        when(buyQtyProperties.getPlanIds()).thenReturn("22, 33, 44");
-        when(deptAdminRuleService.getDeptAdminRules(anyList())).thenReturn(Collections.emptyList());
+        when(deptAdminRuleService.getInitialThreshold(anyLong(), anyInt())).thenReturn(2);
         CalculateBuyQtyRequest request = create("store", 50000, 34, 1488, 9071, 7205, 1500, 12L);
         CalculateBuyQtyParallelRequest pRequest = createFromRequest(request);
 

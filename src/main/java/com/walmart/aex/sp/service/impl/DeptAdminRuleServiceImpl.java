@@ -5,8 +5,11 @@ import com.walmart.aex.sp.dto.deptadminrule.DeptAdminRuleResponse;
 import com.walmart.aex.sp.dto.mapper.DeptAdminRuleMapper;
 import com.walmart.aex.sp.entity.DeptAdminRule;
 import com.walmart.aex.sp.exception.CustomException;
+import com.walmart.aex.sp.properties.BuyQtyProperties;
 import com.walmart.aex.sp.repository.DeptAdminRuleRepository;
 import com.walmart.aex.sp.service.DeptAdminRuleService;
+import com.walmart.aex.sp.util.CommonUtil;
+import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,10 +21,16 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.walmart.aex.sp.util.SizeAndPackConstants.DEFAULT_MIN_REPL_ITEM_UNITS;
+import static com.walmart.aex.sp.util.SizeAndPackConstants.DEFAULT_REPL_ITEM_PIECE_RULE;
+
 @Service
 @Slf4j
 @Transactional
 public class DeptAdminRuleServiceImpl implements DeptAdminRuleService {
+
+    @ManagedConfiguration
+    private BuyQtyProperties buyQtyProperties;
 
     private final DeptAdminRuleRepository deptAdminRuleRepository;
 
@@ -89,6 +98,41 @@ public class DeptAdminRuleServiceImpl implements DeptAdminRuleService {
         catch (Exception ex) {
             log.error("Failed to delete DeptAdminRuleRequests in db. Exception: {}", ex.getMessage());
             throw new CustomException("Failed to delete DeptAdminRuleRequests in db.");
+        }
+    }
+
+    @Override
+    public Integer getInitialThreshold(Long planId, Integer lvl1Nbr) {
+        String plans = buyQtyProperties.getPlanIds();
+        int currentPlan = Math.toIntExact(planId);
+        List<Integer> s3Plans2024 = CommonUtil.getNumbersFromString(plans);
+        if(s3Plans2024.contains(currentPlan)) {
+            return buyQtyProperties.getInitialThreshold();
+        } else {
+            int deptNumber = lvl1Nbr;
+            List<DeptAdminRuleResponse> deptAdminRules = getDeptAdminRules(List.of(deptNumber));
+            if(CollectionUtils.isEmpty(deptAdminRules)) {
+                return DEFAULT_REPL_ITEM_PIECE_RULE;
+            } else {
+                return deptAdminRules.iterator().next().getReplItemPieceRule();
+            }
+        }
+    }
+
+    @Override
+    public Integer getReplenishmentThreshold(Long planId, Integer lvl1Nbr) {
+        int currentPlan = Math.toIntExact(planId);
+        String plans = buyQtyProperties.getPlanIds();
+        List<Integer> s3Plans2024 = CommonUtil.getNumbersFromString(plans);
+        if(s3Plans2024.contains(currentPlan)) {
+            return buyQtyProperties.getReplenishmentThreshold();
+        } else {
+            List<DeptAdminRuleResponse> deptAdminRules = getDeptAdminRules(List.of(lvl1Nbr));
+            if(CollectionUtils.isEmpty(deptAdminRules)) {
+                return DEFAULT_MIN_REPL_ITEM_UNITS;
+            } else {
+                return deptAdminRules.iterator().next().getMinReplItemUnits();
+            }
         }
     }
 }
