@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,9 +49,6 @@ public class AddStoreBuyQuantityService {
     @Autowired
     CalculateInitialSetQuantityService calculateInitialSetQuantityService;
 
-    @Autowired
-    DeptAdminRuleService deptAdminRuleService;
-
     private static final Long DEFAULT_IS_QTY = 0L;
     private static final Long DEFAULT_TOTAL_IS_QTY = 1L;
 
@@ -61,17 +59,15 @@ public class AddStoreBuyQuantityService {
     public AddStoreBuyQuantityService(ObjectMapper objectMapper,
                                       CalculateBumpPackQtyService calculateBumpPackQtyService,
                                       BuyQuantityConstraintService buyQuantityConstraintService,
-                                      CalculateInitialSetQuantityService calculateInitialSetQuantityService,
-                                      DeptAdminRuleService deptAdminRuleService) {
+                                      CalculateInitialSetQuantityService calculateInitialSetQuantityService) {
         this.objectMapper = objectMapper;
         this.calculateBumpPackQtyService = calculateBumpPackQtyService;
         this.buyQuantityConstraintService = buyQuantityConstraintService;
         this.calculateInitialSetQuantityService = calculateInitialSetQuantityService;
-        this.deptAdminRuleService = deptAdminRuleService;
     }
 
 
-    public void addStoreBuyQuantities(AddStoreBuyQuantity addStoreBuyQuantity, BuyQtyObj buyQtyObj) {
+    public void addStoreBuyQuantities(AddStoreBuyQuantity addStoreBuyQuantity, BuyQtyObj buyQtyObj, Integer initialThreshold) {
         BuyQtyStoreObj buyQtyStoreObj = Optional.ofNullable(buyQtyObj)
                 .map(BuyQtyObj::getBuyQtyStoreObj)
                 .orElse(new BuyQtyStoreObj());
@@ -80,12 +76,14 @@ public class AddStoreBuyQuantityService {
                 .map(BuyQtyStoreObj::getBuyQuantities)
                 .orElse(new ArrayList<>());
         List<RFASizePackData> rfaSizePackDataList = addStoreBuyQuantity.getRfaSizePackDataList();
-        rfaSizePackDataList.forEach(rfaSizePackData -> calculateAndAddStoreBuyQuantities(addStoreBuyQuantity, buyQtyObj, initialSetQuantities, rfaSizePackData));
+        rfaSizePackDataList.forEach(rfaSizePackData -> calculateAndAddStoreBuyQuantities(addStoreBuyQuantity, buyQtyObj, initialSetQuantities, rfaSizePackData, initialThreshold));
         buyQtyStoreObj.setBuyQuantities(initialSetQuantities);
-        buyQtyObj.setBuyQtyStoreObj(buyQtyStoreObj);
+        if(!ObjectUtils.isEmpty(buyQtyObj)) {
+            buyQtyObj.setBuyQtyStoreObj(buyQtyStoreObj);
+        }
     }
 
-    public void calculateAndAddStoreBuyQuantities(AddStoreBuyQuantity addStoreBuyQuantity, BuyQtyObj buyQtyObj, List<StoreQuantity> initialSetQuantities, RFASizePackData rfaSizePackData) {
+    public void calculateAndAddStoreBuyQuantities(AddStoreBuyQuantity addStoreBuyQuantity, BuyQtyObj buyQtyObj, List<StoreQuantity> initialSetQuantities, RFASizePackData rfaSizePackData, Integer initialThreshold) {
         if (rfaSizePackData == null) {
             log.warn("rfaSizePackData is null. Not adding storeBuyQuantities for styleNbr : {} , ccId :{}  ", addStoreBuyQuantity.getStyleDto().getStyleNbr(), addStoreBuyQuantity.getCustomerChoiceDto().getCcId());
             return;
@@ -93,31 +91,30 @@ public class AddStoreBuyQuantityService {
         Cluster volumeCluster = getVolumeCluster(addStoreBuyQuantity, rfaSizePackData);
         if (volumeCluster != null) {
             setDefaultValueForNullInitialSet(volumeCluster);
-            setInitialSetAndBumpSetQty(addStoreBuyQuantity, initialSetQuantities, volumeCluster, buyQtyObj, rfaSizePackData);
+            setInitialSetAndBumpSetQty(addStoreBuyQuantity, initialSetQuantities, volumeCluster, buyQtyObj, rfaSizePackData, initialThreshold);
         }
     }
 
-    private void setInitialSetAndBumpSetQty(AddStoreBuyQuantity addStoreBuyQuantity, List<StoreQuantity> initialSetQuantities, Cluster volumeCluster, BuyQtyObj buyQtyObj, RFASizePackData rfaSizePackData) {
+    private void setInitialSetAndBumpSetQty(AddStoreBuyQuantity addStoreBuyQuantity, List<StoreQuantity> initialSetQuantities, Cluster volumeCluster, BuyQtyObj buyQtyObj, RFASizePackData rfaSizePackData, Integer initialThreshold) {
         List<Integer> storeList = safeReadStoreList(rfaSizePackData.getStore_list()).stream().sorted().collect(Collectors.toList());
         SizeDto sizeDto = addStoreBuyQuantity.getSizeDto();
         InitialSetQuantity initialSetQuantity = calculateInitialSetQuantityService.calculateInitialSetQty(sizeDto, volumeCluster, rfaSizePackData);
         double perStoreQty = initialSetQuantity.getPerStoreQty();
         double isQty = initialSetQuantity.getIsQty();
-        Integer initialThreshold = deptAdminRuleService.getInitialThreshold(addStoreBuyQuantity.getBqfpResponse().getPlanId(), addStoreBuyQuantity.getBqfpResponse().getLvl1Nbr());
         if ((perStoreQty < initialThreshold && perStoreQty > 0) && (!CollectionUtils.isEmpty(buyQtyObj.getReplenishments()))) {
             long totalReplenishment = getTotalReplenishment(buyQtyObj);
             if (totalReplenishment > 0) {
                 double unitsLessThanThreshold = initialThreshold - perStoreQty;
                 double totalReducedReplenishment = unitsLessThanThreshold * rfaSizePackData.getStore_cnt();
                 if (totalReplenishment >= totalReducedReplenishment) {
-                    InitialSetWithReplnsConstraint initialSetWithReplnsConstraint = buyQuantityConstraintService.getISWithMoreReplenConstraint(buyQtyObj, totalReducedReplenishment, rfaSizePackData, addStoreBuyQuantity.getBqfpResponse().getPlanId(), addStoreBuyQuantity.getBqfpResponse().getLvl1Nbr());
+                    InitialSetWithReplnsConstraint initialSetWithReplnsConstraint = buyQuantityConstraintService.getISWithMoreReplenConstraint(buyQtyObj, totalReducedReplenishment, rfaSizePackData, initialThreshold);
                     buyQtyObj.setReplenishments(initialSetWithReplnsConstraint.getReplnsWithUnits());
                     perStoreQty = initialSetWithReplnsConstraint.getPerStoreQty();
                     isQty = initialSetWithReplnsConstraint.getIsQty();
                     log.debug("| IS after IS constraints with more replenishment | : {} | {} | {} | {} | {} | {}", addStoreBuyQuantity.getCustomerChoiceDto().getCcId(), sizeDto.getSizeDesc(), FixtureTypeRollup.getFixtureIdFromName(rfaSizePackData.getFixture_type()), isQty, perStoreQty, storeList.size());
                 } else {
                     int storeCntWithNewQty = (int) (totalReplenishment / unitsLessThanThreshold);
-                    InitialSetWithReplnsConstraint initialSetWithReplnsConstraint = buyQuantityConstraintService.getISWithLessReplenConstraint(buyQtyObj, storeCntWithNewQty, storeList, perStoreQty, rfaSizePackData, volumeCluster, sizeDto, addStoreBuyQuantity.getBqfpResponse().getPlanId(), addStoreBuyQuantity.getBqfpResponse().getLvl1Nbr());
+                    InitialSetWithReplnsConstraint initialSetWithReplnsConstraint = buyQuantityConstraintService.getISWithLessReplenConstraint(buyQtyObj, storeCntWithNewQty, storeList, perStoreQty, rfaSizePackData, volumeCluster, sizeDto, initialThreshold);
                     storeList = storeList.subList(0, storeCntWithNewQty);
                     initialSetQuantities.add(initialSetWithReplnsConstraint.getStoreQuantity());
                     buyQtyObj.setReplenishments(initialSetWithReplnsConstraint.getReplnsWithUnits());

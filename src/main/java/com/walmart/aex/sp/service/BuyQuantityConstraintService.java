@@ -26,19 +26,15 @@ public class BuyQuantityConstraintService {
     @Autowired
     CalculateBumpPackQtyService calculateBumpPackQtyService;
 
-    @Autowired
-    DeptAdminRuleService deptAdminRuleService;
-
     public BuyQuantityConstraintService() {
     }
 
-    public BuyQuantityConstraintService(CalculateBumpPackQtyService calculateBumpPackQtyService, DeptAdminRuleService deptAdminRuleService) {
+    public BuyQuantityConstraintService(CalculateBumpPackQtyService calculateBumpPackQtyService) {
         this.calculateBumpPackQtyService = calculateBumpPackQtyService;
-        this.deptAdminRuleService = deptAdminRuleService;
     }
 
 
-    public InitialSetWithReplnsConstraint getISWithMoreReplenConstraint(BuyQtyObj buyQtyObj, double totalReducedReplenishment, RFASizePackData rfaSizePackData, Long planId, Integer lvl1Nbr) {
+    public InitialSetWithReplnsConstraint getISWithMoreReplenConstraint(BuyQtyObj buyQtyObj, double totalReducedReplenishment, RFASizePackData rfaSizePackData, Integer initialThreshold) {
         List<Replenishment> replnsWithUnits = getReplnsWithUnits(buyQtyObj);
         List<Replenishment> replnsWithNoUnits = getReplnsWithNoUnits(buyQtyObj);
         long replenishmentSize = replnsWithUnits.size();
@@ -47,12 +43,11 @@ public class BuyQuantityConstraintService {
         replnsWithUnits.forEach(replenishment -> replenishment.setAdjReplnUnits(getAdjustedDifference(replenishment.getAdjReplnUnits() - perReplenishmentReduced)));
         replnsWithUnits.get(0).setAdjReplnUnits(getAdjustedDifference(replnsWithUnits.get(0).getAdjReplnUnits() - perReplenishmentReducedRemainder));
         replnsWithUnits.addAll(replnsWithNoUnits);
-        double perStoreQty = deptAdminRuleService.getInitialThreshold(planId, lvl1Nbr);
-        double isQty = perStoreQty * rfaSizePackData.getStore_cnt();
+        double isQty = (double)initialThreshold * rfaSizePackData.getStore_cnt();
         InitialSetWithReplnsConstraint initialSetWithReplnsConstraint = new InitialSetWithReplnsConstraint();
         initialSetWithReplnsConstraint.setReplnsWithUnits(replnsWithUnits);
         initialSetWithReplnsConstraint.setIsQty(isQty);
-        initialSetWithReplnsConstraint.setPerStoreQty(perStoreQty);
+        initialSetWithReplnsConstraint.setPerStoreQty(initialThreshold);
         return initialSetWithReplnsConstraint;
     }
 
@@ -60,7 +55,7 @@ public class BuyQuantityConstraintService {
         return Math.max(Math.round(value), 0);
     }
 
-    public InitialSetWithReplnsConstraint getISWithLessReplenConstraint(BuyQtyObj buyQtyObj, int storeCntWithNewQty, List<Integer> storeList, double perStoreQty, RFASizePackData rfaSizePackData, Cluster volumeCluster, SizeDto sizeDto, Long planId, Integer lvl1Nbr) {
+    public InitialSetWithReplnsConstraint getISWithLessReplenConstraint(BuyQtyObj buyQtyObj, int storeCntWithNewQty, List<Integer> storeList, double perStoreQty, RFASizePackData rfaSizePackData, Cluster volumeCluster, SizeDto sizeDto, Integer initialThreshold) {
         List<Replenishment> replnsWithUnits = getReplnsWithUnits(buyQtyObj);
         List<Replenishment> replnsWithNoUnits = getReplnsWithNoUnits(buyQtyObj);
         List<Integer> storeListWithOldQty = storeList.subList(storeCntWithNewQty, storeList.size());
@@ -69,7 +64,7 @@ public class BuyQuantityConstraintService {
         replnsWithUnits.forEach(replenishment -> replenishment.setAdjReplnUnits(0L));
         replnsWithUnits.addAll(replnsWithNoUnits);
         storeList = storeList.subList(0, storeCntWithNewQty);
-        perStoreQty = deptAdminRuleService.getInitialThreshold(planId, lvl1Nbr);
+        perStoreQty = initialThreshold;
         double isQty = perStoreQty * storeList.size();
         InitialSetWithReplnsConstraint initialSetWithReplnsConstraint = new InitialSetWithReplnsConstraint();
         initialSetWithReplnsConstraint.setReplnsWithUnits(replnsWithUnits);
@@ -79,8 +74,8 @@ public class BuyQuantityConstraintService {
         return initialSetWithReplnsConstraint;
     }
 
-    public void processReplenishmentConstraints(Map.Entry<SizeDto, BuyQtyObj> entry, long totalReplenishment, Long planId, Integer lvl1Nbr) {
-        if (totalReplenishment < deptAdminRuleService.getReplenishmentThreshold(planId, lvl1Nbr) && totalReplenishment > 0) {
+    public void processReplenishmentConstraints(Map.Entry<SizeDto, BuyQtyObj> entry, long totalReplenishment, Integer replenishmentThreshold) {
+        if (totalReplenishment < replenishmentThreshold && totalReplenishment > 0) {
             while (entry.getValue().getTotalReplenishment() > 0)
                 updateReplnToInitialSet(entry);
         }

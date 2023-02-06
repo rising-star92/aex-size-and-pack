@@ -112,13 +112,13 @@ class CalculateFinelineBuyQuantityTest {
        MockitoAnnotations.openMocks(this);
        calculateInitialSetQuantityService = new CalculateInitialSetQuantityService();
        calculateBumpPackQtyService = new CalculateBumpPackQtyService();
-       buyQuantityConstraintService = new BuyQuantityConstraintService(calculateBumpPackQtyService, deptAdminRuleService);
-       addStoreBuyQuantityService = new AddStoreBuyQuantityService(mapper, calculateBumpPackQtyService, buyQuantityConstraintService, calculateInitialSetQuantityService, deptAdminRuleService);
+       buyQuantityConstraintService = new BuyQuantityConstraintService(calculateBumpPackQtyService);
+       addStoreBuyQuantityService = new AddStoreBuyQuantityService(mapper, calculateBumpPackQtyService, buyQuantityConstraintService, calculateInitialSetQuantityService);
        replenishmentsOptimizationServices=new ReplenishmentsOptimizationService();
 
        calculateOnlineFinelineBuyQuantity = new  CalculateOnlineFinelineBuyQuantity (mapper, new BuyQtyReplenishmentMapperService(),replenishmentsOptimizationServices );
        calculateFinelineBuyQuantity = new CalculateFinelineBuyQuantity(bqfpService, mapper, new BuyQtyReplenishmentMapperService(), calculateOnlineFinelineBuyQuantity,
-               strategyFetchService,spFineLineChannelFixtureRepository,styleReplenishmentRepository, fineLineReplenishmentRepository, addStoreBuyQuantityService, buyQuantityConstraintService);
+               strategyFetchService,addStoreBuyQuantityService, buyQuantityConstraintService, deptAdminRuleService);
     }
 
     @Test
