@@ -1,21 +1,30 @@
 package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.assortproduct.RFASizePackData;
-import com.walmart.aex.sp.dto.bqfp.*;
+import com.walmart.aex.sp.dto.bqfp.Cluster;
+import com.walmart.aex.sp.dto.bqfp.Replenishment;
 import com.walmart.aex.sp.dto.buyquantity.BuyQtyObj;
 import com.walmart.aex.sp.dto.buyquantity.InitialSetWithReplnsConstraint;
 import com.walmart.aex.sp.dto.buyquantity.SizeDto;
 import com.walmart.aex.sp.dto.buyquantity.StoreQuantity;
+import com.walmart.aex.sp.dto.deptadminrule.DeptAdminRuleResponse;
 import com.walmart.aex.sp.properties.BuyQtyProperties;
 import com.walmart.aex.sp.util.BuyQtyCommonUtil;
+import com.walmart.aex.sp.util.CommonUtil;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static com.walmart.aex.sp.util.SizeAndPackConstants.DEFAULT_REPL_ITEM_PIECE_RULE;
 
 @Service
 @Slf4j
@@ -27,18 +36,22 @@ public class BuyQuantityConstraintService {
     @Autowired
     CalculateBumpPackQtyService calculateBumpPackQtyService;
 
+    @Autowired
+    DeptAdminRuleService deptAdminRuleService;
+
     public BuyQuantityConstraintService() {
     }
 
     public BuyQuantityConstraintService(CalculateBumpPackQtyService calculateBumpPackQtyService,
-                                        BuyQtyProperties buyQtyProperties) {
+                                        BuyQtyProperties buyQtyProperties,
+                                        DeptAdminRuleService deptAdminRuleService) {
         this.calculateBumpPackQtyService = calculateBumpPackQtyService;
         this.buyQtyProperties = buyQtyProperties;
-
+        this.deptAdminRuleService = deptAdminRuleService;
     }
 
 
-    public InitialSetWithReplnsConstraint getISWithMoreReplenConstraint(BuyQtyObj buyQtyObj, double totalReducedReplenishment, RFASizePackData rfaSizePackData) {
+    public InitialSetWithReplnsConstraint getISWithMoreReplenConstraint(BuyQtyObj buyQtyObj, double totalReducedReplenishment, RFASizePackData rfaSizePackData, Long planId, Integer lvl1Nbr) {
         List<Replenishment> replnsWithUnits = getReplnsWithUnits(buyQtyObj);
         List<Replenishment> replnsWithNoUnits = getReplnsWithNoUnits(buyQtyObj);
         long replenishmentSize = replnsWithUnits.size();
@@ -47,7 +60,7 @@ public class BuyQuantityConstraintService {
         replnsWithUnits.forEach(replenishment -> replenishment.setAdjReplnUnits(getAdjustedDifference(replenishment.getAdjReplnUnits() - perReplenishmentReduced)));
         replnsWithUnits.get(0).setAdjReplnUnits(getAdjustedDifference(replnsWithUnits.get(0).getAdjReplnUnits() - perReplenishmentReducedRemainder));
         replnsWithUnits.addAll(replnsWithNoUnits);
-        double perStoreQty = buyQtyProperties.getInitialThreshold();
+        double perStoreQty = getInitialThreshold(planId, lvl1Nbr);
         double isQty = perStoreQty * rfaSizePackData.getStore_cnt();
         InitialSetWithReplnsConstraint initialSetWithReplnsConstraint = new InitialSetWithReplnsConstraint();
         initialSetWithReplnsConstraint.setReplnsWithUnits(replnsWithUnits);
@@ -56,11 +69,28 @@ public class BuyQuantityConstraintService {
         return initialSetWithReplnsConstraint;
     }
 
+    private Integer getInitialThreshold(Long planId, Integer lvl1Nbr) {
+        String plans = buyQtyProperties.getPlanIds();
+        int currentPlan = Math.toIntExact(planId);
+        List<Integer> s3Plans2024 = CommonUtil.getNumbersFromString(plans);
+        if(s3Plans2024.contains(currentPlan)) {
+            return buyQtyProperties.getInitialThreshold();
+        } else {
+            int deptNumber = lvl1Nbr;
+            List<DeptAdminRuleResponse> deptAdminRules = deptAdminRuleService.getDeptAdminRules(List.of(deptNumber));
+            if(CollectionUtils.isEmpty(deptAdminRules)) {
+                return DEFAULT_REPL_ITEM_PIECE_RULE;
+            } else {
+                return deptAdminRules.iterator().next().getReplItemPieceRule();
+            }
+        }
+    }
+
     private long getAdjustedDifference(double value) {
         return Math.max(Math.round(value), 0);
     }
 
-    public InitialSetWithReplnsConstraint getISWithLessReplenConstraint(BuyQtyObj buyQtyObj, int storeCntWithNewQty, List<Integer> storeList, double perStoreQty, RFASizePackData rfaSizePackData, Cluster volumeCluster, SizeDto sizeDto) {
+    public InitialSetWithReplnsConstraint getISWithLessReplenConstraint(BuyQtyObj buyQtyObj, int storeCntWithNewQty, List<Integer> storeList, double perStoreQty, RFASizePackData rfaSizePackData, Cluster volumeCluster, SizeDto sizeDto, Long planId, Integer lvl1Nbr) {
         List<Replenishment> replnsWithUnits = getReplnsWithUnits(buyQtyObj);
         List<Replenishment> replnsWithNoUnits = getReplnsWithNoUnits(buyQtyObj);
         List<Integer> storeListWithOldQty = storeList.subList(storeCntWithNewQty, storeList.size());
@@ -69,7 +99,7 @@ public class BuyQuantityConstraintService {
         replnsWithUnits.forEach(replenishment -> replenishment.setAdjReplnUnits(0L));
         replnsWithUnits.addAll(replnsWithNoUnits);
         storeList = storeList.subList(0, storeCntWithNewQty);
-        perStoreQty = buyQtyProperties.getInitialThreshold();
+        perStoreQty = getInitialThreshold(planId, lvl1Nbr);
         double isQty = perStoreQty * storeList.size();
         InitialSetWithReplnsConstraint initialSetWithReplnsConstraint = new InitialSetWithReplnsConstraint();
         initialSetWithReplnsConstraint.setReplnsWithUnits(replnsWithUnits);
@@ -85,6 +115,24 @@ public class BuyQuantityConstraintService {
                 updateReplnToInitialSet(entry);
         }
     }
+
+//    private Integer getReplenishmentThreshold(Long planId, Integer lvl1Nbr) {
+//        int currentPlan = Math.toIntExact(planId);
+//
+//        String plans = buyQtyProperties.getPlanIds();
+//        List<Integer> s3Plans2024 = CommonUtil.getNumbersFromString(plans);
+//
+//        if(s3Plans2024.contains(currentPlan)) {
+//            return buyQtyProperties.getReplenishmentThreshold();
+//        } else {
+//            List<DeptAdminRuleResponse> deptAdminRules = deptAdminRuleService.getDeptAdminRules(List.of(lvl1Nbr));
+//            if(CollectionUtils.isEmpty(deptAdminRules)) {
+//                return DEFAULT_MIN_REPL_ITEM_UNITS;
+//            } else {
+//                return deptAdminRules.iterator().next().getMinReplItemUnits();
+//            }
+//        }
+//    }
 
 
 

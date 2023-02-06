@@ -10,10 +10,12 @@ import com.walmart.aex.sp.dto.buyquantity.MetricsDto;
 import com.walmart.aex.sp.dto.buyquantity.SizeDto;
 import com.walmart.aex.sp.dto.buyquantity.StoreQuantity;
 import com.walmart.aex.sp.properties.BuyQtyProperties;
+import com.walmart.aex.sp.service.impl.DeptAdminRuleServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -22,6 +24,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.AbstractMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -44,12 +47,15 @@ public class BuyQuantityConstraintServiceTest {
     @Spy
     ObjectMapper mapper = new ObjectMapper();
 
+    @Mock
+    DeptAdminRuleServiceImpl deptAdminRuleService;
+
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         calculateBumpPackQtyService = new CalculateBumpPackQtyService();
-        buyQuantityConstraintService = new BuyQuantityConstraintService(calculateBumpPackQtyService, buyQtyProperties);
+        buyQuantityConstraintService = new BuyQuantityConstraintService(calculateBumpPackQtyService, buyQtyProperties, deptAdminRuleService);
     }
 
     @Test
@@ -110,7 +116,9 @@ public class BuyQuantityConstraintServiceTest {
         BuyQtyObj bqo = deserializeBuyQtyObj(bqoJson);
         RFASizePackData rfaSizePackData = new RFASizePackData();
         rfaSizePackData.setStore_cnt(100);
-        InitialSetWithReplnsConstraint setWithReplnsConstraint = buyQuantityConstraintService.getISWithMoreReplenConstraint(bqo, 800, rfaSizePackData);
+        Mockito.when(buyQtyProperties.getPlanIds()).thenReturn("22,33,44");
+        Mockito.when(deptAdminRuleService.getDeptAdminRules(ArgumentMatchers.anyList())).thenReturn(Collections.emptyList());
+        InitialSetWithReplnsConstraint setWithReplnsConstraint = buyQuantityConstraintService.getISWithMoreReplenConstraint(bqo, 800, rfaSizePackData, 12L, 34);
 
         List<Replenishment> adjustedReplns = setWithReplnsConstraint.getReplnsWithUnits();
         assertTrue(adjustedReplns.stream().allMatch(replenishment -> replenishment.getAdjReplnUnits() >= 0), "Reduction of all repln units should not produce negative value");

@@ -4,7 +4,20 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.assortproduct.APResponse;
 import com.walmart.aex.sp.dto.bqfp.BQFPResponse;
-import com.walmart.aex.sp.dto.buyquantity.*;
+import com.walmart.aex.sp.dto.buyquantity.BumpSetQuantity;
+import com.walmart.aex.sp.dto.buyquantity.BuyQtyObj;
+import com.walmart.aex.sp.dto.buyquantity.BuyQtyResponse;
+import com.walmart.aex.sp.dto.buyquantity.BuyQtyStoreObj;
+import com.walmart.aex.sp.dto.buyquantity.CalculateBuyQtyParallelRequest;
+import com.walmart.aex.sp.dto.buyquantity.CalculateBuyQtyRequest;
+import com.walmart.aex.sp.dto.buyquantity.CalculateBuyQtyResponse;
+import com.walmart.aex.sp.dto.buyquantity.FinelineDto;
+import com.walmart.aex.sp.dto.buyquantity.Lvl3Dto;
+import com.walmart.aex.sp.dto.buyquantity.Lvl4Dto;
+import com.walmart.aex.sp.dto.buyquantity.MetricsDto;
+import com.walmart.aex.sp.dto.buyquantity.SizeDto;
+import com.walmart.aex.sp.dto.buyquantity.StoreQuantity;
+import com.walmart.aex.sp.dto.buyquantity.StrategyVolumeDeviationResponse;
 import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixture;
 import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixtureSize;
 import com.walmart.aex.sp.entity.SpFineLineChannelFixture;
@@ -14,14 +27,14 @@ import com.walmart.aex.sp.properties.BuyQtyProperties;
 import com.walmart.aex.sp.repository.FineLineReplenishmentRepository;
 import com.walmart.aex.sp.repository.SpFineLineChannelFixtureRepository;
 import com.walmart.aex.sp.repository.StyleReplenishmentRepository;
+import com.walmart.aex.sp.service.impl.DeptAdminRuleServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -87,6 +100,9 @@ class CalculateFinelineBuyQuantityTest {
     @Mock
     StrategyFetchService strategyFetchService;
 
+    @Mock
+    DeptAdminRuleServiceImpl deptAdminRuleService;
+
     ReplenishmentsOptimizationService replenishmentsOptimizationServices;
 
    @Spy
@@ -98,7 +114,7 @@ class CalculateFinelineBuyQuantityTest {
        MockitoAnnotations.openMocks(this);
        calculateInitialSetQuantityService = new CalculateInitialSetQuantityService();
        calculateBumpPackQtyService = new CalculateBumpPackQtyService();
-       buyQuantityConstraintService = new BuyQuantityConstraintService(calculateBumpPackQtyService, buyQtyProperties);
+       buyQuantityConstraintService = new BuyQuantityConstraintService(calculateBumpPackQtyService, buyQtyProperties, deptAdminRuleService);
        addStoreBuyQuantityService = new AddStoreBuyQuantityService(mapper, calculateBumpPackQtyService, buyQuantityConstraintService, calculateInitialSetQuantityService, buyQtyProperties);
        replenishmentsOptimizationServices=new ReplenishmentsOptimizationService();
 

@@ -3,8 +3,19 @@ package com.walmart.aex.sp.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.assortproduct.RFASizePackData;
-import com.walmart.aex.sp.dto.bqfp.*;
-import com.walmart.aex.sp.dto.buyquantity.*;
+import com.walmart.aex.sp.dto.bqfp.Cluster;
+import com.walmart.aex.sp.dto.bqfp.CustomerChoice;
+import com.walmart.aex.sp.dto.bqfp.Fixture;
+import com.walmart.aex.sp.dto.bqfp.InitialSet;
+import com.walmart.aex.sp.dto.bqfp.Replenishment;
+import com.walmart.aex.sp.dto.bqfp.Style;
+import com.walmart.aex.sp.dto.buyquantity.AddStoreBuyQuantity;
+import com.walmart.aex.sp.dto.buyquantity.BuyQtyObj;
+import com.walmart.aex.sp.dto.buyquantity.BuyQtyStoreObj;
+import com.walmart.aex.sp.dto.buyquantity.InitialSetQuantity;
+import com.walmart.aex.sp.dto.buyquantity.InitialSetWithReplnsConstraint;
+import com.walmart.aex.sp.dto.buyquantity.SizeDto;
+import com.walmart.aex.sp.dto.buyquantity.StoreQuantity;
 import com.walmart.aex.sp.enums.FixtureTypeRollup;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.properties.BuyQtyProperties;
@@ -15,7 +26,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -95,14 +111,14 @@ public class AddStoreBuyQuantityService {
                 double unitsLessThanThreshold = buyQtyProperties.getInitialThreshold() - perStoreQty;
                 double totalReducedReplenishment = unitsLessThanThreshold * rfaSizePackData.getStore_cnt();
                 if (totalReplenishment >= totalReducedReplenishment) {
-                    InitialSetWithReplnsConstraint initialSetWithReplnsConstraint = buyQuantityConstraintService.getISWithMoreReplenConstraint(buyQtyObj, totalReducedReplenishment, rfaSizePackData);
+                    InitialSetWithReplnsConstraint initialSetWithReplnsConstraint = buyQuantityConstraintService.getISWithMoreReplenConstraint(buyQtyObj, totalReducedReplenishment, rfaSizePackData, addStoreBuyQuantity.getBqfpResponse().getPlanId(), addStoreBuyQuantity.getBqfpResponse().getLvl1Nbr());
                     buyQtyObj.setReplenishments(initialSetWithReplnsConstraint.getReplnsWithUnits());
                     perStoreQty = initialSetWithReplnsConstraint.getPerStoreQty();
                     isQty = initialSetWithReplnsConstraint.getIsQty();
                     log.debug("| IS after IS constraints with more replenishment | : {} | {} | {} | {} | {} | {}", addStoreBuyQuantity.getCustomerChoiceDto().getCcId(), sizeDto.getSizeDesc(), FixtureTypeRollup.getFixtureIdFromName(rfaSizePackData.getFixture_type()), isQty, perStoreQty, storeList.size());
                 } else {
                     int storeCntWithNewQty = (int) (totalReplenishment / unitsLessThanThreshold);
-                    InitialSetWithReplnsConstraint initialSetWithReplnsConstraint = buyQuantityConstraintService.getISWithLessReplenConstraint(buyQtyObj, storeCntWithNewQty, storeList, perStoreQty, rfaSizePackData, volumeCluster, sizeDto);
+                    InitialSetWithReplnsConstraint initialSetWithReplnsConstraint = buyQuantityConstraintService.getISWithLessReplenConstraint(buyQtyObj, storeCntWithNewQty, storeList, perStoreQty, rfaSizePackData, volumeCluster, sizeDto, addStoreBuyQuantity.getBqfpResponse().getPlanId(), addStoreBuyQuantity.getBqfpResponse().getLvl1Nbr());
                     storeList = storeList.subList(0, storeCntWithNewQty);
                     initialSetQuantities.add(initialSetWithReplnsConstraint.getStoreQuantity());
                     buyQtyObj.setReplenishments(initialSetWithReplnsConstraint.getReplnsWithUnits());

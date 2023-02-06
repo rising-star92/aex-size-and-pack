@@ -10,4 +10,7 @@ public interface BuyQtyProperties {
 
     @Property(propertyName = "replenishment.constraint")
     Integer getReplenishmentThreshold();
+
+    @Property(propertyName = "s3PlanIds.constraint")
+    String getPlanIds();
 }

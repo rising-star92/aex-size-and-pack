@@ -14,10 +14,12 @@ import com.walmart.aex.sp.dto.buyquantity.StoreQuantity;
 import com.walmart.aex.sp.dto.buyquantity.StyleDto;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
 import com.walmart.aex.sp.properties.BuyQtyProperties;
+import com.walmart.aex.sp.service.impl.DeptAdminRuleServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -29,6 +31,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -49,6 +52,9 @@ class AddStoreBuyQuantityServiceTest {
     @Mock
     BuyQuantityConstraintService buyQuantityConstraintService;
 
+    @Mock
+    DeptAdminRuleServiceImpl deptAdminRuleService;
+
     @InjectMocks
     private AddStoreBuyQuantityService addStoreBuyQuantityService;
 
@@ -61,7 +67,7 @@ class AddStoreBuyQuantityServiceTest {
         objectMapper = new ObjectMapper();
         calculateInitialSetQuantityService = new CalculateInitialSetQuantityService();
         calculateBumpPackQtyService = new CalculateBumpPackQtyService();
-        buyQuantityConstraintService = new BuyQuantityConstraintService(calculateBumpPackQtyService, buyQtyProperties);
+        buyQuantityConstraintService = new BuyQuantityConstraintService(calculateBumpPackQtyService, buyQtyProperties, deptAdminRuleService);
         addStoreBuyQuantityService = new AddStoreBuyQuantityService(objectMapper, calculateBumpPackQtyService, buyQuantityConstraintService, calculateInitialSetQuantityService, buyQtyProperties);
 
     }
@@ -106,6 +112,8 @@ class AddStoreBuyQuantityServiceTest {
         BQFPResponse bqfpResponse = bqfpResponseFromJson(bqfpJson);
         AddStoreBuyQuantity addStoreBuyQuantity = getAddStoreBuyQuantities(bqfpResponse, getStyleDTO(), getMerchMethodsDto(), getSizeDTO(), rfaSizePackDataList, getCustomerChoiceDTO());
         Mockito.when(buyQtyProperties.getInitialThreshold()).thenReturn(2);
+        Mockito.when(buyQtyProperties.getPlanIds()).thenReturn("22,33,44");
+        Mockito.when(deptAdminRuleService.getDeptAdminRules(ArgumentMatchers.anyList())).thenReturn(Collections.emptyList());
         addStoreBuyQuantityService.addStoreBuyQuantities(addStoreBuyQuantity,buyQtyObj);
         StoreQuantity storeQuantity = buyQtyObj.getBuyQtyStoreObj().getBuyQuantities().get(0);
         assertEquals(4.0, storeQuantity.getTotalUnits());
@@ -123,6 +131,8 @@ class AddStoreBuyQuantityServiceTest {
         BQFPResponse bqfpResponse = bqfpResponseFromJson(bqfpJson);
         AddStoreBuyQuantity addStoreBuyQuantity = getAddStoreBuyQuantities(bqfpResponse, getStyleDTO(), getMerchMethodsDto(), getSizeDTO(), rfaSizePackDataList, getCustomerChoiceDTO());
         Mockito.when(buyQtyProperties.getInitialThreshold()).thenReturn(2);
+        Mockito.when(buyQtyProperties.getPlanIds()).thenReturn("22,33,44");
+        Mockito.when(deptAdminRuleService.getDeptAdminRules(ArgumentMatchers.anyList())).thenReturn(Collections.emptyList());
         addStoreBuyQuantityService.addStoreBuyQuantities(addStoreBuyQuantity,buyQtyObj);
         StoreQuantity storeQuantity = buyQtyObj.getBuyQtyStoreObj().getBuyQuantities().get(1);
         assertEquals(2.0, storeQuantity.getTotalUnits());

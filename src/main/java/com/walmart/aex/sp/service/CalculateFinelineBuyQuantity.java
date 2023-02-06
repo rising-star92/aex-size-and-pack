@@ -12,9 +12,37 @@ import com.walmart.aex.sp.dto.bqfp.CustomerChoice;
 import com.walmart.aex.sp.dto.bqfp.Fixture;
 import com.walmart.aex.sp.dto.bqfp.Replenishment;
 import com.walmart.aex.sp.dto.bqfp.Style;
-import com.walmart.aex.sp.dto.buyquantity.*;
+import com.walmart.aex.sp.dto.buyquantity.AddStoreBuyQuantity;
+import com.walmart.aex.sp.dto.buyquantity.BuyQtyObj;
+import com.walmart.aex.sp.dto.buyquantity.BuyQtyRequest;
+import com.walmart.aex.sp.dto.buyquantity.BuyQtyResponse;
+import com.walmart.aex.sp.dto.buyquantity.CalculateBuyQtyParallelRequest;
+import com.walmart.aex.sp.dto.buyquantity.CalculateBuyQtyRequest;
+import com.walmart.aex.sp.dto.buyquantity.CalculateBuyQtyResponse;
+import com.walmart.aex.sp.dto.buyquantity.ClustersDto;
+import com.walmart.aex.sp.dto.buyquantity.CustomerChoiceDto;
+import com.walmart.aex.sp.dto.buyquantity.FinelineDto;
+import com.walmart.aex.sp.dto.buyquantity.FinelineVolumeDeviationDto;
+import com.walmart.aex.sp.dto.buyquantity.Lvl3Dto;
+import com.walmart.aex.sp.dto.buyquantity.Lvl4Dto;
+import com.walmart.aex.sp.dto.buyquantity.SizeDto;
+import com.walmart.aex.sp.dto.buyquantity.StoreQuantity;
+import com.walmart.aex.sp.dto.buyquantity.StrategyVolumeDeviationRequest;
+import com.walmart.aex.sp.dto.buyquantity.StrategyVolumeDeviationResponse;
+import com.walmart.aex.sp.dto.buyquantity.StyleDto;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
-import com.walmart.aex.sp.entity.*;
+import com.walmart.aex.sp.entity.CcSpMmReplPack;
+import com.walmart.aex.sp.entity.CcSpMmReplPackId;
+import com.walmart.aex.sp.entity.FixtureTypeRollUpId;
+import com.walmart.aex.sp.entity.MerchCatgReplPack;
+import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixture;
+import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixtureId;
+import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixtureSize;
+import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixtureSizeId;
+import com.walmart.aex.sp.entity.SpFineLineChannelFixture;
+import com.walmart.aex.sp.entity.SpFineLineChannelFixtureId;
+import com.walmart.aex.sp.entity.SpStyleChannelFixture;
+import com.walmart.aex.sp.entity.SpStyleChannelFixtureId;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.enums.FixtureTypeRollup;
 import com.walmart.aex.sp.enums.VdLevelCode;
@@ -362,6 +390,9 @@ public class CalculateFinelineBuyQuantity {
         if (!CollectionUtils.isEmpty(allStoresBuyQty.getReplenishments()) && !CollectionUtils.isEmpty(allStoresBuyQty.getBuyQtyStoreObj().getBuyQuantities())) {
             allStoresBuyQty.setTotalReplenishment(buyQuantityConstraintService.getTotalReplenishment(allStoresBuyQty.getReplenishments()));
             buyQuantityConstraintService.processReplenishmentConstraints(entry, allStoresBuyQty.getTotalReplenishment());
+            /*
+            buyQuantityConstraintService.processReplenishmentConstraints(entry, allStoresBuyQty.getTotalReplenishment(), spCustomerChoiceChannelFixture.getSpCustomerChoiceChannelFixtureId().getSpStyleChannelFixtureId().getSpFineLineChannelFixtureId().getPlanId(), spCustomerChoiceChannelFixture.getSpCustomerChoiceChannelFixtureId().getSpStyleChannelFixtureId().getSpFineLineChannelFixtureId().getLvl1Nbr());
+             */
         }
 
         double bsBuyQty = getBsQty(entry);
