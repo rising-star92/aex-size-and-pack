@@ -7,9 +7,7 @@ import com.walmart.aex.sp.dto.buyquantity.BuyQtyObj;
 import com.walmart.aex.sp.dto.buyquantity.InitialSetWithReplnsConstraint;
 import com.walmart.aex.sp.dto.buyquantity.SizeDto;
 import com.walmart.aex.sp.dto.buyquantity.StoreQuantity;
-import com.walmart.aex.sp.properties.BuyQtyProperties;
 import com.walmart.aex.sp.util.BuyQtyCommonUtil;
-import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,9 +23,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class BuyQuantityConstraintService {
 
-    @ManagedConfiguration
-    BuyQtyProperties buyQtyProperties;
-
     @Autowired
     CalculateBumpPackQtyService calculateBumpPackQtyService;
 
@@ -37,11 +32,8 @@ public class BuyQuantityConstraintService {
     public BuyQuantityConstraintService() {
     }
 
-    public BuyQuantityConstraintService(CalculateBumpPackQtyService calculateBumpPackQtyService,
-                                        BuyQtyProperties buyQtyProperties,
-                                        DeptAdminRuleService deptAdminRuleService) {
+    public BuyQuantityConstraintService(CalculateBumpPackQtyService calculateBumpPackQtyService, DeptAdminRuleService deptAdminRuleService) {
         this.calculateBumpPackQtyService = calculateBumpPackQtyService;
-        this.buyQtyProperties = buyQtyProperties;
         this.deptAdminRuleService = deptAdminRuleService;
     }
 

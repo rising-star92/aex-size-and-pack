@@ -23,7 +23,6 @@ import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixtureSize;
 import com.walmart.aex.sp.entity.SpFineLineChannelFixture;
 import com.walmart.aex.sp.entity.SpStyleChannelFixture;
 import com.walmart.aex.sp.exception.SizeAndPackException;
-import com.walmart.aex.sp.properties.BuyQtyProperties;
 import com.walmart.aex.sp.repository.FineLineReplenishmentRepository;
 import com.walmart.aex.sp.repository.SpFineLineChannelFixtureRepository;
 import com.walmart.aex.sp.repository.StyleReplenishmentRepository;
@@ -85,9 +84,6 @@ class CalculateFinelineBuyQuantityTest {
     CalculateBumpPackQtyService calculateBumpPackQtyService;
 
     @Mock
-    BuyQtyProperties buyQtyProperties;
-
-    @Mock
     BuyQuantityConstraintService buyQuantityConstraintService;
 
     @Mock
@@ -116,8 +112,8 @@ class CalculateFinelineBuyQuantityTest {
        MockitoAnnotations.openMocks(this);
        calculateInitialSetQuantityService = new CalculateInitialSetQuantityService();
        calculateBumpPackQtyService = new CalculateBumpPackQtyService();
-       buyQuantityConstraintService = new BuyQuantityConstraintService(calculateBumpPackQtyService, buyQtyProperties, deptAdminRuleService);
-       addStoreBuyQuantityService = new AddStoreBuyQuantityService(mapper, calculateBumpPackQtyService, buyQuantityConstraintService, calculateInitialSetQuantityService, buyQtyProperties, deptAdminRuleService);
+       buyQuantityConstraintService = new BuyQuantityConstraintService(calculateBumpPackQtyService, deptAdminRuleService);
+       addStoreBuyQuantityService = new AddStoreBuyQuantityService(mapper, calculateBumpPackQtyService, buyQuantityConstraintService, calculateInitialSetQuantityService, deptAdminRuleService);
        replenishmentsOptimizationServices=new ReplenishmentsOptimizationService();
 
        calculateOnlineFinelineBuyQuantity = new  CalculateOnlineFinelineBuyQuantity (mapper, new BuyQtyReplenishmentMapperService(),replenishmentsOptimizationServices );

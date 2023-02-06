@@ -18,9 +18,7 @@ import com.walmart.aex.sp.dto.buyquantity.SizeDto;
 import com.walmart.aex.sp.dto.buyquantity.StoreQuantity;
 import com.walmart.aex.sp.enums.FixtureTypeRollup;
 import com.walmart.aex.sp.exception.CustomException;
-import com.walmart.aex.sp.properties.BuyQtyProperties;
 import com.walmart.aex.sp.util.BuyQtyCommonUtil;
-import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -53,9 +51,6 @@ public class AddStoreBuyQuantityService {
     @Autowired
     DeptAdminRuleService deptAdminRuleService;
 
-    @ManagedConfiguration
-    BuyQtyProperties buyQtyProperties;
-
     private static final Long DEFAULT_IS_QTY = 0L;
     private static final Long DEFAULT_TOTAL_IS_QTY = 1L;
 
@@ -67,13 +62,11 @@ public class AddStoreBuyQuantityService {
                                       CalculateBumpPackQtyService calculateBumpPackQtyService,
                                       BuyQuantityConstraintService buyQuantityConstraintService,
                                       CalculateInitialSetQuantityService calculateInitialSetQuantityService,
-                                      BuyQtyProperties buyQtyProperties,
                                       DeptAdminRuleService deptAdminRuleService) {
         this.objectMapper = objectMapper;
         this.calculateBumpPackQtyService = calculateBumpPackQtyService;
         this.buyQuantityConstraintService = buyQuantityConstraintService;
         this.calculateInitialSetQuantityService = calculateInitialSetQuantityService;
-        this.buyQtyProperties = buyQtyProperties;
         this.deptAdminRuleService = deptAdminRuleService;
     }
 

@@ -67,8 +67,8 @@ class AddStoreBuyQuantityServiceTest {
         objectMapper = new ObjectMapper();
         calculateInitialSetQuantityService = new CalculateInitialSetQuantityService();
         calculateBumpPackQtyService = new CalculateBumpPackQtyService();
-        buyQuantityConstraintService = new BuyQuantityConstraintService(calculateBumpPackQtyService, buyQtyProperties, deptAdminRuleService);
-        addStoreBuyQuantityService = new AddStoreBuyQuantityService(objectMapper, calculateBumpPackQtyService, buyQuantityConstraintService, calculateInitialSetQuantityService, buyQtyProperties, deptAdminRuleService);
+        buyQuantityConstraintService = new BuyQuantityConstraintService(calculateBumpPackQtyService, deptAdminRuleService);
+        addStoreBuyQuantityService = new AddStoreBuyQuantityService(objectMapper, calculateBumpPackQtyService, buyQuantityConstraintService, calculateInitialSetQuantityService, deptAdminRuleService);
 
     }
 
