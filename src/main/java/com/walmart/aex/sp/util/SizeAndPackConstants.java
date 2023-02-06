@@ -7,6 +7,7 @@ public class SizeAndPackConstants {
 
     public static final String SUCCESS_STATUS = "Success";
     public static final String FAILED_STATUS = "Failed";
+    public static final String REQUEST_INVALID = "Request is invalid";
     public static final String CATEGORY = "Category";
     public static final String SUB_CATEGORY = "Sub Category";
     public static final String FINELINE = "Fineline";

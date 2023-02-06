@@ -61,21 +61,23 @@ public class PackOptAddDataMapper {
 
         if (!CollectionUtils.isEmpty(channelList)) {
             channelList.forEach(channel -> {
-                MerchantPackOptimizationID merchantPackOptimizationID = new MerchantPackOptimizationID(request.getPlanId(), request.getLvl0Nbr(), lvl1.getLvl1Nbr(), lvl2.getLvl2Nbr(), lvl3.getLvl3Nbr(), channel);
-                MerchantPackOptimization merchantPackOptimization = merchPackOptimizationRepository.findById(merchantPackOptimizationID).orElse(new MerchantPackOptimization());
-                if (merchantPackOptimization.getMerchantPackOptimizationID() == null) {
-                    merchantPackOptimization.setMerchantPackOptimizationID(merchantPackOptimizationID);
+                if(channel.equals(ChannelType.STORE.getId())){
+                    MerchantPackOptimizationID merchantPackOptimizationID = new MerchantPackOptimizationID(request.getPlanId(), request.getLvl0Nbr(), lvl1.getLvl1Nbr(), lvl2.getLvl2Nbr(), lvl3.getLvl3Nbr(), channel);
+                    MerchantPackOptimization merchantPackOptimization = merchPackOptimizationRepository.findById(merchantPackOptimizationID).orElse(new MerchantPackOptimization());
+                    if (merchantPackOptimization.getMerchantPackOptimizationID() == null) {
+                        merchantPackOptimization.setMerchantPackOptimizationID(merchantPackOptimizationID);
 
-                }
-                //Other values has to be updated later after defining proper contract
-                merchantPackOptimization.setMaxNbrOfPacks(50);
-                merchantPackOptimization.setMaxUnitsPerPack(36);
-                merchantPackOptimization.setSinglePackInd(DEFAULT_SINGLE_PACK_INDICATOR);
+                    }
+                    //Other values has to be updated later after defining proper contract
+                    merchantPackOptimization.setMaxNbrOfPacks(50);
+                    merchantPackOptimization.setMaxUnitsPerPack(36);
+                    merchantPackOptimization.setSinglePackInd(DEFAULT_SINGLE_PACK_INDICATOR);
 
-                if (!CollectionUtils.isEmpty(lvl3.getLvl4List())) {
-                    merchantPackOptimization.setSubCatgPackOptimization(setSubCatPackOpt(merchantPackOptimization, lvl3.getLvl4List()));
+                    if (!CollectionUtils.isEmpty(lvl3.getLvl4List())) {
+                        merchantPackOptimization.setSubCatgPackOptimization(setSubCatPackOpt(merchantPackOptimization, lvl3.getLvl4List()));
+                    }
+                    merchCatPackOptSet.add(merchantPackOptimization);
                 }
-                merchCatPackOptSet.add(merchantPackOptimization);
             });
         }
         return merchCatPackOptSet;
@@ -88,7 +90,7 @@ public class PackOptAddDataMapper {
             SubCatgPackOptimizationID subCatgPackOptimizationID = new SubCatgPackOptimizationID(merchantPackOptimization.getMerchantPackOptimizationID(), lvl4.getLvl4Nbr());
             SubCatgPackOptimization subCatgPackOptimization = Optional.of(subCatgPackOptimizationSet)
                     .stream()
-                    .flatMap(Collection::stream).filter(subCatgPackOptimization1 -> subCatgPackOptimization1.getSubCatgPackOptimizationID().equals(subCatgPackOptimizationID))
+                    .flatMap(Collection::stream).filter(subCatgPackOptimization1 -> subCatgPackOptimization1.getSubCatgPackOptimizationID().equals(subCatgPackOptimizationID) && subCatgPackOptimization1.getChannelText().getChannelId().equals(ChannelType.STORE.getId()))
                     .findFirst()
                     .orElse(new SubCatgPackOptimization());
             if (subCatgPackOptimization.getSubCatgPackOptimizationID() == null) {
@@ -115,7 +117,7 @@ public class PackOptAddDataMapper {
             FineLinePackOptimizationID fineLinePackOptimizationID = new FineLinePackOptimizationID(subCatgPackOptimization.getSubCatgPackOptimizationID(), fineline.getFinelineNbr());
             FineLinePackOptimization fineLinePackOptimization = Optional.of(fineLinePackOptimizationSet)
                     .stream()
-                    .flatMap(Collection::stream).filter(fineLinePackOptimization1 -> fineLinePackOptimization1.getFinelinePackOptId().equals(fineLinePackOptimizationID))
+                    .flatMap(Collection::stream).filter(fineLinePackOptimization1 -> fineLinePackOptimization1.getFinelinePackOptId().equals(fineLinePackOptimizationID) && fineLinePackOptimization1.getChannelText().getChannelId().equals(ChannelType.STORE.getId()))
                     .findFirst()
                     .orElse(new FineLinePackOptimization());
             if (fineLinePackOptimization.getFinelinePackOptId() == null) {
@@ -147,7 +149,7 @@ public class PackOptAddDataMapper {
             StylePackOptimizationID stylePackOptimizationID = new StylePackOptimizationID(fineLinePackOptimization.getFinelinePackOptId(), style.getStyleNbr());
             StylePackOptimization stylePackOptimization = Optional.of(stylePackOptimizationSet)
                     .stream()
-                    .flatMap(Collection::stream).filter(stylePackOptimization1 -> stylePackOptimization1.getStylePackoptimizationId().equals(stylePackOptimizationID))
+                    .flatMap(Collection::stream).filter(stylePackOptimization1 -> stylePackOptimization1.getStylePackoptimizationId().equals(stylePackOptimizationID) && stylePackOptimization1.getChannelText().getChannelId().equals(ChannelType.STORE.getId()))
                     .findFirst()
                     .orElse(new StylePackOptimization());
             if (stylePackOptimization.getStylePackoptimizationId() == null) {
@@ -176,7 +178,7 @@ public class PackOptAddDataMapper {
             CcPackOptimizationID ccPackOptimizationID = new CcPackOptimizationID(stylePackOptimization.getStylePackoptimizationId(), customerChoice.getCcId());
             CcPackOptimization ccPackOptimization = Optional.of(ccPackOptimizationSet)
                     .stream()
-                    .flatMap(Collection::stream).filter(ccPackOptimization1 -> ccPackOptimization1.getCcPackOptimizationId().equals(ccPackOptimizationID))
+                    .flatMap(Collection::stream).filter(ccPackOptimization1 -> ccPackOptimization1.getCcPackOptimizationId().equals(ccPackOptimizationID) && ccPackOptimization1.getChannelText().getChannelId().equals(ChannelType.STORE.getId()))
                     .findFirst()
                     .orElse(new CcPackOptimization());
             if (ccPackOptimization.getCcPackOptimizationId() == null) {
