@@ -33,6 +33,16 @@ deploy:
   helm:
     values:
       DYNATRACE_ENABLED: true
+      min:
+        cpu: 800m
+        memory: 600Mi
+      max:
+        cpu: 1
+        memory: 1Gi
+      scaling:
+        cpuPercent: 70
+        min: 2
+        max: 5
       env:
         GOOGLE_APPLICATION_CREDENTIALS: /etc/secrets/gcp_creds.json
       secrets:
@@ -78,14 +88,7 @@ deploy:
           - eus2-dev-a2
       helm:
         values:
-          min:
-            cpu: 800m
-            memory: 600Mi
-          max:
-            cpu: 1
-            memory: 800Mi
           scaling:
-            cpuPercent: 70
             min: 1
             max: 1
           metadata:
@@ -112,16 +115,6 @@ deploy:
           - scus-stage-a4
       helm:
         values:
-          min:
-            cpu: 800m
-            memory: 600Mi
-          max:
-            cpu: 1
-            memory: 800Mi
-          scaling:
-            cpuPercent: 70
-            min: 1
-            max: 1
           metadata:
             labels:
               ccm.serviceId: AEX_SIZE_AND_PACK
@@ -147,16 +140,6 @@ deploy:
       helm:
         values:
           DYNATRACE_ENABLED: true
-          min:
-            cpu: 800m
-            memory: 600Mi
-          max:
-            cpu: 1
-            memory: 800Mi
-          scaling:
-            cpuPercent: 70
-            min: 2
-            max: 5
           metadata:
             labels:
               ccm.serviceId: AEX_SIZE_AND_PACK
