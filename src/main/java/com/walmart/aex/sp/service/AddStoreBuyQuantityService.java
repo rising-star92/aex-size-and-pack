@@ -16,10 +16,12 @@ import com.walmart.aex.sp.dto.buyquantity.InitialSetQuantity;
 import com.walmart.aex.sp.dto.buyquantity.InitialSetWithReplnsConstraint;
 import com.walmart.aex.sp.dto.buyquantity.SizeDto;
 import com.walmart.aex.sp.dto.buyquantity.StoreQuantity;
+import com.walmart.aex.sp.dto.deptadminrule.DeptAdminRuleResponse;
 import com.walmart.aex.sp.enums.FixtureTypeRollup;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.properties.BuyQtyProperties;
 import com.walmart.aex.sp.util.BuyQtyCommonUtil;
+import com.walmart.aex.sp.util.CommonUtil;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.walmart.aex.sp.util.SizeAndPackConstants.DEFAULT_REPL_ITEM_PIECE_RULE;
 
 @Service
 @Slf4j
@@ -50,6 +54,9 @@ public class AddStoreBuyQuantityService {
     @Autowired
     CalculateInitialSetQuantityService calculateInitialSetQuantityService;
 
+    @Autowired
+    DeptAdminRuleService deptAdminRuleService;
+
     @ManagedConfiguration
     BuyQtyProperties buyQtyProperties;
 
@@ -64,12 +71,14 @@ public class AddStoreBuyQuantityService {
                                       CalculateBumpPackQtyService calculateBumpPackQtyService,
                                       BuyQuantityConstraintService buyQuantityConstraintService,
                                       CalculateInitialSetQuantityService calculateInitialSetQuantityService,
-                                      BuyQtyProperties buyQtyProperties) {
+                                      BuyQtyProperties buyQtyProperties,
+                                      DeptAdminRuleService deptAdminRuleService) {
         this.objectMapper = objectMapper;
         this.calculateBumpPackQtyService = calculateBumpPackQtyService;
         this.buyQuantityConstraintService = buyQuantityConstraintService;
         this.calculateInitialSetQuantityService = calculateInitialSetQuantityService;
         this.buyQtyProperties = buyQtyProperties;
+        this.deptAdminRuleService = deptAdminRuleService;
     }
 
 
@@ -105,10 +114,11 @@ public class AddStoreBuyQuantityService {
         InitialSetQuantity initialSetQuantity = calculateInitialSetQuantityService.calculateInitialSetQty(sizeDto, volumeCluster, rfaSizePackData);
         double perStoreQty = initialSetQuantity.getPerStoreQty();
         double isQty = initialSetQuantity.getIsQty();
-        if ((perStoreQty < buyQtyProperties.getInitialThreshold() && perStoreQty > 0) && (!CollectionUtils.isEmpty(buyQtyObj.getReplenishments()))) {
+        Integer initialThreshold = getInitialThreshold(addStoreBuyQuantity.getBqfpResponse().getPlanId(), addStoreBuyQuantity.getBqfpResponse().getLvl1Nbr());
+        if ((perStoreQty < initialThreshold && perStoreQty > 0) && (!CollectionUtils.isEmpty(buyQtyObj.getReplenishments()))) {
             long totalReplenishment = getTotalReplenishment(buyQtyObj);
             if (totalReplenishment > 0) {
-                double unitsLessThanThreshold = buyQtyProperties.getInitialThreshold() - perStoreQty;
+                double unitsLessThanThreshold = initialThreshold - perStoreQty;
                 double totalReducedReplenishment = unitsLessThanThreshold * rfaSizePackData.getStore_cnt();
                 if (totalReplenishment >= totalReducedReplenishment) {
                     InitialSetWithReplnsConstraint initialSetWithReplnsConstraint = buyQuantityConstraintService.getISWithMoreReplenConstraint(buyQtyObj, totalReducedReplenishment, rfaSizePackData, addStoreBuyQuantity.getBqfpResponse().getPlanId(), addStoreBuyQuantity.getBqfpResponse().getLvl1Nbr());
@@ -133,6 +143,23 @@ public class AddStoreBuyQuantityService {
         StoreQuantity storeQuantity = BuyQtyCommonUtil.createStoreQuantity(rfaSizePackData, perStoreQty, storeList, isQty, volumeCluster);
         storeQuantity.setBumpSets(calculateBumpPackQtyService.calculateBumpPackQty(sizeDto, rfaSizePackData, volumeCluster, storeList.size()));
         initialSetQuantities.add(storeQuantity);
+    }
+
+    private Integer getInitialThreshold(Long planId, Integer lvl1Nbr) {
+        String plans = buyQtyProperties.getPlanIds();
+        int currentPlan = Math.toIntExact(planId);
+        List<Integer> s3Plans2024 = CommonUtil.getNumbersFromString(plans);
+        if(s3Plans2024.contains(currentPlan)) {
+            return buyQtyProperties.getInitialThreshold();
+        } else {
+            int deptNumber = lvl1Nbr;
+            List<DeptAdminRuleResponse> deptAdminRules = deptAdminRuleService.getDeptAdminRules(List.of(deptNumber));
+            if(CollectionUtils.isEmpty(deptAdminRules)) {
+                return DEFAULT_REPL_ITEM_PIECE_RULE;
+            } else {
+                return deptAdminRules.iterator().next().getReplItemPieceRule();
+            }
+        }
     }
 
     private long getTotalReplenishment(BuyQtyObj buyQtyObj) {

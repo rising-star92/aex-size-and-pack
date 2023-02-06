@@ -117,7 +117,7 @@ class CalculateFinelineBuyQuantityTest {
        calculateInitialSetQuantityService = new CalculateInitialSetQuantityService();
        calculateBumpPackQtyService = new CalculateBumpPackQtyService();
        buyQuantityConstraintService = new BuyQuantityConstraintService(calculateBumpPackQtyService, buyQtyProperties, deptAdminRuleService);
-       addStoreBuyQuantityService = new AddStoreBuyQuantityService(mapper, calculateBumpPackQtyService, buyQuantityConstraintService, calculateInitialSetQuantityService, buyQtyProperties);
+       addStoreBuyQuantityService = new AddStoreBuyQuantityService(mapper, calculateBumpPackQtyService, buyQuantityConstraintService, calculateInitialSetQuantityService, buyQtyProperties, deptAdminRuleService);
        replenishmentsOptimizationServices=new ReplenishmentsOptimizationService();
 
        calculateOnlineFinelineBuyQuantity = new  CalculateOnlineFinelineBuyQuantity (mapper, new BuyQtyReplenishmentMapperService(),replenishmentsOptimizationServices );
@@ -131,11 +131,11 @@ class CalculateFinelineBuyQuantityTest {
        BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
        APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
        BuyQtyResponse buyQtyResponse = buyQtyResponseFromJson(path.concat("/BuyQtyResponse"));
-       when(buyQtyProperties.getInitialThreshold()).thenReturn(2);
        when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
        when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
        when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
-       when(buyQtyProperties.getInitialThreshold()).thenReturn(2);
+       when(buyQtyProperties.getPlanIds()).thenReturn("22, 33, 44");
+       when(deptAdminRuleService.getDeptAdminRules(anyList())).thenReturn(Collections.emptyList());
        CalculateBuyQtyRequest request = create("store", 50000, 34, 1488, 9071, 7205, 1500, 12L);
        CalculateBuyQtyParallelRequest pRequest = createFromRequest(request);
 
@@ -259,12 +259,12 @@ class CalculateFinelineBuyQuantityTest {
         APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
         BuyQtyResponse buyQtyResponse = buyQtyResponseFromJson(path.concat("/BuyQtyResponse"));
         StrategyVolumeDeviationResponse strategyVolumeDeviationResponse = strategyVolumeDeviationResponseFromJsonFromJson(path.concat("/StrategyVolumeDeviationCategoryResponse"));
-        when(buyQtyProperties.getInitialThreshold()).thenReturn(2);
         when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
         when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
         when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
         when(strategyFetchService.getStrategyVolumeDeviation(any())).thenReturn(strategyVolumeDeviationResponse);
-        when(buyQtyProperties.getInitialThreshold()).thenReturn(2);
+        when(buyQtyProperties.getPlanIds()).thenReturn("22, 33, 44");
+        when(deptAdminRuleService.getDeptAdminRules(anyList())).thenReturn(Collections.emptyList());
         CalculateBuyQtyRequest request = create("store", 50000, 34, 1488, 9071, 7205, 1500, 12L);
         CalculateBuyQtyParallelRequest pRequest = createFromRequest(request);
 
@@ -283,19 +283,18 @@ class CalculateFinelineBuyQuantityTest {
         APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
         BuyQtyResponse buyQtyResponse = buyQtyResponseFromJson(path.concat("/BuyQtyResponse"));
         StrategyVolumeDeviationResponse strategyVolumeDeviationResponse = strategyVolumeDeviationResponseFromJsonFromJson(path.concat("/StrategyVolumeDeviationSubCategoryResponse"));
-        when(buyQtyProperties.getInitialThreshold()).thenReturn(2);
         when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
         when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
         when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
         when(strategyFetchService.getStrategyVolumeDeviation(any())).thenReturn(strategyVolumeDeviationResponse);
-        when(buyQtyProperties.getInitialThreshold()).thenReturn(2);
         CalculateBuyQtyRequest request = create("store", 50000, 34, 1488, 9071, 7205, 1500, 12L);
         CalculateBuyQtyParallelRequest pRequest = createFromRequest(request);
 
         CalculateBuyQtyResponse r = new CalculateBuyQtyResponse();
         r.setMerchCatgReplPacks(new ArrayList<>());
         r.setSpFineLineChannelFixtures(new ArrayList<>());
-
+        when(buyQtyProperties.getPlanIds()).thenReturn("22, 33, 44");
+        when(deptAdminRuleService.getDeptAdminRules(anyList())).thenReturn(Collections.emptyList());
         CalculateBuyQtyResponse response = calculateFinelineBuyQuantity.calculateFinelineBuyQty(request, pRequest, r);
         assertEquals(bqfpResponse.getVolumeDeviationStrategyLevelSelection(), BigDecimal.valueOf(2));
     }
@@ -307,12 +306,12 @@ class CalculateFinelineBuyQuantityTest {
         APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
         BuyQtyResponse buyQtyResponse = buyQtyResponseFromJson(path.concat("/BuyQtyResponse"));
         StrategyVolumeDeviationResponse strategyVolumeDeviationResponse = strategyVolumeDeviationResponseFromJsonFromJson(path.concat("/StrategyVolumeDeviationFinelineResponse"));
-        when(buyQtyProperties.getInitialThreshold()).thenReturn(2);
         when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
         when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
         when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
         when(strategyFetchService.getStrategyVolumeDeviation(any())).thenReturn(strategyVolumeDeviationResponse);
-        when(buyQtyProperties.getInitialThreshold()).thenReturn(2);
+        when(buyQtyProperties.getPlanIds()).thenReturn("22, 33, 44");
+        when(deptAdminRuleService.getDeptAdminRules(anyList())).thenReturn(Collections.emptyList());
         CalculateBuyQtyRequest request = create("store", 50000, 34, 1488, 9071, 7205, 1500, 12L);
         CalculateBuyQtyParallelRequest pRequest = createFromRequest(request);
 
@@ -521,11 +520,11 @@ class CalculateFinelineBuyQuantityTest {
         BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponseWithBumpList"));
         APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
         BuyQtyResponse buyQtyResponse = buyQtyResponseFromJson(path.concat("/BuyQtyResponse"));
-        when(buyQtyProperties.getInitialThreshold()).thenReturn(2);
         when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
         when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
         when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
-        when(buyQtyProperties.getInitialThreshold()).thenReturn(2);
+        when(buyQtyProperties.getPlanIds()).thenReturn("22, 33, 44");
+        when(deptAdminRuleService.getDeptAdminRules(anyList())).thenReturn(Collections.emptyList());
         CalculateBuyQtyRequest request = create("store", 50000, 34, 1488, 9071, 7205, 1500, 12L);
         CalculateBuyQtyParallelRequest pRequest = createFromRequest(request);
 
