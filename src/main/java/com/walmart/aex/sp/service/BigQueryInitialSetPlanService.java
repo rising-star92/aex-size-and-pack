@@ -125,7 +125,7 @@ public class BigQueryInitialSetPlanService {
 
     private String getInStoreWeek(BQFPResponse bqfpResponse, RFAInitialSetBumpSetResponse rfaInitialSetBumpSetResponse) {
         Integer bumpPackNumber = null != rfaInitialSetBumpSetResponse && rfaInitialSetBumpSetResponse.getProduct_fineline().contains(BUMP_PACK) ?
-                Integer.valueOf(rfaInitialSetBumpSetResponse.getProduct_fineline().substring(rfaInitialSetBumpSetResponse.getProduct_fineline().length() - 1)) : 1;
+                Integer.valueOf(rfaInitialSetBumpSetResponse.getProduct_fineline().replaceFirst(BUMP_PACK_PATTERN, "")) : 1;
         BumpSet bp = Optional.ofNullable(bqfpResponse).stream().
                 flatMap( styles -> styles.getStyles().stream())
                 .filter((null != rfaInitialSetBumpSetResponse) ? style -> rfaInitialSetBumpSetResponse.getStyle_id().contains(style.getStyleId()) : style -> true)

@@ -42,4 +42,5 @@ public class SizeAndPackConstants {
     public static final Integer DEFAULT_SINGLE_PACK_INDICATOR = 1;
     public static final String PERCENT = "%";
     public static final String BUMP_PACK = "BP";
+    public static final String BUMP_PACK_PATTERN = "^(\\d*)_(\\d*)-BP";
 }
