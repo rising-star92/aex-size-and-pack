@@ -137,7 +137,7 @@ configDefinitions:
         description: "S3 PLanId List"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "12, 13, 14"
+        defaultValue: "12, 48, 8, 9, 46, 131, 133, 199, 137, 201, 216, 164, 240, 179"
   bqfpServiceConfig:
     description: ""
     resolutionPaths:

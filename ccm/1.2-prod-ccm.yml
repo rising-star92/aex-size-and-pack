@@ -162,6 +162,11 @@ configDefinitions:
         type: "INTEGER"
         kind: "SINGLE"
         defaultValue: 500
+      "s3PlanIds.constraint":
+        description: "S3 PLanId List"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "68, 69, 72"
   bqfpServiceConfig:
     description: ""
     resolutionPaths:
