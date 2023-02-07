@@ -4,6 +4,7 @@ import com.walmart.aex.sp.dto.deptadminrule.DeptAdminRuleRequest;
 import com.walmart.aex.sp.dto.deptadminrule.DeptAdminRuleResponse;
 import com.walmart.aex.sp.entity.DeptAdminRule;
 import com.walmart.aex.sp.exception.CustomException;
+import com.walmart.aex.sp.properties.BuyQtyProperties;
 import com.walmart.aex.sp.repository.DeptAdminRuleRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,7 +15,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.util.ReflectionUtils;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -41,6 +44,10 @@ class DeptAdminRuleServiceImplTest {
     private List<DeptAdminRule> dbResponse;
     private DeptAdminRuleRequest deptAdminRuleRequest;
     private List<DeptAdminRuleResponse> actual;
+
+    @Mock
+    private BuyQtyProperties buyQtyProperties;
+
     @Captor
     private ArgumentCaptor<List<DeptAdminRule>> deptAdminRuleCaptor;
     @Captor
@@ -127,6 +134,72 @@ class DeptAdminRuleServiceImplTest {
         assertEquals(1, deptAdminRuleCaptor.getValue().size());
         assertEquals(22, deptAdminRuleCaptor.getValue().iterator().next().getMinReplItemUnits());
         assertEquals(55, deptAdminRuleCaptor.getValue().iterator().next().getReplItemPieceRule());
+    }
+
+    @Test
+    void test_getInitialThresholdShouldReturnReplItemPieceRule() throws IllegalAccessException {
+        Field field = ReflectionUtils.findField(DeptAdminRuleServiceImpl.class, "buyQtyProperties");
+        field.setAccessible(true);
+        field.set(deptAdminRuleService, buyQtyProperties);
+        when(buyQtyProperties.getS3PlanIds()).thenReturn("22, 33, 44");
+        when(deptAdminRuleRepository.findAllById(anyList())).thenReturn(Collections.singletonList(dbResponse.get(0)));
+        Integer actual = deptAdminRuleService.getInitialThreshold(12L, 22);
+        assertEquals(55, actual);
+    }
+
+    @Test
+    void test_getInitialThresholdShouldReturnDefaultReplItemPieceRule() throws IllegalAccessException {
+        Field field = ReflectionUtils.findField(DeptAdminRuleServiceImpl.class, "buyQtyProperties");
+        field.setAccessible(true);
+        field.set(deptAdminRuleService, buyQtyProperties);
+        when(buyQtyProperties.getS3PlanIds()).thenReturn("22, 33, 44");
+        when(deptAdminRuleRepository.findAllById(anyList())).thenReturn(Collections.emptyList());
+        Integer actual = deptAdminRuleService.getInitialThreshold(12L, 22);
+        assertEquals(2, actual);
+    }
+
+    @Test
+    void test_getInitialThresholdShouldReturnBuyQtyPropertiesReplItemPieceRule() throws IllegalAccessException {
+        Field field = ReflectionUtils.findField(DeptAdminRuleServiceImpl.class, "buyQtyProperties");
+        field.setAccessible(true);
+        field.set(deptAdminRuleService, buyQtyProperties);
+        when(buyQtyProperties.getS3PlanIds()).thenReturn("22, 33, 44");
+        when(buyQtyProperties.getInitialThreshold()).thenReturn(22);
+        Integer actual = deptAdminRuleService.getInitialThreshold(33L, 22);
+        assertEquals(22, actual);
+    }
+
+    @Test
+    void test_getReplenishmentThresholdShouldReturnMinReplItemUnits() throws IllegalAccessException {
+        Field field = ReflectionUtils.findField(DeptAdminRuleServiceImpl.class, "buyQtyProperties");
+        field.setAccessible(true);
+        field.set(deptAdminRuleService, buyQtyProperties);
+        when(buyQtyProperties.getS3PlanIds()).thenReturn("22, 33, 44");
+        when(deptAdminRuleRepository.findAllById(anyList())).thenReturn(Collections.singletonList(dbResponse.get(0)));
+        Integer actual = deptAdminRuleService.getReplenishmentThreshold(12L, 22);
+        assertEquals(22, actual);
+    }
+
+    @Test
+    void test_getReplenishmentThresholdShouldReturnDefaultMinReplItemUnits() throws IllegalAccessException {
+        Field field = ReflectionUtils.findField(DeptAdminRuleServiceImpl.class, "buyQtyProperties");
+        field.setAccessible(true);
+        field.set(deptAdminRuleService, buyQtyProperties);
+        when(buyQtyProperties.getS3PlanIds()).thenReturn("22, 33, 44");
+        when(deptAdminRuleRepository.findAllById(anyList())).thenReturn(Collections.emptyList());
+        Integer actual = deptAdminRuleService.getReplenishmentThreshold(12L, 22);
+        assertEquals(2500, actual);
+    }
+
+    @Test
+    void test_getReplenishmentThresholdShouldReturnBuyQtyPropertiesMinReplItemUnits() throws IllegalAccessException {
+        Field field = ReflectionUtils.findField(DeptAdminRuleServiceImpl.class, "buyQtyProperties");
+        field.setAccessible(true);
+        field.set(deptAdminRuleService, buyQtyProperties);
+        when(buyQtyProperties.getS3PlanIds()).thenReturn("22, 33, 44");
+        when(buyQtyProperties.getReplenishmentThreshold()).thenReturn(150);
+        Integer actual = deptAdminRuleService.getReplenishmentThreshold(33L, 22);
+        assertEquals(150, actual);
     }
 
 }

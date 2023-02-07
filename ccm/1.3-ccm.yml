@@ -133,6 +133,11 @@ configDefinitions:
         type: "INTEGER"
         kind: "SINGLE"
         defaultValue: 500
+      "s3Plans2024.constraint":
+        description: "2024 S3 Plans for dev and stg list"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "12, 8, 9, 73"
   bqfpServiceConfig:
     description: ""
     resolutionPaths:

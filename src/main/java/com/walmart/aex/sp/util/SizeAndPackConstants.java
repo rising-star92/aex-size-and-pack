@@ -5,6 +5,9 @@ public class SizeAndPackConstants {
     private SizeAndPackConstants() {
     }
 
+    public static final Integer DEFAULT_REPL_ITEM_PIECE_RULE = 2;
+    public static final Integer DEFAULT_MIN_REPL_ITEM_UNITS = 2500;
+
     public static final String SUCCESS_STATUS = "Success";
     public static final String FAILED_STATUS = "Failed";
     public static final String REQUEST_INVALID = "Request is invalid";

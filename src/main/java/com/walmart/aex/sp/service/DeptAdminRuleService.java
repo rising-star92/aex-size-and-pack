@@ -8,6 +8,10 @@ import java.util.List;
 public interface DeptAdminRuleService {
     List<DeptAdminRuleResponse> getDeptAdminRules(List<Integer> deptNumbers);
 
+    Integer getInitialThreshold(Long planId, Integer lvl1Nbr);
+
+    Integer getReplenishmentThreshold(Long planId, Integer lvl1Nbr);
+
     void addAdminRules(List<DeptAdminRuleRequest> deptAdminRuleRequests);
     void updateAdminRules(List<DeptAdminRuleRequest> deptAdminRuleRequests);
 
