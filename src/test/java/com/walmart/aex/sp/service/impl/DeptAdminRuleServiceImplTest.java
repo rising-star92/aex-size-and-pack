@@ -141,7 +141,7 @@ class DeptAdminRuleServiceImplTest {
         Field field = ReflectionUtils.findField(DeptAdminRuleServiceImpl.class, "buyQtyProperties");
         field.setAccessible(true);
         field.set(deptAdminRuleService, buyQtyProperties);
-        when(buyQtyProperties.getPlanIds()).thenReturn("22, 33, 44");
+        when(buyQtyProperties.getS3PlanIds()).thenReturn("22, 33, 44");
         when(deptAdminRuleRepository.findAllById(anyList())).thenReturn(Collections.singletonList(dbResponse.get(0)));
         Integer actual = deptAdminRuleService.getInitialThreshold(12L, 22);
         assertEquals(55, actual);
@@ -152,7 +152,7 @@ class DeptAdminRuleServiceImplTest {
         Field field = ReflectionUtils.findField(DeptAdminRuleServiceImpl.class, "buyQtyProperties");
         field.setAccessible(true);
         field.set(deptAdminRuleService, buyQtyProperties);
-        when(buyQtyProperties.getPlanIds()).thenReturn("22, 33, 44");
+        when(buyQtyProperties.getS3PlanIds()).thenReturn("22, 33, 44");
         when(deptAdminRuleRepository.findAllById(anyList())).thenReturn(Collections.emptyList());
         Integer actual = deptAdminRuleService.getInitialThreshold(12L, 22);
         assertEquals(2, actual);
@@ -163,7 +163,7 @@ class DeptAdminRuleServiceImplTest {
         Field field = ReflectionUtils.findField(DeptAdminRuleServiceImpl.class, "buyQtyProperties");
         field.setAccessible(true);
         field.set(deptAdminRuleService, buyQtyProperties);
-        when(buyQtyProperties.getPlanIds()).thenReturn("22, 33, 44");
+        when(buyQtyProperties.getS3PlanIds()).thenReturn("22, 33, 44");
         when(buyQtyProperties.getInitialThreshold()).thenReturn(22);
         Integer actual = deptAdminRuleService.getInitialThreshold(33L, 22);
         assertEquals(22, actual);
@@ -174,7 +174,7 @@ class DeptAdminRuleServiceImplTest {
         Field field = ReflectionUtils.findField(DeptAdminRuleServiceImpl.class, "buyQtyProperties");
         field.setAccessible(true);
         field.set(deptAdminRuleService, buyQtyProperties);
-        when(buyQtyProperties.getPlanIds()).thenReturn("22, 33, 44");
+        when(buyQtyProperties.getS3PlanIds()).thenReturn("22, 33, 44");
         when(deptAdminRuleRepository.findAllById(anyList())).thenReturn(Collections.singletonList(dbResponse.get(0)));
         Integer actual = deptAdminRuleService.getReplenishmentThreshold(12L, 22);
         assertEquals(22, actual);
@@ -185,7 +185,7 @@ class DeptAdminRuleServiceImplTest {
         Field field = ReflectionUtils.findField(DeptAdminRuleServiceImpl.class, "buyQtyProperties");
         field.setAccessible(true);
         field.set(deptAdminRuleService, buyQtyProperties);
-        when(buyQtyProperties.getPlanIds()).thenReturn("22, 33, 44");
+        when(buyQtyProperties.getS3PlanIds()).thenReturn("22, 33, 44");
         when(deptAdminRuleRepository.findAllById(anyList())).thenReturn(Collections.emptyList());
         Integer actual = deptAdminRuleService.getReplenishmentThreshold(12L, 22);
         assertEquals(2500, actual);
@@ -196,7 +196,7 @@ class DeptAdminRuleServiceImplTest {
         Field field = ReflectionUtils.findField(DeptAdminRuleServiceImpl.class, "buyQtyProperties");
         field.setAccessible(true);
         field.set(deptAdminRuleService, buyQtyProperties);
-        when(buyQtyProperties.getPlanIds()).thenReturn("22, 33, 44");
+        when(buyQtyProperties.getS3PlanIds()).thenReturn("22, 33, 44");
         when(buyQtyProperties.getReplenishmentThreshold()).thenReturn(150);
         Integer actual = deptAdminRuleService.getReplenishmentThreshold(33L, 22);
         assertEquals(150, actual);

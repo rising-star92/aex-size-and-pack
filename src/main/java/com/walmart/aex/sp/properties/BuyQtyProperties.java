@@ -12,5 +12,5 @@ public interface BuyQtyProperties {
     Integer getReplenishmentThreshold();
 
     @Property(propertyName = "s3Plans2024.constraint")
-    String getPlanIds();
+    String getS3PlanIds();
 }

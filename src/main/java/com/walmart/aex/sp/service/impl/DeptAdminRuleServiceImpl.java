@@ -103,7 +103,7 @@ public class DeptAdminRuleServiceImpl implements DeptAdminRuleService {
 
     @Override
     public Integer getInitialThreshold(Long planId, Integer lvl1Nbr) {
-        String plans = buyQtyProperties.getPlanIds();
+        String plans = buyQtyProperties.getS3PlanIds();
         int currentPlan = Math.toIntExact(planId);
         List<Integer> s3Plans2024 = CommonUtil.getNumbersFromString(plans);
         if(s3Plans2024.contains(currentPlan)) {
@@ -122,7 +122,7 @@ public class DeptAdminRuleServiceImpl implements DeptAdminRuleService {
     @Override
     public Integer getReplenishmentThreshold(Long planId, Integer lvl1Nbr) {
         int currentPlan = Math.toIntExact(planId);
-        String plans = buyQtyProperties.getPlanIds();
+        String plans = buyQtyProperties.getS3PlanIds();
         List<Integer> s3Plans2024 = CommonUtil.getNumbersFromString(plans);
         if(s3Plans2024.contains(currentPlan)) {
             return buyQtyProperties.getReplenishmentThreshold();
