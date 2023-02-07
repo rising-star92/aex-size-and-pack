@@ -91,7 +91,7 @@ configDefinitions:
         description: "Plm Base URL"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "https://plm-services.aex.walmart.net/"
+        defaultValue: "https://plm-services.aex.prod.walmart.net/"
       "plm.consumerId":
         description: "Plm Consumer Id"
         type: "STRING"
