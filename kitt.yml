@@ -143,7 +143,7 @@ deploy:
           metadata:
             labels:
               ccm.serviceId: AEX_SIZE_AND_PACK
-              ccm.serviceConfigVersion: "1.1-PROD"
+              ccm.serviceConfigVersion: "1.2-PROD"
           env:
             JAVA_OPTS: "-Dspring.profiles.active=prod
                           -Dccm.configs.dir=/etc/config
