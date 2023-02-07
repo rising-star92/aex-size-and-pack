@@ -96,7 +96,7 @@ configDefinitions:
         description: "Plm ConsumerId"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "3796c2db-e916-4669-9e3b-60a4ddd52de1"
+        defaultValue: "c222dffe-0fff-4814-b7a4-682ef1c5da47"
       "plm.svcName":
         description: "Plm Service Name"
         type: "STRING"
