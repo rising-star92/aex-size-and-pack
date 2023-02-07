@@ -93,7 +93,7 @@ configDefinitions:
         kind: "SINGLE"
         defaultValue: "https://plm-services.aex.prod.walmart.net/"
       "plm.consumerId":
-        description: "Plm Consumer Id"
+        description: "Plm ConsumerId"
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "3796c2db-e916-4669-9e3b-60a4ddd52de1"
