@@ -1,7 +1,7 @@
 ---
 metadata:
   serviceId: "AEX_SIZE_AND_PACK"
-  serviceConfigVersion: "1.1-PROD"
+  serviceConfigVersion: "1.2-PROD"
   authzPolicies:
     adminUI:
       adminGroups:
