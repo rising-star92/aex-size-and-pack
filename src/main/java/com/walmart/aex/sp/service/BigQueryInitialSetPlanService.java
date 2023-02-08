@@ -336,7 +336,7 @@ public class BigQueryInitialSetPlanService {
                 "as RFA join "+
                 "(\n" +
                 "SELECT SP.ProductFineline as productFineline, trim(SP.ProductCustomerChoice) as cc,SP.store, SP.SPPackBumpOutput as bs_quantity\n" +
-                "FROM `" + spTableName + "` AS SP where ProductFineline = '" + prodFineline + "' and SPPackBumpOutput >0\n" +
+                "FROM `" + spTableName + "` AS SP where ProductFineline LIKE '" + prodFineline + "' and SPPackBumpOutput >0\n" +
                 ") as SP\n" +
                 "on RFA.store = SP.store and RFA.cc = SP.cc\n" +
                 "join (\n" +
