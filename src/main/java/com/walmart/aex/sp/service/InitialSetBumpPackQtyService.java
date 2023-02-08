@@ -57,8 +57,7 @@ public class InitialSetBumpPackQtyService {
 			List<InitialSetBumpPackQtyData> initSetBpPkQtyDataList) {
 		gcpInitSetBpPkQtyDataList.forEach(gcpInitSetBpPkQtyObj -> {
 			String planIdAndFineline = gcpInitSetBpPkQtyObj.getPlanAndFineline();
-			String[] planFineline = planIdAndFineline.split("_");
-			String[] finelineBp = planFineline[1].split("-");
+			String[] planFineline = planIdAndFineline.split("[_-]");
 
 			InitialSetBumpPackQtyData initSetBpPkQtyData = new InitialSetBumpPackQtyData();
 			initSetBpPkQtyData.setPlanId(Long.parseLong(planFineline[0]));
@@ -67,7 +66,7 @@ public class InitialSetBumpPackQtyService {
 			initSetBpPkQtyData.setLvl2Nbr(0);
 			initSetBpPkQtyData.setLvl3Nbr(0);
 			initSetBpPkQtyData.setLvl4Nbr(0);
-			initSetBpPkQtyData.setFinelineNbr(Integer.parseInt(finelineBp[0]));
+			initSetBpPkQtyData.setFinelineNbr(Integer.parseInt(planFineline[1]));
 			initSetBpPkQtyData.setStyleNbr(gcpInitSetBpPkQtyObj.getStyleNbr());
 			initSetBpPkQtyData.setCcId(gcpInitSetBpPkQtyObj.getCustomerChoice());
 			initSetBpPkQtyData.setMerchMethodDesc(gcpInitSetBpPkQtyObj.getMerchMethodDesc());
