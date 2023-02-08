@@ -3,6 +3,7 @@ package com.walmart.aex.sp.controller;
 import com.walmart.aex.sp.dto.StatusResponse;
 import com.walmart.aex.sp.dto.deptadminrule.DeptAdminRuleRequest;
 import com.walmart.aex.sp.dto.deptadminrule.DeptAdminRuleResponse;
+import com.walmart.aex.sp.dto.deptadminrule.ReplItemResponse;
 import com.walmart.aex.sp.service.DeptAdminRuleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -31,19 +32,20 @@ public class DeptAdminRulesController {
         return deptAdminRuleService.getDeptAdminRules(deptNumbers);
     }
 
+    @QueryMapping
+    public ReplItemResponse getReplItemRule(@Argument Long planId, @Argument Integer lvl1Nbr) {
+        return deptAdminRuleService.getReplItemRule(planId, lvl1Nbr);
+    }
+
     @MutationMapping
     public StatusResponse addDeptAdminRules(@Argument List<DeptAdminRuleRequest> deptAdminRuleRequests) {
         StatusResponse statusResponse = new StatusResponse();
-        boolean isValid = validateDeptAdminRuleRequests(deptAdminRuleRequests);
-        if(!isValid) {
-            statusResponse.setStatus(REQUEST_INVALID);
-        } else {
-            try {
-                deptAdminRuleService.addAdminRules(deptAdminRuleRequests);
-                statusResponse.setStatus(SUCCESS_STATUS);
-            } catch (Exception e) {
-                statusResponse.setStatus(FAILED_STATUS);
-            }
+        statusResponse.setStatus(REQUEST_INVALID);
+        try {
+            deptAdminRuleService.addAdminRules(deptAdminRuleRequests);
+            statusResponse.setStatus(SUCCESS_STATUS);
+        } catch (Exception e) {
+            statusResponse.setStatus(FAILED_STATUS);
         }
         return statusResponse;
     }
@@ -51,53 +53,27 @@ public class DeptAdminRulesController {
     @MutationMapping
     public StatusResponse updateDeptAdminRules(@Argument List<DeptAdminRuleRequest> deptAdminRuleRequests) {
         StatusResponse statusResponse = new StatusResponse();
-        boolean isValid = validateDeptAdminRuleRequests(deptAdminRuleRequests);
-        if(!isValid) {
-            statusResponse.setStatus(REQUEST_INVALID);
-        } else {
-            try {
-                deptAdminRuleService.updateAdminRules(deptAdminRuleRequests);
-                statusResponse.setStatus(SUCCESS_STATUS);
-            } catch (Exception e) {
-                statusResponse.setStatus(FAILED_STATUS);
-            }
+        statusResponse.setStatus(REQUEST_INVALID);
+        try {
+            deptAdminRuleService.updateAdminRules(deptAdminRuleRequests);
+            statusResponse.setStatus(SUCCESS_STATUS);
+        } catch (Exception e) {
+            statusResponse.setStatus(FAILED_STATUS);
         }
         return statusResponse;
     }
 
     @MutationMapping
-    public StatusResponse deleteDeptAdminRules(@Argument List<DeptAdminRuleRequest> deptAdminRuleRequests) {
+    public StatusResponse deleteDeptAdminRules(@Argument List<Integer> deptNbrs) {
         StatusResponse statusResponse = new StatusResponse();
-        boolean isValid = validateDeptAdminRuleRequestsForDeleteRequest(deptAdminRuleRequests);
-        if (!isValid) {
-            statusResponse.setStatus(REQUEST_INVALID);
-        } else {
-            try {
-                deptAdminRuleService.deleteDeptAdminRules(deptAdminRuleRequests);
-                statusResponse.setStatus(SUCCESS_STATUS);
-            } catch (Exception e) {
-                statusResponse.setStatus(FAILED_STATUS);
-            }
+        statusResponse.setStatus(REQUEST_INVALID);
+        try {
+            deptAdminRuleService.deleteDeptAdminRules(deptNbrs);
+            statusResponse.setStatus(SUCCESS_STATUS);
+        } catch (Exception e) {
+            statusResponse.setStatus(FAILED_STATUS);
         }
         return statusResponse;
-    }
-
-    private boolean validateDeptAdminRuleRequestsForDeleteRequest(List<DeptAdminRuleRequest> deptAdminRuleRequests) {
-        for (DeptAdminRuleRequest deptAdminRuleRequest: deptAdminRuleRequests) {
-            if (deptAdminRuleRequest.getDeptNbr() == null) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private boolean validateDeptAdminRuleRequests(List<DeptAdminRuleRequest> deptAdminRuleRequests) {
-        for (DeptAdminRuleRequest deptAdminRuleRequest: deptAdminRuleRequests) {
-            if (deptAdminRuleRequest.getDeptNbr() == null || deptAdminRuleRequest.getReplItemPieceRule() == null || deptAdminRuleRequest.getMinReplItemUnits() == null ) {
-                return false;
-            }
-        }
-        return true;
     }
 
 }
