@@ -8,17 +8,16 @@ import com.google.cloud.bigquery.BigQuery;
 import com.google.cloud.bigquery.BigQueryOptions;
 import com.google.cloud.bigquery.QueryJobConfiguration;
 import com.google.cloud.bigquery.TableResult;
-import com.walmart.aex.sp.dto.bqfp.BQFPRequest;
-import com.walmart.aex.sp.dto.bqfp.BQFPResponse;
-import com.walmart.aex.sp.dto.bqfp.BumpSet;
-import com.walmart.aex.sp.dto.bqfp.Cluster;
+import com.walmart.aex.sp.dto.bqfp.*;
 import com.walmart.aex.sp.dto.commitmentreport.InitialSetPackRequest;
 import com.walmart.aex.sp.dto.commitmentreport.RFAInitialSetBumpSetResponse;
 import com.walmart.aex.sp.dto.isVolume.*;
 import com.walmart.aex.sp.enums.VdLevelCode;
 import com.walmart.aex.sp.properties.BigQueryConnectionProperties;
+import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -77,11 +76,11 @@ public class BigQueryInitialSetPlanService {
                 }
             }));
             List<RFAInitialSetBumpSetResponse> rfaBsRes = new ArrayList<>();
-            String bsInstoreweek = getInStoreWeek(rfaSizePackRequest.getPlanId(), rfaSizePackRequest.getFinelineNbr());
+            BQFPResponse bqfpResponse = getBqfpResponse(rfaSizePackRequest.getPlanId(), rfaSizePackRequest.getFinelineNbr());
 
             for (RFAInitialSetBumpSetResponse rfaBumpSetResponse : rfaInitialSetBumpSetResponseBs) {
                 RFAInitialSetBumpSetResponse rfaRes = new RFAInitialSetBumpSetResponse();
-                rfaRes.setIn_store_week(bsInstoreweek);
+                rfaRes.setIn_store_week(getInStoreWeek(bqfpResponse, rfaBumpSetResponse));
                 rfaRes.setStyle_id(rfaBumpSetResponse.getStyle_id());
                 rfaRes.setCc(rfaBumpSetResponse.getCc());
                 rfaRes.setMerch_method(rfaBumpSetResponse.getMerch_method());
@@ -115,35 +114,30 @@ public class BigQueryInitialSetPlanService {
         return rfaProjectId + "." + rfaDatasetName + "." + tableNameCc;
     }
 
-    public String getInStoreWeek(Integer planId, Integer finelineNbr) {
+    private BQFPResponse getBqfpResponse(Integer planId, Integer finelineNbr) {
         BQFPRequest bqfpRequest = new BQFPRequest();
         bqfpRequest.setPlanId(Long.valueOf(planId));
         bqfpRequest.setFinelineNbr(finelineNbr);
         bqfpRequest.setChannel("1");
 
-        BQFPResponse response = requireNonNull(bqfpService.getBuyQuantityUnits(bqfpRequest), "flow plan response can't be null or empty");
-//        List<BumpSet> bumpList = Optional.ofNullable(response)
-//                .map(styles -> styles.getStyles())
-//                .map(style -> style.get(0))
-//                .map(cc -> cc.getCustomerChoices())
-//                .map(customerChoice -> customerChoice.get(0))
-//                .map(fixtures -> fixtures.getFixtures())
-//                .map(fixture -> fixture.get(0))
-//                .map(clusters -> clusters.getClusters())
-//                .map(cluster -> cluster.get(0))
-//                .map(Cluster::getBumpList)
-//                .orElse(Collections.emptyList());
-        // look for the first bump set. this would be replaced by muliple bump pack for S4.
-        BumpSet bp = Optional.ofNullable(response).stream().
+        return bqfpService.getBuyQuantityUnits(bqfpRequest);
+    }
+
+    private String getInStoreWeek(BQFPResponse bqfpResponse, RFAInitialSetBumpSetResponse rfaInitialSetBumpSetResponse) {
+        Integer bumpPackNumber = null != rfaInitialSetBumpSetResponse && rfaInitialSetBumpSetResponse.getProduct_fineline().contains(BUMP_PACK) ?
+                Integer.valueOf(rfaInitialSetBumpSetResponse.getProduct_fineline().replaceFirst(BUMP_PACK_PATTERN, "")) : 1;
+        BumpSet bp = Optional.ofNullable(bqfpResponse).stream().
                 flatMap( styles -> styles.getStyles().stream())
+                .filter((null != rfaInitialSetBumpSetResponse) ? style -> rfaInitialSetBumpSetResponse.getStyle_id().contains(style.getStyleId()) : style -> true)
                 .flatMap( ccs -> ccs.getCustomerChoices().stream())
+                .filter((null != rfaInitialSetBumpSetResponse) ? cc -> rfaInitialSetBumpSetResponse.getCc().contains(cc.getCcId()) : cc -> true)
                 .flatMap(fixtures -> fixtures.getFixtures().stream())
                 .flatMap(clusters -> clusters.getClusters().stream())
                 .flatMap(bump -> bump.getBumpList().stream())
-                .filter(bump -> null != bump && bump.getWeekDesc()!=null)
-                .findFirst().get();
-        if (null != bp ) {
-                return formatWeekDesc(bp.getWeekDesc());
+                .filter(bump -> null != bump && bump.getBumpPackNbr() == bumpPackNumber  && bump.getWeekDesc()!=null)
+                .findFirst().orElse(new BumpSet());
+        if (null != bp && StringUtils.isNotEmpty(bp.getWeekDesc())) {
+            return formatWeekDesc(bp.getWeekDesc());
         }
         return null;
     }
@@ -163,12 +157,12 @@ public class BigQueryInitialSetPlanService {
 
     private String getSizePackIntialSetQueryString(String ccTableName, String spTableName, Integer planId, Integer finelineNbr) {
         String prodFineline = planId + "_" + finelineNbr;
-        return "WITH MyTable AS ( select distinct reverse( SUBSTR(REVERSE(RFA.cc), STRPOS(REVERSE(RFA.cc), \"_\")+1)) as style_id,RFA.in_store_week, RFA.cc, SP.merch_method, SP.pack_id, SP.UUID AS uuid, SP.size, (SP.initialpack_ratio) AS initialpack_ratio, SUM(SP.is_quantity) AS is_quantity from (select trim(cc) as cc,CAST(store AS INTEGER) as store,min(week) as in_store_week FROM `" + ccTableName + "`as RFA where plan_id_partition=" + planId + " and fineline=" + finelineNbr + " and final_alloc_space>0 group by cc,store order by cc, in_store_week, store )as RFA join (SELECT trim(SP.ProductCustomerChoice) as cc,SP.store, SP.SPPackID as pack_id, SP.MerchMethod as merch_method, SP.UUID as uuid, SP.size, SP.SPBumpSetPackSizeRatio as bumppack_ratio, SP.SPInitialSetPackSizeRatio as initialpack_ratio, SP.SPPackInitialSetOutput as is_quantity, SP.SPPackBumpOutput as bs_quantity FROM `" + spTableName + "` AS SP where ProductFineline = '" + prodFineline + "' and SPInitialSetPackSizeRatio >0 ) as SP on RFA.store = SP.store and RFA.cc = SP.cc GROUP BY RFA.in_store_week,RFA.cc,SP.merch_method, uuid, SP.size,SP.pack_id ,initialpack_ratio order by RFA.in_store_week,RFA.cc,SP.merch_method,SP.size, uuid, SP.pack_id,initialpack_ratio ) SELECT TO_JSON_STRING(rfaTable) AS json FROM MyTable AS rfaTable";
+        return "WITH MyTable AS ( select distinct product_fineline, reverse( SUBSTR(REVERSE(RFA.cc), STRPOS(REVERSE(RFA.cc), \"_\")+1)) as style_id,RFA.in_store_week, RFA.cc, SP.merch_method, SP.pack_id, SP.UUID AS uuid, SP.size, (SP.initialpack_ratio) AS initialpack_ratio, SUM(SP.is_quantity) AS is_quantity from (select trim(cc) as cc,CAST(store AS INTEGER) as store,min(week) as in_store_week FROM `" + ccTableName + "`as RFA where plan_id_partition=" + planId + " and fineline=" + finelineNbr + " and final_alloc_space>0 group by cc,store order by cc, in_store_week, store )as RFA join (SELECT SP.ProductFineline as product_fineline, trim(SP.ProductCustomerChoice) as cc,SP.store, SP.SPPackID as pack_id, SP.MerchMethod as merch_method, SP.UUID as uuid, SP.size, SP.SPBumpSetPackSizeRatio as bumppack_ratio, SP.SPInitialSetPackSizeRatio as initialpack_ratio, SP.SPPackInitialSetOutput as is_quantity, SP.SPPackBumpOutput as bs_quantity FROM `" + spTableName + "` AS SP where SP.ProductFineline = '" + prodFineline + "' and SPInitialSetPackSizeRatio >0 ) as SP on RFA.store = SP.store and RFA.cc = SP.cc GROUP BY product_fineline,RFA.in_store_week,RFA.cc,SP.merch_method, uuid, SP.size,SP.pack_id ,initialpack_ratio order by product_fineline,RFA.in_store_week,RFA.cc,SP.merch_method,SP.size, uuid, SP.pack_id,initialpack_ratio ) SELECT TO_JSON_STRING(rfaTable) AS json FROM MyTable AS rfaTable";
     }
 
     private String getSizePackBumpSetQueryString(String spTableName, Integer planId, Integer finelineNbr) {
-        String prodFineline = planId + "_" + finelineNbr;
-        return "WITH MyTable AS ( select distinct reverse( SUBSTR(REVERSE(ProductCustomerChoice), STRPOS(REVERSE(ProductCustomerChoice), \"_\")+1)) as style_id, SP.ProductCustomerChoice as cc, SP.MerchMethod AS merch_method, SP.UUID AS uuid, SP.SPPackID as pack_id,SP.Size as size, (SP.SPBumpSetPackSizeRatio) AS bumppack_ratio, SUM(SP.SPPackBumpOutput) AS bs_quantity FROM `" + spTableName + "` AS SP where ProductFineline = '" + prodFineline + "' and SPBumpSetPackSizeRatio>0 GROUP BY style_id,cc,merch_method,size,pack_id,uuid,bumppack_ratio order by style_id,cc,merch_method,size,pack_id,uuid, bumppack_ratio ) SELECT TO_JSON_STRING(rfaTable) AS json FROM MyTable AS rfaTable";
+        String prodFineline = planId + "_" + finelineNbr + PERCENT;
+        return "WITH MyTable AS ( select distinct SP.ProductFineline as product_fineline, reverse( SUBSTR(REVERSE(ProductCustomerChoice), STRPOS(REVERSE(ProductCustomerChoice), \"_\")+1)) as style_id, SP.ProductCustomerChoice as cc, SP.MerchMethod AS merch_method, SP.UUID AS uuid, SP.SPPackID as pack_id,SP.Size as size, (SP.SPBumpSetPackSizeRatio) AS bumppack_ratio, SUM(SP.SPPackBumpOutput) AS bs_quantity FROM `" + spTableName + "` AS SP where SP.ProductFineline LIKE '" + prodFineline + "' and SPBumpSetPackSizeRatio>0 GROUP BY product_fineline,style_id,cc,merch_method,size,pack_id,uuid,bumppack_ratio order by product_fineline,style_id,cc,merch_method,size,pack_id,uuid,bumppack_ratio ) SELECT TO_JSON_STRING(rfaTable) AS json FROM MyTable AS rfaTable";
     }
 
     private String getISByVolumeFinelineClusterQuery(String ccTableName, String spTableName, Integer planId, Integer finelineNbr, String analyticsData,String interval, Integer fiscalYear) {
@@ -463,7 +457,8 @@ public class BigQueryInitialSetPlanService {
         }));
 
         try{
-            String bsInstoreweek = getInStoreWeek(planId.intValue(), request.getFinelineNbr());
+            BQFPResponse bqfpResponse = getBqfpResponse(planId.intValue(), request.getFinelineNbr());
+            String bsInstoreweek = getInStoreWeek(bqfpResponse, null);
             sqlQuery = findBumpSqlQuery(planId, request,bsInstoreweek);
             bigQuery = BigQueryOptions.getDefaultInstance().getService();
             queryConfigIs = QueryJobConfiguration.newBuilder(sqlQuery).build();
