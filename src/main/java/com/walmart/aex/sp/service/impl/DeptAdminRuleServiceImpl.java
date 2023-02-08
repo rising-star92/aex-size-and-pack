@@ -105,7 +105,7 @@ public class DeptAdminRuleServiceImpl implements DeptAdminRuleService {
     }
 
     @Override
-    public ReplItemResponse getRepelItemRule(Long planId, Integer lvl1Nbr) {
+    public ReplItemResponse getReplItemRule(Long planId, Integer lvl1Nbr) {
         ReplItemResponse response = new ReplItemResponse();
         String plans = buyQtyProperties.getS3PlanIds();
         int currentPlan = Math.toIntExact(planId);

@@ -18,5 +18,5 @@ public interface DeptAdminRuleService {
 
     void deleteDeptAdminRules(List<Integer> deptNbrs);
 
-    ReplItemResponse getRepelItemRule(Long planId, Integer lvl1Nbr);
+    ReplItemResponse getReplItemRule(Long planId, Integer lvl1Nbr);
 }

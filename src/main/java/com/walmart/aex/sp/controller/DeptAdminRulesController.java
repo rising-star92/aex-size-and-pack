@@ -33,8 +33,8 @@ public class DeptAdminRulesController {
     }
 
     @QueryMapping
-    public ReplItemResponse getRepelItemRules(@Argument Long planId, @Argument Integer lvl1Nbr) {
-        return deptAdminRuleService.getRepelItemRule(planId, lvl1Nbr);
+    public ReplItemResponse getReplItemRule(@Argument Long planId, @Argument Integer lvl1Nbr) {
+        return deptAdminRuleService.getReplItemRule(planId, lvl1Nbr);
     }
 
     @MutationMapping

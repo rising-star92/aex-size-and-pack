@@ -200,38 +200,38 @@ class DeptAdminRuleServiceImplTest {
     }
 
     @Test
-    void test_getRepelItemRuleShouldReturnValuesFromCCM() throws IllegalAccessException {
+    void test_getReplItemRuleShouldReturnValuesFromCCM() throws IllegalAccessException {
         Field field = ReflectionUtils.findField(DeptAdminRuleServiceImpl.class, "buyQtyProperties");
         field.setAccessible(true);
         field.set(deptAdminRuleService, buyQtyProperties);
         when(buyQtyProperties.getS3PlanIds()).thenReturn("22, 33, 44");
         when(buyQtyProperties.getInitialThreshold()).thenReturn(2);
         when(buyQtyProperties.getReplenishmentThreshold()).thenReturn(500);
-        ReplItemResponse repelItemRule = deptAdminRuleService.getRepelItemRule(22L, 35);
+        ReplItemResponse repelItemRule = deptAdminRuleService.getReplItemRule(22L, 35);
         assertEquals(2, repelItemRule.getReplItemPieceRule());
         assertEquals(500, repelItemRule.getMinReplItemUnits());
     }
 
     @Test
-    void test_getRepelItemRuleShouldReturnDefaultValuesIfDeptNbrDoesNotExist() throws IllegalAccessException {
+    void test_getReplItemRuleShouldReturnDefaultValuesIfDeptNbrDoesNotExist() throws IllegalAccessException {
         Field field = ReflectionUtils.findField(DeptAdminRuleServiceImpl.class, "buyQtyProperties");
         field.setAccessible(true);
         field.set(deptAdminRuleService, buyQtyProperties);
         when(buyQtyProperties.getS3PlanIds()).thenReturn("22, 33, 44");
         when(deptAdminRuleRepository.findAllById(anyList())).thenReturn(Collections.emptyList());
-        ReplItemResponse repelItemRule = deptAdminRuleService.getRepelItemRule(23L, 35);
+        ReplItemResponse repelItemRule = deptAdminRuleService.getReplItemRule(23L, 35);
         assertEquals(2, repelItemRule.getReplItemPieceRule());
         assertEquals(2500, repelItemRule.getMinReplItemUnits());
     }
 
     @Test
-    void test_getRepelItemRuleShouldReturnValuesFromDB() throws IllegalAccessException {
+    void test_getReplItemRuleShouldReturnValuesFromDB() throws IllegalAccessException {
         Field field = ReflectionUtils.findField(DeptAdminRuleServiceImpl.class, "buyQtyProperties");
         field.setAccessible(true);
         field.set(deptAdminRuleService, buyQtyProperties);
         when(buyQtyProperties.getS3PlanIds()).thenReturn("22, 33, 44");
         when(deptAdminRuleRepository.findAllById(anyList())).thenReturn(Collections.singletonList(dbResponse.get(0)));
-        ReplItemResponse repelItemRule = deptAdminRuleService.getRepelItemRule(23L, 35);
+        ReplItemResponse repelItemRule = deptAdminRuleService.getReplItemRule(23L, 35);
         assertEquals(55, repelItemRule.getReplItemPieceRule());
         assertEquals(22, repelItemRule.getMinReplItemUnits());
     }
