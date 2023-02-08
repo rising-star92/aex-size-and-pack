@@ -61,7 +61,7 @@ public class PostPackOptimizationService {
                                   try {
                                       List<Replenishment> replObj = objectMapper.readValue(ccSpMmReplPack.getReplenObj(), new TypeReference<>() {});
                                       Long totalReplnUnits = replObj.stream().mapToLong(Replenishment::getAdjReplnUnits).sum();
-                                      replObj.forEach(replWeekObj -> replWeekObj.setAdjReplnUnits(totalReplnUnits == 0 ? 0 : (ccSpMmReplPack.getReplUnits() * ((replWeekObj.getAdjReplnUnits() * 100) / totalReplnUnits) / 100)));
+                                      replObj.forEach(replWeekObj -> replWeekObj.setAdjReplnUnits(totalReplnUnits == 0 ? 0 : Math.round(replWeekObj.getAdjReplnUnits() * ((double)ccSpMmReplPack.getReplUnits()/ (double)totalReplnUnits))));
                                       ccSpMmReplPack.setReplenObj(objectMapper.writeValueAsString(replObj));
                                   } catch (JsonProcessingException jpe) {
                                       log.error("Could not convert Replenishment Object Json for week disaggregation ", jpe);
