@@ -72,7 +72,7 @@ input UpdateVnPkWhPkReplnRequest {
 
 input CalculateBuyQtyRequest {
     planId: Int!
-    channel: String
+    channel: String!
     planDesc: String
     lvl0Nbr: Int
     lvl1Nbr: Int
