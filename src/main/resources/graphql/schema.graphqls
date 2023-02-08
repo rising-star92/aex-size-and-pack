@@ -14,6 +14,8 @@ type Query {
      fetchPackOptConstraintsByFineline(request: PackOptConstraintRequest!): PackOptimizationResponse!
      getStoreDistributionByPlan(request: PackInfoRequest!): StoreDistributionResponse!
      getInitialAndBumpSetDetailsByVolumeCluster(request: InitialSetVolumeRequest!): [InitialSetVolumeResponse]!
+     getDeptAdminRules(deptNumbers: [Int]): [DeptAdminRuleResponse]!
+     getRepelItemRules(planId: Int!, lvl1Nbr: Int!): ReplItemResponse!
 }
 
 
@@ -30,6 +32,9 @@ type Mutation {
     updatePackOptConstraints(request:UpdatePackOptConstraintRequestDTO!):StatusResponse
     updateColorCombination(request: ColorCombinationRequest!): StatusResponse!
     updateFromQuote(request: RunPackOptRequest!): StatusResponse
+    addDeptAdminRules(deptAdminRuleRequests: [DeptAdminRuleRequest]!): StatusResponse
+    updateDeptAdminRules(deptAdminRuleRequests: [DeptAdminRuleRequest]!): StatusResponse
+    deleteDeptAdminRules(deptNbrs: [Int]!): StatusResponse
 }
 
 input UpdatePackOptConstraintRequestDTO {
@@ -402,9 +407,15 @@ input ReplenishmentRequest {
 }
 
 input RunPackOptRequest {
-  planId: Int
-  inputRequest: InputRequest
-  runUser: String
+    planId: Int
+    inputRequest: InputRequest
+    runUser: String
+}
+
+input DeptAdminRuleRequest {
+    deptNbr: Int!
+    replItemPieceRule: Int!
+    minReplItemUnits: Int!
 }
 
 input InputRequest {
@@ -524,6 +535,17 @@ type InitialSetVolumeResponse{
     finelineNbr: Int!
     styleId: String!
     customerChoices: [CustomerChoicesVolume]
+}
+
+type DeptAdminRuleResponse{
+    deptNbr: Int!
+    replItemPieceRule: Int!
+    minReplItemUnits: Int!
+}
+
+type ReplItemResponse{
+    replItemPieceRule: Int!
+    minReplItemUnits: Int!
 }
 
 type CustomerChoicesVolume {

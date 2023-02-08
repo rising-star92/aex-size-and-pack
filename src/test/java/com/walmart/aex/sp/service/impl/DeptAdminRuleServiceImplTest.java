@@ -2,6 +2,7 @@ package com.walmart.aex.sp.service.impl;
 
 import com.walmart.aex.sp.dto.deptadminrule.DeptAdminRuleRequest;
 import com.walmart.aex.sp.dto.deptadminrule.DeptAdminRuleResponse;
+import com.walmart.aex.sp.dto.deptadminrule.ReplItemResponse;
 import com.walmart.aex.sp.entity.DeptAdminRule;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.properties.BuyQtyProperties;
@@ -86,11 +87,8 @@ class DeptAdminRuleServiceImplTest {
 
     @Test
     void test_deleteAdminRulesShouldDeleteData() {
-        deptAdminRuleRequest = DeptAdminRuleRequest.builder()
-                .deptNbr(12).minReplItemUnits(22).replItemPieceRule(55).build();
-        List<DeptAdminRuleRequest> request = new ArrayList<>(Collections.singletonList(deptAdminRuleRequest));
         when(deptAdminRuleRepository.findById(12)).thenReturn(Optional.of(dbResponse.get(0)));
-        deptAdminRuleService.deleteDeptAdminRules(request);
+        deptAdminRuleService.deleteDeptAdminRules(Collections.singletonList(12));
         verify(deptAdminRuleRepository, Mockito.times(1))
                 .deleteAllById(deptIdCaptor.capture());
         assertEquals(1, deptIdCaptor.getValue().size());
@@ -98,13 +96,8 @@ class DeptAdminRuleServiceImplTest {
 
     @Test
     void test_deleteAdminRulesShouldPartialDeleteData() {
-        deptAdminRuleRequest = DeptAdminRuleRequest.builder()
-                .deptNbr(12).minReplItemUnits(22).replItemPieceRule(55).build();
-        DeptAdminRuleRequest deptAdminRuleRequest2 = DeptAdminRuleRequest.builder()
-                .deptNbr(13).minReplItemUnits(22).replItemPieceRule(55).build();
-        List<DeptAdminRuleRequest> request = new ArrayList<>(Arrays.asList(deptAdminRuleRequest, deptAdminRuleRequest2));
         when(deptAdminRuleRepository.findById(12)).thenReturn(Optional.of(dbResponse.get(0)));
-        deptAdminRuleService.deleteDeptAdminRules(request);
+        deptAdminRuleService.deleteDeptAdminRules(Collections.singletonList(12));
         verify(deptAdminRuleRepository, Mockito.times(1))
                 .deleteAllById(deptIdCaptor.capture());
         assertEquals(1, deptIdCaptor.getValue().size());
@@ -112,11 +105,15 @@ class DeptAdminRuleServiceImplTest {
 
     @Test
     void test_deleteAdminRulesShouldThrowExceptionIfDeptIdIsNotAvailable() {
-        deptAdminRuleRequest = DeptAdminRuleRequest.builder()
-                .deptNbr(12).minReplItemUnits(22).replItemPieceRule(55).build();
-        List<DeptAdminRuleRequest> request = new ArrayList<>(Collections.singletonList(deptAdminRuleRequest));
         doThrow(RuntimeException.class).when(deptAdminRuleRepository).deleteAllById(anySet());
-        assertThrows(CustomException.class, () -> deptAdminRuleService.deleteDeptAdminRules(request));
+        when(deptAdminRuleRepository.findById(12)).thenReturn(Optional.of(dbResponse.get(0)));
+        assertThrows(CustomException.class, () -> deptAdminRuleService.deleteDeptAdminRules(Collections.singletonList(12)));
+    }
+
+    @Test
+    void test_deleteAdminRulesShouldLogErrorIfDeptIsNotExisted() {
+        when(deptAdminRuleRepository.findById(12)).thenReturn(Optional.empty());
+        deptAdminRuleService.deleteDeptAdminRules(Collections.singletonList(12));
     }
 
     @Test
@@ -200,6 +197,43 @@ class DeptAdminRuleServiceImplTest {
         when(buyQtyProperties.getReplenishmentThreshold()).thenReturn(150);
         Integer actual = deptAdminRuleService.getReplenishmentThreshold(33L, 22);
         assertEquals(150, actual);
+    }
+
+    @Test
+    void test_getRepelItemRuleShouldReturnValuesFromCCM() throws IllegalAccessException {
+        Field field = ReflectionUtils.findField(DeptAdminRuleServiceImpl.class, "buyQtyProperties");
+        field.setAccessible(true);
+        field.set(deptAdminRuleService, buyQtyProperties);
+        when(buyQtyProperties.getS3PlanIds()).thenReturn("22, 33, 44");
+        when(buyQtyProperties.getInitialThreshold()).thenReturn(2);
+        when(buyQtyProperties.getReplenishmentThreshold()).thenReturn(500);
+        ReplItemResponse repelItemRule = deptAdminRuleService.getRepelItemRule(22L, 35);
+        assertEquals(2, repelItemRule.getReplItemPieceRule());
+        assertEquals(500, repelItemRule.getMinReplItemUnits());
+    }
+
+    @Test
+    void test_getRepelItemRuleShouldReturnDefaultValuesIfDeptNbrDoesNotExist() throws IllegalAccessException {
+        Field field = ReflectionUtils.findField(DeptAdminRuleServiceImpl.class, "buyQtyProperties");
+        field.setAccessible(true);
+        field.set(deptAdminRuleService, buyQtyProperties);
+        when(buyQtyProperties.getS3PlanIds()).thenReturn("22, 33, 44");
+        when(deptAdminRuleRepository.findAllById(anyList())).thenReturn(Collections.emptyList());
+        ReplItemResponse repelItemRule = deptAdminRuleService.getRepelItemRule(23L, 35);
+        assertEquals(2, repelItemRule.getReplItemPieceRule());
+        assertEquals(2500, repelItemRule.getMinReplItemUnits());
+    }
+
+    @Test
+    void test_getRepelItemRuleShouldReturnValuesFromDB() throws IllegalAccessException {
+        Field field = ReflectionUtils.findField(DeptAdminRuleServiceImpl.class, "buyQtyProperties");
+        field.setAccessible(true);
+        field.set(deptAdminRuleService, buyQtyProperties);
+        when(buyQtyProperties.getS3PlanIds()).thenReturn("22, 33, 44");
+        when(deptAdminRuleRepository.findAllById(anyList())).thenReturn(Collections.singletonList(dbResponse.get(0)));
+        ReplItemResponse repelItemRule = deptAdminRuleService.getRepelItemRule(23L, 35);
+        assertEquals(55, repelItemRule.getReplItemPieceRule());
+        assertEquals(22, repelItemRule.getMinReplItemUnits());
     }
 
 }
