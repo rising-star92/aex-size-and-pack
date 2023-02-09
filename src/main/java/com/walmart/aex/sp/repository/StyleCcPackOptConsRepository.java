@@ -95,7 +95,7 @@ public interface StyleCcPackOptConsRepository extends JpaRepository<CcPackOptimi
             "AND sp.stylePlanId.finelinePlanId.finelineNbr = scf.spStyleChannelFixtureId.spFineLineChannelFixtureId.fineLineNbr " +
             "AND sp.stylePlanId.styleNbr = scf.spStyleChannelFixtureId.styleNbr  " +
             "AND sp.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId = scf.spStyleChannelFixtureId.spFineLineChannelFixtureId.channelId  " +
-            "AND (scf.bumpPackQty + scf.initialSetQty > 0 OR scf.buyQty > 0)" +
+            "AND (scf.bumpPackQty + scf.initialSetQty + scf.replnQty > 0 OR scf.buyQty > 0)" +
 
             "inner join " +
             "CustChoicePlan ccp " +
@@ -123,7 +123,7 @@ public interface StyleCcPackOptConsRepository extends JpaRepository<CcPackOptimi
             "AND ccp.custChoicePlanId.stylePlanId.styleNbr = spcCf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.styleNbr " +
             "AND ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId  = spcCf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.channelId " +
             "AND ccp.custChoicePlanId.ccId  = spcCf.spCustomerChoiceChannelFixtureId.customerChoice " +
-            "AND (spcCf.bumpPackQty + spcCf.initialSetQty > 0 OR spcCf.buyQty > 0) " +
+            "AND (spcCf.bumpPackQty + spcCf.initialSetQty + spcCf.replnQty > 0 OR spcCf.buyQty > 0) " +
 
             "left join " +
             "StylePackOptimization spk " +
