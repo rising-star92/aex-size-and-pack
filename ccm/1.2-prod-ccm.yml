@@ -1,7 +1,7 @@
 ---
 metadata:
   serviceId: "AEX_SIZE_AND_PACK"
-  serviceConfigVersion: "1.1-PROD"
+  serviceConfigVersion: "1.2-PROD"
   authzPolicies:
     adminUI:
       adminGroups:
@@ -91,12 +91,12 @@ configDefinitions:
         description: "Plm Base URL"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "https://plm-services.aex.walmart.net/"
+        defaultValue: "https://plm-services.aex.prod.walmart.net/"
       "plm.consumerId":
-        description: "Plm Consumer Id"
+        description: "Plm ConsumerId"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "3796c2db-e916-4669-9e3b-60a4ddd52de1"
+        defaultValue: "80eac37e-62ff-4d41-a106-c5bff13827e9"
       "plm.svcName":
         description: "Plm Service Name"
         type: "STRING"
@@ -162,6 +162,11 @@ configDefinitions:
         type: "INTEGER"
         kind: "SINGLE"
         defaultValue: 500
+      "s3Plans2024.constraint":
+        description: "2024 S3 Plans for prod list"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "68, 69, 72"
   bqfpServiceConfig:
     description: ""
     resolutionPaths:

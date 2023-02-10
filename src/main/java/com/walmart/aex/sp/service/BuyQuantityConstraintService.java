@@ -1,28 +1,27 @@
 package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.assortproduct.RFASizePackData;
-import com.walmart.aex.sp.dto.bqfp.*;
+import com.walmart.aex.sp.dto.bqfp.Cluster;
+import com.walmart.aex.sp.dto.bqfp.Replenishment;
 import com.walmart.aex.sp.dto.buyquantity.BuyQtyObj;
 import com.walmart.aex.sp.dto.buyquantity.InitialSetWithReplnsConstraint;
 import com.walmart.aex.sp.dto.buyquantity.SizeDto;
 import com.walmart.aex.sp.dto.buyquantity.StoreQuantity;
-import com.walmart.aex.sp.properties.BuyQtyProperties;
 import com.walmart.aex.sp.util.BuyQtyCommonUtil;
-import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class BuyQuantityConstraintService {
-
-    @ManagedConfiguration
-    BuyQtyProperties buyQtyProperties;
 
     @Autowired
     CalculateBumpPackQtyService calculateBumpPackQtyService;
@@ -30,15 +29,12 @@ public class BuyQuantityConstraintService {
     public BuyQuantityConstraintService() {
     }
 
-    public BuyQuantityConstraintService(CalculateBumpPackQtyService calculateBumpPackQtyService,
-                                        BuyQtyProperties buyQtyProperties) {
+    public BuyQuantityConstraintService(CalculateBumpPackQtyService calculateBumpPackQtyService) {
         this.calculateBumpPackQtyService = calculateBumpPackQtyService;
-        this.buyQtyProperties = buyQtyProperties;
-
     }
 
 
-    public InitialSetWithReplnsConstraint getISWithMoreReplenConstraint(BuyQtyObj buyQtyObj, double totalReducedReplenishment, RFASizePackData rfaSizePackData) {
+    public InitialSetWithReplnsConstraint getISWithMoreReplenConstraint(BuyQtyObj buyQtyObj, double totalReducedReplenishment, RFASizePackData rfaSizePackData, Integer initialThreshold) {
         List<Replenishment> replnsWithUnits = getReplnsWithUnits(buyQtyObj);
         List<Replenishment> replnsWithNoUnits = getReplnsWithNoUnits(buyQtyObj);
         long replenishmentSize = replnsWithUnits.size();
@@ -47,12 +43,11 @@ public class BuyQuantityConstraintService {
         replnsWithUnits.forEach(replenishment -> replenishment.setAdjReplnUnits(getAdjustedDifference(replenishment.getAdjReplnUnits() - perReplenishmentReduced)));
         replnsWithUnits.get(0).setAdjReplnUnits(getAdjustedDifference(replnsWithUnits.get(0).getAdjReplnUnits() - perReplenishmentReducedRemainder));
         replnsWithUnits.addAll(replnsWithNoUnits);
-        double perStoreQty = buyQtyProperties.getInitialThreshold();
-        double isQty = perStoreQty * rfaSizePackData.getStore_cnt();
+        double isQty = (double)initialThreshold * rfaSizePackData.getStore_cnt();
         InitialSetWithReplnsConstraint initialSetWithReplnsConstraint = new InitialSetWithReplnsConstraint();
         initialSetWithReplnsConstraint.setReplnsWithUnits(replnsWithUnits);
         initialSetWithReplnsConstraint.setIsQty(isQty);
-        initialSetWithReplnsConstraint.setPerStoreQty(perStoreQty);
+        initialSetWithReplnsConstraint.setPerStoreQty(initialThreshold);
         return initialSetWithReplnsConstraint;
     }
 
@@ -60,7 +55,7 @@ public class BuyQuantityConstraintService {
         return Math.max(Math.round(value), 0);
     }
 
-    public InitialSetWithReplnsConstraint getISWithLessReplenConstraint(BuyQtyObj buyQtyObj, int storeCntWithNewQty, List<Integer> storeList, double perStoreQty, RFASizePackData rfaSizePackData, Cluster volumeCluster, SizeDto sizeDto) {
+    public InitialSetWithReplnsConstraint getISWithLessReplenConstraint(BuyQtyObj buyQtyObj, int storeCntWithNewQty, List<Integer> storeList, double perStoreQty, RFASizePackData rfaSizePackData, Cluster volumeCluster, SizeDto sizeDto, Integer initialThreshold) {
         List<Replenishment> replnsWithUnits = getReplnsWithUnits(buyQtyObj);
         List<Replenishment> replnsWithNoUnits = getReplnsWithNoUnits(buyQtyObj);
         List<Integer> storeListWithOldQty = storeList.subList(storeCntWithNewQty, storeList.size());
@@ -69,7 +64,7 @@ public class BuyQuantityConstraintService {
         replnsWithUnits.forEach(replenishment -> replenishment.setAdjReplnUnits(0L));
         replnsWithUnits.addAll(replnsWithNoUnits);
         storeList = storeList.subList(0, storeCntWithNewQty);
-        perStoreQty = buyQtyProperties.getInitialThreshold();
+        perStoreQty = initialThreshold;
         double isQty = perStoreQty * storeList.size();
         InitialSetWithReplnsConstraint initialSetWithReplnsConstraint = new InitialSetWithReplnsConstraint();
         initialSetWithReplnsConstraint.setReplnsWithUnits(replnsWithUnits);
@@ -79,14 +74,12 @@ public class BuyQuantityConstraintService {
         return initialSetWithReplnsConstraint;
     }
 
-    public void processReplenishmentConstraints(Map.Entry<SizeDto, BuyQtyObj> entry, long totalReplenishment) {
-        if (totalReplenishment < buyQtyProperties.getReplenishmentThreshold() && totalReplenishment > 0) {
+    public void processReplenishmentConstraints(Map.Entry<SizeDto, BuyQtyObj> entry, long totalReplenishment, Integer replenishmentThreshold) {
+        if (totalReplenishment < replenishmentThreshold && totalReplenishment > 0) {
             while (entry.getValue().getTotalReplenishment() > 0)
                 updateReplnToInitialSet(entry);
         }
     }
-
-
 
     private void updateReplnToInitialSet(Map.Entry<SizeDto, BuyQtyObj> entry) {
         List<StoreQuantity> splitStoreQtys = new ArrayList<>();

@@ -5,6 +5,9 @@ public class SizeAndPackConstants {
     private SizeAndPackConstants() {
     }
 
+    public static final Integer DEFAULT_REPL_ITEM_PIECE_RULE = 2;
+    public static final Integer DEFAULT_MIN_REPL_ITEM_UNITS = 2500;
+
     public static final String SUCCESS_STATUS = "Success";
     public static final String FAILED_STATUS = "Failed";
     public static final String REQUEST_INVALID = "Request is invalid";
@@ -40,4 +43,7 @@ public class SizeAndPackConstants {
     public static final String PACKOPT_FINELINE_STATUS_SUFFIX = "/api/packOptimization/plan/{planId}/fineline/{finelineNbr}/status/{status}";
     public static final String BUMPPACK_DETAILS_SUFFIX = "/bumppack/{bumpPackNbr}";
     public static final Integer DEFAULT_SINGLE_PACK_INDICATOR = 1;
+    public static final String PERCENT = "%";
+    public static final String BUMP_PACK = "BP";
+    public static final String BUMP_PACK_PATTERN = "^(\\d*)_(\\d*)-BP";
 }

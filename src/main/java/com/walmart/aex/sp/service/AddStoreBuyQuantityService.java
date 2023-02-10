@@ -3,19 +3,34 @@ package com.walmart.aex.sp.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.assortproduct.RFASizePackData;
-import com.walmart.aex.sp.dto.bqfp.*;
-import com.walmart.aex.sp.dto.buyquantity.*;
+import com.walmart.aex.sp.dto.bqfp.Cluster;
+import com.walmart.aex.sp.dto.bqfp.CustomerChoice;
+import com.walmart.aex.sp.dto.bqfp.Fixture;
+import com.walmart.aex.sp.dto.bqfp.InitialSet;
+import com.walmart.aex.sp.dto.bqfp.Replenishment;
+import com.walmart.aex.sp.dto.bqfp.Style;
+import com.walmart.aex.sp.dto.buyquantity.AddStoreBuyQuantity;
+import com.walmart.aex.sp.dto.buyquantity.BuyQtyObj;
+import com.walmart.aex.sp.dto.buyquantity.BuyQtyStoreObj;
+import com.walmart.aex.sp.dto.buyquantity.InitialSetQuantity;
+import com.walmart.aex.sp.dto.buyquantity.InitialSetWithReplnsConstraint;
+import com.walmart.aex.sp.dto.buyquantity.SizeDto;
+import com.walmart.aex.sp.dto.buyquantity.StoreQuantity;
 import com.walmart.aex.sp.enums.FixtureTypeRollup;
 import com.walmart.aex.sp.exception.CustomException;
-import com.walmart.aex.sp.properties.BuyQtyProperties;
 import com.walmart.aex.sp.util.BuyQtyCommonUtil;
-import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,9 +49,6 @@ public class AddStoreBuyQuantityService {
     @Autowired
     CalculateInitialSetQuantityService calculateInitialSetQuantityService;
 
-    @ManagedConfiguration
-    BuyQtyProperties buyQtyProperties;
-
     private static final Long DEFAULT_IS_QTY = 0L;
     private static final Long DEFAULT_TOTAL_IS_QTY = 1L;
 
@@ -47,17 +59,15 @@ public class AddStoreBuyQuantityService {
     public AddStoreBuyQuantityService(ObjectMapper objectMapper,
                                       CalculateBumpPackQtyService calculateBumpPackQtyService,
                                       BuyQuantityConstraintService buyQuantityConstraintService,
-                                      CalculateInitialSetQuantityService calculateInitialSetQuantityService,
-                                      BuyQtyProperties buyQtyProperties) {
+                                      CalculateInitialSetQuantityService calculateInitialSetQuantityService) {
         this.objectMapper = objectMapper;
         this.calculateBumpPackQtyService = calculateBumpPackQtyService;
         this.buyQuantityConstraintService = buyQuantityConstraintService;
         this.calculateInitialSetQuantityService = calculateInitialSetQuantityService;
-        this.buyQtyProperties = buyQtyProperties;
     }
 
 
-    public void addStoreBuyQuantities(AddStoreBuyQuantity addStoreBuyQuantity, BuyQtyObj buyQtyObj) {
+    public void addStoreBuyQuantities(AddStoreBuyQuantity addStoreBuyQuantity, BuyQtyObj buyQtyObj, Integer initialThreshold) {
         BuyQtyStoreObj buyQtyStoreObj = Optional.ofNullable(buyQtyObj)
                 .map(BuyQtyObj::getBuyQtyStoreObj)
                 .orElse(new BuyQtyStoreObj());
@@ -66,12 +76,14 @@ public class AddStoreBuyQuantityService {
                 .map(BuyQtyStoreObj::getBuyQuantities)
                 .orElse(new ArrayList<>());
         List<RFASizePackData> rfaSizePackDataList = addStoreBuyQuantity.getRfaSizePackDataList();
-        rfaSizePackDataList.forEach(rfaSizePackData -> calculateAndAddStoreBuyQuantities(addStoreBuyQuantity, buyQtyObj, initialSetQuantities, rfaSizePackData));
+        rfaSizePackDataList.forEach(rfaSizePackData -> calculateAndAddStoreBuyQuantities(addStoreBuyQuantity, buyQtyObj, initialSetQuantities, rfaSizePackData, initialThreshold));
         buyQtyStoreObj.setBuyQuantities(initialSetQuantities);
-        buyQtyObj.setBuyQtyStoreObj(buyQtyStoreObj);
+        if(!ObjectUtils.isEmpty(buyQtyObj)) {
+            buyQtyObj.setBuyQtyStoreObj(buyQtyStoreObj);
+        }
     }
 
-    public void calculateAndAddStoreBuyQuantities(AddStoreBuyQuantity addStoreBuyQuantity, BuyQtyObj buyQtyObj, List<StoreQuantity> initialSetQuantities, RFASizePackData rfaSizePackData) {
+    public void calculateAndAddStoreBuyQuantities(AddStoreBuyQuantity addStoreBuyQuantity, BuyQtyObj buyQtyObj, List<StoreQuantity> initialSetQuantities, RFASizePackData rfaSizePackData, Integer initialThreshold) {
         if (rfaSizePackData == null) {
             log.warn("rfaSizePackData is null. Not adding storeBuyQuantities for styleNbr : {} , ccId :{}  ", addStoreBuyQuantity.getStyleDto().getStyleNbr(), addStoreBuyQuantity.getCustomerChoiceDto().getCcId());
             return;
@@ -79,30 +91,30 @@ public class AddStoreBuyQuantityService {
         Cluster volumeCluster = getVolumeCluster(addStoreBuyQuantity, rfaSizePackData);
         if (volumeCluster != null) {
             setDefaultValueForNullInitialSet(volumeCluster);
-            setInitialSetAndBumpSetQty(addStoreBuyQuantity, initialSetQuantities, volumeCluster, buyQtyObj, rfaSizePackData);
+            setInitialSetAndBumpSetQty(addStoreBuyQuantity, initialSetQuantities, volumeCluster, buyQtyObj, rfaSizePackData, initialThreshold);
         }
     }
 
-    private void setInitialSetAndBumpSetQty(AddStoreBuyQuantity addStoreBuyQuantity, List<StoreQuantity> initialSetQuantities, Cluster volumeCluster, BuyQtyObj buyQtyObj, RFASizePackData rfaSizePackData) {
+    private void setInitialSetAndBumpSetQty(AddStoreBuyQuantity addStoreBuyQuantity, List<StoreQuantity> initialSetQuantities, Cluster volumeCluster, BuyQtyObj buyQtyObj, RFASizePackData rfaSizePackData, Integer initialThreshold) {
         List<Integer> storeList = safeReadStoreList(rfaSizePackData.getStore_list()).stream().sorted().collect(Collectors.toList());
         SizeDto sizeDto = addStoreBuyQuantity.getSizeDto();
         InitialSetQuantity initialSetQuantity = calculateInitialSetQuantityService.calculateInitialSetQty(sizeDto, volumeCluster, rfaSizePackData);
         double perStoreQty = initialSetQuantity.getPerStoreQty();
         double isQty = initialSetQuantity.getIsQty();
-        if ((perStoreQty < buyQtyProperties.getInitialThreshold() && perStoreQty > 0) && (!CollectionUtils.isEmpty(buyQtyObj.getReplenishments()))) {
+        if ((perStoreQty < initialThreshold && perStoreQty > 0) && (!CollectionUtils.isEmpty(buyQtyObj.getReplenishments()))) {
             long totalReplenishment = getTotalReplenishment(buyQtyObj);
             if (totalReplenishment > 0) {
-                double unitsLessThanThreshold = buyQtyProperties.getInitialThreshold() - perStoreQty;
+                double unitsLessThanThreshold = initialThreshold - perStoreQty;
                 double totalReducedReplenishment = unitsLessThanThreshold * rfaSizePackData.getStore_cnt();
                 if (totalReplenishment >= totalReducedReplenishment) {
-                    InitialSetWithReplnsConstraint initialSetWithReplnsConstraint = buyQuantityConstraintService.getISWithMoreReplenConstraint(buyQtyObj, totalReducedReplenishment, rfaSizePackData);
+                    InitialSetWithReplnsConstraint initialSetWithReplnsConstraint = buyQuantityConstraintService.getISWithMoreReplenConstraint(buyQtyObj, totalReducedReplenishment, rfaSizePackData, initialThreshold);
                     buyQtyObj.setReplenishments(initialSetWithReplnsConstraint.getReplnsWithUnits());
                     perStoreQty = initialSetWithReplnsConstraint.getPerStoreQty();
                     isQty = initialSetWithReplnsConstraint.getIsQty();
                     log.debug("| IS after IS constraints with more replenishment | : {} | {} | {} | {} | {} | {}", addStoreBuyQuantity.getCustomerChoiceDto().getCcId(), sizeDto.getSizeDesc(), FixtureTypeRollup.getFixtureIdFromName(rfaSizePackData.getFixture_type()), isQty, perStoreQty, storeList.size());
                 } else {
                     int storeCntWithNewQty = (int) (totalReplenishment / unitsLessThanThreshold);
-                    InitialSetWithReplnsConstraint initialSetWithReplnsConstraint = buyQuantityConstraintService.getISWithLessReplenConstraint(buyQtyObj, storeCntWithNewQty, storeList, perStoreQty, rfaSizePackData, volumeCluster, sizeDto);
+                    InitialSetWithReplnsConstraint initialSetWithReplnsConstraint = buyQuantityConstraintService.getISWithLessReplenConstraint(buyQtyObj, storeCntWithNewQty, storeList, perStoreQty, rfaSizePackData, volumeCluster, sizeDto, initialThreshold);
                     storeList = storeList.subList(0, storeCntWithNewQty);
                     initialSetQuantities.add(initialSetWithReplnsConstraint.getStoreQuantity());
                     buyQtyObj.setReplenishments(initialSetWithReplnsConstraint.getReplnsWithUnits());

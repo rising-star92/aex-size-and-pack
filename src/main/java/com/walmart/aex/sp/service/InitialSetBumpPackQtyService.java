@@ -57,7 +57,7 @@ public class InitialSetBumpPackQtyService {
 			List<InitialSetBumpPackQtyData> initSetBpPkQtyDataList) {
 		gcpInitSetBpPkQtyDataList.forEach(gcpInitSetBpPkQtyObj -> {
 			String planIdAndFineline = gcpInitSetBpPkQtyObj.getPlanAndFineline();
-			String[] planFineline = planIdAndFineline.split("_");
+			String[] planFineline = planIdAndFineline.split("[_-]");
 
 			InitialSetBumpPackQtyData initSetBpPkQtyData = new InitialSetBumpPackQtyData();
 			initSetBpPkQtyData.setPlanId(Long.parseLong(planFineline[0]));

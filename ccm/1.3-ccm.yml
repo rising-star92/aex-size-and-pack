@@ -133,6 +133,11 @@ configDefinitions:
         type: "INTEGER"
         kind: "SINGLE"
         defaultValue: 500
+      "s3Plans2024.constraint":
+        description: "2024 S3 Plans for dev and stg list"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "12, 8, 9, 73"
   bqfpServiceConfig:
     description: ""
     resolutionPaths:
@@ -515,7 +520,7 @@ configOverrides:
       value:
         properties:
           "plm.baseUrl": "https://plm-services.aex.dev.walmart.net/"
-          "plm.consumerId": "ba539c67-5318-4b68-967b-930c767b2dc0"
+          "plm.consumerId": "19ce2bf5-4c24-4bbf-bee9-84496dd07e3c"
           "plm.svcName": "AEX_PLM_SERVICES"
           "plm.env": "dev"
     - name: "stage"
@@ -526,7 +531,7 @@ configOverrides:
       value:
         properties:
           "plm.baseUrl": "https://plm-services.aex.stg.walmart.net/"
-          "plm.consumerId": "2e89ee47-4879-475a-a01b-1995123df8fe"
+          "plm.consumerId": "93c617a1-31ec-4333-a819-683ef7514cc0"
           "plm.svcName": "AEX_PLM_SERVICES"
           "plm.env": "stg"
   bigQueryConfig:

@@ -17,5 +17,6 @@ public class RFAInitialSetBumpSetResponse {
 	private Integer is_quantity;
 	private Integer bs_quantity;
 	private String uuid;
+	private String product_fineline;
 
 }
