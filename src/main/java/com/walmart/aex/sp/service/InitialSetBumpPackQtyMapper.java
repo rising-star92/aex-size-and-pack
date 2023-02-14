@@ -154,7 +154,7 @@ public class InitialSetBumpPackQtyMapper {
 		List<SizeDto> sizeDtoList = Optional.ofNullable(merchMethodsDto.getSizes()).orElse(new ArrayList<>());
 
 		sizeDtoList.stream().filter(sizeDto -> initSetBpPkQtyData.getSizeDesc().equals(sizeDto.getSizeDesc()))
-				.findFirst().ifPresentOrElse(customerChoiceDto -> log.info("Size implementation"),
+				.findFirst().ifPresentOrElse(sizeDto -> updateQuantity(initSetBpPkQtyData, sizeDto),
 						() -> setSizes(initSetBpPkQtyData, sizeDtoList));
 
 		return sizeDtoList;
@@ -169,6 +169,13 @@ public class InitialSetBumpPackQtyMapper {
 		metricsDto.setBumpPackQty(initSetBpPkQtyData.getBumpPackQty());
 		sizeDto.setMetrics(metricsDto);
 		sizeDtoList.add(sizeDto);
+	}
+
+	private void updateQuantity(InitialSetBumpPackQtyData initSetBpPkQtyData, SizeDto sizeDto) {
+		if (initSetBpPkQtyData.getFinalInitialSetQty() != null)
+			sizeDto.getMetrics().setFinalInitialSetQty(sizeDto.getMetrics().getFinalInitialSetQty() + initSetBpPkQtyData.getFinalInitialSetQty());
+		if (initSetBpPkQtyData.getBumpPackQty() != null)
+			sizeDto.getMetrics().setBumpPackQty(sizeDto.getMetrics().getBumpPackQty() + initSetBpPkQtyData.getBumpPackQty());
 	}
 
 }
