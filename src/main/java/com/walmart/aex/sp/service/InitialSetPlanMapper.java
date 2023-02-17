@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import com.walmart.aex.sp.dto.commitmentreport.InitialSetPlan;
@@ -22,6 +23,8 @@ public class InitialSetPlanMapper {
 	public void mapInitialSetPlan(RFAInitialSetBumpSetResponse rfaInitialSetBumpSetResponse, InitialBumpSetResponse response, Integer fineline) {
 		response.setFinelineNbr(fineline);
 		response.setIntialSetStyles(mapInitialSetStyle(rfaInitialSetBumpSetResponse, response));
+
+		response.getIntialSetStyles().removeIf(initialSetStyle -> initialSetStyle.getInitialSetPlan().isEmpty());
 		
 	}
 	
@@ -44,9 +47,12 @@ public class InitialSetPlanMapper {
 	private List<InitialSetPlan> mapInitialSet(RFAInitialSetBumpSetResponse rfaInitialSetBumpSetResponse, InitialSetStyle style) {
 		List<InitialSetPlan> initialSetPlans = Optional.ofNullable(style.getInitialSetPlan()).orElse(new ArrayList<>());
 
-		initialSetPlans.stream().filter(initialSetPlan -> rfaInitialSetBumpSetResponse.getIn_store_week().equals(initialSetPlan.getInStoreWeek())).findFirst()
-				.ifPresentOrElse(initialSetPlan -> initialSetPlan.setPackDetails(mapInitialSetPack(rfaInitialSetBumpSetResponse, initialSetPlan)),
-						() -> setInitialSetPlan(rfaInitialSetBumpSetResponse, initialSetPlans));
+		if (StringUtils.isNotEmpty(rfaInitialSetBumpSetResponse.getIn_store_week()))
+			initialSetPlans.stream()
+					.filter(initialSetPlan -> rfaInitialSetBumpSetResponse.getIn_store_week().equals(initialSetPlan.getInStoreWeek()))
+					.findFirst()
+					.ifPresentOrElse(initialSetPlan -> initialSetPlan.setPackDetails(mapInitialSetPack(rfaInitialSetBumpSetResponse, initialSetPlan)),
+							() -> setInitialSetPlan(rfaInitialSetBumpSetResponse, initialSetPlans));
 		return initialSetPlans;
 	}
 
