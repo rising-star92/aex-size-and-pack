@@ -135,9 +135,9 @@ public class BigQueryInitialSetPlanService {
                 .flatMap(fixtures -> fixtures.getFixtures().stream())
                 .filter((StringUtils.isNotEmpty(fixtureType)) ? fixture -> fixtureType.contains(fixture.getFixtureType()) : fixture -> true)
                 .flatMap(clusters -> clusters.getClusters().stream())
-                .filter((null != clusterId) ? cluster -> clusterId == cluster.getAnalyticsClusterId() : cluster -> true)
+                .filter((null != clusterId) ? cluster -> clusterId.equals(cluster.getAnalyticsClusterId()) : cluster -> true)
                 .flatMap(bump -> bump.getBumpList().stream())
-                .filter(bump -> null != bump && bump.getBumpPackNbr() == bumpPackNumber  && bump.getWeekDesc()!=null)
+                .filter(bump -> null != bump && bump.getBumpPackNbr().equals(bumpPackNumber)  && StringUtils.isNotEmpty(bump.getWeekDesc()))
                 .findFirst().orElse(new BumpSet());
         if (null != bp && StringUtils.isNotEmpty(bp.getWeekDesc())) {
             return formatWeekDesc(bp.getWeekDesc());

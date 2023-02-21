@@ -3,13 +3,16 @@ package com.walmart.aex.sp.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import com.walmart.aex.sp.dto.buyquantity.*;
+import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.walmart.aex.sp.dto.buyquantity.BuyQtyResponse;
 import com.walmart.aex.sp.dto.initsetbumppkqty.InitialSetBumpPackQtyData;
+
+import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
 public class InitialSetBumpPackQtyMapperTest {
@@ -22,20 +25,27 @@ public class InitialSetBumpPackQtyMapperTest {
 		BuyQtyResponse buyQtyResponse = new BuyQtyResponse();
 
 		InitialSetBumpPackQtyData initSetBpPkQtyData = getInitialSetBumpPackQtyDetails();
+		initSetBpPkQtyData.setCcId("34_5141_4_21_11_PEACH SOOT");
+		List<InitialSetBumpPackQtyData> initialSetBumpPackQtyDataList = List.of(getInitialSetBumpPackQtyDetails(), getInitialSetBumpPackQtyDetails(), initSetBpPkQtyData);
 
-		initSetBpPkQtyMapper.mapInitSetBpPkQtyLvl2Sp(initSetBpPkQtyData, buyQtyResponse);
+		initialSetBumpPackQtyDataList.stream().forEach(initialSetBumpPackQtyData -> {
+			initSetBpPkQtyMapper.mapInitSetBpPkQtyLvl2Sp(initialSetBumpPackQtyData, buyQtyResponse);
+		});
+
 		assertNotNull(buyQtyResponse);
 
-		Integer finalInitialSetQty = buyQtyResponse.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0)
-				.getStyles().get(0).getCustomerChoices().get(0).getMerchMethods().get(0).getSizes().get(0).getMetrics()
-				.getFinalInitialSetQty();
+		MetricsDto metricsDto = buyQtyResponse
+				.getLvl3List().stream().filter(lvl3Dto -> lvl3Dto.getLvl3Nbr() == 0).findFirst().orElse(new Lvl3Dto())
+				.getLvl4List().stream().filter(lvl4Dto -> lvl4Dto.getLvl4Nbr() == 0).findFirst().orElse(new Lvl4Dto())
+				.getFinelines().stream().filter(finelineDto -> finelineDto.getFinelineNbr() == 5141).findFirst().orElse(new FinelineDto())
+				.getStyles().stream().filter(styleDto -> styleDto.getStyleNbr().equals("34_5141_4_21_11")).findFirst().orElse(new StyleDto())
+				.getCustomerChoices().stream().filter(ccDto -> ccDto.getCcId().equals("34_5141_4_21_11_BLACK SOOT MARL")).findFirst().orElse(new CustomerChoiceDto())
+				.getMerchMethods().stream().filter(merchMethodDto -> merchMethodDto.getMerchMethod().equals("FOLDED")).findFirst().orElse(new MerchMethodsDto())
+				.getSizes().stream().filter(sizeDto -> sizeDto.getSizeDesc().equals("L")).findFirst().orElse(new SizeDto())
+				.getMetrics();
 
-		Integer bumpPackQty = buyQtyResponse.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles()
-				.get(0).getCustomerChoices().get(0).getMerchMethods().get(0).getSizes().get(0).getMetrics()
-				.getBumpPackQty();
-
-		assertEquals(1326, finalInitialSetQty);
-		assertEquals(0, bumpPackQty);
+		assertEquals(2652, metricsDto.getFinalInitialSetQty());
+		assertEquals(20, metricsDto.getBumpPackQty());
 
 	}
 
@@ -54,7 +64,7 @@ public class InitialSetBumpPackQtyMapperTest {
 		initSetBpPkQtyData.setMerchMethodDesc("FOLDED");
 		initSetBpPkQtyData.setSizeDesc("L");
 		initSetBpPkQtyData.setFinalInitialSetQty(1326);
-		initSetBpPkQtyData.setBumpPackQty(0);
+		initSetBpPkQtyData.setBumpPackQty(10);
 
 		return initSetBpPkQtyData;
 	}

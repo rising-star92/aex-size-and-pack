@@ -84,6 +84,20 @@ public interface StyleCcPackOptConsRepository extends JpaRepository<CcPackOptimi
             "AND fp.finelinePlanId.subCatPlanId.merchCatPlanId.channelId = sp.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId " +
 
             "inner join " +
+            "SpStyleChannelFixture scf " +
+            "ON " +
+            "sp.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.planId = scf.spStyleChannelFixtureId.spFineLineChannelFixtureId.planId " +
+            "AND sp.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.lvl0Nbr = scf.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl0Nbr  " +
+            "AND sp.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.lvl1Nbr = scf.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl1Nbr " +
+            "AND sp.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.lvl2Nbr = scf.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl2Nbr " +
+            "AND sp.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.lvl3Nbr = scf.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl3Nbr " +
+            "AND sp.stylePlanId.finelinePlanId.subCatPlanId.lvl4Nbr = scf.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl4Nbr " +
+            "AND sp.stylePlanId.finelinePlanId.finelineNbr = scf.spStyleChannelFixtureId.spFineLineChannelFixtureId.fineLineNbr " +
+            "AND sp.stylePlanId.styleNbr = scf.spStyleChannelFixtureId.styleNbr  " +
+            "AND sp.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId = scf.spStyleChannelFixtureId.spFineLineChannelFixtureId.channelId  " +
+            "AND (scf.bumpPackQty + scf.initialSetQty + scf.replnQty > 0 OR scf.buyQty > 0)" +
+
+            "inner join " +
             "CustChoicePlan ccp " +
             "ON " +
             "sp.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.planId = ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.planId " +
@@ -95,6 +109,21 @@ public interface StyleCcPackOptConsRepository extends JpaRepository<CcPackOptimi
             "AND sp.stylePlanId.finelinePlanId.finelineNbr = ccp.custChoicePlanId.stylePlanId.finelinePlanId.finelineNbr " +
             "AND sp.stylePlanId.styleNbr = ccp.custChoicePlanId.stylePlanId.styleNbr " +
             "AND sp.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId = ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId " +
+
+            "inner join " +
+            "SpCustomerChoiceChannelFixture spcCf " +
+            "ON " +
+            "ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.planId = spcCf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.planId " +
+            "AND ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.lvl0Nbr = spcCf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl0Nbr " +
+            "AND ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.lvl1Nbr = spcCf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl1Nbr " +
+            "AND ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.lvl2Nbr = spcCf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl2Nbr " +
+            "AND ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.lvl3Nbr = spcCf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl3Nbr " +
+            "AND ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.lvl4Nbr = spcCf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl4Nbr " +
+            "AND ccp.custChoicePlanId.stylePlanId.finelinePlanId.finelineNbr = spcCf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.fineLineNbr " +
+            "AND ccp.custChoicePlanId.stylePlanId.styleNbr = spcCf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.styleNbr " +
+            "AND ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId  = spcCf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.channelId " +
+            "AND ccp.custChoicePlanId.ccId  = spcCf.spCustomerChoiceChannelFixtureId.customerChoice " +
+            "AND (spcCf.bumpPackQty + spcCf.initialSetQty + spcCf.replnQty > 0 OR spcCf.buyQty > 0) " +
 
             "left join " +
             "StylePackOptimization spk " +
