@@ -4,7 +4,6 @@ owner:
 profiles:
   - springboot-web-jdk11-alpine
   - "git://Tunr:strati-af-ccm2-assets:master:ccm2v2"
-  - goldensignal-strati
 
 build:
   buildType: maven-j11
@@ -96,8 +95,6 @@ deploy:
             labels:
               ccm.serviceId: AEX_SIZE_AND_PACK
               ccm.serviceConfigVersion: "1.3"
-              wm.app: AEX_SIZE_AND_PACK
-              wm.env: 'dev'
           env:
             JAVA_OPTS: "-Dspring.profiles.active=dev
                         -Dccm.configs.dir=/etc/config
@@ -105,12 +102,7 @@ deploy:
                         -Dcom.walmart.platform.config.appName={{$.kitt.build.artifact}}
                         -Dcom.walmart.platform.config.runOnEnv={{ $.kittExec.currentCluster.profile }}
                         -Dcom.walmart.platform.logging.kafka.brokerList={{ $.kittExec.currentCluster.site }}.kafka.medusa.prod.walmart.com:9092
-                        -Dcom.walmart.platform.config.runOnDataCenter={{ $.kittExec.currentCluster.site }}
-                        -Dio.strati.RuntimeContext=io.strati.impl.runtime.context.RuntimeContextEnv
-                        -Dcom.walmart.platform.telemetry.otel.enabled=true
-                        -Dcom.walmart.platform.metrics.impl.type=MICROMETER
-                        -Dcom.walmart.platform.txnmarking.otel.type=LOGGING
-                        -Dcom.walmart.platform.logging.profile=OTEL"
+                        -Dcom.walmart.platform.config.runOnDataCenter={{ $.kittExec.currentCluster.site }}"
     - name: stage
       approvers:
         groups:
@@ -127,8 +119,6 @@ deploy:
             labels:
               ccm.serviceId: AEX_SIZE_AND_PACK
               ccm.serviceConfigVersion: "1.3"
-              wm.app: AEX_SIZE_AND_PACK
-              wm.env: 'stage'
           env:
             JAVA_OPTS: "-Dspring.profiles.active=stg
                           -Dccm.configs.dir=/etc/config
@@ -136,12 +126,7 @@ deploy:
                           -Dcom.walmart.platform.config.appName={{$.kitt.build.artifact}}
                           -Dcom.walmart.platform.config.runOnEnv={{ $.kittExec.currentCluster.profile }}
                           -Dcom.walmart.platform.logging.kafka.brokerList={{ $.kittExec.currentCluster.site }}.kafka.medusa.prod.walmart.com:9092
-                          -Dcom.walmart.platform.config.runOnDataCenter={{ $.kittExec.currentCluster.site }}
-                          -Dio.strati.RuntimeContext=io.strati.impl.runtime.context.RuntimeContextEnv
-                          -Dcom.walmart.platform.telemetry.otel.enabled=true
-                          -Dcom.walmart.platform.metrics.impl.type=MICROMETER
-                          -Dcom.walmart.platform.txnmarking.otel.type=LOGGING
-                          -Dcom.walmart.platform.logging.profile=OTEL"
+                          -Dcom.walmart.platform.config.runOnDataCenter={{ $.kittExec.currentCluster.site }}"
     - name: prod
       approvers:
         groups:
@@ -159,8 +144,6 @@ deploy:
             labels:
               ccm.serviceId: AEX_SIZE_AND_PACK
               ccm.serviceConfigVersion: "1.2-PROD"
-              wm.app: AEX_SIZE_AND_PACK
-              wm.env: 'prod'
           env:
             JAVA_OPTS: "-Dspring.profiles.active=prod
                           -Dccm.configs.dir=/etc/config
@@ -168,12 +151,7 @@ deploy:
                           -Dcom.walmart.platform.config.appName={{$.kitt.build.artifact}}
                           -Dcom.walmart.platform.config.runOnEnv={{ $.kittExec.currentCluster.profile }}
                           -Dcom.walmart.platform.logging.kafka.brokerList={{ $.kittExec.currentCluster.site }}.kafka.medusa.prod.walmart.com:9092
-                          -Dcom.walmart.platform.config.runOnDataCenter={{ $.kittExec.currentCluster.site }}
-                          -Dio.strati.RuntimeContext=io.strati.impl.runtime.context.RuntimeContextEnv
-                          -Dcom.walmart.platform.telemetry.otel.enabled=true
-                          -Dcom.walmart.platform.metrics.impl.type=MICROMETER
-                          -Dcom.walmart.platform.txnmarking.otel.type=LOGGING
-                          -Dcom.walmart.platform.logging.profile=OTEL"
+                          -Dcom.walmart.platform.config.runOnDataCenter={{ $.kittExec.currentCluster.site }}"
 notify:
   slack:
     channelName: "apparel-precision-ops"
@@ -181,6 +159,3 @@ notify:
 alerts:
   slackChannel:
     - apparel-precision-alerts
-setup:
-  featureFlagMap:
-    isGoldenSignalGateEnabled: true
