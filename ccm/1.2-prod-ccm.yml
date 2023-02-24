@@ -163,7 +163,7 @@ configDefinitions:
         kind: "SINGLE"
         defaultValue: 500
       "s3Plans2024.constraint":
-        description: "2024 S3 Plans for prod list"
+        description: "2024 S3 Plans for prod list "
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "68, 69, 72"
