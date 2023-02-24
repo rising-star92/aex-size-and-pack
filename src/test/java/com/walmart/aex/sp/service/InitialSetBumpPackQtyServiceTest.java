@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.buyquantity.BuyQtyRequest;
 import com.walmart.aex.sp.dto.buyquantity.BuyQtyResponse;
+import com.walmart.aex.sp.dto.buyquantity.SizeDto;
 import com.walmart.aex.sp.dto.initsetbumppkqty.InitSetBumpPackDTO;
 import com.walmart.aex.sp.dto.initsetbumppkqty.InitSetBumpPackData;
 import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixtureSize;
@@ -50,20 +51,30 @@ class InitialSetBumpPackQtyServiceTest {
 
         when(bigQueryInitSetBpPkQtyService.fetchInitialSetBumpPackDataFromGCP(any())).thenReturn(gcpResponse);
         List<SpCustomerChoiceChannelFixtureSize> dbResponse = new ArrayList<>(Arrays.asList(
-                new SpCustomerChoiceChannelFixtureSize(new SpCustomerChoiceChannelFixtureSizeId(null, 1446), null, "M", null, null, null, null, null, null, null, null, null, null),
-                new SpCustomerChoiceChannelFixtureSize(new SpCustomerChoiceChannelFixtureSizeId(null, 1463), null, "L", null, null, null, null, null, null, null, null, null, null),
-                new SpCustomerChoiceChannelFixtureSize(new SpCustomerChoiceChannelFixtureSizeId(null, 1446), null, "M", null, null, null, null, null, null, null, null, null, null),
-                new SpCustomerChoiceChannelFixtureSize(new SpCustomerChoiceChannelFixtureSizeId(null, 1463), null, "L", null, null, null, null, null, null, null, null, null, null),
-                new SpCustomerChoiceChannelFixtureSize(new SpCustomerChoiceChannelFixtureSizeId(null, 1429), null, "S", null, null, null, null, null, null, null, null, null, null),
-                new SpCustomerChoiceChannelFixtureSize(new SpCustomerChoiceChannelFixtureSizeId(null, 1429), null, "S", null, null, null, null, null, null, null, null, null, null)
+                getSpCustomerChoiceChannelFixtureSize(1446, "M"),
+                getSpCustomerChoiceChannelFixtureSize(1463, "L"),
+                getSpCustomerChoiceChannelFixtureSize(1446, "M"),
+                getSpCustomerChoiceChannelFixtureSize(1463, "L"),
+                getSpCustomerChoiceChannelFixtureSize(1429, "S"),
+                getSpCustomerChoiceChannelFixtureSize(1429, "S")
         ));
         when(spCustomerChoiceChannelFixtureSizeRepository.getSpCcChanFixtrDataByPlanFineline(anyLong(), anyInt()))
                 .thenReturn(dbResponse);
-        BuyQtyRequest request = objectMapper.readValue("{\"planId\":69,\"channel\":\"store\",\"finelineNbr\":468}", BuyQtyRequest.class);
+
+        BuyQtyRequest request = new BuyQtyRequest();
+        request.setPlanId(69L);
+        request.setChannel("store");
+        request.setFinelineNbr(468);
+
         BuyQtyResponse actual = initialSetBumpPackQtyService.getInitSetBpPkByPlanFineline(request);
-        assertEquals(3, actual.getLvl3List().iterator().next().getLvl4List().iterator().next().getFinelines().iterator().next().getStyles().iterator().next().getCustomerChoices().iterator().next().getMerchMethods().iterator().next().getSizes().size());
-        actual.getLvl3List().iterator().next().getLvl4List().iterator().next().getFinelines().iterator().next().getStyles().iterator().next().getCustomerChoices().iterator().next().getMerchMethods().iterator().next().getSizes().forEach(val -> {
+        List<SizeDto> sizes = actual.getLvl3List().iterator().next().getLvl4List().iterator().next().getFinelines().iterator().next().getStyles().iterator().next().getCustomerChoices().iterator().next().getMerchMethods().iterator().next().getSizes();
+        assertEquals(3, sizes.size());
+        sizes.forEach(val -> {
             assertNotNull(val.getAhsSizeId());
         });
+    }
+
+    private SpCustomerChoiceChannelFixtureSize getSpCustomerChoiceChannelFixtureSize(int ahsSizeId, String size) {
+        return new SpCustomerChoiceChannelFixtureSize(new SpCustomerChoiceChannelFixtureSizeId(null, ahsSizeId), null, size, null, null, null, null, null, null, null, null, null, null);
     }
 }
