@@ -1,20 +1,22 @@
 package com.walmart.aex.sp.service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.stereotype.Service;
-
 import com.walmart.aex.sp.dto.buyquantity.BuyQtyRequest;
 import com.walmart.aex.sp.dto.buyquantity.BuyQtyResponse;
-import com.walmart.aex.sp.dto.initsetbumppkqty.InitialSetBumpPackQtyData;
 import com.walmart.aex.sp.dto.initsetbumppkqty.InitSetBumpPackDTO;
 import com.walmart.aex.sp.dto.initsetbumppkqty.InitSetBumpPackData;
+import com.walmart.aex.sp.dto.initsetbumppkqty.InitialSetBumpPackQtyData;
+import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixtureSize;
 import com.walmart.aex.sp.enums.ChannelType;
-
+import com.walmart.aex.sp.repository.SpCustomerChoiceChannelFixtureSizeRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -22,11 +24,13 @@ public class InitialSetBumpPackQtyService {
 
 	private final BigQueryInitSetBpPkQtyService bigQueryInitSetBpPkQtyService;
 	private final InitialSetBumpPackQtyMapper initSetBpPkQtyMapper;
+	private final SpCustomerChoiceChannelFixtureSizeRepository spCustomerChoiceChannelFixtureSizeRepository;
 
 	public InitialSetBumpPackQtyService(BigQueryInitSetBpPkQtyService bigQueryInitSetBpPkQtyService,
-			InitialSetBumpPackQtyMapper initSetBpPkQtyMapper) {
+										InitialSetBumpPackQtyMapper initSetBpPkQtyMapper, SpCustomerChoiceChannelFixtureSizeRepository spCustomerChoiceChannelFixtureSizeRepository) {
 		this.bigQueryInitSetBpPkQtyService = bigQueryInitSetBpPkQtyService;
 		this.initSetBpPkQtyMapper = initSetBpPkQtyMapper;
+		this.spCustomerChoiceChannelFixtureSizeRepository = spCustomerChoiceChannelFixtureSizeRepository;
 	}
 
 	public BuyQtyResponse getInitSetBpPkByPlanFineline(BuyQtyRequest request) {
@@ -39,9 +43,9 @@ public class InitialSetBumpPackQtyService {
 					&& request.getFinelineNbr() != null) {
 				initSetBpPkData = bigQueryInitSetBpPkQtyService.fetchInitialSetBumpPackDataFromGCP(request);
 			}
-
+			Map<String, Integer> ahsSizeDescMap = getAhsSizeDescMap(request.getPlanId(), request.getFinelineNbr());
 			if (initSetBpPkData != null && initSetBpPkData.getInitSetBpPkQtyDTOList() != null) {
-				mapInitSetBumpPackQty(initSetBpPkData.getInitSetBpPkQtyDTOList(), initSetBpPkQtyDataList);
+				mapInitSetBumpPackQty(initSetBpPkData.getInitSetBpPkQtyDTOList(), initSetBpPkQtyDataList, ahsSizeDescMap);
 			}
 
 			Optional.of(initSetBpPkQtyDataList).stream().flatMap(Collection::stream).forEach(
@@ -53,8 +57,15 @@ public class InitialSetBumpPackQtyService {
 		return response;
 	}
 
+	private Map<String, Integer> getAhsSizeDescMap(Long planId, Integer fineLineNbr) {
+		Map<String, Integer> ahsSizeDescMap = new HashMap<>();
+		List<SpCustomerChoiceChannelFixtureSize> spCcChanFixtrDataByPlanFineline = spCustomerChoiceChannelFixtureSizeRepository.getSpCcChanFixtrDataByPlanFineline(planId, fineLineNbr);
+		spCcChanFixtrDataByPlanFineline.forEach(spCustomerChoiceChannelFixtureSize -> ahsSizeDescMap.putIfAbsent(spCustomerChoiceChannelFixtureSize.getAhsSizeDesc(), spCustomerChoiceChannelFixtureSize.getSpCustomerChoiceChannelFixtureSizeId().getAhsSizeId()));
+		return ahsSizeDescMap;
+	}
+
 	private void mapInitSetBumpPackQty(List<InitSetBumpPackDTO> gcpInitSetBpPkQtyDataList,
-			List<InitialSetBumpPackQtyData> initSetBpPkQtyDataList) {
+			List<InitialSetBumpPackQtyData> initSetBpPkQtyDataList, Map<String, Integer> ahsSizeDescMap) {
 		gcpInitSetBpPkQtyDataList.forEach(gcpInitSetBpPkQtyObj -> {
 			String planIdAndFineline = gcpInitSetBpPkQtyObj.getPlanAndFineline();
 			String[] planFineline = planIdAndFineline.split("[_-]");
@@ -73,9 +84,9 @@ public class InitialSetBumpPackQtyService {
 			initSetBpPkQtyData.setSizeDesc(gcpInitSetBpPkQtyObj.getSize());
 			initSetBpPkQtyData.setFinalInitialSetQty(gcpInitSetBpPkQtyObj.getFinalInitialSetQty());
 			initSetBpPkQtyData.setBumpPackQty(gcpInitSetBpPkQtyObj.getBumpPackQty());
+			initSetBpPkQtyData.setAhsSizeId(ahsSizeDescMap.get(gcpInitSetBpPkQtyObj.getSize()));
 
 			initSetBpPkQtyDataList.add(initSetBpPkQtyData);
-
 		});
 
 	}
