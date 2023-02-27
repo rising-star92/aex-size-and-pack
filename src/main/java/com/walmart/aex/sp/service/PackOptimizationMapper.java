@@ -146,7 +146,7 @@ public class PackOptimizationMapper {
 			metricsObj.setInitialSet(stObj.getIsUnits());
 		}
 		metricsObj.setFlowStrategyType(FlowStrategy.getFlowStrategyFromId(stObj.getFlowStrategyCode()));
-		if(null!=bumpPackNbr && stObj.getBumpSets().size()>=bumpPackNbr) {
+		if(null!=bumpPackNbr) {
 			BumpSetDto bumpSetDto = getBumpPackByNbr(stObj, bumpPackNbr);
 			if(null!=bumpSetDto) {
 				metricsObj.setBumpSet(bumpSetDto.getBsUnits());
