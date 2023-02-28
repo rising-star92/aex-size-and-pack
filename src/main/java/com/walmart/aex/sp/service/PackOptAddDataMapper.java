@@ -222,6 +222,8 @@ public class PackOptAddDataMapper {
             if (!StringUtils.isEmpty(supplierName) && !StringUtils.isEmpty(ccPackOptimization.getVendorName()) && !supplierName.equalsIgnoreCase(ccPackOptimization.getVendorName())) {
                 log.info("Received Supplier Name update event from LP. Removing FactoryId, Port of Origin and Color Combination for CC {}  ",ccPackOptimization.getCcPackOptimizationId());
                 ccPackOptimization.setPortOfOriginName(null);
+                ccPackOptimization.setOverrideFactoryId(null);
+                ccPackOptimization.setOverrideFactoryName(null);
                 if (!StringUtils.isEmpty(ccPackOptimization.getColorCombination())) {
                     colorCombinationSets.add(ccPackOptimization.getColorCombination());
                 }
