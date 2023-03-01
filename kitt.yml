@@ -29,7 +29,7 @@ deploy:
   releaseType:
     rollbackOnError: false
     waitForReady: true
-    deployTimeout: 300
+    deployTimeout: 600
   helm:
     values:
       DYNATRACE_ENABLED: true
