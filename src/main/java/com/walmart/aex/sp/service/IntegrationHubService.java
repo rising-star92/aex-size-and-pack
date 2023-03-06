@@ -64,6 +64,7 @@ public class IntegrationHubService {
         List<MediaType> mediaTypeList = new ArrayList<>();
         mediaTypeList.add(MediaType.APPLICATION_JSON);
         headers.setAccept(mediaTypeList);
+        headers.set("WM_SVC.NAME", "AEX_SIZE_AND_PACK");
         return headers;
     }
 

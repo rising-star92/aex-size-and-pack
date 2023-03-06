@@ -27,6 +27,8 @@
         <ccm.client.version>2.0.11</ccm.client.version>
         <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
         <org.projectlombok.version>1.18.22</org.projectlombok.version>
+        <strati.boms.version>11.0.17</strati.boms.version>
+        <txn.marking.version>4.5.4</txn.marking.version>
 
         <sonar.coverage.exclusions>
             **/Application.java,
@@ -212,6 +214,52 @@
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
             <version>1.5.3.Final</version>
+        </dependency>
+
+        <!-- MUST HAVE: Required Strati dependency -->
+        <dependency>
+            <groupId>io.strati</groupId>
+            <artifactId>strati-af-javase-bom</artifactId>
+            <version>${strati.boms.version}</version>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>io.strati</groupId>
+            <artifactId>strati-af-spring4-bom</artifactId>
+            <version>${strati.boms.version}</version>
+            <type>pom</type>
+        </dependency>
+
+        <!-- MUST HAVE: Required additional Strati dependency to use the transaction
+            marking interceptors for Springboot applications. -->
+        <dependency>
+            <groupId>io.strati</groupId>
+            <artifactId>strati-af-txn-marking-springboot-client</artifactId>
+            <version>${txn.marking.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.strati</groupId>
+            <artifactId>strati-af-txn-marking-springboot-server</artifactId>
+            <version>${txn.marking.version}</version>
+        </dependency>
+
+        <!-- Required Spring Boot related dependency -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+            <exclusions>
+                <!-- Must exclude spring-boot-starter-logging to use strati-af-logging. -->
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- MUST HAVE: Required for publishing Prometheus metrics -->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
         </dependency>
     </dependencies>
 
