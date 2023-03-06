@@ -10,5 +10,5 @@ public class PackDetails {
 	  private String packId;
 	  private List<Metrics> metrics;
 	  private String uuId;
-	  private Integer bumpPackNumber;
+	  private Integer bumpPackNbr;
 }

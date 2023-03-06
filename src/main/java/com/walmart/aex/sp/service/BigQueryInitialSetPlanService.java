@@ -82,7 +82,7 @@ public class BigQueryInitialSetPlanService {
                 RFAInitialSetBumpSetResponse rfaRes = new RFAInitialSetBumpSetResponse();
                 BumpSet bp = getBumpSet(bqfpResponse, rfaBumpSetResponse.getProduct_fineline(), rfaBumpSetResponse.getStyle_id(), rfaBumpSetResponse.getCc(), null, null);
                 rfaRes.setIn_store_week(getInStoreWeek(bp));
-                rfaRes.setBumpPackNum(bp.getBumpPackNbr());
+                rfaRes.setBumpPackNbr(bp.getBumpPackNbr());
                 rfaRes.setStyle_id(rfaBumpSetResponse.getStyle_id());
                 rfaRes.setCc(rfaBumpSetResponse.getCc());
                 rfaRes.setMerch_method(rfaBumpSetResponse.getMerch_method());

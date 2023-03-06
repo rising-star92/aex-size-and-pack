@@ -77,7 +77,7 @@ public class InitialSetPlanMapper {
 		paDetails.setPackId(rfaInitialSetBumpSetResponse.getPack_id());
 		paDetails.setMetrics(mapInitialSetPackMetrics(rfaInitialSetBumpSetResponse,paDetails));
 		paDetails.setUuId(rfaInitialSetBumpSetResponse.getUuid());
-		paDetails.setBumpPackNumber(rfaInitialSetBumpSetResponse.getBumpPackNum());
+		paDetails.setBumpPackNbr(rfaInitialSetBumpSetResponse.getBumpPackNbr());
 		packDetails.add(paDetails);
 	}
 	

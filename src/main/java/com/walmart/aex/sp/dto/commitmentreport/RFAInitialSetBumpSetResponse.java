@@ -18,6 +18,6 @@ public class RFAInitialSetBumpSetResponse {
 	private Integer bs_quantity;
 	private String uuid;
 	private String product_fineline;
-	private Integer bumpPackNum;
+	private Integer bumpPackNbr;
 
 }

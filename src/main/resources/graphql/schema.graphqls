@@ -136,7 +136,7 @@ type PackDetails{
 	packId: String
 	uuId: String
 	metrics: [Metrics]
-	bumpPackNumber: Int
+	bumpPackNbr: Int
 }
 
 type Metrics{
