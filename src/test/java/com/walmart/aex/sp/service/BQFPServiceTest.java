@@ -103,6 +103,16 @@ public class BQFPServiceTest {
       assertNull(result);
    }
 
+   @Test
+   public void getSuccessBQFPResponseByCreatingRequestObject() {
+      ResponseEntity<BQFPResponse> response = ResponseEntity.status(HttpStatus.OK).body(successResponse());
+      when(properties.getUrl()).thenReturn("https://bqfp.dev/flow-plan/v1/getBuyQuantityFromFlowPlan");
+      when(restTemplate.exchange(any(URI.class), eq(HttpMethod.GET), any(), eq(BQFPResponse.class))).thenReturn(response);
+      BQFPResponse result = bqfpService.getBqfpResponse(485, 123);
+      verify(restTemplate, times(1)).exchange(any(URI.class), eq(HttpMethod.GET), any(), eq(BQFPResponse.class));
+      assertNotNull(result);
+   }
+
 
 
    private BQFPResponse successResponse() {

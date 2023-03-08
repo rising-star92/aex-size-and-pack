@@ -21,6 +21,7 @@ import com.walmart.aex.sp.properties.GraphQLProperties;
 import com.walmart.aex.sp.util.BuyQtyCommonUtil;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -104,7 +105,7 @@ public class BigQueryStoreDistributionService {
                     BumpSet bumpSet = BuyQtyCommonUtil.getBumpSet(bqfpResponse, storeDistribution.getProductFineline(), storeDistribution.getStyleNbr(),
                             storeDistribution.getCc(), storeDistribution.getFixtureType(), storeDistribution.getClusterId());
                     String bSInStoreWeek = BuyQtyCommonUtil.getInStoreWeek(bumpSet);
-                    storeDistribution.setInStoreWeek(Long.valueOf(bSInStoreWeek));
+                    if (StringUtils.isNotEmpty(bSInStoreWeek)) storeDistribution.setInStoreWeek(Long.valueOf(bSInStoreWeek));
                 }
                 storeDistributionData.setStoreDistributionList(storeDistributionBumpSetList);
             }
@@ -201,7 +202,7 @@ public class BigQueryStoreDistributionService {
 
     private String getAnalyticsQueryByDeviation(FinelineVolumeDeviationDto finelineVolumeDeviationDto, String season, Integer fiscalYear) throws SizeAndPackException {
         if (finelineVolumeDeviationDto.getVolumeDeviationLevel().equals(VdLevelCode.CATEGORY.getDescription()))
-            return "select scc.store_nbr as store,scc.cluster_id as clusterId from `" + bigQueryConnectionProperties.getAnalyticsData() + ".svg_category_cluster` cc " +
+            return "select cc.store_nbr as store, cc.cluster_id as clusterId from `" + bigQueryConnectionProperties.getAnalyticsData() + ".svg_category_cluster` cc " +
                     "join `" + bigQueryConnectionProperties.getAnalyticsData() + ".svg_category` c on c.cluster_id = cc.cluster_id and c.dept_nbr = cc.dept_nbr and " +
                     "c.dept_catg_nbr = cc.dept_catg_nbr and c.season = cc.season and c.fiscal_year = cc.fiscal_year " +
                     "where c.dept_catg_nbr = " + finelineVolumeDeviationDto.getLvl3Nbr() + " and  c.season = '" + season + "' and c.fiscal_year = " + fiscalYear;

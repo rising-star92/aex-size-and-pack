@@ -12,6 +12,7 @@ import com.walmart.aex.sp.exception.SizeAndPackException;
 import com.walmart.aex.sp.properties.GraphQLProperties;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -21,14 +22,11 @@ import java.util.function.Function;
 @Service
 @Slf4j
 public class StrategyFetchService {
-    private final GraphQLService graphQLService;
+    @Autowired
+    private GraphQLService graphQLService;
 
     @ManagedConfiguration
-    GraphQLProperties graphQLProperties;
-
-    StrategyFetchService(GraphQLService graphQLService) {
-        this.graphQLService = graphQLService;
-    }
+    private GraphQLProperties graphQLProperties;
 
     public BuyQtyResponse getBuyQtyResponseSizeProfile(BuyQtyRequest buyQtyRequest) throws SizeAndPackException
     {
@@ -97,7 +95,7 @@ public class StrategyFetchService {
         return (StrategyVolumeDeviationResponse) post(graphQLProperties.getSizeProfileUrl(), graphQLProperties.getStrategyVolumeDeviationLevel(), headers, data, Payload::getGetVolumeDeviationStrategySelection);
     }
 
-    public Map<String, String> getHeaderForStrategy() {
+    private Map<String, String> getHeaderForStrategy() {
         Map<String, String> headers = new HashMap<>();
         headers.put("WM_CONSUMER.ID", graphQLProperties.getSizeProfileConsumerId());
         headers.put("WM_SVC.NAME", graphQLProperties.getSizeProfileConsumerName());
@@ -105,7 +103,7 @@ public class StrategyFetchService {
         return headers;
     }
 
-    public Map<String, Object> getBuyQtyRequest(BuyQtyRequest buyQtyRequest)
+    private Map<String, Object> getBuyQtyRequest(BuyQtyRequest buyQtyRequest)
     {
         Map<String, Object> data = new HashMap<>();
         data.put("planId", buyQtyRequest.getPlanId());
@@ -116,8 +114,9 @@ public class StrategyFetchService {
     public StrategyVolumeDeviationResponse getStrategyVolumeDeviation(Long planId, Integer finelineNbr) throws SizeAndPackException {
         List<StrategyVolumeDeviationRequest> strategyVolumeDeviationRequests = new ArrayList<>();
         StrategyVolumeDeviationRequest strategyVolumeDeviationRequest = new StrategyVolumeDeviationRequest();
-        strategyVolumeDeviationRequest.setPlanId(planId);
         List<Integer> finelines = new ArrayList<>();
+
+        strategyVolumeDeviationRequest.setPlanId(planId);
         finelines.add(finelineNbr);
         strategyVolumeDeviationRequest.setFinelineNbr(finelines);
         strategyVolumeDeviationRequests.add(strategyVolumeDeviationRequest);
