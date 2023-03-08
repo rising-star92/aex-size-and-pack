@@ -11,4 +11,8 @@ public class StoreDistributionDTO {
 	private String packId;
 	private Integer store;
 	private Integer initialPackMultiplier;
+	private Integer clusterId;
+	private String cc;
+	private float fixtureAllocation;
+	private String fixtureType;
 }

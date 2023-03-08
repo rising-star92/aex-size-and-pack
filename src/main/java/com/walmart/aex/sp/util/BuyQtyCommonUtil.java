@@ -1,25 +1,19 @@
 package com.walmart.aex.sp.util;
 
 import com.walmart.aex.sp.dto.assortproduct.RFASizePackData;
-import com.walmart.aex.sp.dto.bqfp.BQFPResponse;
-import com.walmart.aex.sp.dto.bqfp.Cluster;
-import com.walmart.aex.sp.dto.bqfp.CustomerChoice;
-import com.walmart.aex.sp.dto.bqfp.Fixture;
-import com.walmart.aex.sp.dto.bqfp.Replenishment;
-import com.walmart.aex.sp.dto.bqfp.Style;
+import com.walmart.aex.sp.dto.bqfp.*;
 import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
 import com.walmart.aex.sp.service.BuyQuantityMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
+import static java.util.Objects.requireNonNull;
 
 @Component
 @Slf4j
@@ -149,5 +143,42 @@ public class BuyQtyCommonUtil {
         if (volumeCluster.getFlowStrategy() != null)
             storeQuantity.setFlowStrategyCode(volumeCluster.getFlowStrategy());
         return storeQuantity;
+    }
+
+    public static BumpSet getBumpSet(BQFPResponse bqfpResponse, String productFineline, String styleNbr, String ccId, String fixtureType, Integer clusterId) {
+        Integer bumpPackNumber = StringUtils.isNotEmpty(productFineline) && productFineline.contains(BUMP_PACK) ?
+                Integer.valueOf(productFineline.replaceFirst(BUMP_PACK_PATTERN, "")) : 1;
+        return Optional.ofNullable(bqfpResponse).stream().
+                flatMap( styles -> styles.getStyles().stream())
+                .filter((StringUtils.isNotEmpty(styleNbr)) ? style -> styleNbr.contains(style.getStyleId()) : style -> true)
+                .flatMap( ccs -> ccs.getCustomerChoices().stream())
+                .filter((StringUtils.isNotEmpty(ccId)) ? cc -> ccId.contains(cc.getCcId()) : cc -> true)
+                .flatMap(fixtures -> fixtures.getFixtures().stream())
+                .filter((StringUtils.isNotEmpty(fixtureType)) ? fixture -> fixtureType.contains(fixture.getFixtureType()) : fixture -> true)
+                .flatMap(clusters -> clusters.getClusters().stream())
+                .filter((null != clusterId) ? cluster -> clusterId.equals(cluster.getAnalyticsClusterId()) : cluster -> true)
+                .flatMap(bump -> bump.getBumpList().stream())
+                .filter(bump -> null != bump && bump.getBumpPackNbr().equals(bumpPackNumber)  && StringUtils.isNotEmpty(bump.getWeekDesc()))
+                .findFirst().orElse(new BumpSet());
+    }
+
+    public static String getInStoreWeek(BumpSet bp) {
+        if (null != bp && StringUtils.isNotEmpty(bp.getWeekDesc())) {
+            return formatWeekDesc(bp.getWeekDesc());
+        }
+        return null;
+    }
+
+    private static String formatWeekDesc(String input) {
+        requireNonNull(input, "input is required and missing.");
+
+        StringBuilder weekDesc = new StringBuilder();
+
+        for (char c : input.toCharArray()) {
+            if (c >= '0' && c <= '9') {
+                weekDesc.append(c);
+            }
+        }
+        return weekDesc.toString();
     }
 }

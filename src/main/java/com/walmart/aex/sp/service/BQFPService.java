@@ -2,18 +2,13 @@ package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.bqfp.BQFPRequest;
 import com.walmart.aex.sp.dto.bqfp.BQFPResponse;
-import com.walmart.aex.sp.dto.gql.GraphQLResponse;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.properties.BQFPServiceProperties;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.utils.URIBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
@@ -93,6 +88,15 @@ public class BQFPService {
       BQFPResponse response = createDefaultResponse();
       log.error("BQFP service call failed after 3 retries for request : " + request, e);
       return response;
+   }
+
+   public BQFPResponse getBqfpResponse(Integer planId, Integer finelineNbr) {
+      BQFPRequest bqfpRequest = new BQFPRequest();
+      bqfpRequest.setPlanId(Long.valueOf(planId));
+      bqfpRequest.setFinelineNbr(finelineNbr);
+      bqfpRequest.setChannel("1");
+
+      return getBuyQuantityUnits(bqfpRequest);
    }
 
    private BQFPResponse createDefaultResponse() {

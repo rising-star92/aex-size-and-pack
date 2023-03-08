@@ -15,10 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 
 @Service
@@ -114,6 +111,17 @@ public class StrategyFetchService {
         data.put("planId", buyQtyRequest.getPlanId());
         data.put("channel", buyQtyRequest.getChannel());
         return data;
+    }
+
+    public StrategyVolumeDeviationResponse getStrategyVolumeDeviation(Long planId, Integer finelineNbr) throws SizeAndPackException {
+        List<StrategyVolumeDeviationRequest> strategyVolumeDeviationRequests = new ArrayList<>();
+        StrategyVolumeDeviationRequest strategyVolumeDeviationRequest = new StrategyVolumeDeviationRequest();
+        strategyVolumeDeviationRequest.setPlanId(planId);
+        List<Integer> finelines = new ArrayList<>();
+        finelines.add(finelineNbr);
+        strategyVolumeDeviationRequest.setFinelineNbr(finelines);
+        strategyVolumeDeviationRequests.add(strategyVolumeDeviationRequest);
+        return getStrategyVolumeDeviation(strategyVolumeDeviationRequests);
     }
 
 }

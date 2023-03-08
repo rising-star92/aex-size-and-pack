@@ -77,4 +77,18 @@ public interface GraphQLProperties {
     @Property(propertyName = "strategy.vg.deviation.level")
     String getStrategyVolumeDeviationLevel();
 
+    @Property(propertyName = "cbam.plan.definition.url")
+    String getPlanDefinitionUrl();
+
+    @Property(propertyName = "cbam.plan.definition.query")
+    String getPlanDefinitionQuery();
+
+    @Property(propertyName = "cbam.plan.definition.consumer.id")
+    String getPlanDefinitionConsumerId();
+
+    @Property(propertyName = "cbam.plan.definition.consumer.name")
+    String getPlanDefinitionConsumerName();
+
+    @Property(propertyName = "cbam.plan.definition.consumer.env")
+    String getPlanDefinitionConsumerEnv();
 }

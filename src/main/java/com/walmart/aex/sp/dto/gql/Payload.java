@@ -6,6 +6,7 @@ import com.walmart.aex.sp.dto.bqfp.RfaWeeksResponse;
 import com.walmart.aex.sp.dto.buyquantity.BuyQtyResponse;
 import com.walmart.aex.sp.dto.buyquantity.StrategyVolumeDeviationResponse;
 import com.walmart.aex.sp.dto.currentlineplan.Lvl3;
+import com.walmart.aex.sp.dto.plan.definition.PlanIdResponse;
 import lombok.Data;
 
 import java.util.List;
@@ -21,4 +22,5 @@ public class Payload {
     private RfaWeeksResponse getRFAWeeksByFineline;
     private List<Lvl3> getLinePlanFinelines;
     private StrategyVolumeDeviationResponse getVolumeDeviationStrategySelection;
+    private PlanIdResponse getPlanById;
 }

@@ -373,6 +373,31 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "query($volumeDeviationRequests:[VolumeDeviationRequests]) {getVolumeDeviationStrategySelection (request: {volumeDeviationRequestsList: $volumeDeviationRequests }) { finelines { finelineId finelineName lvl0Nbr lvl1Nbr lvl2Nbr lvl3Nbr lvl4Nbr planId volumeDeviationLevel } } }"
+      "cbam.plan.definition.url":
+        description: "Get Plan definition from Line Plan"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "https://plan-definition.cbam.dev.walmart.net/graphql"
+      "cbam.plan.definition.query":
+        description: "get plan information from LP query"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "query getPlanById($planId: Int!) { getPlanById(planId : $planId) { planId planDesc } }"
+      "cbam.plan.definition.consumer.id":
+        description: "Consumer ID to call Assort Product"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "19ce2bf5-4c24-4bbf-bee9-84496dd07e3c"
+      "cbam.plan.definition.consumer.name":
+        description: "Consumer service name"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "CBAM_PLAN_DEFINITION"
+      "cbam.plan.definition.consumer.env":
+        description: "Consumer Environment"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "dev"
   bigQueryConfig:
     description: "Big Query Config to connect with GCP tables"
     resolutionPaths:
@@ -452,6 +477,9 @@ configOverrides:
           "buy.qty.line.plan.weeks.url": "http://current-line-plan.aex.stg.walmart.net/graphql"
           "buy.qty.line.plan.consumer.env": "stg"
           "buy.qty.line.plan.consumer.id": "93c617a1-31ec-4333-a819-683ef7514cc0"
+          "cbam.plan.definition.url": "https://plan-definition.cbam.stg.walmart.net/graphql"
+          "cbam.plan.definition.consumer.id": "93c617a1-31ec-4333-a819-683ef7514cc0"
+          "cbam.plan.definition.consumer.env": "stg"
   bqfpServiceConfig:
     - name: "dev"
       description: "Flow Plan override for DEV profile"
