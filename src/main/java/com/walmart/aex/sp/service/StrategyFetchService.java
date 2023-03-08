@@ -89,7 +89,7 @@ public class StrategyFetchService {
         return (BuyQtyResponse) post(graphQLProperties.getSizeProfileUrl(), graphQLProperties.getAllCcSizeProfileQuery(), headers, data, Payload::getGetAllCcSizeClus);
     }
 
-    public StrategyVolumeDeviationResponse getStrategyVolumeDeviation(List<StrategyVolumeDeviationRequest> strategyVolumeDeviationRequests) throws SizeAndPackException
+    private StrategyVolumeDeviationResponse getStrategyVolumeDeviation(List<StrategyVolumeDeviationRequest> strategyVolumeDeviationRequests) throws SizeAndPackException
     {
         Map<String, String> headers = getHeaderForStrategy();
         Map<String, Object> data = new HashMap<>();
