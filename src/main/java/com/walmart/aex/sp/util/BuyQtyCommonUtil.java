@@ -133,7 +133,7 @@ public class BuyQtyCommonUtil {
             //We only need DC Inbound Units from here for downstream calculation.  Will use DcInboundAdjUnits if present or else DcInboundUnits
 
             Long units = Optional.ofNullable(rep.getDcInboundAdjUnits())
-                    .orElse(Optional.ofNullable(rep.getDcInboundUnits()).orElse(0L));
+                  .orElse(Optional.ofNullable(rep.getDcInboundUnits()).orElse(0L));
             replnObjectMap.setDcInboundUnits(replnObjectMap.getDcInboundUnits() + units);
         });
         return new ArrayList<>(replnMap.values());

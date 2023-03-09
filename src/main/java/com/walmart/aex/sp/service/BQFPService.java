@@ -82,10 +82,10 @@ public class BQFPService {
       final String CHANNEL = "channelId";
       final String FINELINE_NBR = "fineLineNbr";
       return new URIBuilder(url)
-              .addParameter(PLAN_ID, String.valueOf(request.getPlanId()))
-              .addParameter(CHANNEL, request.getChannel())
-              .addParameter(FINELINE_NBR, String.valueOf(request.getFinelineNbr()))
-              .build();
+            .addParameter(PLAN_ID, String.valueOf(request.getPlanId()))
+            .addParameter(CHANNEL, request.getChannel())
+            .addParameter(FINELINE_NBR, String.valueOf(request.getFinelineNbr()))
+            .build();
    }
 
    @Recover
