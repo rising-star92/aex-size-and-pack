@@ -12,7 +12,6 @@ import com.walmart.aex.sp.exception.SizeAndPackException;
 import com.walmart.aex.sp.properties.GraphQLProperties;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -22,11 +21,14 @@ import java.util.function.Function;
 @Service
 @Slf4j
 public class StrategyFetchService {
-    @Autowired
-    private GraphQLService graphQLService;
+    private final GraphQLService graphQLService;
 
     @ManagedConfiguration
     private GraphQLProperties graphQLProperties;
+
+    public StrategyFetchService(GraphQLService graphQLService) {
+        this.graphQLService = graphQLService;
+    }
 
     public BuyQtyResponse getBuyQtyResponseSizeProfile(BuyQtyRequest buyQtyRequest) throws SizeAndPackException
     {

@@ -19,6 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +44,8 @@ class StrategyFetchServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-//        strategyFetchService = new StrategyFetchService(graphQLService, graphQLProperties);
+        strategyFetchService = new StrategyFetchService(graphQLService);
+        ReflectionTestUtils.setField(strategyFetchService, "graphQLProperties", graphQLProperties);
         setGraphQlResponse();
         setGraphQLProperties();
     }
