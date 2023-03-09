@@ -1,7 +1,6 @@
 package com.walmart.aex.sp.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.walmart.aex.sp.dto.bqfp.BQFPResponse;
 import com.walmart.aex.sp.dto.buyquantity.BuyQntyResponseDTO;
 import com.walmart.aex.sp.dto.buyquantity.BuyQtyRequest;
 import com.walmart.aex.sp.dto.buyquantity.BuyQtyResponse;
@@ -72,10 +71,6 @@ public class  BuyQtyResponseInputs {
 
     public static BuyQtyResponse buyQtyResponseFromJson(String path) throws IOException {
         return mapper.readValue(readJsonFileAsString(path), BuyQtyResponse.class);
-    }
-
-    public static BQFPResponse bQFPResponseFromJson(String path) throws IOException {
-        return mapper.readValue(readJsonFileAsString(path), BQFPResponse.class);
     }
 
     public static BuyQtyRequest fetchBuyQtyRequestForOnline()

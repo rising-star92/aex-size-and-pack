@@ -102,7 +102,7 @@ public class StoreDistributionMapper {
 
 		DistributionMetric distributionMetric = new DistributionMetric();
 		distributionMetric.setStore(storeDistributionDto.getStore());
-		distributionMetric.setMultiplier(storeDistributionDto.getPackMultiplier());
+		distributionMetric.setMultiplier(storeDistributionDto.getInitialPackMultiplier());
 		distributionMetricList.add(distributionMetric);
 
 		return distributionMetricList;

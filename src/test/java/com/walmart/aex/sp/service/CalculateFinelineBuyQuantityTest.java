@@ -103,36 +103,36 @@ class CalculateFinelineBuyQuantityTest {
 
     ReplenishmentsOptimizationService replenishmentsOptimizationServices;
 
-   @Spy
-   ObjectMapper mapper = new ObjectMapper();
+    @Spy
+    ObjectMapper mapper = new ObjectMapper();
 
     @BeforeEach
 
     void setUp() {
-       MockitoAnnotations.openMocks(this);
-       calculateInitialSetQuantityService = new CalculateInitialSetQuantityService();
-       calculateBumpPackQtyService = new CalculateBumpPackQtyService();
-       buyQuantityConstraintService = new BuyQuantityConstraintService(calculateBumpPackQtyService);
-       addStoreBuyQuantityService = new AddStoreBuyQuantityService(mapper, calculateBumpPackQtyService, buyQuantityConstraintService, calculateInitialSetQuantityService);
-       replenishmentsOptimizationServices=new ReplenishmentsOptimizationService();
+        MockitoAnnotations.openMocks(this);
+        calculateInitialSetQuantityService = new CalculateInitialSetQuantityService();
+        calculateBumpPackQtyService = new CalculateBumpPackQtyService();
+        buyQuantityConstraintService = new BuyQuantityConstraintService(calculateBumpPackQtyService);
+        addStoreBuyQuantityService = new AddStoreBuyQuantityService(mapper, calculateBumpPackQtyService, buyQuantityConstraintService, calculateInitialSetQuantityService);
+        replenishmentsOptimizationServices=new ReplenishmentsOptimizationService();
 
-       calculateOnlineFinelineBuyQuantity = new  CalculateOnlineFinelineBuyQuantity (mapper, new BuyQtyReplenishmentMapperService(),replenishmentsOptimizationServices );
-       calculateFinelineBuyQuantity = new CalculateFinelineBuyQuantity(bqfpService, mapper, new BuyQtyReplenishmentMapperService(), calculateOnlineFinelineBuyQuantity,
-               strategyFetchService,addStoreBuyQuantityService, buyQuantityConstraintService, deptAdminRuleService);
+        calculateOnlineFinelineBuyQuantity = new  CalculateOnlineFinelineBuyQuantity (mapper, new BuyQtyReplenishmentMapperService(),replenishmentsOptimizationServices );
+        calculateFinelineBuyQuantity = new CalculateFinelineBuyQuantity(bqfpService, mapper, new BuyQtyReplenishmentMapperService(), calculateOnlineFinelineBuyQuantity,
+                strategyFetchService,addStoreBuyQuantityService, buyQuantityConstraintService, deptAdminRuleService);
     }
 
     @Test
     void initialSetCalculationTest() throws SizeAndPackException, IOException {
-       final String path = "/plan72fineline1500";
-       BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
-       APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
-       BuyQtyResponse buyQtyResponse = buyQtyResponseFromJson(path.concat("/BuyQtyResponse"));
-       when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
-       when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
-       when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
-       when(deptAdminRuleService.getInitialThreshold(anyLong(), anyInt())).thenReturn(2);
-       CalculateBuyQtyRequest request = create("store", 50000, 34, 1488, 9071, 7205, 1500, 12L);
-       CalculateBuyQtyParallelRequest pRequest = createFromRequest(request);
+        final String path = "/plan72fineline1500";
+        BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
+        APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
+        BuyQtyResponse buyQtyResponse = buyQtyResponseFromJson(path.concat("/BuyQtyResponse"));
+        when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
+        when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
+        when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
+        when(deptAdminRuleService.getInitialThreshold(anyLong(), anyInt())).thenReturn(2);
+        CalculateBuyQtyRequest request = create("store", 50000, 34, 1488, 9071, 7205, 1500, 12L);
+        CalculateBuyQtyParallelRequest pRequest = createFromRequest(request);
 
         CalculateBuyQtyResponse r = new CalculateBuyQtyResponse();
         r.setMerchCatgReplPacks(new ArrayList<>());
@@ -190,7 +190,7 @@ class CalculateFinelineBuyQuantityTest {
         assertNotNull(response.getMerchCatgReplPacks());
         assertEquals(1, response.getMerchCatgReplPacks().size(), "Only 1 merch catg repl pack created");
         assertEquals((Integer)18417,
-              response.getMerchCatgReplPacks().get(0).getReplUnits(), "Repln units should be 19143 for cc");
+                response.getMerchCatgReplPacks().get(0).getReplUnits(), "Repln units should be 19143 for cc");
 
     }
 
@@ -255,7 +255,7 @@ class CalculateFinelineBuyQuantityTest {
         when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
         when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
         when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
-        when(strategyFetchService.getStrategyVolumeDeviation(anyLong(), anyInt())).thenReturn(strategyVolumeDeviationResponse);
+        when(strategyFetchService.getStrategyVolumeDeviation(any())).thenReturn(strategyVolumeDeviationResponse);
         when(deptAdminRuleService.getInitialThreshold(anyLong(), anyInt())).thenReturn(2);
         CalculateBuyQtyRequest request = create("store", 50000, 34, 1488, 9071, 7205, 1500, 12L);
         CalculateBuyQtyParallelRequest pRequest = createFromRequest(request);
@@ -278,7 +278,7 @@ class CalculateFinelineBuyQuantityTest {
         when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
         when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
         when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
-        when(strategyFetchService.getStrategyVolumeDeviation(anyLong(), anyInt())).thenReturn(strategyVolumeDeviationResponse);
+        when(strategyFetchService.getStrategyVolumeDeviation(any())).thenReturn(strategyVolumeDeviationResponse);
         CalculateBuyQtyRequest request = create("store", 50000, 34, 1488, 9071, 7205, 1500, 12L);
         CalculateBuyQtyParallelRequest pRequest = createFromRequest(request);
 
@@ -300,7 +300,7 @@ class CalculateFinelineBuyQuantityTest {
         when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
         when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
         when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
-        when(strategyFetchService.getStrategyVolumeDeviation(anyLong(), anyInt())).thenReturn(strategyVolumeDeviationResponse);
+        when(strategyFetchService.getStrategyVolumeDeviation(any())).thenReturn(strategyVolumeDeviationResponse);
         when(deptAdminRuleService.getInitialThreshold(anyLong(), anyInt())).thenReturn(2);
         CalculateBuyQtyRequest request = create("store", 50000, 34, 1488, 9071, 7205, 1500, 12L);
         CalculateBuyQtyParallelRequest pRequest = createFromRequest(request);
@@ -366,7 +366,7 @@ class CalculateFinelineBuyQuantityTest {
             return mapper.readValue(json, BuyQtyObj.class);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
-           Assertions.fail("Something happened deserializing store object");
+            Assertions.fail("Something happened deserializing store object");
         }
         return null;
     }
@@ -456,13 +456,13 @@ class CalculateFinelineBuyQuantityTest {
         CalculateBuyQtyResponse response = calculateFinelineBuyQuantity.calculateFinelineBuyQty(request, pRequest, r);
 
         SpCustomerChoiceChannelFixture fixture1 = response.getSpFineLineChannelFixtures()
-                                                .stream()
-                                                .map(SpFineLineChannelFixture::getSpStyleChannelFixtures)
-                                                .flatMap(Collection::stream)
-                                                .map(SpStyleChannelFixture::getSpCustomerChoiceChannelFixture)
-                                                .flatMap(Collection::stream)
-                                                .filter(customer -> customer.getSpCustomerChoiceChannelFixtureId().getCustomerChoice().equals("23_250_0_22_1_ANTHRACITE"))
-                                                .findFirst().get();
+                .stream()
+                .map(SpFineLineChannelFixture::getSpStyleChannelFixtures)
+                .flatMap(Collection::stream)
+                .map(SpStyleChannelFixture::getSpCustomerChoiceChannelFixture)
+                .flatMap(Collection::stream)
+                .filter(customer -> customer.getSpCustomerChoiceChannelFixtureId().getCustomerChoice().equals("23_250_0_22_1_ANTHRACITE"))
+                .findFirst().get();
         Set<SpCustomerChoiceChannelFixtureSize> fixture1Sizes = fixture1.getSpCustomerChoiceChannelFixtureSize();
 
         assertEquals(16, fixture1Sizes.size(), "Fixture 1 Should have 16 sizes present");

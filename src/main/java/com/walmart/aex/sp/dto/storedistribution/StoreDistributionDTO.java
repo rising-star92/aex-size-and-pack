@@ -10,9 +10,5 @@ public class StoreDistributionDTO {
 	private Long inStoreWeek;
 	private String packId;
 	private Integer store;
-	private Integer packMultiplier;
-	private Integer clusterId;
-	private String cc;
-	private float fixtureAllocation;
-	private String fixtureType;
+	private Integer initialPackMultiplier;
 }

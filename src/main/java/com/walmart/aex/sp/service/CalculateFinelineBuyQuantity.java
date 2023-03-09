@@ -173,7 +173,7 @@ public class CalculateFinelineBuyQuantity {
     private CompletableFuture<StrategyVolumeDeviationResponse> getStrategyVolumeDeviationCompletableFuture(Long planId, Integer finelineNbr) {
         return CompletableFuture.supplyAsync(() -> {
             try {
-                return strategyFetchService.getStrategyVolumeDeviation(planId, finelineNbr);
+                return getStrategyVolumeDeviation(planId, finelineNbr);
             } catch (SizeAndPackException e) {
                 throw new CustomException("Failed to fetch buyQtyResponse");
             }
@@ -444,6 +444,17 @@ public class CalculateFinelineBuyQuantity {
         buyQtyRequest.setLvl4Nbr(calculateBuyQtyParallelRequest.getLvl4Nbr());
         buyQtyRequest.setFinelineNbr(calculateBuyQtyParallelRequest.getFinelineNbr());
         return strategyFetchService.getAllCcSizeProfiles(buyQtyRequest);
+    }
+
+    private StrategyVolumeDeviationResponse getStrategyVolumeDeviation(Long planId, Integer finelineNbr) throws SizeAndPackException {
+        List<StrategyVolumeDeviationRequest> strategyVolumeDeviationRequests = new ArrayList<>();
+        StrategyVolumeDeviationRequest strategyVolumeDeviationRequest = new StrategyVolumeDeviationRequest();
+        strategyVolumeDeviationRequest.setPlanId(planId);
+        List<Integer> finelines = new ArrayList<>();
+        finelines.add(finelineNbr);
+        strategyVolumeDeviationRequest.setFinelineNbr(finelines);
+        strategyVolumeDeviationRequests.add(strategyVolumeDeviationRequest);
+        return strategyFetchService.getStrategyVolumeDeviation(strategyVolumeDeviationRequests);
     }
 
     private APResponse getRfaSpResponse(CalculateBuyQtyRequest calculateBuyQtyRequest, Integer finelineNbr, BQFPResponse bqfpResponse) {

@@ -1,19 +1,19 @@
 {
-  "planId": 73,
+  "planId": 485,
   "lvl0Nbr": 50000,
   "lvl1Nbr": 34,
-  "lvl2Nbr": 6419,
-  "lvl3Nbr": 12234,
-  "lvl4Nbr": 31520,
-  "finelineNbr": 3483,
-  "volumeDeviationStrategyLevelSelection": 2.000,
+  "lvl2Nbr": 1488,
+  "lvl3Nbr": 9074,
+  "lvl4Nbr": 7211,
+  "finelineNbr": 572,
+  "volumeDeviationStrategyLevelSelection": 1.000,
   "styles": [
     {
-      "styleId": "34_3483_0_15_11",
+      "styleId": "34_572_1_22_5",
       "channelType": null,
       "customerChoices": [
         {
-          "ccId": "34_3483_0_15_11_BLKSOT",
+          "ccId": "34_572_1_22_5_BLACK SOOT",
           "fixtures": [
             {
               "fixtureType": "WALLS",
@@ -21,201 +21,103 @@
               "clusters": [
                 {
                   "analyticsClusterId": 1,
-                  "flowStrategy": 3,
+                  "flowStrategy": null,
                   "metrics": {
                     "inStoredate": null,
                     "totalStoresAllocated": null
                   },
                   "initialSet": {
                     "weeksOfSale": null,
-                    "initialSetUnitsPerFix": 160,
-                    "totalInitialSetUnits": 3194,
-                    "totalInitialSetPerStore": null
+                    "initialSetUnitsPerFix": 150,
+                    "totalInitialSetUnits": 23550
                   },
                   "bumpList": []
                 },
                 {
                   "analyticsClusterId": 2,
-                  "flowStrategy": 3,
+                  "flowStrategy": null,
                   "metrics": {
                     "inStoredate": null,
                     "totalStoresAllocated": null
                   },
                   "initialSet": {
                     "weeksOfSale": null,
-                    "initialSetUnitsPerFix": 160,
-                    "totalInitialSetUnits": 8176,
-                    "totalInitialSetPerStore": null
+                    "initialSetUnitsPerFix": 141,
+                    "totalInitialSetUnits": 73320
                   },
                   "bumpList": []
                 },
                 {
                   "analyticsClusterId": 3,
-                  "flowStrategy": 3,
+                  "flowStrategy": null,
                   "metrics": {
                     "inStoredate": null,
                     "totalStoresAllocated": null
                   },
                   "initialSet": {
                     "weeksOfSale": null,
-                    "initialSetUnitsPerFix": 142,
-                    "totalInitialSetUnits": 9045,
-                    "totalInitialSetPerStore": null
+                    "initialSetUnitsPerFix": 123,
+                    "totalInitialSetUnits": 30627
                   },
                   "bumpList": []
                 },
                 {
                   "analyticsClusterId": 4,
-                  "flowStrategy": 3,
+                  "flowStrategy": null,
                   "metrics": {
                     "inStoredate": null,
                     "totalStoresAllocated": null
                   },
                   "initialSet": {
                     "weeksOfSale": null,
-                    "initialSetUnitsPerFix": 98,
-                    "totalInitialSetUnits": 4142,
-                    "totalInitialSetPerStore": null
+                    "initialSetUnitsPerFix": 93,
+                    "totalInitialSetUnits": 43338
                   },
                   "bumpList": []
                 },
                 {
                   "analyticsClusterId": 5,
-                  "flowStrategy": 3,
+                  "flowStrategy": null,
                   "metrics": {
                     "inStoredate": null,
                     "totalStoresAllocated": null
                   },
                   "initialSet": {
                     "weeksOfSale": null,
-                    "initialSetUnitsPerFix": 51,
-                    "totalInitialSetUnits": 778,
-                    "totalInitialSetPerStore": null
+                    "initialSetUnitsPerFix": 69,
+                    "totalInitialSetUnits": 17457
                   },
                   "bumpList": []
                 }
               ],
               "replenishments": [
                 {
-                  "replnUnits": 24004,
-                  "adjReplnUnits": null,
-                  "replnWeek": 12244,
-                  "replnWeekDesc": "FYE2023WK44",
-                  "remainingUnits": 110815,
-                  "dcInboundUnits": 90883,
-                  "dcInboundAdjUnits": null
-                },
-                {
-                  "replnUnits": 25585,
-                  "adjReplnUnits": null,
-                  "replnWeek": 12245,
-                  "replnWeekDesc": "FYE2023WK45",
-                  "remainingUnits": 110815,
-                  "dcInboundUnits": 0,
-                  "dcInboundAdjUnits": 971
-                },
-                {
-                  "replnUnits": 20335,
-                  "adjReplnUnits": null,
-                  "replnWeek": 12246,
-                  "replnWeekDesc": "FYE2023WK46",
-                  "remainingUnits": 110815,
-                  "dcInboundUnits": 0,
-                  "dcInboundAdjUnits": null
-                },
-                {
-                  "replnUnits": 33674,
-                  "adjReplnUnits": null,
-                  "replnWeek": 12247,
-                  "replnWeekDesc": "FYE2023WK47",
-                  "remainingUnits": 110815,
-                  "dcInboundUnits": 0,
-                  "dcInboundAdjUnits": null
-                },
-                {
-                  "replnUnits": 27000,
-                  "adjReplnUnits": null,
-                  "replnWeek": 12248,
-                  "replnWeekDesc": "FYE2023WK48",
-                  "remainingUnits": 110815,
-                  "dcInboundUnits": 14778,
-                  "dcInboundAdjUnits": null
-                },
-                {
-                  "replnUnits": 18935,
-                  "adjReplnUnits": null,
-                  "replnWeek": 12249,
-                  "replnWeekDesc": "FYE2023WK49",
-                  "remainingUnits": 110815,
-                  "dcInboundUnits": 0,
-                  "dcInboundAdjUnits": null
-                },
-                {
-                  "replnUnits": 2302,
-                  "adjReplnUnits": null,
-                  "replnWeek": 12250,
-                  "replnWeekDesc": "FYE2023WK50",
-                  "remainingUnits": 110815,
-                  "dcInboundUnits": 0,
-                  "dcInboundAdjUnits": null
-                },
-                {
-                  "replnUnits": 0,
-                  "adjReplnUnits": null,
-                  "replnWeek": 12251,
-                  "replnWeekDesc": "FYE2023WK51",
-                  "remainingUnits": 110815,
-                  "dcInboundUnits": 0,
-                  "dcInboundAdjUnits": null
-                },
-                {
-                  "replnUnits": 0,
-                  "adjReplnUnits": null,
-                  "replnWeek": 12252,
-                  "replnWeekDesc": "FYE2023WK52",
-                  "remainingUnits": 110815,
-                  "dcInboundUnits": 0,
-                  "dcInboundAdjUnits": null
-                },
-                {
-                  "replnUnits": 0,
-                  "adjReplnUnits": null,
-                  "replnWeek": 12301,
+                  "replnUnits": 109574,
+                  "replnWeek": 12401,
                   "replnWeekDesc": "FYE2024WK01",
-                  "remainingUnits": 110815,
-                  "dcInboundUnits": 0,
-                  "dcInboundAdjUnits": null
+                  "remainingUnits": 188292
                 },
                 {
-                  "replnUnits": 0,
-                  "adjReplnUnits": null,
-                  "replnWeek": 12302,
-                  "replnWeekDesc": "FYE2024WK02",
-                  "remainingUnits": 110815,
-                  "dcInboundUnits": 0,
-                  "dcInboundAdjUnits": null
+                  "replnUnits": 109574,
+                  "replnWeek": 12402,
+                  "replnWeekDesc": "FYE2025WK02",
+                  "remainingUnits": 188292
                 },
                 {
-                  "replnUnits": 0,
-                  "adjReplnUnits": null,
-                  "replnWeek": 12303,
-                  "replnWeekDesc": "FYE2024WK03",
-                  "remainingUnits": 110815,
-                  "dcInboundUnits": 0,
-                  "dcInboundAdjUnits": null
+                  "replnUnits": 109574,
+                  "replnWeek": 12403,
+                  "replnWeekDesc": "FYE2025WK03",
+                  "remainingUnits": 188292
                 },
                 {
-                  "replnUnits": 0,
-                  "adjReplnUnits": null,
-                  "replnWeek": 12304,
-                  "replnWeekDesc": "FYE2024WK04",
-                  "remainingUnits": 110815,
-                  "dcInboundUnits": 0,
-                  "dcInboundAdjUnits": null
+                  "replnUnits": 109574,
+                  "replnWeek": 12404,
+                  "replnWeekDesc": "FYE2025WK04",
+                  "remainingUnits": 188292
                 }
               ],
-              "remainingUnits": 110815,
-              "pctTotalRemainingUnits": 0.6959
+              "remainingUnits": 188292,
+              "pctTotalRemainingUnits": 0.5819402334659212
             },
             {
               "fixtureType": "RACKS",
@@ -223,214 +125,110 @@
               "clusters": [
                 {
                   "analyticsClusterId": 1,
-                  "flowStrategy": 3,
+                  "flowStrategy": null,
                   "metrics": {
                     "inStoredate": null,
                     "totalStoresAllocated": null
                   },
                   "initialSet": {
                     "weeksOfSale": null,
-                    "initialSetUnitsPerFix": 140,
-                    "totalInitialSetUnits": 805,
-                    "totalInitialSetPerStore": null
+                    "initialSetUnitsPerFix": 150,
+                    "totalInitialSetUnits": 24150
                   },
                   "bumpList": []
                 },
                 {
                   "analyticsClusterId": 2,
-                  "flowStrategy": 3,
+                  "flowStrategy": null,
                   "metrics": {
                     "inStoredate": null,
                     "totalStoresAllocated": null
                   },
                   "initialSet": {
                     "weeksOfSale": null,
-                    "initialSetUnitsPerFix": 140,
-                    "totalInitialSetUnits": 1995,
-                    "totalInitialSetPerStore": null
+                    "initialSetUnitsPerFix": 141,
+                    "totalInitialSetUnits": 38070
                   },
                   "bumpList": []
                 },
                 {
                   "analyticsClusterId": 3,
-                  "flowStrategy": 3,
+                  "flowStrategy": null,
                   "metrics": {
                     "inStoredate": null,
                     "totalStoresAllocated": null
                   },
                   "initialSet": {
                     "weeksOfSale": null,
-                    "initialSetUnitsPerFix": 140,
-                    "totalInitialSetUnits": 4165,
-                    "totalInitialSetPerStore": null
-                  },
-                  "bumpList": []
-                },
-                {
-                  "analyticsClusterId": 5,
-                  "flowStrategy": 3,
-                  "metrics": {
-                    "inStoredate": null,
-                    "totalStoresAllocated": null
-                  },
-                  "initialSet": {
-                    "weeksOfSale": null,
-                    "initialSetUnitsPerFix": 72,
-                    "totalInitialSetUnits": 504,
-                    "totalInitialSetPerStore": null
+                    "initialSetUnitsPerFix": 123,
+                    "totalInitialSetUnits": 16359
                   },
                   "bumpList": []
                 },
                 {
                   "analyticsClusterId": 4,
-                  "flowStrategy": 3,
+                  "flowStrategy": null,
                   "metrics": {
                     "inStoredate": null,
                     "totalStoresAllocated": null
                   },
                   "initialSet": {
                     "weeksOfSale": null,
-                    "initialSetUnitsPerFix": 98,
-                    "totalInitialSetUnits": 2548,
-                    "totalInitialSetPerStore": null
+                    "initialSetUnitsPerFix": 93,
+                    "totalInitialSetUnits": 39990
+                  },
+                  "bumpList": []
+                },
+                {
+                  "analyticsClusterId": 5,
+                  "flowStrategy": null,
+                  "metrics": {
+                    "inStoredate": null,
+                    "totalStoresAllocated": null
+                  },
+                  "initialSet": {
+                    "weeksOfSale": null,
+                    "initialSetUnitsPerFix": 69,
+                    "totalInitialSetUnits": 16698
                   },
                   "bumpList": []
                 }
               ],
               "replenishments": [
                 {
-                  "replnUnits": 24004,
-                  "adjReplnUnits": null,
-                  "replnWeek": 12244,
-                  "replnWeekDesc": "FYE2023WK44",
-                  "remainingUnits": 48436,
-                  "dcInboundUnits": 39714,
-                  "dcInboundAdjUnits": null
-                },
-                {
-                  "replnUnits": 25585,
-                  "adjReplnUnits": null,
-                  "replnWeek": 12245,
-                  "replnWeekDesc": "FYE2023WK45",
-                  "remainingUnits": 48436,
-                  "dcInboundUnits": 0,
-                  "dcInboundAdjUnits": 424
-                },
-                {
-                  "replnUnits": 20335,
-                  "adjReplnUnits": null,
-                  "replnWeek": 12246,
-                  "replnWeekDesc": "FYE2023WK46",
-                  "remainingUnits": 48436,
-                  "dcInboundUnits": 0,
-                  "dcInboundAdjUnits": null
-                },
-                {
-                  "replnUnits": 33674,
-                  "adjReplnUnits": null,
-                  "replnWeek": 12247,
-                  "replnWeekDesc": "FYE2023WK47",
-                  "remainingUnits": 48436,
-                  "dcInboundUnits": 0,
-                  "dcInboundAdjUnits": null
-                },
-                {
-                  "replnUnits": 27000,
-                  "adjReplnUnits": null,
-                  "replnWeek": 12248,
-                  "replnWeekDesc": "FYE2023WK48",
-                  "remainingUnits": 48436,
-                  "dcInboundUnits": 6458,
-                  "dcInboundAdjUnits": null
-                },
-                {
-                  "replnUnits": 18935,
-                  "adjReplnUnits": null,
-                  "replnWeek": 12249,
-                  "replnWeekDesc": "FYE2023WK49",
-                  "remainingUnits": 48436,
-                  "dcInboundUnits": 0,
-                  "dcInboundAdjUnits": null
-                },
-                {
-                  "replnUnits": 2302,
-                  "adjReplnUnits": null,
-                  "replnWeek": 12250,
-                  "replnWeekDesc": "FYE2023WK50",
-                  "remainingUnits": 48436,
-                  "dcInboundUnits": 0,
-                  "dcInboundAdjUnits": null
-                },
-                {
-                  "replnUnits": 0,
-                  "adjReplnUnits": null,
-                  "replnWeek": 12251,
-                  "replnWeekDesc": "FYE2023WK51",
-                  "remainingUnits": 48436,
-                  "dcInboundUnits": 0,
-                  "dcInboundAdjUnits": null
-                },
-                {
-                  "replnUnits": 0,
-                  "adjReplnUnits": null,
-                  "replnWeek": 12252,
-                  "replnWeekDesc": "FYE2023WK52",
-                  "remainingUnits": 48436,
-                  "dcInboundUnits": 0,
-                  "dcInboundAdjUnits": null
-                },
-                {
-                  "replnUnits": 0,
-                  "adjReplnUnits": null,
-                  "replnWeek": 12301,
+                  "replnUnits": 56549,
+                  "replnWeek": 12401,
                   "replnWeekDesc": "FYE2024WK01",
-                  "remainingUnits": 48436,
-                  "dcInboundUnits": 0,
-                  "dcInboundAdjUnits": null
+                  "remainingUnits": 135267
                 },
                 {
-                  "replnUnits": 0,
-                  "adjReplnUnits": null,
-                  "replnWeek": 12302,
-                  "replnWeekDesc": "FYE2024WK02",
-                  "remainingUnits": 48436,
-                  "dcInboundUnits": 0,
-                  "dcInboundAdjUnits": null
+                  "replnUnits": 56549,
+                  "replnWeek": 12402,
+                  "replnWeekDesc": "FYE2025WK02",
+                  "remainingUnits": 135267
                 },
                 {
-                  "replnUnits": 0,
-                  "adjReplnUnits": null,
-                  "replnWeek": 12303,
-                  "replnWeekDesc": "FYE2024WK03",
-                  "remainingUnits": 48436,
-                  "dcInboundUnits": 0,
-                  "dcInboundAdjUnits": null
+                  "replnUnits": 56549,
+                  "replnWeek": 12403,
+                  "replnWeekDesc": "FYE2025WK03",
+                  "remainingUnits": 135267
                 },
                 {
-                  "replnUnits": 0,
-                  "adjReplnUnits": null,
-                  "replnWeek": 12304,
-                  "replnWeekDesc": "FYE2024WK04",
-                  "remainingUnits": 48436,
-                  "dcInboundUnits": 0,
-                  "dcInboundAdjUnits": null
+                  "replnUnits": 56549,
+                  "replnWeek": 12404,
+                  "replnWeekDesc": "FYE2025WK04",
+                  "remainingUnits": 135267
                 }
               ],
-              "remainingUnits": 48436,
-              "pctTotalRemainingUnits": 0.3041
+              "remainingUnits": 135267,
+              "pctTotalRemainingUnits": 0.4180597665340788
             }
           ],
           "replenishments": [],
-          "remainingUnits": 159251
-        }
-      ]
-    },
-    {
-      "styleId": "34_3483_4_19_8",
-      "channelType": null,
-      "customerChoices": [
+          "remainingUnits": 323559
+        },
         {
-          "ccId": "34_3483_4_19_8_BLCOVE",
+          "ccId": "34_572_1_22_5_CHARTREUSE",
           "fixtures": [
             {
               "fixtureType": "WALLS",
@@ -438,167 +236,35 @@
               "clusters": [
                 {
                   "analyticsClusterId": 1,
-                  "flowStrategy": 2,
+                  "flowStrategy": null,
                   "metrics": {
                     "inStoredate": null,
                     "totalStoresAllocated": null
                   },
                   "initialSet": {
                     "weeksOfSale": null,
-                    "initialSetUnitsPerFix": 160,
-                    "totalInitialSetUnits": 3194,
-                    "totalInitialSetPerStore": null
+                    "initialSetUnitsPerFix": 70,
+                    "totalInitialSetUnits": 10990
                   },
-                  "bumpList": [
-                    {
-                      "units": 1715,
-                      "weekDesc": "FYE2023WK48    ",
-                      "wmYearWeek": 12248,
-                      "bumpPackNbr": 1
-                    },
-                    {
-                      "units": 2573,
-                      "weekDesc": "FYE2023WK50    ",
-                      "wmYearWeek": 12250,
-                      "bumpPackNbr": 2
-                    },
-                    {
-                      "units": 2315,
-                      "weekDesc": "FYE2024WK01    ",
-                      "wmYearWeek": 12301,
-                      "bumpPackNbr": 3
-                    },
-                    {
-                      "units": 0,
-                      "weekDesc": "FYE2023WK44    ",
-                      "wmYearWeek": 12244,
-                      "bumpPackNbr": 4
-                    }
-                  ]
+                  "bumpList": []
                 },
                 {
                   "analyticsClusterId": 2,
-                  "flowStrategy": 2,
+                  "flowStrategy": null,
                   "metrics": {
                     "inStoredate": null,
                     "totalStoresAllocated": null
                   },
                   "initialSet": {
                     "weeksOfSale": null,
-                    "initialSetUnitsPerFix": 152,
-                    "totalInitialSetUnits": 7767,
-                    "totalInitialSetPerStore": null
+                    "initialSetUnitsPerFix": 47,
+                    "totalInitialSetUnits": 24440
                   },
-                  "bumpList": [
-                    {
-                      "units": 4171,
-                      "weekDesc": "FYE2023WK48    ",
-                      "wmYearWeek": 12248,
-                      "bumpPackNbr": 1
-                    },
-                    {
-                      "units": 6257,
-                      "weekDesc": "FYE2023WK50    ",
-                      "wmYearWeek": 12250,
-                      "bumpPackNbr": 2
-                    },
-                    {
-                      "units": 5631,
-                      "weekDesc": "FYE2024WK01    ",
-                      "wmYearWeek": 12301,
-                      "bumpPackNbr": 3
-                    },
-                    {
-                      "units": 0,
-                      "weekDesc": "FYE2023WK44    ",
-                      "wmYearWeek": 12244,
-                      "bumpPackNbr": 4
-                    }
-                  ]
+                  "bumpList": []
                 },
                 {
                   "analyticsClusterId": 3,
-                  "flowStrategy": 2,
-                  "metrics": {
-                    "inStoredate": null,
-                    "totalStoresAllocated": null
-                  },
-                  "initialSet": {
-                    "weeksOfSale": null,
-                    "initialSetUnitsPerFix": 113,
-                    "totalInitialSetUnits": 7198,
-                    "totalInitialSetPerStore": null
-                  },
-                  "bumpList": [
-                    {
-                      "units": 3865,
-                      "weekDesc": "FYE2023WK48    ",
-                      "wmYearWeek": 12248,
-                      "bumpPackNbr": 1
-                    },
-                    {
-                      "units": 5798,
-                      "weekDesc": "FYE2023WK50    ",
-                      "wmYearWeek": 12250,
-                      "bumpPackNbr": 2
-                    },
-                    {
-                      "units": 5218,
-                      "weekDesc": "FYE2024WK01    ",
-                      "wmYearWeek": 12301,
-                      "bumpPackNbr": 3
-                    },
-                    {
-                      "units": 0,
-                      "weekDesc": "FYE2023WK44    ",
-                      "wmYearWeek": 12244,
-                      "bumpPackNbr": 4
-                    }
-                  ]
-                },
-                {
-                  "analyticsClusterId": 4,
-                  "flowStrategy": 2,
-                  "metrics": {
-                    "inStoredate": null,
-                    "totalStoresAllocated": null
-                  },
-                  "initialSet": {
-                    "weeksOfSale": null,
-                    "initialSetUnitsPerFix": 78,
-                    "totalInitialSetUnits": 3296,
-                    "totalInitialSetPerStore": null
-                  },
-                  "bumpList": [
-                    {
-                      "units": 1770,
-                      "weekDesc": "FYE2023WK48    ",
-                      "wmYearWeek": 12248,
-                      "bumpPackNbr": 1
-                    },
-                    {
-                      "units": 2655,
-                      "weekDesc": "FYE2023WK50    ",
-                      "wmYearWeek": 12250,
-                      "bumpPackNbr": 2
-                    },
-                    {
-                      "units": 2389,
-                      "weekDesc": "FYE2024WK01    ",
-                      "wmYearWeek": 12301,
-                      "bumpPackNbr": 3
-                    },
-                    {
-                      "units": 0,
-                      "weekDesc": "FYE2023WK44    ",
-                      "wmYearWeek": 12244,
-                      "bumpPackNbr": 4
-                    }
-                  ]
-                },
-                {
-                  "analyticsClusterId": 5,
-                  "flowStrategy": 2,
+                  "flowStrategy": null,
                   "metrics": {
                     "inStoredate": null,
                     "totalStoresAllocated": null
@@ -606,40 +272,67 @@
                   "initialSet": {
                     "weeksOfSale": null,
                     "initialSetUnitsPerFix": 41,
-                    "totalInitialSetUnits": 625,
-                    "totalInitialSetPerStore": null
+                    "totalInitialSetUnits": 10209
                   },
-                  "bumpList": [
-                    {
-                      "units": 335,
-                      "weekDesc": "FYE2023WK48    ",
-                      "wmYearWeek": 12248,
-                      "bumpPackNbr": 1
-                    },
-                    {
-                      "units": 502,
-                      "weekDesc": "FYE2023WK50    ",
-                      "wmYearWeek": 12250,
-                      "bumpPackNbr": 2
-                    },
-                    {
-                      "units": 453,
-                      "weekDesc": "FYE2024WK01    ",
-                      "wmYearWeek": 12301,
-                      "bumpPackNbr": 3
-                    },
-                    {
-                      "units": 0,
-                      "weekDesc": "FYE2023WK44    ",
-                      "wmYearWeek": 12244,
-                      "bumpPackNbr": 4
-                    }
-                  ]
+                  "bumpList": []
+                },
+                {
+                  "analyticsClusterId": 4,
+                  "flowStrategy": null,
+                  "metrics": {
+                    "inStoredate": null,
+                    "totalStoresAllocated": null
+                  },
+                  "initialSet": {
+                    "weeksOfSale": null,
+                    "initialSetUnitsPerFix": 31,
+                    "totalInitialSetUnits": 14446
+                  },
+                  "bumpList": []
+                },
+                {
+                  "analyticsClusterId": 5,
+                  "flowStrategy": null,
+                  "metrics": {
+                    "inStoredate": null,
+                    "totalStoresAllocated": null
+                  },
+                  "initialSet": {
+                    "weeksOfSale": null,
+                    "initialSetUnitsPerFix": 30,
+                    "totalInitialSetUnits": 7590
+                  },
+                  "bumpList": []
                 }
               ],
-              "replenishments": [],
-              "remainingUnits": 0,
-              "pctTotalRemainingUnits": 0.0
+              "replenishments": [
+                {
+                  "replnUnits": 39323,
+                  "replnWeek": 12401,
+                  "replnWeekDesc": "FYE2024WK01",
+                  "remainingUnits": 67675
+                },
+                {
+                  "replnUnits": 39323,
+                  "replnWeek": 12402,
+                  "replnWeekDesc": "FYE2025WK02",
+                  "remainingUnits": 67675
+                },
+                {
+                  "replnUnits": 39323,
+                  "replnWeek": 12403,
+                  "replnWeekDesc": "FYE2025WK03",
+                  "remainingUnits": 67675
+                },
+                {
+                  "replnUnits": 39323,
+                  "replnWeek": 12404,
+                  "replnWeekDesc": "FYE2025WK04",
+                  "remainingUnits": 67675
+                }
+              ],
+              "remainingUnits": 67675,
+              "pctTotalRemainingUnits": 0.5810608922622523
             },
             {
               "fixtureType": "RACKS",
@@ -647,644 +340,107 @@
               "clusters": [
                 {
                   "analyticsClusterId": 1,
-                  "flowStrategy": 2,
+                  "flowStrategy": null,
                   "metrics": {
                     "inStoredate": null,
                     "totalStoresAllocated": null
                   },
                   "initialSet": {
                     "weeksOfSale": null,
-                    "initialSetUnitsPerFix": 140,
-                    "totalInitialSetUnits": 805,
-                    "totalInitialSetPerStore": null
+                    "initialSetUnitsPerFix": 70,
+                    "totalInitialSetUnits": 11270
                   },
-                  "bumpList": [
-                    {
-                      "units": 484,
-                      "weekDesc": "FYE2023WK48    ",
-                      "wmYearWeek": 12248,
-                      "bumpPackNbr": 1
-                    },
-                    {
-                      "units": 728,
-                      "weekDesc": "FYE2023WK50    ",
-                      "wmYearWeek": 12250,
-                      "bumpPackNbr": 2
-                    },
-                    {
-                      "units": 655,
-                      "weekDesc": "FYE2024WK01    ",
-                      "wmYearWeek": 12301,
-                      "bumpPackNbr": 3
-                    },
-                    {
-                      "units": 0,
-                      "weekDesc": "FYE2023WK44    ",
-                      "wmYearWeek": 12244,
-                      "bumpPackNbr": 4
-                    }
-                  ]
+                  "bumpList": []
                 },
                 {
                   "analyticsClusterId": 2,
-                  "flowStrategy": 2,
+                  "flowStrategy": null,
                   "metrics": {
                     "inStoredate": null,
                     "totalStoresAllocated": null
                   },
                   "initialSet": {
                     "weeksOfSale": null,
-                    "initialSetUnitsPerFix": 140,
-                    "totalInitialSetUnits": 1995,
-                    "totalInitialSetPerStore": null
+                    "initialSetUnitsPerFix": 47,
+                    "totalInitialSetUnits": 12690
                   },
-                  "bumpList": [
-                    {
-                      "units": 1203,
-                      "weekDesc": "FYE2023WK48    ",
-                      "wmYearWeek": 12248,
-                      "bumpPackNbr": 1
-                    },
-                    {
-                      "units": 1805,
-                      "weekDesc": "FYE2023WK50    ",
-                      "wmYearWeek": 12250,
-                      "bumpPackNbr": 2
-                    },
-                    {
-                      "units": 1624,
-                      "weekDesc": "FYE2024WK01    ",
-                      "wmYearWeek": 12301,
-                      "bumpPackNbr": 3
-                    },
-                    {
-                      "units": 0,
-                      "weekDesc": "FYE2023WK44    ",
-                      "wmYearWeek": 12244,
-                      "bumpPackNbr": 4
-                    }
-                  ]
+                  "bumpList": []
                 },
                 {
                   "analyticsClusterId": 3,
-                  "flowStrategy": 2,
+                  "flowStrategy": null,
                   "metrics": {
                     "inStoredate": null,
                     "totalStoresAllocated": null
                   },
                   "initialSet": {
                     "weeksOfSale": null,
-                    "initialSetUnitsPerFix": 113,
-                    "totalInitialSetUnits": 3361,
-                    "totalInitialSetPerStore": null
+                    "initialSetUnitsPerFix": 41,
+                    "totalInitialSetUnits": 5453
                   },
-                  "bumpList": [
-                    {
-                      "units": 2027,
-                      "weekDesc": "FYE2023WK48    ",
-                      "wmYearWeek": 12248,
-                      "bumpPackNbr": 1
-                    },
-                    {
-                      "units": 3041,
-                      "weekDesc": "FYE2023WK50    ",
-                      "wmYearWeek": 12250,
-                      "bumpPackNbr": 2
-                    },
-                    {
-                      "units": 2737,
-                      "weekDesc": "FYE2024WK01    ",
-                      "wmYearWeek": 12301,
-                      "bumpPackNbr": 3
-                    },
-                    {
-                      "units": 0,
-                      "weekDesc": "FYE2023WK44    ",
-                      "wmYearWeek": 12244,
-                      "bumpPackNbr": 4
-                    }
-                  ]
-                },
-                {
-                  "analyticsClusterId": 5,
-                  "flowStrategy": 2,
-                  "metrics": {
-                    "inStoredate": null,
-                    "totalStoresAllocated": null
-                  },
-                  "initialSet": {
-                    "weeksOfSale": null,
-                    "initialSetUnitsPerFix": 72,
-                    "totalInitialSetUnits": 504,
-                    "totalInitialSetPerStore": null
-                  },
-                  "bumpList": [
-                    {
-                      "units": 304,
-                      "weekDesc": "FYE2023WK48    ",
-                      "wmYearWeek": 12248,
-                      "bumpPackNbr": 1
-                    },
-                    {
-                      "units": 456,
-                      "weekDesc": "FYE2023WK50    ",
-                      "wmYearWeek": 12250,
-                      "bumpPackNbr": 2
-                    },
-                    {
-                      "units": 410,
-                      "weekDesc": "FYE2024WK01    ",
-                      "wmYearWeek": 12301,
-                      "bumpPackNbr": 3
-                    },
-                    {
-                      "units": 0,
-                      "weekDesc": "FYE2023WK44    ",
-                      "wmYearWeek": 12244,
-                      "bumpPackNbr": 4
-                    }
-                  ]
+                  "bumpList": []
                 },
                 {
                   "analyticsClusterId": 4,
-                  "flowStrategy": 2,
+                  "flowStrategy": null,
                   "metrics": {
                     "inStoredate": null,
                     "totalStoresAllocated": null
                   },
                   "initialSet": {
                     "weeksOfSale": null,
-                    "initialSetUnitsPerFix": 78,
-                    "totalInitialSetUnits": 2028,
-                    "totalInitialSetPerStore": null
+                    "initialSetUnitsPerFix": 31,
+                    "totalInitialSetUnits": 13330
                   },
-                  "bumpList": [
-                    {
-                      "units": 1223,
-                      "weekDesc": "FYE2023WK48    ",
-                      "wmYearWeek": 12248,
-                      "bumpPackNbr": 1
-                    },
-                    {
-                      "units": 1833,
-                      "weekDesc": "FYE2023WK50    ",
-                      "wmYearWeek": 12250,
-                      "bumpPackNbr": 2
-                    },
-                    {
-                      "units": 1651,
-                      "weekDesc": "FYE2024WK01    ",
-                      "wmYearWeek": 12301,
-                      "bumpPackNbr": 3
-                    },
-                    {
-                      "units": 0,
-                      "weekDesc": "FYE2023WK44    ",
-                      "wmYearWeek": 12244,
-                      "bumpPackNbr": 4
-                    }
-                  ]
-                }
-              ],
-              "replenishments": [],
-              "remainingUnits": 0,
-              "pctTotalRemainingUnits": 0.0
-            }
-          ],
-          "replenishments": [],
-          "remainingUnits": 0
-        },
-        {
-          "ccId": "34_3483_4_19_8_BLKSOT",
-          "fixtures": [
-            {
-              "fixtureType": "WALLS",
-              "fixtureTypeRollupId": 1,
-              "clusters": [
-                {
-                  "analyticsClusterId": 1,
-                  "flowStrategy": 2,
-                  "metrics": {
-                    "inStoredate": null,
-                    "totalStoresAllocated": null
-                  },
-                  "initialSet": {
-                    "weeksOfSale": null,
-                    "initialSetUnitsPerFix": 160,
-                    "totalInitialSetUnits": 3194,
-                    "totalInitialSetPerStore": null
-                  },
-                  "bumpList": [
-                    {
-                      "units": 2419,
-                      "weekDesc": "FYE2023WK48    ",
-                      "wmYearWeek": 12248,
-                      "bumpPackNbr": 1
-                    },
-                    {
-                      "units": 3194,
-                      "weekDesc": "FYE2023WK50    ",
-                      "wmYearWeek": 12250,
-                      "bumpPackNbr": 2
-                    },
-                    {
-                      "units": 3194,
-                      "weekDesc": "FYE2024WK01    ",
-                      "wmYearWeek": 12301,
-                      "bumpPackNbr": 3
-                    },
-                    {
-                      "units": 0,
-                      "weekDesc": "FYE2023WK44    ",
-                      "wmYearWeek": 12244,
-                      "bumpPackNbr": 4
-                    }
-                  ]
-                },
-                {
-                  "analyticsClusterId": 3,
-                  "flowStrategy": 2,
-                  "metrics": {
-                    "inStoredate": null,
-                    "totalStoresAllocated": null
-                  },
-                  "initialSet": {
-                    "weeksOfSale": null,
-                    "initialSetUnitsPerFix": 142,
-                    "totalInitialSetUnits": 9045,
-                    "totalInitialSetPerStore": null
-                  },
-                  "bumpList": [
-                    {
-                      "units": 6852,
-                      "weekDesc": "FYE2023WK48    ",
-                      "wmYearWeek": 12248,
-                      "bumpPackNbr": 1
-                    },
-                    {
-                      "units": 9594,
-                      "weekDesc": "FYE2023WK50    ",
-                      "wmYearWeek": 12250,
-                      "bumpPackNbr": 2
-                    },
-                    {
-                      "units": 10192,
-                      "weekDesc": "FYE2024WK01    ",
-                      "wmYearWeek": 12301,
-                      "bumpPackNbr": 3
-                    },
-                    {
-                      "units": 0,
-                      "weekDesc": "FYE2023WK44    ",
-                      "wmYearWeek": 12244,
-                      "bumpPackNbr": 4
-                    }
-                  ]
-                },
-                {
-                  "analyticsClusterId": 2,
-                  "flowStrategy": 2,
-                  "metrics": {
-                    "inStoredate": null,
-                    "totalStoresAllocated": null
-                  },
-                  "initialSet": {
-                    "weeksOfSale": null,
-                    "initialSetUnitsPerFix": 160,
-                    "totalInitialSetUnits": 8176,
-                    "totalInitialSetPerStore": null
-                  },
-                  "bumpList": [
-                    {
-                      "units": 6194,
-                      "weekDesc": "FYE2023WK48    ",
-                      "wmYearWeek": 12248,
-                      "bumpPackNbr": 1
-                    },
-                    {
-                      "units": 8175,
-                      "weekDesc": "FYE2023WK50    ",
-                      "wmYearWeek": 12250,
-                      "bumpPackNbr": 2
-                    },
-                    {
-                      "units": 8175,
-                      "weekDesc": "FYE2024WK01    ",
-                      "wmYearWeek": 12301,
-                      "bumpPackNbr": 3
-                    },
-                    {
-                      "units": 0,
-                      "weekDesc": "FYE2023WK44    ",
-                      "wmYearWeek": 12244,
-                      "bumpPackNbr": 4
-                    }
-                  ]
-                },
-                {
-                  "analyticsClusterId": 4,
-                  "flowStrategy": 2,
-                  "metrics": {
-                    "inStoredate": null,
-                    "totalStoresAllocated": null
-                  },
-                  "initialSet": {
-                    "weeksOfSale": null,
-                    "initialSetUnitsPerFix": 98,
-                    "totalInitialSetUnits": 4142,
-                    "totalInitialSetPerStore": null
-                  },
-                  "bumpList": [
-                    {
-                      "units": 3138,
-                      "weekDesc": "FYE2023WK48    ",
-                      "wmYearWeek": 12248,
-                      "bumpPackNbr": 1
-                    },
-                    {
-                      "units": 4393,
-                      "weekDesc": "FYE2023WK50    ",
-                      "wmYearWeek": 12250,
-                      "bumpPackNbr": 2
-                    },
-                    {
-                      "units": 5021,
-                      "weekDesc": "FYE2024WK01    ",
-                      "wmYearWeek": 12301,
-                      "bumpPackNbr": 3
-                    },
-                    {
-                      "units": 0,
-                      "weekDesc": "FYE2023WK44    ",
-                      "wmYearWeek": 12244,
-                      "bumpPackNbr": 4
-                    }
-                  ]
+                  "bumpList": []
                 },
                 {
                   "analyticsClusterId": 5,
-                  "flowStrategy": 2,
+                  "flowStrategy": null,
                   "metrics": {
                     "inStoredate": null,
                     "totalStoresAllocated": null
                   },
                   "initialSet": {
                     "weeksOfSale": null,
-                    "initialSetUnitsPerFix": 51,
-                    "totalInitialSetUnits": 778,
-                    "totalInitialSetPerStore": null
+                    "initialSetUnitsPerFix": 25,
+                    "totalInitialSetUnits": 6050
                   },
-                  "bumpList": [
-                    {
-                      "units": 589,
-                      "weekDesc": "FYE2023WK48    ",
-                      "wmYearWeek": 12248,
-                      "bumpPackNbr": 1
-                    },
-                    {
-                      "units": 825,
-                      "weekDesc": "FYE2023WK50    ",
-                      "wmYearWeek": 12250,
-                      "bumpPackNbr": 2
-                    },
-                    {
-                      "units": 943,
-                      "weekDesc": "FYE2024WK01    ",
-                      "wmYearWeek": 12301,
-                      "bumpPackNbr": 3
-                    },
-                    {
-                      "units": 0,
-                      "weekDesc": "FYE2023WK44    ",
-                      "wmYearWeek": 12244,
-                      "bumpPackNbr": 4
-                    }
-                  ]
+                  "bumpList": []
                 }
               ],
-              "replenishments": [],
-              "remainingUnits": 0,
-              "pctTotalRemainingUnits": 0.0
+              "replenishments": [
+                {
+                  "replnUnits": 20441,
+                  "replnWeek": 12401,
+                  "replnWeekDesc": "FYE2024WK01",
+                  "remainingUnits": 48793
+                },
+                {
+                  "replnUnits": 20441,
+                  "replnWeek": 12402,
+                  "replnWeekDesc": "FYE2025WK02",
+                  "remainingUnits": 48793
+                },
+                {
+                  "replnUnits": 20441,
+                  "replnWeek": 12403,
+                  "replnWeekDesc": "FYE2025WK03",
+                  "remainingUnits": 48793
+                },
+                {
+                  "replnUnits": 20441,
+                  "replnWeek": 12404,
+                  "replnWeekDesc": "FYE2025WK04",
+                  "remainingUnits": 48793
+                }
+              ],
+              "remainingUnits": 48793,
+              "pctTotalRemainingUnits": 0.41893910773774773
             }
           ],
           "replenishments": [],
-          "remainingUnits": 0
-        },
-        {
-          "ccId": "34_3483_4_19_8_CHGYHT",
-          "fixtures": [
-            {
-              "fixtureType": "WALLS",
-              "fixtureTypeRollupId": 1,
-              "clusters": [
-                {
-                  "analyticsClusterId": 1,
-                  "flowStrategy": 2,
-                  "metrics": {
-                    "inStoredate": null,
-                    "totalStoresAllocated": null
-                  },
-                  "initialSet": {
-                    "weeksOfSale": null,
-                    "initialSetUnitsPerFix": 160,
-                    "totalInitialSetUnits": 3194,
-                    "totalInitialSetPerStore": null
-                  },
-                  "bumpList": [
-                    {
-                      "units": 2209,
-                      "weekDesc": "FYE2023WK49    ",
-                      "wmYearWeek": 12249,
-                      "bumpPackNbr": 1
-                    },
-                    {
-                      "units": 2209,
-                      "weekDesc": "FYE2023WK51    ",
-                      "wmYearWeek": 12251,
-                      "bumpPackNbr": 2
-                    },
-                    {
-                      "units": 2209,
-                      "weekDesc": "FYE2024WK02    ",
-                      "wmYearWeek": 12302,
-                      "bumpPackNbr": 3
-                    },
-                    {
-                      "units": 0,
-                      "weekDesc": "FYE2023WK44    ",
-                      "wmYearWeek": 12244,
-                      "bumpPackNbr": 4
-                    }
-                  ]
-                },
-                {
-                  "analyticsClusterId": 2,
-                  "flowStrategy": 2,
-                  "metrics": {
-                    "inStoredate": null,
-                    "totalStoresAllocated": null
-                  },
-                  "initialSet": {
-                    "weeksOfSale": null,
-                    "initialSetUnitsPerFix": 160,
-                    "totalInitialSetUnits": 8176,
-                    "totalInitialSetPerStore": null
-                  },
-                  "bumpList": [
-                    {
-                      "units": 5655,
-                      "weekDesc": "FYE2023WK49    ",
-                      "wmYearWeek": 12249,
-                      "bumpPackNbr": 1
-                    },
-                    {
-                      "units": 5655,
-                      "weekDesc": "FYE2023WK51    ",
-                      "wmYearWeek": 12251,
-                      "bumpPackNbr": 2
-                    },
-                    {
-                      "units": 5655,
-                      "weekDesc": "FYE2024WK02    ",
-                      "wmYearWeek": 12302,
-                      "bumpPackNbr": 3
-                    },
-                    {
-                      "units": 0,
-                      "weekDesc": "FYE2023WK44    ",
-                      "wmYearWeek": 12244,
-                      "bumpPackNbr": 4
-                    }
-                  ]
-                },
-                {
-                  "analyticsClusterId": 3,
-                  "flowStrategy": 2,
-                  "metrics": {
-                    "inStoredate": null,
-                    "totalStoresAllocated": null
-                  },
-                  "initialSet": {
-                    "weeksOfSale": null,
-                    "initialSetUnitsPerFix": 124,
-                    "totalInitialSetUnits": 7898,
-                    "totalInitialSetPerStore": null
-                  },
-                  "bumpList": [
-                    {
-                      "units": 5463,
-                      "weekDesc": "FYE2023WK49    ",
-                      "wmYearWeek": 12249,
-                      "bumpPackNbr": 1
-                    },
-                    {
-                      "units": 5463,
-                      "weekDesc": "FYE2023WK51    ",
-                      "wmYearWeek": 12251,
-                      "bumpPackNbr": 2
-                    },
-                    {
-                      "units": 5463,
-                      "weekDesc": "FYE2024WK02    ",
-                      "wmYearWeek": 12302,
-                      "bumpPackNbr": 3
-                    },
-                    {
-                      "units": 0,
-                      "weekDesc": "FYE2023WK44    ",
-                      "wmYearWeek": 12244,
-                      "bumpPackNbr": 4
-                    }
-                  ]
-                },
-                {
-                  "analyticsClusterId": 5,
-                  "flowStrategy": 2,
-                  "metrics": {
-                    "inStoredate": null,
-                    "totalStoresAllocated": null
-                  },
-                  "initialSet": {
-                    "weeksOfSale": null,
-                    "initialSetUnitsPerFix": 45,
-                    "totalInitialSetUnits": 687,
-                    "totalInitialSetPerStore": null
-                  },
-                  "bumpList": [
-                    {
-                      "units": 475,
-                      "weekDesc": "FYE2023WK49    ",
-                      "wmYearWeek": 12249,
-                      "bumpPackNbr": 1
-                    },
-                    {
-                      "units": 475,
-                      "weekDesc": "FYE2023WK51    ",
-                      "wmYearWeek": 12251,
-                      "bumpPackNbr": 2
-                    },
-                    {
-                      "units": 475,
-                      "weekDesc": "FYE2024WK02    ",
-                      "wmYearWeek": 12302,
-                      "bumpPackNbr": 3
-                    },
-                    {
-                      "units": 0,
-                      "weekDesc": "FYE2023WK44    ",
-                      "wmYearWeek": 12244,
-                      "bumpPackNbr": 4
-                    }
-                  ]
-                },
-                {
-                  "analyticsClusterId": 4,
-                  "flowStrategy": 2,
-                  "metrics": {
-                    "inStoredate": null,
-                    "totalStoresAllocated": null
-                  },
-                  "initialSet": {
-                    "weeksOfSale": null,
-                    "initialSetUnitsPerFix": 85,
-                    "totalInitialSetUnits": 3592,
-                    "totalInitialSetPerStore": null
-                  },
-                  "bumpList": [
-                    {
-                      "units": 2484,
-                      "weekDesc": "FYE2023WK49    ",
-                      "wmYearWeek": 12249,
-                      "bumpPackNbr": 1
-                    },
-                    {
-                      "units": 2484,
-                      "weekDesc": "FYE2023WK51    ",
-                      "wmYearWeek": 12251,
-                      "bumpPackNbr": 2
-                    },
-                    {
-                      "units": 2484,
-                      "weekDesc": "FYE2024WK02    ",
-                      "wmYearWeek": 12302,
-                      "bumpPackNbr": 3
-                    },
-                    {
-                      "units": 0,
-                      "weekDesc": "FYE2023WK44    ",
-                      "wmYearWeek": 12244,
-                      "bumpPackNbr": 4
-                    }
-                  ]
-                }
-              ],
-              "replenishments": [],
-              "remainingUnits": 0,
-              "pctTotalRemainingUnits": 0.0
-            }
-          ],
-          "replenishments": [],
-          "remainingUnits": 0
+          "remainingUnits": 116468
         }
       ]
     }
