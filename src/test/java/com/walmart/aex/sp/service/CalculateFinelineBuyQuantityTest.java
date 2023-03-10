@@ -3,21 +3,8 @@ package com.walmart.aex.sp.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.assortproduct.APResponse;
-import com.walmart.aex.sp.dto.bqfp.BQFPResponse;
-import com.walmart.aex.sp.dto.buyquantity.BumpSetQuantity;
-import com.walmart.aex.sp.dto.buyquantity.BuyQtyObj;
-import com.walmart.aex.sp.dto.buyquantity.BuyQtyResponse;
-import com.walmart.aex.sp.dto.buyquantity.BuyQtyStoreObj;
-import com.walmart.aex.sp.dto.buyquantity.CalculateBuyQtyParallelRequest;
-import com.walmart.aex.sp.dto.buyquantity.CalculateBuyQtyRequest;
-import com.walmart.aex.sp.dto.buyquantity.CalculateBuyQtyResponse;
-import com.walmart.aex.sp.dto.buyquantity.FinelineDto;
-import com.walmart.aex.sp.dto.buyquantity.Lvl3Dto;
-import com.walmart.aex.sp.dto.buyquantity.Lvl4Dto;
-import com.walmart.aex.sp.dto.buyquantity.MetricsDto;
-import com.walmart.aex.sp.dto.buyquantity.SizeDto;
-import com.walmart.aex.sp.dto.buyquantity.StoreQuantity;
-import com.walmart.aex.sp.dto.buyquantity.StrategyVolumeDeviationResponse;
+import com.walmart.aex.sp.dto.bqfp.*;
+import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixture;
 import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixtureSize;
 import com.walmart.aex.sp.entity.SpFineLineChannelFixture;
@@ -27,7 +14,10 @@ import com.walmart.aex.sp.repository.FineLineReplenishmentRepository;
 import com.walmart.aex.sp.repository.SpFineLineChannelFixtureRepository;
 import com.walmart.aex.sp.repository.StyleReplenishmentRepository;
 import com.walmart.aex.sp.service.impl.DeptAdminRuleServiceImpl;
+import com.walmart.aex.sp.util.BQFPResponseInputs;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -524,6 +514,36 @@ class CalculateFinelineBuyQuantityTest {
 
         assertEquals(1, response.getSpFineLineChannelFixtures().size());
         assertEquals(4, response.getSpFineLineChannelFixtures().iterator().next().getBumpPackCnt());
+    }
+
+    @Test
+    void test_getCcMaxBumpPackCnt(){
+        StyleDto style = new StyleDto();
+        style.setStyleNbr("34_1234_001");
+        CustomerChoiceDto customerChoice = new CustomerChoiceDto();
+        customerChoice.setCcId("1234_001");
+        List<Style> styles = new ArrayList<>();
+        Style st = new Style();
+        st.setStyleId("34_1234_001");
+        BQFPResponse bqfpResponse = new BQFPResponse(12L,50000,34,6419,12228,31507,2702,styles);
+
+        List<CustomerChoice> ccs = new ArrayList<>();
+        CustomerChoice cc1 = new CustomerChoice();
+        cc1.setCcId("1234_001");
+        cc1.setFixtures(BQFPResponseInputs.getFixtureList(2,"RACKS","WALLS"));
+
+        CustomerChoice cc2 = new CustomerChoice();
+        cc2.setCcId("1234_002");
+        cc2.setFixtures(BQFPResponseInputs.getFixtureList(1,"RACKS"));
+
+        ccs.add(cc1);
+        ccs.add(cc2);
+        st.setCustomerChoices(ccs);
+        styles.add(st);
+        bqfpResponse.setStyles(styles);
+        Integer result = calculateFinelineBuyQuantity.getCcMaxBumpPackCnt(bqfpResponse,style,customerChoice);
+        assertEquals(3, result);
+
     }
 
 }
