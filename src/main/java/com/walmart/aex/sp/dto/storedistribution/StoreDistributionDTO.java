@@ -13,6 +13,6 @@ public class StoreDistributionDTO {
 	private Integer packMultiplier;
 	private Integer clusterId;
 	private String cc;
-	private float fixtureAllocation;
+	private Float fixtureAllocation;
 	private String fixtureType;
 }
