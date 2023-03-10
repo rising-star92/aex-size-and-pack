@@ -14,6 +14,8 @@ import com.walmart.aex.sp.dto.isVolume.*;
 import com.walmart.aex.sp.enums.VdLevelCode;
 import com.walmart.aex.sp.properties.BigQueryConnectionProperties;
 import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
+
+import com.walmart.aex.sp.util.BuyQtyCommonUtil;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -76,12 +78,12 @@ public class BigQueryInitialSetPlanService {
                 }
             }));
             List<RFAInitialSetBumpSetResponse> rfaBsRes = new ArrayList<>();
-            BQFPResponse bqfpResponse = getBqfpResponse(rfaSizePackRequest.getPlanId(), rfaSizePackRequest.getFinelineNbr());
+            BQFPResponse bqfpResponse = bqfpService.getBqfpResponse(rfaSizePackRequest.getPlanId(), rfaSizePackRequest.getFinelineNbr());
 
             for (RFAInitialSetBumpSetResponse rfaBumpSetResponse : rfaInitialSetBumpSetResponseBs) {
                 RFAInitialSetBumpSetResponse rfaRes = new RFAInitialSetBumpSetResponse();
-                BumpSet bp = getBumpSet(bqfpResponse, rfaBumpSetResponse.getProduct_fineline(), rfaBumpSetResponse.getStyle_id(), rfaBumpSetResponse.getCc(), null, null);
-                rfaRes.setIn_store_week(getInStoreWeek(bp));
+                BumpSet bp = BuyQtyCommonUtil.getBumpSet(bqfpResponse, rfaBumpSetResponse.getProduct_fineline(), rfaBumpSetResponse.getStyle_id(), rfaBumpSetResponse.getCc(), null, null);
+                rfaRes.setIn_store_week(BuyQtyCommonUtil.getInStoreWeek(bp));
                 rfaRes.setBumpPackNbr(bp.getBumpPackNbr());
                 rfaRes.setStyle_id(rfaBumpSetResponse.getStyle_id());
                 rfaRes.setCc(rfaBumpSetResponse.getCc());
@@ -114,45 +116,6 @@ public class BigQueryInitialSetPlanService {
         String rfaDatasetName = bigQueryConnectionProperties.getRFADataSetName();
         String tableNameCc = bigQueryConnectionProperties.getRFACCStageTable();
         return rfaProjectId + "." + rfaDatasetName + "." + tableNameCc;
-    }
-
-    private BQFPResponse getBqfpResponse(Integer planId, Integer finelineNbr) {
-        BQFPRequest bqfpRequest = new BQFPRequest();
-        bqfpRequest.setPlanId(Long.valueOf(planId));
-        bqfpRequest.setFinelineNbr(finelineNbr);
-        bqfpRequest.setChannel("1");
-
-        return bqfpService.getBuyQuantityUnits(bqfpRequest);
-    }
-
-    private BumpSet getBumpSet(BQFPResponse bqfpResponse, String productFineline, String styleNbr, String ccId, String fixtureType, Integer clusterId) {
-        Integer bumpPackNumber = StringUtils.isNotEmpty(productFineline) && productFineline.contains(BUMP_PACK) ?
-                Integer.valueOf(productFineline.replaceFirst(BUMP_PACK_PATTERN, "")) : 1;
-        return Optional.ofNullable(bqfpResponse).stream().
-                flatMap( styles -> styles.getStyles().stream())
-                .filter((StringUtils.isNotEmpty(styleNbr)) ? style -> styleNbr.contains(style.getStyleId()) : style -> true)
-                .flatMap( ccs -> ccs.getCustomerChoices().stream())
-                .filter((StringUtils.isNotEmpty(ccId)) ? cc -> ccId.contains(cc.getCcId()) : cc -> true)
-                .flatMap(fixtures -> fixtures.getFixtures().stream())
-                .filter((StringUtils.isNotEmpty(fixtureType)) ? fixture -> fixtureType.contains(fixture.getFixtureType()) : fixture -> true)
-                .flatMap(clusters -> clusters.getClusters().stream())
-                .filter((null != clusterId) ? cluster -> clusterId.equals(cluster.getAnalyticsClusterId()) : cluster -> true)
-                .flatMap(bump -> bump.getBumpList().stream())
-                .filter(bump -> null != bump && bump.getBumpPackNbr().equals(bumpPackNumber)  && StringUtils.isNotEmpty(bump.getWeekDesc()))
-                .findFirst().orElse(new BumpSet());
-    }
-
-    public String formatWeekDesc(String input) {
-        requireNonNull(input, "input is required and missing.");
-
-        StringBuilder weekDesc = new StringBuilder();
-
-        for (char c : input.toCharArray()) {
-            if (c >= '0' && c <= '9') {
-                weekDesc.append(c);
-            }
-        }
-        return weekDesc.toString();
     }
 
     private String getSizePackIntialSetQueryString(String ccTableName, String spTableName, Integer planId, Integer finelineNbr) {
@@ -461,7 +424,7 @@ public class BigQueryInitialSetPlanService {
         }));
 
         try{
-            BQFPResponse bqfpResponse = getBqfpResponse(planId.intValue(), request.getFinelineNbr());
+            BQFPResponse bqfpResponse = bqfpService.getBqfpResponse(planId.intValue(), request.getFinelineNbr());
             sqlQuery = findBumpSqlQuery(planId, request);
             bigQuery = BigQueryOptions.getDefaultInstance().getService();
             queryConfigIs = QueryJobConfiguration.newBuilder(sqlQuery).build();
@@ -469,8 +432,8 @@ public class BigQueryInitialSetPlanService {
             resultsIs.iterateAll().forEach(rows -> rows.forEach(row -> {
                 try {
                     VolumeClusterDTO volumeClusterDTO = objectMapper.readValue(row.getStringValue(), VolumeClusterDTO.class);
-                    BumpSet bp = getBumpSet(bqfpResponse, volumeClusterDTO.getProductFineline(), volumeClusterDTO.getStyle_nbr(), volumeClusterDTO.getCc(), volumeClusterDTO.getFixtureType(), volumeClusterDTO.getClusterId());
-                    String bsInstoreweek = getInStoreWeek(bp);
+                    BumpSet bp = BuyQtyCommonUtil.getBumpSet(bqfpResponse, volumeClusterDTO.getProductFineline(), volumeClusterDTO.getStyle_nbr(), volumeClusterDTO.getCc(), volumeClusterDTO.getFixtureType(), volumeClusterDTO.getClusterId());
+                    String bsInstoreweek = BuyQtyCommonUtil.getInStoreWeek(bp);
                     VolumeQueryId volumeQueryId = new VolumeQueryId(volumeClusterDTO.getCc(), volumeClusterDTO.getStyle_nbr(), volumeClusterDTO.getClusterId(), Integer.valueOf(bsInstoreweek), volumeClusterDTO.getFixtureType(),volumeClusterDTO.getFixtureAllocation());
                     if (uniqueRows.containsKey(volumeQueryId)) {
                         uniqueRows.get(volumeQueryId).add(volumeClusterDTO);
@@ -487,13 +450,6 @@ public class BigQueryInitialSetPlanService {
             log.error("Error Occured while fetch Bump Pack information", e);
         }
         return formatUniqueRows(request, uniqueRows);
-    }
-
-    private String getInStoreWeek(BumpSet bp) {
-        if (null != bp && StringUtils.isNotEmpty(bp.getWeekDesc())) {
-            return formatWeekDesc(bp.getWeekDesc());
-        }
-        return null;
     }
 
     private String findBumpSqlQuery(Long planId, FinelineVolume request) {

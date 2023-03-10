@@ -15,10 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 
 @Service
@@ -27,9 +24,9 @@ public class StrategyFetchService {
     private final GraphQLService graphQLService;
 
     @ManagedConfiguration
-    GraphQLProperties graphQLProperties;
+    private GraphQLProperties graphQLProperties;
 
-    StrategyFetchService(GraphQLService graphQLService) {
+    public StrategyFetchService(GraphQLService graphQLService) {
         this.graphQLService = graphQLService;
     }
 
@@ -92,7 +89,7 @@ public class StrategyFetchService {
         return (BuyQtyResponse) post(graphQLProperties.getSizeProfileUrl(), graphQLProperties.getAllCcSizeProfileQuery(), headers, data, Payload::getGetAllCcSizeClus);
     }
 
-    public StrategyVolumeDeviationResponse getStrategyVolumeDeviation(List<StrategyVolumeDeviationRequest> strategyVolumeDeviationRequests) throws SizeAndPackException
+    private StrategyVolumeDeviationResponse getStrategyVolumeDeviation(List<StrategyVolumeDeviationRequest> strategyVolumeDeviationRequests) throws SizeAndPackException
     {
         Map<String, String> headers = getHeaderForStrategy();
         Map<String, Object> data = new HashMap<>();
@@ -100,7 +97,7 @@ public class StrategyFetchService {
         return (StrategyVolumeDeviationResponse) post(graphQLProperties.getSizeProfileUrl(), graphQLProperties.getStrategyVolumeDeviationLevel(), headers, data, Payload::getGetVolumeDeviationStrategySelection);
     }
 
-    public Map<String, String> getHeaderForStrategy() {
+    private Map<String, String> getHeaderForStrategy() {
         Map<String, String> headers = new HashMap<>();
         headers.put("WM_CONSUMER.ID", graphQLProperties.getSizeProfileConsumerId());
         headers.put("WM_SVC.NAME", graphQLProperties.getSizeProfileConsumerName());
@@ -108,12 +105,23 @@ public class StrategyFetchService {
         return headers;
     }
 
-    public Map<String, Object> getBuyQtyRequest(BuyQtyRequest buyQtyRequest)
+    private Map<String, Object> getBuyQtyRequest(BuyQtyRequest buyQtyRequest)
     {
         Map<String, Object> data = new HashMap<>();
         data.put("planId", buyQtyRequest.getPlanId());
         data.put("channel", buyQtyRequest.getChannel());
         return data;
+    }
+
+    public StrategyVolumeDeviationResponse getStrategyVolumeDeviation(Long planId, Integer finelineNbr) throws SizeAndPackException {
+        List<StrategyVolumeDeviationRequest> strategyVolumeDeviationRequests = new ArrayList<>();
+        StrategyVolumeDeviationRequest strategyVolumeDeviationRequest = new StrategyVolumeDeviationRequest();
+        strategyVolumeDeviationRequest.setPlanId(planId);
+        List<Integer> finelines = new ArrayList<>();
+        finelines.add(finelineNbr);
+        strategyVolumeDeviationRequest.setFinelineNbr(finelines);
+        strategyVolumeDeviationRequests.add(strategyVolumeDeviationRequest);
+        return getStrategyVolumeDeviation(strategyVolumeDeviationRequests);
     }
 
 }

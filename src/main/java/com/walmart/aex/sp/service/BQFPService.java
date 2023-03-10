@@ -95,6 +95,15 @@ public class BQFPService {
       return response;
    }
 
+   public BQFPResponse getBqfpResponse(Integer planId, Integer finelineNbr) {
+      BQFPRequest bqfpRequest = new BQFPRequest();
+      bqfpRequest.setPlanId(Long.valueOf(planId));
+      bqfpRequest.setFinelineNbr(finelineNbr);
+      bqfpRequest.setChannel("1");
+
+      return getBuyQuantityUnits(bqfpRequest);
+   }
+
    private BQFPResponse createDefaultResponse() {
       return new BQFPResponse();
    }
