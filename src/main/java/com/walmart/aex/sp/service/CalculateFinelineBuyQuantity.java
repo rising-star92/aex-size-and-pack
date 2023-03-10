@@ -193,7 +193,9 @@ public class CalculateFinelineBuyQuantity {
                                 CalculateBuyQtyResponse calculateBuyQtyResponse, CalculateBuyQtyRequest calculateBuyQtyRequest) {
         List<SpFineLineChannelFixture> spFineLineChannelFixtures = new ArrayList<>();
         Map<Integer, List<MerchMethodsDto>> merchCodeMap = new HashMap<>();
-        Integer maxBumpCount = getMaxBumpCountVal(bqfpResponse);
+        Set<CustomerChoice> customerChoices = bqfpResponse.getStyles().stream().map(Style::getCustomerChoices)
+                .flatMap(Collection::stream).collect(Collectors.toSet());
+        Integer maxBumpCount = getMaxBumpCountVal(customerChoices);
         finelineDto.getMerchMethods().stream().filter(mm -> mm != null && mm.getMerchMethodCode() != null).forEach(merch -> {
             if (!merchCodeMap.containsKey(merch.getMerchMethodCode()))
                 merchCodeMap.put(merch.getMerchMethodCode(), new ArrayList<>());
@@ -223,10 +225,9 @@ public class CalculateFinelineBuyQuantity {
         calculateBuyQtyResponse.setSpFineLineChannelFixtures(spFineLineChannelFixtures);
     }
 
-    private Integer getMaxBumpCountVal(BQFPResponse bqfpResponse) {
+    private Integer getMaxBumpCountVal(Set<CustomerChoice> customerChoices) {
         int max = 0;
-        Optional<Cluster> res = bqfpResponse.getStyles().stream().map(Style::getCustomerChoices)
-                .flatMap(Collection::stream)
+        Optional<Cluster> res = customerChoices.stream()
                 .map(CustomerChoice::getFixtures)
                 .flatMap(Collection::stream)
                 .map(Fixture::getClusters)
@@ -291,8 +292,7 @@ public class CalculateFinelineBuyQuantity {
             if (!CollectionUtils.isEmpty(customerChoiceDto.getClusters())) {
                 getCcClusters(styleDto, customerChoiceDto, merchMethodsDtos, apResponse, bqfpResponse, spCustomerChoiceChannelFixture, calculateBuyQtyResponse, calculateBuyQtyParallelRequest);
             }
-            Integer ccMaxBumpPackCnt = getCcMaxBumpPackCnt(bqfpResponse,styleDto,customerChoiceDto);
-            spCustomerChoiceChannelFixture.setBumpPackCnt(ccMaxBumpPackCnt);
+            spCustomerChoiceChannelFixture.setBumpPackCnt(getCcMaxBumpPackCnt(bqfpResponse,styleDto,customerChoiceDto));
             spCustomerChoiceChannelFixtures.add(spCustomerChoiceChannelFixture);
         });
         log.info("calculating Style IS and BS Qty");
@@ -300,24 +300,12 @@ public class CalculateFinelineBuyQuantity {
         spStyleChannelFixture.setSpCustomerChoiceChannelFixture(spCustomerChoiceChannelFixtures);
     }
 
-    protected Integer getCcMaxBumpPackCnt(BQFPResponse bqfpResponse, StyleDto style, CustomerChoiceDto customerChoice) {
-        int max = 0;
-        Optional<Cluster> res = bqfpResponse.getStyles().stream().filter(styleDto -> styleDto.getStyleId().equalsIgnoreCase(style.getStyleNbr()))
+    protected Integer getCcMaxBumpPackCnt(BQFPResponse bqfpResponse, StyleDto styleDto, CustomerChoiceDto customerChoiceDto ) {
+        Set<CustomerChoice> customerChoices = bqfpResponse.getStyles().stream().filter(style -> style.getStyleId().equalsIgnoreCase(styleDto.getStyleNbr()))
                 .map(Style::getCustomerChoices)
                 .flatMap(Collection::stream)
-                .filter(cc -> cc.getCcId().equalsIgnoreCase(customerChoice.getCcId()))
-                .map(CustomerChoice::getFixtures)
-                .flatMap(Collection::stream)
-                .map(Fixture::getClusters)
-                .flatMap(Collection::stream)
-                .filter(cluster -> cluster != null && cluster.getBumpList() != null)
-                .max(Comparator.comparing(cluster -> cluster.getBumpList().size()))
-                .stream().findFirst();
-
-        if(res.isPresent()) {
-            max = res.get().getBumpList().size();
-        }
-        return max;
+                .filter(cc -> cc.getCcId().equalsIgnoreCase(customerChoiceDto.getCcId())).collect(Collectors.toSet());
+        return getMaxBumpCountVal(customerChoices);
     }
 
     private void getCcClusters(StyleDto styleDto, CustomerChoiceDto customerChoiceDto, List<MerchMethodsDto> merchMethodsDtos, APResponse apResponse, BQFPResponse bqfpResponse, SpCustomerChoiceChannelFixture spCustomerChoiceChannelFixture, CalculateBuyQtyResponse calculateBuyQtyResponse, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest) {
