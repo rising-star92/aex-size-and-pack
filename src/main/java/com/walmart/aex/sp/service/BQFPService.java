@@ -3,6 +3,7 @@ package com.walmart.aex.sp.service;
 import com.walmart.aex.sp.dto.bqfp.BQFPRequest;
 import com.walmart.aex.sp.dto.bqfp.BQFPResponse;
 import com.walmart.aex.sp.dto.gql.GraphQLResponse;
+import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.properties.BQFPServiceProperties;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
@@ -93,6 +94,15 @@ public class BQFPService {
       BQFPResponse response = createDefaultResponse();
       log.error("BQFP service call failed after 3 retries for request : " + request, e);
       return response;
+   }
+
+   public BQFPResponse getBqfpResponse(Integer planId, Integer finelineNbr) {
+      BQFPRequest bqfpRequest = new BQFPRequest();
+      bqfpRequest.setPlanId(Long.valueOf(planId));
+      bqfpRequest.setFinelineNbr(finelineNbr);
+      bqfpRequest.setChannel(String.valueOf(ChannelType.STORE.getId()));
+
+      return getBuyQuantityUnits(bqfpRequest);
    }
 
    private BQFPResponse createDefaultResponse() {
