@@ -2,7 +2,6 @@ package com.walmart.aex.sp.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.xml.bind.v2.TODO;
 import com.walmart.aex.sp.dto.assortproduct.APRequest;
 import com.walmart.aex.sp.dto.assortproduct.APResponse;
 import com.walmart.aex.sp.dto.assortproduct.RFASizePackData;
@@ -220,31 +219,11 @@ public class CalculateFinelineBuyQuantity {
             } else log.info("Styles Size Profiles are empty to calculate buy Qty: {}", finelineDto);
             spFineLineChannelFixture.setBumpPackCnt(maxBumpCount);
             spFineLineChannelFixtures.add(spFineLineChannelFixture);
-
         });
-
         calculateBuyQtyResponse.setSpFineLineChannelFixtures(spFineLineChannelFixtures);
     }
 
     private Integer getMaxBumpCountVal(BQFPResponse bqfpResponse) {
-        int max = 0;
-        Optional<Cluster> res = bqfpResponse.getStyles().stream().map(Style::getCustomerChoices)
-                .flatMap(Collection::stream)
-                .map(CustomerChoice::getFixtures)
-                .flatMap(Collection::stream)
-                .map(Fixture::getClusters)
-                .flatMap(Collection::stream)
-                .filter(cluster -> cluster != null && cluster.getBumpList() != null)
-                .max(Comparator.comparing(cluster -> cluster.getBumpList().size()))
-                .stream().findFirst();
-
-        if(res.isPresent()) {
-            max = res.get().getBumpList().size();
-        }
-        return max;
-    }
-
-    private Integer getCCMaxBumpCountVal(BQFPResponse bqfpResponse) {
         int max = 0;
         Optional<Cluster> res = bqfpResponse.getStyles().stream().map(Style::getCustomerChoices)
                 .flatMap(Collection::stream)
