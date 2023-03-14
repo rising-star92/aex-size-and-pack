@@ -138,7 +138,7 @@ public class PackOptimizationService {
         FineLinePackOptimizationResponse finelinePackOptimizationResponse = new FineLinePackOptimizationResponse();
         try {
             List<FineLinePackOptimizationResponseDTO> finelinePackOptimizationResponseDTOS = finelinePackOptimizationRepository.getPackOptByFineline(planId, finelineNbr);
-            Integer totalCCsAcrossAllSets = finelinePackOptimizationRepository.getTotalCCsAcrossAllSetsByPlanIdFineline(planId,finelineNbr);
+            Integer totalCCsAcrossAllSets = ccPackOptimizationRepository.getTotalCCsAcrossAllSetsByPlanIdFineline(planId,finelineNbr);
             if (CollectionUtils.isEmpty(finelinePackOptimizationResponseDTOS)) {
                 return finelinePackOptimizationResponse;
             }

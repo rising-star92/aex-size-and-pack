@@ -49,34 +49,4 @@ public interface FineLinePackOptimizationRepository  extends JpaRepository<SpCus
 			"(sccfs.initialSetQty + sccfs.bumpPackQty > 0 OR sccfs.buyQty > 0)")
 	List<FineLinePackOptimizationResponseDTO>getPackOptByFineline(@Param("planId") Long planId,@Param("finelineNbr")Integer finelineNbr);
 
-
-	@Query(value="select sum(sccf.bumpPackCnt + 1)" +
-			"from SpCustomerChoiceChannelFixture sccf " +
-			"left join " + "FineLinePackOptimization fp " + "ON " +
-			"sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.planId  = fp.finelinePackOptId.subCatgPackOptimizationID.merchantPackOptimizationID.planId " +
-			"AND sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl0Nbr = fp.finelinePackOptId.subCatgPackOptimizationID.merchantPackOptimizationID.repTLvl0 " +
-			"AND sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl1Nbr = fp.finelinePackOptId.subCatgPackOptimizationID.merchantPackOptimizationID.repTLvl1 " +
-			"AND sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl2Nbr  = fp.finelinePackOptId.subCatgPackOptimizationID.merchantPackOptimizationID.repTLvl2 " +
-			"AND sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl3Nbr = fp.finelinePackOptId.subCatgPackOptimizationID.merchantPackOptimizationID.repTLvl3 " +
-			"AND sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl4Nbr = fp.finelinePackOptId.subCatgPackOptimizationID.repTLvl4 " +
-			"AND sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.fineLineNbr = fp.finelinePackOptId.finelineNbr " +
-			"AND  sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.channelId = fp.channelText.channelId " +
-
-			"left join " + "CcPackOptimization ccp " + "ON " +
-			"sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.planId = ccp.ccPackOptimizationId.stylePackOptimizationID.finelinePackOptimizationID.subCatgPackOptimizationID.merchantPackOptimizationID.planId " +
-			"AND sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl0Nbr = ccp.ccPackOptimizationId.stylePackOptimizationID.finelinePackOptimizationID.subCatgPackOptimizationID.merchantPackOptimizationID.repTLvl0 " +
-			"AND sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl1Nbr = ccp.ccPackOptimizationId.stylePackOptimizationID.finelinePackOptimizationID.subCatgPackOptimizationID.merchantPackOptimizationID.repTLvl1 " +
-			"AND sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl2Nbr = ccp.ccPackOptimizationId.stylePackOptimizationID.finelinePackOptimizationID.subCatgPackOptimizationID.merchantPackOptimizationID.repTLvl2 " +
-			"AND sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl3Nbr = ccp.ccPackOptimizationId.stylePackOptimizationID.finelinePackOptimizationID.subCatgPackOptimizationID.merchantPackOptimizationID.repTLvl3 " +
-			"AND sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.lvl4Nbr = ccp.ccPackOptimizationId.stylePackOptimizationID.finelinePackOptimizationID.subCatgPackOptimizationID.repTLvl4 " +
-			"AND sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.fineLineNbr = ccp.ccPackOptimizationId.stylePackOptimizationID.finelinePackOptimizationID.finelineNbr " +
-			"AND sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.styleNbr= ccp.ccPackOptimizationId.stylePackOptimizationID.styleNbr " +
-			"AND sccf.spCustomerChoiceChannelFixtureId.customerChoice = ccp.ccPackOptimizationId.customerChoice " +
-			"AND sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.channelId = ccp.channelText.channelId " +
-
-			"where sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.planId = :planId and " +
-			"sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.fineLineNbr =:finelineNbr and " +
-			"sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.channelId=1")
-	Integer getTotalCCsAcrossAllSetsByPlanIdFineline(@Param("planId") Long planId, @Param("finelineNbr")Integer finelineNbr);
-
 }
