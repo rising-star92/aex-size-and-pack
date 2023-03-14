@@ -180,7 +180,7 @@ public class CalculateOnlineFinelineBuyQuantity {
                 replenishment1.setAdjReplnUnits(Math.round ((getReplenishmentUnits(replenishment) * getAvgSizePct(sizeDto)) / 100));
                 replObj.add(replenishment1);
             });
-            buyQtyObj.setReplenishments(replenishmentsOptimizationServices.getUpdatedReplenishmentsPack(replObj,VP_DEFAULT));
+            buyQtyObj.setReplenishments(replenishmentsOptimizationServices.getUpdatedReplenishmentsPack(replObj,VP_DEFAULT, 2));
 
         });
     }

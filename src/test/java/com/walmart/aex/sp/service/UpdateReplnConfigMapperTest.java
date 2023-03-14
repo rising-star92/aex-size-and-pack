@@ -3,13 +3,7 @@ package com.walmart.aex.sp.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.bqfp.Replenishment;
-import com.walmart.aex.sp.entity.CcMmReplPack;
-import com.walmart.aex.sp.entity.CcReplPack;
-import com.walmart.aex.sp.entity.CcSpMmReplPack;
-import com.walmart.aex.sp.entity.FinelineReplPack;
-import com.walmart.aex.sp.entity.MerchCatgReplPack;
-import com.walmart.aex.sp.entity.StyleReplPack;
-import com.walmart.aex.sp.entity.SubCatgReplPack;
+import com.walmart.aex.sp.entity.*;
 import com.walmart.aex.sp.repository.CatgReplnPkConsRepository;
 import com.walmart.aex.sp.repository.CcMmReplnPkConsRepository;
 import com.walmart.aex.sp.repository.CcReplnPkConsRepository;
@@ -124,6 +118,7 @@ class UpdateReplnConfigMapperTest {
 				"\"adjReplnUnits\":333,\"remainingUnits\":1,\"dcInboundUnits\":1,\"dcInboundAdjUnits\":1}," +
 				"{\"replnWeek\":2,\"replnWeekDesc\":\"test\",\"replnUnits\":1,\"adjReplnUnits\":100," +
 				"\"remainingUnits\":1,\"dcInboundUnits\":1,\"dcInboundAdjUnits\":1}]");
+		ccSpMmRP1.setCcSpReplPackId(getCcSpMmReplPackId(1));
 		CcSpMmReplPack ccSpMmRP2 = new CcSpMmReplPack();
 		ccSpMmRP2.setReplPackCnt(6);
 		ccSpMmRP2.setVendorPackCnt(3);
@@ -133,6 +128,7 @@ class UpdateReplnConfigMapperTest {
 				"\"adjReplnUnits\":555,\"remainingUnits\":1,\"dcInboundUnits\":1,\"dcInboundAdjUnits\":1}," +
 				"{\"replnWeek\":2,\"replnWeekDesc\":\"test\",\"replnUnits\":1,\"adjReplnUnits\":200," +
 				"\"remainingUnits\":1,\"dcInboundUnits\":1,\"dcInboundAdjUnits\":1}]");
+		ccSpMmRP2.setCcSpReplPackId(getCcSpMmReplPackId(1));
 		CcSpMmReplPack ccSpMmRP3 = new CcSpMmReplPack();
 		ccSpMmRP3.setReplPackCnt(6);
 		ccSpMmRP3.setVendorPackCnt(3);
@@ -142,6 +138,7 @@ class UpdateReplnConfigMapperTest {
 				"\"adjReplnUnits\":777,\"remainingUnits\":1,\"dcInboundUnits\":1,\"dcInboundAdjUnits\":1}," +
 				"{\"replnWeek\":2,\"replnWeekDesc\":\"test\",\"replnUnits\":1,\"adjReplnUnits\":300," +
 				"\"remainingUnits\":1,\"dcInboundUnits\":1,\"dcInboundAdjUnits\":1}]");
+		ccSpMmRP3.setCcSpReplPackId(getCcSpMmReplPackId(1));
 		CcSpMmReplPack ccSpMmRP4 = new CcSpMmReplPack();
 		ccSpMmRP4.setReplPackCnt(6);
 		ccSpMmRP4.setVendorPackCnt(3);
@@ -151,6 +148,7 @@ class UpdateReplnConfigMapperTest {
 				"\"adjReplnUnits\":999,\"remainingUnits\":1,\"dcInboundUnits\":1,\"dcInboundAdjUnits\":1}," +
 				"{\"replnWeek\":2,\"replnWeekDesc\":\"test\",\"replnUnits\":1,\"adjReplnUnits\":400," +
 				"\"remainingUnits\":1,\"dcInboundUnits\":1,\"dcInboundAdjUnits\":1}]");
+		ccSpMmRP4.setCcSpReplPackId(getCcSpMmReplPackId(1));
 		Set<CcSpMmReplPack> ccSpMmReplPackSet1 = new LinkedHashSet<>(Arrays.asList(ccSpMmRP1, ccSpMmRP2));
 		Set<CcSpMmReplPack> ccSpMmReplPackSet2 = new LinkedHashSet<>(Arrays.asList(ccSpMmRP3, ccSpMmRP4));
 
@@ -277,7 +275,7 @@ class UpdateReplnConfigMapperTest {
 				"\"adjReplnUnits\":333,\"remainingUnits\":1,\"dcInboundUnits\":1,\"dcInboundAdjUnits\":1}," +
 				"{\"replnWeek\":2,\"replnWeekDesc\":\"test\",\"replnUnits\":1,\"adjReplnUnits\":100," +
 				"\"remainingUnits\":1,\"dcInboundUnits\":1,\"dcInboundAdjUnits\":1}]");
-
+		ccSpMmReplPack.setCcSpReplPackId(getCcSpMmReplPackId(1));
 		ccSpMmReplPacks.add(ccSpMmReplPack);
 		replenishmentMapper.updateVnpkWhpkForCcSpMmReplnPkConsMapper(ccSpMmReplPacks, 4,2);
 		verify(ccSpReplnPkConsRepository,Mockito.times(1)).saveAll(ccSpMmReplPackArgumentCaptor.capture());
@@ -286,6 +284,31 @@ class UpdateReplnConfigMapperTest {
 		List<Replenishment> replenishments = Arrays.asList(objectMapper.readValue(ccSpMmReplPack1.getReplenObj(),Replenishment[].class));
 		assertEquals(436, replenishments.get(0).getAdjReplnUnits());
 		assertEquals(0, replenishments.get(1).getAdjReplnUnits());
+
+	}
+
+	@Test
+	void test_updateVnpkWhpkForCcSpMmReplnPkConsMapperForOnline() throws JsonProcessingException {
+
+		List<CcSpMmReplPack> ccSpMmReplPacks = new ArrayList<>();
+		CcSpMmReplPack ccSpMmReplPack = new CcSpMmReplPack();
+		ccSpMmReplPack.setReplPackCnt(6);
+		ccSpMmReplPack.setVendorPackCnt(3);
+		ccSpMmReplPack.setWhsePackCnt(2);
+		ccSpMmReplPack.setReplUnits(4);
+		ccSpMmReplPack.setReplenObj("[{\"replnWeek\":1,\"replnWeekDesc\":\"test\",\"replnUnits\":1," +
+				"\"adjReplnUnits\":333,\"remainingUnits\":1,\"dcInboundUnits\":1,\"dcInboundAdjUnits\":1}," +
+				"{\"replnWeek\":2,\"replnWeekDesc\":\"test\",\"replnUnits\":1,\"adjReplnUnits\":100," +
+				"\"remainingUnits\":1,\"dcInboundUnits\":1,\"dcInboundAdjUnits\":1}]");
+		ccSpMmReplPack.setCcSpReplPackId(getCcSpMmReplPackId(2));
+		ccSpMmReplPacks.add(ccSpMmReplPack);
+		replenishmentMapper.updateVnpkWhpkForCcSpMmReplnPkConsMapper(ccSpMmReplPacks, 4,2);
+		verify(ccSpReplnPkConsRepository,Mockito.times(1)).saveAll(ccSpMmReplPackArgumentCaptor.capture());
+		CcSpMmReplPack ccSpMmReplPack1 = ccSpMmReplPackArgumentCaptor.getValue().iterator().next();
+		assertNotNull(ccSpMmReplPack1);
+		List<Replenishment> replenishments = Arrays.asList(objectMapper.readValue(ccSpMmReplPack1.getReplenObj(),Replenishment[].class));
+		assertEquals(336, replenishments.get(0).getAdjReplnUnits());
+		assertEquals(100, replenishments.get(1).getAdjReplnUnits());
 
 	}
 
@@ -302,7 +325,7 @@ class UpdateReplnConfigMapperTest {
 				"\"adjReplnUnits\":300,\"remainingUnits\":1,\"dcInboundUnits\":1,\"dcInboundAdjUnits\":1}," +
 				"{\"replnWeek\":2,\"replnWeekDesc\":\"test\",\"replnUnits\":1,\"adjReplnUnits\":100," +
 				"\"remainingUnits\":1,\"dcInboundUnits\":1,\"dcInboundAdjUnits\":1}]");
-
+		ccSpMmReplPack.setCcSpReplPackId(getCcSpMmReplPackId(1));
 		ccSpMmReplPacks.add(ccSpMmReplPack);
 		replenishmentMapper.updateVnpkWhpkForCcSpMmReplnPkConsMapper(ccSpMmReplPacks, 4,2);
 		verify(ccSpReplnPkConsRepository,Mockito.times(1)).saveAll(ccSpMmReplPackArgumentCaptor.capture());
@@ -355,6 +378,24 @@ class UpdateReplnConfigMapperTest {
 			}
 		}
 
+	}
+
+	private CcSpMmReplPackId getCcSpMmReplPackId(Integer channelId) {
+		MerchCatgReplPackId merchCatgReplPackId = new MerchCatgReplPackId();
+		merchCatgReplPackId.setChannelId(channelId);
+		SubCatgReplPackId subCatgReplPackId = new SubCatgReplPackId();
+		subCatgReplPackId.setMerchCatgReplPackId(merchCatgReplPackId);
+		FinelineReplPackId finelineReplPackId = new FinelineReplPackId();
+		finelineReplPackId.setSubCatgReplPackId(subCatgReplPackId);
+		StyleReplPackId styleReplPackId = new StyleReplPackId();
+		styleReplPackId.setFinelineReplPackId(finelineReplPackId);
+		CcReplPackId ccReplPackId = new CcReplPackId();
+		ccReplPackId.setStyleReplPackId(styleReplPackId);
+		CcMmReplPackId ccMmReplPackId = new CcMmReplPackId();
+		ccMmReplPackId.setCcReplPackId(ccReplPackId);
+		CcSpMmReplPackId ccSpMmReplPackId = new CcSpMmReplPackId();
+		ccSpMmReplPackId.setCcMmReplPackId(ccMmReplPackId);
+		return ccSpMmReplPackId;
 	}
 
 }

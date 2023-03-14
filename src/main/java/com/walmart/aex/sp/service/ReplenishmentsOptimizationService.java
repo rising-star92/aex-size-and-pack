@@ -21,38 +21,40 @@ public class ReplenishmentsOptimizationService {
      * @param vnpkQty
      * @return
      */
-    public List<Replenishment> getUpdatedReplenishmentsPack(List<Replenishment> replenishments, Integer vnpkQty) {
+    public List<Replenishment> getUpdatedReplenishmentsPack(List<Replenishment> replenishments, Integer vnpkQty, Integer channelId) {
 
         if (CollectionUtils.isEmpty(replenishments)) {
             log.info("Replenishment list is null/empty");
             return Collections.emptyList();
         }
+        /** Adjust the replenishment unit only for Store */
+        if(1 == channelId) {
+            //get non-zero weeks which are supposed to be adjusted.
+            List<Replenishment> nonZeroReplenishmentList = replenishments.stream().filter(replenishment -> replenishment.getAdjReplnUnits() != null && replenishment.getAdjReplnUnits() > 0).collect(Collectors.toList());
 
-        //get non-zero weeks which are supposed to be adjusted.
-        List<Replenishment> nonZeroReplenishmentList = replenishments.stream().filter(replenishment -> replenishment.getAdjReplnUnits() != null && replenishment.getAdjReplnUnits() > 0).collect(Collectors.toList());
-
-        //sum of all adjReplnUnits including starting index
-        long futureWeekAdjReplnUnitsSum = nonZeroReplenishmentList.stream().map(Replenishment::getAdjReplnUnits).mapToLong(Long::longValue).sum();
+            //sum of all adjReplnUnits including starting index
+            long futureWeekAdjReplnUnitsSum = nonZeroReplenishmentList.stream().map(Replenishment::getAdjReplnUnits).mapToLong(Long::longValue).sum();
 
 
-        //adjust the adjReplnUnits
-        for (int i = 0; i < nonZeroReplenishmentList.size(); i++) {
-            //if current adjReplnUnits is less than Minimum_Replenishment_Quantity only then it need adjustment and if nonZeroReplenishmentList is last and is less Minimum_Replenishment_Quantity
-            if (nonZeroReplenishmentList.get(i).getAdjReplnUnits() < MINIMUM_REPLENISHMENT_QUANTITY) {
-                //get available future adjReplnUnits exclude current
-                futureWeekAdjReplnUnitsSum = Math.abs(futureWeekAdjReplnUnitsSum - nonZeroReplenishmentList.get(i).getAdjReplnUnits());
+            //adjust the adjReplnUnits
+            for (int i = 0; i < nonZeroReplenishmentList.size(); i++) {
+                //if current adjReplnUnits is less than Minimum_Replenishment_Quantity only then it need adjustment and if nonZeroReplenishmentList is last and is less Minimum_Replenishment_Quantity
+                if (nonZeroReplenishmentList.get(i).getAdjReplnUnits() < MINIMUM_REPLENISHMENT_QUANTITY) {
+                    //get available future adjReplnUnits exclude current
+                    futureWeekAdjReplnUnitsSum = Math.abs(futureWeekAdjReplnUnitsSum - nonZeroReplenishmentList.get(i).getAdjReplnUnits());
 
-                // if future weeks sum is less than Minimum_Replenishment_Quantity then add to current week and make rest to 0
-                if (futureWeekAdjReplnUnitsSum < MINIMUM_REPLENISHMENT_QUANTITY) {
-                    //add all of them and make future weeks to 0
-                    setDefaultFutureWeek(nonZeroReplenishmentList, futureWeekAdjReplnUnitsSum, i);
-                    break;
+                    // if future weeks sum is less than Minimum_Replenishment_Quantity then add to current week and make rest to 0
+                    if (futureWeekAdjReplnUnitsSum < MINIMUM_REPLENISHMENT_QUANTITY) {
+                        //add all of them and make future weeks to 0
+                        setDefaultFutureWeek(nonZeroReplenishmentList, futureWeekAdjReplnUnitsSum, i);
+                        break;
+                    }
+                    //for every week [i], we need to iterate future weeks [j] to get required, if we get required then break or else loop exits itself
+                    futureWeekAdjReplnUnitsSum = getFutureWeekAdjReplnUnitsSum(nonZeroReplenishmentList, futureWeekAdjReplnUnitsSum, i);
+
+                } else {
+                    futureWeekAdjReplnUnitsSum = Math.abs(futureWeekAdjReplnUnitsSum - nonZeroReplenishmentList.get(i).getAdjReplnUnits());
                 }
-                //for every week [i], we need to iterate future weeks [j] to get required, if we get required then break or else loop exits itself
-                futureWeekAdjReplnUnitsSum = getFutureWeekAdjReplnUnitsSum(nonZeroReplenishmentList, futureWeekAdjReplnUnitsSum, i);
-
-            } else {
-                futureWeekAdjReplnUnitsSum = Math.abs(futureWeekAdjReplnUnitsSum - nonZeroReplenishmentList.get(i).getAdjReplnUnits());
             }
         }
         updatedAdjustedDcInboundQty(replenishments,vnpkQty);
