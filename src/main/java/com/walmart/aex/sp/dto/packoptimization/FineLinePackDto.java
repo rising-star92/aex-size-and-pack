@@ -10,6 +10,7 @@ import lombok.Data;
 @Data
 public class FineLinePackDto {
 	 private Integer finelineNbr;
-	  private FinelineLevelConstraints finelineLevelConstraints;
-	  private List<CcPackDto> customerChoices;
+	 private FinelineLevelConstraints finelineLevelConstraints;
+	 private Integer totalCCsAcrossAllSets;
+	 private List<CcPackDto> customerChoices;
 }
