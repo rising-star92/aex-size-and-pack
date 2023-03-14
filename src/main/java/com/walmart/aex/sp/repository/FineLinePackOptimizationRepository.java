@@ -50,7 +50,7 @@ public interface FineLinePackOptimizationRepository  extends JpaRepository<SpCus
 	List<FineLinePackOptimizationResponseDTO>getPackOptByFineline(@Param("planId") Long planId,@Param("finelineNbr")Integer finelineNbr);
 
 
-	@Query(value="select sum(sccf.bumpPackCnt + sccf.initialSetQty)" +
+	@Query(value="select sum(sccf.bumpPackCnt + 1)" +
 			"from SpCustomerChoiceChannelFixture sccf " +
 			"left join " + "FineLinePackOptimization fp " + "ON " +
 			"sccf.spCustomerChoiceChannelFixtureId.spStyleChannelFixtureId.spFineLineChannelFixtureId.planId  = fp.finelinePackOptId.subCatgPackOptimizationID.merchantPackOptimizationID.planId " +
