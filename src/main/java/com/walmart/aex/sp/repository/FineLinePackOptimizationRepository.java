@@ -49,4 +49,6 @@ public interface FineLinePackOptimizationRepository  extends JpaRepository<SpCus
 			"(sccfs.initialSetQty + sccfs.bumpPackQty > 0 OR sccfs.buyQty > 0)")
 	List<FineLinePackOptimizationResponseDTO>getPackOptByFineline(@Param("planId") Long planId,@Param("finelineNbr")Integer finelineNbr);
 
+
+
 }
