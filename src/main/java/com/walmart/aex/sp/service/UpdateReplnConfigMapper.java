@@ -211,7 +211,8 @@ public class UpdateReplnConfigMapper {
 					List<Replenishment> replObj = objectMapper.readValue(replObjJson, new TypeReference<>() {});
 					ccSpReplnCons.setVendorPackCnt(vnpk == null ? ccSpReplnCons.getVendorPackCnt() : vnpk);
 					ccSpReplnCons.setWhsePackCnt(whpk == null ? ccSpReplnCons.getWhsePackCnt() : whpk);
-					replObj = replenishmentsOptimizationService.getUpdatedReplenishmentsPack(replObj, ccSpReplnCons.getVendorPackCnt());
+					Integer channelId = ccSpReplnCons.getCcSpReplPackId().getCcMmReplPackId().getCcReplPackId().getStyleReplPackId().getFinelineReplPackId().getSubCatgReplPackId().getMerchCatgReplPackId().getChannelId();
+					replObj = replenishmentsOptimizationService.getUpdatedReplenishmentsPack(replObj, ccSpReplnCons.getVendorPackCnt(), channelId);
 					replUnits = replObj.stream().mapToLong(Replenishment::getAdjReplnUnits).sum();
 					ccSpReplnCons.setReplenObj(objectMapper.writeValueAsString(replObj));
 				} catch (JsonProcessingException e) {
