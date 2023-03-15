@@ -13,6 +13,7 @@ import com.walmart.aex.sp.entity.MerchCatgReplPack;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.enums.FixtureTypeRollup;
 import com.walmart.aex.sp.exception.CustomException;
+import com.walmart.aex.sp.util.SizeAndPackConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -180,7 +181,7 @@ public class CalculateOnlineFinelineBuyQuantity {
                 replenishment1.setAdjReplnUnits(Math.round ((getReplenishmentUnits(replenishment) * getAvgSizePct(sizeDto)) / 100));
                 replObj.add(replenishment1);
             });
-            buyQtyObj.setReplenishments(replenishmentsOptimizationServices.getUpdatedReplenishmentsPack(replObj,VP_DEFAULT, 2));
+            buyQtyObj.setReplenishments(replenishmentsOptimizationServices.getUpdatedReplenishmentsPack(replObj,VP_DEFAULT, SizeAndPackConstants.ONLINE_CHANNEL_ID));
 
         });
     }

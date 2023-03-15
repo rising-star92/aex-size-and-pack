@@ -1,6 +1,7 @@
 package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.bqfp.Replenishment;
+import com.walmart.aex.sp.util.SizeAndPackConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -28,7 +29,7 @@ public class ReplenishmentsOptimizationService {
             return Collections.emptyList();
         }
         /** Adjust the replenishment unit only for Store */
-        if(1 == channelId) {
+        if(SizeAndPackConstants.STORE_CHANNEL_ID == channelId) {
             //get non-zero weeks which are supposed to be adjusted.
             List<Replenishment> nonZeroReplenishmentList = replenishments.stream().filter(replenishment -> replenishment.getAdjReplnUnits() != null && replenishment.getAdjReplnUnits() > 0).collect(Collectors.toList());
 
