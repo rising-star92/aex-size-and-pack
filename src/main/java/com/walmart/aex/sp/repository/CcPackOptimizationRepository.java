@@ -4,6 +4,7 @@ import com.walmart.aex.sp.entity.CcPackOptimization;
 import com.walmart.aex.sp.entity.CcPackOptimizationID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Set;
@@ -55,4 +56,32 @@ public interface CcPackOptimizationRepository extends JpaRepository<CcPackOptimi
             "AND ccPackOpt.ccPackOptimizationId.stylePackOptimizationID.finelinePackOptimizationID.subCatgPackOptimizationID.repTLvl4 =?6 \n" +
             "AND ccPackOpt.ccPackOptimizationId.stylePackOptimizationID.finelinePackOptimizationID.finelineNbr =?7 ")
     List<CcPackOptimization> findCCPackOptimizationByFineLineNbr(Long planId, Integer lvl0Nbr, Integer lvl1Nbr, Integer lvl2Nbr, Integer lvl3Nbr, Integer lvl4Nbr, Integer finelineNbr);
+
+    @Query(value = "select sum(t.bump_pack_cnt + 1) from (" +
+            "select distinct(sccf.customer_choice) , sccf.bump_pack_cnt  " +
+            "from [dbo].[sp_cc_chan_fixtr] sccf " +
+            "left join [dbo].[fineline_pkopt_cons] fp ON " +
+            "sccf.plan_id = fp.plan_id " +
+            "AND sccf.rpt_lvl_0_nbr = fp.rpt_lvl_0_nbr " +
+            "AND sccf.rpt_lvl_1_nbr = fp.rpt_lvl_1_nbr " +
+            "AND sccf.rpt_lvl_2_nbr  = fp.rpt_lvl_2_nbr " +
+            "AND sccf.rpt_lvl_3_nbr = fp.rpt_lvl_3_nbr " +
+            "AND sccf.rpt_lvl_4_nbr = fp.rpt_lvl_4_nbr " +
+            "AND sccf.fineline_nbr = fp.fineline_nbr " +
+            "AND  sccf.channel_id = fp.channel_id " +
+            "inner join  [dbo].[cc_pkopt_cons] ccp  ON " +
+            "sccf.plan_id = ccp.plan_id " +
+            "AND sccf.rpt_lvl_0_nbr = ccp.rpt_lvl_0_nbr " +
+            "AND sccf.rpt_lvl_1_nbr = ccp.rpt_lvl_1_nbr " +
+            "AND sccf.rpt_lvl_2_nbr = ccp.rpt_lvl_2_nbr " +
+            "AND sccf.rpt_lvl_3_nbr = ccp.rpt_lvl_3_nbr " +
+            "AND sccf.rpt_lvl_4_nbr = ccp.rpt_lvl_4_nbr " +
+            "AND sccf.fineline_nbr = ccp.fineline_nbr " +
+            "AND sccf.style_nbr= ccp.style_nbr " +
+            "AND sccf.customer_choice = ccp.customer_choice " +
+            "AND sccf.channel_id = ccp.channel_id " +
+            "where sccf.plan_id =:planId and " +
+            "sccf.fineline_nbr =:finelineNbr and " +
+            "sccf.channel_id=1 ) as t", nativeQuery = true)
+    Integer getTotalCCsAcrossAllSetsByPlanIdFineline(@Param("planId") Long planId, @Param("finelineNbr")Integer finelineNbr);
 }

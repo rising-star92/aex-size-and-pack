@@ -24,26 +24,27 @@ public class PackOptimizationMapper {
 	private static final Integer DEFAULT_BUMPPACK = 1;
 
 
-	public void mapPackOptimizationFineline(FineLinePackOptimizationResponseDTO finelinePackOptimizationResponseDTO, FineLinePackOptimizationResponse response,Long planId, Integer bumpPackNbr ) {
+	public void mapPackOptimizationFineline(FineLinePackOptimizationResponseDTO finelinePackOptimizationResponseDTO, FineLinePackOptimizationResponse response,Long planId, Integer bumpPackNbr, Integer totalCCsAcrossAllSets ) {
 		response.setPlanId(planId);
-		response.setFinelines(mapReplenishmentFl(finelinePackOptimizationResponseDTO, response, bumpPackNbr));
+		response.setFinelines(mapReplenishmentFl(finelinePackOptimizationResponseDTO, response, bumpPackNbr,totalCCsAcrossAllSets));
 	}
 
-	private List<FineLinePackDto> mapReplenishmentFl(FineLinePackOptimizationResponseDTO finelinePackOptimizationResponseDTO, FineLinePackOptimizationResponse response, Integer bumpPackNbr) {
+	private List<FineLinePackDto> mapReplenishmentFl(FineLinePackOptimizationResponseDTO finelinePackOptimizationResponseDTO, FineLinePackOptimizationResponse response, Integer bumpPackNbr, Integer totalCCsAcrossAllSets) {
 		List<FineLinePackDto> finelineDtoList = Optional.ofNullable(response.getFinelines()).orElse(new ArrayList<>());
 
 		finelineDtoList.stream()
 		.filter(finelineDto -> finelinePackOptimizationResponseDTO.getFinelineNbr().equals(finelineDto.getFinelineNbr())).findFirst()
 		.ifPresentOrElse(finelineDto -> finelineDto.setCustomerChoices(mapReplenishmentCc(finelinePackOptimizationResponseDTO, finelineDto, bumpPackNbr)),
-				() -> setFinelineSP(finelinePackOptimizationResponseDTO, finelineDtoList, bumpPackNbr));
+				() -> setFinelineSP(finelinePackOptimizationResponseDTO, finelineDtoList, bumpPackNbr,totalCCsAcrossAllSets));
 		return finelineDtoList;
 	}
 
-	private void setFinelineSP(FineLinePackOptimizationResponseDTO finelinePackOptimizationResponseDTO, List<FineLinePackDto> finelineDtoList, Integer bumpPackNbr) {
+	private void setFinelineSP(FineLinePackOptimizationResponseDTO finelinePackOptimizationResponseDTO, List<FineLinePackDto> finelineDtoList, Integer bumpPackNbr, Integer totalCCS) {
 		FineLinePackDto fineline = new FineLinePackDto();
 		fineline.setFinelineNbr(finelinePackOptimizationResponseDTO.getFinelineNbr());
 		fineline.setFinelineLevelConstraints(setFinelineConstraints(finelinePackOptimizationResponseDTO,fineline));
 		fineline.setCustomerChoices(mapReplenishmentCc(finelinePackOptimizationResponseDTO, fineline, bumpPackNbr));
+		fineline.setTotalCCsAcrossAllSets(totalCCS);
 		finelineDtoList.add(fineline);
 	}
 	

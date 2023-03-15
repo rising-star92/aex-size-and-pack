@@ -40,14 +40,14 @@ public class PackOptimizationMapperTest {
 		fineLinePackOptimizationResponseDTO.setFactoryId("0121");
 		fineLinePackOptimizationResponseDTO.setColorCombination("offWhite");
 		fineLinePackOptimizationResponseDTO.setSinglePackInd(1);
-		packOptimizationMapper.mapPackOptimizationFineline(fineLinePackOptimizationResponseDTO,fineLinePackOptimizationResponse,471l, 1);
+		packOptimizationMapper.mapPackOptimizationFineline(fineLinePackOptimizationResponseDTO,fineLinePackOptimizationResponse,471l, 1,1);
 		assertNotNull(fineLinePackOptimizationResponse);
 		assertEquals(471,fineLinePackOptimizationResponse.getPlanId());
 		assertNotNull(fineLinePackOptimizationResponse.getFinelines());
 		assertNotNull(fineLinePackOptimizationResponse.getFinelines().get(0).getFinelineLevelConstraints());
 		assertNotNull(fineLinePackOptimizationResponse.getFinelines().get(0).getCustomerChoices());
 		assertNotNull(fineLinePackOptimizationResponse.getFinelines().get(0).getCustomerChoices().get(0).getColorCombinationConstraints());
-		
+
 		assertEquals(20,fineLinePackOptimizationResponse.getFinelines().get(0).getFinelineLevelConstraints().getMaxUnitsPerPack());
 		assertEquals(5,fineLinePackOptimizationResponse.getFinelines().get(0).getFinelineLevelConstraints().getMaxPacks());
 		assertEquals("0121",fineLinePackOptimizationResponse.getFinelines().get(0).getCustomerChoices().get(0).getColorCombinationConstraints().getFactoryId());
@@ -153,7 +153,7 @@ public class PackOptimizationMapperTest {
 		fineLinePackOptimizationResponseDTO.setFactoryId("0121");
 		fineLinePackOptimizationResponseDTO.setColorCombination("offWhite");
 		fineLinePackOptimizationResponseDTO.setSinglePackInd(1);
-		packOptimizationMapper.mapPackOptimizationFineline(fineLinePackOptimizationResponseDTO,fineLinePackOptimizationResponse,471l, 2);
+		packOptimizationMapper.mapPackOptimizationFineline(fineLinePackOptimizationResponseDTO,fineLinePackOptimizationResponse,471l, 2,1);
 		log.info("test: {}",fineLinePackOptimizationResponse);
 		assertEquals(123456,fineLinePackOptimizationResponse.getFinelines().get(0).getCustomerChoices().get(0).getFixtures().get(0).getSizes().get(0)
 				.getMetrics().stream().filter(metricsPackDto -> metricsPackDto.getStoreList().contains(0)
@@ -254,7 +254,7 @@ public class PackOptimizationMapperTest {
 		fineLinePackOptimizationResponseDTO.setFactoryId("0121");
 		fineLinePackOptimizationResponseDTO.setColorCombination("offWhite");
 		fineLinePackOptimizationResponseDTO.setSinglePackInd(1);
-		packOptimizationMapper.mapPackOptimizationFineline(fineLinePackOptimizationResponseDTO,fineLinePackOptimizationResponse,471l, 1);
+		packOptimizationMapper.mapPackOptimizationFineline(fineLinePackOptimizationResponseDTO,fineLinePackOptimizationResponse,471l, 1,1);
 		log.info("test: {}",fineLinePackOptimizationResponse);
 		assertEquals(123456,fineLinePackOptimizationResponse.getFinelines().get(0).getCustomerChoices().get(0).getFixtures().get(0).getSizes().get(0)
 				.getMetrics().stream().filter(metricsPackDto -> metricsPackDto.getStoreList().contains(0)
@@ -352,7 +352,7 @@ public class PackOptimizationMapperTest {
 		fineLinePackOptimizationResponseDTO.setFactoryId("0121");
 		fineLinePackOptimizationResponseDTO.setColorCombination("offWhite");
 		fineLinePackOptimizationResponseDTO.setSinglePackInd(1);
-		packOptimizationMapper.mapPackOptimizationFineline(fineLinePackOptimizationResponseDTO,fineLinePackOptimizationResponse,471l, 1);
+		packOptimizationMapper.mapPackOptimizationFineline(fineLinePackOptimizationResponseDTO,fineLinePackOptimizationResponse,471l, 1,1);
 		log.info("test: {}",fineLinePackOptimizationResponse);
 		assertEquals(123456,fineLinePackOptimizationResponse.getFinelines().get(0).getCustomerChoices().get(0).getFixtures().get(0).getSizes().get(0)
 				.getMetrics().stream().filter(metricsPackDto -> metricsPackDto.getStoreList().contains(0)

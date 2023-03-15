@@ -138,6 +138,7 @@ public class PackOptimizationService {
         FineLinePackOptimizationResponse finelinePackOptimizationResponse = new FineLinePackOptimizationResponse();
         try {
             List<FineLinePackOptimizationResponseDTO> finelinePackOptimizationResponseDTOS = finelinePackOptimizationRepository.getPackOptByFineline(planId, finelineNbr);
+            Integer totalCCsAcrossAllSets = ccPackOptimizationRepository.getTotalCCsAcrossAllSetsByPlanIdFineline(planId,finelineNbr);
             if (CollectionUtils.isEmpty(finelinePackOptimizationResponseDTOS)) {
                 return finelinePackOptimizationResponse;
             }
@@ -145,7 +146,7 @@ public class PackOptimizationService {
                     .stream()
                     .flatMap(Collection::stream)
                     .forEach(finelinePackOptimizationResponseDTO -> packOptimizationMapper.
-                            mapPackOptimizationFineline(finelinePackOptimizationResponseDTO, finelinePackOptimizationResponse, planId, bumpPackNbr));
+                            mapPackOptimizationFineline(finelinePackOptimizationResponseDTO, finelinePackOptimizationResponse, planId, bumpPackNbr,totalCCsAcrossAllSets));
         } catch (Exception e) {
             log.error("Exception While fetching Fineline pack Optimization :", e);
             throw new CustomException("Failed to fetch Fineline Pack Optimization , due to" + e);
