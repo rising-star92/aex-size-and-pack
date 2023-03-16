@@ -30,7 +30,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class BQFPServiceTest {
+class BQFPServiceTest {
 
    @Mock
    private RestTemplate restTemplate;
@@ -48,7 +48,7 @@ public class BQFPServiceTest {
    }
 
    @Test
-   public void successResponseReturnsBQFPResponse() {
+   void successResponseReturnsBQFPResponse() {
       ResponseEntity<BQFPResponse> response = ResponseEntity.status(HttpStatus.OK).body(successResponse());
       when(properties.getUrl()).thenReturn("https://bqfp.dev/flow-plan/v1/getBuyQuantityFromFlowPlan");
       when(restTemplate.exchange(any(URI.class), eq(HttpMethod.GET), any(), eq(BQFPResponse.class))).thenReturn(response);
@@ -58,7 +58,7 @@ public class BQFPServiceTest {
    }
 
    @Test
-   public void exceptionThrownWithInvalidURI() {
+   void exceptionThrownWithInvalidURI() {
 
       Exception exception = assertThrows(CustomException.class, () -> {
          bqfpService.getBuyQuantityUnits(new BQFPRequest(485L, "1", 572));
@@ -70,7 +70,7 @@ public class BQFPServiceTest {
    }
 
    @Test
-   public void exceptionThrownWhenNonSuccessResponseFromBQFP() {
+   void exceptionThrownWhenNonSuccessResponseFromBQFP() {
       when(properties.getUrl()).thenReturn("https://bqfp.dev/flow-plan/v1/getBuyQuantityFromFlowPlan");
       when(restTemplate.exchange(any(URI.class), eq(HttpMethod.GET), any(), eq(BQFPResponse.class))).thenThrow(new RestClientException("Bad Request"));
       Exception exception = assertThrows(CustomException.class, () -> {
@@ -83,19 +83,19 @@ public class BQFPServiceTest {
    }
 
    @Test
-   public void createDefaultConstructorTest() {
+   void createDefaultConstructorTest() {
       bqfpService = new BQFPService();
       assertNotNull(bqfpService);
    }
 
    @Test
-   public void createBQFPServiceWithRestTemplateConstructor() {
+   void createBQFPServiceWithRestTemplateConstructor() {
       bqfpService = new BQFPService(restTemplate);
       assertNotNull(bqfpService);
    }
 
    @Test
-   public void handleReturnNullTest() {
+   void handleReturnNullTest() {
       ResponseEntity<BQFPResponse> response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
       when(properties.getUrl()).thenReturn("https://bqfp.dev/flow-plan/v1/getBuyQuantityFromFlowPlan");
       when(restTemplate.exchange(any(URI.class), eq(HttpMethod.GET), any(), eq(BQFPResponse.class))).thenReturn(response);
@@ -103,7 +103,15 @@ public class BQFPServiceTest {
       assertNull(result);
    }
 
-
+   @Test
+   void getSuccessBQFPResponseByCreatingRequestObject() {
+      ResponseEntity<BQFPResponse> response = ResponseEntity.status(HttpStatus.OK).body(successResponse());
+      when(properties.getUrl()).thenReturn("https://bqfp.dev/flow-plan/v1/getBuyQuantityFromFlowPlan");
+      when(restTemplate.exchange(any(URI.class), eq(HttpMethod.GET), any(), eq(BQFPResponse.class))).thenReturn(response);
+      BQFPResponse result = bqfpService.getBqfpResponse(485, 123);
+      verify(restTemplate, times(1)).exchange(any(URI.class), eq(HttpMethod.GET), any(), eq(BQFPResponse.class));
+      assertNotNull(result);
+   }
 
    private BQFPResponse successResponse() {
       BQFPResponse response = new BQFPResponse();
