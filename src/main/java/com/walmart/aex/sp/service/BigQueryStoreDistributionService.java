@@ -211,7 +211,7 @@ public class BigQueryStoreDistributionService {
 			return "select distinct scc.store_nbr as store,scc.cluster_id as clusterId from `" + bigQueryConnectionProperties.getAnalyticsData() + ".svg_subcategory_cluster` scc " +
 					"join `" + bigQueryConnectionProperties.getAnalyticsData() + ".svg_subcategory` sc on sc.cluster_id = scc.cluster_id and sc.dept_nbr = scc.dept_nbr and " +
 					"sc.dept_catg_nbr = scc.dept_catg_nbr and sc.dept_subcatg_nbr = scc.dept_subcatg_nbr and sc.season = scc.season and sc.fiscal_year = scc.fiscal_year " +
-					"where sc.dept_cat_nbr = " + finelineVolumeDeviationDto.getLvl3Nbr() + " and sc.dept_subcatg_nbr = " + finelineVolumeDeviationDto.getLvl4Nbr() +
+					"where sc.dept_catg_nbr = " + finelineVolumeDeviationDto.getLvl3Nbr() + " and sc.dept_subcatg_nbr = " + finelineVolumeDeviationDto.getLvl4Nbr() +
 					" and  sc.season = '" + season + "' and sc.fiscal_year = " + fiscalYear;
 
 		else if (finelineVolumeDeviationDto.getVolumeDeviationLevel().equals(VdLevelCode.FINELINE.getDescription()))
