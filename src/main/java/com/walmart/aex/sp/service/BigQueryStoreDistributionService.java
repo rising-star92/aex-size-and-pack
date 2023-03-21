@@ -72,25 +72,12 @@ public class BigQueryStoreDistributionService {
 			Long inStoreWeek = packData.getInStoreWeek();
 			String packId = packData.getPackId();
 			String planAndFineline = planId + "_" + fineline + PERCENT;
-			String sqlQuery = getInitialSetQuery(parquetTableName, packOptOutputTableName,
-					planAndFineline, planId, fineline, packId);
 			BigQuery bigQuery = BigQueryOptions.getDefaultInstance().getService();
-			QueryJobConfiguration queryConfig = QueryJobConfiguration.newBuilder(sqlQuery).build();
-			TableResult results = bigQuery.query(queryConfig);
-			results.iterateAll().forEach(rows -> rows.forEach(row -> {
-				try {
-					StoreDistributionDTO storeDistributionDTO = objectMapper.readValue(row.getValue().toString(),
-							StoreDistributionDTO.class);
-					storeDistributionList.add(storeDistributionDTO);
-				} catch (JsonProcessingException e) {
-					log.error("Error while mapping the gcp table response data \n", e);
-				}
-			}));
-			if (storeDistributionList.isEmpty()) {
-				sqlQuery = getBumpSetStoreDistributionQuery(parquetTableName, packOptOutputTableName,
-						planAndFineline, planId, fineline, packId);
-				queryConfig = QueryJobConfiguration.newBuilder(sqlQuery).build();
-				results = bigQuery.query(queryConfig);
+			if (!Boolean.parseBoolean(bigQueryConnectionProperties.getStoreDistributionFeatureFlag())) {
+				String storeDistributionQuery = getStoreDistributionQuery(parquetTableName, packOptOutputTableName,
+						planAndFineline, planId, fineline, inStoreWeek, packId);
+				QueryJobConfiguration queryConfig = QueryJobConfiguration.newBuilder(storeDistributionQuery).build();
+				TableResult results = bigQuery.query(queryConfig);
 				results.iterateAll().forEach(rows -> rows.forEach(row -> {
 					try {
 						StoreDistributionDTO storeDistributionDTO = objectMapper.readValue(row.getValue().toString(),
@@ -100,12 +87,42 @@ public class BigQueryStoreDistributionService {
 						log.error("Error while mapping the gcp table response data \n", e);
 					}
 				}));
-				BQFPResponse bqfpResponse = bqfpService.getBqfpResponse(Math.toIntExact(planId), fineline);
-				for (StoreDistributionDTO storeDistribution : storeDistributionList) {
-					BumpSet bumpSet = BuyQtyCommonUtil.getBumpSet(bqfpResponse, storeDistribution.getProductFineline(), storeDistribution.getStyleNbr(),
-							storeDistribution.getCc(), storeDistribution.getFixtureType(), storeDistribution.getClusterId());
-					String bSInStoreWeek = BuyQtyCommonUtil.getInStoreWeek(bumpSet);
-					if (StringUtils.isNotEmpty(bSInStoreWeek)) storeDistribution.setInStoreWeek(Long.valueOf(bSInStoreWeek));
+			} else {
+				String sqlQuery = getInitialSetQuery(parquetTableName, packOptOutputTableName,
+						planAndFineline, planId, fineline, packId);
+
+				QueryJobConfiguration queryConfig = QueryJobConfiguration.newBuilder(sqlQuery).build();
+				TableResult results = bigQuery.query(queryConfig);
+				results.iterateAll().forEach(rows -> rows.forEach(row -> {
+					try {
+						StoreDistributionDTO storeDistributionDTO = objectMapper.readValue(row.getValue().toString(),
+								StoreDistributionDTO.class);
+						storeDistributionList.add(storeDistributionDTO);
+					} catch (JsonProcessingException e) {
+						log.error("Error while mapping the gcp table response data \n", e);
+					}
+				}));
+				if (storeDistributionList.isEmpty()) {
+					sqlQuery = getBumpSetStoreDistributionQuery(parquetTableName, packOptOutputTableName,
+							planAndFineline, planId, fineline, packId);
+					queryConfig = QueryJobConfiguration.newBuilder(sqlQuery).build();
+					results = bigQuery.query(queryConfig);
+					results.iterateAll().forEach(rows -> rows.forEach(row -> {
+						try {
+							StoreDistributionDTO storeDistributionDTO = objectMapper.readValue(row.getValue().toString(),
+									StoreDistributionDTO.class);
+							storeDistributionList.add(storeDistributionDTO);
+						} catch (JsonProcessingException e) {
+							log.error("Error while mapping the gcp table response data \n", e);
+						}
+					}));
+					BQFPResponse bqfpResponse = bqfpService.getBqfpResponse(Math.toIntExact(planId), fineline);
+					for (StoreDistributionDTO storeDistribution : storeDistributionList) {
+						BumpSet bumpSet = BuyQtyCommonUtil.getBumpSet(bqfpResponse, storeDistribution.getProductFineline(), storeDistribution.getStyleNbr(),
+								storeDistribution.getCc(), storeDistribution.getFixtureType(), storeDistribution.getClusterId());
+						String bSInStoreWeek = BuyQtyCommonUtil.getInStoreWeek(bumpSet);
+						if (StringUtils.isNotEmpty(bSInStoreWeek)) storeDistribution.setInStoreWeek(Long.valueOf(bSInStoreWeek));
+					}
 				}
 			}
 			storeDistributionData.setStoreDistributionList(storeDistributionList);
@@ -221,4 +238,37 @@ public class BigQueryStoreDistributionService {
 
 		throw new SizeAndPackException("Invalid Deviation Level, Fineline, Subcategory, Category are valid values");
 	}
+
+	private String getStoreDistributionQuery(String parquetTableName, String packOptOutputTableName,
+											 String planAndFineline, Long planId, Integer fineline, Long inStoreWeek, String packId) {
+		return "WITH MyTable AS ((select distinct productFineline, RFA.finelineNbr, RFA.styleNbr, RFA.inStoreWeek, SP.packId, SP.store, SP.packMultiplier from "
+				+ "(select fineline as finelineNbr, reverse( SUBSTR(REVERSE(trim(cc)), STRPOS(REVERSE(trim(cc)), \"_\")+1)) as styleNbr,trim(cc) as cc, CAST(store AS INTEGER) as store, min(week) as inStoreWeek "
+				+ "from `" + parquetTableName + "` as RFA where plan_id_partition=" + planId + " and fineline="
+				+ fineline + " and final_alloc_space>0"
+				+ " group by finelineNbr, styleNbr,cc,store having inStoreWeek=" + inStoreWeek
+				+ " order by finelineNbr, styleNbr,cc, inStoreWeek, store ) as RFA " + "join "
+				+ "(SELECT SP.ProductFineline as productFineline, trim(SP.ProductCustomerChoice)as cc, SP.store, SP.SPPackID as packId, SP.MerchMethod as merch_method, SP.size, "
+				+ "SP.SPInitialSetPackMultiplier as packMultiplier from `" + packOptOutputTableName
+				+ "` as SP where ProductFineline LIKE '" + planAndFineline + "' and "
+				+ "SPInitialSetPackMultiplier>0 and SP.SPPackID='" + packId
+				+ "') as SP on RFA.store = SP.store and RFA.cc = SP.cc "
+				+ "group by productFineline, RFA.finelineNbr, RFA.styleNbr, RFA.inStoreWeek, SP.packId, SP.store, SP.packMultiplier "
+				+ "order by productFineline, RFA.finelineNbr, RFA.styleNbr, RFA.inStoreWeek, SP.packId, SP.store, SP.packMultiplier) "
+				+ "UNION ALL" +
+				" (select distinct productFineline, RFA.finelineNbr, RFA.styleNbr, RFA.inStoreWeek, SP.packId, SP.store, SP.packMultiplier from "
+				+ "(select fineline as finelineNbr, reverse( SUBSTR(REVERSE(trim(cc)), STRPOS(REVERSE(trim(cc)), \"_\")+1)) as styleNbr,trim(cc) as cc, CAST(store AS INTEGER) as store, min(week) as inStoreWeek "
+				+ "from `" + parquetTableName + "` as RFA where plan_id_partition=" + planId + " and fineline="
+				+ fineline + " and final_alloc_space>0"
+				+ " group by finelineNbr, styleNbr,cc,store "
+				+ "order by finelineNbr, styleNbr,cc, inStoreWeek, store ) as RFA " + "join "
+				+ "(SELECT SP.ProductFineline as productFineline, trim(SP.ProductCustomerChoice)as cc, SP.store, SP.SPPackID as packId, SP.MerchMethod as merch_method, SP.size, "
+				+ "SP.SPBumpSetPackMultiplier as packMultiplier from `" + packOptOutputTableName
+				+ "` as SP where ProductFineline LIKE '" + planAndFineline + "' and "
+				+ "SPBumpSetPackMultiplier>0 and SP.SPPackID='" + packId
+				+ "') as SP on RFA.store = SP.store and RFA.cc = SP.cc "
+				+ "group by productFineline, RFA.finelineNbr, RFA.styleNbr, RFA.inStoreWeek, SP.packId, SP.store, SP.packMultiplier "
+				+ "order by productFineline, RFA.finelineNbr, RFA.styleNbr, RFA.inStoreWeek, SP.packId, SP.store, SP.packMultiplier)) "
+				+ "SELECT TO_JSON_STRING(gcpTable) AS json FROM MyTable AS gcpTable";
+	}
+
 }
