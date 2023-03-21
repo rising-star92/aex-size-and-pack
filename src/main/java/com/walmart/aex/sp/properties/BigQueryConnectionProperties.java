@@ -26,4 +26,7 @@ public interface BigQueryConnectionProperties {
 
 	@Property(propertyName = "analytics_data")
 	String getAnalyticsData();
+
+	@Property(propertyName = "store.distribution.feature.flag")
+	String getStoreDistributionFeatureFlag();
 }
