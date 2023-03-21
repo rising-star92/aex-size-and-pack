@@ -1,8 +1,10 @@
 package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.bqfp.Replenishment;
+import com.walmart.aex.sp.service.impl.DeptAdminRuleServiceImpl;
 import com.walmart.aex.sp.util.SizeAndPackConstants;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -14,7 +16,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ReplenishmentsOptimizationService {
 
-    public static final Integer MINIMUM_REPLENISHMENT_QUANTITY = 500;
+    @Autowired
+    DeptAdminRuleServiceImpl deptAdminRuleService;
 
     /**
      * Update Replenishments packs count from the list
@@ -22,36 +25,37 @@ public class ReplenishmentsOptimizationService {
      * @param vnpkQty
      * @return
      */
-    public List<Replenishment> getUpdatedReplenishmentsPack(List<Replenishment> replenishments, Integer vnpkQty, Integer channelId) {
+    public List<Replenishment> getUpdatedReplenishmentsPack(List<Replenishment> replenishments, Integer vnpkQty, Integer channelId, Integer lvl1Nbr, Long planId) {
 
         if (CollectionUtils.isEmpty(replenishments)) {
             log.info("Replenishment list is null/empty");
             return Collections.emptyList();
         }
+
         /** Adjust the replenishment unit only for Store */
-        if(SizeAndPackConstants.STORE_CHANNEL_ID == channelId) {
+        if(SizeAndPackConstants.STORE_CHANNEL_ID.equals(channelId)) {
             //get non-zero weeks which are supposed to be adjusted.
             List<Replenishment> nonZeroReplenishmentList = replenishments.stream().filter(replenishment -> replenishment.getAdjReplnUnits() != null && replenishment.getAdjReplnUnits() > 0).collect(Collectors.toList());
 
             //sum of all adjReplnUnits including starting index
             long futureWeekAdjReplnUnitsSum = nonZeroReplenishmentList.stream().map(Replenishment::getAdjReplnUnits).mapToLong(Long::longValue).sum();
 
-
+            Integer minimumReplenishmentUnit = deptAdminRuleService.getReplenishmentThreshold(planId, lvl1Nbr);
             //adjust the adjReplnUnits
             for (int i = 0; i < nonZeroReplenishmentList.size(); i++) {
                 //if current adjReplnUnits is less than Minimum_Replenishment_Quantity only then it need adjustment and if nonZeroReplenishmentList is last and is less Minimum_Replenishment_Quantity
-                if (nonZeroReplenishmentList.get(i).getAdjReplnUnits() < MINIMUM_REPLENISHMENT_QUANTITY) {
+                if (nonZeroReplenishmentList.get(i).getAdjReplnUnits() < minimumReplenishmentUnit) {
                     //get available future adjReplnUnits exclude current
                     futureWeekAdjReplnUnitsSum = Math.abs(futureWeekAdjReplnUnitsSum - nonZeroReplenishmentList.get(i).getAdjReplnUnits());
 
                     // if future weeks sum is less than Minimum_Replenishment_Quantity then add to current week and make rest to 0
-                    if (futureWeekAdjReplnUnitsSum < MINIMUM_REPLENISHMENT_QUANTITY) {
+                    if (futureWeekAdjReplnUnitsSum < minimumReplenishmentUnit) {
                         //add all of them and make future weeks to 0
-                        setDefaultFutureWeek(nonZeroReplenishmentList, futureWeekAdjReplnUnitsSum, i);
+                        setDefaultFutureWeek(nonZeroReplenishmentList, futureWeekAdjReplnUnitsSum, i, minimumReplenishmentUnit);
                         break;
                     }
                     //for every week [i], we need to iterate future weeks [j] to get required, if we get required then break or else loop exits itself
-                    futureWeekAdjReplnUnitsSum = getFutureWeekAdjReplnUnitsSum(nonZeroReplenishmentList, futureWeekAdjReplnUnitsSum, i);
+                    futureWeekAdjReplnUnitsSum = getFutureWeekAdjReplnUnitsSum(nonZeroReplenishmentList, futureWeekAdjReplnUnitsSum, i, minimumReplenishmentUnit);
 
                 } else {
                     futureWeekAdjReplnUnitsSum = Math.abs(futureWeekAdjReplnUnitsSum - nonZeroReplenishmentList.get(i).getAdjReplnUnits());
@@ -81,7 +85,7 @@ public class ReplenishmentsOptimizationService {
      * @param futureWeekAdjReplnUnitsSum
      * @param i
      */
-    private static void setDefaultFutureWeek(List<Replenishment> nonZeroReplenishmentList, long futureWeekAdjReplnUnitsSum, int i) {
+    private static void setDefaultFutureWeek(List<Replenishment> nonZeroReplenishmentList, long futureWeekAdjReplnUnitsSum, int i, Integer minimumReplenishmentUnit) {
         nonZeroReplenishmentList.get(i).setAdjReplnUnits(nonZeroReplenishmentList.get(i).getAdjReplnUnits() + futureWeekAdjReplnUnitsSum);
 
         // make rest of the weeks to 0
@@ -90,7 +94,7 @@ public class ReplenishmentsOptimizationService {
         }
         // break out of loop and return
 
-        if (i > 0 && nonZeroReplenishmentList.get(i).getAdjReplnUnits() < MINIMUM_REPLENISHMENT_QUANTITY) {
+        if (i > 0 && nonZeroReplenishmentList.get(i).getAdjReplnUnits() < minimumReplenishmentUnit) {
             int k = i - 1;
             nonZeroReplenishmentList.get(k).setAdjReplnUnits(nonZeroReplenishmentList.get(k).getAdjReplnUnits() + nonZeroReplenishmentList.get(i).getAdjReplnUnits());
             nonZeroReplenishmentList.get(i).setAdjReplnUnits(0L);
@@ -105,8 +109,8 @@ public class ReplenishmentsOptimizationService {
      * @param i
      * @return
      */
-    private static long getFutureWeekAdjReplnUnitsSum(List<Replenishment> nonZeroReplenishmentList, long futureWeekAdjReplnUnitsSum, int i) {
-        long required = Math.abs(MINIMUM_REPLENISHMENT_QUANTITY - nonZeroReplenishmentList.get(i).getAdjReplnUnits());
+    private static long getFutureWeekAdjReplnUnitsSum(List<Replenishment> nonZeroReplenishmentList, long futureWeekAdjReplnUnitsSum, int i, Integer minimumReplenishmentUnit) {
+        long required = Math.abs(minimumReplenishmentUnit - nonZeroReplenishmentList.get(i).getAdjReplnUnits());
         for (int j = i + 1; j < nonZeroReplenishmentList.size(); j++) {
             if (required == 0 || nonZeroReplenishmentList.get(j).getAdjReplnUnits() == 0) {
                 break;

@@ -4,13 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.bqfp.Replenishment;
 import com.walmart.aex.sp.entity.*;
-import com.walmart.aex.sp.repository.CatgReplnPkConsRepository;
-import com.walmart.aex.sp.repository.CcMmReplnPkConsRepository;
-import com.walmart.aex.sp.repository.CcReplnPkConsRepository;
-import com.walmart.aex.sp.repository.CcSpReplnPkConsRepository;
-import com.walmart.aex.sp.repository.FinelineReplnPkConsRepository;
-import com.walmart.aex.sp.repository.StyleReplnPkConsRepository;
-import com.walmart.aex.sp.repository.SubCatgReplnPkConsRepository;
+import com.walmart.aex.sp.repository.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -86,7 +80,7 @@ class UpdateReplnConfigMapperTest {
 	@Mock
 	private CcSpReplnPkConsRepository ccSpReplnPkConsRepository;
 
-	@Spy
+	@Mock
 	private ReplenishmentsOptimizationService replenishmentsOptimizationService;
 
 
@@ -108,7 +102,6 @@ class UpdateReplnConfigMapperTest {
 	private ObjectMapper objectMapper;
 	@Test
 	void test_updateVnpkWhpkForCatgReplnConsMapperToRollUpReplPackCnt() {
-
 		CcSpMmReplPack ccSpMmRP1 = new CcSpMmReplPack();
 		ccSpMmRP1.setReplPackCnt(6);
 		ccSpMmRP1.setVendorPackCnt(3);
@@ -223,7 +216,14 @@ class UpdateReplnConfigMapperTest {
 		merch2.setVnpkWhpkRatio(vnpkwhpkRatio);
 		merch2.setSubReplPack(subReplenishmentPack);
 		List<MerchCatgReplPack> catgReplnPkConsLst = new LinkedList<>(Arrays.asList(merch1, merch2));
-
+		Mockito.when(replenishmentsOptimizationService.getUpdatedReplenishmentsPack(getReplenishments(333L,100L), 4, 1, 34, 12L)).thenReturn(getReplenishments(436L,0L));
+		Mockito.when(replenishmentsOptimizationService.getUpdatedReplenishmentsPack(getReplenishments(555L,200L), 4, 1, 34, 12L)).thenReturn(getReplenishments(756L,0L));
+		Mockito.when(replenishmentsOptimizationService.getUpdatedReplenishmentsPack(getReplenishments(777L,300L), 4, 1, 34, 12L)).thenReturn(getReplenishments(1080L,0L));
+		Mockito.when(replenishmentsOptimizationService.getUpdatedReplenishmentsPack(getReplenishments(999L,400L), 4, 1, 34, 12L)).thenReturn(getReplenishments(1400L,0L));
+		Mockito.when(replenishmentsOptimizationService.getUpdatedReplenishmentsPack(getReplenishments(436L,0L), 4, 1, 34, 12L)).thenReturn(getReplenishments(436L,0L));
+		Mockito.when(replenishmentsOptimizationService.getUpdatedReplenishmentsPack(getReplenishments(756L,0L), 4, 1, 34, 12L)).thenReturn(getReplenishments(756L,0L));
+		Mockito.when(replenishmentsOptimizationService.getUpdatedReplenishmentsPack(getReplenishments(1080L,0L), 4, 1, 34, 12L)).thenReturn(getReplenishments(1080L,0L));
+		Mockito.when(replenishmentsOptimizationService.getUpdatedReplenishmentsPack(getReplenishments(1400L,0L), 4, 1, 34, 12L)).thenReturn(getReplenishments(1400L,0L));
 		replenishmentMapper.updateVnpkWhpkForCatgReplnConsMapper(catgReplnPkConsLst, 4, 2);
 		verify(replenishmentMapper,Mockito.times(1)).updateVnpkWhpkForCatgReplnConsMapper(any(), anyInt(), anyInt());
 
@@ -277,6 +277,8 @@ class UpdateReplnConfigMapperTest {
 				"\"remainingUnits\":1,\"dcInboundUnits\":1,\"dcInboundAdjUnits\":1}]");
 		ccSpMmReplPack.setCcSpReplPackId(getCcSpMmReplPackId(1));
 		ccSpMmReplPacks.add(ccSpMmReplPack);
+		Mockito.when(replenishmentsOptimizationService.getUpdatedReplenishmentsPack(getReplenishments(333L,100L), 4, 1, 34, 12L)).thenReturn(getReplenishments(436L,0L));
+
 		replenishmentMapper.updateVnpkWhpkForCcSpMmReplnPkConsMapper(ccSpMmReplPacks, 4,2);
 		verify(ccSpReplnPkConsRepository,Mockito.times(1)).saveAll(ccSpMmReplPackArgumentCaptor.capture());
 		CcSpMmReplPack ccSpMmReplPack1 = ccSpMmReplPackArgumentCaptor.getValue().iterator().next();
@@ -302,6 +304,7 @@ class UpdateReplnConfigMapperTest {
 				"\"remainingUnits\":1,\"dcInboundUnits\":1,\"dcInboundAdjUnits\":1}]");
 		ccSpMmReplPack.setCcSpReplPackId(getCcSpMmReplPackId(2));
 		ccSpMmReplPacks.add(ccSpMmReplPack);
+		Mockito.when(replenishmentsOptimizationService.getUpdatedReplenishmentsPack(Mockito.any(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyLong())).thenReturn(getReplenishments(336L,100L));
 		replenishmentMapper.updateVnpkWhpkForCcSpMmReplnPkConsMapper(ccSpMmReplPacks, 4,2);
 		verify(ccSpReplnPkConsRepository,Mockito.times(1)).saveAll(ccSpMmReplPackArgumentCaptor.capture());
 		CcSpMmReplPack ccSpMmReplPack1 = ccSpMmReplPackArgumentCaptor.getValue().iterator().next();
@@ -327,6 +330,7 @@ class UpdateReplnConfigMapperTest {
 				"\"remainingUnits\":1,\"dcInboundUnits\":1,\"dcInboundAdjUnits\":1}]");
 		ccSpMmReplPack.setCcSpReplPackId(getCcSpMmReplPackId(1));
 		ccSpMmReplPacks.add(ccSpMmReplPack);
+		Mockito.when(replenishmentsOptimizationService.getUpdatedReplenishmentsPack(Mockito.any(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyLong())).thenReturn(getReplenishments(400L,0L));
 		replenishmentMapper.updateVnpkWhpkForCcSpMmReplnPkConsMapper(ccSpMmReplPacks, 4,2);
 		verify(ccSpReplnPkConsRepository,Mockito.times(1)).saveAll(ccSpMmReplPackArgumentCaptor.capture());
 		CcSpMmReplPack ccSpMmReplPack1 = ccSpMmReplPackArgumentCaptor.getValue().iterator().next();
@@ -383,6 +387,8 @@ class UpdateReplnConfigMapperTest {
 	private CcSpMmReplPackId getCcSpMmReplPackId(Integer channelId) {
 		MerchCatgReplPackId merchCatgReplPackId = new MerchCatgReplPackId();
 		merchCatgReplPackId.setChannelId(channelId);
+		merchCatgReplPackId.setPlanId(12L);
+		merchCatgReplPackId.setRepTLvl1(34);
 		SubCatgReplPackId subCatgReplPackId = new SubCatgReplPackId();
 		subCatgReplPackId.setMerchCatgReplPackId(merchCatgReplPackId);
 		FinelineReplPackId finelineReplPackId = new FinelineReplPackId();
@@ -396,6 +402,30 @@ class UpdateReplnConfigMapperTest {
 		CcSpMmReplPackId ccSpMmReplPackId = new CcSpMmReplPackId();
 		ccSpMmReplPackId.setCcMmReplPackId(ccMmReplPackId);
 		return ccSpMmReplPackId;
+	}
+
+	private List<Replenishment> getReplenishments(Long replenAdj1, Long replenAdj2) {
+		List<Replenishment> replenishments = new ArrayList<>();
+		Replenishment replenishments1 = new Replenishment();
+		replenishments1.setReplnWeek(1);
+		replenishments1.setReplnWeekDesc("test");
+		replenishments1.setReplnUnits(1L);
+		replenishments1.setAdjReplnUnits(replenAdj1);
+		replenishments1.setRemainingUnits(1L);
+		replenishments1.setDcInboundUnits(1L);
+		replenishments1.setDcInboundAdjUnits(1L);
+		replenishments.add(replenishments1);
+
+		Replenishment replenishments2 = new Replenishment();
+		replenishments2.setReplnWeek(2);
+		replenishments2.setReplnWeekDesc("test");
+		replenishments2.setReplnUnits(1L);
+		replenishments2.setAdjReplnUnits(replenAdj2);
+		replenishments2.setRemainingUnits(1L);
+		replenishments2.setDcInboundUnits(1L);
+		replenishments2.setDcInboundAdjUnits(1L);
+		replenishments.add(replenishments2);
+		return replenishments;
 	}
 
 }
