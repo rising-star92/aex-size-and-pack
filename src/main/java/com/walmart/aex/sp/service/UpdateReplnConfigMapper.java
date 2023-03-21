@@ -4,13 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.bqfp.Replenishment;
-import com.walmart.aex.sp.entity.CcMmReplPack;
-import com.walmart.aex.sp.entity.CcReplPack;
-import com.walmart.aex.sp.entity.CcSpMmReplPack;
-import com.walmart.aex.sp.entity.FinelineReplPack;
-import com.walmart.aex.sp.entity.MerchCatgReplPack;
-import com.walmart.aex.sp.entity.StyleReplPack;
-import com.walmart.aex.sp.entity.SubCatgReplPack;
+import com.walmart.aex.sp.entity.*;
 import com.walmart.aex.sp.repository.CatgReplnPkConsRepository;
 import com.walmart.aex.sp.repository.CcMmReplnPkConsRepository;
 import com.walmart.aex.sp.repository.CcReplnPkConsRepository;
@@ -211,8 +205,11 @@ public class UpdateReplnConfigMapper {
 					List<Replenishment> replObj = objectMapper.readValue(replObjJson, new TypeReference<>() {});
 					ccSpReplnCons.setVendorPackCnt(vnpk == null ? ccSpReplnCons.getVendorPackCnt() : vnpk);
 					ccSpReplnCons.setWhsePackCnt(whpk == null ? ccSpReplnCons.getWhsePackCnt() : whpk);
-					Integer channelId = ccSpReplnCons.getCcSpReplPackId().getCcMmReplPackId().getCcReplPackId().getStyleReplPackId().getFinelineReplPackId().getSubCatgReplPackId().getMerchCatgReplPackId().getChannelId();
-					replObj = replenishmentsOptimizationService.getUpdatedReplenishmentsPack(replObj, ccSpReplnCons.getVendorPackCnt(), channelId);
+					MerchCatgReplPackId merchCatgReplPackId = ccSpReplnCons.getCcSpReplPackId().getCcMmReplPackId().getCcReplPackId().getStyleReplPackId().getFinelineReplPackId().getSubCatgReplPackId().getMerchCatgReplPackId();
+					Integer channelId = merchCatgReplPackId.getChannelId();
+					Integer lv1Number = merchCatgReplPackId.getRepTLvl1();
+					Long planId = merchCatgReplPackId.getPlanId();
+					replObj = replenishmentsOptimizationService.getUpdatedReplenishmentsPack(replObj, ccSpReplnCons.getVendorPackCnt(), channelId, lv1Number, planId);
 					replUnits = replObj.stream().mapToLong(Replenishment::getAdjReplnUnits).sum();
 					ccSpReplnCons.setReplenObj(objectMapper.writeValueAsString(replObj));
 				} catch (JsonProcessingException e) {
