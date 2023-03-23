@@ -443,7 +443,7 @@ configDefinitions:
         kind: "SINGLE"
         defaultValue: "analytics_data_prod"
       "store.distribution.feature.flag":
-        description: "enable v1/v2 of store distribution API"
+        description: "enable v1/v2  of store distribution API"
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "false"
