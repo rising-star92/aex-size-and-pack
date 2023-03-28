@@ -124,7 +124,7 @@ public class BigQueryStoreDistributionService {
 						if (StringUtils.isNotEmpty(bSInStoreWeek)) storeDistribution.setInStoreWeek(Long.valueOf(bSInStoreWeek));
 					}
 					// Filtering result based on the inStoreWeek value passed down in request
-					storeDistributionList.removeIf(store -> !store.getInStoreWeek().equals(packData.getInStoreWeek()));
+					storeDistributionList.removeIf(store -> null == store.getInStoreWeek() || !store.getInStoreWeek().equals(packData.getInStoreWeek()));
 				}
 			}
 			storeDistributionData.setStoreDistributionList(storeDistributionList);
