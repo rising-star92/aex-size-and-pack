@@ -232,7 +232,7 @@ class BigQueryStoreDistributionServiceTest {
         packData.setPlanId(73L);
         packData.setFinelineNbr(3483);
         packData.setPackId("SP_bs73_3483_0_34_3483_4_19_8_BLCOVE_FOLDED_0");
-        packData.setInStoreWeek(202352L);
+        packData.setInStoreWeek(202348L);
 
         FieldValue isFieldValue1 = FieldValue.of(FieldValue.Attribute.PRIMITIVE, "{\"productFineline\":\"73_3483\",\"finelineNbr\":3483,\"styleNbr\":\"34_3483_4_19_8\",\"inStoreWeek\":202344,\"packId\":\"SP_is73_3483_0_34_3483_4_19_8_CHGYHT_HANGING_1\",\"store\":35,\"packMultiplier\":1}");
         FieldValue isFieldValue2 = FieldValue.of(FieldValue.Attribute.PRIMITIVE, "{\"productFineline\":\"73_3483\",\"finelineNbr\":3483,\"styleNbr\":\"34_3483_4_19_8\",\"inStoreWeek\":202344,\"packId\":\"SP_is73_3483_0_34_3483_4_19_8_CHGYHT_HANGING_1\",\"store\":37,\"packMultiplier\":1}");
