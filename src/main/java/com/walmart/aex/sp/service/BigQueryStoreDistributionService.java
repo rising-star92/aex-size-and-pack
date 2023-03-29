@@ -89,7 +89,7 @@ public class BigQueryStoreDistributionService {
 				}));
 			} else {
 				String sqlQuery = getInitialSetQuery(parquetTableName, packOptOutputTableName,
-						planAndFineline, planId, fineline, packId);
+						planAndFineline, planId, fineline, packId, inStoreWeek);
 
 				QueryJobConfiguration queryConfig = QueryJobConfiguration.newBuilder(sqlQuery).build();
 				TableResult results = bigQuery.query(queryConfig);
@@ -171,7 +171,7 @@ public class BigQueryStoreDistributionService {
 	}
 
 	private String getInitialSetQuery(String parquetTableName, String packOptOutputTableName,
-									  String planAndFineline, Long planId, Integer fineline, String packId) {
+									  String planAndFineline, Long planId, Integer fineline, String packId, Long inStoreWeek) {
 		return "WITH MyTable AS " +
 				"(select distinct productFineline, " +
 				"RFA.finelineNbr, " +
@@ -182,7 +182,7 @@ public class BigQueryStoreDistributionService {
 				"SP.packMultiplier " +
 				"from (select fineline as finelineNbr, reverse( SUBSTR(REVERSE(trim(cc)), STRPOS(REVERSE(trim(cc)), \"_\")+1)) as styleNbr,trim(cc) as cc, CAST(store AS INTEGER) as store, min(week) as inStoreWeek " +
 				"from `" + parquetTableName + "` as RFA where plan_id_partition=" + planId + " and fineline=" + fineline + " and final_alloc_space>0 " +
-				"group by finelineNbr, styleNbr,cc,store order by finelineNbr, styleNbr,cc, inStoreWeek, store ) as RFA " +
+				"group by finelineNbr, styleNbr,cc,store having inStoreWeek=" + inStoreWeek + " order by finelineNbr, styleNbr,cc, inStoreWeek, store ) as RFA " +
 				"join " +
 				"(SELECT SP.ProductFineline as productFineline, trim(SP.ProductCustomerChoice)as cc, SP.store, SP.SPPackID as packId, SP.MerchMethod as merch_method, SP.size, SP.SPInitialSetPackMultiplier as packMultiplier " +
 				"from `" + packOptOutputTableName + "` as SP where ProductFineline LIKE '" + planAndFineline + "' and SPInitialSetPackMultiplier>0 and " +
