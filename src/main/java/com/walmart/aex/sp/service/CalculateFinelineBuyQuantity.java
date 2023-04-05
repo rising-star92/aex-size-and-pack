@@ -5,13 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.assortproduct.APRequest;
 import com.walmart.aex.sp.dto.assortproduct.APResponse;
 import com.walmart.aex.sp.dto.assortproduct.RFASizePackData;
-import com.walmart.aex.sp.dto.bqfp.BQFPRequest;
-import com.walmart.aex.sp.dto.bqfp.BQFPResponse;
-import com.walmart.aex.sp.dto.bqfp.Cluster;
-import com.walmart.aex.sp.dto.bqfp.CustomerChoice;
-import com.walmart.aex.sp.dto.bqfp.Fixture;
-import com.walmart.aex.sp.dto.bqfp.Replenishment;
-import com.walmart.aex.sp.dto.bqfp.Style;
+import com.walmart.aex.sp.dto.bqfp.*;
 import com.walmart.aex.sp.dto.buyquantity.AddStoreBuyQuantity;
 import com.walmart.aex.sp.dto.buyquantity.BuyQtyObj;
 import com.walmart.aex.sp.dto.buyquantity.BuyQtyRequest;
@@ -333,8 +327,9 @@ public class CalculateFinelineBuyQuantity {
         Set<SpCustomerChoiceChannelFixtureSize> spCustomerChoiceChannelFixtureSizes = Optional.ofNullable(spCustomerChoiceChannelFixture.getSpCustomerChoiceChannelFixtureSize()).orElse(new HashSet<>());
         Set<CcSpMmReplPack> ccSpMmReplPacks = new HashSet<>();
         Integer replenishmentThreshold = deptAdminRuleService.getReplenishmentThreshold(bqfpResponse.getPlanId(), bqfpResponse.getLvl1Nbr());
+        boolean isInitialSetDefined = isInitialSetDefined(bqfpResponse);
         for (Map.Entry<SizeDto, BuyQtyObj> entry : storeBuyQtyBySizeId.entrySet()) {
-            setSizeChanFixtureBuyQty(spCustomerChoiceChannelFixture, replenishments, spCustomerChoiceChannelFixtureSizes, ccSpMmReplPacks, entry, replenishmentThreshold);
+            setSizeChanFixtureBuyQty(spCustomerChoiceChannelFixture, replenishments, spCustomerChoiceChannelFixtureSizes, ccSpMmReplPacks, entry, replenishmentThreshold, isInitialSetDefined);
         }
 
         if (!CollectionUtils.isEmpty(ccSpMmReplPacks)) {
@@ -373,7 +368,7 @@ public class CalculateFinelineBuyQuantity {
                                           List<Replenishment> replenishments, Set<SpCustomerChoiceChannelFixtureSize> spCustomerChoiceChannelFixtureSizes,
                                           Set<CcSpMmReplPack> ccSpMmReplPacks,
                                           Map.Entry<SizeDto, BuyQtyObj> entry,
-                                          Integer replenishmentThreshold) {
+                                          Integer replenishmentThreshold, boolean isInitialSetDefined) {
         SpCustomerChoiceChannelFixtureSizeId spCustomerChoiceChannelFixtureSizeId = new SpCustomerChoiceChannelFixtureSizeId(spCustomerChoiceChannelFixture.getSpCustomerChoiceChannelFixtureId(), entry.getKey().getAhsSizeId());
         SpCustomerChoiceChannelFixtureSize spCustomerChoiceChannelFixtureSize = Optional.of(spCustomerChoiceChannelFixtureSizes)
                 .stream()
@@ -390,7 +385,9 @@ public class CalculateFinelineBuyQuantity {
         final BuyQtyObj allStoresBuyQty = entry.getValue();
         if (!CollectionUtils.isEmpty(allStoresBuyQty.getReplenishments()) && !CollectionUtils.isEmpty(allStoresBuyQty.getBuyQtyStoreObj().getBuyQuantities())) {
             allStoresBuyQty.setTotalReplenishment(buyQuantityConstraintService.getTotalReplenishment(allStoresBuyQty.getReplenishments()));
-            buyQuantityConstraintService.processReplenishmentConstraints(entry, allStoresBuyQty.getTotalReplenishment(), replenishmentThreshold);
+            if (isInitialSetDefined) {
+                buyQuantityConstraintService.processReplenishmentConstraints(entry, allStoresBuyQty.getTotalReplenishment(), replenishmentThreshold);
+            }
         }
 
         double bsBuyQty = getBsQty(entry);
@@ -630,5 +627,19 @@ public class CalculateFinelineBuyQuantity {
         } catch (JsonProcessingException e) {
             log.error("Unable to serialize response: {}", key, e);
         }
+    }
+
+    private boolean isInitialSetDefined(BQFPResponse bqfpResponse) {
+        return Optional.ofNullable(bqfpResponse.getStyles())
+                .stream()
+                .flatMap(Collection::stream)
+                .map(Style::getCustomerChoices)
+                .flatMap(Collection::stream)
+                .map(CustomerChoice::getFixtures)
+                .flatMap(Collection::stream)
+                .map(Fixture::getClusters)
+                .flatMap(Collection::stream)
+                .map(Cluster::getInitialSet)
+                .anyMatch(initialSet -> (initialSet != null && initialSet.getInitialSetUnitsPerFix() != null && initialSet.getInitialSetUnitsPerFix() > 0));
     }
 }

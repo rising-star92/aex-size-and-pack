@@ -301,6 +301,37 @@ class CalculateFinelineBuyQuantityTest {
         assertEquals(bqfpResponse.getVolumeDeviationStrategyLevelSelection(), BigDecimal.valueOf(1));
     }
 
+    @Test
+    void minReplenishmentRuleWithoutInitialSet() throws SizeAndPackException, IOException {
+        final String path = "/plan236fineline5414";
+        BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
+        APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
+        BuyQtyResponse buyQtyResponse = buyQtyResponseFromJson(path.concat("/BuyQtyResponse"));
+        when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
+        when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
+        when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
+        when(deptAdminRuleService.getInitialThreshold(anyLong(), anyInt())).thenReturn(2500);
+        CalculateBuyQtyRequest request = create("store", 50000, 34, 6420, 12238, 31526, 5414, 236L);
+        CalculateBuyQtyParallelRequest pRequest = createFromRequest(request);
+
+        CalculateBuyQtyResponse r = new CalculateBuyQtyResponse();
+        r.setMerchCatgReplPacks(new ArrayList<>());
+        r.setSpFineLineChannelFixtures(new ArrayList<>());
+
+        CalculateBuyQtyResponse response = calculateFinelineBuyQuantity.calculateFinelineBuyQty(request, pRequest, r);
+
+        SpFineLineChannelFixture fixture1 = response.getSpFineLineChannelFixtures().stream().
+                filter(f -> f.getSpFineLineChannelFixtureId().getFixtureTypeRollUpId().getFixtureTypeRollupId().equals(1)).findFirst().get();
+        Set<SpCustomerChoiceChannelFixtureSize> fixture1Sizes = fixture1
+                .getSpStyleChannelFixtures().stream().findFirst()
+                .get().getSpCustomerChoiceChannelFixture().stream().findFirst()
+                .get().getSpCustomerChoiceChannelFixtureSize();
+        assertEquals(0, fixture1.getInitialSetQty());
+        assertEquals(9504, fixture1.getBuyQty());
+        assertEquals(9504, fixture1.getReplnQty());
+    }
+
+
     private StrategyVolumeDeviationResponse strategyVolumeDeviationResponseFromJsonFromJson(String path) throws IOException {
         return mapper.readValue(readJsonFileAsString(path), StrategyVolumeDeviationResponse.class);
     }
