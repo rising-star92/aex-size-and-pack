@@ -105,35 +105,39 @@ public class BigQueryStoreDistributionService {
 				if (storeDistributionList.isEmpty()) {
 					sqlQuery = getBumpSetStoreDistributionQuery(parquetTableName, packOptOutputTableName,
 							planAndFineline, planId, fineline, packId);
-					queryConfig = QueryJobConfiguration.newBuilder(sqlQuery).build();
-					results = bigQuery.query(queryConfig);
-					results.iterateAll().forEach(rows -> rows.forEach(row -> {
-						try {
-							StoreDistributionDTO storeDistributionDTO = objectMapper.readValue(row.getValue().toString(),
-									StoreDistributionDTO.class);
-							storeDistributionList.add(storeDistributionDTO);
-						} catch (JsonProcessingException e) {
-							log.error("Error while mapping the gcp table response data \n", e);
+					if (StringUtils.isNotEmpty(sqlQuery)) {
+						queryConfig = QueryJobConfiguration.newBuilder(sqlQuery).build();
+						results = bigQuery.query(queryConfig);
+						results.iterateAll().forEach(rows -> rows.forEach(row -> {
+							try {
+								StoreDistributionDTO storeDistributionDTO = objectMapper.readValue(row.getValue().toString(),
+										StoreDistributionDTO.class);
+								storeDistributionList.add(storeDistributionDTO);
+							} catch (JsonProcessingException e) {
+								log.error("Error while mapping the gcp table response data \n", e);
+							}
+						}));
+						BQFPResponse bqfpResponse = bqfpService.getBqfpResponse(Math.toIntExact(planId), fineline);
+						for (StoreDistributionDTO storeDistribution : storeDistributionList) {
+							BumpSet bumpSet = BuyQtyCommonUtil.getBumpSet(bqfpResponse, storeDistribution.getProductFineline(), storeDistribution.getStyleNbr(),
+									storeDistribution.getCc(), storeDistribution.getFixtureType(), storeDistribution.getClusterId());
+							String bSInStoreWeek = BuyQtyCommonUtil.getInStoreWeek(bumpSet);
+							if (StringUtils.isNotEmpty(bSInStoreWeek))
+								storeDistribution.setInStoreWeek(Long.valueOf(bSInStoreWeek));
 						}
-					}));
-					BQFPResponse bqfpResponse = bqfpService.getBqfpResponse(Math.toIntExact(planId), fineline);
-					for (StoreDistributionDTO storeDistribution : storeDistributionList) {
-						BumpSet bumpSet = BuyQtyCommonUtil.getBumpSet(bqfpResponse, storeDistribution.getProductFineline(), storeDistribution.getStyleNbr(),
-								storeDistribution.getCc(), storeDistribution.getFixtureType(), storeDistribution.getClusterId());
-						String bSInStoreWeek = BuyQtyCommonUtil.getInStoreWeek(bumpSet);
-						if (StringUtils.isNotEmpty(bSInStoreWeek)) storeDistribution.setInStoreWeek(Long.valueOf(bSInStoreWeek));
+						// Filtering result based on the inStoreWeek value passed down in request
+						storeDistributionList.removeIf(store -> null == store.getInStoreWeek() || !store.getInStoreWeek().equals(packData.getInStoreWeek()));
 					}
-					// Filtering result based on the inStoreWeek value passed down in request
-					storeDistributionList.removeIf(store -> null == store.getInStoreWeek() || !store.getInStoreWeek().equals(packData.getInStoreWeek()));
 				}
 			}
-			storeDistributionData.setStoreDistributionList(storeDistributionList);
-			log.info("Query performed successfully.");
+			if (!storeDistributionList.isEmpty()) {
+				storeDistributionData.setStoreDistributionList(storeDistributionList);
+				log.info("Query performed successfully.");
+			}
 		} catch (Exception e) {
 			log.error("Exception details are ", e);
 		}
 
-		log.info("results: {}", storeDistributionData);
 		return storeDistributionData;
 	}
 
