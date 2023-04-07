@@ -93,6 +93,7 @@ public class MidasServiceCall {
       headers.set("request_ts", String.valueOf(Instant.now().getEpochSecond()));
       headers.set("tenant", midasProperties.getMidasHeaderTenant());
       headers.set("Authorization", secretsProperties.fetchMidasAPIAuthorization());
+      headers.set("WM_SVC.NAME", "AEX_SIZE_AND_PACK");
       return headers;
    }
 
