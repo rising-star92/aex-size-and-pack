@@ -447,7 +447,7 @@ configDefinitions:
         description: "enable v1/v2 of store distribution API"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "false"
+        defaultValue: "true"
 configOverrides:
   graphQlConfig:
     - name: "dev"
@@ -582,4 +582,4 @@ configOverrides:
           "ml.datasetName": "aex_pack_opt_non_prod"
           "rfa.table.sp.packoptimization.output": "output_stage"
           "analytics_data": "analytics_data_stage"
-          "store.distribution.feature.flag": "false"
+          "store.distribution.feature.flag": "true"
