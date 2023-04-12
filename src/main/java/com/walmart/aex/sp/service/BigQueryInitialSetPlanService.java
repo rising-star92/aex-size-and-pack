@@ -433,14 +433,16 @@ public class BigQueryInitialSetPlanService {
                 try {
                     VolumeClusterDTO volumeClusterDTO = objectMapper.readValue(row.getStringValue(), VolumeClusterDTO.class);
                     BumpSet bp = BuyQtyCommonUtil.getBumpSet(bqfpResponse, volumeClusterDTO.getProductFineline(), volumeClusterDTO.getStyle_nbr(), volumeClusterDTO.getCc(), volumeClusterDTO.getFixtureType(), volumeClusterDTO.getClusterId());
-                    String bsInstoreweek = BuyQtyCommonUtil.getInStoreWeek(bp);
-                    VolumeQueryId volumeQueryId = new VolumeQueryId(volumeClusterDTO.getCc(), volumeClusterDTO.getStyle_nbr(), volumeClusterDTO.getClusterId(), Integer.valueOf(bsInstoreweek), volumeClusterDTO.getFixtureType(),volumeClusterDTO.getFixtureAllocation());
-                    if (uniqueRows.containsKey(volumeQueryId)) {
-                        uniqueRows.get(volumeQueryId).add(volumeClusterDTO);
-                    } else {
-                        List<VolumeClusterDTO> volumeClusterDTOList = new ArrayList<>();
-                        volumeClusterDTOList.add(volumeClusterDTO);
-                        uniqueRows.put(volumeQueryId, volumeClusterDTOList);
+                    if (StringUtils.isNotEmpty(bp.getWeekDesc())) {
+                        String bsInstoreweek = BuyQtyCommonUtil.getInStoreWeek(bp);
+                        VolumeQueryId volumeQueryId = new VolumeQueryId(volumeClusterDTO.getCc(), volumeClusterDTO.getStyle_nbr(), volumeClusterDTO.getClusterId(), Integer.valueOf(bsInstoreweek), volumeClusterDTO.getFixtureType(), volumeClusterDTO.getFixtureAllocation());
+                        if (uniqueRows.containsKey(volumeQueryId)) {
+                            uniqueRows.get(volumeQueryId).add(volumeClusterDTO);
+                        } else {
+                            List<VolumeClusterDTO> volumeClusterDTOList = new ArrayList<>();
+                            volumeClusterDTOList.add(volumeClusterDTO);
+                            uniqueRows.put(volumeQueryId, volumeClusterDTOList);
+                        }
                     }
                 } catch (JsonProcessingException e) {
                     throw new RuntimeException(e);
