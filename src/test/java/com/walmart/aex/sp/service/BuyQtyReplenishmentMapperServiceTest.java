@@ -6,6 +6,8 @@ import com.walmart.aex.sp.dto.buyquantity.CustomerChoiceDto;
 import com.walmart.aex.sp.dto.buyquantity.StyleDto;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
 import com.walmart.aex.sp.entity.*;
+import com.walmart.aex.sp.repository.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -40,6 +42,32 @@ public class BuyQtyReplenishmentMapperServiceTest {
 	CustomerChoiceDto customerChoiceDto;
 	@Mock
 	Set<CcSpMmReplPack> ccSpMmReplPacks;
+
+	@Mock
+	MerchCatgReplPackRepository merchCatgReplPackRepository;
+
+	@Mock
+	SubCatgReplnPkConsRepository subCatgReplnPkConsRepository;
+
+	@Mock
+	FinelineReplnPkConsRepository finelineReplnPkConsRepository;
+
+	@Mock
+	StyleReplnPkConsRepository styleReplnPkConsRepository;
+
+	@Mock
+	CcReplnPkConsRepository ccReplnPkConsRepository;
+
+	@Mock
+	CcMmReplnPkConsRepository ccMmReplnPkConsRepository;
+
+	@Mock
+	CcSpReplnPkConsRepository ccSpReplnPkConsRepository;
+
+	@BeforeEach
+	void setUp() {
+		buyQtyReplenishmentMapperService = new BuyQtyReplenishmentMapperService(merchCatgReplPackRepository, subCatgReplnPkConsRepository, finelineReplnPkConsRepository, styleReplnPkConsRepository, ccReplnPkConsRepository, ccMmReplnPkConsRepository, ccSpReplnPkConsRepository);
+	}
 	
 	@Test
 	public void testSetAllReplenishments() {

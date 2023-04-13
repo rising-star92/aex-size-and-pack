@@ -10,9 +10,7 @@ import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixtureSize;
 import com.walmart.aex.sp.entity.SpFineLineChannelFixture;
 import com.walmart.aex.sp.entity.SpStyleChannelFixture;
 import com.walmart.aex.sp.exception.SizeAndPackException;
-import com.walmart.aex.sp.repository.FineLineReplenishmentRepository;
-import com.walmart.aex.sp.repository.SpFineLineChannelFixtureRepository;
-import com.walmart.aex.sp.repository.StyleReplenishmentRepository;
+import com.walmart.aex.sp.repository.*;
 import com.walmart.aex.sp.service.impl.DeptAdminRuleServiceImpl;
 import com.walmart.aex.sp.util.BQFPResponseInputs;
 import lombok.extern.slf4j.Slf4j;
@@ -91,6 +89,27 @@ class CalculateFinelineBuyQuantityTest {
 
     ReplenishmentsOptimizationService replenishmentsOptimizationServices;
 
+    @Mock
+    MerchCatgReplPackRepository merchCatgReplPackRepository;
+
+    @Mock
+    SubCatgReplnPkConsRepository subCatgReplnPkConsRepository;
+
+    @Mock
+    FinelineReplnPkConsRepository finelineReplnPkConsRepository;
+
+    @Mock
+    StyleReplnPkConsRepository styleReplnPkConsRepository;
+
+    @Mock
+    CcReplnPkConsRepository ccReplnPkConsRepository;
+
+    @Mock
+    CcMmReplnPkConsRepository ccMmReplnPkConsRepository;
+
+    @Mock
+    CcSpReplnPkConsRepository ccSpReplnPkConsRepository;
+
    @Spy
    ObjectMapper mapper = new ObjectMapper();
 
@@ -103,9 +122,9 @@ class CalculateFinelineBuyQuantityTest {
        buyQuantityConstraintService = new BuyQuantityConstraintService(calculateBumpPackQtyService);
        addStoreBuyQuantityService = new AddStoreBuyQuantityService(mapper, calculateBumpPackQtyService, buyQuantityConstraintService, calculateInitialSetQuantityService);
        replenishmentsOptimizationServices=new ReplenishmentsOptimizationService();
-
-       calculateOnlineFinelineBuyQuantity = new  CalculateOnlineFinelineBuyQuantity (mapper, new BuyQtyReplenishmentMapperService(),replenishmentsOptimizationServices );
-       calculateFinelineBuyQuantity = new CalculateFinelineBuyQuantity(bqfpService, mapper, new BuyQtyReplenishmentMapperService(), calculateOnlineFinelineBuyQuantity,
+       BuyQtyReplenishmentMapperService buyQtyReplenishmentMapperService = new BuyQtyReplenishmentMapperService(merchCatgReplPackRepository, subCatgReplnPkConsRepository, finelineReplnPkConsRepository, styleReplnPkConsRepository, ccReplnPkConsRepository, ccMmReplnPkConsRepository, ccSpReplnPkConsRepository);
+       calculateOnlineFinelineBuyQuantity = new  CalculateOnlineFinelineBuyQuantity (mapper, buyQtyReplenishmentMapperService,replenishmentsOptimizationServices );
+       calculateFinelineBuyQuantity = new CalculateFinelineBuyQuantity(bqfpService, mapper, buyQtyReplenishmentMapperService, calculateOnlineFinelineBuyQuantity,
                strategyFetchService,addStoreBuyQuantityService, buyQuantityConstraintService, deptAdminRuleService);
     }
 

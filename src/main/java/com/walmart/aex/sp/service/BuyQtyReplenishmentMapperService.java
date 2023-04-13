@@ -8,16 +8,45 @@ import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
 import com.walmart.aex.sp.entity.*;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.enums.FixtureTypeRollup;
+import com.walmart.aex.sp.repository.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
 
 @Slf4j
 @Service
 public class BuyQtyReplenishmentMapperService {
+
+    private final MerchCatgReplPackRepository merchCatgReplPackRepository;
+
+    private final SubCatgReplnPkConsRepository subCatgReplnPkConsRepository;
+
+    private final FinelineReplnPkConsRepository finelineReplnPkConsRepository;
+
+    private final StyleReplnPkConsRepository styleReplnPkConsRepository;
+
+    private final CcReplnPkConsRepository ccReplnPkConsRepository;
+
+    private final CcMmReplnPkConsRepository ccMmReplnPkConsRepository;
+
+    private final CcSpReplnPkConsRepository ccSpReplnPkConsRepository;
+
+    public BuyQtyReplenishmentMapperService(MerchCatgReplPackRepository merchCatgReplPackRepository, SubCatgReplnPkConsRepository subCatgReplnPkConsRepository,
+                                            FinelineReplnPkConsRepository finelineReplnPkConsRepository, StyleReplnPkConsRepository styleReplnPkConsRepository,
+                                            CcReplnPkConsRepository ccReplnPkConsRepository, CcMmReplnPkConsRepository ccMmReplnPkConsRepository, CcSpReplnPkConsRepository ccSpReplnPkConsRepository) {
+        this.merchCatgReplPackRepository = merchCatgReplPackRepository;
+        this.subCatgReplnPkConsRepository = subCatgReplnPkConsRepository;
+        this.finelineReplnPkConsRepository = finelineReplnPkConsRepository;
+        this.styleReplnPkConsRepository = styleReplnPkConsRepository;
+        this.ccReplnPkConsRepository = ccReplnPkConsRepository;
+        this.ccMmReplnPkConsRepository = ccMmReplnPkConsRepository;
+        this.ccSpReplnPkConsRepository = ccSpReplnPkConsRepository;
+    }
+
     public List<MerchCatgReplPack> setAllReplenishments(StyleDto styleDto, MerchMethodsDto merchMethodsDto, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, CalculateBuyQtyResponse calculateBuyQtyResponse, CustomerChoiceDto customerChoiceDto, Set<CcSpMmReplPack> ccSpMmReplPacks) {
         List<MerchCatgReplPack> merchCatgReplPacks = calculateBuyQtyResponse.getMerchCatgReplPacks();
         // Hard coded FixtureTypeRollUpId for testing calculation
@@ -52,18 +81,13 @@ public class BuyQtyReplenishmentMapperService {
         log.info("Replenishment: Check if Cc MM Repln pack Id is existing: {}", ccMmReplPackId);
         CcMmReplPack ccMmReplPack = setCcMmReplnPack(ccMmReplPacks, ccMmReplPackId);
 
-        ccSpMmReplPacks.forEach( ccSpMmReplPack -> {
-            ccSpMmReplPack.setReplPackCnt(ccSpMmReplPack.getReplUnits()/VP_DEFAULT);
-            ccSpMmReplPack.setVendorPackCnt(VP_DEFAULT);
-            ccSpMmReplPack.setWhsePackCnt(WP_DEFAULT);
-            ccSpMmReplPack.setVnpkWhpkRatio(VP_WP_RATIO_DEFAULT);
-        });
-
         ccSpMmReplPacks.forEach(ccSpMmReplPack -> setReplenishmentSizeEntity(ccMmReplPack, ccSpMmReplPack, merchMethodsDto));
 
-        ccMmReplPack.setVendorPackCnt(VP_DEFAULT);
-        ccMmReplPack.setWhsePackCnt(WP_DEFAULT);
-        ccMmReplPack.setVnpkWhpkRatio(VP_WP_RATIO_DEFAULT);
+        Map<Integer, CcSpMmReplPack> ccSpMmReplPackSizeMap = getCcSpMmReplPackSieMap(ccMmReplPack);
+        ccSpMmReplPacks.forEach( ccSpMmReplPack -> {
+            setVendorPackAndWhsePackCountForCCSpMm(ccSpMmReplPackSizeMap, ccSpMmReplPack);
+        });
+        setVendorPackAndWhsePackCountForCCmm(ccMmReplPack);
 
         log.info("Calculating CC MM Repln Qty");
         //Repln Units
@@ -80,7 +104,7 @@ public class BuyQtyReplenishmentMapperService {
                 .mapToInt(ccSpMmReplPack -> Optional.ofNullable(ccSpMmReplPack.getFinalBuyUnits()).orElse(0))
                 .sum()
         );
-        ccMmReplPack.setReplPackCnt(ccMmReplPack.getReplUnits()/VP_DEFAULT);
+        ccMmReplPack.setReplPackCnt(ccMmReplPack.getReplUnits()/ccMmReplPack.getVendorPackCnt());
 
         ccMmReplPack.setMerchMethodDesc(merchMethodsDto.getMerchMethod());
         ccMmReplPacks.add(ccMmReplPack);
@@ -88,9 +112,7 @@ public class BuyQtyReplenishmentMapperService {
         //CC
         ccReplPack.setCcMmReplPack(ccMmReplPacks);
         log.info("Calculating CC Repln Qty");
-        ccReplPack.setVendorPackCnt(VP_DEFAULT);
-        ccReplPack.setWhsePackCnt(WP_DEFAULT);
-        ccReplPack.setVnpkWhpkRatio(VP_WP_RATIO_DEFAULT);
+        setVendorPackAndWhsePackCountForCCRepln(ccReplPack);
         ccReplPack.setReplUnits(ccMmReplPacks.stream()
                 .filter(Objects::nonNull)
                 .mapToInt(ccMmReplPack1 -> Optional.ofNullable(ccMmReplPack1.getReplUnits()).orElse(0))
@@ -99,16 +121,14 @@ public class BuyQtyReplenishmentMapperService {
                 .filter(Objects::nonNull)
                 .mapToInt(ccMmReplPack1 -> Optional.ofNullable(ccMmReplPack1.getFinalBuyUnits()).orElse(0))
                 .sum());
-        ccReplPack.setReplPackCnt(ccReplPack.getReplUnits()/VP_DEFAULT);
+        ccReplPack.setReplPackCnt(ccReplPack.getReplUnits()/ccReplPack.getVendorPackCnt());
 
         ccReplPacks.add(ccReplPack);
 
         //Style
         styleReplPack.setCcReplPack(ccReplPacks);
         log.info("Calculating Style Repln Qty");
-        styleReplPack.setVendorPackCnt(VP_DEFAULT);
-        styleReplPack.setWhsePackCnt(WP_DEFAULT);
-        styleReplPack.setVnpkWhpkRatio(VP_WP_RATIO_DEFAULT);
+        setVendorPackAndWhsePackCountForStyle(styleReplPack);
         styleReplPack.setReplUnits(ccReplPacks.stream()
                 .filter(Objects::nonNull)
                 .mapToInt(ccReplPack1 -> Optional.ofNullable(ccReplPack1.getReplUnits()).orElse(0))
@@ -119,16 +139,14 @@ public class BuyQtyReplenishmentMapperService {
                 .mapToInt(ccReplPack1 -> Optional.ofNullable(ccReplPack1.getFinalBuyUnits()).orElse(0))
                 .sum()
         );
-        styleReplPack.setReplPackCnt(styleReplPack.getReplUnits()/VP_DEFAULT);
+        styleReplPack.setReplPackCnt(styleReplPack.getReplUnits()/styleReplPack.getVendorPackCnt());
 
         styleReplPacks.add(styleReplPack);
 
         //Fineline
         finelineReplPack.setStyleReplPack(styleReplPacks);
         log.info("Calculating fineline Repln Qty");
-        finelineReplPack.setVendorPackCnt(VP_DEFAULT);
-        finelineReplPack.setWhsePackCnt(WP_DEFAULT);
-        finelineReplPack.setVnpkWhpkRatio(VP_WP_RATIO_DEFAULT);
+        setVendorPackAndWhsePackCountForFineline(finelineReplPack);
         finelineReplPack.setReplUnits(styleReplPacks.stream()
                 .filter(Objects::nonNull)
                 .mapToInt(styleReplPack1 -> Optional.ofNullable(styleReplPack1.getReplUnits()).orElse(0))
@@ -139,7 +157,7 @@ public class BuyQtyReplenishmentMapperService {
                 .mapToInt(styleReplPack1 -> Optional.ofNullable(styleReplPack1.getFinalBuyUnits()).orElse(0))
                 .sum()
         );
-        finelineReplPack.setReplPackCnt(finelineReplPack.getReplUnits()/VP_DEFAULT);
+        finelineReplPack.setReplPackCnt(finelineReplPack.getReplUnits()/finelineReplPack.getVendorPackCnt());
 
         finelineReplPack.setFixtureTypeRollupName(FixtureTypeRollup.getFixtureTypeFromId(merchMethodsDto.getFixtureTypeRollupId()));
         finelineReplPack.setRunStatusCode(0);
@@ -148,9 +166,7 @@ public class BuyQtyReplenishmentMapperService {
         //Sub catg
         subCatgReplPack.setFinelineReplPack(finelineReplPacks);
         log.info("Calculating Sub Catg Repln Qty");
-        subCatgReplPack.setVendorPackCnt(VP_DEFAULT);
-        subCatgReplPack.setWhsePackCnt(WP_DEFAULT);
-        subCatgReplPack.setVnpkWhpkRatio(VP_WP_RATIO_DEFAULT);
+        setVendorPackAndWhsePackCountForSubCat(subCatgReplPack);
         subCatgReplPack.setReplUnits(finelineReplPacks.stream()
                 .filter(Objects::nonNull)
                 .mapToInt(finelineReplPack1 -> Optional.ofNullable(finelineReplPack1.getReplUnits()).orElse(0))
@@ -162,7 +178,7 @@ public class BuyQtyReplenishmentMapperService {
                 .sum()
         );
 
-        subCatgReplPack.setReplPackCnt(subCatgReplPack.getReplUnits()/VP_DEFAULT);
+        subCatgReplPack.setReplPackCnt(subCatgReplPack.getReplUnits()/subCatgReplPack.getVendorPackCnt());
 
         subCatgReplPack.setFixtureTypeRollupName(FixtureTypeRollup.getFixtureTypeFromId(merchMethodsDto.getFixtureTypeRollupId()));
         subCatgReplPack.setRunStatusCode(0);
@@ -171,9 +187,7 @@ public class BuyQtyReplenishmentMapperService {
         //Catg
         merchCatgReplPack.setSubReplPack(subCatgReplPacks);
         log.info("Calculating Catg Repln Qty");
-        merchCatgReplPack.setVendorPackCnt(VP_DEFAULT);
-        merchCatgReplPack.setWhsePackCnt(WP_DEFAULT);
-        merchCatgReplPack.setVnpkWhpkRatio(VP_WP_RATIO_DEFAULT);
+        setVendorPackAndWhsePackCountForMerchCatg(merchCatgReplPack);
         merchCatgReplPack.setReplUnits(subCatgReplPacks.stream()
                 .filter(Objects::nonNull)
                 .mapToInt(subCatgReplPack1 -> Optional.ofNullable(subCatgReplPack1.getReplUnits()).orElse(0))
@@ -184,7 +198,7 @@ public class BuyQtyReplenishmentMapperService {
                 .mapToInt(subCatgReplPack1 -> Optional.ofNullable(subCatgReplPack1.getFinalBuyUnits()).orElse(0))
                 .sum()
         );
-        merchCatgReplPack.setReplPackCnt(merchCatgReplPack.getReplUnits()/VP_DEFAULT);
+        merchCatgReplPack.setReplPackCnt(merchCatgReplPack.getReplUnits()/merchCatgReplPack.getVendorPackCnt());
 
         merchCatgReplPack.setFixtureTypeRollupName(FixtureTypeRollup.getFixtureTypeFromId(merchMethodsDto.getFixtureTypeRollupId()));
         merchCatgReplPack.setRunStatusCode(0);
@@ -285,5 +299,133 @@ public class BuyQtyReplenishmentMapperService {
 
         ccSpMmReplPacks.add(ccSpMmReplPack);
         ccMmReplPack.setCcSpMmReplPack(ccSpMmReplPacks);
+    }
+
+    private void setVendorPackAndWhsePackCountForMerchCatg(MerchCatgReplPack merchCatgReplPack) {
+        if (merchCatgReplPack.getVendorPackCnt() == null && merchCatgReplPack.getWhsePackCnt() == null) {
+            Optional<MerchCatgReplPack> merchCatgReplPackResult = merchCatgReplPackRepository.findById(merchCatgReplPack.getMerchCatgReplPackId());
+            if (merchCatgReplPackResult.isPresent()) {
+                MerchCatgReplPack merchCatgReplPackFromDb = merchCatgReplPackResult.get();
+                merchCatgReplPack.setVendorPackCnt(merchCatgReplPackFromDb.getVendorPackCnt());
+                merchCatgReplPack.setWhsePackCnt(merchCatgReplPackFromDb.getWhsePackCnt());
+                merchCatgReplPack.setVnpkWhpkRatio(merchCatgReplPackFromDb.getVnpkWhpkRatio());
+            } else {
+                merchCatgReplPack.setVendorPackCnt(VP_DEFAULT);
+                merchCatgReplPack.setWhsePackCnt(WP_DEFAULT);
+                merchCatgReplPack.setVnpkWhpkRatio(VP_WP_RATIO_DEFAULT);
+            }
+        }
+    }
+
+    private void setVendorPackAndWhsePackCountForSubCat(SubCatgReplPack subCatgReplPack) {
+        if (subCatgReplPack.getVendorPackCnt() == null && subCatgReplPack.getWhsePackCnt() == null) {
+            Optional<SubCatgReplPack> subCatgReplPackResult = subCatgReplnPkConsRepository.findById(subCatgReplPack.getSubCatgReplPackId());
+            if (subCatgReplPackResult.isPresent()) {
+                SubCatgReplPack subCatgReplPackFromDb = subCatgReplPackResult.get();
+                subCatgReplPack.setVendorPackCnt(subCatgReplPackFromDb.getVendorPackCnt());
+                subCatgReplPack.setWhsePackCnt(subCatgReplPackFromDb.getWhsePackCnt());
+                subCatgReplPack.setVnpkWhpkRatio(subCatgReplPackFromDb.getVnpkWhpkRatio());
+            } else {
+                subCatgReplPack.setVendorPackCnt(VP_DEFAULT);
+                subCatgReplPack.setWhsePackCnt(WP_DEFAULT);
+                subCatgReplPack.setVnpkWhpkRatio(VP_WP_RATIO_DEFAULT);
+            }
+        }
+    }
+
+    private void setVendorPackAndWhsePackCountForFineline(FinelineReplPack finelineReplPack) {
+        if (finelineReplPack.getVendorPackCnt() == null && finelineReplPack.getWhsePackCnt() == null) {
+            Optional<FinelineReplPack> finelineReplPackResult = finelineReplnPkConsRepository.findById(finelineReplPack.getFinelineReplPackId());
+            if (finelineReplPackResult.isPresent()) {
+                FinelineReplPack finelineReplPackFromDB = finelineReplPackResult.get();
+                finelineReplPack.setVendorPackCnt(finelineReplPackFromDB.getVendorPackCnt());
+                finelineReplPack.setWhsePackCnt(finelineReplPackFromDB.getWhsePackCnt());
+                finelineReplPack.setVnpkWhpkRatio(finelineReplPackFromDB.getVnpkWhpkRatio());
+            } else {
+                finelineReplPack.setVendorPackCnt(VP_DEFAULT);
+                finelineReplPack.setWhsePackCnt(WP_DEFAULT);
+                finelineReplPack.setVnpkWhpkRatio(VP_WP_RATIO_DEFAULT);
+            }
+        }
+    }
+
+    private void setVendorPackAndWhsePackCountForStyle(StyleReplPack styleReplPack) {
+        if (styleReplPack.getVendorPackCnt() == null && styleReplPack.getWhsePackCnt() == null) {
+            Optional<StyleReplPack> styleReplPackResult = styleReplnPkConsRepository.findById(styleReplPack.getStyleReplPackId());
+            if (styleReplPackResult.isPresent()) {
+                StyleReplPack styleReplPackFromDB = styleReplPackResult.get();
+                styleReplPack.setVendorPackCnt(styleReplPackFromDB.getVendorPackCnt());
+                styleReplPack.setWhsePackCnt(styleReplPackFromDB.getWhsePackCnt());
+                styleReplPack.setVnpkWhpkRatio(styleReplPackFromDB.getVnpkWhpkRatio());
+            } else {
+                styleReplPack.setVendorPackCnt(VP_DEFAULT);
+                styleReplPack.setWhsePackCnt(WP_DEFAULT);
+                styleReplPack.setVnpkWhpkRatio(VP_WP_RATIO_DEFAULT);
+            }
+        }
+    }
+
+    private void setVendorPackAndWhsePackCountForCCRepln(CcReplPack ccReplPack) {
+        if (ccReplPack.getVendorPackCnt() == null && ccReplPack.getWhsePackCnt() == null) {
+            Optional<CcReplPack> ccReplPackResult = ccReplnPkConsRepository.findById(ccReplPack.getCcReplPackId());
+            if (ccReplPackResult.isPresent()) {
+                CcReplPack ccReplPackFromDb = ccReplPackResult.get();
+                ccReplPack.setVendorPackCnt(ccReplPackFromDb.getVendorPackCnt());
+                ccReplPack.setWhsePackCnt(ccReplPackFromDb.getWhsePackCnt());
+                ccReplPack.setVnpkWhpkRatio(ccReplPackFromDb.getVnpkWhpkRatio());
+            } else {
+                ccReplPack.setVendorPackCnt(VP_DEFAULT);
+                ccReplPack.setWhsePackCnt(WP_DEFAULT);
+                ccReplPack.setVnpkWhpkRatio(VP_WP_RATIO_DEFAULT);
+            }
+        }
+    }
+
+    private void setVendorPackAndWhsePackCountForCCmm(CcMmReplPack ccMmReplPack) {
+        if (ccMmReplPack.getVendorPackCnt() == null && ccMmReplPack.getWhsePackCnt() == null) {
+            Optional<CcMmReplPack> ccMmReplPackResult = ccMmReplnPkConsRepository.findById(ccMmReplPack.getCcMmReplPackId());
+            if (ccMmReplPackResult.isPresent()) {
+                CcMmReplPack ccMmReplPackFromDb = ccMmReplPackResult.get();
+                ccMmReplPack.setVendorPackCnt(ccMmReplPackFromDb.getVendorPackCnt());
+                ccMmReplPack.setWhsePackCnt(ccMmReplPackFromDb.getWhsePackCnt());
+                ccMmReplPack.setVnpkWhpkRatio(ccMmReplPackFromDb.getVnpkWhpkRatio());
+            } else {
+                ccMmReplPack.setVendorPackCnt(VP_DEFAULT);
+                ccMmReplPack.setWhsePackCnt(WP_DEFAULT);
+                ccMmReplPack.setVnpkWhpkRatio(VP_WP_RATIO_DEFAULT);
+            }
+        }
+    }
+
+    private Map<Integer, CcSpMmReplPack> getCcSpMmReplPackSieMap(CcMmReplPack ccMmReplPack) {
+        List<CcSpMmReplPack> ccSpMmReplPacks = new ArrayList<>();
+        if (ccMmReplPack != null && ccMmReplPack.getCcMmReplPackId() != null) {
+            CcReplPackId ccReplPackId = ccMmReplPack.getCcMmReplPackId().getCcReplPackId();
+            StyleReplPackId styleReplPackId = ccReplPackId.getStyleReplPackId();
+            FinelineReplPackId finelineReplPackId = styleReplPackId.getFinelineReplPackId();
+            SubCatgReplPackId subCatgReplPackId = finelineReplPackId.getSubCatgReplPackId();
+            MerchCatgReplPackId merchCatgReplPackId = subCatgReplPackId.getMerchCatgReplPackId();
+            ccSpMmReplPacks = ccSpReplnPkConsRepository.getCcSpMmReplnPkVendorPackAndWhsePackCount(merchCatgReplPackId.getPlanId(), merchCatgReplPackId.getChannelId(), merchCatgReplPackId.getRepTLvl3(), subCatgReplPackId.getRepTLvl4(), finelineReplPackId.getFinelineNbr(), styleReplPackId.getStyleNbr(), ccReplPackId.getCustomerChoice(), ccMmReplPack.getCcMmReplPackId().getMerchMethodCode());
+        }
+        return Optional.ofNullable(ccSpMmReplPacks)
+                .stream()
+                .flatMap(Collection::stream)
+                .collect(Collectors.toMap(ccSpMmReplPack -> ccSpMmReplPack.getCcSpReplPackId().getAhsSizeId(), ccSpMmReplPack -> ccSpMmReplPack));
+    }
+
+    private void setVendorPackAndWhsePackCountForCCSpMm(Map<Integer, CcSpMmReplPack> ccSpMmReplPackSizeMap, CcSpMmReplPack ccSpMmReplPack) {
+        if (ccSpMmReplPackSizeMap != null && ccSpMmReplPackSizeMap.containsKey(ccSpMmReplPack.getCcSpReplPackId().getAhsSizeId())) {
+            CcSpMmReplPack ccSpMmReplPackFromDb = ccSpMmReplPackSizeMap.get(ccSpMmReplPack.getCcSpReplPackId().getAhsSizeId());
+            Integer vendorPackCnt = ccSpMmReplPackFromDb.getVendorPackCnt();
+            ccSpMmReplPack.setReplPackCnt(ccSpMmReplPack.getReplUnits() / vendorPackCnt);
+            ccSpMmReplPack.setVendorPackCnt(vendorPackCnt);
+            ccSpMmReplPack.setWhsePackCnt(ccSpMmReplPackFromDb.getWhsePackCnt());
+            ccSpMmReplPack.setVnpkWhpkRatio(ccSpMmReplPackFromDb.getVnpkWhpkRatio());
+        } else {
+            ccSpMmReplPack.setReplPackCnt(ccSpMmReplPack.getReplUnits() / VP_DEFAULT);
+            ccSpMmReplPack.setVendorPackCnt(VP_DEFAULT);
+            ccSpMmReplPack.setWhsePackCnt(WP_DEFAULT);
+            ccSpMmReplPack.setVnpkWhpkRatio(VP_WP_RATIO_DEFAULT);
+        }
     }
 }

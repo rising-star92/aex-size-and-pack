@@ -99,4 +99,12 @@ public interface CcSpReplnPkConsRepository extends JpaRepository<CcSpMmReplPack,
    @Modifying(clearAutomatically = true, flushAutomatically = true)
    @Query(value = "delete from rc_cc_sp_mm_replpk_fixtr_cons where plan_id = :planId and channel_id = :channelId and fineline_nbr in (:finelineNbrs)", nativeQuery = true)
    void deleteByPlanIdFinelineIdChannelId(@Param("planId") Long planId, @Param("channelId") Integer channelId, @Param("finelineNbrs") Set<Integer> finelineNbrs);
+
+    @Transactional
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query(value = "select * from dbo.rc_cc_sp_mm_replpk_fixtr_cons where plan_id = :planId and \n"
+            + "channel_id = :channelId and rpt_lvl_3_nbr=:lvl3Nbr and rpt_lvl_4_nbr=:lvl4Nbr and fineline_nbr=:fineline and style_nbr=:style and customer_choice=:customerChoice and merch_method_code=:merch_method_code ", nativeQuery = true)
+    List<CcSpMmReplPack> getCcSpMmReplnPkVendorPackAndWhsePackCount(@Param("planId")Long planId, @Param("channelId") Integer channelId, @Param("lvl3Nbr") Integer lvl3Nbr,
+                                                  @Param("lvl4Nbr") Integer lvl4Nbr, @Param("fineline") Integer fineline, @Param("style") String style, @Param("customerChoice") String customerChoice,
+                                                  @Param("merch_method_code") Integer merch_method_code);
 }
