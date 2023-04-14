@@ -25,6 +25,7 @@ import com.walmart.aex.sp.dto.buyquantity.StrategyVolumeDeviationRequest;
 import com.walmart.aex.sp.dto.buyquantity.StrategyVolumeDeviationResponse;
 import com.walmart.aex.sp.dto.buyquantity.StyleDto;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
+import com.walmart.aex.sp.dto.replenishment.cons.ReplenishmentCons;
 import com.walmart.aex.sp.entity.CcSpMmReplPack;
 import com.walmart.aex.sp.entity.CcSpMmReplPackId;
 import com.walmart.aex.sp.entity.FixtureTypeRollUpId;
@@ -77,6 +78,7 @@ public class CalculateFinelineBuyQuantity {
     private final AddStoreBuyQuantityService addStoreBuyQuantityService;
     private final BuyQuantityConstraintService buyQuantityConstraintService;
     private final DeptAdminRuleService deptAdminRuleService;
+    private final ReplenishmentService replenishmentService;
 
     public CalculateFinelineBuyQuantity(BQFPService bqfpService,
                                         ObjectMapper objectMapper,
@@ -84,7 +86,7 @@ public class CalculateFinelineBuyQuantity {
                                         CalculateOnlineFinelineBuyQuantity calculateOnlineFinelineBuyQuantity,
                                         StrategyFetchService strategyFetchService,
                                         AddStoreBuyQuantityService addStoreBuyQuantityService,
-                                        BuyQuantityConstraintService buyQuantityConstraintService, DeptAdminRuleService deptAdminRuleService) {
+                                        BuyQuantityConstraintService buyQuantityConstraintService, DeptAdminRuleService deptAdminRuleService, ReplenishmentService replenishmentService) {
         this.bqfpService = bqfpService;
         this.objectMapper = objectMapper;
         this.strategyFetchService = strategyFetchService;
@@ -93,6 +95,7 @@ public class CalculateFinelineBuyQuantity {
         this.addStoreBuyQuantityService = addStoreBuyQuantityService;
         this.buyQuantityConstraintService = buyQuantityConstraintService;
         this.deptAdminRuleService = deptAdminRuleService;
+        this.replenishmentService = replenishmentService;
     }
 
     public CalculateBuyQtyResponse calculateFinelineBuyQty(CalculateBuyQtyRequest calculateBuyQtyRequest, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, CalculateBuyQtyResponse calculateBuyQtyResponse) throws CustomException {
@@ -334,7 +337,8 @@ public class CalculateFinelineBuyQuantity {
 
         if (!CollectionUtils.isEmpty(ccSpMmReplPacks)) {
             //Replenishment
-            List<MerchCatgReplPack> merchCatgReplPacks = buyQtyReplenishmentMapperService.setAllReplenishments(styleDto, merchMethodsDtos.get(0), calculateBuyQtyParallelRequest, calculateBuyQtyResponse, customerChoiceDto, ccSpMmReplPacks);
+            ReplenishmentCons replenishmentCons = replenishmentService.fetchReplenishmentConstraints(styleDto, merchMethodsDtos.get(0), calculateBuyQtyParallelRequest, customerChoiceDto);
+            List<MerchCatgReplPack> merchCatgReplPacks = buyQtyReplenishmentMapperService.setAllReplenishments(styleDto, merchMethodsDtos.get(0), calculateBuyQtyParallelRequest, calculateBuyQtyResponse, customerChoiceDto, ccSpMmReplPacks, replenishmentCons);
             calculateBuyQtyResponse.setMerchCatgReplPacks(merchCatgReplPacks);
         }
 

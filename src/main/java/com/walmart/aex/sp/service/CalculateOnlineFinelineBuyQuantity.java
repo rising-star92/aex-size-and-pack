@@ -7,6 +7,7 @@ import com.walmart.aex.sp.dto.bqfp.Replenishment;
 import com.walmart.aex.sp.dto.bqfp.Style;
 import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
+import com.walmart.aex.sp.dto.replenishment.cons.ReplenishmentCons;
 import com.walmart.aex.sp.entity.CcSpMmReplPack;
 import com.walmart.aex.sp.entity.CcSpMmReplPackId;
 import com.walmart.aex.sp.entity.MerchCatgReplPack;
@@ -31,12 +32,15 @@ public class CalculateOnlineFinelineBuyQuantity {
     private final BuyQtyReplenishmentMapperService buyQtyReplenishmentMapperService;
 
     private final ReplenishmentsOptimizationService replenishmentsOptimizationServices;
+    private final ReplenishmentService replenishmentService;
 
     public CalculateOnlineFinelineBuyQuantity(ObjectMapper objectMapper,
-                                              BuyQtyReplenishmentMapperService buyQtyReplenishmentMapperService, ReplenishmentsOptimizationService replenishmentsOptimizationServices) {
+                                              BuyQtyReplenishmentMapperService buyQtyReplenishmentMapperService,
+                                              ReplenishmentsOptimizationService replenishmentsOptimizationServices, ReplenishmentService replenishmentService) {
         this.objectMapper = objectMapper;
         this.buyQtyReplenishmentMapperService = buyQtyReplenishmentMapperService;
         this.replenishmentsOptimizationServices = replenishmentsOptimizationServices;
+        this.replenishmentService = replenishmentService;
     }
 
 
@@ -119,7 +123,8 @@ public class CalculateOnlineFinelineBuyQuantity {
         }
         if (!CollectionUtils.isEmpty(ccSpMmReplPacks)) {
             //Replenishment
-            List<MerchCatgReplPack> merchCatgReplPacks = buyQtyReplenishmentMapperService.setAllReplenishments(styleDto, merchMethodsDto, calculateBuyQtyParallelRequest, calculateBuyQtyResponse, customerChoiceDto, ccSpMmReplPacks);
+            ReplenishmentCons replenishmentCons = replenishmentService.fetchReplenishmentConstraints(styleDto, merchMethodsDto, calculateBuyQtyParallelRequest, customerChoiceDto);
+            List<MerchCatgReplPack> merchCatgReplPacks = buyQtyReplenishmentMapperService.setAllReplenishments(styleDto, merchMethodsDto, calculateBuyQtyParallelRequest, calculateBuyQtyResponse, customerChoiceDto, ccSpMmReplPacks, replenishmentCons);
             calculateBuyQtyResponse.setMerchCatgReplPacks(merchCatgReplPacks);
         }
     }

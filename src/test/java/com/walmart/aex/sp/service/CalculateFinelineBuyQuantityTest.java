@@ -13,6 +13,7 @@ import com.walmart.aex.sp.exception.SizeAndPackException;
 import com.walmart.aex.sp.repository.*;
 import com.walmart.aex.sp.service.impl.DeptAdminRuleServiceImpl;
 import com.walmart.aex.sp.util.BQFPResponseInputs;
+import com.walmart.aex.sp.util.BuyQtyCommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -87,10 +88,13 @@ class CalculateFinelineBuyQuantityTest {
     @Mock
     DeptAdminRuleServiceImpl deptAdminRuleService;
 
+    @Mock
+    ReplenishmentService replenishmentService;
+
     ReplenishmentsOptimizationService replenishmentsOptimizationServices;
 
     @Mock
-    MerchCatgReplPackRepository merchCatgReplPackRepository;
+    CatgReplnPkConsRepository catgReplnPkConsRepository;
 
     @Mock
     SubCatgReplnPkConsRepository subCatgReplnPkConsRepository;
@@ -99,16 +103,41 @@ class CalculateFinelineBuyQuantityTest {
     FinelineReplnPkConsRepository finelineReplnPkConsRepository;
 
     @Mock
-    StyleReplnPkConsRepository styleReplnPkConsRepository;
+    StyleReplnPkConsRepository styleReplnConsRepository;
 
     @Mock
-    CcReplnPkConsRepository ccReplnPkConsRepository;
+    CcReplnPkConsRepository ccReplnConsRepository;
 
     @Mock
     CcMmReplnPkConsRepository ccMmReplnPkConsRepository;
 
     @Mock
     CcSpReplnPkConsRepository ccSpReplnPkConsRepository;
+
+    @Mock
+    SpCustomerChoiceReplenishmentRepository  spCustomerChoiceReplenishmentRepository;
+
+    @Mock
+    SizeListReplenishmentRepository sizeListReplenishmentRepository;
+
+    @Mock
+    ReplenishmentMapper replenishmentMapper;
+
+    @Mock
+    UpdateReplnConfigMapper updateReplnConfigMapper;
+
+    @Mock
+    BuyQuantityMapper buyQuantityMapper;
+
+    @Mock
+    BuyQtyCommonUtil buyQtyCommonUtil;
+
+    @Mock
+    SizeLevelReplenishmentRepository sizeLevelReplenishmentRepository;
+
+    @Mock
+    SizeLevelReplenishmentMapper sizeLevelReplenishmentMapper;
+
 
    @Spy
    ObjectMapper mapper = new ObjectMapper();
@@ -122,10 +151,14 @@ class CalculateFinelineBuyQuantityTest {
        buyQuantityConstraintService = new BuyQuantityConstraintService(calculateBumpPackQtyService);
        addStoreBuyQuantityService = new AddStoreBuyQuantityService(mapper, calculateBumpPackQtyService, buyQuantityConstraintService, calculateInitialSetQuantityService);
        replenishmentsOptimizationServices=new ReplenishmentsOptimizationService();
-       BuyQtyReplenishmentMapperService buyQtyReplenishmentMapperService = new BuyQtyReplenishmentMapperService(merchCatgReplPackRepository, subCatgReplnPkConsRepository, finelineReplnPkConsRepository, styleReplnPkConsRepository, ccReplnPkConsRepository, ccMmReplnPkConsRepository, ccSpReplnPkConsRepository);
-       calculateOnlineFinelineBuyQuantity = new  CalculateOnlineFinelineBuyQuantity (mapper, buyQtyReplenishmentMapperService,replenishmentsOptimizationServices );
+       BuyQtyReplenishmentMapperService buyQtyReplenishmentMapperService = new BuyQtyReplenishmentMapperService();
+       replenishmentService = new ReplenishmentService(fineLineReplenishmentRepository, spCustomerChoiceReplenishmentRepository, sizeListReplenishmentRepository, catgReplnPkConsRepository,
+               subCatgReplnPkConsRepository, finelineReplnPkConsRepository, styleReplnConsRepository, ccReplnConsRepository,
+               ccMmReplnPkConsRepository, ccSpReplnPkConsRepository, replenishmentMapper, updateReplnConfigMapper, buyQuantityMapper,
+               strategyFetchService, buyQtyCommonUtil, sizeLevelReplenishmentRepository,sizeLevelReplenishmentMapper);
+       calculateOnlineFinelineBuyQuantity = new  CalculateOnlineFinelineBuyQuantity (mapper, buyQtyReplenishmentMapperService,replenishmentsOptimizationServices, replenishmentService );
        calculateFinelineBuyQuantity = new CalculateFinelineBuyQuantity(bqfpService, mapper, buyQtyReplenishmentMapperService, calculateOnlineFinelineBuyQuantity,
-               strategyFetchService,addStoreBuyQuantityService, buyQuantityConstraintService, deptAdminRuleService);
+               strategyFetchService,addStoreBuyQuantityService, buyQuantityConstraintService, deptAdminRuleService, replenishmentService);
     }
 
     @Test

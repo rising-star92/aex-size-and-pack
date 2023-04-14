@@ -5,6 +5,7 @@ import com.walmart.aex.sp.dto.buyquantity.CalculateBuyQtyResponse;
 import com.walmart.aex.sp.dto.buyquantity.CustomerChoiceDto;
 import com.walmart.aex.sp.dto.buyquantity.StyleDto;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
+import com.walmart.aex.sp.dto.replenishment.cons.*;
 import com.walmart.aex.sp.entity.*;
 import com.walmart.aex.sp.repository.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,10 +16,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -44,30 +42,7 @@ public class BuyQtyReplenishmentMapperServiceTest {
 	Set<CcSpMmReplPack> ccSpMmReplPacks;
 
 	@Mock
-	MerchCatgReplPackRepository merchCatgReplPackRepository;
-
-	@Mock
-	SubCatgReplnPkConsRepository subCatgReplnPkConsRepository;
-
-	@Mock
-	FinelineReplnPkConsRepository finelineReplnPkConsRepository;
-
-	@Mock
-	StyleReplnPkConsRepository styleReplnPkConsRepository;
-
-	@Mock
-	CcReplnPkConsRepository ccReplnPkConsRepository;
-
-	@Mock
-	CcMmReplnPkConsRepository ccMmReplnPkConsRepository;
-
-	@Mock
-	CcSpReplnPkConsRepository ccSpReplnPkConsRepository;
-
-	@BeforeEach
-	void setUp() {
-		buyQtyReplenishmentMapperService = new BuyQtyReplenishmentMapperService(merchCatgReplPackRepository, subCatgReplnPkConsRepository, finelineReplnPkConsRepository, styleReplnPkConsRepository, ccReplnPkConsRepository, ccMmReplnPkConsRepository, ccSpReplnPkConsRepository);
-	}
+	ReplenishmentCons replenishmentCons;
 	
 	@Test
 	public void testSetAllReplenishments() {
@@ -166,7 +141,7 @@ public class BuyQtyReplenishmentMapperServiceTest {
 		ccMmReplPack.setCcSpMmReplPack(ccSpMmReplPacks);
 		ccMmReplPackList.add(ccMmReplPack);
 				
-		List<MerchCatgReplPack> catgReplPacks=buyQtyReplenishmentMapperService.setAllReplenishments(styleDto, merchMethodsDto, calculateBuyQtyParallelRequest, calculateBuyQtyResponse, customerChoiceDto, ccSpMmReplPacks);
+		List<MerchCatgReplPack> catgReplPacks=buyQtyReplenishmentMapperService.setAllReplenishments(styleDto, merchMethodsDto, calculateBuyQtyParallelRequest, calculateBuyQtyResponse, customerChoiceDto, ccSpMmReplPacks, getReplenishmentCons());
 	
 		assertNotNull(catgReplPacks);
 		assertEquals(1, catgReplPacks.get(0).getFinalBuyUnits());
@@ -193,7 +168,7 @@ public class BuyQtyReplenishmentMapperServiceTest {
 		calculateBuyQtyResponse =  new CalculateBuyQtyResponse();
 		calculateBuyQtyResponse.setMerchCatgReplPacks(merchCatgReplPacks);
 
-		List<MerchCatgReplPack> catgReplPacks=buyQtyReplenishmentMapperService.setAllReplenishments(styleDto, merchMethodsDto, calculateBuyQtyParallelRequest, calculateBuyQtyResponse, customerChoiceDto, ccSpMmReplPacks);
+		List<MerchCatgReplPack> catgReplPacks=buyQtyReplenishmentMapperService.setAllReplenishments(styleDto, merchMethodsDto, calculateBuyQtyParallelRequest, calculateBuyQtyResponse, customerChoiceDto, ccSpMmReplPacks, getReplenishmentCons());
 
 		assertNotNull(catgReplPacks);
 		assertEquals(12, catgReplPacks.get(0).getVendorPackCnt());
@@ -233,5 +208,41 @@ public class BuyQtyReplenishmentMapperServiceTest {
 				.iterator().next().getStyleReplPack().iterator().next().getCcReplPack().iterator().next()
 				.getCcMmReplPack().iterator().next().getVnpkWhpkRatio());
 
+	}
+
+	private ReplenishmentCons getReplenishmentCons() {
+		ReplenishmentCons replenishmentCons = new ReplenishmentCons();
+		MerchCatgReplPackCons merchCatgReplPackCons = new MerchCatgReplPackCons();
+		merchCatgReplPackCons.setVendorPackCount(12);
+		merchCatgReplPackCons.setWarehousePackCount(2);
+		merchCatgReplPackCons.setVendorPackWarHousePackRatio(6.00);
+		replenishmentCons.setMerchCatgReplPackCons(merchCatgReplPackCons);
+		SubCatgReplPackCons subCatgReplPackCons = new SubCatgReplPackCons();
+		subCatgReplPackCons.setVendorPackCount(12);
+		subCatgReplPackCons.setWarehousePackCount(2);
+		subCatgReplPackCons.setVendorPackWarHousePackRatio(6.00);
+		replenishmentCons.setSubCatgReplPackCons(subCatgReplPackCons);
+		FinelineReplPackCons finelineReplPackCons = new FinelineReplPackCons();
+		finelineReplPackCons.setVendorPackCount(12);
+		finelineReplPackCons.setWarehousePackCount(2);
+		finelineReplPackCons.setVendorPackWarHousePackRatio(6.00);
+		replenishmentCons.setFinelineReplPackCons(finelineReplPackCons);
+		StyleReplPackCons styleReplPackCons = new StyleReplPackCons();
+		styleReplPackCons.setVendorPackCount(12);
+		styleReplPackCons.setWarehousePackCount(2);
+		styleReplPackCons.setVendorPackWarHousePackRatio(6.00);
+		replenishmentCons.setStyleReplPackCons(styleReplPackCons);
+		CcReplPackCons ccReplPackCons = new CcReplPackCons();
+		ccReplPackCons.setVendorPackCount(12);
+		ccReplPackCons.setWarehousePackCount(2);
+		ccReplPackCons.setVendorPackWarHousePackRatio(6.00);
+		replenishmentCons.setCcReplPackCons(ccReplPackCons);
+		CcMmReplPackCons ccMmReplPackCons = new CcMmReplPackCons();
+		ccMmReplPackCons.setVendorPackCount(12);
+		ccMmReplPackCons.setWarehousePackCount(2);
+		ccMmReplPackCons.setVendorPackWarHousePackRatio(6.00);
+		replenishmentCons.setCcMmReplPackCons(ccMmReplPackCons);
+		replenishmentCons.setCcSpMmReplPackConsMap(new HashMap<>());
+		return replenishmentCons;
 	}
 }
