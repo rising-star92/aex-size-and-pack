@@ -14,6 +14,7 @@ import com.walmart.aex.sp.entity.MerchCatgReplPack;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.enums.FixtureTypeRollup;
 import com.walmart.aex.sp.exception.CustomException;
+import com.walmart.aex.sp.util.BuyQtyCommonUtil;
 import com.walmart.aex.sp.util.SizeAndPackConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -74,7 +75,9 @@ public class CalculateOnlineFinelineBuyQuantity {
         styles.forEach(styleDto -> {
             log.info("Checking if Online Styles are existing: {}", styleDto);
             if (!CollectionUtils.isEmpty(styleDto.getCustomerChoices())) {
-                replenishmentService.setStyleReplenishmentCons(replenishmentCons, styleDto);
+                if (BuyQtyCommonUtil.isStyleHasBQFP(bqfpResponse, styleDto.getStyleNbr())) {
+                    replenishmentService.setStyleReplenishmentCons(replenishmentCons, styleDto);
+                }
                 getOnlineCustomerChoices(styleDto, merchMethodsDto, bqfpResponse, calculateBuyQtyParallelRequest, calculateBuyQtyResponse, replenishmentCons);
             }
         });

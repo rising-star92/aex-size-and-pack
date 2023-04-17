@@ -21,7 +21,6 @@ import com.walmart.aex.sp.dto.buyquantity.Lvl3Dto;
 import com.walmart.aex.sp.dto.buyquantity.Lvl4Dto;
 import com.walmart.aex.sp.dto.buyquantity.SizeDto;
 import com.walmart.aex.sp.dto.buyquantity.StoreQuantity;
-import com.walmart.aex.sp.dto.buyquantity.StrategyVolumeDeviationRequest;
 import com.walmart.aex.sp.dto.buyquantity.StrategyVolumeDeviationResponse;
 import com.walmart.aex.sp.dto.buyquantity.StyleDto;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
@@ -259,7 +258,9 @@ public class CalculateFinelineBuyQuantity {
             }
             spStyleChannelFixture.setMerchMethodCode(spFineLineChannelFixture.getMerchMethodCode());
             if (!CollectionUtils.isEmpty(styleDto.getCustomerChoices())) {
-                replenishmentService.setStyleReplenishmentCons(replenishmentCons, styleDto);
+                if (BuyQtyCommonUtil.isStyleHasBQFP(bqfpResponse, styleDto.getStyleNbr())) {
+                    replenishmentService.setStyleReplenishmentCons(replenishmentCons, styleDto);
+                }
                 getCustomerChoices(styleDto, merchMethodsDtos, apResponse, bqfpResponse, spStyleChannelFixture, calculateBuyQtyParallelRequest, calculateBuyQtyResponse, replenishmentCons);
             }
             spStyleChannelFixtures.add(spStyleChannelFixture);
