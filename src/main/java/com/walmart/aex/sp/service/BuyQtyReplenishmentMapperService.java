@@ -62,7 +62,7 @@ public class BuyQtyReplenishmentMapperService {
         });
         ccMmReplPack.setVendorPackCnt(replenishmentCons.getCcMmReplPackCons().getVendorPackCount());
         ccMmReplPack.setWhsePackCnt(replenishmentCons.getCcMmReplPackCons().getWarehousePackCount());
-        ccMmReplPack.setVnpkWhpkRatio(replenishmentCons.getCcMmReplPackCons().getVendorPackWarHousePackRatio());
+        ccMmReplPack.setVnpkWhpkRatio(replenishmentCons.getCcMmReplPackCons().getVendorPackWareHousePackRatio());
 
         log.info("Calculating CC MM Repln Qty");
         //Repln Units
@@ -89,7 +89,7 @@ public class BuyQtyReplenishmentMapperService {
         log.info("Calculating CC Repln Qty");
         ccReplPack.setVendorPackCnt(replenishmentCons.getCcReplPackCons().getVendorPackCount());
         ccReplPack.setWhsePackCnt(replenishmentCons.getCcReplPackCons().getWarehousePackCount());
-        ccReplPack.setVnpkWhpkRatio(replenishmentCons.getCcReplPackCons().getVendorPackWarHousePackRatio());
+        ccReplPack.setVnpkWhpkRatio(replenishmentCons.getCcReplPackCons().getVendorPackWareHousePackRatio());
         ccReplPack.setReplUnits(ccMmReplPacks.stream()
                 .filter(Objects::nonNull)
                 .mapToInt(ccMmReplPack1 -> Optional.ofNullable(ccMmReplPack1.getReplUnits()).orElse(0))
@@ -107,7 +107,7 @@ public class BuyQtyReplenishmentMapperService {
         log.info("Calculating Style Repln Qty");
         styleReplPack.setVendorPackCnt(replenishmentCons.getStyleReplPackCons().getVendorPackCount());
         styleReplPack.setWhsePackCnt(replenishmentCons.getStyleReplPackCons().getWarehousePackCount());
-        styleReplPack.setVnpkWhpkRatio(replenishmentCons.getStyleReplPackCons().getVendorPackWarHousePackRatio());
+        styleReplPack.setVnpkWhpkRatio(replenishmentCons.getStyleReplPackCons().getVendorPackWareHousePackRatio());
         styleReplPack.setReplUnits(ccReplPacks.stream()
                 .filter(Objects::nonNull)
                 .mapToInt(ccReplPack1 -> Optional.ofNullable(ccReplPack1.getReplUnits()).orElse(0))
@@ -127,7 +127,7 @@ public class BuyQtyReplenishmentMapperService {
         log.info("Calculating fineline Repln Qty");
         finelineReplPack.setVendorPackCnt(replenishmentCons.getFinelineReplPackCons().getVendorPackCount());
         finelineReplPack.setWhsePackCnt(replenishmentCons.getFinelineReplPackCons().getWarehousePackCount());
-        finelineReplPack.setVnpkWhpkRatio(replenishmentCons.getFinelineReplPackCons().getVendorPackWarHousePackRatio());
+        finelineReplPack.setVnpkWhpkRatio(replenishmentCons.getFinelineReplPackCons().getVendorPackWareHousePackRatio());
         finelineReplPack.setReplUnits(styleReplPacks.stream()
                 .filter(Objects::nonNull)
                 .mapToInt(styleReplPack1 -> Optional.ofNullable(styleReplPack1.getReplUnits()).orElse(0))
@@ -149,7 +149,7 @@ public class BuyQtyReplenishmentMapperService {
         log.info("Calculating Sub Catg Repln Qty");
         subCatgReplPack.setVendorPackCnt(replenishmentCons.getSubCatgReplPackCons().getVendorPackCount());
         subCatgReplPack.setWhsePackCnt(replenishmentCons.getSubCatgReplPackCons().getWarehousePackCount());
-        subCatgReplPack.setVnpkWhpkRatio(replenishmentCons.getSubCatgReplPackCons().getVendorPackWarHousePackRatio());
+        subCatgReplPack.setVnpkWhpkRatio(replenishmentCons.getSubCatgReplPackCons().getVendorPackWareHousePackRatio());
 
         subCatgReplPack.setReplUnits(finelineReplPacks.stream()
                 .filter(Objects::nonNull)
@@ -173,7 +173,7 @@ public class BuyQtyReplenishmentMapperService {
         log.info("Calculating Catg Repln Qty");
         merchCatgReplPack.setVendorPackCnt(replenishmentCons.getMerchCatgReplPackCons().getVendorPackCount());
         merchCatgReplPack.setWhsePackCnt(replenishmentCons.getMerchCatgReplPackCons().getWarehousePackCount());
-        merchCatgReplPack.setVnpkWhpkRatio(replenishmentCons.getMerchCatgReplPackCons().getVendorPackWarHousePackRatio());
+        merchCatgReplPack.setVnpkWhpkRatio(replenishmentCons.getMerchCatgReplPackCons().getVendorPackWareHousePackRatio());
         merchCatgReplPack.setReplUnits(subCatgReplPacks.stream()
                 .filter(Objects::nonNull)
                 .mapToInt(subCatgReplPack1 -> Optional.ofNullable(subCatgReplPack1.getReplUnits()).orElse(0))

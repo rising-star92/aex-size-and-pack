@@ -402,11 +402,11 @@ public class ReplenishmentService  {
             MerchCatgReplPack merchCatgReplPackFromDb = merchCatgReplPackResult.get();
             merchCatgReplPackCons.setVendorPackCount(merchCatgReplPackFromDb.getVendorPackCnt());
             merchCatgReplPackCons.setWarehousePackCount(merchCatgReplPackFromDb.getWhsePackCnt());
-            merchCatgReplPackCons.setVendorPackWarHousePackRatio(merchCatgReplPackFromDb.getVnpkWhpkRatio());
+            merchCatgReplPackCons.setVendorPackWareHousePackRatio(merchCatgReplPackFromDb.getVnpkWhpkRatio());
         } else {
             merchCatgReplPackCons.setVendorPackCount(VP_DEFAULT);
             merchCatgReplPackCons.setWarehousePackCount(WP_DEFAULT);
-            merchCatgReplPackCons.setVendorPackWarHousePackRatio(VP_WP_RATIO_DEFAULT);
+            merchCatgReplPackCons.setVendorPackWareHousePackRatio(VP_WP_RATIO_DEFAULT);
         }
         return merchCatgReplPackCons;
     }
@@ -419,11 +419,11 @@ public class ReplenishmentService  {
             SubCatgReplPack subCatgReplPackFromDB = subCatgReplPackResult.get();
             subCatgReplPackCons.setVendorPackCount(subCatgReplPackFromDB.getVendorPackCnt());
             subCatgReplPackCons.setWarehousePackCount(subCatgReplPackFromDB.getWhsePackCnt());
-            subCatgReplPackCons.setVendorPackWarHousePackRatio(subCatgReplPackFromDB.getVnpkWhpkRatio());
+            subCatgReplPackCons.setVendorPackWareHousePackRatio(subCatgReplPackFromDB.getVnpkWhpkRatio());
         } else {
             subCatgReplPackCons.setVendorPackCount(VP_DEFAULT);
             subCatgReplPackCons.setWarehousePackCount(WP_DEFAULT);
-            subCatgReplPackCons.setVendorPackWarHousePackRatio(VP_WP_RATIO_DEFAULT);
+            subCatgReplPackCons.setVendorPackWareHousePackRatio(VP_WP_RATIO_DEFAULT);
         }
         return subCatgReplPackCons;
     }
@@ -436,11 +436,11 @@ public class ReplenishmentService  {
             FinelineReplPack finelineReplPackFromDB = finelineReplPackResult.get();
             finelineReplPackCons.setVendorPackCount(finelineReplPackFromDB.getVendorPackCnt());
             finelineReplPackCons.setWarehousePackCount(finelineReplPackFromDB.getWhsePackCnt());
-            finelineReplPackCons.setVendorPackWarHousePackRatio(finelineReplPackFromDB.getVnpkWhpkRatio());
+            finelineReplPackCons.setVendorPackWareHousePackRatio(finelineReplPackFromDB.getVnpkWhpkRatio());
         } else {
             finelineReplPackCons.setVendorPackCount(VP_DEFAULT);
             finelineReplPackCons.setWarehousePackCount(WP_DEFAULT);
-            finelineReplPackCons.setVendorPackWarHousePackRatio(VP_WP_RATIO_DEFAULT);
+            finelineReplPackCons.setVendorPackWareHousePackRatio(VP_WP_RATIO_DEFAULT);
         }
         return finelineReplPackCons;
     }
@@ -453,11 +453,11 @@ public class ReplenishmentService  {
             StyleReplPack styleReplPackFromDB = stylePackResult.get();
             styleReplPackCons.setVendorPackCount(styleReplPackFromDB.getVendorPackCnt());
             styleReplPackCons.setWarehousePackCount(styleReplPackFromDB.getWhsePackCnt());
-            styleReplPackCons.setVendorPackWarHousePackRatio(styleReplPackFromDB.getVnpkWhpkRatio());
+            styleReplPackCons.setVendorPackWareHousePackRatio(styleReplPackFromDB.getVnpkWhpkRatio());
         } else {
             styleReplPackCons.setVendorPackCount(VP_DEFAULT);
             styleReplPackCons.setWarehousePackCount(WP_DEFAULT);
-            styleReplPackCons.setVendorPackWarHousePackRatio(VP_WP_RATIO_DEFAULT);
+            styleReplPackCons.setVendorPackWareHousePackRatio(VP_WP_RATIO_DEFAULT);
         }
         return styleReplPackCons;
     }
@@ -470,11 +470,11 @@ public class ReplenishmentService  {
             CcReplPack ccReplPackFromDB = ccRepPackResult.get();
             ccReplPackCons.setVendorPackCount(ccReplPackFromDB.getVendorPackCnt());
             ccReplPackCons.setWarehousePackCount(ccReplPackFromDB.getWhsePackCnt());
-            ccReplPackCons.setVendorPackWarHousePackRatio(ccReplPackFromDB.getVnpkWhpkRatio());
+            ccReplPackCons.setVendorPackWareHousePackRatio(ccReplPackFromDB.getVnpkWhpkRatio());
         } else {
             ccReplPackCons.setVendorPackCount(VP_DEFAULT);
             ccReplPackCons.setWarehousePackCount(WP_DEFAULT);
-            ccReplPackCons.setVendorPackWarHousePackRatio(VP_WP_RATIO_DEFAULT);
+            ccReplPackCons.setVendorPackWareHousePackRatio(VP_WP_RATIO_DEFAULT);
         }
         return ccReplPackCons;
     }
@@ -487,11 +487,11 @@ public class ReplenishmentService  {
             CcMmReplPack ccMmReplPackFromDB = ccMmReplPackResult.get();
             ccMmReplPackCons.setVendorPackCount(ccMmReplPackFromDB.getVendorPackCnt());
             ccMmReplPackCons.setWarehousePackCount(ccMmReplPackFromDB.getWhsePackCnt());
-            ccMmReplPackCons.setVendorPackWarHousePackRatio(ccMmReplPackFromDB.getVnpkWhpkRatio());
+            ccMmReplPackCons.setVendorPackWareHousePackRatio(ccMmReplPackFromDB.getVnpkWhpkRatio());
         } else {
             ccMmReplPackCons.setVendorPackCount(VP_DEFAULT);
             ccMmReplPackCons.setWarehousePackCount(WP_DEFAULT);
-            ccMmReplPackCons.setVendorPackWarHousePackRatio(VP_WP_RATIO_DEFAULT);
+            ccMmReplPackCons.setVendorPackWareHousePackRatio(VP_WP_RATIO_DEFAULT);
         }
         return ccMmReplPackCons;
     }

@@ -6,5 +6,5 @@ import lombok.Data;
 public class ReplVnPackAndWhPackCount {
     private Integer vendorPackCount;
     private Integer warehousePackCount;
-    private Double vendorPackWarHousePackRatio;
+    private Double vendorPackWareHousePackRatio;
 }
