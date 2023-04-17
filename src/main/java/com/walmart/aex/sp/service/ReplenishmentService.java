@@ -368,29 +368,35 @@ public class ReplenishmentService  {
         updateReplnConfigMapper.updateVnpkWhpkForCatgReplnConsMapper(catgReplnPkConsList, null, null);
     }
 
-    public ReplenishmentCons fetchReplenishmentConstraints(StyleDto styleDto, MerchMethodsDto merchMethodsDto, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, CustomerChoiceDto customerChoiceDto) {
-        log.info("Fetch vendorPackcount, WarehousePackCount and VNP/WHP ratio");
+    public ReplenishmentCons fetchHierarchyReplnCons(CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, MerchMethodsDto merchMethodsDto) {
         MerchCatgReplPackId merchCatgReplPackId = new MerchCatgReplPackId(calculateBuyQtyParallelRequest.getPlanId(), calculateBuyQtyParallelRequest.getLvl0Nbr(),
                 calculateBuyQtyParallelRequest.getLvl1Nbr(), calculateBuyQtyParallelRequest.getLvl2Nbr(), calculateBuyQtyParallelRequest.getLvl3Nbr(),
                 ChannelType.getChannelIdFromName(calculateBuyQtyParallelRequest.getChannel()), merchMethodsDto.getMerchMethodCode());
         SubCatgReplPackId subCatgReplPackId = new SubCatgReplPackId(merchCatgReplPackId, calculateBuyQtyParallelRequest.getLvl4Nbr());
         FinelineReplPackId finelineReplPackId = new FinelineReplPackId(subCatgReplPackId, calculateBuyQtyParallelRequest.getFinelineNbr());
-        StyleReplPackId styleReplPackId = new StyleReplPackId(finelineReplPackId, styleDto.getStyleNbr());
-        CcReplPackId ccReplPackId = new CcReplPackId(styleReplPackId, customerChoiceDto.getCcId());
-        CcMmReplPackId ccMmReplPackId = new CcMmReplPackId(ccReplPackId, merchMethodsDto.getMerchMethodCode());
         ReplenishmentCons replenishmentCons = new ReplenishmentCons();
         replenishmentCons.setMerchCatgReplPackCons(getVendorPackAndWhsePackCountForMerchCatg(merchCatgReplPackId));
         replenishmentCons.setSubCatgReplPackCons(getVendorPackAndWhsePackCountForSubCatg(subCatgReplPackId));
         replenishmentCons.setFinelineReplPackCons(getVendorPackAndWhsePackCountForFineline(finelineReplPackId));
-        replenishmentCons.setStyleReplPackCons(getVendorPackAndWhsePackCountForStyle(styleReplPackId));
-        replenishmentCons.setCcReplPackCons(getVendorPackAndWhsePackCountForCc(ccReplPackId));
-        replenishmentCons.setCcMmReplPackCons(getVendorPackAndWhsePackCountForCcMm(ccMmReplPackId));
-        replenishmentCons.setCcSpMmReplPackConsMap(getCcSpMmReplPackSieMap(calculateBuyQtyParallelRequest, styleDto.getStyleNbr(), customerChoiceDto.getCcId(), merchMethodsDto.getMerchMethodCode()));
         return replenishmentCons;
+    }
+
+    public void setStyleReplenishmentCons(ReplenishmentCons replenishmentCons, StyleDto styleDto) {
+        StyleReplPackId styleReplPackId = new StyleReplPackId(replenishmentCons.getFinelineReplPackCons().getFinelineReplPackId(), styleDto.getStyleNbr());
+        replenishmentCons.setStyleReplPackCons(getVendorPackAndWhsePackCountForStyle(styleReplPackId));
+    }
+
+    public void setCcsReplenishmentCons(ReplenishmentCons replenishmentCons, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, MerchMethodsDto merchMethodsDto, StyleDto styleDto, CustomerChoiceDto customerChoiceDto) {
+        CcReplPackId ccReplPackId = new CcReplPackId(replenishmentCons.getStyleReplPackCons().getStyleReplPackId(), customerChoiceDto.getCcId());
+        replenishmentCons.setCcReplPackCons(getVendorPackAndWhsePackCountForCc(ccReplPackId));
+        CcMmReplPackId ccMmReplPackId = new CcMmReplPackId(ccReplPackId, merchMethodsDto.getMerchMethodCode());
+        replenishmentCons.setCcMmReplPackCons(getVendorPackAndWhsePackCountForCcMm(ccMmReplPackId));
+        replenishmentCons.setCcSpMmReplPackConsMap(getCcSpMmReplPackSizeMap(calculateBuyQtyParallelRequest, styleDto.getStyleNbr(), customerChoiceDto.getCcId(), merchMethodsDto.getMerchMethodCode()));
     }
 
     private MerchCatgReplPackCons getVendorPackAndWhsePackCountForMerchCatg(MerchCatgReplPackId merchCatgReplPackId) {
         MerchCatgReplPackCons merchCatgReplPackCons = new MerchCatgReplPackCons();
+        merchCatgReplPackCons.setMerchCatgReplPackId(merchCatgReplPackId);
         Optional<MerchCatgReplPack> merchCatgReplPackResult = catgReplnPkConsRepository.findById(merchCatgReplPackId);
         if (merchCatgReplPackResult.isPresent()) {
             MerchCatgReplPack merchCatgReplPackFromDb = merchCatgReplPackResult.get();
@@ -407,6 +413,7 @@ public class ReplenishmentService  {
 
     private SubCatgReplPackCons getVendorPackAndWhsePackCountForSubCatg(SubCatgReplPackId subCatgReplPackId) {
         SubCatgReplPackCons subCatgReplPackCons = new SubCatgReplPackCons();
+        subCatgReplPackCons.setSubCatgReplPackId(subCatgReplPackId);
         Optional<SubCatgReplPack> subCatgReplPackResult = subCatgReplnPkConsRepository.findById(subCatgReplPackId);
         if (subCatgReplPackResult.isPresent()) {
             SubCatgReplPack subCatgReplPackFromDB = subCatgReplPackResult.get();
@@ -423,6 +430,7 @@ public class ReplenishmentService  {
 
     private FinelineReplPackCons getVendorPackAndWhsePackCountForFineline(FinelineReplPackId finelineReplPackId) {
         FinelineReplPackCons finelineReplPackCons = new FinelineReplPackCons();
+        finelineReplPackCons.setFinelineReplPackId(finelineReplPackId);
         Optional<FinelineReplPack> finelineReplPackResult = finelineReplnPkConsRepository.findById(finelineReplPackId);
         if (finelineReplPackResult.isPresent()) {
             FinelineReplPack finelineReplPackFromDB = finelineReplPackResult.get();
@@ -439,6 +447,7 @@ public class ReplenishmentService  {
 
     private StyleReplPackCons getVendorPackAndWhsePackCountForStyle(StyleReplPackId styleReplPackId) {
         StyleReplPackCons styleReplPackCons = new StyleReplPackCons();
+        styleReplPackCons.setStyleReplPackId(styleReplPackId);
         Optional<StyleReplPack> stylePackResult = styleReplnConsRepository.findById(styleReplPackId);
         if (stylePackResult.isPresent()) {
             StyleReplPack styleReplPackFromDB = stylePackResult.get();
@@ -455,6 +464,7 @@ public class ReplenishmentService  {
 
     private CcReplPackCons getVendorPackAndWhsePackCountForCc(CcReplPackId ccReplPackId) {
         CcReplPackCons ccReplPackCons = new CcReplPackCons();
+        ccReplPackCons.setCcReplPackId(ccReplPackId);
         Optional<CcReplPack> ccRepPackResult = ccReplnConsRepository.findById(ccReplPackId);
         if (ccRepPackResult.isPresent()) {
             CcReplPack ccReplPackFromDB = ccRepPackResult.get();
@@ -471,6 +481,7 @@ public class ReplenishmentService  {
 
     private CcMmReplPackCons getVendorPackAndWhsePackCountForCcMm(CcMmReplPackId ccMmReplPackId) {
         CcMmReplPackCons ccMmReplPackCons = new CcMmReplPackCons();
+        ccMmReplPackCons.setCcMmReplPackId(ccMmReplPackId);
         Optional<CcMmReplPack> ccMmReplPackResult = ccMmReplnPkConsRepository.findById(ccMmReplPackId);
         if (ccMmReplPackResult.isPresent()) {
             CcMmReplPack ccMmReplPackFromDB = ccMmReplPackResult.get();
@@ -485,7 +496,7 @@ public class ReplenishmentService  {
         return ccMmReplPackCons;
     }
 
-    private Map<Integer, CcSpMmReplPack> getCcSpMmReplPackSieMap(CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, String styleNbr, String ccId, Integer merchCode) {
+    private Map<Integer, CcSpMmReplPack> getCcSpMmReplPackSizeMap(CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, String styleNbr, String ccId, Integer merchCode) {
         List<CcSpMmReplPack> ccSpMmReplPacks = ccSpReplnPkConsRepository.getCcSpMmReplnPkVendorPackAndWhsePackCount(calculateBuyQtyParallelRequest.getPlanId(), ChannelType.getChannelIdFromName(calculateBuyQtyParallelRequest.getChannel()), calculateBuyQtyParallelRequest.getLvl3Nbr(), calculateBuyQtyParallelRequest.getLvl4Nbr(), calculateBuyQtyParallelRequest.getFinelineNbr(), styleNbr, ccId, merchCode);
         return Optional.ofNullable(ccSpMmReplPacks)
                 .stream()

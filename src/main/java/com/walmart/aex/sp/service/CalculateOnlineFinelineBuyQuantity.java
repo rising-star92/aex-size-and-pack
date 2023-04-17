@@ -70,27 +70,29 @@ public class CalculateOnlineFinelineBuyQuantity {
 
     private void getOnlineStyles(List<StyleDto> styles, MerchMethodsDto merchMethodsDto, BQFPResponse bqfpResponse,
                                  CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, CalculateBuyQtyResponse calculateBuyQtyResponse) {
+        ReplenishmentCons replenishmentCons = replenishmentService.fetchHierarchyReplnCons(calculateBuyQtyParallelRequest, merchMethodsDto);
         styles.forEach(styleDto -> {
             log.info("Checking if Online Styles are existing: {}", styleDto);
             if (!CollectionUtils.isEmpty(styleDto.getCustomerChoices())) {
-                getOnlineCustomerChoices(styleDto, merchMethodsDto, bqfpResponse, calculateBuyQtyParallelRequest, calculateBuyQtyResponse);
+                replenishmentService.setStyleReplenishmentCons(replenishmentCons, styleDto);
+                getOnlineCustomerChoices(styleDto, merchMethodsDto, bqfpResponse, calculateBuyQtyParallelRequest, calculateBuyQtyResponse, replenishmentCons);
             }
         });
     }
 
     private void getOnlineCustomerChoices(StyleDto styleDto, MerchMethodsDto merchMethodsDto, BQFPResponse bqfpResponse,
-                                          CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, CalculateBuyQtyResponse calculateBuyQtyResponse) {
+                                          CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, CalculateBuyQtyResponse calculateBuyQtyResponse, ReplenishmentCons replenishmentCons) {
         styleDto.getCustomerChoices().forEach(customerChoiceDto -> {
             log.info("Checking if Online Cc are existing: {}", customerChoiceDto);
             //TODO: Delete replenishment if replenishment is deleted after set
             if (!CollectionUtils.isEmpty(customerChoiceDto.getClusters())) {
-                getOnlineCcClusters(styleDto, customerChoiceDto, merchMethodsDto, bqfpResponse, calculateBuyQtyResponse, calculateBuyQtyParallelRequest);
+                getOnlineCcClusters(styleDto, customerChoiceDto, merchMethodsDto, bqfpResponse, calculateBuyQtyResponse, calculateBuyQtyParallelRequest, replenishmentCons);
             }
         });
     }
 
     private void getOnlineCcClusters(StyleDto styleDto, CustomerChoiceDto customerChoiceDto, MerchMethodsDto merchMethodsDto,
-                                     BQFPResponse bqfpResponse, CalculateBuyQtyResponse calculateBuyQtyResponse, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest) {
+                                     BQFPResponse bqfpResponse, CalculateBuyQtyResponse calculateBuyQtyResponse, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, ReplenishmentCons replenishmentCons) {
         Map<SizeDto, BuyQtyObj> storeBuyQtyBySizeId = new HashMap<>();
         //Replenishment
         List<Replenishment> replenishments = getReplenishments(bqfpResponse, styleDto, customerChoiceDto);
@@ -123,7 +125,7 @@ public class CalculateOnlineFinelineBuyQuantity {
         }
         if (!CollectionUtils.isEmpty(ccSpMmReplPacks)) {
             //Replenishment
-            ReplenishmentCons replenishmentCons = replenishmentService.fetchReplenishmentConstraints(styleDto, merchMethodsDto, calculateBuyQtyParallelRequest, customerChoiceDto);
+            replenishmentService.setCcsReplenishmentCons(replenishmentCons, calculateBuyQtyParallelRequest, merchMethodsDto, styleDto, customerChoiceDto);
             List<MerchCatgReplPack> merchCatgReplPacks = buyQtyReplenishmentMapperService.setAllReplenishments(styleDto, merchMethodsDto, calculateBuyQtyParallelRequest, calculateBuyQtyResponse, customerChoiceDto, ccSpMmReplPacks, replenishmentCons);
             calculateBuyQtyResponse.setMerchCatgReplPacks(merchCatgReplPacks);
         }
