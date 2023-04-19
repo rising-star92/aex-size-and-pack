@@ -10,11 +10,10 @@ import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixtureSize;
 import com.walmart.aex.sp.entity.SpFineLineChannelFixture;
 import com.walmart.aex.sp.entity.SpStyleChannelFixture;
 import com.walmart.aex.sp.exception.SizeAndPackException;
-import com.walmart.aex.sp.repository.FineLineReplenishmentRepository;
-import com.walmart.aex.sp.repository.SpFineLineChannelFixtureRepository;
-import com.walmart.aex.sp.repository.StyleReplenishmentRepository;
+import com.walmart.aex.sp.repository.*;
 import com.walmart.aex.sp.service.impl.DeptAdminRuleServiceImpl;
 import com.walmart.aex.sp.util.BQFPResponseInputs;
+import com.walmart.aex.sp.util.BuyQtyCommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -89,7 +88,56 @@ class CalculateFinelineBuyQuantityTest {
     @Mock
     DeptAdminRuleServiceImpl deptAdminRuleService;
 
+    @Mock
+    ReplenishmentService replenishmentService;
+
     ReplenishmentsOptimizationService replenishmentsOptimizationServices;
+
+    @Mock
+    CatgReplnPkConsRepository catgReplnPkConsRepository;
+
+    @Mock
+    SubCatgReplnPkConsRepository subCatgReplnPkConsRepository;
+
+    @Mock
+    FinelineReplnPkConsRepository finelineReplnPkConsRepository;
+
+    @Mock
+    StyleReplnPkConsRepository styleReplnConsRepository;
+
+    @Mock
+    CcReplnPkConsRepository ccReplnConsRepository;
+
+    @Mock
+    CcMmReplnPkConsRepository ccMmReplnPkConsRepository;
+
+    @Mock
+    CcSpReplnPkConsRepository ccSpReplnPkConsRepository;
+
+    @Mock
+    SpCustomerChoiceReplenishmentRepository  spCustomerChoiceReplenishmentRepository;
+
+    @Mock
+    SizeListReplenishmentRepository sizeListReplenishmentRepository;
+
+    @Mock
+    ReplenishmentMapper replenishmentMapper;
+
+    @Mock
+    UpdateReplnConfigMapper updateReplnConfigMapper;
+
+    @Mock
+    BuyQuantityMapper buyQuantityMapper;
+
+    @Mock
+    BuyQtyCommonUtil buyQtyCommonUtil;
+
+    @Mock
+    SizeLevelReplenishmentRepository sizeLevelReplenishmentRepository;
+
+    @Mock
+    SizeLevelReplenishmentMapper sizeLevelReplenishmentMapper;
+
 
    @Spy
    ObjectMapper mapper = new ObjectMapper();
@@ -103,10 +151,14 @@ class CalculateFinelineBuyQuantityTest {
        buyQuantityConstraintService = new BuyQuantityConstraintService(calculateBumpPackQtyService);
        addStoreBuyQuantityService = new AddStoreBuyQuantityService(mapper, calculateBumpPackQtyService, buyQuantityConstraintService, calculateInitialSetQuantityService);
        replenishmentsOptimizationServices=new ReplenishmentsOptimizationService();
-
-       calculateOnlineFinelineBuyQuantity = new  CalculateOnlineFinelineBuyQuantity (mapper, new BuyQtyReplenishmentMapperService(),replenishmentsOptimizationServices );
-       calculateFinelineBuyQuantity = new CalculateFinelineBuyQuantity(bqfpService, mapper, new BuyQtyReplenishmentMapperService(), calculateOnlineFinelineBuyQuantity,
-               strategyFetchService,addStoreBuyQuantityService, buyQuantityConstraintService, deptAdminRuleService);
+       BuyQtyReplenishmentMapperService buyQtyReplenishmentMapperService = new BuyQtyReplenishmentMapperService();
+       replenishmentService = new ReplenishmentService(fineLineReplenishmentRepository, spCustomerChoiceReplenishmentRepository, sizeListReplenishmentRepository, catgReplnPkConsRepository,
+               subCatgReplnPkConsRepository, finelineReplnPkConsRepository, styleReplnConsRepository, ccReplnConsRepository,
+               ccMmReplnPkConsRepository, ccSpReplnPkConsRepository, replenishmentMapper, updateReplnConfigMapper, buyQuantityMapper,
+               strategyFetchService, buyQtyCommonUtil, sizeLevelReplenishmentRepository,sizeLevelReplenishmentMapper);
+       calculateOnlineFinelineBuyQuantity = new  CalculateOnlineFinelineBuyQuantity (mapper, buyQtyReplenishmentMapperService,replenishmentsOptimizationServices, replenishmentService );
+       calculateFinelineBuyQuantity = new CalculateFinelineBuyQuantity(bqfpService, mapper, buyQtyReplenishmentMapperService, calculateOnlineFinelineBuyQuantity,
+               strategyFetchService,addStoreBuyQuantityService, buyQuantityConstraintService, deptAdminRuleService, replenishmentService);
     }
 
     @Test

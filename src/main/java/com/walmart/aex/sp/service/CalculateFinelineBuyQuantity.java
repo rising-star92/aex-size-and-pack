@@ -21,10 +21,10 @@ import com.walmart.aex.sp.dto.buyquantity.Lvl3Dto;
 import com.walmart.aex.sp.dto.buyquantity.Lvl4Dto;
 import com.walmart.aex.sp.dto.buyquantity.SizeDto;
 import com.walmart.aex.sp.dto.buyquantity.StoreQuantity;
-import com.walmart.aex.sp.dto.buyquantity.StrategyVolumeDeviationRequest;
 import com.walmart.aex.sp.dto.buyquantity.StrategyVolumeDeviationResponse;
 import com.walmart.aex.sp.dto.buyquantity.StyleDto;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
+import com.walmart.aex.sp.dto.replenishment.cons.ReplenishmentCons;
 import com.walmart.aex.sp.entity.CcSpMmReplPack;
 import com.walmart.aex.sp.entity.CcSpMmReplPackId;
 import com.walmart.aex.sp.entity.FixtureTypeRollUpId;
@@ -77,6 +77,7 @@ public class CalculateFinelineBuyQuantity {
     private final AddStoreBuyQuantityService addStoreBuyQuantityService;
     private final BuyQuantityConstraintService buyQuantityConstraintService;
     private final DeptAdminRuleService deptAdminRuleService;
+    private final ReplenishmentService replenishmentService;
 
     public CalculateFinelineBuyQuantity(BQFPService bqfpService,
                                         ObjectMapper objectMapper,
@@ -84,7 +85,7 @@ public class CalculateFinelineBuyQuantity {
                                         CalculateOnlineFinelineBuyQuantity calculateOnlineFinelineBuyQuantity,
                                         StrategyFetchService strategyFetchService,
                                         AddStoreBuyQuantityService addStoreBuyQuantityService,
-                                        BuyQuantityConstraintService buyQuantityConstraintService, DeptAdminRuleService deptAdminRuleService) {
+                                        BuyQuantityConstraintService buyQuantityConstraintService, DeptAdminRuleService deptAdminRuleService, ReplenishmentService replenishmentService) {
         this.bqfpService = bqfpService;
         this.objectMapper = objectMapper;
         this.strategyFetchService = strategyFetchService;
@@ -93,6 +94,7 @@ public class CalculateFinelineBuyQuantity {
         this.addStoreBuyQuantityService = addStoreBuyQuantityService;
         this.buyQuantityConstraintService = buyQuantityConstraintService;
         this.deptAdminRuleService = deptAdminRuleService;
+        this.replenishmentService = replenishmentService;
     }
 
     public CalculateBuyQtyResponse calculateFinelineBuyQty(CalculateBuyQtyRequest calculateBuyQtyRequest, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, CalculateBuyQtyResponse calculateBuyQtyResponse) throws CustomException {
@@ -195,7 +197,6 @@ public class CalculateFinelineBuyQuantity {
                 merchCodeMap.put(merch.getMerchMethodCode(), new ArrayList<>());
             merchCodeMap.get(merch.getMerchMethodCode()).add(merch);
         });
-
         merchCodeMap.forEach((merchMethodCode, merchMethodsDtos) -> {
             // Hard coded for temporary testing of calculating InitialSet, BumpSet and Replenishment
             FixtureTypeRollUpId fixtureTypeRollUpId = new FixtureTypeRollUpId(merchMethodCode);
@@ -240,6 +241,7 @@ public class CalculateFinelineBuyQuantity {
                            CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, CalculateBuyQtyResponse calculateBuyQtyResponse) {
 
         Set<SpStyleChannelFixture> spStyleChannelFixtures = Optional.ofNullable(spFineLineChannelFixture.getSpStyleChannelFixtures()).orElse(new HashSet<>());
+        ReplenishmentCons replenishmentCons = replenishmentService.fetchHierarchyReplnCons(calculateBuyQtyParallelRequest, merchMethodsDtos.get(0));
         styles.forEach(styleDto -> {
 
             SpStyleChannelFixtureId spStyleChannelFixtureId = new SpStyleChannelFixtureId(spFineLineChannelFixture.getSpFineLineChannelFixtureId(), styleDto.getStyleNbr());
@@ -256,7 +258,10 @@ public class CalculateFinelineBuyQuantity {
             }
             spStyleChannelFixture.setMerchMethodCode(spFineLineChannelFixture.getMerchMethodCode());
             if (!CollectionUtils.isEmpty(styleDto.getCustomerChoices())) {
-                getCustomerChoices(styleDto, merchMethodsDtos, apResponse, bqfpResponse, spStyleChannelFixture, calculateBuyQtyParallelRequest, calculateBuyQtyResponse);
+                if (BuyQtyCommonUtil.isStyleHasBQFP(bqfpResponse, styleDto.getStyleNbr())) {
+                    replenishmentService.setStyleReplenishmentCons(replenishmentCons, styleDto);
+                }
+                getCustomerChoices(styleDto, merchMethodsDtos, apResponse, bqfpResponse, spStyleChannelFixture, calculateBuyQtyParallelRequest, calculateBuyQtyResponse, replenishmentCons);
             }
             spStyleChannelFixtures.add(spStyleChannelFixture);
         });
@@ -266,7 +271,7 @@ public class CalculateFinelineBuyQuantity {
     }
 
     private void getCustomerChoices(StyleDto styleDto, List<MerchMethodsDto> merchMethodsDtos, APResponse apResponse, BQFPResponse bqfpResponse,
-                                    SpStyleChannelFixture spStyleChannelFixture, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, CalculateBuyQtyResponse calculateBuyQtyResponse) {
+                                    SpStyleChannelFixture spStyleChannelFixture, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, CalculateBuyQtyResponse calculateBuyQtyResponse, ReplenishmentCons replenishmentCons) {
 
         Set<SpCustomerChoiceChannelFixture> spCustomerChoiceChannelFixtures = Optional.ofNullable(spStyleChannelFixture.getSpCustomerChoiceChannelFixture()).orElse(new HashSet<>());
         styleDto.getCustomerChoices().forEach(customerChoiceDto -> {
@@ -284,7 +289,7 @@ public class CalculateFinelineBuyQuantity {
             }
             spCustomerChoiceChannelFixture.setMerchMethodCode(spStyleChannelFixture.getMerchMethodCode());
             if (!CollectionUtils.isEmpty(customerChoiceDto.getClusters())) {
-                getCcClusters(styleDto, customerChoiceDto, merchMethodsDtos, apResponse, bqfpResponse, spCustomerChoiceChannelFixture, calculateBuyQtyResponse, calculateBuyQtyParallelRequest);
+                getCcClusters(styleDto, customerChoiceDto, merchMethodsDtos, apResponse, bqfpResponse, spCustomerChoiceChannelFixture, calculateBuyQtyResponse, calculateBuyQtyParallelRequest, replenishmentCons);
             }
             spCustomerChoiceChannelFixture.setBumpPackCnt(getCcMaxBumpPackCnt(bqfpResponse,styleDto,customerChoiceDto));
             spCustomerChoiceChannelFixtures.add(spCustomerChoiceChannelFixture);
@@ -302,7 +307,7 @@ public class CalculateFinelineBuyQuantity {
         return getMaxBumpCountVal(customerChoices);
     }
 
-    private void getCcClusters(StyleDto styleDto, CustomerChoiceDto customerChoiceDto, List<MerchMethodsDto> merchMethodsDtos, APResponse apResponse, BQFPResponse bqfpResponse, SpCustomerChoiceChannelFixture spCustomerChoiceChannelFixture, CalculateBuyQtyResponse calculateBuyQtyResponse, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest) {
+    private void getCcClusters(StyleDto styleDto, CustomerChoiceDto customerChoiceDto, List<MerchMethodsDto> merchMethodsDtos, APResponse apResponse, BQFPResponse bqfpResponse, SpCustomerChoiceChannelFixture spCustomerChoiceChannelFixture, CalculateBuyQtyResponse calculateBuyQtyResponse, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, ReplenishmentCons replenishmentCons) {
         Map<SizeDto, BuyQtyObj> storeBuyQtyBySizeId = new HashMap<>();
         Integer initialThreshold = deptAdminRuleService.getInitialThreshold(bqfpResponse.getPlanId(), bqfpResponse.getLvl1Nbr());
         //Replenishment
@@ -334,7 +339,8 @@ public class CalculateFinelineBuyQuantity {
 
         if (!CollectionUtils.isEmpty(ccSpMmReplPacks)) {
             //Replenishment
-            List<MerchCatgReplPack> merchCatgReplPacks = buyQtyReplenishmentMapperService.setAllReplenishments(styleDto, merchMethodsDtos.get(0), calculateBuyQtyParallelRequest, calculateBuyQtyResponse, customerChoiceDto, ccSpMmReplPacks);
+            replenishmentService.setCcsReplenishmentCons(replenishmentCons, calculateBuyQtyParallelRequest, merchMethodsDtos.get(0), styleDto, customerChoiceDto);
+            List<MerchCatgReplPack> merchCatgReplPacks = buyQtyReplenishmentMapperService.setAllReplenishments(styleDto, merchMethodsDtos.get(0), calculateBuyQtyParallelRequest, calculateBuyQtyResponse, customerChoiceDto, ccSpMmReplPacks, replenishmentCons);
             calculateBuyQtyResponse.setMerchCatgReplPacks(merchCatgReplPacks);
         }
 

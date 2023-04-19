@@ -186,4 +186,11 @@ public class BuyQtyCommonUtil {
         }
         return weekDesc.toString();
     }
+
+    public static boolean isStyleHasBQFP(BQFPResponse bqfpResponse, String styleId) {
+        return Optional.ofNullable(bqfpResponse.getStyles())
+                .stream()
+                .flatMap(Collection::stream)
+                .anyMatch(style -> (style != null && style.getStyleId().equalsIgnoreCase(styleId)));
+    }
 }

@@ -7,12 +7,14 @@ import com.walmart.aex.sp.dto.bqfp.Replenishment;
 import com.walmart.aex.sp.dto.bqfp.Style;
 import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
+import com.walmart.aex.sp.dto.replenishment.cons.ReplenishmentCons;
 import com.walmart.aex.sp.entity.CcSpMmReplPack;
 import com.walmart.aex.sp.entity.CcSpMmReplPackId;
 import com.walmart.aex.sp.entity.MerchCatgReplPack;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.enums.FixtureTypeRollup;
 import com.walmart.aex.sp.exception.CustomException;
+import com.walmart.aex.sp.util.BuyQtyCommonUtil;
 import com.walmart.aex.sp.util.SizeAndPackConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,12 +33,15 @@ public class CalculateOnlineFinelineBuyQuantity {
     private final BuyQtyReplenishmentMapperService buyQtyReplenishmentMapperService;
 
     private final ReplenishmentsOptimizationService replenishmentsOptimizationServices;
+    private final ReplenishmentService replenishmentService;
 
     public CalculateOnlineFinelineBuyQuantity(ObjectMapper objectMapper,
-                                              BuyQtyReplenishmentMapperService buyQtyReplenishmentMapperService, ReplenishmentsOptimizationService replenishmentsOptimizationServices) {
+                                              BuyQtyReplenishmentMapperService buyQtyReplenishmentMapperService,
+                                              ReplenishmentsOptimizationService replenishmentsOptimizationServices, ReplenishmentService replenishmentService) {
         this.objectMapper = objectMapper;
         this.buyQtyReplenishmentMapperService = buyQtyReplenishmentMapperService;
         this.replenishmentsOptimizationServices = replenishmentsOptimizationServices;
+        this.replenishmentService = replenishmentService;
     }
 
 
@@ -66,27 +71,31 @@ public class CalculateOnlineFinelineBuyQuantity {
 
     private void getOnlineStyles(List<StyleDto> styles, MerchMethodsDto merchMethodsDto, BQFPResponse bqfpResponse,
                                  CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, CalculateBuyQtyResponse calculateBuyQtyResponse) {
+        ReplenishmentCons replenishmentCons = replenishmentService.fetchHierarchyReplnCons(calculateBuyQtyParallelRequest, merchMethodsDto);
         styles.forEach(styleDto -> {
             log.info("Checking if Online Styles are existing: {}", styleDto);
             if (!CollectionUtils.isEmpty(styleDto.getCustomerChoices())) {
-                getOnlineCustomerChoices(styleDto, merchMethodsDto, bqfpResponse, calculateBuyQtyParallelRequest, calculateBuyQtyResponse);
+                if (BuyQtyCommonUtil.isStyleHasBQFP(bqfpResponse, styleDto.getStyleNbr())) {
+                    replenishmentService.setStyleReplenishmentCons(replenishmentCons, styleDto);
+                }
+                getOnlineCustomerChoices(styleDto, merchMethodsDto, bqfpResponse, calculateBuyQtyParallelRequest, calculateBuyQtyResponse, replenishmentCons);
             }
         });
     }
 
     private void getOnlineCustomerChoices(StyleDto styleDto, MerchMethodsDto merchMethodsDto, BQFPResponse bqfpResponse,
-                                          CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, CalculateBuyQtyResponse calculateBuyQtyResponse) {
+                                          CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, CalculateBuyQtyResponse calculateBuyQtyResponse, ReplenishmentCons replenishmentCons) {
         styleDto.getCustomerChoices().forEach(customerChoiceDto -> {
             log.info("Checking if Online Cc are existing: {}", customerChoiceDto);
             //TODO: Delete replenishment if replenishment is deleted after set
             if (!CollectionUtils.isEmpty(customerChoiceDto.getClusters())) {
-                getOnlineCcClusters(styleDto, customerChoiceDto, merchMethodsDto, bqfpResponse, calculateBuyQtyResponse, calculateBuyQtyParallelRequest);
+                getOnlineCcClusters(styleDto, customerChoiceDto, merchMethodsDto, bqfpResponse, calculateBuyQtyResponse, calculateBuyQtyParallelRequest, replenishmentCons);
             }
         });
     }
 
     private void getOnlineCcClusters(StyleDto styleDto, CustomerChoiceDto customerChoiceDto, MerchMethodsDto merchMethodsDto,
-                                     BQFPResponse bqfpResponse, CalculateBuyQtyResponse calculateBuyQtyResponse, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest) {
+                                     BQFPResponse bqfpResponse, CalculateBuyQtyResponse calculateBuyQtyResponse, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, ReplenishmentCons replenishmentCons) {
         Map<SizeDto, BuyQtyObj> storeBuyQtyBySizeId = new HashMap<>();
         //Replenishment
         List<Replenishment> replenishments = getReplenishments(bqfpResponse, styleDto, customerChoiceDto);
@@ -119,7 +128,8 @@ public class CalculateOnlineFinelineBuyQuantity {
         }
         if (!CollectionUtils.isEmpty(ccSpMmReplPacks)) {
             //Replenishment
-            List<MerchCatgReplPack> merchCatgReplPacks = buyQtyReplenishmentMapperService.setAllReplenishments(styleDto, merchMethodsDto, calculateBuyQtyParallelRequest, calculateBuyQtyResponse, customerChoiceDto, ccSpMmReplPacks);
+            replenishmentService.setCcsReplenishmentCons(replenishmentCons, calculateBuyQtyParallelRequest, merchMethodsDto, styleDto, customerChoiceDto);
+            List<MerchCatgReplPack> merchCatgReplPacks = buyQtyReplenishmentMapperService.setAllReplenishments(styleDto, merchMethodsDto, calculateBuyQtyParallelRequest, calculateBuyQtyResponse, customerChoiceDto, ccSpMmReplPacks, replenishmentCons);
             calculateBuyQtyResponse.setMerchCatgReplPacks(merchCatgReplPacks);
         }
     }
