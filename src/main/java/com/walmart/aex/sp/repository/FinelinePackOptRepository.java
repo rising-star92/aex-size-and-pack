@@ -100,7 +100,7 @@ public interface FinelinePackOptRepository
             "AND finePlan.finelinePlanId.subCatPlanId.merchCatPlanId.lvl1Nbr = spFlChFix.spFineLineChannelFixtureId.lvl1Nbr \n" +
             "AND finePlan.finelinePlanId.subCatPlanId.merchCatPlanId.lvl0Nbr = spFlChFix.spFineLineChannelFixtureId.lvl0Nbr \n" +
             "AND finePlan.finelinePlanId.subCatPlanId.merchCatPlanId.planId = spFlChFix.spFineLineChannelFixtureId.planId \n" +
-            "AND (spFlChFix.bumpPackQty + spFlChFix.initialSetQty > 0 OR spFlChFix.buyQty > 0) \n" +
+            "AND (spFlChFix.bumpPackQty + spFlChFix.initialSetQty > 0) \n" +
 
             "left JOIN MerchantPackOptimization merchPackOpt ON merchCatPlan.merchCatPlanId.lvl3Nbr = merchPackOpt.merchantPackOptimizationID.repTLvl3 \n" +
             "AND merchCatPlan.merchCatPlanId.lvl2Nbr = merchPackOpt.merchantPackOptimizationID.repTLvl2 \n" +
