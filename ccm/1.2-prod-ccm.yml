@@ -446,7 +446,7 @@ configDefinitions:
         description: "enable v1/v2  of store distribution API"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "false"
+        defaultValue: "true"
 apiVersion: "2.0"
 kind: "ServiceConfig"
 
