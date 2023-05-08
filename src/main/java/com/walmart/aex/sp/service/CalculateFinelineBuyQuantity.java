@@ -43,6 +43,7 @@ import com.walmart.aex.sp.enums.VdLevelCode;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.exception.SizeAndPackException;
 import com.walmart.aex.sp.util.BuyQtyCommonUtil;
+import com.walmart.aex.sp.util.SizeAndPackConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Marker;
 import org.slf4j.helpers.BasicMarkerFactory;
@@ -64,6 +65,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
+import static com.walmart.aex.sp.util.SizeAndPackConstants.VP_DEFAULT;
+
 @Service
 @Slf4j
 public class CalculateFinelineBuyQuantity {
@@ -78,6 +81,7 @@ public class CalculateFinelineBuyQuantity {
     private final BuyQuantityConstraintService buyQuantityConstraintService;
     private final DeptAdminRuleService deptAdminRuleService;
     private final ReplenishmentService replenishmentService;
+    private final ReplenishmentsOptimizationService replenishmentsOptimizationServices;
 
     public CalculateFinelineBuyQuantity(BQFPService bqfpService,
                                         ObjectMapper objectMapper,
@@ -85,7 +89,10 @@ public class CalculateFinelineBuyQuantity {
                                         CalculateOnlineFinelineBuyQuantity calculateOnlineFinelineBuyQuantity,
                                         StrategyFetchService strategyFetchService,
                                         AddStoreBuyQuantityService addStoreBuyQuantityService,
-                                        BuyQuantityConstraintService buyQuantityConstraintService, DeptAdminRuleService deptAdminRuleService, ReplenishmentService replenishmentService) {
+                                        BuyQuantityConstraintService buyQuantityConstraintService,
+                                        DeptAdminRuleService deptAdminRuleService,
+                                        ReplenishmentService replenishmentService,
+                                        ReplenishmentsOptimizationService replenishmentsOptimizationServices) {
         this.bqfpService = bqfpService;
         this.objectMapper = objectMapper;
         this.strategyFetchService = strategyFetchService;
@@ -95,6 +102,7 @@ public class CalculateFinelineBuyQuantity {
         this.buyQuantityConstraintService = buyQuantityConstraintService;
         this.deptAdminRuleService = deptAdminRuleService;
         this.replenishmentService = replenishmentService;
+        this.replenishmentsOptimizationServices = replenishmentsOptimizationServices;
     }
 
     public CalculateBuyQtyResponse calculateFinelineBuyQty(CalculateBuyQtyRequest calculateBuyQtyRequest, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, CalculateBuyQtyResponse calculateBuyQtyResponse) throws CustomException {
@@ -314,12 +322,16 @@ public class CalculateFinelineBuyQuantity {
         List<Replenishment> replenishments = BuyQtyCommonUtil.getReplenishments(merchMethodsDtos, bqfpResponse, styleDto, customerChoiceDto);
         log.info("Get All Replenishments if exists for customerchoice: {} and fixtureType: {}", customerChoiceDto.getCcId(), spCustomerChoiceChannelFixture.getSpCustomerChoiceChannelFixtureId().getSpStyleChannelFixtureId().getSpFineLineChannelFixtureId().getFixtureTypeRollUpId().getFixtureTypeRollupId());
         if (!CollectionUtils.isEmpty(replenishments)) {
+            /** Query the Replenishment constraint if Replenishment unit exits **/
+            if(hasDcInboundUnits(replenishments)){
+                replenishmentService.setCcsReplenishmentCons(replenishmentCons, calculateBuyQtyParallelRequest, merchMethodsDtos.get(0), styleDto, customerChoiceDto);
+            }
             //Set Replenishment for Size Map
             Optional.ofNullable(customerChoiceDto.getClusters())
                     .stream()
                     .flatMap(Collection::stream)
                     .filter(clustersDto1 -> clustersDto1.getClusterID().equals(0))
-                    .findFirst().ifPresent(clustersDto -> setReplenishmentSizes(clustersDto, replenishments, storeBuyQtyBySizeId));
+                    .findFirst().ifPresent(clustersDto -> setReplenishmentSizes(clustersDto, replenishments, storeBuyQtyBySizeId, calculateBuyQtyParallelRequest.getLvl1Nbr(), calculateBuyQtyParallelRequest.getPlanId(), replenishmentCons.getCcSpMmReplPackConsMap()));
         }
         customerChoiceDto.getClusters().forEach(clustersDto -> {
             if (!CollectionUtils.isEmpty(clustersDto.getSizes()) && !clustersDto.getClusterID().equals(0)) {
@@ -339,7 +351,6 @@ public class CalculateFinelineBuyQuantity {
 
         if (!CollectionUtils.isEmpty(ccSpMmReplPacks)) {
             //Replenishment
-            replenishmentService.setCcsReplenishmentCons(replenishmentCons, calculateBuyQtyParallelRequest, merchMethodsDtos.get(0), styleDto, customerChoiceDto);
             List<MerchCatgReplPack> merchCatgReplPacks = buyQtyReplenishmentMapperService.setAllReplenishments(styleDto, merchMethodsDtos.get(0), calculateBuyQtyParallelRequest, calculateBuyQtyResponse, customerChoiceDto, ccSpMmReplPacks, replenishmentCons);
             calculateBuyQtyResponse.setMerchCatgReplPacks(merchCatgReplPacks);
         }
@@ -602,7 +613,7 @@ public class CalculateFinelineBuyQuantity {
         ccSpMmReplPacks.add(ccSpMmReplPack);
     }
 
-    private void setReplenishmentSizes(ClustersDto clustersDto, List<Replenishment> replenishments, Map<SizeDto, BuyQtyObj> storeBuyQtyBySizeId) {
+    private void setReplenishmentSizes(ClustersDto clustersDto, List<Replenishment> replenishments, Map<SizeDto, BuyQtyObj> storeBuyQtyBySizeId, Integer lvl1Nbr, Long planId, Map<Integer, CcSpMmReplPack> cCSpMmReplPackSizeMap) {
         clustersDto.getSizes().forEach(sizeDto -> {
             BuyQtyObj buyQtyObj;
             if (storeBuyQtyBySizeId.containsKey(sizeDto)) {
@@ -621,7 +632,11 @@ public class CalculateFinelineBuyQuantity {
                 replenishment1.setAdjReplnUnits(Math.round((units * getAvgSizePct(sizeDto)) / 100));
                 replObj.add(replenishment1);
             });
-            buyQtyObj.setReplenishments(replObj);
+            Integer vendorPackQty = VP_DEFAULT;
+            if (!CollectionUtils.isEmpty(cCSpMmReplPackSizeMap) && cCSpMmReplPackSizeMap.containsKey(sizeDto.getAhsSizeId())) {
+                vendorPackQty = cCSpMmReplPackSizeMap.get(sizeDto.getAhsSizeId()).getVendorPackCnt();
+            }
+            buyQtyObj.setReplenishments(replenishmentsOptimizationServices.getUpdatedReplenishmentsPack(replObj, vendorPackQty, SizeAndPackConstants.STORE_CHANNEL_ID, lvl1Nbr, planId));
         });
     }
 
@@ -647,5 +662,12 @@ public class CalculateFinelineBuyQuantity {
                 .flatMap(Collection::stream)
                 .map(Cluster::getInitialSet)
                 .anyMatch(initialSet -> (initialSet != null && initialSet.getInitialSetUnitsPerFix() != null && initialSet.getInitialSetUnitsPerFix() > 0));
+    }
+
+    private boolean hasDcInboundUnits(List<Replenishment> replenishments) {
+        return Optional.ofNullable(replenishments)
+                .stream()
+                .flatMap(Collection::stream)
+                .anyMatch(replenishment -> (replenishment.getDcInboundUnits() != null && replenishment.getDcInboundUnits() > 0));
     }
 }
