@@ -19,10 +19,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.annotation.DirtiesContext;
 
@@ -91,6 +88,7 @@ class CalculateFinelineBuyQuantityTest {
     @Mock
     ReplenishmentService replenishmentService;
 
+    @Mock
     ReplenishmentsOptimizationService replenishmentsOptimizationServices;
 
     @Mock
@@ -150,7 +148,7 @@ class CalculateFinelineBuyQuantityTest {
        calculateBumpPackQtyService = new CalculateBumpPackQtyService();
        buyQuantityConstraintService = new BuyQuantityConstraintService(calculateBumpPackQtyService);
        addStoreBuyQuantityService = new AddStoreBuyQuantityService(mapper, calculateBumpPackQtyService, buyQuantityConstraintService, calculateInitialSetQuantityService);
-       replenishmentsOptimizationServices=new ReplenishmentsOptimizationService();
+       replenishmentsOptimizationServices=new ReplenishmentsOptimizationService(deptAdminRuleService);
        BuyQtyReplenishmentMapperService buyQtyReplenishmentMapperService = new BuyQtyReplenishmentMapperService();
        replenishmentService = new ReplenishmentService(fineLineReplenishmentRepository, spCustomerChoiceReplenishmentRepository, sizeListReplenishmentRepository, catgReplnPkConsRepository,
                subCatgReplnPkConsRepository, finelineReplnPkConsRepository, styleReplnConsRepository, ccReplnConsRepository,
@@ -158,7 +156,7 @@ class CalculateFinelineBuyQuantityTest {
                strategyFetchService, buyQtyCommonUtil, sizeLevelReplenishmentRepository,sizeLevelReplenishmentMapper);
        calculateOnlineFinelineBuyQuantity = new  CalculateOnlineFinelineBuyQuantity (mapper, buyQtyReplenishmentMapperService,replenishmentsOptimizationServices, replenishmentService );
        calculateFinelineBuyQuantity = new CalculateFinelineBuyQuantity(bqfpService, mapper, buyQtyReplenishmentMapperService, calculateOnlineFinelineBuyQuantity,
-               strategyFetchService,addStoreBuyQuantityService, buyQuantityConstraintService, deptAdminRuleService, replenishmentService);
+               strategyFetchService,addStoreBuyQuantityService, buyQuantityConstraintService, deptAdminRuleService, replenishmentService, replenishmentsOptimizationServices);
     }
 
     @Test
@@ -229,7 +227,7 @@ class CalculateFinelineBuyQuantityTest {
 
         assertNotNull(response.getMerchCatgReplPacks());
         assertEquals(1, response.getMerchCatgReplPacks().size(), "Only 1 merch catg repl pack created");
-        assertEquals((Integer)18417,
+        assertEquals((Integer)18474,
               response.getMerchCatgReplPacks().get(0).getReplUnits(), "Repln units should be 19143 for cc");
 
     }
@@ -379,8 +377,8 @@ class CalculateFinelineBuyQuantityTest {
                 .get().getSpCustomerChoiceChannelFixture().stream().findFirst()
                 .get().getSpCustomerChoiceChannelFixtureSize();
         assertEquals(0, fixture1.getInitialSetQty());
-        assertEquals(9504, fixture1.getBuyQty());
-        assertEquals(9504, fixture1.getReplnQty());
+        assertEquals(9612, fixture1.getBuyQty());
+        assertEquals(9612, fixture1.getReplnQty());
     }
 
 

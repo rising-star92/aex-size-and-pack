@@ -16,8 +16,12 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ReplenishmentsOptimizationService {
 
-    @Autowired
-    DeptAdminRuleServiceImpl deptAdminRuleService;
+
+    private final DeptAdminRuleServiceImpl deptAdminRuleService;
+
+    public ReplenishmentsOptimizationService(DeptAdminRuleServiceImpl deptAdminRuleService) {
+        this.deptAdminRuleService = deptAdminRuleService;
+    }
 
     /**
      * Update Replenishments packs count from the list

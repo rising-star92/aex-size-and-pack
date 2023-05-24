@@ -101,12 +101,16 @@ public class CalculateOnlineFinelineBuyQuantity {
         List<Replenishment> replenishments = getReplenishments(bqfpResponse, styleDto, customerChoiceDto);
         log.info("Get All Replenishments if exists for customerchoice: {} and merch method: {}", customerChoiceDto.getCcId(), merchMethodsDto.getFixtureTypeRollupId());
         if (!CollectionUtils.isEmpty(replenishments)) {
+            /** Query the Replenishment constraint if Replenishment unit exits **/
+            if(hasDcInboundAndAdjUnits(replenishments)){
+                replenishmentService.setCcsReplenishmentCons(replenishmentCons, calculateBuyQtyParallelRequest, merchMethodsDto, styleDto, customerChoiceDto);
+            }
             //Set Replenishment for Size Map
             Optional.ofNullable(customerChoiceDto.getClusters())
                     .stream()
                     .flatMap(Collection::stream)
                     .filter(clustersDto1 -> clustersDto1.getClusterID().equals(0))
-                    .findFirst().ifPresent(clustersDto -> setReplenishmentSizes(clustersDto, replenishments, storeBuyQtyBySizeId, bqfpResponse.getLvl1Nbr(), bqfpResponse.getPlanId() ));
+                    .findFirst().ifPresent(clustersDto -> setReplenishmentSizes(clustersDto, replenishments, storeBuyQtyBySizeId, bqfpResponse.getLvl1Nbr(), bqfpResponse.getPlanId(), replenishmentCons.getCcSpMmReplPackConsMap() ));
         }
 
         Set<CcSpMmReplPack> ccSpMmReplPacks = new HashSet<>();
@@ -122,13 +126,13 @@ public class CalculateOnlineFinelineBuyQuantity {
                             .mapToLong(replenishment -> Optional.ofNullable(replenishment.getAdjReplnUnits()).orElse(0L))
                             .sum();
                 }
-
-                setCcMmSpReplenishment(ccSpMmReplPacks, entry, (int) totalReplenishment, (int) totalReplenishment);
+                if (totalReplenishment > 0) {
+                    setCcMmSpReplenishment(ccSpMmReplPacks, entry, (int) totalReplenishment, (int) totalReplenishment);
+                }
             }
         }
         if (!CollectionUtils.isEmpty(ccSpMmReplPacks)) {
             //Replenishment
-            replenishmentService.setCcsReplenishmentCons(replenishmentCons, calculateBuyQtyParallelRequest, merchMethodsDto, styleDto, customerChoiceDto);
             List<MerchCatgReplPack> merchCatgReplPacks = buyQtyReplenishmentMapperService.setAllReplenishments(styleDto, merchMethodsDto, calculateBuyQtyParallelRequest, calculateBuyQtyResponse, customerChoiceDto, ccSpMmReplPacks, replenishmentCons);
             calculateBuyQtyResponse.setMerchCatgReplPacks(merchCatgReplPacks);
         }
@@ -172,7 +176,7 @@ public class CalculateOnlineFinelineBuyQuantity {
                 .orElse(new ArrayList<>());
     }
 
-    private void setReplenishmentSizes(ClustersDto clustersDto, List<Replenishment> replenishments, Map<SizeDto, BuyQtyObj> storeBuyQtyBySizeId, Integer lvl1Nbr, Long planId) {
+    private void setReplenishmentSizes(ClustersDto clustersDto, List<Replenishment> replenishments, Map<SizeDto, BuyQtyObj> storeBuyQtyBySizeId, Integer lvl1Nbr, Long planId, Map<Integer, CcSpMmReplPack> cCSpMmReplPackSizeMap) {
         clustersDto.getSizes().forEach(sizeDto -> {
             BuyQtyObj buyQtyObj;
             if (storeBuyQtyBySizeId.containsKey(sizeDto)) {
@@ -188,11 +192,14 @@ public class CalculateOnlineFinelineBuyQuantity {
                 Replenishment replenishment1 = new Replenishment();
                 replenishment1.setReplnWeek(replenishment.getReplnWeek());
                 replenishment1.setReplnWeekDesc(replenishment.getReplnWeekDesc());
-                replenishment1.setAdjReplnUnits(Math.round ((getReplenishmentUnits(replenishment) * getAvgSizePct(sizeDto)) / 100));
+                replenishment1.setAdjReplnUnits(Math.round((getReplenishmentUnits(replenishment) * getAvgSizePct(sizeDto)) / 100));
                 replObj.add(replenishment1);
             });
-            buyQtyObj.setReplenishments(replenishmentsOptimizationServices.getUpdatedReplenishmentsPack(replObj,VP_DEFAULT, SizeAndPackConstants.ONLINE_CHANNEL_ID, lvl1Nbr, planId));
-
+            Integer vendorPackQty = VP_DEFAULT;
+            if (!CollectionUtils.isEmpty(cCSpMmReplPackSizeMap) && cCSpMmReplPackSizeMap.containsKey(sizeDto.getAhsSizeId())) {
+                vendorPackQty = cCSpMmReplPackSizeMap.get(sizeDto.getAhsSizeId()).getVendorPackCnt();
+            }
+            buyQtyObj.setReplenishments(replenishmentsOptimizationServices.getUpdatedReplenishmentsPack(replObj, vendorPackQty, SizeAndPackConstants.ONLINE_CHANNEL_ID, lvl1Nbr, planId));
         });
     }
 
@@ -210,5 +217,12 @@ public class CalculateOnlineFinelineBuyQuantity {
         } else if (replenishment.getDcInboundUnits() != null) {
             return replenishment.getDcInboundUnits();
         } else return 0L;
+    }
+
+    private boolean hasDcInboundAndAdjUnits(List<Replenishment> replenishments) {
+        return Optional.ofNullable(replenishments)
+                .stream()
+                .flatMap(Collection::stream)
+                .anyMatch(replenishment -> ((replenishment.getDcInboundAdjUnits() != null && replenishment.getDcInboundAdjUnits() > 0) || replenishment.getDcInboundUnits() != null && replenishment.getDcInboundUnits() > 0));
     }
 }
