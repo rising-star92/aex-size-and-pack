@@ -9,6 +9,7 @@
 * [Hashicorp/Vault](https://wmlink/hashicorp)
 * [Ccm2](https://wmlink/ccm2)
 * Dev DB
+* https://dx.walmart.com/documents/product/Proximity/Maven-Usage-oe5f1pa4ew - Download Settings.xml and place it in /Users/<userid>/.m2/
 
 ## To run jar you need following you need following args/ vm options
     -Dspring.profiles.active=local
