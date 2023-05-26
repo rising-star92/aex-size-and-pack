@@ -10,5 +10,4 @@ public class FinelineVolume {
     private int lvl4Nbr;
     private String interval;
     private Integer fiscalYear;
-    private String volumeDeviationLevel;
 }

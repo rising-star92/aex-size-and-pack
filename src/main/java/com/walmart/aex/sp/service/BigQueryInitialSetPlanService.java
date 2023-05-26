@@ -8,13 +8,17 @@ import com.google.cloud.bigquery.BigQueryOptions;
 import com.google.cloud.bigquery.QueryJobConfiguration;
 import com.google.cloud.bigquery.TableResult;
 import com.walmart.aex.sp.dto.bqfp.*;
+import com.walmart.aex.sp.dto.buyquantity.FinelineVolumeDeviationDto;
+import com.walmart.aex.sp.dto.buyquantity.StrategyVolumeDeviationResponse;
 import com.walmart.aex.sp.dto.commitmentreport.InitialSetPackRequest;
 import com.walmart.aex.sp.dto.commitmentreport.RFAInitialSetBumpSetResponse;
 import com.walmart.aex.sp.dto.isVolume.*;
 import com.walmart.aex.sp.enums.VdLevelCode;
+import com.walmart.aex.sp.exception.SizeAndPackException;
 import com.walmart.aex.sp.properties.BigQueryConnectionProperties;
 import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
 
+import com.walmart.aex.sp.properties.GraphQLProperties;
 import com.walmart.aex.sp.util.BuyQtyCommonUtil;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
@@ -25,21 +29,22 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.IntStream;
 
-import static java.util.Objects.requireNonNull;
-
 @Service
 @Slf4j
 public class BigQueryInitialSetPlanService {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
-
     private final BQFPService bqfpService;
-
+    private final StrategyFetchService strategyFetchService;
     @ManagedConfiguration
     BigQueryConnectionProperties bigQueryConnectionProperties;
 
-    public BigQueryInitialSetPlanService(BQFPService bqfpService) {
+    @ManagedConfiguration
+    private GraphQLProperties graphQLProperties;
+
+    public BigQueryInitialSetPlanService(BQFPService bqfpService, StrategyFetchService strategyFetchService) {
         this.bqfpService = bqfpService;
+        this.strategyFetchService = strategyFetchService;
     }
 
 
@@ -400,8 +405,20 @@ public class BigQueryInitialSetPlanService {
                 ") SELECT TO_JSON_STRING(rfaTable) AS json FROM MyTable AS rfaTable\n";
     }
 
-    public List<InitialSetVolumeResponse> getInitialAndBumpSetDetailsByVolumeCluster(Long planId, FinelineVolume request) throws InterruptedException {
-        String sqlQuery = findSqlQuery(planId, request);
+    public List<InitialSetVolumeResponse> getInitialAndBumpSetDetailsByVolumeCluster(Long planId, FinelineVolume request) throws InterruptedException, SizeAndPackException {
+        String volumeDeviationLevel;
+        String sqlQuery = null;
+        StrategyVolumeDeviationResponse volumeDeviationResponse = strategyFetchService.getStrategyVolumeDeviation(planId, request.getFinelineNbr());
+        if (null != volumeDeviationResponse && !volumeDeviationResponse.getFinelines().isEmpty()) {
+            FinelineVolumeDeviationDto finelineVolumeDeviationDto = volumeDeviationResponse.getFinelines().get(0);
+            volumeDeviationLevel = finelineVolumeDeviationDto.getVolumeDeviationLevel();
+            if(StringUtils.isNotEmpty(volumeDeviationLevel)){
+                sqlQuery = findSqlQuery(planId, request,volumeDeviationLevel);
+            }
+        }else{
+            log.error("Error Occurred while fetching Strategy Volume Deviation level for plan ID {} and fineline {}", planId, request.getFinelineNbr());
+            throw new SizeAndPackException("Error Occurred while fetching Strategy Volume Deviation level for plan ID " + planId);
+        }
         BigQuery bigQuery = BigQueryOptions.getDefaultInstance().getService();
         QueryJobConfiguration queryConfigIs = QueryJobConfiguration.newBuilder(sqlQuery).build();
         TableResult resultsIs = bigQuery.query(queryConfigIs);
@@ -425,7 +442,9 @@ public class BigQueryInitialSetPlanService {
 
         try{
             BQFPResponse bqfpResponse = bqfpService.getBqfpResponse(planId.intValue(), request.getFinelineNbr());
-            sqlQuery = findBumpSqlQuery(planId, request);
+            if(StringUtils.isNotEmpty(volumeDeviationLevel)){
+                sqlQuery = findBumpSqlQuery(planId, request,volumeDeviationLevel);
+            }
             bigQuery = BigQueryOptions.getDefaultInstance().getService();
             queryConfigIs = QueryJobConfiguration.newBuilder(sqlQuery).build();
             resultsIs = bigQuery.query(queryConfigIs);
@@ -454,15 +473,15 @@ public class BigQueryInitialSetPlanService {
         return formatUniqueRows(request, uniqueRows);
     }
 
-    private String findBumpSqlQuery(Long planId, FinelineVolume request) {
+    private String findBumpSqlQuery(Long planId, FinelineVolume request, String volumeDeviationLevel) {
         String tableNameSp = getProjectIdSp();
         String tableNameCc = getProjectIdCc();
 
-        if (request.getVolumeDeviationLevel().equals(VdLevelCode.CATEGORY.getDescription())) {
+        if (volumeDeviationLevel.equals(VdLevelCode.CATEGORY.getDescription())) {
             return getBumpQTYVolumeCatClusterQuery(tableNameCc, tableNameSp, Math.toIntExact(planId), request.getFinelineNbr(), request.getLvl3Nbr(), bigQueryConnectionProperties.getAnalyticsData(),request.getInterval(),request.getFiscalYear());
-        } else if (request.getVolumeDeviationLevel().equals(VdLevelCode.SUB_CATEGORY.getDescription())) {
+        } else if (volumeDeviationLevel.equals(VdLevelCode.SUB_CATEGORY.getDescription())) {
             return getBumpQTYVolumeSubCatClusterQuery(tableNameCc, tableNameSp, Math.toIntExact(planId), request.getFinelineNbr(), request.getLvl4Nbr(), bigQueryConnectionProperties.getAnalyticsData(),request.getInterval(),request.getFiscalYear(),request.getLvl3Nbr());
-        } else if (request.getVolumeDeviationLevel().equals(VdLevelCode.FINELINE.getDescription())) {
+        } else if (volumeDeviationLevel.equals(VdLevelCode.FINELINE.getDescription())) {
             return getBumpQTYVolumeFinelineClusterQuery(tableNameCc, tableNameSp, Math.toIntExact(planId), request.getFinelineNbr(), bigQueryConnectionProperties.getAnalyticsData(),request.getInterval(),request.getFiscalYear(),request.getLvl3Nbr(),request.getLvl4Nbr());
         }
         throw new RuntimeException("Invalid Deviation Level, Fineline, Subcategory, Category are valid values");
@@ -547,15 +566,15 @@ public class BigQueryInitialSetPlanService {
         return metricsVolume;
     }
 
-    private String findSqlQuery(Long planId, FinelineVolume request) {
+    private String findSqlQuery(Long planId, FinelineVolume request, String volumeDeviationLevel) {
         String tableNameSp = getProjectIdSp();
         String tableNameCc = getProjectIdCc();
 
-        if (request.getVolumeDeviationLevel().equals(VdLevelCode.CATEGORY.getDescription())) {
+        if (volumeDeviationLevel.equals(VdLevelCode.CATEGORY.getDescription())) {
             return getISByVolumeCatClusterQuery(tableNameCc, tableNameSp, Math.toIntExact(planId), request.getFinelineNbr(), request.getLvl3Nbr(), bigQueryConnectionProperties.getAnalyticsData(),request.getInterval(),request.getFiscalYear());
-        } else if (request.getVolumeDeviationLevel().equals(VdLevelCode.SUB_CATEGORY.getDescription())) {
+        } else if (volumeDeviationLevel.equals(VdLevelCode.SUB_CATEGORY.getDescription())) {
             return getISByVolumeSubCatClusterQuery(tableNameCc, tableNameSp, Math.toIntExact(planId), request.getFinelineNbr(), request.getLvl4Nbr(), bigQueryConnectionProperties.getAnalyticsData(),request.getInterval(),request.getFiscalYear(),request.getLvl3Nbr());
-        } else if (request.getVolumeDeviationLevel().equals(VdLevelCode.FINELINE.getDescription())) {
+        } else if (volumeDeviationLevel.equals(VdLevelCode.FINELINE.getDescription())) {
             return getISByVolumeFinelineClusterQuery(tableNameCc, tableNameSp, Math.toIntExact(planId), request.getFinelineNbr(), bigQueryConnectionProperties.getAnalyticsData(),request.getInterval(),request.getFiscalYear(),request.getLvl3Nbr(),request.getLvl4Nbr());
         }
         throw new RuntimeException("Invalid Deviation Level, Fineline, Subcategory, Category are valid values");
