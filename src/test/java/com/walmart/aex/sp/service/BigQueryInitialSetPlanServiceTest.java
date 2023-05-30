@@ -33,7 +33,7 @@ import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
-public class BigQueryInitialSetPlanServiceTest {
+class BigQueryInitialSetPlanServiceTest {
     @Mock
     private BigQuery bigQuery;
     @Mock
@@ -63,8 +63,7 @@ public class BigQueryInitialSetPlanServiceTest {
         FinelineVolume request = getFinelineVolume();
         StrategyVolumeDeviationResponse volumeDeviationResponse = getVolumeDeviationStrategyResponse();
         when(strategyFetchService.getStrategyVolumeDeviation(planId, request.getFinelineNbr())).thenReturn(volumeDeviationResponse);
-        try {
-            MockedStatic<BigQueryOptions> mockBigQuery = mockStatic(BigQueryOptions.class);
+        try(MockedStatic<BigQueryOptions> mockBigQuery = mockStatic(BigQueryOptions.class)) {
             mockBigQuery.when(BigQueryOptions::getDefaultInstance).thenReturn(bigQueryOptions);
             when(bigQueryOptions.getService()).thenReturn(bigQuery);
             when(bigQuery.query(any(QueryJobConfiguration.class))).thenReturn(isResult);
@@ -79,7 +78,6 @@ public class BigQueryInitialSetPlanServiceTest {
         }
     }
 
-    @NotNull
     private FinelineVolume getFinelineVolume() {
         FinelineVolume request = new FinelineVolume();
         request.setFinelineNbr(3483);
