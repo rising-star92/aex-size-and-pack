@@ -86,7 +86,7 @@ deploy:
         - main
       target:
         cluster_id:
-          - eus2-dev-a2
+          - useast-dev-az-302
       helm:
         values:
           scaling:
