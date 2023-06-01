@@ -528,7 +528,8 @@ input FinelineVolume {
     lvl3Nbr: Int!
     lvl4Nbr: Int!
     interval: String!,
-    fiscalYear: Int!
+    fiscalYear: Int!,
+    volumeDeviationLevel : String
 }
 
 type InitialSetVolumeResponse{

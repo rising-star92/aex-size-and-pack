@@ -78,6 +78,25 @@ class BigQueryInitialSetPlanServiceTest {
         }
     }
 
+    @Test
+    void getInitialAndBumpSetDetailsByVolumeClusterTestWhenVolumeDeviationIsPassed() throws SizeAndPackException {
+        Long planId = 73l;
+        FinelineVolume request = getFinelineVolumeWithVolDeviation();
+        try(MockedStatic<BigQueryOptions> mockBigQuery = mockStatic(BigQueryOptions.class)) {
+            mockBigQuery.when(BigQueryOptions::getDefaultInstance).thenReturn(bigQueryOptions);
+            when(bigQueryOptions.getService()).thenReturn(bigQuery);
+            when(bigQuery.query(any(QueryJobConfiguration.class))).thenReturn(isResult);
+            when(bqfpService.getBqfpResponse(anyInt(), anyInt())).thenReturn(bqfpResponse);
+            List<InitialSetVolumeResponse> response = bigQueryInitialSetPlanService.getInitialAndBumpSetDetailsByVolumeCluster(planId,request);
+            assertEquals(1, response.size());
+            assertEquals(2, response.get(0).getCustomerChoices().size());
+            assertEquals(1, response.get(0).getCustomerChoices().get(0).getIsPlans().get(0).getMetrics().get(0).getStores().size());
+            verify(bigQuery, times(2)).query(any(QueryJobConfiguration.class));
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private FinelineVolume getFinelineVolume() {
         FinelineVolume request = new FinelineVolume();
         request.setFinelineNbr(3483);
@@ -88,6 +107,16 @@ class BigQueryInitialSetPlanServiceTest {
         return request;
     }
 
+    private FinelineVolume getFinelineVolumeWithVolDeviation() {
+        FinelineVolume request = new FinelineVolume();
+        request.setFinelineNbr(3483);
+        request.setInterval("S3");
+        request.setLvl3Nbr(12228);
+        request.setLvl4Nbr(31507);
+        request.setFiscalYear(2024);
+        request.setVolumeDeviationLevel("Sub_Category");
+        return request;
+    }
     private void setData() throws IOException {
         FieldValue isFieldValue1 = FieldValue.of(FieldValue.Attribute.PRIMITIVE, "{\"productFineline\":\"73_3483\",\"cc\":\"34_3483_4_19_8_COFFEE CAKE\",\"style_nbr\":\"34_3483_4_19_8\",\"is_quantity\":202344,\"bs_quantity\":1,\"store\":35,\"clusterId\":1,\"in_store_week\":202432,\"fixtureAllocation\":0.25,\"fixtureType\":\"HANGING\"}");
         FieldValue isFieldValue2 = FieldValue.of(FieldValue.Attribute.PRIMITIVE, "{\"productFineline\":\"73_3483\",\"cc\":\"34_3483_4_19_8_MUSTARD\",\"style_nbr\":\"34_3483_4_19_8\",\"is_quantity\":202344,\"bs_quantity\":2,\"store\":37,\"clusterId\":1,\"in_store_week\":202432,\"fixtureAllocation\":0.25,\"fixtureType\":\"HANGING\"}");
