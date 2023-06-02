@@ -1,8 +1,7 @@
 package com.walmart.aex.sp.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -95,16 +94,16 @@ public class StoreDistributionMapper {
 		packDistributionList.add(packDistrObj);
 	}
 
-	private List<DistributionMetric> mapDistributionMetrics(StoreDistributionDTO storeDistributionDto,
+	private Set<DistributionMetric> mapDistributionMetrics(StoreDistributionDTO storeDistributionDto,
 			PackDistribution packDistrObj) {
-		List<DistributionMetric> distributionMetricList = Optional.ofNullable(packDistrObj.getDistributionMetricList())
-				.orElse(new ArrayList<>());
+		Set<DistributionMetric> distributionMetricSet = Optional.ofNullable(packDistrObj.getDistributionMetricList())
+				.orElse(new HashSet<>());
 
 		DistributionMetric distributionMetric = new DistributionMetric();
 		distributionMetric.setStore(storeDistributionDto.getStore());
 		distributionMetric.setMultiplier(storeDistributionDto.getPackMultiplier());
-		distributionMetricList.add(distributionMetric);
+		distributionMetricSet.add(distributionMetric);
 
-		return distributionMetricList;
+		return distributionMetricSet.stream().sorted().collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 }
