@@ -100,10 +100,12 @@ public class StoreDistributionMapper {
 		List<DistributionMetric> distributionMetricList = Optional.ofNullable(packDistrObj.getDistributionMetricList())
 				.orElse(new ArrayList<>());
 
-		DistributionMetric distributionMetric = new DistributionMetric();
-		distributionMetric.setStore(storeDistributionDto.getStore());
-		distributionMetric.setMultiplier(storeDistributionDto.getPackMultiplier());
-		distributionMetricList.add(distributionMetric);
+		if (distributionMetricList.stream().noneMatch(distribution -> distribution.getStore().equals(storeDistributionDto.getStore()) && distribution.getMultiplier().equals(storeDistributionDto.getPackMultiplier()))) {
+			DistributionMetric distributionMetric = new DistributionMetric();
+			distributionMetric.setStore(storeDistributionDto.getStore());
+			distributionMetric.setMultiplier(storeDistributionDto.getPackMultiplier());
+			distributionMetricList.add(distributionMetric);
+		}
 
 		return distributionMetricList;
 	}
