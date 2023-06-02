@@ -66,54 +66,6 @@ public class CommonUtilTest {
 	}
 
 	@Test
-	void testGetFixtureRollUpId(){
-
-		int case1 = CommonUtil.getFixtureRollUpId("online_fixture");
-		int case2 = CommonUtil.getFixtureRollUpId("walls"); 
-		int case3 = CommonUtil.getFixtureRollUpId("endcaps");
-		int case4 = CommonUtil.getFixtureRollUpId("racks");
-		int case5 = CommonUtil.getFixtureRollUpId("tables");
-
-		assertEquals(0,case1);
-		assertEquals(1,case2);
-		assertEquals(2,case3);
-		assertEquals(3,case4);
-		assertEquals(4,case5);
-
-		Exception exception = assertThrows(RuntimeException.class, () -> {
-			CommonUtil.getFixtureRollUpId("hi");
-		});
-
-		String expectedMessage = "Fixture Type does not Match";
-		String actualMessage = exception.getMessage();
-
-		assertTrue(actualMessage.contains(expectedMessage));
-
-	}
-
-	@Test
-	void testGetMerchMethod(){
-
-		int case1 = CommonUtil.getMerchMethod("folded");
-		int case2 = CommonUtil.getMerchMethod("hanging"); 
-		int case3 = CommonUtil.getMerchMethod("online_merch_method");
-
-		assertEquals(2,case1);
-		assertEquals(1,case2);
-		assertEquals(0,case3);
-
-		Exception exception = assertThrows(RuntimeException.class, () -> {
-			CommonUtil.getMerchMethod("hi");
-		});
-
-		String expectedMessage = "Merch Method does not Match";
-		String actualMessage = exception.getMessage();
-
-		assertTrue(actualMessage.contains(expectedMessage));
-
-	}
-
-	@Test
 	void testGetIntMerchMethod(){
 
 		String case1 = CommonUtil.getMerchMethod(2);

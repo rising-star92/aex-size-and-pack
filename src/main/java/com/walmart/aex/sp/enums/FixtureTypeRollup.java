@@ -9,7 +9,8 @@ public enum FixtureTypeRollup {
     WALLS(1, "WALLS"),
     ENDCAPS(2, "ENDCAPS"),
     RACKS(3, "RACKS"),
-    TABLES(4, "TABLES");
+    TABLES(4, "TABLES"),
+    H_RACKS(5, "H-RACK");
 
     private final Integer code;
     private final String description;
