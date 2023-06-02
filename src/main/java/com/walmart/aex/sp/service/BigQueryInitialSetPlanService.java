@@ -406,6 +406,7 @@ public class BigQueryInitialSetPlanService {
     }
 
     public List<InitialSetVolumeResponse> getInitialAndBumpSetDetailsByVolumeCluster(Long planId, FinelineVolume request) throws InterruptedException, SizeAndPackException {
+//      TODO: Remove this code when commit report is ready with the change, i.e. volu,e deviation should be always fetched from the Strategy Service
         String volumeDeviationLevel = request.getVolumeDeviationLevel();
         String sqlQuery = null;
         if(null == volumeDeviationLevel || volumeDeviationLevel.isBlank()){

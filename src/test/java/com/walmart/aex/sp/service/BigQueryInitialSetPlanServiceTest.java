@@ -11,6 +11,7 @@ import com.walmart.aex.sp.exception.SizeAndPackException;
 import com.walmart.aex.sp.properties.BigQueryConnectionProperties;
 import com.walmart.aex.sp.util.BuyQtyResponseInputs;
 import org.jetbrains.annotations.NotNull;
+import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,7 +27,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
@@ -97,6 +98,24 @@ class BigQueryInitialSetPlanServiceTest {
         }
     }
 
+    @Test
+    void getInitialAndBumpSetDetailsByVolumeClusterTestWhenStrategyAPIReturnsNull() throws SizeAndPackException {
+        Long planId = 73l;
+        FinelineVolume request = getFinelineVolume();
+        when(strategyFetchService.getStrategyVolumeDeviation(planId, request.getFinelineNbr())).thenReturn(null);
+        try(MockedStatic<BigQueryOptions> mockBigQuery = mockStatic(BigQueryOptions.class)) {
+            mockBigQuery.when(BigQueryOptions::getDefaultInstance).thenReturn(bigQueryOptions);
+            List<InitialSetVolumeResponse> response = bigQueryInitialSetPlanService.getInitialAndBumpSetDetailsByVolumeCluster(planId, request);
+            assertEquals(0, response.size());
+            verify(bigQuery, times(2)).query(any(QueryJobConfiguration.class));
+            fail("Error Occurred while fetching Strategy Volume Deviation level for plan ID 73");
+        }catch (SizeAndPackException e) {
+            assertEquals("Error Occurred while fetching Strategy Volume Deviation level for plan ID 73", e.getMessage());
+            }
+        catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
     private FinelineVolume getFinelineVolume() {
         FinelineVolume request = new FinelineVolume();
         request.setFinelineNbr(3483);
