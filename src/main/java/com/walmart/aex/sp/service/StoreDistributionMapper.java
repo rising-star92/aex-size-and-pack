@@ -1,6 +1,7 @@
 package com.walmart.aex.sp.service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -96,13 +97,13 @@ public class StoreDistributionMapper {
 	private Set<DistributionMetric> mapDistributionMetrics(StoreDistributionDTO storeDistributionDto,
 			PackDistribution packDistrObj) {
 		Set<DistributionMetric> distributionMetricSet = Optional.ofNullable(packDistrObj.getDistributionMetricList())
-				.orElse(new TreeSet<>());
+				.orElse(new HashSet<>());
 
 		DistributionMetric distributionMetric = new DistributionMetric();
 		distributionMetric.setStore(storeDistributionDto.getStore());
 		distributionMetric.setMultiplier(storeDistributionDto.getPackMultiplier());
 		distributionMetricSet.add(distributionMetric);
 
-		return distributionMetricSet;
+		return distributionMetricSet.stream().sorted().collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 }
