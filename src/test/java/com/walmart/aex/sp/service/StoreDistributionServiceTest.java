@@ -37,7 +37,7 @@ class StoreDistributionServiceTest {
     }
 
     @Test
-    void fetchStoreDistributionResponseTest() {
+    void fetchStoreDistributionResponseWithNoDuplicatesTest() {
         when(bigQueryStoreDistributionService.getStoreDistributionData(Mockito.any())).thenReturn(storeDistributionData);
         StoreDistributionResponse response = storeDistributionService.fetchStoreDistributionResponse(request);
 
@@ -53,6 +53,7 @@ class StoreDistributionServiceTest {
         assertEquals(202344L, initialSetPlanData.getInStoreWeek());
         assertEquals(1, initialSetPlanData.getPackDistributionList().size());
         assertEquals("Test_PackId", packDistribution.getPackId());
+//        We get three from the response, but the mapper is removing 1 duplicate entry since it has same store and multiplier combination
         assertEquals(2, packDistribution.getDistributionMetricList().size());
         assertEquals(1, distributionMetric.getStore());
         assertEquals(1, distributionMetric.getMultiplier());
