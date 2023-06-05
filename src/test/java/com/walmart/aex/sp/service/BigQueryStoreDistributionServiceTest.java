@@ -120,7 +120,7 @@ class BigQueryStoreDistributionServiceTest {
                     .filter(s -> s.getPackId().equals(packData.getPackId()))
                     .findFirst().orElse(new StoreDistributionDTO());
 
-            assertEquals(1, response.getStoreDistributionList().size());
+            assertEquals(2, response.getStoreDistributionList().size());
             assertEquals(202348L, storeDistributionDTO.getInStoreWeek());
             verify(bigQuery, times(2)).query(any(QueryJobConfiguration.class));
             verify(graphQLService, times(1)).post(anyString(), anyString(), anyMap(), anyMap());
@@ -167,7 +167,7 @@ class BigQueryStoreDistributionServiceTest {
                     .filter(s -> s.getPackId().equals(packData.getPackId()))
                     .findFirst().orElse(new StoreDistributionDTO());
 
-            assertEquals(1, response.getStoreDistributionList().size());
+            assertEquals(2, response.getStoreDistributionList().size());
             assertEquals(202348L, storeDistributionDTO.getInStoreWeek());
             verify(bigQuery, times(2)).query(any(QueryJobConfiguration.class));
             verify(graphQLService, times(1)).post(anyString(), anyString(), anyMap(), anyMap());
@@ -216,7 +216,7 @@ class BigQueryStoreDistributionServiceTest {
                     .filter(s -> s.getPackId().equals(packData.getPackId()))
                     .findFirst().orElse(new StoreDistributionDTO());
 
-            assertEquals(1, response.getStoreDistributionList().size());
+            assertEquals(2, response.getStoreDistributionList().size());
             assertEquals(202348L, storeDistributionDTO.getInStoreWeek());
             verify(bigQuery, times(2)).query(any(QueryJobConfiguration.class));
             verify(graphQLService, times(1)).post(anyString(), anyString(), anyMap(), anyMap());
@@ -242,10 +242,11 @@ class BigQueryStoreDistributionServiceTest {
         isResult = new TableResult(null, 2L, new PageImpl<>(null, null, Collections.singleton(isFieldValueList)) );
 
         FieldValue bsFieldValue1 = FieldValue.of(FieldValue.Attribute.PRIMITIVE, "{\"productFineline\":\"73_3483\",\"finelineNbr\":3483,\"styleNbr\":\"34_3483_4_19_8\",\"inStoreWeek\":202344,\"packId\":\"SP_bs73_3483_0_34_3483_4_19_8_BLCOVE_FOLDED_0\",\"store\":5440,\"packMultiplier\":1,\"clusterId\":1,\"cc\":\"34_3483_4_19_8_BLCOVE\",\"fixtureAllocation\":0.5,\"fixtureType\":\"RACKS\"}");
+        FieldValue bsFieldValue2 = FieldValue.of(FieldValue.Attribute.PRIMITIVE, "{\"productFineline\":\"73_3483\",\"finelineNbr\":3483,\"styleNbr\":\"34_3483_4_19_8\",\"inStoreWeek\":202344,\"packId\":\"SP_bs73_3483_0_34_3483_4_19_8_BLCOVE_FOLDED_0\",\"store\":5440,\"packMultiplier\":1,\"clusterId\":1,\"cc\":\"34_3483_4_19_8_BLCOVE_0\",\"fixtureAllocation\":0.5,\"fixtureType\":\"RACKS\"}");
 
-        FieldValueList bsFieldValueList = FieldValueList.of(List.of(bsFieldValue1));
+        FieldValueList bsFieldValueList = FieldValueList.of(List.of(bsFieldValue1, bsFieldValue2));
 
-        bsResult = new TableResult(null, 1L, new PageImpl<>(null, null, Collections.singleton(bsFieldValueList)) );
+        bsResult = new TableResult(null, 2L, new PageImpl<>(null, null, Collections.singleton(bsFieldValueList)) );
 
         bqfpResponse = BuyQtyResponseInputs.bQFPResponseFromJson("/bqfpServiceResponse");
     }
