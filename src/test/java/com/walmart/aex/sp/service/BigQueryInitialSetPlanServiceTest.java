@@ -108,9 +108,9 @@ class BigQueryInitialSetPlanServiceTest {
             List<InitialSetVolumeResponse> response = bigQueryInitialSetPlanService.getInitialAndBumpSetDetailsByVolumeCluster(planId, request);
             assertEquals(0, response.size());
             verify(bigQuery, times(2)).query(any(QueryJobConfiguration.class));
-            fail("Error Occurred while fetching Strategy Volume Deviation level for plan ID 73");
+            fail("Error Occurred while fetching Strategy Volume Deviation Response for plan ID 73");
         }catch (SizeAndPackException e) {
-            assertEquals("Error Occurred while fetching Strategy Volume Deviation level for plan ID 73", e.getMessage());
+            assertEquals("Error Occurred while fetching Strategy Volume Deviation Response for plan ID 73", e.getMessage());
             }
         catch (InterruptedException e) {
             throw new RuntimeException(e);

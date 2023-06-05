@@ -414,12 +414,15 @@ public class BigQueryInitialSetPlanService {
             if (null != volumeDeviationResponse && !volumeDeviationResponse.getFinelines().isEmpty()) {
                 FinelineVolumeDeviationDto finelineVolumeDeviationDto = volumeDeviationResponse.getFinelines().get(0);
                 volumeDeviationLevel = finelineVolumeDeviationDto.getVolumeDeviationLevel();
-                if(StringUtils.isNotEmpty(volumeDeviationLevel)){
-                    sqlQuery = findSqlQuery(planId, request,volumeDeviationLevel);
+                if (StringUtils.isNotEmpty(volumeDeviationLevel)) {
+                    sqlQuery = findSqlQuery(planId, request, volumeDeviationLevel);
+                } else {
+                    log.error("Error Occurred while fetching Strategy Volume Deviation level for plan ID {} and fineline {}", planId, request.getFinelineNbr());
+                    throw new SizeAndPackException("Error Occurred while fetching Strategy Volume Deviation level for plan ID " + planId);
                 }
             }else{
-                log.error("Error Occurred while fetching Strategy Volume Deviation level for plan ID {} and fineline {}", planId, request.getFinelineNbr());
-                throw new SizeAndPackException("Error Occurred while fetching Strategy Volume Deviation level for plan ID " + planId);
+                log.error("Error Occurred while fetching Strategy Volume Deviation Response for plan ID {} and fineline {}", planId, request.getFinelineNbr());
+                throw new SizeAndPackException("Error Occurred while fetching Strategy Volume Deviation Response for plan ID " + planId);
             }
         }else{
             sqlQuery = findSqlQuery(planId, request,volumeDeviationLevel);
@@ -447,8 +450,11 @@ public class BigQueryInitialSetPlanService {
 
         try{
             BQFPResponse bqfpResponse = bqfpService.getBqfpResponse(planId.intValue(), request.getFinelineNbr());
-            if(StringUtils.isNotEmpty(volumeDeviationLevel)){
-                sqlQuery = findBumpSqlQuery(planId, request,volumeDeviationLevel);
+            if (StringUtils.isNotEmpty(volumeDeviationLevel)) {
+                sqlQuery = findBumpSqlQuery(planId, request, volumeDeviationLevel);
+            } else {
+                log.error("Error Occurred while fetching Strategy Volume Deviation level for plan ID {} and fineline {}", planId, request.getFinelineNbr());
+                throw new SizeAndPackException("Error Occurred while fetching Strategy Volume Deviation level for plan ID " + planId);
             }
             bigQuery = BigQueryOptions.getDefaultInstance().getService();
             queryConfigIs = QueryJobConfiguration.newBuilder(sqlQuery).build();
