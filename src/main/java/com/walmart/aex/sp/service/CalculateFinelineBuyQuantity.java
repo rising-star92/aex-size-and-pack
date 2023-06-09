@@ -322,7 +322,7 @@ public class CalculateFinelineBuyQuantity {
         List<Replenishment> replenishments = BuyQtyCommonUtil.getReplenishments(merchMethodsDtos, bqfpResponse, styleDto, customerChoiceDto);
         log.info("Get All Replenishments if exists for customerchoice: {} and fixtureType: {}", customerChoiceDto.getCcId(), spCustomerChoiceChannelFixture.getSpCustomerChoiceChannelFixtureId().getSpStyleChannelFixtureId().getSpFineLineChannelFixtureId().getFixtureTypeRollUpId().getFixtureTypeRollupId());
         if (!CollectionUtils.isEmpty(replenishments)) {
-            /** Query the Replenishment constraint if Replenishment unit exits **/
+            /** Query the Replenishment constraint if Replenishment unit exists **/
             if(hasDcInboundUnits(replenishments)){
                 replenishmentService.setCcsReplenishmentCons(replenishmentCons, calculateBuyQtyParallelRequest, merchMethodsDtos.get(0), styleDto, customerChoiceDto);
             }
@@ -363,13 +363,11 @@ public class CalculateFinelineBuyQuantity {
                                  BQFPResponse bqfpResponse, Map<SizeDto, BuyQtyObj> storeBuyQtyBySizeId, List<RFASizePackData> rfaSizePackDataList, Integer initialThreshold) {
         clustersDto.getSizes().forEach(sizeDto -> {
 
-            BuyQtyObj buyQtyObj;
-            if (storeBuyQtyBySizeId.containsKey(sizeDto)) {
-                buyQtyObj = storeBuyQtyBySizeId.get(sizeDto);
-            } else {
+            if (!storeBuyQtyBySizeId.containsKey(sizeDto)) {
                 storeBuyQtyBySizeId.put(sizeDto, new BuyQtyObj());
-                buyQtyObj = storeBuyQtyBySizeId.get(sizeDto);
             }
+            BuyQtyObj buyQtyObj = storeBuyQtyBySizeId.get(sizeDto);
+
             AddStoreBuyQuantity addStoreBuyQuantity = new AddStoreBuyQuantity();
             addStoreBuyQuantity.setRfaSizePackDataList(rfaSizePackDataList);
             addStoreBuyQuantity.setStyleDto(styleDto);
@@ -615,13 +613,10 @@ public class CalculateFinelineBuyQuantity {
 
     private void setReplenishmentSizes(ClustersDto clustersDto, List<Replenishment> replenishments, Map<SizeDto, BuyQtyObj> storeBuyQtyBySizeId, Integer lvl1Nbr, Long planId, Map<Integer, CcSpMmReplPack> cCSpMmReplPackSizeMap) {
         clustersDto.getSizes().forEach(sizeDto -> {
-            BuyQtyObj buyQtyObj;
-            if (storeBuyQtyBySizeId.containsKey(sizeDto)) {
-                buyQtyObj = storeBuyQtyBySizeId.get(sizeDto);
-            } else {
+            if (!storeBuyQtyBySizeId.containsKey(sizeDto)) {
                 storeBuyQtyBySizeId.put(sizeDto, new BuyQtyObj());
-                buyQtyObj = storeBuyQtyBySizeId.get(sizeDto);
             }
+            BuyQtyObj buyQtyObj = storeBuyQtyBySizeId.get(sizeDto);
 
             List<Replenishment> replObj = new ArrayList<>();
 

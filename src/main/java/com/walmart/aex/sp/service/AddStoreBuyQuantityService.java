@@ -182,10 +182,12 @@ public class AddStoreBuyQuantityService {
             initialSet.setInitialSetUnitsPerFix(DEFAULT_IS_QTY);
             initialSet.setTotalInitialSetUnits(DEFAULT_TOTAL_IS_QTY);
             volumeCluster.setInitialSet(initialSet);
-        } else if (volumeCluster.getInitialSet().getInitialSetUnitsPerFix() == null) {
+        }
+        if (volumeCluster.getInitialSet().getInitialSetUnitsPerFix() == null) {
             log.warn("InitialSetUnitsPerFix of volumeCluster : {} is null. Setting InitialSetUnitsPerFix as zero ", volumeCluster);
             volumeCluster.getInitialSet().setInitialSetUnitsPerFix(DEFAULT_IS_QTY);
-        } else if (volumeCluster.getInitialSet().getTotalInitialSetUnits() == null) {
+        }
+        if (volumeCluster.getInitialSet().getTotalInitialSetUnits() == null) {
             log.warn("TotalInitialSetUnits of volumeCluster : {} is null. Setting TotalInitialSetUnits as one ", volumeCluster);
             volumeCluster.getInitialSet().setTotalInitialSetUnits(DEFAULT_TOTAL_IS_QTY);
         }

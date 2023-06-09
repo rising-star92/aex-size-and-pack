@@ -10,7 +10,7 @@ public enum FixtureTypeRollup {
     ENDCAPS(2, "ENDCAPS"),
     RACKS(3, "RACKS"),
     TABLES(4, "TABLES"),
-    H_RACKS(5, "H-RACK");
+    H_RACKS(5, "H-RACKS");
 
     
     private final Integer code;
