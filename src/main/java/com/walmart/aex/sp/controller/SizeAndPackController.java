@@ -2,6 +2,7 @@ package com.walmart.aex.sp.controller;
 
 
 import com.walmart.aex.sp.dto.commitmentreport.InitialSetPackRequest;
+import com.walmart.aex.sp.dto.cr.storepacks.PackDetailsVolumeResponse;
 import com.walmart.aex.sp.dto.commitmentreport.InitialBumpSetResponse;
 import com.walmart.aex.sp.dto.isVolume.InitialSetVolumeRequest;
 import com.walmart.aex.sp.dto.isVolume.InitialSetVolumeResponse;
@@ -101,7 +102,12 @@ public class SizeAndPackController {
 	public StoreDistributionResponse getStoreDistributionByPlan(@Argument PackInfoRequest request) {
 		return storeDistributionService.fetchStoreDistributionResponse(request);
 	}
-
+    
+    @QueryMapping
+    public PackDetailsVolumeResponse getPackStoreDetailsByVolumeCluster(@Argument InitialSetVolumeRequest request)
+    {
+    	return sizeAndPackService.getPackStoreDetailsByVolumeCluster(request);
+    }
 }
 
 
