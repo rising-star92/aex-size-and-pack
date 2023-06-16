@@ -260,12 +260,11 @@ public class BigQueryPackStoresService
                " and fineline_nbr = " + finelineNbr + " and season = '"+interval+"' and fiscal_year = " +fiscalYear + " \n" +
                ") as CL\n" +
                "on RFA.store = CL.store\n" +
-               "GROUP BY SP.productFineline, SP.SPPackID, RFA.fineline, RFA.in_store_week,RFA.style_nbr, RFA.cc, CL.clusterId,RFA.store ,RFA.fixtureAllocation, RFA.fixtureType order by "
-               + "RFA.in_store_week,RFA.style_nbr,RFA.cc,CL.clusterId,RFA.store, RFA.fixtureAllocation, RFA.fixtureType, SP.SPPackID\n" +
+               "GROUP BY SP.productFineline, SP.packId, RFA.fineline, RFA.in_store_week,RFA.style_nbr, RFA.cc, CL.clusterId,RFA.store ,RFA.fixtureAllocation, RFA.fixtureType, SP.initialSetPackMultiplier, SP.bumpSetPackMultiplier order by "
+               + "RFA.in_store_week,RFA.style_nbr,RFA.cc,CL.clusterId,RFA.store, RFA.fixtureAllocation, RFA.fixtureType, SP.packId, SP.initialSetPackMultiplier, SP.bumpSetPackMultiplier\n" +
                ") SELECT TO_JSON_STRING(rfaTable) AS json FROM MyTable AS rfaTable\n";
 	 }
 	 
-	 //TODO: Add multiplier
 	 private String getStorePacksByVolumeCatClusterQuery(String ccTableName, String spTableName, Integer planId, Integer finelineNbr, Integer catNbr, String analyticsData, String interval, 
 			 Integer fiscalYear)
 	 {
@@ -313,12 +312,11 @@ public class BigQueryPackStoresService
                		+ "and sc.dept_nbr = scc.dept_nbr and sc.dept_catg_nbr = scc.dept_catg_nbr and sc.season = scc.season and sc.fiscal_year = scc.fiscal_year where sc.dept_catg_nbr = " + catNbr +
                		" and  sc.season = '"+interval+"' and sc.fiscal_year = " +fiscalYear + ") as CL\n" +
                "on RFA.store = CL.store\n" +
-               "GROUP BY SP.productFineline, SP.SPPackID, RFA.fineline, RFA.in_store_week,RFA.style_nbr, RFA.cc, CL.clusterId,RFA.store ,RFA.fixtureAllocation, RFA.fixtureType order by "
-               + "RFA.in_store_week,RFA.style_nbr,RFA.cc,CL.clusterId,RFA.store, RFA.fixtureAllocation, RFA.fixtureType, SP.SPPackID\n" +
+               "GROUP BY SP.productFineline, SP.packId, RFA.fineline, RFA.in_store_week,RFA.style_nbr, RFA.cc, CL.clusterId,RFA.store ,RFA.fixtureAllocation, RFA.fixtureType, SP.initialSetPackMultiplier, SP.bumpSetPackMultiplier order by "
+               + "RFA.in_store_week,RFA.style_nbr,RFA.cc,CL.clusterId,RFA.store, RFA.fixtureAllocation, RFA.fixtureType, SP.packId, SP.initialSetPackMultiplier, SP.bumpSetPackMultiplier\n" +
                ") SELECT TO_JSON_STRING(rfaTable) AS json FROM MyTable AS rfaTable\n";
 	 }
 	 
-	 //TODO: Add multiplier
 	 private String geStorePacksByVolumeSubCatClusterQuery(String ccTableName, String spTableName, Integer planId, Integer finelineNbr, Integer subCatNbr, String analyticsData, String interval, 
 			 Integer fiscalYear, Integer catNbr)
 	 {
@@ -366,8 +364,8 @@ public class BigQueryPackStoresService
                		+ "and sc.dept_nbr = scc.dept_nbr and sc.dept_catg_nbr = scc.dept_catg_nbr and sc.dept_subcatg_nbr = scc.dept_subcatg_nbr and sc.season = scc.season and sc.fiscal_year = scc.fiscal_year "
                		+ "where sc.dept_catg_nbr = " + catNbr + " and  sc.season = '"+interval+"' and sc.fiscal_year = " +fiscalYear + ") as CL\n" +
                "on RFA.store = CL.store\n" +
-               "GROUP BY SP.productFineline, SP.SPPackID, RFA.fineline, RFA.in_store_week,RFA.style_nbr, RFA.cc, CL.clusterId,RFA.store ,RFA.fixtureAllocation, RFA.fixtureType order by "
-               + "RFA.in_store_week,RFA.style_nbr,RFA.cc,CL.clusterId,RFA.store, RFA.fixtureAllocation, RFA.fixtureType, SP.SPPackID\n" +
+               "GROUP BY SP.productFineline, SP.packID, RFA.fineline, RFA.in_store_week,RFA.style_nbr, RFA.cc, CL.clusterId,RFA.store ,RFA.fixtureAllocation, RFA.fixtureType, SP.initialSetPackMultiplier, SP.bumpSetPackMultiplier order by "
+               + "RFA.in_store_week,RFA.style_nbr,RFA.cc,CL.clusterId,RFA.store, RFA.fixtureAllocation, RFA.fixtureType, SP.packId, SP.initialSetPackMultiplier, SP.bumpSetPackMultiplier\n" +
                ") SELECT TO_JSON_STRING(rfaTable) AS json FROM MyTable AS rfaTable\n";
 	 }
 }

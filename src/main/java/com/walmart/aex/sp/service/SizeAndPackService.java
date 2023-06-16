@@ -404,16 +404,22 @@ public class SizeAndPackService {
         return response;
     }
     
-    public PackDetailsVolumeResponse getPackStoreDetailsByVolumeCluster(InitialSetVolumeRequest request)
+    public List<PackDetailsVolumeResponse> getPackStoreDetailsByVolumeCluster(InitialSetVolumeRequest request)
     {
-    	try 
+    	List<PackDetailsVolumeResponse> responses = new ArrayList<>();
+    	for(FinelineVolume finelineVolume : request.getFinelines())
     	{
-			return bigQueryPackStoresService.getPackStoreDetailsByVolumeCluster(request.getPlanId(), request.getFinelines().get(0));
-		} 
-    	catch (SizeAndPackException e) 
-    	{
-    		log.error("Exception While fetching store pack details by volume cluster ", e);
-		}
-    	return null;
+    		try
+    		{
+    			responses.add(bigQueryPackStoresService
+        				.getPackStoreDetailsByVolumeCluster(request.getPlanId(), 
+        						finelineVolume));
+    		}
+    		catch (SizeAndPackException e) 
+        	{
+        		log.error("Exception while fetching pack store details by volume cluster ", e);
+    		}
+    	}
+    	return responses;
     }
 }

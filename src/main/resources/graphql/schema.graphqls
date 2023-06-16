@@ -16,7 +16,7 @@ type Query {
      getInitialAndBumpSetDetailsByVolumeCluster(request: InitialSetVolumeRequest!): [InitialSetVolumeResponse]!
      getDeptAdminRules(deptNumbers: [Int]): [DeptAdminRuleResponse]!
      getReplItemRule(planId: Int!, lvl1Nbr: Int!): ReplItemResponse!
-     getPackStoreDetailsByVolumeCluster(request: InitialSetVolumeRequest!): PackDetailsVolumeResponse!
+     getPackStoreDetailsByVolumeCluster(request: InitialSetVolumeRequest!): [PackDetailsVolumeResponse]!
 }
 
 
