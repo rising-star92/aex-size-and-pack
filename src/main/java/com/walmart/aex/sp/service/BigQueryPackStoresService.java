@@ -24,11 +24,11 @@ import com.walmart.aex.sp.dto.buyquantity.FinelineVolumeDeviationDto;
 import com.walmart.aex.sp.dto.buyquantity.StrategyVolumeDeviationResponse;
 import com.walmart.aex.sp.dto.cr.storepacks.PackDetailsVolumeResponse;
 import com.walmart.aex.sp.dto.cr.storepacks.PackStoreDTO;
-import com.walmart.aex.sp.dto.cr.storepacks.Store;
+import com.walmart.aex.sp.dto.cr.storepacks.StoreMetrics;
 import com.walmart.aex.sp.dto.cr.storepacks.StylePack;
-import com.walmart.aex.sp.dto.cr.storepacks.StyleVolume;
+import com.walmart.aex.sp.dto.cr.storepacks.StylePackVolume;
 import com.walmart.aex.sp.dto.cr.storepacks.VolumeFixtureAllocation;
-import com.walmart.aex.sp.dto.cr.storepacks.VolumeFixtureAllocationMetrics;
+import com.walmart.aex.sp.dto.cr.storepacks.VolumeFixtureMetrics;
 import com.walmart.aex.sp.dto.isVolume.FinelineVolume;
 import com.walmart.aex.sp.enums.VdLevelCode;
 import com.walmart.aex.sp.exception.SizeAndPackException;
@@ -119,7 +119,8 @@ public class BigQueryPackStoresService
 				log.error("Thread to fetch store packs interrupted while waiting for query to complete", e);
 		 }
 	     
-	     Map<StylePack, Map<VolumeFixtureAllocation, List<Store>>> volFixtureMetrics = new HashMap<>();
+	     Map<StylePack, Map<VolumeFixtureAllocation, List<StoreMetrics>>> volFixtureMetrics = 
+	    		 new HashMap<>();
 	     for(PackStoreDTO packStoreDTO : packStoreDTOs)
 	     {
 	    	 if(packStoreDTO.getIs_quantity() > 0)
@@ -129,7 +130,7 @@ public class BigQueryPackStoresService
 		    					 VolumeFixtureAllocation.builder().ccId(packStoreDTO.getCc())
 		    					 .fixtureType(packStoreDTO.getFixtureType())
 		    					 .fixtureAllocation(new BigDecimal(packStoreDTO.getFixtureAllocation())
-		    							 ).build(), y -> new ArrayList<>()).add(Store.builder()
+		    							 ).build(), y -> new ArrayList<>()).add(StoreMetrics.builder()
 		    									 .multiplier(packStoreDTO.getInitialSetPackMultiplier())
 		    									 .storeNo(packStoreDTO.getStore())
 		    									 .qty(packStoreDTO.getIs_quantity()).build());
@@ -141,33 +142,36 @@ public class BigQueryPackStoresService
 		    					 VolumeFixtureAllocation.builder().ccId(packStoreDTO.getCc())
 		    					 .fixtureType(packStoreDTO.getFixtureType())
 		    					 .fixtureAllocation(new BigDecimal(packStoreDTO.getFixtureAllocation())
-		    							 ).build(), y -> new ArrayList<>()).add(Store.builder()
+		    							 ).build(), y -> new ArrayList<>()).add(StoreMetrics.builder()
 		    									 .multiplier(packStoreDTO.getBumpSetPackMultiplier())
 		    									 .storeNo(packStoreDTO.getStore())
 		    									 .qty(packStoreDTO.getBs_quantity()).build());
 	    	 }
 	     }
 	     
-	     List<StyleVolume> styleVolumes = new ArrayList<>();
-	     for(Map.Entry<StylePack, Map<VolumeFixtureAllocation, List<Store>>> entry : volFixtureMetrics.entrySet())
+	     List<StylePackVolume> stylePackVolumes = new ArrayList<>();
+	     for(Map.Entry<StylePack, Map<VolumeFixtureAllocation, List<StoreMetrics>>> entry : 
+	    	 volFixtureMetrics.entrySet())
 	     {
 	    	 StylePack stylePack = entry.getKey();
-	    	 List<VolumeFixtureAllocationMetrics> volFixtureAllocationMetrics = new ArrayList<>();
-	    	 for(Map.Entry<VolumeFixtureAllocation, List<Store>> e : entry.getValue().entrySet())
+	    	 List<VolumeFixtureMetrics> volFixtureAllocationMetrics = new ArrayList<>();
+	    	 for(Map.Entry<VolumeFixtureAllocation, List<StoreMetrics>> e : entry.getValue().entrySet())
 	    	 {
+	    		 List<StoreMetrics> storeMetrics = e.getValue();
 	    		 VolumeFixtureAllocation volumeFixtureAllocation = e.getKey();
-	    		 volFixtureAllocationMetrics.add(VolumeFixtureAllocationMetrics.builder()
+	    		 volFixtureAllocationMetrics.add(VolumeFixtureMetrics.builder()
 	    				 .ccId(volumeFixtureAllocation.getCcId())
 	    				 .fixtureAllocation(volumeFixtureAllocation.getFixtureAllocation())
 	    				 .fixtureType(volumeFixtureAllocation.getFixtureType())
-	    				 .stores(e.getValue())
+	    				 .quantity(storeMetrics.stream().mapToInt(StoreMetrics::getQty).sum())
+	    				 .stores(storeMetrics)
 	    				 .build());
 	    	 }
-	    	 styleVolumes.add(StyleVolume.builder().styleId(stylePack.getStyleId())
+	    	 stylePackVolumes.add(StylePackVolume.builder().styleId(stylePack.getStyleId())
 	    			 .packId(stylePack.getPackId()).metrics(volFixtureAllocationMetrics).build());
 	     }
 		 return PackDetailsVolumeResponse.builder()
-	    		 .finelineNbr(finelineNbr).styleVolumes(styleVolumes).build();
+	    		 .finelineNbr(finelineNbr).stylePackVolumes(stylePackVolumes).build();
 	 }
 	 
 	 private String findSqlQuery(Long planId, FinelineVolume request, String volumeDeviationLevel) 
@@ -278,7 +282,9 @@ public class BigQueryPackStoresService
                "CL.clusterId,\n" +
                "RFA.fixtureAllocation,\n" +
                "RFA.fixtureType\n" +
-               "SP.SPPackID,\n" +
+               "SP.packId,\n" +
+               "SP.initialSetPackMultiplier,\n" +
+               "SP.bumpSetPackMultiplier,\n" +
                "from (\n" +
                " select distinct trim(cc_week.cc) as cc, trim(cc_week.style_nbr) as style_nbr, cast (cc_week.store as INT64) as store,cc_week.in_store_week, "
                + "allocated as fixtureAllocation, final_pref as fixtureType from (" +
@@ -296,7 +302,10 @@ public class BigQueryPackStoresService
                ")"+
                "as RFA left outer join "+
                "(\n" +
-               "SELECT SP.ProductFineline, trim(SP.ProductCustomerChoice) as cc,SP.store, SP.SPPackID, SP.SPPackInitialSetOutput as is_quantity, SP.SPPackBumpOutput as bs_quantity\n" +
+               "SELECT SP.ProductFineline, trim(SP.ProductCustomerChoice) as cc,SP.store, SP.SPPackID as packId, "
+               + "SP.SPPackInitialSetOutput as is_quantity, SP.SPPackBumpOutput as bs_quantity\n" 
+               + " SP.SPInitialSetPackMultiplier as initialSetPackMultiplier, " 
+               + "SP.SPBumpSetPackMultiplier as bumpSetPackMultiplier\n" +
                "FROM `" + spTableName + "` AS SP where ProductFineline like '" + prodFineline +
                ") as SP\n" +
                "on RFA.store = SP.store and RFA.cc = SP.cc\n" +
@@ -326,7 +335,9 @@ public class BigQueryPackStoresService
                "CL.clusterId,\n" +
                "RFA.fixtureAllocation,\n" +
                "RFA.fixtureType\n" +
-               "SP.SPPackID,\n" +
+               "SP.packId,\n" +
+               "SP.initialSetPackMultiplier,\n" +
+               "SP.bumpSetPackMultiplier,\n" +
                "from (\n" +
                " select distinct trim(cc_week.cc) as cc, trim(cc_week.style_nbr) as style_nbr, cast (cc_week.store as INT64) as store,cc_week.in_store_week, "
                + "allocated as fixtureAllocation, final_pref as fixtureType from (" +
@@ -344,7 +355,10 @@ public class BigQueryPackStoresService
                ")"+
                "as RFA left outer join "+
                "(\n" +
-               "SELECT SP.ProductFineline, trim(SP.ProductCustomerChoice) as cc,SP.store, SP.SPPackID, SP.SPPackInitialSetOutput as is_quantity, SP.SPPackBumpOutput as bs_quantity\n" +
+               "SELECT SP.ProductFineline, trim(SP.ProductCustomerChoice) as cc,SP.store, SP.SPPackID as packId, "
+               + "SP.SPPackInitialSetOutput as is_quantity, SP.SPPackBumpOutput as bs_quantity\n" 
+               + " SP.SPInitialSetPackMultiplier as initialSetPackMultiplier, " 
+               + "SP.SPBumpSetPackMultiplier as bumpSetPackMultiplier\n" +
                "FROM `" + spTableName + "` AS SP where ProductFineline like '" + prodFineline +
                ") as SP\n" +
                "on RFA.store = SP.store and RFA.cc = SP.cc\n" +

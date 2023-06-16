@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Builder
 @Getter
-public class Store 
+public class StoreMetrics
 {
 	private Integer storeNo;
 	private Integer multiplier;

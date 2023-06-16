@@ -7,9 +7,9 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class StyleVolume 
+public class StylePackVolume 
 {
 	private String styleId;
 	private String packId;
-	private List<VolumeFixtureAllocationMetrics> metrics;
+	private List<VolumeFixtureMetrics> metrics;
 }

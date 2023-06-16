@@ -10,5 +10,5 @@ import lombok.Getter;
 public class PackDetailsVolumeResponse 
 {
 	 private int finelineNbr;
-	 private List<StyleVolume> styleVolumes;
+	 private List<StylePackVolume> stylePackVolumes;
 }

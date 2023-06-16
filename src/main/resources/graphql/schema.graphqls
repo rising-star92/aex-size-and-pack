@@ -575,25 +575,25 @@ type StoreDetail {
 
 type PackDetailsVolumeResponse {
     finelineNbr : Int!
-    styles: [StyleVolume]!
+    stylePackVolumes: [StylePackVolume]!
 }
 
-type StyleVolume {
+type StylePackVolume {
     styleId: String!
     packId: String
-    metrics: [MetricsVolumeCluster]
+    metrics: [VolumeFixtureMetrics]
 }
 
-type MetricsVolumeCluster {
+type VolumeFixtureMetrics {
     volumeClusterId: Int!
     fixtureType: String
     fixtureAllocation: Float
     quantity: Int!
     ccId: String
-    stores: [StoreDetailsVolumeCluster]
+    stores: [StoreMetrics]
 }
 
-type StoreDetailsVolumeCluster {
+type StoreMetrics {
     store: Int!
     multiplier: Int!
     qty: Int!

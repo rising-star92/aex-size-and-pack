@@ -8,12 +8,12 @@ import lombok.Getter;
 
 @Builder
 @Getter
-public class VolumeFixtureAllocationMetrics 
+public class VolumeFixtureMetrics 
 {
 	 private int volumeClusterId;
 	 private String fixtureType;
 	 private BigDecimal fixtureAllocation;
 	 private int quantity;
 	 private String ccId;
-     private List<Store> stores;
+     private List<StoreMetrics> stores;
 }
