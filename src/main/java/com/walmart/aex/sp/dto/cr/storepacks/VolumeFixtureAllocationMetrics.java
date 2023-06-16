@@ -3,9 +3,11 @@ package com.walmart.aex.sp.dto.cr.storepacks;
 import java.math.BigDecimal;
 import java.util.List;
 
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
 
-@Data
+@Builder
+@Getter
 public class VolumeFixtureAllocationMetrics 
 {
 	 private int volumeClusterId;

@@ -2,9 +2,11 @@ package com.walmart.aex.sp.dto.cr.storepacks;
 
 import java.util.List;
 
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
 
-@Data
+@Getter
+@Builder
 public class StyleVolume 
 {
 	private String styleId;

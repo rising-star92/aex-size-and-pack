@@ -1,8 +1,10 @@
 package com.walmart.aex.sp.dto.cr.storepacks;
 
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
 
-@Data
+@Builder
+@Getter
 public class Store 
 {
 	private Integer storeNo;

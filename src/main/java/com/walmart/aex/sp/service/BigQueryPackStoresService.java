@@ -1,17 +1,34 @@
 package com.walmart.aex.sp.service;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.cloud.bigquery.BigQuery;
 import com.google.cloud.bigquery.BigQueryOptions;
+import com.google.cloud.bigquery.FieldValue;
+import com.google.cloud.bigquery.FieldValueList;
 import com.google.cloud.bigquery.JobException;
 import com.google.cloud.bigquery.QueryJobConfiguration;
 import com.google.cloud.bigquery.TableResult;
 import com.walmart.aex.sp.dto.buyquantity.FinelineVolumeDeviationDto;
 import com.walmart.aex.sp.dto.buyquantity.StrategyVolumeDeviationResponse;
 import com.walmart.aex.sp.dto.cr.storepacks.PackDetailsVolumeResponse;
+import com.walmart.aex.sp.dto.cr.storepacks.PackStoreDTO;
+import com.walmart.aex.sp.dto.cr.storepacks.Store;
+import com.walmart.aex.sp.dto.cr.storepacks.StylePack;
+import com.walmart.aex.sp.dto.cr.storepacks.StyleVolume;
+import com.walmart.aex.sp.dto.cr.storepacks.VolumeFixtureAllocation;
+import com.walmart.aex.sp.dto.cr.storepacks.VolumeFixtureAllocationMetrics;
 import com.walmart.aex.sp.dto.isVolume.FinelineVolume;
 import com.walmart.aex.sp.enums.VdLevelCode;
 import com.walmart.aex.sp.exception.SizeAndPackException;
@@ -66,9 +83,32 @@ public class BigQueryPackStoresService
          }
 		 BigQuery bigQuery = BigQueryOptions.getDefaultInstance().getService();
 	     QueryJobConfiguration queryConfig = QueryJobConfiguration.newBuilder(sqlQuery).build();
+	     List<PackStoreDTO> packStoreDTOs = new ArrayList<>();
 	     try 
 	     {
 			TableResult tableResult = bigQuery.query(queryConfig);
+			Iterator<FieldValueList> iterator = tableResult.iterateAll().iterator();
+			while(iterator.hasNext())
+			{
+				for(FieldValue fieldValue : iterator.next())
+				{
+					try 
+					{
+						PackStoreDTO packStoreDTO = objectMapper.readValue(
+								fieldValue.getValue().toString(),
+								PackStoreDTO.class);
+						packStoreDTOs.add(packStoreDTO);
+					} 
+					catch (JsonMappingException e) 
+					{
+						log.error("Error while mapping the pack store gcp table response data", e);
+					} 
+					catch (JsonProcessingException e) 
+					{
+						log.error("Error while processing the pack store gcp table response data", e);
+					}
+				}
+			}
 		 }
 	     catch (JobException e) 
 		    {
@@ -76,11 +116,58 @@ public class BigQueryPackStoresService
 			} 
 	     catch (InterruptedException e) 
 	     {
-				// TODO Auto-generated catch block
 				log.error("Thread to fetch store packs interrupted while waiting for query to complete", e);
-		  }
-		   
-		 return null;
+		 }
+	     
+	     Map<StylePack, Map<VolumeFixtureAllocation, List<Store>>> volFixtureMetrics = new HashMap<>();
+	     for(PackStoreDTO packStoreDTO : packStoreDTOs)
+	     {
+	    	 if(packStoreDTO.getIs_quantity() > 0)
+	    	 {
+	    		 volFixtureMetrics.computeIfAbsent(new StylePack(packStoreDTO.getStyle_nbr(),
+		    			 packStoreDTO.getPackId()), x -> new HashMap<>()).computeIfAbsent(
+		    					 VolumeFixtureAllocation.builder().ccId(packStoreDTO.getCc())
+		    					 .fixtureType(packStoreDTO.getFixtureType())
+		    					 .fixtureAllocation(new BigDecimal(packStoreDTO.getFixtureAllocation())
+		    							 ).build(), y -> new ArrayList<>()).add(Store.builder()
+		    									 .multiplier(packStoreDTO.getInitialSetPackMultiplier())
+		    									 .storeNo(packStoreDTO.getStore())
+		    									 .qty(packStoreDTO.getIs_quantity()).build());
+	    	 }
+	    	 else if(packStoreDTO.getBs_quantity() > 0)
+	    	 {
+	    		 volFixtureMetrics.computeIfAbsent(new StylePack(packStoreDTO.getStyle_nbr(),
+		    			 packStoreDTO.getPackId()), x -> new HashMap<>()).computeIfAbsent(
+		    					 VolumeFixtureAllocation.builder().ccId(packStoreDTO.getCc())
+		    					 .fixtureType(packStoreDTO.getFixtureType())
+		    					 .fixtureAllocation(new BigDecimal(packStoreDTO.getFixtureAllocation())
+		    							 ).build(), y -> new ArrayList<>()).add(Store.builder()
+		    									 .multiplier(packStoreDTO.getBumpSetPackMultiplier())
+		    									 .storeNo(packStoreDTO.getStore())
+		    									 .qty(packStoreDTO.getBs_quantity()).build());
+	    	 }
+	     }
+	     
+	     List<StyleVolume> styleVolumes = new ArrayList<>();
+	     for(Map.Entry<StylePack, Map<VolumeFixtureAllocation, List<Store>>> entry : volFixtureMetrics.entrySet())
+	     {
+	    	 StylePack stylePack = entry.getKey();
+	    	 List<VolumeFixtureAllocationMetrics> volFixtureAllocationMetrics = new ArrayList<>();
+	    	 for(Map.Entry<VolumeFixtureAllocation, List<Store>> e : entry.getValue().entrySet())
+	    	 {
+	    		 VolumeFixtureAllocation volumeFixtureAllocation = e.getKey();
+	    		 volFixtureAllocationMetrics.add(VolumeFixtureAllocationMetrics.builder()
+	    				 .ccId(volumeFixtureAllocation.getCcId())
+	    				 .fixtureAllocation(volumeFixtureAllocation.getFixtureAllocation())
+	    				 .fixtureType(volumeFixtureAllocation.getFixtureType())
+	    				 .stores(e.getValue())
+	    				 .build());
+	    	 }
+	    	 styleVolumes.add(StyleVolume.builder().styleId(stylePack.getStyleId())
+	    			 .packId(stylePack.getPackId()).metrics(volFixtureAllocationMetrics).build());
+	     }
+		 return PackDetailsVolumeResponse.builder()
+	    		 .finelineNbr(finelineNbr).styleVolumes(styleVolumes).build();
 	 }
 	 
 	 private String findSqlQuery(Long planId, FinelineVolume request, String volumeDeviationLevel) 
@@ -138,7 +225,9 @@ public class BigQueryPackStoresService
                "CL.clusterId,\n" +
                "RFA.fixtureAllocation,\n" +
                "RFA.fixtureType\n" +
-               "SP.SPPackID,\n" +
+               "SP.packId,\n" +
+               "SP.initialSetPackMultiplier,\n" +
+               "SP.bumpSetPackMultiplier,\n" +
                "from (\n" +
                " select distinct trim(cc_week.cc) as cc, trim(cc_week.style_nbr) as style_nbr, cast (cc_week.store as INT64) as store,cc_week.in_store_week, "
                + "allocated as fixtureAllocation, final_pref as fixtureType from (" +
@@ -156,7 +245,9 @@ public class BigQueryPackStoresService
                ")"+
                "as RFA left outer join "+
                "(\n" +
-               "SELECT SP.ProductFineline, trim(SP.ProductCustomerChoice) as cc,SP.store, SP.SPPackID, SP.SPPackInitialSetOutput as is_quantity, SP.SPPackBumpOutput as bs_quantity\n" +
+               "SELECT SP.ProductFineline, trim(SP.ProductCustomerChoice) as cc,SP.store, SP.SPPackID as packId, "
+               + "SP.SPPackInitialSetOutput as is_quantity, SP.SPPackBumpOutput as bs_quantity, SP.SPInitialSetPackMultiplier "
+               + "as initialSetPackMultiplier, SP.SPBumpSetPackMultiplier as bumpSetPackMultiplier\n" +
                "FROM `" + spTableName + "` AS SP where ProductFineline like '" + prodFineline +
                ") as SP\n" +
                "on RFA.store = SP.store and RFA.cc = SP.cc\n" +
@@ -170,6 +261,7 @@ public class BigQueryPackStoresService
                ") SELECT TO_JSON_STRING(rfaTable) AS json FROM MyTable AS rfaTable\n";
 	 }
 	 
+	 //TODO: Add multiplier
 	 private String getStorePacksByVolumeCatClusterQuery(String ccTableName, String spTableName, Integer planId, Integer finelineNbr, Integer catNbr, String analyticsData, String interval, 
 			 Integer fiscalYear)
 	 {
@@ -217,6 +309,7 @@ public class BigQueryPackStoresService
                ") SELECT TO_JSON_STRING(rfaTable) AS json FROM MyTable AS rfaTable\n";
 	 }
 	 
+	 //TODO: Add multiplier
 	 private String geStorePacksByVolumeSubCatClusterQuery(String ccTableName, String spTableName, Integer planId, Integer finelineNbr, Integer subCatNbr, String analyticsData, String interval, 
 			 Integer fiscalYear, Integer catNbr)
 	 {
