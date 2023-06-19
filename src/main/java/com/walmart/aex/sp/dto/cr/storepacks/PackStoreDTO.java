@@ -13,7 +13,6 @@ public class PackStoreDTO
     private Integer bs_quantity;
     private Integer store;
     private Integer clusterId;
-    private Integer in_store_week;
     private float fixtureAllocation;
     private String fixtureType;
     private String packId;

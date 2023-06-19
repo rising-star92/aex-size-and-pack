@@ -123,28 +123,45 @@ public class BigQueryPackStoresService
 	    		 new HashMap<>();
 	     for(PackStoreDTO packStoreDTO : packStoreDTOs)
 	     {
-	    	 if(packStoreDTO.getIs_quantity() > 0)
+	    	 Integer isQty = packStoreDTO.getIs_quantity();
+	    	 Integer bsQty = packStoreDTO.getBs_quantity();
+	    	 if(isQty == null && bsQty == null)
 	    	 {
 	    		 volFixtureMetrics.computeIfAbsent(new StylePack(packStoreDTO.getStyle_nbr(),
 		    			 packStoreDTO.getPackId()), x -> new HashMap<>()).computeIfAbsent(
 		    					 VolumeFixtureAllocation.builder().ccId(packStoreDTO.getCc())
+		    					 .volumeClusterId(packStoreDTO.getClusterId())
+		    					 .fixtureType(packStoreDTO.getFixtureType())
+		    					 .fixtureAllocation(new BigDecimal(packStoreDTO.getFixtureAllocation())
+		    							 ).build(), y -> new ArrayList<>()).add(StoreMetrics.builder()
+		    									 .multiplier(0)
+		    									 .store(packStoreDTO.getStore())
+		    									 .qty(0).build());
+	    	 }
+	    	 if(isQty!=null && isQty > 0)
+	    	 {
+	    		 volFixtureMetrics.computeIfAbsent(new StylePack(packStoreDTO.getStyle_nbr(),
+		    			 packStoreDTO.getPackId()), x -> new HashMap<>()).computeIfAbsent(
+		    					 VolumeFixtureAllocation.builder().ccId(packStoreDTO.getCc())
+		    					 .volumeClusterId(packStoreDTO.getClusterId())
 		    					 .fixtureType(packStoreDTO.getFixtureType())
 		    					 .fixtureAllocation(new BigDecimal(packStoreDTO.getFixtureAllocation())
 		    							 ).build(), y -> new ArrayList<>()).add(StoreMetrics.builder()
 		    									 .multiplier(packStoreDTO.getInitialSetPackMultiplier())
-		    									 .storeNo(packStoreDTO.getStore())
+		    									 .store(packStoreDTO.getStore())
 		    									 .qty(packStoreDTO.getIs_quantity()).build());
 	    	 }
-	    	 else if(packStoreDTO.getBs_quantity() > 0)
+	    	 else if(bsQty!=null && bsQty > 0)
 	    	 {
 	    		 volFixtureMetrics.computeIfAbsent(new StylePack(packStoreDTO.getStyle_nbr(),
 		    			 packStoreDTO.getPackId()), x -> new HashMap<>()).computeIfAbsent(
 		    					 VolumeFixtureAllocation.builder().ccId(packStoreDTO.getCc())
+		    					 .volumeClusterId(packStoreDTO.getClusterId())
 		    					 .fixtureType(packStoreDTO.getFixtureType())
 		    					 .fixtureAllocation(new BigDecimal(packStoreDTO.getFixtureAllocation())
 		    							 ).build(), y -> new ArrayList<>()).add(StoreMetrics.builder()
 		    									 .multiplier(packStoreDTO.getBumpSetPackMultiplier())
-		    									 .storeNo(packStoreDTO.getStore())
+		    									 .store(packStoreDTO.getStore())
 		    									 .qty(packStoreDTO.getBs_quantity()).build());
 	    	 }
 	     }
@@ -163,6 +180,7 @@ public class BigQueryPackStoresService
 	    				 .ccId(volumeFixtureAllocation.getCcId())
 	    				 .fixtureAllocation(volumeFixtureAllocation.getFixtureAllocation())
 	    				 .fixtureType(volumeFixtureAllocation.getFixtureType())
+	    				 .volumeClusterId(volumeFixtureAllocation.getVolumeClusterId())
 	    				 .quantity(storeMetrics.stream().mapToInt(StoreMetrics::getQty).sum())
 	    				 .stores(storeMetrics)
 	    				 .build());
@@ -228,13 +246,13 @@ public class BigQueryPackStoresService
                "RFA.store,\n" +
                "CL.clusterId,\n" +
                "RFA.fixtureAllocation,\n" +
-               "RFA.fixtureType\n" +
+               "RFA.fixtureType,\n" +
                "SP.packId,\n" +
                "SP.initialSetPackMultiplier,\n" +
-               "SP.bumpSetPackMultiplier,\n" +
+               "SP.bumpSetPackMultiplier\n" +
                "from (\n" +
                " select distinct trim(cc_week.cc) as cc, trim(cc_week.style_nbr) as style_nbr, cast (cc_week.store as INT64) as store,cc_week.in_store_week, "
-               + "allocated as fixtureAllocation, final_pref as fixtureType from (" +
+               + " cc_week.fineline as fineline, allocated as fixtureAllocation, final_pref as fixtureType from (" +
                "(select fineline, store, allocated, final_pref from ("+
                "select fineline, store, week, allocated, final_pref, row_number() over(PARTITION BY fineline, store order by week) as rw_nbr from "+
                "(select * from " + ccTableName  +
@@ -246,14 +264,14 @@ public class BigQueryPackStoresService
                " where plan_id_partition =" + planId+ " and final_alloc_space > 0 and fineline=" +finelineNbr + " group by store, fineline, style_nbr,cc) cc_week" +
                " on fl_alloc.fineline = cc_week.fineline" +
                " and fl_alloc.store = cc_week.store )" +
-               ")"+
+               ") "+
                "as RFA left outer join "+
                "(\n" +
                "SELECT SP.ProductFineline, trim(SP.ProductCustomerChoice) as cc,SP.store, SP.SPPackID as packId, "
                + "SP.SPPackInitialSetOutput as is_quantity, SP.SPPackBumpOutput as bs_quantity, SP.SPInitialSetPackMultiplier "
                + "as initialSetPackMultiplier, SP.SPBumpSetPackMultiplier as bumpSetPackMultiplier\n" +
                "FROM `" + spTableName + "` AS SP where ProductFineline like '" + prodFineline +
-               ") as SP\n" +
+               "') as SP\n" +
                "on RFA.store = SP.store and RFA.cc = SP.cc\n" +
                "join (\n" +
                "select store_nbr as store,cluster_id  as clusterId from `" + analyticsData + ".svg_fl_cluster` where dept_catg_nbr = " + catNbr + " and dept_subcatg_nbr = " + subCatNbr + 
@@ -261,7 +279,7 @@ public class BigQueryPackStoresService
                ") as CL\n" +
                "on RFA.store = CL.store\n" +
                "GROUP BY SP.productFineline, SP.packId, RFA.fineline, RFA.in_store_week,RFA.style_nbr, RFA.cc, CL.clusterId,RFA.store ,RFA.fixtureAllocation, RFA.fixtureType, SP.initialSetPackMultiplier, SP.bumpSetPackMultiplier order by "
-               + "RFA.in_store_week,RFA.style_nbr,RFA.cc,CL.clusterId,RFA.store, RFA.fixtureAllocation, RFA.fixtureType, SP.packId, SP.initialSetPackMultiplier, SP.bumpSetPackMultiplier\n" +
+               + "RFA.style_nbr,RFA.cc,CL.clusterId,RFA.store, RFA.fixtureAllocation, RFA.fixtureType, SP.packId, SP.initialSetPackMultiplier, SP.bumpSetPackMultiplier\n" +
                ") SELECT TO_JSON_STRING(rfaTable) AS json FROM MyTable AS rfaTable\n";
 	 }
 	 
@@ -280,13 +298,13 @@ public class BigQueryPackStoresService
                "RFA.store,\n" +
                "CL.clusterId,\n" +
                "RFA.fixtureAllocation,\n" +
-               "RFA.fixtureType\n" +
+               "RFA.fixtureType,\n" +
                "SP.packId,\n" +
                "SP.initialSetPackMultiplier,\n" +
-               "SP.bumpSetPackMultiplier,\n" +
+               "SP.bumpSetPackMultiplier\n" +
                "from (\n" +
                " select distinct trim(cc_week.cc) as cc, trim(cc_week.style_nbr) as style_nbr, cast (cc_week.store as INT64) as store,cc_week.in_store_week, "
-               + "allocated as fixtureAllocation, final_pref as fixtureType from (" +
+               + " cc_week.fineline as fineline, allocated as fixtureAllocation, final_pref as fixtureType from (" +
                "(select fineline, store, allocated, final_pref from ("+
                "select fineline, store, week, allocated, final_pref, row_number() over(PARTITION BY fineline, store order by week) as rw_nbr from "+
                "(select * from " + ccTableName  +
@@ -298,22 +316,22 @@ public class BigQueryPackStoresService
                " where plan_id_partition =" + planId+ " and final_alloc_space > 0 and fineline=" +finelineNbr + " group by store, fineline, style_nbr,cc) cc_week" +
                " on fl_alloc.fineline = cc_week.fineline" +
                " and fl_alloc.store = cc_week.store )" +
-               ")"+
+               ") "+
                "as RFA left outer join "+
                "(\n" +
                "SELECT SP.ProductFineline, trim(SP.ProductCustomerChoice) as cc,SP.store, SP.SPPackID as packId, "
-               + "SP.SPPackInitialSetOutput as is_quantity, SP.SPPackBumpOutput as bs_quantity\n" 
+               + "SP.SPPackInitialSetOutput as is_quantity, SP.SPPackBumpOutput as bs_quantity, \n" 
                + " SP.SPInitialSetPackMultiplier as initialSetPackMultiplier, " 
                + "SP.SPBumpSetPackMultiplier as bumpSetPackMultiplier\n" +
                "FROM `" + spTableName + "` AS SP where ProductFineline like '" + prodFineline +
-               ") as SP\n" +
+               "') as SP\n" +
                "on RFA.store = SP.store and RFA.cc = SP.cc\n" +
                "join (select scc.store_nbr as store,scc.cluster_id  as clusterId  from `" + analyticsData + ".svg_category_cluster` scc join `"+analyticsData+".svg_category` sc on sc.cluster_id = scc.cluster_id "
                		+ "and sc.dept_nbr = scc.dept_nbr and sc.dept_catg_nbr = scc.dept_catg_nbr and sc.season = scc.season and sc.fiscal_year = scc.fiscal_year where sc.dept_catg_nbr = " + catNbr +
                		" and  sc.season = '"+interval+"' and sc.fiscal_year = " +fiscalYear + ") as CL\n" +
                "on RFA.store = CL.store\n" +
                "GROUP BY SP.productFineline, SP.packId, RFA.fineline, RFA.in_store_week,RFA.style_nbr, RFA.cc, CL.clusterId,RFA.store ,RFA.fixtureAllocation, RFA.fixtureType, SP.initialSetPackMultiplier, SP.bumpSetPackMultiplier order by "
-               + "RFA.in_store_week,RFA.style_nbr,RFA.cc,CL.clusterId,RFA.store, RFA.fixtureAllocation, RFA.fixtureType, SP.packId, SP.initialSetPackMultiplier, SP.bumpSetPackMultiplier\n" +
+               + "RFA.style_nbr,RFA.cc,CL.clusterId,RFA.store, RFA.fixtureAllocation, RFA.fixtureType, SP.packId, SP.initialSetPackMultiplier, SP.bumpSetPackMultiplier\n" +
                ") SELECT TO_JSON_STRING(rfaTable) AS json FROM MyTable AS rfaTable\n";
 	 }
 	 
@@ -332,13 +350,13 @@ public class BigQueryPackStoresService
                "RFA.store,\n" +
                "CL.clusterId,\n" +
                "RFA.fixtureAllocation,\n" +
-               "RFA.fixtureType\n" +
+               "RFA.fixtureType,\n" +
                "SP.packId,\n" +
                "SP.initialSetPackMultiplier,\n" +
-               "SP.bumpSetPackMultiplier,\n" +
+               "SP.bumpSetPackMultiplier\n" +
                "from (\n" +
                " select distinct trim(cc_week.cc) as cc, trim(cc_week.style_nbr) as style_nbr, cast (cc_week.store as INT64) as store,cc_week.in_store_week, "
-               + "allocated as fixtureAllocation, final_pref as fixtureType from (" +
+               + " cc_week.fineline as fineline, allocated as fixtureAllocation, final_pref as fixtureType from (" +
                "(select fineline, store, allocated, final_pref from ("+
                "select fineline, store, week, allocated, final_pref, row_number() over(PARTITION BY fineline, store order by week) as rw_nbr from "+
                "(select * from " + ccTableName  +
@@ -350,22 +368,22 @@ public class BigQueryPackStoresService
                " where plan_id_partition =" + planId+ " and final_alloc_space > 0 and fineline=" +finelineNbr + " group by store, fineline, style_nbr,cc) cc_week" +
                " on fl_alloc.fineline = cc_week.fineline" +
                " and fl_alloc.store = cc_week.store )" +
-               ")"+
+               ") "+
                "as RFA left outer join "+
                "(\n" +
                "SELECT SP.ProductFineline, trim(SP.ProductCustomerChoice) as cc,SP.store, SP.SPPackID as packId, "
-               + "SP.SPPackInitialSetOutput as is_quantity, SP.SPPackBumpOutput as bs_quantity\n" 
+               + "SP.SPPackInitialSetOutput as is_quantity, SP.SPPackBumpOutput as bs_quantity, \n" 
                + " SP.SPInitialSetPackMultiplier as initialSetPackMultiplier, " 
                + "SP.SPBumpSetPackMultiplier as bumpSetPackMultiplier\n" +
                "FROM `" + spTableName + "` AS SP where ProductFineline like '" + prodFineline +
-               ") as SP\n" +
+               "') as SP\n" +
                "on RFA.store = SP.store and RFA.cc = SP.cc\n" +
                "join (select scc.store_nbr as store,scc.cluster_id  as clusterId  from `" + analyticsData + ".svg_subcategory_cluster` scc join `"+analyticsData+".svg_subcategory` sc on sc.cluster_id = scc.cluster_id "
                		+ "and sc.dept_nbr = scc.dept_nbr and sc.dept_catg_nbr = scc.dept_catg_nbr and sc.dept_subcatg_nbr = scc.dept_subcatg_nbr and sc.season = scc.season and sc.fiscal_year = scc.fiscal_year "
-               		+ "where sc.dept_catg_nbr = " + catNbr + " and  sc.season = '"+interval+"' and sc.fiscal_year = " +fiscalYear + ") as CL\n" +
+               		+ "where sc.dept_catg_nbr = " + catNbr + " and sc.dept_subcatg_nbr = " + subCatNbr + " and  sc.season = '"+interval+"' and sc.fiscal_year = " +fiscalYear + ") as CL\n" +
                "on RFA.store = CL.store\n" +
                "GROUP BY SP.productFineline, SP.packID, RFA.fineline, RFA.in_store_week,RFA.style_nbr, RFA.cc, CL.clusterId,RFA.store ,RFA.fixtureAllocation, RFA.fixtureType, SP.initialSetPackMultiplier, SP.bumpSetPackMultiplier order by "
-               + "RFA.in_store_week,RFA.style_nbr,RFA.cc,CL.clusterId,RFA.store, RFA.fixtureAllocation, RFA.fixtureType, SP.packId, SP.initialSetPackMultiplier, SP.bumpSetPackMultiplier\n" +
+               + "RFA.style_nbr,RFA.cc,CL.clusterId,RFA.store, RFA.fixtureAllocation, RFA.fixtureType, SP.packId, SP.initialSetPackMultiplier, SP.bumpSetPackMultiplier\n" +
                ") SELECT TO_JSON_STRING(rfaTable) AS json FROM MyTable AS rfaTable\n";
 	 }
 }

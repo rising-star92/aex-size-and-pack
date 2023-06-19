@@ -594,7 +594,7 @@ type VolumeFixtureMetrics {
 }
 
 type StoreMetrics {
-    store: Int!
-    multiplier: Int!
-    qty: Int!
+    store: Int
+    multiplier: Int
+    qty: Int
 }     

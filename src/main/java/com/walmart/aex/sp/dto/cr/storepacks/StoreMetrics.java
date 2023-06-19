@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 public class StoreMetrics
 {
-	private Integer storeNo;
+	private Integer store;
 	private Integer multiplier;
     private Integer qty;
 }
