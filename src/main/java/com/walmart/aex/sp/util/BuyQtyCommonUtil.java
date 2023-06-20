@@ -145,6 +145,7 @@ public class BuyQtyCommonUtil {
         storeQuantity.setVolumeCluster(rfaSizePackData.getVolume_group_cluster_id());
         storeQuantity.setSizeCluster(rfaSizePackData.getSize_cluster_id());
         storeQuantity.setStoreList(storeListWithOldQty);
+        storeQuantity.setRfaSizePackData(rfaSizePackData);
         if (volumeCluster.getFlowStrategy() != null)
             storeQuantity.setFlowStrategyCode(volumeCluster.getFlowStrategy());
         return storeQuantity;

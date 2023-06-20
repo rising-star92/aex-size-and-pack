@@ -125,8 +125,8 @@ class AddStoreBuyQuantityServiceTest {
         AddStoreBuyQuantity addStoreBuyQuantity = getAddStoreBuyQuantities(bqfpResponse, getStyleDTO(), getMerchMethodsDto(), getSizeDTO(), rfaSizePackDataList, getCustomerChoiceDTO());
         addStoreBuyQuantityService.addStoreBuyQuantities(addStoreBuyQuantity,buyQtyObj, 2);
         StoreQuantity storeQuantity = buyQtyObj.getBuyQtyStoreObj().getBuyQuantities().get(1);
-        assertEquals(2.0, storeQuantity.getTotalUnits());
-        assertEquals(2.0, storeQuantity.getIsUnits());
+        assertEquals(1.0, storeQuantity.getTotalUnits());
+        assertEquals(1.0, storeQuantity.getIsUnits());
     }
 
     @Test
@@ -141,8 +141,8 @@ class AddStoreBuyQuantityServiceTest {
         AddStoreBuyQuantity addStoreBuyQuantity = getAddStoreBuyQuantities(bqfpResponse, getStyleDTO(), getMerchMethodsDto(), getSizeDTO(), rfaSizePackDataList, getCustomerChoiceDTO());
         addStoreBuyQuantityService.addStoreBuyQuantities(addStoreBuyQuantity,buyQtyObj, 2);
         StoreQuantity storeQuantity = buyQtyObj.getBuyQtyStoreObj().getBuyQuantities().get(0);
-        assertEquals(0.0, storeQuantity.getTotalUnits());
-        assertEquals(0.0, storeQuantity.getIsUnits());
+        assertEquals(4.0, storeQuantity.getTotalUnits());
+        assertEquals(2.0, storeQuantity.getIsUnits());
     }
 
     @Test
@@ -157,8 +157,8 @@ class AddStoreBuyQuantityServiceTest {
         AddStoreBuyQuantity addStoreBuyQuantity = getAddStoreBuyQuantities(bqfpResponse, getStyleDTO(), getMerchMethodsDto(), getSizeDTO(), rfaSizePackDataList, getCustomerChoiceDTO());
         addStoreBuyQuantityService.addStoreBuyQuantities(addStoreBuyQuantity,buyQtyObj, 2);
         StoreQuantity storeQuantity = buyQtyObj.getBuyQtyStoreObj().getBuyQuantities().get(0);
-        assertEquals(0.0, storeQuantity.getTotalUnits());
-        assertEquals(0.0, storeQuantity.getIsUnits());
+        assertEquals(4.0, storeQuantity.getTotalUnits());
+        assertEquals(2.0, storeQuantity.getIsUnits());
     }
 
     @Test
