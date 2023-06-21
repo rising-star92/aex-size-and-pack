@@ -1,0 +1,15 @@
+{
+    "finelines": [
+        {
+            "finelineId": 468,
+            "finelineName": null,
+            "lvl0Nbr": 50000,
+            "lvl1Nbr": 34,
+            "lvl2Nbr": 1488,
+            "lvl3Nbr": 9074,
+            "lvl4Nbr": 7207,
+            "planId": 69,
+            "volumeDeviationLevel": "Category"
+        }
+    ]
+}
