@@ -6,5 +6,5 @@ import lombok.Data;
 public class InitialSetQuantity {
     private double isQty;
     private double perStoreQty;
-    private boolean zeroPerStore;
+    private boolean zeroQtyPerStore;
 }

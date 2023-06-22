@@ -55,13 +55,6 @@ public class BuyQuantityConstraintService {
         return Math.max(Math.round(value), 0);
     }
 
-    /**
-     * ISQty = 200 2
-     * RepQty = 20
-     * RepCnt = 20
-     * withUnit = 2
-     * withoutUnit = 18
-     */
     public InitialSetWithReplnsConstraint getISWithLessReplenConstraint(BuyQtyObj buyQtyObj, int storeCntWithNewQty, List<Integer> storeList, double perStoreQty, RFASizePackData rfaSizePackData, Cluster volumeCluster, SizeDto sizeDto, Integer initialThreshold) {
         List<Replenishment> replnsWithUnits = getReplnsWithUnits(buyQtyObj);
         List<Replenishment> replnsWithNoUnits = getReplnsWithNoUnits(buyQtyObj);

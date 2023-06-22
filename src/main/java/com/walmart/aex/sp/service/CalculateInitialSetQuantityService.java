@@ -28,13 +28,13 @@ public class CalculateInitialSetQuantityService {
                 // explicitly setting perStoreQty as 1
                  perStoreQty = 1.0;
                 // flag to identify this particular InitialSet is set to 1
-                initialSetQuantity.setZeroPerStore(true); // rep
+                initialSetQuantity.setZeroQtyPerStore(true); // rep
             }
             isQty = perStoreQty * rfaSizePackData.getStore_cnt();
         }
         initialSetQuantity.setIsQty(isQty);
         initialSetQuantity.setPerStoreQty(perStoreQty);
-        log.debug("| IS before constraints | : {} | {} | {}  ", sizeDto.getSizeDesc(), isQty, perStoreQty);
+        log.debug("| IS before constraints and isZeroQtyPerStore | : {} | {} | {} | {}  ", sizeDto.getSizeDesc(), isQty, perStoreQty, initialSetQuantity.isZeroQtyPerStore());
         return initialSetQuantity;
     }
 }
