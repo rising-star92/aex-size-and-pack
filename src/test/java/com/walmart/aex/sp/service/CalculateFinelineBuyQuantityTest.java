@@ -351,6 +351,7 @@ class CalculateFinelineBuyQuantityTest {
         assertEquals(bqfpResponse.getVolumeDeviationStrategyLevelSelection(), BigDecimal.valueOf(1));
     }
 
+    @Test
     void minReplenishmentRuleWithoutInitialSet() throws SizeAndPackException, IOException {
         final String path = "/plan236fineline5414";
         BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
@@ -359,7 +360,7 @@ class CalculateFinelineBuyQuantityTest {
         when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
         when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
         when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
-        when(deptAdminRuleService.getInitialThreshold(anyLong(), anyInt())).thenReturn(2500);
+        when(deptAdminRuleService.getInitialThreshold(anyLong(), anyInt())).thenReturn(2);
         CalculateBuyQtyRequest request = create("store", 50000, 34, 6420, 12238, 31526, 5414, 236L);
         CalculateBuyQtyParallelRequest pRequest = createFromRequest(request);
 
@@ -371,13 +372,14 @@ class CalculateFinelineBuyQuantityTest {
 
         SpFineLineChannelFixture fixture1 = response.getSpFineLineChannelFixtures().stream().
                 filter(f -> f.getSpFineLineChannelFixtureId().getFixtureTypeRollUpId().getFixtureTypeRollupId().equals(1)).findFirst().get();
-        Set<SpCustomerChoiceChannelFixtureSize> fixture1Sizes = fixture1
+        SpCustomerChoiceChannelFixture ccFixture = fixture1
                 .getSpStyleChannelFixtures().stream().findFirst()
-                .get().getSpCustomerChoiceChannelFixture().stream().findFirst()
-                .get().getSpCustomerChoiceChannelFixtureSize();
-        assertEquals(0, fixture1.getInitialSetQty());
+                .get().getSpCustomerChoiceChannelFixture().stream().filter(cc -> cc.getSpCustomerChoiceChannelFixtureId().getCustomerChoice().equals("34_5414_1_22_2_RICH BLACK"))
+                .findFirst().get();
+        assertEquals(0, ccFixture.getInitialSetQty());
+        assertEquals(1308, fixture1.getInitialSetQty());
         assertEquals(9612, fixture1.getBuyQty());
-        assertEquals(9612, fixture1.getReplnQty());
+        assertEquals(8304, fixture1.getReplnQty());
     }
 
 
