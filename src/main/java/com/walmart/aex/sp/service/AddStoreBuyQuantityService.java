@@ -58,11 +58,13 @@ public class AddStoreBuyQuantityService {
     public AddStoreBuyQuantityService(ObjectMapper objectMapper,
                                       CalculateBumpPackQtyService calculateBumpPackQtyService,
                                       BuyQuantityConstraintService buyQuantityConstraintService,
-                                      CalculateInitialSetQuantityService calculateInitialSetQuantityService) {
+                                      CalculateInitialSetQuantityService calculateInitialSetQuantityService,
+                                      BuyQtyProperties buyQtyProperties) {
         this.objectMapper = objectMapper;
         this.calculateBumpPackQtyService = calculateBumpPackQtyService;
         this.buyQuantityConstraintService = buyQuantityConstraintService;
         this.calculateInitialSetQuantityService = calculateInitialSetQuantityService;
+        this.buyQtyProperties = buyQtyProperties;
     }
 
 

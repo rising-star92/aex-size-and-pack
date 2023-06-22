@@ -19,10 +19,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
@@ -65,8 +62,8 @@ class AddStoreBuyQuantityServiceTest {
         calculateInitialSetQuantityService = new CalculateInitialSetQuantityService();
         calculateBumpPackQtyService = new CalculateBumpPackQtyService();
         buyQuantityConstraintService = new BuyQuantityConstraintService(calculateBumpPackQtyService);
-        addStoreBuyQuantityService = new AddStoreBuyQuantityService(objectMapper, calculateBumpPackQtyService, buyQuantityConstraintService, calculateInitialSetQuantityService);
-
+        addStoreBuyQuantityService = new AddStoreBuyQuantityService(objectMapper, calculateBumpPackQtyService, buyQuantityConstraintService, calculateInitialSetQuantityService, buyQtyProperties);
+        Mockito.when(buyQtyProperties.getOneUnitPerStoreFeatureFlag()).thenReturn("true");
     }
 
     @Test
