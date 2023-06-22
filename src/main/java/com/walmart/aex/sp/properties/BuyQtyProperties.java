@@ -13,4 +13,7 @@ public interface BuyQtyProperties {
 
     @Property(propertyName = "s3Plans2024.constraint")
     String getS3PlanIds();
+
+    @Property(propertyName = "initialSet.oneUnitPerStoreFlag")
+    String getOneUnitPerStoreFeatureFlag();
 }
