@@ -625,7 +625,7 @@ class CalculateFinelineBuyQuantityTest {
     }
 
     @Test
-    void newCalTest() throws SizeAndPackException, IOException {
+    void test_calculateInitialSetWithAtleast1UnitPerStore() throws SizeAndPackException, IOException {
         final String path = "/plan69fineline468";
         BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
         APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
