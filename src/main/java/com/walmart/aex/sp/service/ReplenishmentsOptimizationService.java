@@ -74,7 +74,7 @@ public class ReplenishmentsOptimizationService {
 
         if(replenishments!=null && vnpkQty!= null && vnpkQty>0) {
             replenishments.forEach(replobj -> {
-                if(replobj.getAdjReplnUnits()!=null){
+                if(replobj.getAdjReplnUnits()!=null && replobj.getAdjReplnUnits() > 0){
                     double noOfVendorPacks = Math.ceil((double)(replobj.getAdjReplnUnits()) / vnpkQty); // Math.ceil will return a double value and double has higher range than int, therefore using double
                     Long updatedAdjReplnUnits = (long)(noOfVendorPacks * vnpkQty);
                     replobj.setAdjReplnUnits(updatedAdjReplnUnits);

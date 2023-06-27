@@ -10,6 +10,7 @@ import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixtureSize;
 import com.walmart.aex.sp.entity.SpFineLineChannelFixture;
 import com.walmart.aex.sp.entity.SpStyleChannelFixture;
 import com.walmart.aex.sp.exception.SizeAndPackException;
+import com.walmart.aex.sp.properties.BuyQtyProperties;
 import com.walmart.aex.sp.repository.*;
 import com.walmart.aex.sp.service.impl.DeptAdminRuleServiceImpl;
 import com.walmart.aex.sp.util.BQFPResponseInputs;
@@ -42,6 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -136,6 +138,9 @@ class CalculateFinelineBuyQuantityTest {
     @Mock
     SizeLevelReplenishmentMapper sizeLevelReplenishmentMapper;
 
+    @Mock
+    BuyQtyProperties buyQtyProperties;
+
 
    @Spy
    ObjectMapper mapper = new ObjectMapper();
@@ -147,7 +152,7 @@ class CalculateFinelineBuyQuantityTest {
        calculateInitialSetQuantityService = new CalculateInitialSetQuantityService();
        calculateBumpPackQtyService = new CalculateBumpPackQtyService();
        buyQuantityConstraintService = new BuyQuantityConstraintService(calculateBumpPackQtyService);
-       addStoreBuyQuantityService = new AddStoreBuyQuantityService(mapper, calculateBumpPackQtyService, buyQuantityConstraintService, calculateInitialSetQuantityService);
+       addStoreBuyQuantityService = new AddStoreBuyQuantityService(mapper, calculateBumpPackQtyService, buyQuantityConstraintService, calculateInitialSetQuantityService, buyQtyProperties);
        replenishmentsOptimizationServices=new ReplenishmentsOptimizationService(deptAdminRuleService);
        BuyQtyReplenishmentMapperService buyQtyReplenishmentMapperService = new BuyQtyReplenishmentMapperService();
        replenishmentService = new ReplenishmentService(fineLineReplenishmentRepository, spCustomerChoiceReplenishmentRepository, sizeListReplenishmentRepository, catgReplnPkConsRepository,
@@ -157,6 +162,7 @@ class CalculateFinelineBuyQuantityTest {
        calculateOnlineFinelineBuyQuantity = new  CalculateOnlineFinelineBuyQuantity (mapper, buyQtyReplenishmentMapperService,replenishmentsOptimizationServices, replenishmentService );
        calculateFinelineBuyQuantity = new CalculateFinelineBuyQuantity(bqfpService, mapper, buyQtyReplenishmentMapperService, calculateOnlineFinelineBuyQuantity,
                strategyFetchService,addStoreBuyQuantityService, buyQuantityConstraintService, deptAdminRuleService, replenishmentService, replenishmentsOptimizationServices);
+       lenient().when(buyQtyProperties.getOneUnitPerStoreFeatureFlag()).thenReturn("true");
     }
 
     @Test
@@ -360,7 +366,7 @@ class CalculateFinelineBuyQuantityTest {
         when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
         when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
         when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
-        when(deptAdminRuleService.getInitialThreshold(anyLong(), anyInt())).thenReturn(2500);
+        when(deptAdminRuleService.getInitialThreshold(anyLong(), anyInt())).thenReturn(2);
         CalculateBuyQtyRequest request = create("store", 50000, 34, 6420, 12238, 31526, 5414, 236L);
         CalculateBuyQtyParallelRequest pRequest = createFromRequest(request);
 
@@ -372,13 +378,14 @@ class CalculateFinelineBuyQuantityTest {
 
         SpFineLineChannelFixture fixture1 = response.getSpFineLineChannelFixtures().stream().
                 filter(f -> f.getSpFineLineChannelFixtureId().getFixtureTypeRollUpId().getFixtureTypeRollupId().equals(1)).findFirst().get();
-        Set<SpCustomerChoiceChannelFixtureSize> fixture1Sizes = fixture1
+        SpCustomerChoiceChannelFixture ccFixture = fixture1
                 .getSpStyleChannelFixtures().stream().findFirst()
-                .get().getSpCustomerChoiceChannelFixture().stream().findFirst()
-                .get().getSpCustomerChoiceChannelFixtureSize();
-        assertEquals(0, fixture1.getInitialSetQty());
+                .get().getSpCustomerChoiceChannelFixture().stream().filter(cc -> cc.getSpCustomerChoiceChannelFixtureId().getCustomerChoice().equals("34_5414_1_22_2_RICH BLACK"))
+                .findFirst().get();
+        assertEquals(0, ccFixture.getInitialSetQty());
+        assertEquals(1308, fixture1.getInitialSetQty());
         assertEquals(9612, fixture1.getBuyQty());
-        assertEquals(9612, fixture1.getReplnQty());
+        assertEquals(8304, fixture1.getReplnQty());
     }
 
 
@@ -540,16 +547,16 @@ class CalculateFinelineBuyQuantityTest {
         int fix36x30 = 17443;
         int fix38x32 = 14045;
         int fix40x30 = 11399;
-        int fix44x30 = 9617;
-        int fix42x30 = 11742;
+        int fix44x30 = 9708;
+        int fix42x30 = 11807;
         int fix38x30 = 13891;
         int fix32x32 = 17356;
         int fix34x30 = 17356;
         int fix34x32 = 18017;
         int fix36x32 = 14757;
-        int fix29x30 = 7026;
+        int fix29x30 = 7215;
         int fix30x32 = 11425;
-        int fix33x30 = 7210;
+        int fix33x30 = 7513;
         int fix32x30 = 17077;
         int expectedTotalFix1InitialSetQty = IntStream.of(fix30x30, fix40x32, fix36x30, fix38x32, fix40x30, fix44x30, fix42x30,
                 fix38x30, fix32x32, fix34x30, fix34x32, fix36x32, fix29x30, fix30x32, fix33x30, fix32x30).sum();
@@ -623,6 +630,53 @@ class CalculateFinelineBuyQuantityTest {
         Integer result = calculateFinelineBuyQuantity.getCcMaxBumpPackCnt(bqfpResponse,style,customerChoice);
         assertEquals(3, result);
 
+    }
+
+    @Test
+    void test_calculateInitialSetWithAtleast1UnitPerStore() throws SizeAndPackException, IOException {
+        final String path = "/plan69fineline468";
+        BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
+        APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
+        BuyQtyResponse buyQtyResponse = buyQtyResponseFromJson(path.concat("/BuyQtyResponse"));
+        StrategyVolumeDeviationResponse strategyVolumeDeviationResponse = strategyVolumeDeviationResponseFromJsonFromJson(path.concat("/VDResponse"));
+        when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
+        when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
+        when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
+        when(strategyFetchService.getStrategyVolumeDeviation(anyLong(), anyInt())).thenReturn(strategyVolumeDeviationResponse);
+        when(deptAdminRuleService.getInitialThreshold(anyLong(), anyInt())).thenReturn(2);
+        when(deptAdminRuleService.getReplenishmentThreshold(anyLong(), anyInt())).thenReturn(500);
+        CalculateBuyQtyRequest request = create("store", 50000, 34, 1488, 9074, 7207, 468, 69L);
+        CalculateBuyQtyParallelRequest pRequest = createFromRequest(request);
+
+        CalculateBuyQtyResponse r = new CalculateBuyQtyResponse();
+        r.setMerchCatgReplPacks(new ArrayList<>());
+        r.setSpFineLineChannelFixtures(new ArrayList<>());
+
+        CalculateBuyQtyResponse response = calculateFinelineBuyQuantity.calculateFinelineBuyQty(request, pRequest, r);
+
+        SpFineLineChannelFixture fixture1 = response.getSpFineLineChannelFixtures().stream().
+                filter(f -> f.getSpFineLineChannelFixtureId().getFixtureTypeRollUpId().getFixtureTypeRollupId().equals(1)).findFirst().get();
+        Set<SpCustomerChoiceChannelFixtureSize> fixture1Sizes = fixture1
+                .getSpStyleChannelFixtures().stream().filter(style -> style.getSpStyleChannelFixtureId().getStyleNbr().equals("34_468_3_24_004"))
+                .findFirst().get()
+                .getSpCustomerChoiceChannelFixture().stream().filter(cc -> cc.getSpCustomerChoiceChannelFixtureId().getCustomerChoice().equals("34_468_3_24_004_003"))
+                .findFirst().get().getSpCustomerChoiceChannelFixtureSize();
+
+        assertEquals(7, fixture1Sizes.size(), "Fixture 1 Should have 7 sizes present");
+        int fix1xs = 3716;
+        int fix1s = 13028;
+        int fix1m = 16070;
+        int fix1l = 16989;
+        int fix1xl = 13187;
+        int fix1xxl = 9932;
+        int fix1xxxl = 3926;
+        assertUnitValueBySize(fixture1Sizes, "XS", fix1xs, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
+        assertUnitValueBySize(fixture1Sizes, "S", fix1s, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
+        assertUnitValueBySize(fixture1Sizes, "M", fix1m, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
+        assertUnitValueBySize(fixture1Sizes, "L", fix1l, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
+        assertUnitValueBySize(fixture1Sizes, "XL", fix1xl, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
+        assertUnitValueBySize(fixture1Sizes, "XXL", fix1xxl, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
+        assertUnitValueBySize(fixture1Sizes, "XXXL", fix1xxxl, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
     }
 
 }

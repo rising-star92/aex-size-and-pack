@@ -19,10 +19,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
@@ -65,8 +62,8 @@ class AddStoreBuyQuantityServiceTest {
         calculateInitialSetQuantityService = new CalculateInitialSetQuantityService();
         calculateBumpPackQtyService = new CalculateBumpPackQtyService();
         buyQuantityConstraintService = new BuyQuantityConstraintService(calculateBumpPackQtyService);
-        addStoreBuyQuantityService = new AddStoreBuyQuantityService(objectMapper, calculateBumpPackQtyService, buyQuantityConstraintService, calculateInitialSetQuantityService);
-
+        addStoreBuyQuantityService = new AddStoreBuyQuantityService(objectMapper, calculateBumpPackQtyService, buyQuantityConstraintService, calculateInitialSetQuantityService, buyQtyProperties);
+        Mockito.when(buyQtyProperties.getOneUnitPerStoreFeatureFlag()).thenReturn("true");
     }
 
     @Test
@@ -125,8 +122,8 @@ class AddStoreBuyQuantityServiceTest {
         AddStoreBuyQuantity addStoreBuyQuantity = getAddStoreBuyQuantities(bqfpResponse, getStyleDTO(), getMerchMethodsDto(), getSizeDTO(), rfaSizePackDataList, getCustomerChoiceDTO());
         addStoreBuyQuantityService.addStoreBuyQuantities(addStoreBuyQuantity,buyQtyObj, 2);
         StoreQuantity storeQuantity = buyQtyObj.getBuyQtyStoreObj().getBuyQuantities().get(1);
-        assertEquals(2.0, storeQuantity.getTotalUnits());
-        assertEquals(2.0, storeQuantity.getIsUnits());
+        assertEquals(1.0, storeQuantity.getTotalUnits());
+        assertEquals(1.0, storeQuantity.getIsUnits());
     }
 
     @Test
@@ -141,8 +138,8 @@ class AddStoreBuyQuantityServiceTest {
         AddStoreBuyQuantity addStoreBuyQuantity = getAddStoreBuyQuantities(bqfpResponse, getStyleDTO(), getMerchMethodsDto(), getSizeDTO(), rfaSizePackDataList, getCustomerChoiceDTO());
         addStoreBuyQuantityService.addStoreBuyQuantities(addStoreBuyQuantity,buyQtyObj, 2);
         StoreQuantity storeQuantity = buyQtyObj.getBuyQtyStoreObj().getBuyQuantities().get(0);
-        assertEquals(0.0, storeQuantity.getTotalUnits());
-        assertEquals(0.0, storeQuantity.getIsUnits());
+        assertEquals(4.0, storeQuantity.getTotalUnits());
+        assertEquals(2.0, storeQuantity.getIsUnits());
     }
 
     @Test
@@ -157,8 +154,8 @@ class AddStoreBuyQuantityServiceTest {
         AddStoreBuyQuantity addStoreBuyQuantity = getAddStoreBuyQuantities(bqfpResponse, getStyleDTO(), getMerchMethodsDto(), getSizeDTO(), rfaSizePackDataList, getCustomerChoiceDTO());
         addStoreBuyQuantityService.addStoreBuyQuantities(addStoreBuyQuantity,buyQtyObj, 2);
         StoreQuantity storeQuantity = buyQtyObj.getBuyQtyStoreObj().getBuyQuantities().get(0);
-        assertEquals(0.0, storeQuantity.getTotalUnits());
-        assertEquals(0.0, storeQuantity.getIsUnits());
+        assertEquals(4.0, storeQuantity.getTotalUnits());
+        assertEquals(2.0, storeQuantity.getIsUnits());
     }
 
     @Test
