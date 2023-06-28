@@ -604,4 +604,4 @@ configOverrides:
         envProfile: "stage"
       value:
         properties:
-          "initialSet.oneUnitPerStoreFlag": "false"
+          "initialSet.oneUnitPerStoreFlag": "true"
