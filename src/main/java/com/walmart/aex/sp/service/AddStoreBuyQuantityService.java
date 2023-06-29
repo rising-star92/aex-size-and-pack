@@ -14,7 +14,7 @@ import com.walmart.aex.sp.enums.FixtureTypeRollup;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.properties.BuyQtyProperties;
 import com.walmart.aex.sp.util.BuyQtyCommonUtil;
-import io.strati.configuration.annotation.ManagedConfiguration;
+import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
