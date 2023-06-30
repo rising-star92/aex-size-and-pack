@@ -132,7 +132,7 @@ public class AddStoreBuyQuantityService {
         List<Integer> storeList = safeReadStoreList(rfaSizePackData.getStore_list()).stream().sorted().collect(Collectors.toList());
         SizeDto sizeDto = addStoreBuyQuantity.getSizeDto();
         // calculate the InitialSetQty
-        InitialSetQuantity initialSetQuantity = calculateInitialSetQuantityService.calculateInitialSetQty(sizeDto, volumeCluster, rfaSizePackData); // 0
+        InitialSetQuantity initialSetQuantity = calculateInitialSetQuantityService.calculateInitialSetQtyV2(sizeDto, volumeCluster, rfaSizePackData); // 0
         double perStoreQty = initialSetQuantity.getPerStoreQty();
         double isQty = initialSetQuantity.getIsQty();
         // Based on the flag which we get from calculateInitialSetQty method to figure our which one is explicitly been set to 1

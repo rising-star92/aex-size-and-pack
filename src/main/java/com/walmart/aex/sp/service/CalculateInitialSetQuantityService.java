@@ -13,6 +13,19 @@ import org.springframework.stereotype.Service;
 public class CalculateInitialSetQuantityService {
 
     public InitialSetQuantity calculateInitialSetQty(SizeDto sizeDto, Cluster volumeCluster, RFASizePackData rfaSizePackData) {
+        // TODO: remove this version when cleaning up
+        InitialSetQuantity initialSetQuantity = new InitialSetQuantity();
+        Float isCalculatedBq = rfaSizePackData.getStore_cnt() * volumeCluster.getInitialSet().getInitialSetUnitsPerFix() * rfaSizePackData.getFixture_group();
+        double isQty = (isCalculatedBq * BuyQtyCommonUtil.getSizePct(sizeDto)) / 100;
+        double perStoreQty = Math.round(isQty / rfaSizePackData.getStore_cnt());
+        isQty = perStoreQty * rfaSizePackData.getStore_cnt();
+        initialSetQuantity.setIsQty(isQty);
+        initialSetQuantity.setPerStoreQty(perStoreQty);
+        log.debug("| IS before constraints | : {} | {} | {} ", sizeDto.getSizeDesc(), isQty, perStoreQty);
+        return initialSetQuantity;
+    }
+
+    public InitialSetQuantity calculateInitialSetQtyV2(SizeDto sizeDto, Cluster volumeCluster, RFASizePackData rfaSizePackData) {
         /*** Calculate IS Buy Quantity ***/
         InitialSetQuantity initialSetQuantity = new InitialSetQuantity();
         Float isCalculatedBq = rfaSizePackData.getStore_cnt() * volumeCluster.getInitialSet().getInitialSetUnitsPerFix() * rfaSizePackData.getFixture_group();
