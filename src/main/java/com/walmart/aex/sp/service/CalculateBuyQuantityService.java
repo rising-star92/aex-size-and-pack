@@ -47,13 +47,7 @@ public class CalculateBuyQuantityService {
         List<CalculateBuyQtyParallelRequest> calculateBuyQtyParallelRequests = new ArrayList<>();
         log.info("Received calculateBuyQtyRequest payload to calculate buy quantity: {} ",calculateBuyQtyRequest);
         try {
-            List<Integer> finelines = Optional.of(calculateBuyQtyRequest.getLvl3List()).stream()
-                    .flatMap(Collection::stream)
-                    .map(Lvl3Dto::getLvl4List).flatMap(Collection::stream)
-                    .map(Lvl4Dto::getFinelines).flatMap(Collection::stream)
-                    .mapToInt(FinelineDto::getFinelineNbr).boxed().collect(Collectors.toList());
-
-            List<FinelinePlan> finelinePlanList = finelinePlanRepository.findAllByFinelinePlanId_SubCatPlanId_MerchCatPlanId_PlanIdAndFinelinePlanId_FinelineNbrIn(calculateBuyQtyRequest.getPlanId(), finelines).get();
+            List<FinelinePlan> finelinePlanList = getFinelinePlans(calculateBuyQtyRequest);
             if (!CollectionUtils.isEmpty(calculateBuyQtyRequest.getLvl3List())) {
                 calculateBuyQtyRequest.getLvl3List().forEach(lvl3Dto -> {
                     if (!CollectionUtils.isEmpty(lvl3Dto.getLvl4List())) {
@@ -76,6 +70,16 @@ public class CalculateBuyQuantityService {
         } catch (Exception e) {
             log.error("Failed to Calculate Buy Quantity. Error: ", e);
         }
+    }
+
+    private List<FinelinePlan> getFinelinePlans(CalculateBuyQtyRequest calculateBuyQtyRequest) {
+        List<Integer> finelines = Optional.of(calculateBuyQtyRequest.getLvl3List()).stream()
+                .flatMap(Collection::stream)
+                .map(Lvl3Dto::getLvl4List).flatMap(Collection::stream)
+                .map(Lvl4Dto::getFinelines).flatMap(Collection::stream)
+                .mapToInt(FinelineDto::getFinelineNbr).boxed().collect(Collectors.toList());
+
+        return finelinePlanRepository.findAllByFinelinePlanId_SubCatPlanId_MerchCatPlanId_PlanIdAndFinelinePlanId_FinelineNbrIn(calculateBuyQtyRequest.getPlanId(), finelines).get();
     }
 
     private static CalculateBuyQtyParallelRequest createCalculateBuyQtyParallelRequest(List<FinelinePlan> finelinePlanList, Lvl3Dto lvl3Dto, Lvl4Dto lvl4Dto, FinelineDto finelineDto, CalculateBuyQtyRequest calculateBuyQtyRequest) {
