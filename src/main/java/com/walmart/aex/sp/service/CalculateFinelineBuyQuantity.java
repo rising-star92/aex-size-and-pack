@@ -135,7 +135,7 @@ public class CalculateFinelineBuyQuantity {
             FinelineDto finelineDto = getFineline(buyQtyResponse);
             if (finelineDto != null) {
                 if (!CollectionUtils.isEmpty(finelineDto.getMerchMethods()) && ChannelType.STORE.getDescription().equalsIgnoreCase(calculateBuyQtyParallelRequest.getChannel())) {
-                    getMerchMethod(calculateBuyQtyParallelRequest, finelineDto, apResponse, bqfpResponseCompletableFuture.get(), calculateBuyQtyResponse, calculateBuyQtyRequest);
+                    getMerchMethod(calculateBuyQtyParallelRequest, finelineDto, apResponse, bqfpResponseCompletableFuture.get(), calculateBuyQtyResponse);
                 } else if (ChannelType.ONLINE.getDescription().equalsIgnoreCase(calculateBuyQtyParallelRequest.getChannel())) {
                     calculateBuyQtyResponse = calculateOnlineFinelineBuyQuantity.calculateOnlineBuyQty(calculateBuyQtyParallelRequest, finelineDto, bqfpResponseCompletableFuture.get(), calculateBuyQtyResponse);
                 } else log.info("Merchmethods or channel is empty: {}", buyQtyResponseCompletableFuture);
@@ -194,7 +194,7 @@ public class CalculateFinelineBuyQuantity {
     }
 
     private void getMerchMethod(CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, FinelineDto finelineDto, APResponse apResponse, BQFPResponse bqfpResponse,
-                                CalculateBuyQtyResponse calculateBuyQtyResponse, CalculateBuyQtyRequest calculateBuyQtyRequest) {
+                                CalculateBuyQtyResponse calculateBuyQtyResponse) {
         List<SpFineLineChannelFixture> spFineLineChannelFixtures = new ArrayList<>();
         Map<Integer, List<MerchMethodsDto>> merchCodeMap = new HashMap<>();
         Set<CustomerChoice> customerChoices = bqfpResponse.getStyles().stream().map(Style::getCustomerChoices)
@@ -208,8 +208,8 @@ public class CalculateFinelineBuyQuantity {
         merchCodeMap.forEach((merchMethodCode, merchMethodsDtos) -> {
             // Hard coded for temporary testing of calculating InitialSet, BumpSet and Replenishment
             FixtureTypeRollUpId fixtureTypeRollUpId = new FixtureTypeRollUpId(merchMethodCode);
-            SpFineLineChannelFixtureId spFineLineChannelFixtureId = new SpFineLineChannelFixtureId(fixtureTypeRollUpId, calculateBuyQtyRequest.getPlanId(), calculateBuyQtyRequest.getLvl0Nbr(),
-                    calculateBuyQtyRequest.getLvl1Nbr(), calculateBuyQtyRequest.getLvl2Nbr(), calculateBuyQtyParallelRequest.getLvl3Nbr(), calculateBuyQtyParallelRequest.getLvl4Nbr(), finelineDto.getFinelineNbr(), ChannelType.getChannelIdFromName(calculateBuyQtyRequest.getChannel()));
+            SpFineLineChannelFixtureId spFineLineChannelFixtureId = new SpFineLineChannelFixtureId(fixtureTypeRollUpId, calculateBuyQtyParallelRequest.getPlanId(), calculateBuyQtyParallelRequest.getLvl0Nbr(),
+                    calculateBuyQtyParallelRequest.getLvl1Nbr(), calculateBuyQtyParallelRequest.getLvl2Nbr(), calculateBuyQtyParallelRequest.getLvl3Nbr(), calculateBuyQtyParallelRequest.getLvl4Nbr(), finelineDto.getFinelineNbr(), ChannelType.getChannelIdFromName(calculateBuyQtyParallelRequest.getChannel()));
             log.info("Checking if Fineline Chan Fixture Id is existing: {}", spFineLineChannelFixtureId);
 
             SpFineLineChannelFixture spFineLineChannelFixture = new SpFineLineChannelFixture();
