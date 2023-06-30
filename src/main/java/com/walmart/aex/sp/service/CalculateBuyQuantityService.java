@@ -30,7 +30,6 @@ public class CalculateBuyQuantityService {
     private final BuyQuantityCommonRepository buyQuantityCommonRepository;
     private final ReplenishmentCommonRepository replenishmentCommonRepository;
     private final CalculateFinelineBuyQuantity calculateFinelineBuyQuantity;
-
     private final FinelinePlanRepository finelinePlanRepository;
 
     public CalculateBuyQuantityService(BuyQuantityCommonRepository buyQuantityCommonRepository,
@@ -61,15 +60,7 @@ public class CalculateBuyQuantityService {
                         lvl3Dto.getLvl4List().forEach(lvl4Dto -> {
                             if (!CollectionUtils.isEmpty(lvl4Dto.getFinelines())) {
                                 lvl4Dto.getFinelines().forEach(finelineDto -> {
-                                    CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest = new CalculateBuyQtyParallelRequest();
-                                    calculateBuyQtyParallelRequest.setPlanId(calculateBuyQtyRequest.getPlanId());
-                                    setHierarchy(finelinePlanList, lvl3Dto, lvl4Dto, finelineDto, calculateBuyQtyParallelRequest);
-
-                                    calculateBuyQtyParallelRequest.setChannel(calculateBuyQtyRequest.getChannel());
-                                    calculateBuyQtyParallelRequest.setLvl3Nbr(lvl3Dto.getLvl3Nbr());
-                                    calculateBuyQtyParallelRequest.setLvl4Nbr(lvl4Dto.getLvl4Nbr());
-                                    calculateBuyQtyParallelRequest.setFinelineNbr(finelineDto.getFinelineNbr());
-                                    calculateBuyQtyParallelRequests.add(calculateBuyQtyParallelRequest);
+                                    calculateBuyQtyParallelRequests.add(createCalculateBuyQtyParallelRequest(finelinePlanList, lvl3Dto, lvl4Dto, finelineDto, calculateBuyQtyRequest));
                                 });
                             } else
                                 log.info("No Finelines available to calculate buy quantity for request: {}", calculateBuyQtyRequest);
@@ -87,7 +78,13 @@ public class CalculateBuyQuantityService {
         }
     }
 
-    private static void setHierarchy(List<FinelinePlan> finelinePlanList, Lvl3Dto lvl3Dto, Lvl4Dto lvl4Dto, FinelineDto finelineDto, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest) {
+    private static CalculateBuyQtyParallelRequest createCalculateBuyQtyParallelRequest(List<FinelinePlan> finelinePlanList, Lvl3Dto lvl3Dto, Lvl4Dto lvl4Dto, FinelineDto finelineDto, CalculateBuyQtyRequest calculateBuyQtyRequest) {
+        CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest = new CalculateBuyQtyParallelRequest();
+        calculateBuyQtyParallelRequest.setPlanId(calculateBuyQtyRequest.getPlanId());
+        calculateBuyQtyParallelRequest.setChannel(calculateBuyQtyRequest.getChannel());
+        calculateBuyQtyParallelRequest.setLvl3Nbr(lvl3Dto.getLvl3Nbr());
+        calculateBuyQtyParallelRequest.setLvl4Nbr(lvl4Dto.getLvl4Nbr());
+        calculateBuyQtyParallelRequest.setFinelineNbr(finelineDto.getFinelineNbr());
         Optional<FinelinePlan> optionalFinelinePlan = finelinePlanList.stream()
                 .filter(fineline -> fineline.getFinelinePlanId().getSubCatPlanId().getMerchCatPlanId().getLvl3Nbr().equals(lvl3Dto.getLvl3Nbr()) &&
                         fineline.getFinelinePlanId().getSubCatPlanId().getLvl4Nbr().equals(lvl4Dto.getLvl4Nbr()) &&
@@ -98,6 +95,7 @@ public class CalculateBuyQuantityService {
             calculateBuyQtyParallelRequest.setLvl1Nbr(finelinePlan.getFinelinePlanId().getSubCatPlanId().getMerchCatPlanId().getLvl1Nbr());
             calculateBuyQtyParallelRequest.setLvl2Nbr(finelinePlan.getFinelinePlanId().getSubCatPlanId().getMerchCatPlanId().getLvl2Nbr());
         }
+        return calculateBuyQtyParallelRequest;
     }
 
     private void calculateFinelinesParallel(CalculateBuyQtyRequest calculateBuyQtyRequest, List<CalculateBuyQtyParallelRequest> calculateBuyQtyParallelRequests) {
