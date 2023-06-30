@@ -454,4 +454,3 @@ configDefinitions:
         defaultValue: "true"
 apiVersion: "2.0"
 kind: "ServiceConfig"
-
