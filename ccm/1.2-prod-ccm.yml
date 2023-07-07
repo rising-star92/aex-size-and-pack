@@ -171,7 +171,7 @@ configDefinitions:
         description: "Feature flag to enable the logic for making sure each store gets one unit"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "false"
+        defaultValue: "true"
   bqfpServiceConfig:
     description: ""
     resolutionPaths:
