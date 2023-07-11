@@ -25,15 +25,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 
-import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.ws.rs.Consumes;
 import java.util.List;
 
 @Slf4j
 @RequestMapping("/size-and-pack/v1")
 @Controller
-@Api(consumes = MediaType.APPLICATION_JSON_VALUE)
+@Consumes(MediaType.APPLICATION_JSON_VALUE)
 public class SizeAndPackController {
 
 	private final CommonUtil commonUtil;

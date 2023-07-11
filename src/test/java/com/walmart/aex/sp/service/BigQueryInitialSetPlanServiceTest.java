@@ -10,8 +10,6 @@ import com.walmart.aex.sp.dto.isVolume.InitialSetVolumeResponse;
 import com.walmart.aex.sp.exception.SizeAndPackException;
 import com.walmart.aex.sp.properties.BigQueryConnectionProperties;
 import com.walmart.aex.sp.util.BuyQtyResponseInputs;
-import org.jetbrains.annotations.NotNull;
-import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

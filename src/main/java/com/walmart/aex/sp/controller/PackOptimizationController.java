@@ -17,7 +17,6 @@ import com.walmart.aex.sp.service.IntegrationHubService;
 import com.walmart.aex.sp.service.PackOptimizationService;
 import com.walmart.aex.sp.service.PostPackOptimizationService;
 import com.walmart.aex.sp.service.UpdateFromQuoteService;
-import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
@@ -31,6 +30,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.ws.rs.Consumes;
 import java.math.BigInteger;
 
 import static com.walmart.aex.sp.util.SizeAndPackConstants.FAILED_STATUS;
@@ -38,11 +38,8 @@ import static com.walmart.aex.sp.util.SizeAndPackConstants.INCORRECT_ACTION_MSG;
 import static com.walmart.aex.sp.util.SizeAndPackConstants.NO_ACTION_MSG;
 
 @Slf4j
-
 @RestController
-
-@Api(consumes = MediaType.APPLICATION_JSON_VALUE)
-
+@Consumes(MediaType.APPLICATION_JSON_VALUE)
 public class PackOptimizationController {
     private final PackOptimizationService packOptService;
 
