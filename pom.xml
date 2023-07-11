@@ -27,8 +27,8 @@
         <ccm.client.version>2.0.11</ccm.client.version>
         <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
         <org.projectlombok.version>1.18.22</org.projectlombok.version>
-        <strati.boms.version>11.0.17</strati.boms.version>
-        <txn.marking.version>4.5.4</txn.marking.version>
+        <strati.boms.version>11.1.1</strati.boms.version>
+        <txn.marking.version>4.6.6</txn.marking.version>
 
         <sonar.coverage.exclusions>
             **/Application.java,
@@ -267,6 +267,13 @@
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
             <version>2.0</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-text -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+            <version>1.10.0</version>
         </dependency>
     </dependencies>
 
