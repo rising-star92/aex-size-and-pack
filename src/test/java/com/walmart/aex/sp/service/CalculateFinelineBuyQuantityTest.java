@@ -233,8 +233,8 @@ class CalculateFinelineBuyQuantityTest {
 
         assertNotNull(response.getMerchCatgReplPacks());
         assertEquals(1, response.getMerchCatgReplPacks().size(), "Only 1 merch catg repl pack created");
-        assertEquals((Integer)18474,
-              response.getMerchCatgReplPacks().get(0).getReplUnits(), "Repln units should be 19143 for cc");
+        assertEquals((Integer)18417,
+              response.getMerchCatgReplPacks().get(0).getReplUnits(), "Repln units should be 18417 for cc");
 
     }
 

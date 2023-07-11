@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
 @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-public class ReplenishmentsOptimizationServiceTest {
+class ReplenishmentsOptimizationServiceTest {
 
     @InjectMocks
     ReplenishmentsOptimizationService replenishmentsOptimizationService;
@@ -32,7 +32,7 @@ public class ReplenishmentsOptimizationServiceTest {
 
 
     @Test
-    public void assertUpdatedReplenishmentWithDcInboundQtyRulesWithScenario1() {
+    void assertUpdatedReplenishmentWithDcInboundQtyRulesWithScenario1() {
         Integer store_channelId = 1;
         Integer online_channelId = 2;
         Integer lv1Number = 34;
@@ -55,7 +55,7 @@ public class ReplenishmentsOptimizationServiceTest {
         assertEquals(getReplenishmentsObj(List.of(499L, 505L, 0L)), replenishmentsOptimizationService.getUpdatedReplenishmentsPack(getReplenishmentsObj(List.of(1L, 499L, 499L)), 5, store_channelId, lv1Number, planId));
         assertEquals(getReplenishmentsObj(List.of(1000L, 950L, 950L)), replenishmentsOptimizationService.getUpdatedReplenishmentsPack(getReplenishmentsObj(List.of(1000L, 950L, 950L)),5, online_channelId, null, null));
         assertEquals(getReplenishmentsObj(List.of(175L,240L,180L,0L)), replenishmentsOptimizationService.getUpdatedReplenishmentsPack(getReplenishmentsObj(List.of(175L, 240L, 180L,0L)),5, online_channelId, null, null));
-
+        assertEquals(getReplenishmentsObj(List.of(500L, 760L, 0L)), replenishmentsOptimizationService.getUpdatedReplenishmentsPack(getReplenishmentsObj(List.of(10L, 300L, 950L)),5, store_channelId, lv1Number, planId));
     }
 
     private List<Replenishment> getReplenishmentsObj(List<Long> longs) {
