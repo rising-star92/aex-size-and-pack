@@ -44,7 +44,7 @@ public class BuyQuantityConstraintService {
         for (Replenishment replenishment: replnsWithUnits) {
             long result = getRoundedDifference(replenishment.getAdjReplnUnits(), perReplenishmentReduced);
             if (result < 0)
-                remainingWeekUnits = remainingWeekUnits + (-result);
+                remainingWeekUnits = remainingWeekUnits + Math.abs(result);
             replenishment.setAdjReplnUnits(getAdjustedDifference(result));
         }
         if (remainingWeekUnits > 0) {
@@ -74,7 +74,7 @@ public class BuyQuantityConstraintService {
                 long result = getRoundedDifference(replenishment.getAdjReplnUnits(), remainingUnits);
                 replenishment.setAdjReplnUnits(getAdjustedDifference(result));
                 if (result < 0)
-                    remainingUnits = remainingUnits + (-result);
+                    remainingUnits = remainingUnits + Math.abs(result);
                 else
                     remainingUnits = 0;
             }
