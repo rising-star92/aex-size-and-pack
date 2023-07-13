@@ -119,6 +119,7 @@ public class ReplenishmentsOptimizationService {
             if (required == 0 || nonZeroReplenishmentList.get(j).getAdjReplnUnits() == 0) {
                 break;
             }
+            // If the required is greater than the future week, then pull all the units from future week into current
             if (required >= nonZeroReplenishmentList.get(j).getAdjReplnUnits()) {
                 long temp = nonZeroReplenishmentList.get(j).getAdjReplnUnits();
                 nonZeroReplenishmentList.get(j).setAdjReplnUnits(0L);

@@ -408,7 +408,7 @@ public class CalculateFinelineBuyQuantity {
         }
 
         entry.getValue().setTotalReplenishment(0L);
-        // DC Inbound Optimization
+        // DC Inbound Optimization to consider all the replenishment count
         entry.getValue().setReplenishments(replenishmentsOptimizationServices.getUpdatedReplenishmentsPack(entry.getValue().getReplenishments(), vendorPackQty, SizeAndPackConstants.STORE_CHANNEL_ID, lvl1Nbr, planId));
         //Update Store Qty
         final BuyQtyObj allStoresBuyQty = entry.getValue();

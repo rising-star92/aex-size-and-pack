@@ -43,6 +43,7 @@ public class BuyQuantityConstraintService {
         double remainingWeekUnits = 0.0;
         for (Replenishment replenishment: replnsWithUnits) {
             long result = getRoundedDifference(replenishment.getAdjReplnUnits(), perReplenishmentReduced);
+            // if the perReplenishmentReduced is greater than the current week, capture the remainder and reduce it from future week
             if (result < 0)
                 remainingWeekUnits = remainingWeekUnits + Math.abs(result);
             replenishment.setAdjReplnUnits(getAdjustedDifference(result));
