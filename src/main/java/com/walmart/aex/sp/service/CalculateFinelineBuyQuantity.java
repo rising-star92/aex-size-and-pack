@@ -408,8 +408,12 @@ public class CalculateFinelineBuyQuantity {
         }
 
         entry.getValue().setTotalReplenishment(0L);
-        // DC Inbound Optimization to consider all the replenishment count
-        entry.getValue().setReplenishments(replenishmentsOptimizationServices.getUpdatedReplenishmentsPack(entry.getValue().getReplenishments(), vendorPackQty, SizeAndPackConstants.STORE_CHANNEL_ID, lvl1Nbr, planId));
+
+        double bsBuyQty = getBsQty(entry);
+        double isBuyQty = getIsQty(entry);
+        // Run DC Inbound Optimization when IS is 0 to consider all the replenishment count
+        if (isBuyQty == 0)
+            entry.getValue().setReplenishments(replenishmentsOptimizationServices.getUpdatedReplenishmentsPack(entry.getValue().getReplenishments(), vendorPackQty, SizeAndPackConstants.STORE_CHANNEL_ID, lvl1Nbr, planId));
         //Update Store Qty
         final BuyQtyObj allStoresBuyQty = entry.getValue();
         if (!CollectionUtils.isEmpty(allStoresBuyQty.getReplenishments()) && !CollectionUtils.isEmpty(allStoresBuyQty.getBuyQtyStoreObj().getBuyQuantities())) {
@@ -419,8 +423,6 @@ public class CalculateFinelineBuyQuantity {
             }
         }
 
-        double bsBuyQty = getBsQty(entry);
-        double isBuyQty = getIsQty(entry);
         double totalBuyQty = isBuyQty + bsBuyQty + entry.getValue().getTotalReplenishment();
         spCustomerChoiceChannelFixtureSize.setInitialSetQty((int) Math.round(isBuyQty));
         spCustomerChoiceChannelFixtureSize.setBumpPackQty((int) Math.round(bsBuyQty));
