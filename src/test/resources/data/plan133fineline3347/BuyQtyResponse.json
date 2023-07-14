@@ -1,0 +1,1413 @@
+{
+    "planId": 133,
+    "lvl0Nbr": 50000,
+    "lvl1Nbr": 23,
+    "lvl2Nbr": 3669,
+    "lvl3List": [
+        {
+            "lvl3Nbr": 8244,
+            "lvl4List": [
+                {
+                    "lvl4Nbr": 16906,
+                    "finelines": [
+                        {
+                            "finelineNbr": 3347,
+                            "merchMethods": [
+                                {
+                                    "fixtureTypeRollupId": 3,
+                                    "merchMethod": "HANGING",
+                                    "merchMethodCode": 1
+                                }
+                            ],
+                            "metrics": {
+                                "sizeProfilePct": null,
+                                "adjSizeProfilePct": null,
+                                "avgSizeProfilePct": null,
+                                "adjAvgSizeProfilePct": null
+                            },
+                            "clusters": null,
+                            "styles": [
+                                {
+                                    "styleNbr": "23_3347_1_25_001",
+                                    "metrics": {
+                                        "sizeProfilePct": null,
+                                        "adjSizeProfilePct": null,
+                                        "avgSizeProfilePct": null,
+                                        "adjAvgSizeProfilePct": null
+                                    },
+                                    "clusters": null,
+                                    "customerChoices": [
+                                        {
+                                            "ccId": "23_3347_1_25_001_001",
+                                            "metrics": {
+                                                "sizeProfilePct": null,
+                                                "adjSizeProfilePct": null,
+                                                "avgSizeProfilePct": 0.0,
+                                                "adjAvgSizeProfilePct": 100.0
+                                            },
+                                            "clusters": [
+                                                {
+                                                    "clusterID": 0,
+                                                    "sizes": [
+                                                        {
+                                                            "ahsSizeId": 9354,
+                                                            "sizeDesc": "29X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 5.4,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 5.4
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 9854,
+                                                            "sizeDesc": "30X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 6.4,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 6.4
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 10054,
+                                                            "sizeDesc": "30X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 5.5,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 5.5
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 11654,
+                                                            "sizeDesc": "32X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 8.3,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 8.3
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 11854,
+                                                            "sizeDesc": "32X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 7.8,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 7.8
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 12554,
+                                                            "sizeDesc": "33X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 6.5,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 6.5
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 13654,
+                                                            "sizeDesc": "34X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 7.8,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 7.8
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 13854,
+                                                            "sizeDesc": "34X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 7.3,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 7.3
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 15854,
+                                                            "sizeDesc": "36X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 7.5,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 7.5
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 16054,
+                                                            "sizeDesc": "36X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 6.8,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 6.8
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 18054,
+                                                            "sizeDesc": "38X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 5.8,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 5.8
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 18254,
+                                                            "sizeDesc": "38X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 5.3,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 5.3
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 20254,
+                                                            "sizeDesc": "40X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 4.9,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 4.9
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 20454,
+                                                            "sizeDesc": "40X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 5.0,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 5.0
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 21554,
+                                                            "sizeDesc": "42X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 4.8,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 4.8
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 22754,
+                                                            "sizeDesc": "44X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 4.9,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 4.9
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "clusterID": 1,
+                                                    "sizes": [
+                                                        {
+                                                            "ahsSizeId": 9354,
+                                                            "sizeDesc": "29X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 5.4,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 9854,
+                                                            "sizeDesc": "30X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 6.4,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 10054,
+                                                            "sizeDesc": "30X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 5.5,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 11654,
+                                                            "sizeDesc": "32X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 8.3,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 11854,
+                                                            "sizeDesc": "32X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 7.8,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 12554,
+                                                            "sizeDesc": "33X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 6.5,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 13654,
+                                                            "sizeDesc": "34X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 7.8,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 13854,
+                                                            "sizeDesc": "34X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 7.3,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 15854,
+                                                            "sizeDesc": "36X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 7.5,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 16054,
+                                                            "sizeDesc": "36X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 6.8,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 18054,
+                                                            "sizeDesc": "38X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 5.8,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 18254,
+                                                            "sizeDesc": "38X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 5.3,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 20254,
+                                                            "sizeDesc": "40X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 4.9,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 20454,
+                                                            "sizeDesc": "40X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 5.0,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 21554,
+                                                            "sizeDesc": "42X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 4.8,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 22754,
+                                                            "sizeDesc": "44X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 4.9,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "ccId": "23_3347_1_25_001_002",
+                                            "metrics": {
+                                                "sizeProfilePct": null,
+                                                "adjSizeProfilePct": null,
+                                                "avgSizeProfilePct": 0.0,
+                                                "adjAvgSizeProfilePct": 100.0
+                                            },
+                                            "clusters": [
+                                                {
+                                                    "clusterID": 0,
+                                                    "sizes": [
+                                                        {
+                                                            "ahsSizeId": 9354,
+                                                            "sizeDesc": "29X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 5.4,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 5.4
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 9854,
+                                                            "sizeDesc": "30X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 6.4,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 6.4
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 10054,
+                                                            "sizeDesc": "30X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 5.5,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 5.5
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 11654,
+                                                            "sizeDesc": "32X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 8.3,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 8.3
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 11854,
+                                                            "sizeDesc": "32X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 7.8,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 7.8
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 12554,
+                                                            "sizeDesc": "33X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 6.5,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 6.5
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 13654,
+                                                            "sizeDesc": "34X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 7.8,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 7.8
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 13854,
+                                                            "sizeDesc": "34X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 7.3,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 7.3
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 15854,
+                                                            "sizeDesc": "36X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 7.5,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 7.5
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 16054,
+                                                            "sizeDesc": "36X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 6.8,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 6.8
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 18054,
+                                                            "sizeDesc": "38X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 5.8,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 5.8
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 18254,
+                                                            "sizeDesc": "38X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 5.3,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 5.3
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 20254,
+                                                            "sizeDesc": "40X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 4.9,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 4.9
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 20454,
+                                                            "sizeDesc": "40X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 5.0,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 5.0
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 21554,
+                                                            "sizeDesc": "42X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 4.8,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 4.8
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 22754,
+                                                            "sizeDesc": "44X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 4.9,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 4.9
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "clusterID": 1,
+                                                    "sizes": [
+                                                        {
+                                                            "ahsSizeId": 9354,
+                                                            "sizeDesc": "29X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 5.4,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 9854,
+                                                            "sizeDesc": "30X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 6.4,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 10054,
+                                                            "sizeDesc": "30X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 5.5,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 11654,
+                                                            "sizeDesc": "32X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 8.3,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 11854,
+                                                            "sizeDesc": "32X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 7.8,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 12554,
+                                                            "sizeDesc": "33X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 6.5,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 13654,
+                                                            "sizeDesc": "34X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 7.8,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 13854,
+                                                            "sizeDesc": "34X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 7.3,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 15854,
+                                                            "sizeDesc": "36X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 7.5,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 16054,
+                                                            "sizeDesc": "36X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 6.8,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 18054,
+                                                            "sizeDesc": "38X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 5.8,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 18254,
+                                                            "sizeDesc": "38X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 5.3,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 20254,
+                                                            "sizeDesc": "40X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 4.9,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 20454,
+                                                            "sizeDesc": "40X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 5.0,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 21554,
+                                                            "sizeDesc": "42X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 4.8,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 22754,
+                                                            "sizeDesc": "44X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 4.9,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "ccId": "23_3347_1_25_001_003",
+                                            "metrics": {
+                                                "sizeProfilePct": null,
+                                                "adjSizeProfilePct": null,
+                                                "avgSizeProfilePct": 0.0,
+                                                "adjAvgSizeProfilePct": 100.0
+                                            },
+                                            "clusters": [
+                                                {
+                                                    "clusterID": 0,
+                                                    "sizes": [
+                                                        {
+                                                            "ahsSizeId": 9354,
+                                                            "sizeDesc": "29X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 5.4,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 5.4
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 9854,
+                                                            "sizeDesc": "30X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 6.4,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 6.4
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 10054,
+                                                            "sizeDesc": "30X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 5.5,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 5.5
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 11654,
+                                                            "sizeDesc": "32X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 8.3,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 8.3
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 11854,
+                                                            "sizeDesc": "32X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 7.8,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 7.8
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 12554,
+                                                            "sizeDesc": "33X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 6.5,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 6.5
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 13654,
+                                                            "sizeDesc": "34X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 7.8,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 7.8
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 13854,
+                                                            "sizeDesc": "34X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 7.3,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 7.3
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 15854,
+                                                            "sizeDesc": "36X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 7.5,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 7.5
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 16054,
+                                                            "sizeDesc": "36X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 6.8,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 6.8
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 18054,
+                                                            "sizeDesc": "38X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 5.8,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 5.8
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 18254,
+                                                            "sizeDesc": "38X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 5.3,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 5.3
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 20254,
+                                                            "sizeDesc": "40X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 4.9,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 4.9
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 20454,
+                                                            "sizeDesc": "40X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 5.0,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 5.0
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 21554,
+                                                            "sizeDesc": "42X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 4.8,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 4.8
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 22754,
+                                                            "sizeDesc": "44X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 4.9,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 4.9
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "clusterID": 1,
+                                                    "sizes": [
+                                                        {
+                                                            "ahsSizeId": 9354,
+                                                            "sizeDesc": "29X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 5.4,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 9854,
+                                                            "sizeDesc": "30X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 6.4,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 10054,
+                                                            "sizeDesc": "30X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 5.5,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 11654,
+                                                            "sizeDesc": "32X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 8.3,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 11854,
+                                                            "sizeDesc": "32X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 7.8,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 12554,
+                                                            "sizeDesc": "33X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 6.5,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 13654,
+                                                            "sizeDesc": "34X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 7.8,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 13854,
+                                                            "sizeDesc": "34X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 7.3,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 15854,
+                                                            "sizeDesc": "36X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 7.5,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 16054,
+                                                            "sizeDesc": "36X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 6.8,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 18054,
+                                                            "sizeDesc": "38X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 5.8,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 18254,
+                                                            "sizeDesc": "38X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 5.3,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 20254,
+                                                            "sizeDesc": "40X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 4.9,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 20454,
+                                                            "sizeDesc": "40X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 5.0,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 21554,
+                                                            "sizeDesc": "42X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 4.8,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 22754,
+                                                            "sizeDesc": "44X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 4.9,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "ccId": "23_3347_1_25_001_004",
+                                            "metrics": {
+                                                "sizeProfilePct": null,
+                                                "adjSizeProfilePct": null,
+                                                "avgSizeProfilePct": 0.0,
+                                                "adjAvgSizeProfilePct": 100.0
+                                            },
+                                            "clusters": [
+                                                {
+                                                    "clusterID": 0,
+                                                    "sizes": [
+                                                        {
+                                                            "ahsSizeId": 9354,
+                                                            "sizeDesc": "29X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 5.4,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 5.4
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 9854,
+                                                            "sizeDesc": "30X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 6.4,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 6.4
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 10054,
+                                                            "sizeDesc": "30X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 5.5,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 5.5
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 11654,
+                                                            "sizeDesc": "32X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 8.3,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 8.3
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 11854,
+                                                            "sizeDesc": "32X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 7.8,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 7.8
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 12554,
+                                                            "sizeDesc": "33X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 6.5,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 6.5
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 13654,
+                                                            "sizeDesc": "34X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 7.8,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 7.8
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 13854,
+                                                            "sizeDesc": "34X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 7.3,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 7.3
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 15854,
+                                                            "sizeDesc": "36X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 7.5,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 7.5
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 16054,
+                                                            "sizeDesc": "36X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 6.8,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 6.8
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 18054,
+                                                            "sizeDesc": "38X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 5.8,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 5.8
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 18254,
+                                                            "sizeDesc": "38X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 5.3,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 5.3
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 20254,
+                                                            "sizeDesc": "40X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 4.9,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 4.9
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 20454,
+                                                            "sizeDesc": "40X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 5.0,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 5.0
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 21554,
+                                                            "sizeDesc": "42X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 4.8,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 4.8
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 22754,
+                                                            "sizeDesc": "44X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 4.9,
+                                                                "avgSizeProfilePct": 0.0,
+                                                                "adjAvgSizeProfilePct": 4.9
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "clusterID": 1,
+                                                    "sizes": [
+                                                        {
+                                                            "ahsSizeId": 9354,
+                                                            "sizeDesc": "29X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 5.4,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 9854,
+                                                            "sizeDesc": "30X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 6.4,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 10054,
+                                                            "sizeDesc": "30X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 5.5,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 11654,
+                                                            "sizeDesc": "32X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 8.3,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 11854,
+                                                            "sizeDesc": "32X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 7.8,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 12554,
+                                                            "sizeDesc": "33X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 6.5,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 13654,
+                                                            "sizeDesc": "34X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 7.8,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 13854,
+                                                            "sizeDesc": "34X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 7.3,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 15854,
+                                                            "sizeDesc": "36X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 7.5,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 16054,
+                                                            "sizeDesc": "36X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 6.8,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 18054,
+                                                            "sizeDesc": "38X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 5.8,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 18254,
+                                                            "sizeDesc": "38X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 5.3,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 20254,
+                                                            "sizeDesc": "40X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 4.9,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 20454,
+                                                            "sizeDesc": "40X32",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 5.0,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 21554,
+                                                            "sizeDesc": "42X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 4.8,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        },
+                                                        {
+                                                            "ahsSizeId": 22754,
+                                                            "sizeDesc": "44X30",
+                                                            "metrics": {
+                                                                "sizeProfilePct": 0.0,
+                                                                "adjSizeProfilePct": 4.9,
+                                                                "avgSizeProfilePct": null,
+                                                                "adjAvgSizeProfilePct": null
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
