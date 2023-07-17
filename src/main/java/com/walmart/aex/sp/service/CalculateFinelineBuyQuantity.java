@@ -344,10 +344,9 @@ public class CalculateFinelineBuyQuantity {
         Set<SpCustomerChoiceChannelFixtureSize> spCustomerChoiceChannelFixtureSizes = Optional.ofNullable(spCustomerChoiceChannelFixture.getSpCustomerChoiceChannelFixtureSize()).orElse(new HashSet<>());
         Set<CcSpMmReplPack> ccSpMmReplPacks = new HashSet<>();
         Integer replenishmentThreshold = deptAdminRuleService.getReplenishmentThreshold(bqfpResponse.getPlanId(), bqfpResponse.getLvl1Nbr());
-        boolean isInitialSetDefined = isInitialSetDefined(bqfpResponse);
         for (Map.Entry<SizeDto, BuyQtyObj> entry : storeBuyQtyBySizeId.entrySet()) {
             Integer vendorPackQty = getVendorPackQty(replenishmentCons, entry);
-            setSizeChanFixtureBuyQty(spCustomerChoiceChannelFixture, replenishments, spCustomerChoiceChannelFixtureSizes, ccSpMmReplPacks, entry, replenishmentThreshold, isInitialSetDefined, vendorPackQty, calculateBuyQtyParallelRequest.getLvl1Nbr(), calculateBuyQtyParallelRequest.getPlanId());
+            setSizeChanFixtureBuyQty(spCustomerChoiceChannelFixture, replenishments, spCustomerChoiceChannelFixtureSizes, ccSpMmReplPacks, entry, replenishmentThreshold, vendorPackQty, calculateBuyQtyParallelRequest.getLvl1Nbr(), calculateBuyQtyParallelRequest.getPlanId());
         }
 
         if (!CollectionUtils.isEmpty(ccSpMmReplPacks)) {
@@ -394,7 +393,7 @@ public class CalculateFinelineBuyQuantity {
                                           Set<CcSpMmReplPack> ccSpMmReplPacks,
                                           Map.Entry<SizeDto, BuyQtyObj> entry,
                                           Integer replenishmentThreshold,
-                                          boolean isInitialSetDefined, Integer vendorPackQty,
+                                          Integer vendorPackQty,
                                           Integer lvl1Nbr, Long planId) {
         SpCustomerChoiceChannelFixtureSizeId spCustomerChoiceChannelFixtureSizeId = new SpCustomerChoiceChannelFixtureSizeId(spCustomerChoiceChannelFixture.getSpCustomerChoiceChannelFixtureId(), entry.getKey().getAhsSizeId());
         SpCustomerChoiceChannelFixtureSize spCustomerChoiceChannelFixtureSize = Optional.of(spCustomerChoiceChannelFixtureSizes)
@@ -408,18 +407,19 @@ public class CalculateFinelineBuyQuantity {
         }
 
         entry.getValue().setTotalReplenishment(0L);
-
         double bsBuyQty = getBsQty(entry);
         double isBuyQty = getIsQty(entry);
-        // Run DC Inbound Optimization when IS is 0 to consider all the replenishment count
-        if (isBuyQty == 0)
-            entry.getValue().setReplenishments(replenishmentsOptimizationServices.getUpdatedReplenishmentsPack(entry.getValue().getReplenishments(), vendorPackQty, SizeAndPackConstants.STORE_CHANNEL_ID, lvl1Nbr, planId));
         //Update Store Qty
         final BuyQtyObj allStoresBuyQty = entry.getValue();
         if (!CollectionUtils.isEmpty(allStoresBuyQty.getReplenishments()) && !CollectionUtils.isEmpty(allStoresBuyQty.getBuyQtyStoreObj().getBuyQuantities())) {
             allStoresBuyQty.setTotalReplenishment(buyQuantityConstraintService.getTotalReplenishment(allStoresBuyQty.getReplenishments()));
-            if (isInitialSetDefined) {
+            // IF calculated IS is greater than 0, then process the replenishment to be moved into InitialSet if it falls under minimum replenishment condition
+            if (isBuyQty > 0) {
                 buyQuantityConstraintService.processReplenishmentConstraints(entry, allStoresBuyQty.getTotalReplenishment(), replenishmentThreshold);
+            } else {
+                // Run DC Inbound Optimization when IS is equal to 0 to consider the replenishment count for non initialSets
+                entry.getValue().setReplenishments(replenishmentsOptimizationServices.getUpdatedReplenishmentsPack(entry.getValue().getReplenishments(), vendorPackQty, SizeAndPackConstants.STORE_CHANNEL_ID, lvl1Nbr, planId));
+                entry.getValue().setTotalReplenishment(buyQuantityConstraintService.getTotalReplenishment(entry.getValue().getReplenishments()));
             }
         }
 
@@ -655,20 +655,6 @@ public class CalculateFinelineBuyQuantity {
         } catch (JsonProcessingException e) {
             log.error("Unable to serialize response: {}", key, e);
         }
-    }
-
-    private boolean isInitialSetDefined(BQFPResponse bqfpResponse) {
-        return Optional.ofNullable(bqfpResponse.getStyles())
-                .stream()
-                .flatMap(Collection::stream)
-                .map(Style::getCustomerChoices)
-                .flatMap(Collection::stream)
-                .map(CustomerChoice::getFixtures)
-                .flatMap(Collection::stream)
-                .map(Fixture::getClusters)
-                .flatMap(Collection::stream)
-                .map(Cluster::getInitialSet)
-                .anyMatch(initialSet -> (initialSet != null && initialSet.getInitialSetUnitsPerFix() != null && initialSet.getInitialSetUnitsPerFix() > 0));
     }
 
     private boolean hasDcInboundUnits(List<Replenishment> replenishments) {
