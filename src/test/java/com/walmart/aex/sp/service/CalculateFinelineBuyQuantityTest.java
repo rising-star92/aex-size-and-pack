@@ -383,9 +383,9 @@ class CalculateFinelineBuyQuantityTest {
                 .get().getSpCustomerChoiceChannelFixture().stream().filter(cc -> cc.getSpCustomerChoiceChannelFixtureId().getCustomerChoice().equals("34_5414_1_22_2_RICH BLACK"))
                 .findFirst().get();
         assertEquals(0, ccFixture.getInitialSetQty());
-        assertEquals(0, fixture1.getInitialSetQty());
-        assertEquals(9612, fixture1.getBuyQty());
-        assertEquals(9612, fixture1.getReplnQty());
+        assertEquals(1308, fixture1.getInitialSetQty());
+        assertEquals(9540, fixture1.getBuyQty());
+        assertEquals(8232, fixture1.getReplnQty());
     }
 
 

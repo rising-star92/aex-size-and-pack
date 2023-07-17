@@ -14,6 +14,7 @@ import com.walmart.aex.sp.dto.buyquantity.StoreQuantity;
 import com.walmart.aex.sp.dto.buyquantity.StyleDto;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
 import com.walmart.aex.sp.properties.BuyQtyProperties;
+import com.walmart.aex.sp.service.impl.DeptAdminRuleServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,6 +45,9 @@ class AddStoreBuyQuantityServiceTest {
 
     @Mock
     BuyQuantityConstraintService buyQuantityConstraintService;
+
+    @Mock
+    DeptAdminRuleServiceImpl deptAdminRuleService;
 
     @InjectMocks
     private AddStoreBuyQuantityService addStoreBuyQuantityService;
@@ -134,8 +138,8 @@ class AddStoreBuyQuantityServiceTest {
         AddStoreBuyQuantity addStoreBuyQuantity = getAddStoreBuyQuantities(bqfpResponse, getStyleDTO(), getMerchMethodsDto(), getSizeDTO(), rfaSizePackDataList, getCustomerChoiceDTO());
         addStoreBuyQuantityService.addStoreBuyQuantities(addStoreBuyQuantity,buyQtyObj, 2);
         StoreQuantity storeQuantity = buyQtyObj.getBuyQtyStoreObj().getBuyQuantities().get(0);
-        assertEquals(0.0, storeQuantity.getTotalUnits());
-        assertEquals(0.0, storeQuantity.getIsUnits());
+        assertEquals(4.0, storeQuantity.getTotalUnits());
+        assertEquals(2.0, storeQuantity.getIsUnits());
     }
 
     @Test
@@ -167,8 +171,8 @@ class AddStoreBuyQuantityServiceTest {
         AddStoreBuyQuantity addStoreBuyQuantity = getAddStoreBuyQuantities(bqfpResponse, getStyleDTO(), getMerchMethodsDto(), getSizeDTO(), rfaSizePackDataList, getCustomerChoiceDTO());
         addStoreBuyQuantityService.addStoreBuyQuantities(addStoreBuyQuantity,buyQtyObj, 2);
         StoreQuantity storeQuantity = buyQtyObj.getBuyQtyStoreObj().getBuyQuantities().get(0);
-        assertEquals(0.0, storeQuantity.getTotalUnits());
-        assertEquals(0.0, storeQuantity.getIsUnits());
+        assertEquals(4.0, storeQuantity.getTotalUnits());
+        assertEquals(2.0, storeQuantity.getIsUnits());
     }
 
     @Test
@@ -190,7 +194,7 @@ class AddStoreBuyQuantityServiceTest {
         assertEquals(18124.0, bumpSetQuantity.getTotalUnits());
     }
 
-    private AddStoreBuyQuantity getAddStoreBuyQuantities(BQFPResponse bqfpResponse, StyleDto styleDto, MerchMethodsDto merchMethodsDto, SizeDto sizeDto, List<RFASizePackData> rfaSizePackDataList, CustomerChoiceDto customerChoiceDto) {
+    private AddStoreBuyQuantity getAddStoreBuyQuantities(BQFPResponse bqfpResponse, StyleDto styleDto, MerchMethodsDto merchMethodsDto, SizeDto sizeDto, List<RFASizePackData> rfaSizePackDataList, CustomerChoiceDto customerChoiceDto) throws IOException {
         AddStoreBuyQuantity addStoreBuyQuantity = new AddStoreBuyQuantity();
         addStoreBuyQuantity.setBqfpResponse(bqfpResponse);
         addStoreBuyQuantity.setStyleDto(styleDto);
