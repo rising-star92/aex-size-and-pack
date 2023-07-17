@@ -760,7 +760,7 @@ class CalculateFinelineBuyQuantityTest {
     }
 
     private int getIsQty(String storeObj) throws JsonProcessingException {
-        BuyQtyStoreObj buyQtyStoreObj = new ObjectMapper().readValue(storeObj, BuyQtyStoreObj.class);
+        BuyQtyStoreObj buyQtyStoreObj = mapper.readValue(storeObj, BuyQtyStoreObj.class);
         return (int) Math.round(buyQtyStoreObj.getBuyQuantities()
                 .stream()
                 .filter(Objects::nonNull)
