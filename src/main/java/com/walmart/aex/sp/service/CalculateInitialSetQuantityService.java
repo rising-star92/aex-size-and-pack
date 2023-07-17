@@ -33,8 +33,8 @@ public class CalculateInitialSetQuantityService {
         double sizePct = BuyQtyCommonUtil.getSizePct(sizeDto);
         double isQty = 0.0;
         double perStoreQty = 0.0;
-        // if sizePct is > 0 then perform the logic to promote perStoreQty to 1 incase if the calculation gives us 0
-        if (sizePct > 0.0) {
+        // if sizePct is > 0 and initialSetUnitsPerFix > 0, then perform the logic to promote perStoreQty to 1 incase if the calculation gives us 0
+        if (sizePct > 0.0 && volumeCluster.getInitialSet().getInitialSetUnitsPerFix() != null && volumeCluster.getInitialSet().getInitialSetUnitsPerFix() > 0) {
             isQty = (isCalculatedBq * sizePct) / 100;
             perStoreQty = Math.round(isQty / rfaSizePackData.getStore_cnt());
             if (perStoreQty == 0.0) {
