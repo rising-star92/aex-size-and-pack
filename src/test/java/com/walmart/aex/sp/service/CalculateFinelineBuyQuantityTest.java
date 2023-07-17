@@ -233,8 +233,8 @@ class CalculateFinelineBuyQuantityTest {
 
         assertNotNull(response.getMerchCatgReplPacks());
         assertEquals(1, response.getMerchCatgReplPacks().size(), "Only 1 merch catg repl pack created");
-        assertEquals((Integer)18474,
-              response.getMerchCatgReplPacks().get(0).getReplUnits(), "Repln units should be 19143 for cc");
+        assertEquals((Integer)18417,
+              response.getMerchCatgReplPacks().get(0).getReplUnits(), "Repln units should be 18417 for cc");
 
     }
 
@@ -715,7 +715,7 @@ class CalculateFinelineBuyQuantityTest {
                 .findFirst().get();
 
         assertEquals(75273, customerChoiceChannelFixture1.getInitialSetQty(), "CC which got initial set from BQFP will go through initialSetCalculation");
-        assertEquals(48492, customerChoiceChannelFixture1.getReplnQty(), "Replenishments are calculated with initial sets");
+        assertEquals(48030, customerChoiceChannelFixture1.getReplnQty(), "Replenishments are calculated with initial sets");
 
         assertEquals(0, customerChoiceChannelFixture2.getInitialSetQty(), "CC which doesn't got any initialSet from BQFP will not have initial sets");
         assertEquals(101784, customerChoiceChannelFixture2.getReplnQty(), "Replenishments are calculated when no initial sets are available");

@@ -85,11 +85,11 @@ public class AddStoreBuyQuantityService {
             rfaSizePackDataList.forEach(rfaSizePackData -> addOneUnitPerStore(addStoreBuyQuantity, buyQtyObj, processQuantities, rfaSizePackData));
             // Second iteration on the result of the first to adjust the rep with admin rule
             setInitialSetAndBumpSetQtyV2(addStoreBuyQuantity, processQuantities, buyQtyObj, initialThreshold);
-            processQuantities.forEach(quantity -> quantity.setRfaSizePackData(null));
             initialSetQuantities.addAll(processQuantities);
         } else {
             rfaSizePackDataList.forEach(rfaSizePackData -> calculateAndAddStoreBuyQuantities(addStoreBuyQuantity, buyQtyObj, initialSetQuantities, rfaSizePackData, initialThreshold));
         }
+        initialSetQuantities.forEach(quantity -> quantity.setRfaSizePackData(null));
         buyQtyStoreObj.setBuyQuantities(initialSetQuantities);
         if(!ObjectUtils.isEmpty(buyQtyObj)) {
             buyQtyObj.setBuyQtyStoreObj(buyQtyStoreObj);

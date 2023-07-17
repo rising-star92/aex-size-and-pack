@@ -40,8 +40,20 @@ public class BuyQuantityConstraintService {
         long replenishmentSize = replnsWithUnits.size();
         double perReplenishmentReduced = (totalReducedReplenishment / replenishmentSize);
         double perReplenishmentReducedRemainder = (totalReducedReplenishment % replenishmentSize);
-        replnsWithUnits.forEach(replenishment -> replenishment.setAdjReplnUnits(getAdjustedDifference(replenishment.getAdjReplnUnits() - perReplenishmentReduced)));
-        replnsWithUnits.get(0).setAdjReplnUnits(getAdjustedDifference(replnsWithUnits.get(0).getAdjReplnUnits() - perReplenishmentReducedRemainder));
+        double remainingWeekUnits = 0.0;
+        for (Replenishment replenishment: replnsWithUnits) {
+            long result = getRoundedDifference(replenishment.getAdjReplnUnits(), perReplenishmentReduced);
+            // if the perReplenishmentReduced is greater than the current week, capture the remainder and reduce it from future week
+            if (result < 0)
+                remainingWeekUnits = remainingWeekUnits + Math.abs(result);
+            replenishment.setAdjReplnUnits(getAdjustedDifference(result));
+        }
+        if (remainingWeekUnits > 0) {
+            replnsWithUnits = getReplnsWithUnits(buyQtyObj);
+            replnsWithNoUnits = getReplnsWithNoUnits(buyQtyObj);
+            reduceUnits(replnsWithUnits, remainingWeekUnits);
+        }
+        replnsWithUnits.get(0).setAdjReplnUnits(getAdjustedDifference(getRoundedDifference(replnsWithUnits.get(0).getAdjReplnUnits(), perReplenishmentReducedRemainder)));
         replnsWithUnits.addAll(replnsWithNoUnits);
         double isQty = (double)initialThreshold * rfaSizePackData.getStore_cnt();
         InitialSetWithReplnsConstraint initialSetWithReplnsConstraint = new InitialSetWithReplnsConstraint();
@@ -51,8 +63,27 @@ public class BuyQuantityConstraintService {
         return initialSetWithReplnsConstraint;
     }
 
-    private long getAdjustedDifference(double value) {
-        return Math.max(Math.round(value), 0);
+    private static long getRoundedDifference(long replenishmentUnits, double perReplenishmentReduced) {
+        return Math.round(replenishmentUnits - perReplenishmentReduced);
+    }
+
+    private void reduceUnits(List<Replenishment> replenishments, double remainingUnits) {
+        for (Replenishment replenishment : replenishments) {
+            if (replenishment.getAdjReplnUnits() > 0) {
+                if (remainingUnits == 0)
+                    break;
+                long result = getRoundedDifference(replenishment.getAdjReplnUnits(), remainingUnits);
+                replenishment.setAdjReplnUnits(getAdjustedDifference(result));
+                if (result < 0)
+                    remainingUnits = remainingUnits + Math.abs(result);
+                else
+                    remainingUnits = 0;
+            }
+        }
+    }
+
+    private long getAdjustedDifference(long value) {
+        return Math.max(value, 0);
     }
 
     public InitialSetWithReplnsConstraint getISWithLessReplenConstraint(BuyQtyObj buyQtyObj, int storeCntWithNewQty, List<Integer> storeList, double perStoreQty, RFASizePackData rfaSizePackData, Cluster volumeCluster, SizeDto sizeDto, Integer initialThreshold) {
