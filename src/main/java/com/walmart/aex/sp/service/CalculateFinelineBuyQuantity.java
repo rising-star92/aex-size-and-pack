@@ -424,6 +424,8 @@ public class CalculateFinelineBuyQuantity {
             }
         }
 
+        bsBuyQty = getBsQty(entry);
+        isBuyQty = getIsQty(entry);
         double totalBuyQty = isBuyQty + bsBuyQty + entry.getValue().getTotalReplenishment();
         spCustomerChoiceChannelFixtureSize.setInitialSetQty((int) Math.round(isBuyQty));
         spCustomerChoiceChannelFixtureSize.setBumpPackQty((int) Math.round(bsBuyQty));
