@@ -679,4 +679,49 @@ class CalculateFinelineBuyQuantityTest {
         assertUnitValueBySize(fixture1Sizes, "XXXL", fix1xxxl, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
     }
 
+    @Test
+    void test_calculateInitialSetWithCombinationOfZeroAndGreaterThanZeroInitialSet() throws SizeAndPackException, IOException {
+        final String path = "/plan133fineline3347";
+        BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
+        APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
+        BuyQtyResponse buyQtyResponse = buyQtyResponseFromJson(path.concat("/BuyQtyResponse"));
+        StrategyVolumeDeviationResponse strategyVolumeDeviationResponse = strategyVolumeDeviationResponseFromJsonFromJson(path.concat("/VDResponse"));
+        when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
+        when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
+        when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
+        when(strategyFetchService.getStrategyVolumeDeviation(anyLong(), anyInt())).thenReturn(strategyVolumeDeviationResponse);
+        when(deptAdminRuleService.getInitialThreshold(anyLong(), anyInt())).thenReturn(2);
+        when(deptAdminRuleService.getReplenishmentThreshold(anyLong(), anyInt())).thenReturn(750);
+        CalculateBuyQtyRequest request = create("store", 50000, 23, 3669, 8244, 16906, 3347, 133L);
+        CalculateBuyQtyParallelRequest pRequest = createFromRequest(request);
+
+        CalculateBuyQtyResponse r = new CalculateBuyQtyResponse();
+        r.setMerchCatgReplPacks(new ArrayList<>());
+        r.setSpFineLineChannelFixtures(new ArrayList<>());
+
+        CalculateBuyQtyResponse response = calculateFinelineBuyQuantity.calculateFinelineBuyQty(request, pRequest, r);
+
+        SpFineLineChannelFixture fixture1 = response.getSpFineLineChannelFixtures().stream().
+                filter(f -> f.getSpFineLineChannelFixtureId().getFixtureTypeRollUpId().getFixtureTypeRollupId().equals(1)).findFirst().get();
+        SpCustomerChoiceChannelFixture customerChoiceChannelFixture1 = fixture1
+                .getSpStyleChannelFixtures().stream().filter(style -> style.getSpStyleChannelFixtureId().getStyleNbr().equals("23_3347_1_25_001"))
+                .findFirst().get()
+                .getSpCustomerChoiceChannelFixture().stream().filter(cc -> cc.getSpCustomerChoiceChannelFixtureId().getCustomerChoice().equals("23_3347_1_25_001_001"))
+                .findFirst().get();
+        SpCustomerChoiceChannelFixture customerChoiceChannelFixture2 = fixture1
+                .getSpStyleChannelFixtures().stream().filter(style -> style.getSpStyleChannelFixtureId().getStyleNbr().equals("23_3347_1_25_001"))
+                .findFirst().get()
+                .getSpCustomerChoiceChannelFixture().stream().filter(cc -> cc.getSpCustomerChoiceChannelFixtureId().getCustomerChoice().equals("23_3347_1_25_001_002"))
+                .findFirst().get();
+
+        assertEquals(75273, customerChoiceChannelFixture1.getInitialSetQty(), "CC which got initial set from BQFP will go through initialSetCalculation");
+        assertEquals(48030, customerChoiceChannelFixture1.getReplnQty(), "Replenishments are calculated with initial sets");
+
+        assertEquals(0, customerChoiceChannelFixture2.getInitialSetQty(), "CC which doesn't got any initialSet from BQFP will not have initial sets");
+        assertEquals(101784, customerChoiceChannelFixture2.getReplnQty(), "Replenishments are calculated when no initial sets are available");
+
+        assertEquals(75273, fixture1.getInitialSetQty(), "At fineline level, the initialSet value is coming from only one CC");
+
+    }
+
 }
