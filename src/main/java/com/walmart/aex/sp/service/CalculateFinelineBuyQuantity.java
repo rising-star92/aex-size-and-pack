@@ -417,7 +417,7 @@ public class CalculateFinelineBuyQuantity {
             if (isBuyQty > 0) {
                 buyQuantityConstraintService.processReplenishmentConstraints(entry, allStoresBuyQty.getTotalReplenishment(), replenishmentThreshold);
             } else {
-                // Run DC Inbound Optimization when IS is equal to 0 to consider the replenishment count for non initialSets
+                // Run DC Inbound Optimization when calculated IS is equal to 0 to consider the replenishment count for non initialSets
                 entry.getValue().setReplenishments(replenishmentsOptimizationServices.getUpdatedReplenishmentsPack(entry.getValue().getReplenishments(), vendorPackQty, SizeAndPackConstants.STORE_CHANNEL_ID, lvl1Nbr, planId));
                 entry.getValue().setTotalReplenishment(buyQuantityConstraintService.getTotalReplenishment(entry.getValue().getReplenishments()));
             }
