@@ -74,6 +74,7 @@ public interface FinelinePackOptRepository
             "analytic.endTs,\n" +
             "r.runStatusCode,\n" +
             "r.runStatusDesc,\n" +
+            "r.runStatusLongDesc,\n" +
             "analytic.firstName, \n" +
             "analytic.lastName,\n" +
             "analytic.returnMessage ) \n"+

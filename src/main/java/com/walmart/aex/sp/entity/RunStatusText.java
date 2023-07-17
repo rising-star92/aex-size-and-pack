@@ -25,4 +25,7 @@ public class RunStatusText {
     @Column(name = "run_status_desc", nullable = false)
      private String runStatusDesc;
 
+    @Column(name = "run_status_long_desc", nullable = false)
+    private String runStatusLongDesc;
+
 }

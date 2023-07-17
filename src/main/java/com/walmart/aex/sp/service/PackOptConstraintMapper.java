@@ -261,9 +261,10 @@ public class PackOptConstraintMapper {
     }
 
     private List<RunOptimization> getRunOptimizationDetails(FineLineMapperDto fineLineMapperDto) {
+
         RunOptimization opt = new RunOptimization();
         opt.setName(fineLineMapperDto.getFirstName());
-        opt.setReturnMessage(fineLineMapperDto.getReturnMessage());
+        opt.setRunStatusLongDesc(fineLineMapperDto.getRunStatusLongDesc());
         opt.setRunStatusCode(fineLineMapperDto.getRunStatusCode());
         opt.setStartTs(fineLineMapperDto.getStartTs());
         return List.of(opt);
