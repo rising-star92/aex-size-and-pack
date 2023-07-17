@@ -28,12 +28,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -722,6 +717,55 @@ class CalculateFinelineBuyQuantityTest {
 
         assertEquals(75273, fixture1.getInitialSetQty(), "At fineline level, the initialSet value is coming from only one CC");
 
+    }
+
+    @Test
+    void test_calculateInitialSetWithCombinationOfZeroAndGreaterThanZeroInitialSet1() throws SizeAndPackException, IOException {
+        final String path = "/plan73fineline2810";
+        BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
+        APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
+        BuyQtyResponse buyQtyResponse = buyQtyResponseFromJson(path.concat("/BuyQtyResponse"));
+        StrategyVolumeDeviationResponse strategyVolumeDeviationResponse = strategyVolumeDeviationResponseFromJsonFromJson(path.concat("/VDResponse"));
+        when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
+        when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
+        when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
+        when(strategyFetchService.getStrategyVolumeDeviation(anyLong(), anyInt())).thenReturn(strategyVolumeDeviationResponse);
+        when(deptAdminRuleService.getInitialThreshold(anyLong(), anyInt())).thenReturn(2);
+        when(deptAdminRuleService.getReplenishmentThreshold(anyLong(), anyInt())).thenReturn(2500);
+        CalculateBuyQtyRequest request = create("store", 50000, 34, 6419, 12228, 31507, 2810, 73L);
+        CalculateBuyQtyParallelRequest pRequest = createFromRequest(request);
+
+        CalculateBuyQtyResponse r = new CalculateBuyQtyResponse();
+        r.setMerchCatgReplPacks(new ArrayList<>());
+        r.setSpFineLineChannelFixtures(new ArrayList<>());
+
+        CalculateBuyQtyResponse response = calculateFinelineBuyQuantity.calculateFinelineBuyQty(request, pRequest, r);
+
+        SpFineLineChannelFixture fixture1 = response.getSpFineLineChannelFixtures().stream().
+                filter(f -> f.getSpFineLineChannelFixtureId().getFixtureTypeRollUpId().getFixtureTypeRollupId().equals(2)).findFirst().get();
+        Set<SpCustomerChoiceChannelFixtureSize> customerChoiceChannelFixtureSize = fixture1
+                .getSpStyleChannelFixtures().stream().filter(style -> style.getSpStyleChannelFixtureId().getStyleNbr().equals("34_2810_4_21_6"))
+                .findFirst().get()
+                .getSpCustomerChoiceChannelFixture().stream().filter(cc -> cc.getSpCustomerChoiceChannelFixtureId().getCustomerChoice().equals("34_2810_4_21_6_CRLBSM"))
+                .findFirst().get().getSpCustomerChoiceChannelFixtureSize();
+
+        customerChoiceChannelFixtureSize.forEach(size -> {
+            try {
+                assertEquals(size.getInitialSetQty(), getIsQty(size.getStoreObj()), "Total IS Qty of size " + size.getAhsSizeDesc() + " should be equal to the size of size/volume cluster IS Units");
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+    }
+
+    private int getIsQty(String storeObj) throws JsonProcessingException {
+        BuyQtyStoreObj buyQtyStoreObj = new ObjectMapper().readValue(storeObj, BuyQtyStoreObj.class);
+        return (int) Math.round(buyQtyStoreObj.getBuyQuantities()
+                .stream()
+                .filter(Objects::nonNull)
+                .mapToDouble(storeQuantity -> Optional.ofNullable(storeQuantity.getTotalUnits()).orElse((double) 0))
+                .sum());
     }
 
 }
