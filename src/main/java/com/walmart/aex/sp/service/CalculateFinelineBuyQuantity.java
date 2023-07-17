@@ -418,6 +418,7 @@ public class CalculateFinelineBuyQuantity {
                 buyQuantityConstraintService.processReplenishmentConstraints(entry, allStoresBuyQty.getTotalReplenishment(), replenishmentThreshold);
             } else {
                 // Run DC Inbound Optimization when calculated IS is equal to 0 to consider the replenishment count for non initialSets
+                // Getting 0 IS from BQFP or User explicitly added SizePct as 0 where they dont need any IS
                 entry.getValue().setReplenishments(replenishmentsOptimizationServices.getUpdatedReplenishmentsPack(entry.getValue().getReplenishments(), vendorPackQty, SizeAndPackConstants.STORE_CHANNEL_ID, lvl1Nbr, planId));
                 entry.getValue().setTotalReplenishment(buyQuantityConstraintService.getTotalReplenishment(entry.getValue().getReplenishments()));
             }
