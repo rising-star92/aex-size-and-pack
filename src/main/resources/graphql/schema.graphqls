@@ -249,6 +249,7 @@ type RunOptimization{
     name: String
     startTs: String
     endTs: String
+    returnMessage: String
     runStatusLongDesc: String
     runStatusCode: Int
 }
