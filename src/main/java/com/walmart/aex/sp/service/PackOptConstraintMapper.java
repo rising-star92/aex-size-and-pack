@@ -264,6 +264,7 @@ public class PackOptConstraintMapper {
 
         RunOptimization opt = new RunOptimization();
         opt.setName(fineLineMapperDto.getFirstName());
+        opt.setReturnMessage(fineLineMapperDto.getReturnMessage());
         opt.setRunStatusLongDesc(fineLineMapperDto.getRunStatusLongDesc());
         opt.setRunStatusCode(fineLineMapperDto.getRunStatusCode());
         opt.setStartTs(fineLineMapperDto.getStartTs());
