@@ -65,6 +65,7 @@ public class FineLineMapperDto {
     private Date endTs;
     private Integer runStatusCode;
     private String runStatusDesc;
+    private String runStatusLongDesc;
     private String firstName;
     private String lastName;
     private String returnMessage;
@@ -114,7 +115,7 @@ public class FineLineMapperDto {
             Integer ccVendorNumber6, Integer ccGsmSupplierNumber, Integer ccVendorNumber9, String ccFactoryId,
             String ccPortOfOrigin, Integer ccSinglePackIndicator, String ccColorCombination,
             Integer ccMaxUnitsPerPack, Integer ccMaxPacks, String ccFactoryName, Date startTs, Date endTs, Integer runStatusCode,
-            String runStatusDesc, String firstName, String lastName, String returnMessage) {
+            String runStatusDesc, String runStatusLongDesc, String firstName, String lastName, String returnMessage) {
         this.planId = planId;
         this.channelId = channelId;
         this.lvl0Nbr = lvl0Nbr;
@@ -164,6 +165,7 @@ public class FineLineMapperDto {
         this.endTs = endTs;
         this.runStatusCode = runStatusCode;
         this.runStatusDesc = runStatusDesc;
+        this.runStatusLongDesc = runStatusLongDesc;
         this.firstName = firstName;
         this.lastName = lastName;
         this.returnMessage = returnMessage;
