@@ -36,7 +36,6 @@ public class BuyQuantityConstraintService {
 
     public InitialSetWithReplnsConstraint getISWithMoreReplenConstraint(BuyQtyObj buyQtyObj, double totalReducedReplenishment, RFASizePackData rfaSizePackData, Integer initialThreshold) {
         List<Replenishment> replnsWithUnits = getReplnsWithUnits(buyQtyObj);
-        List<Replenishment> replnsWithNoUnits = getReplnsWithNoUnits(buyQtyObj);
         long replenishmentSize = replnsWithUnits.size();
         double perReplenishmentReduced = (totalReducedReplenishment / replenishmentSize);
         double perReplenishmentReducedRemainder = (totalReducedReplenishment % replenishmentSize);
@@ -50,14 +49,11 @@ public class BuyQuantityConstraintService {
         }
         if (remainingWeekUnits > 0) {
             replnsWithUnits = getReplnsWithUnits(buyQtyObj);
-            replnsWithNoUnits = getReplnsWithNoUnits(buyQtyObj);
             reduceUnits(replnsWithUnits, remainingWeekUnits);
         }
         replnsWithUnits.get(0).setAdjReplnUnits(getAdjustedDifference(getRoundedDifference(replnsWithUnits.get(0).getAdjReplnUnits(), perReplenishmentReducedRemainder)));
-        replnsWithUnits.addAll(replnsWithNoUnits);
         double isQty = (double)initialThreshold * rfaSizePackData.getStore_cnt();
         InitialSetWithReplnsConstraint initialSetWithReplnsConstraint = new InitialSetWithReplnsConstraint();
-        initialSetWithReplnsConstraint.setReplnsWithUnits(replnsWithUnits);
         initialSetWithReplnsConstraint.setIsQty(isQty);
         initialSetWithReplnsConstraint.setPerStoreQty(initialThreshold);
         return initialSetWithReplnsConstraint;
@@ -88,17 +84,14 @@ public class BuyQuantityConstraintService {
 
     public InitialSetWithReplnsConstraint getISWithLessReplenConstraint(BuyQtyObj buyQtyObj, int storeCntWithNewQty, List<Integer> storeList, double perStoreQty, RFASizePackData rfaSizePackData, Cluster volumeCluster, SizeDto sizeDto, Integer initialThreshold) {
         List<Replenishment> replnsWithUnits = getReplnsWithUnits(buyQtyObj);
-        List<Replenishment> replnsWithNoUnits = getReplnsWithNoUnits(buyQtyObj);
         List<Integer> storeListWithOldQty = storeList.subList(storeCntWithNewQty, storeList.size());
         StoreQuantity storeQtyCopy = BuyQtyCommonUtil.createStoreQuantity(rfaSizePackData, perStoreQty, storeListWithOldQty, perStoreQty * storeListWithOldQty.size(), volumeCluster);
         storeQtyCopy.setBumpSets(calculateBumpPackQtyService.calculateBumpPackQty(sizeDto, rfaSizePackData, volumeCluster, storeListWithOldQty.size()));
         replnsWithUnits.forEach(replenishment -> replenishment.setAdjReplnUnits(0L));
-        replnsWithUnits.addAll(replnsWithNoUnits);
         storeList = storeList.subList(0, storeCntWithNewQty);
         perStoreQty = initialThreshold;
         double isQty = perStoreQty * storeList.size();
         InitialSetWithReplnsConstraint initialSetWithReplnsConstraint = new InitialSetWithReplnsConstraint();
-        initialSetWithReplnsConstraint.setReplnsWithUnits(replnsWithUnits);
         initialSetWithReplnsConstraint.setStoreQuantity(storeQtyCopy);
         initialSetWithReplnsConstraint.setIsQty(isQty);
         initialSetWithReplnsConstraint.setPerStoreQty(perStoreQty);
@@ -172,7 +165,4 @@ public class BuyQuantityConstraintService {
                 .filter(repln -> repln.getAdjReplnUnits() > 0).collect(Collectors.toList());
     }
 
-    private List<Replenishment> getReplnsWithNoUnits(BuyQtyObj buyQtyObj) {
-        return buyQtyObj.getReplenishments().stream().filter(repln -> repln.getAdjReplnUnits() == null || repln.getAdjReplnUnits() == 0).collect(Collectors.toList());
-    }
 }

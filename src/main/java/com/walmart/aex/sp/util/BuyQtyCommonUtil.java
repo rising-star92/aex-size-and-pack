@@ -9,12 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
@@ -123,7 +118,7 @@ public class BuyQtyCommonUtil {
                 .map(Fixture::getReplenishments)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
-        Map<Integer, Replenishment> replnMap = new HashMap<>();
+        Map<Integer, Replenishment> replnMap = new LinkedHashMap<>();
         replenishments.forEach(rep -> {
             if (!replnMap.containsKey(rep.getReplnWeek())) {
                 replnMap.put(rep.getReplnWeek(), new Replenishment(rep.getReplnWeek(), rep.getReplnWeekDesc(), 0L, 0L, 0L, 0L, 0L));
