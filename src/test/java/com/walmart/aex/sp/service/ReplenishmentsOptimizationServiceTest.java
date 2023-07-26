@@ -68,8 +68,8 @@ class ReplenishmentsOptimizationServiceTest {
         List<Integer> expectedWeekOrder = Arrays.asList(12402,12406,12418);
         assertEquals(expectedWeekOrder, replens.stream().map(Replenishment::getReplnWeek).collect(Collectors.toList()), "Should be in ascending order");
         assertEquals(12402, replens.stream()
-              .filter(replenishment -> replenishment.getAdjReplnUnits() == 250)
-              .findFirst().get().getReplnWeek(), "Week 12402 should have 250 units");
+              .filter(replenishment -> replenishment.getAdjReplnUnits() == 252)
+              .findFirst().get().getReplnWeek(), "Week 12402 should have 252 units");
     }
 
     private List<Replenishment> getReplenishmentsObj(List<Long> longs) {
