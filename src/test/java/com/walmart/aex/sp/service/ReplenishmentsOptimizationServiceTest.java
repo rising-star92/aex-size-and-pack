@@ -1,11 +1,9 @@
 package com.walmart.aex.sp.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.bqfp.Replenishment;
-import com.walmart.aex.sp.properties.BuyQtyProperties;
-import com.walmart.aex.sp.repository.DeptAdminRuleRepository;
 import com.walmart.aex.sp.service.impl.DeptAdminRuleServiceImpl;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,8 +13,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -25,11 +25,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class ReplenishmentsOptimizationServiceTest {
 
     @InjectMocks
-    ReplenishmentsOptimizationService replenishmentsOptimizationService;
+    private ReplenishmentsOptimizationService replenishmentsOptimizationService;
 
     @Mock
-    DeptAdminRuleServiceImpl deptAdminRuleService;
+    private DeptAdminRuleServiceImpl deptAdminRuleService;
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
     void assertUpdatedReplenishmentWithDcInboundQtyRulesWithScenario1() {
@@ -56,6 +57,19 @@ class ReplenishmentsOptimizationServiceTest {
         assertEquals(getReplenishmentsObj(List.of(1000L, 950L, 950L)), replenishmentsOptimizationService.getUpdatedReplenishmentsPack(getReplenishmentsObj(List.of(1000L, 950L, 950L)),5, online_channelId, null, null));
         assertEquals(getReplenishmentsObj(List.of(175L,240L,180L,0L)), replenishmentsOptimizationService.getUpdatedReplenishmentsPack(getReplenishmentsObj(List.of(175L, 240L, 180L,0L)),5, online_channelId, null, null));
         assertEquals(getReplenishmentsObj(List.of(500L, 760L, 0L)), replenishmentsOptimizationService.getUpdatedReplenishmentsPack(getReplenishmentsObj(List.of(10L, 300L, 950L)),5, store_channelId, lv1Number, planId));
+    }
+
+    @Test
+    void unorderedReplenWeeksShouldBeProperlyOptimizedAndOrdered() throws JsonProcessingException {
+        String replenObj = "[{\"replnWeek\":12418,\"replnWeekDesc\":\"FYE2025WK18\",\"adjReplnUnits\":200},{\"replnWeek\":12402,\"replnWeekDesc\":\"FYE2025WK02\",\"adjReplnUnits\":50},{\"replnWeek\":12406,\"replnWeekDesc\":\"FYE2025WK06\",\"adjReplnUnits\":0}]";
+        Mockito.when(deptAdminRuleService.getReplenishmentThreshold(Mockito.anyLong(), Mockito.anyInt())).thenReturn(750);
+        List<Replenishment> replens = Arrays.asList(objectMapper.readValue(replenObj, Replenishment[].class));
+        replens = replenishmentsOptimizationService.getUpdatedReplenishmentsPack(replens, 12,1,23, 123L);
+        List<Integer> expectedWeekOrder = Arrays.asList(12402,12406,12418);
+        assertEquals(expectedWeekOrder, replens.stream().map(Replenishment::getReplnWeek).collect(Collectors.toList()), "Should be in ascending order");
+        assertEquals(12402, replens.stream()
+              .filter(replenishment -> replenishment.getAdjReplnUnits() == 250)
+              .findFirst().get().getReplnWeek(), "Week 12402 should have 250 units");
     }
 
     private List<Replenishment> getReplenishmentsObj(List<Long> longs) {
