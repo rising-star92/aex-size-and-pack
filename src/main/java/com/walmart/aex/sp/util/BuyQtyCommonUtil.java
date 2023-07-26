@@ -130,7 +130,7 @@ public class BuyQtyCommonUtil {
                   .orElse(Optional.ofNullable(rep.getDcInboundUnits()).orElse(0L));
             replnObjectMap.setDcInboundUnits(replnObjectMap.getDcInboundUnits() + units);
         });
-        return new ArrayList<>(replnMap.values());
+        return sortReplenishments(new ArrayList<>(replnMap.values()));
     }
 
     public static StoreQuantity createStoreQuantity(RFASizePackData rfaSizePackData, double perStoreQty, List<Integer> storeListWithOldQty, double totalUnits, Cluster volumeCluster) {
@@ -188,5 +188,9 @@ public class BuyQtyCommonUtil {
                 .stream()
                 .flatMap(Collection::stream)
                 .anyMatch(style -> (style != null && style.getStyleId().equalsIgnoreCase(styleId)));
+    }
+
+    public static List<Replenishment> sortReplenishments(List<Replenishment> replenishments) {
+        return replenishments.stream().sorted(Comparator.comparing(Replenishment::getReplnWeek)).collect(Collectors.toList());
     }
 }

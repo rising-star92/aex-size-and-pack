@@ -1,11 +1,7 @@
 package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.bqfp.Replenishment;
-import com.walmart.aex.sp.properties.BuyQtyProperties;
-import com.walmart.aex.sp.repository.DeptAdminRuleRepository;
 import com.walmart.aex.sp.service.impl.DeptAdminRuleServiceImpl;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -63,6 +59,7 @@ class ReplenishmentsOptimizationServiceTest {
         longs.forEach(l -> {
             Replenishment replenishment = new Replenishment();
             replenishment.setAdjReplnUnits(l);
+            replenishment.setReplnWeek(0);
             double noOfVendorPacks = Math.ceil((double) replenishment.getAdjReplnUnits() / 5.0);
             Long updatedAdjReplnUnit = (long) (noOfVendorPacks * 5.0);
             replenishment.setAdjReplnUnits(updatedAdjReplnUnit);
