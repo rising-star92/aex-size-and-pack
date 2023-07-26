@@ -1,11 +1,11 @@
 package com.walmart.aex.sp.service;
 
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.walmart.aex.sp.dto.bqfp.BQFPResponse;
-import com.walmart.aex.sp.dto.bqfp.BumpSet;
+import com.walmart.aex.sp.dto.bqfp.*;
 import com.walmart.aex.sp.dto.buyquantity.BuyQntyResponseDTO;
 import com.walmart.aex.sp.dto.buyquantity.BuyQtyResponse;
+import com.walmart.aex.sp.dto.buyquantity.CustomerChoiceDto;
+import com.walmart.aex.sp.dto.buyquantity.StyleDto;
+import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
 import com.walmart.aex.sp.util.BuyQtyCommonUtil;
 import com.walmart.aex.sp.util.BuyQtyResponseInputs;
 import org.junit.jupiter.api.Test;
@@ -18,7 +18,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -30,19 +33,14 @@ class BuyQtyCommonUtilTest {
     private BuyQtyCommonUtil buyQtyCommonUtil;
 
     @Mock
-    private BuyQtyResponseInputs buyQtyInputs;
-
-    @Mock
     private BuyQuantityMapper buyQuantityMapper;
-
-    private final ObjectMapper mapper = new ObjectMapper();
 
     @Test
     void filterFinelinesWithSizesTest() throws IOException
     {
         List<BuyQntyResponseDTO> buyQntyResponseDTOS = BuyQtyResponseInputs.buyQtyFinelineInput();
         BuyQtyResponse buyQtyResponseFromStrategy = BuyQtyResponseInputs.buyQtyResponseFromJson("/buyQtySizeResponse");
-        BuyQtyResponse buyQtyResponse = buyQtyCommonUtil.filterFinelinesWithSizes(buyQntyResponseDTOS,buyQtyResponseFromStrategy);
+        buyQtyCommonUtil.filterFinelinesWithSizes(buyQntyResponseDTOS,buyQtyResponseFromStrategy);
 
         Mockito.verify(buyQuantityMapper, Mockito.times(1)).mapBuyQntyLvl2Sp(buyQntyResponseDTOS.get(0),new BuyQtyResponse(),null);
         Mockito.verify(buyQuantityMapper, Mockito.times(1)).mapBuyQntyLvl2Sp(buyQntyResponseDTOS.get(1),new BuyQtyResponse(),null);
@@ -55,7 +53,7 @@ class BuyQtyCommonUtilTest {
     {
         List<BuyQntyResponseDTO> buyQntyResponseDTOS = BuyQtyResponseInputs.buyQtyStyleCcInput();
         BuyQtyResponse buyQtyResponseFromStrategy = BuyQtyResponseInputs.buyQtyResponseFromJson("/buyQtySizeResponse");
-        BuyQtyResponse buyQtyResponse = buyQtyCommonUtil.filterStylesCcWithSizes(buyQntyResponseDTOS,buyQtyResponseFromStrategy,2855);
+        buyQtyCommonUtil.filterStylesCcWithSizes(buyQntyResponseDTOS,buyQtyResponseFromStrategy,2855);
 
         Mockito.verify(buyQuantityMapper, Mockito.times(1)).mapBuyQntyLvl2Sp(buyQntyResponseDTOS.get(0),new BuyQtyResponse(),2855);
         Mockito.verify(buyQuantityMapper, Mockito.times(1)).mapBuyQntyLvl2Sp(buyQntyResponseDTOS.get(1),new BuyQtyResponse(),2855);
@@ -121,6 +119,56 @@ class BuyQtyCommonUtilTest {
 
             assertNotNull(inStoreWeek);
             assertEquals("202350", inStoreWeek);
+        }
+    }
+
+    @Test
+    void getReplenishmentTest() {
+        try (MockedStatic<BuyQtyCommonUtil> mockedStatic = Mockito.mockStatic(BuyQtyCommonUtil.class, invocationOnMock -> {
+            Method method = invocationOnMock.getMethod();
+            if ("getReplenishments".equals(method.getName())) {
+                return invocationOnMock.callRealMethod();
+            } else {
+                return invocationOnMock.getMock();
+            }
+        })) {
+            StyleDto styleDto = new StyleDto();
+            styleDto.setStyleNbr("34_3483_0_15_11");
+
+            CustomerChoiceDto customerChoiceDto = new CustomerChoiceDto();
+            customerChoiceDto.setCcId("34_3483_0_15_11_BLKSOT");
+
+            MerchMethodsDto merchMethodsDto = new MerchMethodsDto();
+            merchMethodsDto.setFixtureTypeRollupId(1);
+            BQFPResponse bqfpResponse = BuyQtyResponseInputs.bQFPResponseFromJson("/bqfpServiceResponse");
+            List<Replenishment> originalReplenishment = Optional.ofNullable(bqfpResponse.getStyles())
+                    .stream()
+                    .flatMap(Collection::stream)
+                    .filter(style -> style.getStyleId().equalsIgnoreCase(styleDto.getStyleNbr()))
+                    .findFirst()
+                    .map(Style::getCustomerChoices)
+                    .stream()
+                    .flatMap(Collection::stream)
+                    .filter(customerChoice -> customerChoice.getCcId().equalsIgnoreCase(customerChoiceDto.getCcId()))
+                    .findFirst()
+                    .map(CustomerChoice::getFixtures)
+                    .stream()
+                    .flatMap(Collection::stream)
+                    .filter(fixture -> merchMethodsDto.getFixtureTypeRollupId().equals(fixture.getFixtureTypeRollupId()))
+                    .map(Fixture::getReplenishments)
+                    .flatMap(Collection::stream)
+                    .collect(Collectors.toList());
+
+            List<Replenishment> result = BuyQtyCommonUtil.getReplenishments(List.of(merchMethodsDto), bqfpResponse, styleDto, customerChoiceDto);
+
+            assertNotNull(result);
+
+            for (int i = 0; i < originalReplenishment.size(); i++) {
+                assertEquals(originalReplenishment.get(i).getReplnWeek(), result.get(i).getReplnWeek());
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

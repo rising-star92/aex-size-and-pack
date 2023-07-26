@@ -713,7 +713,7 @@ class CalculateFinelineBuyQuantityTest {
         assertEquals(48030, customerChoiceChannelFixture1.getReplnQty(), "Replenishments are calculated with initial sets");
 
         assertEquals(0, customerChoiceChannelFixture2.getInitialSetQty(), "CC which doesn't got any initialSet from BQFP will not have initial sets");
-        assertEquals(101784, customerChoiceChannelFixture2.getReplnQty(), "Replenishments are calculated when no initial sets are available");
+        assertEquals(101736, customerChoiceChannelFixture2.getReplnQty(), "Replenishments are calculated when no initial sets are available");
 
         assertEquals(75273, fixture1.getInitialSetQty(), "At fineline level, the initialSet value is coming from only one CC");
 

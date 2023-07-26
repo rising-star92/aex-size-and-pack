@@ -141,8 +141,7 @@ public class AddStoreBuyQuantityService {
             if (totalReplenishment > 0) {
                 double totalReducedReplenishment = rfaSizePackData.getStore_cnt();
                 if (totalReplenishment >= totalReducedReplenishment) {
-                    InitialSetWithReplnsConstraint initialSetWithReplnsConstraint = buyQuantityConstraintService.getISWithMoreReplenConstraint(buyQtyObj, totalReducedReplenishment, rfaSizePackData, DEFAULT_INITIAL_THRESHOLD);
-                    buyQtyObj.setReplenishments(initialSetWithReplnsConstraint.getReplnsWithUnits());
+                    buyQuantityConstraintService.getISWithMoreReplenConstraint(buyQtyObj, totalReducedReplenishment, rfaSizePackData, DEFAULT_INITIAL_THRESHOLD);
                     log.debug("| Replenishment count after adjusting with more replenishment | : {} | {} | {} | {} | {} | {} | {}", addStoreBuyQuantity.getCustomerChoiceDto().getCcId(), sizeDto.getSizeDesc(), FixtureTypeRollup.getFixtureIdFromName(rfaSizePackData.getFixture_type()), isQty, perStoreQty, storeList.size(), getTotalReplenishment(buyQtyObj));
                 } else {
                     // When the replenishment is less than the store count, reduce available replenishment count to zero
@@ -185,7 +184,6 @@ public class AddStoreBuyQuantityService {
                 double totalReducedReplenishment = unitsLessThanThreshold * rfaSizePackData.getStore_cnt();
                 if (totalReplenishment >= totalReducedReplenishment) {
                     InitialSetWithReplnsConstraint initialSetWithReplnsConstraint = buyQuantityConstraintService.getISWithMoreReplenConstraint(buyQtyObj, totalReducedReplenishment, rfaSizePackData, initialThreshold);
-                    buyQtyObj.setReplenishments(initialSetWithReplnsConstraint.getReplnsWithUnits());
                     perStoreQty = initialSetWithReplnsConstraint.getPerStoreQty();
                     isQty = initialSetWithReplnsConstraint.getIsQty();
                     log.debug("| IS after IS constraints with more replenishment | : {} | {} | {} | {} | {} | {}", addStoreBuyQuantity.getCustomerChoiceDto().getCcId(), sizeDto.getSizeDesc(), FixtureTypeRollup.getFixtureIdFromName(rfaSizePackData.getFixture_type()), isQty, perStoreQty, storeList.size());
@@ -194,7 +192,6 @@ public class AddStoreBuyQuantityService {
                     InitialSetWithReplnsConstraint initialSetWithReplnsConstraint = buyQuantityConstraintService.getISWithLessReplenConstraint(buyQtyObj, storeCntWithNewQty, storeList, perStoreQty, rfaSizePackData, volumeCluster, sizeDto, initialThreshold);
                     storeList = storeList.subList(0, storeCntWithNewQty);
                     initialSetQuantities.add(initialSetWithReplnsConstraint.getStoreQuantity());
-                    buyQtyObj.setReplenishments(initialSetWithReplnsConstraint.getReplnsWithUnits());
                     perStoreQty = initialSetWithReplnsConstraint.getPerStoreQty();
                     isQty = initialSetWithReplnsConstraint.getIsQty();
 
@@ -251,7 +248,6 @@ public class AddStoreBuyQuantityService {
             double totalReducedReplenishment = unitsLessThanThreshold * rfaSizePackData.getStore_cnt();
             if (totalReplenishment >= totalReducedReplenishment) {
                 InitialSetWithReplnsConstraint initialSetWithReplnsConstraint = buyQuantityConstraintService.getISWithMoreReplenConstraint(buyQtyObj, totalReducedReplenishment, rfaSizePackData, initialThreshold);
-                buyQtyObj.setReplenishments(initialSetWithReplnsConstraint.getReplnsWithUnits());
                 perStoreQty = initialSetWithReplnsConstraint.getPerStoreQty();
                 isQty = initialSetWithReplnsConstraint.getIsQty();
                 log.debug("| IS after IS constraints with more replenishment | : {} | {} | {} | {} | {} | {}", addStoreBuyQuantity.getCustomerChoiceDto().getCcId(), sizeDto.getSizeDesc(), FixtureTypeRollup.getFixtureIdFromName(rfaSizePackData.getFixture_type()), isQty, perStoreQty, storeList.size());
@@ -260,7 +256,6 @@ public class AddStoreBuyQuantityService {
                 InitialSetWithReplnsConstraint initialSetWithReplnsConstraint = buyQuantityConstraintService.getISWithLessReplenConstraint(buyQtyObj, storeCntWithNewQty, storeList, perStoreQty, rfaSizePackData, volumeCluster, sizeDto, initialThreshold);
                 storeList = storeList.subList(0, storeCntWithNewQty);
                 initialSetQuantities.add(initialSetWithReplnsConstraint.getStoreQuantity());
-                buyQtyObj.setReplenishments(initialSetWithReplnsConstraint.getReplnsWithUnits());
                 perStoreQty = initialSetWithReplnsConstraint.getPerStoreQty();
                 isQty = initialSetWithReplnsConstraint.getIsQty();
 
