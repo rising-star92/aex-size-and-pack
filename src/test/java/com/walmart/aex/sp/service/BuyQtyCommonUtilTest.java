@@ -126,7 +126,7 @@ class BuyQtyCommonUtilTest {
     void getReplenishmentTest() {
         try (MockedStatic<BuyQtyCommonUtil> mockedStatic = Mockito.mockStatic(BuyQtyCommonUtil.class, invocationOnMock -> {
             Method method = invocationOnMock.getMethod();
-            if ("getReplenishments".equals(method.getName())) {
+            if ("getReplenishments".equals(method.getName()) || "sortReplenishments".equals(method.getName())) {
                 return invocationOnMock.callRealMethod();
             } else {
                 return invocationOnMock.getMock();
