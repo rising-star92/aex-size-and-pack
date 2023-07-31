@@ -130,6 +130,7 @@ deploy:
               wm.app: AEX_SIZE_AND_PACK
               wm.env: 'stg'
           env:
+            DYNATRACE_ENABLED: true
             JAVA_OPTS: "-Dspring.profiles.active=stg
                           -Dccm.configs.dir=/etc/config
                           -Djava.awt.headless=true

@@ -2,9 +2,9 @@ package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.bqfp.Replenishment;
 import com.walmart.aex.sp.service.impl.DeptAdminRuleServiceImpl;
+import com.walmart.aex.sp.util.BuyQtyCommonUtil;
 import com.walmart.aex.sp.util.SizeAndPackConstants;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -36,10 +36,12 @@ public class ReplenishmentsOptimizationService {
             return Collections.emptyList();
         }
 
+        List<Replenishment> sortedReplenishments = BuyQtyCommonUtil.sortReplenishments(replenishments);
+
         /** Adjust the replenishment unit only for Store */
         if(SizeAndPackConstants.STORE_CHANNEL_ID.equals(channelId)) {
             //get non-zero weeks which are supposed to be adjusted.
-            List<Replenishment> nonZeroReplenishmentList = replenishments.stream().filter(replenishment -> replenishment.getAdjReplnUnits() != null && replenishment.getAdjReplnUnits() > 0).collect(Collectors.toList());
+            List<Replenishment> nonZeroReplenishmentList = sortedReplenishments.stream().filter(replenishment -> replenishment.getAdjReplnUnits() != null && replenishment.getAdjReplnUnits() > 0).collect(Collectors.toList());
 
             //sum of all adjReplnUnits including starting index
             long futureWeekAdjReplnUnitsSum = nonZeroReplenishmentList.stream().map(Replenishment::getAdjReplnUnits).mapToLong(Long::longValue).sum();
@@ -66,15 +68,15 @@ public class ReplenishmentsOptimizationService {
                 }
             }
         }
-        updatedAdjustedDcInboundQty(replenishments,vnpkQty);
-        return replenishments;
+        updatedAdjustedDcInboundQty(sortedReplenishments, vnpkQty);
+        return sortedReplenishments;
     }
 
     private void updatedAdjustedDcInboundQty(List<Replenishment> replenishments,Integer vnpkQty) {
 
         if(replenishments!=null && vnpkQty!= null && vnpkQty>0) {
             replenishments.forEach(replobj -> {
-                if(replobj.getAdjReplnUnits()!=null){
+                if(replobj.getAdjReplnUnits()!=null && replobj.getAdjReplnUnits() > 0){
                     double noOfVendorPacks = Math.ceil((double)(replobj.getAdjReplnUnits()) / vnpkQty); // Math.ceil will return a double value and double has higher range than int, therefore using double
                     Long updatedAdjReplnUnits = (long)(noOfVendorPacks * vnpkQty);
                     replobj.setAdjReplnUnits(updatedAdjReplnUnits);
@@ -119,10 +121,10 @@ public class ReplenishmentsOptimizationService {
             if (required == 0 || nonZeroReplenishmentList.get(j).getAdjReplnUnits() == 0) {
                 break;
             }
-
+            // If the required is greater than the future week, then pull all the units from future week into current
             if (required >= nonZeroReplenishmentList.get(j).getAdjReplnUnits()) {
                 long temp = nonZeroReplenishmentList.get(j).getAdjReplnUnits();
-                nonZeroReplenishmentList.get(j).setAdjReplnUnits(required - temp);
+                nonZeroReplenishmentList.get(j).setAdjReplnUnits(0L);
                 nonZeroReplenishmentList.get(i).setAdjReplnUnits(nonZeroReplenishmentList.get(i).getAdjReplnUnits() + temp);
                 required = required - temp;
                 futureWeekAdjReplnUnitsSum = futureWeekAdjReplnUnitsSum - temp;

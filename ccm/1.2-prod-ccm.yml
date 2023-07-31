@@ -167,6 +167,11 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "68, 69, 72"
+      "initialSet.oneUnitPerStoreFlag":
+        description: "Feature flag to enable the logic for making sure each store gets one unit"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "true"
   bqfpServiceConfig:
     description: ""
     resolutionPaths:
@@ -449,4 +454,3 @@ configDefinitions:
         defaultValue: "true"
 apiVersion: "2.0"
 kind: "ServiceConfig"
-

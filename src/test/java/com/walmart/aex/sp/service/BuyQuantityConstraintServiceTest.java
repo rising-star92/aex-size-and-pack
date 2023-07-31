@@ -3,6 +3,7 @@ package com.walmart.aex.sp.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.assortproduct.RFASizePackData;
+import com.walmart.aex.sp.dto.bqfp.Cluster;
 import com.walmart.aex.sp.dto.bqfp.Replenishment;
 import com.walmart.aex.sp.dto.buyquantity.BuyQtyObj;
 import com.walmart.aex.sp.dto.buyquantity.InitialSetWithReplnsConstraint;
@@ -18,11 +19,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import static org.mockito.Mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.AbstractMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -47,7 +47,6 @@ class BuyQuantityConstraintServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        calculateBumpPackQtyService = new CalculateBumpPackQtyService();
         buyQuantityConstraintService = new BuyQuantityConstraintService(calculateBumpPackQtyService);
     }
 
@@ -108,8 +107,53 @@ class BuyQuantityConstraintServiceTest {
         rfaSizePackData.setStore_cnt(100);
         InitialSetWithReplnsConstraint setWithReplnsConstraint = buyQuantityConstraintService.getISWithMoreReplenConstraint(bqo, 800, rfaSizePackData, 2);
 
-        List<Replenishment> adjustedReplns = setWithReplnsConstraint.getReplnsWithUnits();
+        List<Replenishment> adjustedReplns = bqo.getReplenishments();
         assertTrue(adjustedReplns.stream().allMatch(replenishment -> replenishment.getAdjReplnUnits() >= 0), "Reduction of all repln units should not produce negative value");
+    }
+
+    @Test
+    void constraintProcessingShouldReduceRequiredCountFromWeekUnits() {
+        String bqoJson = "{\"replenishments\":[{\"replnWeek\":12327,\"replnWeekDesc\":\"FYE2024WK27\",\"adjReplnUnits\":75},{\"replnWeek\":12331,\"replnWeekDesc\":\"FYE2024WK31\",\"adjReplnUnits\":300},{\"replnWeek\":12335,\"replnWeekDesc\":\"FYE2024WK35\",\"adjReplnUnits\":2899},{\"replnWeek\":12339,\"replnWeekDesc\":\"FYE2024WK39\",\"adjReplnUnits\":0}],\"totalReplenishment\":0}";
+        BuyQtyObj bqo = deserializeBuyQtyObj(bqoJson);
+        RFASizePackData rfaSizePackData = new RFASizePackData();
+        rfaSizePackData.setStore_cnt(739);
+        InitialSetWithReplnsConstraint setWithReplnsConstraint = buyQuantityConstraintService.getISWithMoreReplenConstraint(bqo, 739, rfaSizePackData, 2);
+
+        List<Replenishment> adjustedReplns = bqo.getReplenishments();
+        assertTrue(adjustedReplns.stream().allMatch(replenishment -> replenishment.getAdjReplnUnits() >= 0), "Reduction of all repln units should not produce negative value");
+    }
+
+    @Test
+    void constraintProcessingShouldSplitStoresWhenLessReplenishment() throws JsonProcessingException {
+        String bqoJson = "{\"replenishments\":[{\"replnWeek\":12327,\"replnWeekDesc\":\"FYE2024WK27\",\"adjReplnUnits\":75},{\"replnWeek\":12331,\"replnWeekDesc\":\"FYE2024WK31\",\"adjReplnUnits\":300},{\"replnWeek\":12335,\"replnWeekDesc\":\"FYE2024WK35\",\"adjReplnUnits\":0},{\"replnWeek\":12339,\"replnWeekDesc\":\"FYE2024WK39\",\"adjReplnUnits\":0}],\"totalReplenishment\":0}";
+        BuyQtyObj bqo = deserializeBuyQtyObj(bqoJson);
+        RFASizePackData rfaSizePackData = new RFASizePackData();
+        rfaSizePackData.setStore_cnt(408);
+        rfaSizePackData.setVolume_group_cluster_id(1);
+        rfaSizePackData.setSize_cluster_id(1);
+        String storeListJson = "[3406, 1903, 3733, 6898, 256, 2688, 664, 410, 504, 2559, 5245, 3017, 535, 5703, 1341, 3294, 1464, 579, 5145, 2757, 529, 2990, 1241, 1720, 2322, 581, 3267, 2201, 829, 575, 5743, 1156, 2122, 365, 2928, 3763, 2399, 1535, 2857, 1514, 5056, 5027, 2037, 3461, 1348, 950, 3301, 2649, 2243, 536, 3630, 661, 2360, 1496, 1242, 844, 590, 5046, 2993, 2485, 5150, 1927, 3118, 2864, 3322, 2154, 3570, 601, 5748, 1923, 1313, 3237, 755, 3462, 3391, 5823, 1888, 3435, 4503, 1055, 2631, 3762, 3283, 1636, 1353, 1586, 1557, 1528, 5311, 622, 491, 3431, 2038, 2496, 645, 35, 1103, 870, 2700, 5480, 58, 2621, 4574, 1118, 1097, 1453, 1801, 3835, 3225, 1578, 4358, 258, 687, 4237, 781, 1014, 5247, 5705, 5087, 398, 500, 937, 4631, 3136, 400, 3209, 4298, 2049, 1737, 1483, 1229, 5491, 3284, 2755, 752, 896, 2197, 571, 3278, 1987, 5160, 5254, 3403, 1125, 892, 261, 1473, 821, 813, 284, 1454, 1, 1802, 5373, 184, 1671, 2616, 1752, 359, 1215, 228, 2283, 1644, 2987, 4440, 2712, 1217, 5479, 201, 2002, 2604, 753, 682, 1669, 2991, 2250, 878, 1488, 3056, 574, 2404, 2273, 851, 220, 699, 322, 1178, 1361, 2827, 4424, 3285, 824, 2117, 3460, 1376, 1355, 4274, 470, 818, 5080, 768, 1430, 3404, 2105, 2338, 3406, 1903, 3733, 6898, 256, 2688, 664, 410, 504, 2559, 5245, 3017, 535, 5703, 1341, 3294, 1464, 579, 5145, 2757, 529, 2990, 1241, 1720, 2322, 581, 3267, 2201, 829, 575, 5743, 1156, 2122, 365, 2928, 3763, 2399, 1535, 2857, 1514, 5056, 5027, 2037, 3461, 1348, 950, 3301, 2649, 2243, 536, 3630, 661, 2360, 1496, 1242, 844, 590, 5046, 2993, 2485, 5150, 1927, 3118, 2864, 3322, 2154, 3570, 601, 5748, 1923, 1313, 3237, 755, 3462, 3391, 5823, 1888, 3435, 4503, 1055, 2631, 3762, 3283, 1636, 1353, 1586, 1557, 1528, 5311, 622, 491, 3431, 2038, 2496, 645, 35, 1103, 870, 2700, 5480, 58, 2621, 4574, 1118, 1097, 1453, 1801, 3835, 3225, 1578, 4358, 258, 687, 4237, 781, 1014, 5247, 5705, 5087, 398, 500, 937, 4631, 3136, 400, 3209, 4298, 2049, 1737, 1483, 1229, 5491, 3284, 2755, 752, 896, 2197, 571, 3278, 1987, 5160, 5254, 3403, 1125, 892, 261, 1473, 821, 813, 284, 1454, 1, 1802, 5373, 184, 1671, 2616, 1752, 359, 1215, 228, 2283, 1644, 2987, 4440, 2712, 1217, 5479, 201, 2002, 2604, 753, 682, 1669, 2991, 2250, 878, 1488, 3056, 574, 2404, 2273, 851, 220, 699, 322, 1178, 1361, 2827, 4424, 3285, 824, 2117, 3460, 1376, 1355, 4274, 470, 818, 5080, 768, 1430, 3404, 2105, 2338]";
+        List<Integer> storeList = Arrays.asList(mapper.readValue(storeListJson, Integer[].class));
+        Cluster volumeCluster = new Cluster();
+        volumeCluster.setFlowStrategy(1);
+        SizeDto sizeDto = new SizeDto();
+
+        when(calculateBumpPackQtyService.calculateBumpPackQty(sizeDto, rfaSizePackData, volumeCluster, 35)).thenReturn(new ArrayList<>());
+        InitialSetWithReplnsConstraint setWithReplnsConstraint = buyQuantityConstraintService.getISWithLessReplenConstraint(bqo, 375, storeList, 1.0, rfaSizePackData, volumeCluster, new SizeDto(), 2);
+
+        StoreQuantity storeQuantityWithNoNewRep = setWithReplnsConstraint.getStoreQuantity();
+        assertEquals(1.0, storeQuantityWithNoNewRep.getIsUnits(), "Stores should have old IS units");
+        assertEquals(35.0, storeQuantityWithNoNewRep.getTotalUnits(), "35 stores should get 1 unit each");
+        assertEquals(750.0, setWithReplnsConstraint.getIsQty(), "375 stores gets 2 units, IS will be 750");
+        assertEquals(2.0, setWithReplnsConstraint.getPerStoreQty(), "New Per Store Qty after setting replenishments");
+    }
+
+    @Test
+    void test_getTotalReplenishment() throws JsonProcessingException {
+        String bqoJson = "[{\"replnWeek\":12327,\"replnWeekDesc\":\"FYE2024WK27\",\"adjReplnUnits\":75},{\"replnWeek\":12331,\"replnWeekDesc\":\"FYE2024WK31\",\"adjReplnUnits\":300},{\"replnWeek\":12335,\"replnWeekDesc\":\"FYE2024WK35\",\"adjReplnUnits\":2899},{\"replnWeek\":12339,\"replnWeekDesc\":\"FYE2024WK39\",\"adjReplnUnits\":0}]}";
+        List<Replenishment> replenishments = Arrays.asList(mapper.readValue(bqoJson, Replenishment[].class));
+        Long totalReplenishment = buyQuantityConstraintService.getTotalReplenishment(replenishments);
+
+        assertEquals(3274, totalReplenishment, "Reduction of all repln units should not produce negative value");
     }
 
     private BuyQtyObj deserializeBuyQtyObj(String json) {

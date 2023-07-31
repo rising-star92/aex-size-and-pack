@@ -3,6 +3,8 @@ package com.walmart.aex.sp.controller;
 
 import java.util.List;
 
+import javax.ws.rs.Consumes;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
@@ -32,13 +34,12 @@ import com.walmart.aex.sp.service.SizeAndPackService;
 import com.walmart.aex.sp.service.StoreDistributionService;
 import com.walmart.aex.sp.util.CommonUtil;
 
-import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequestMapping("/size-and-pack/v1")
 @Controller
-@Api(consumes = MediaType.APPLICATION_JSON_VALUE)
+@Consumes(MediaType.APPLICATION_JSON_VALUE)
 public class SizeAndPackController {
 
 	private final CommonUtil commonUtil;

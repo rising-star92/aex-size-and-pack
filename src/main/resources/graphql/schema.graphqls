@@ -251,6 +251,7 @@ type RunOptimization{
     startTs: String
     endTs: String
     returnMessage: String
+    runStatusLongDesc: String
     runStatusCode: Int
 }
 

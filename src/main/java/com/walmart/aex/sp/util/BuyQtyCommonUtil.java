@@ -9,12 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
@@ -123,7 +118,7 @@ public class BuyQtyCommonUtil {
                 .map(Fixture::getReplenishments)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
-        Map<Integer, Replenishment> replnMap = new HashMap<>();
+        Map<Integer, Replenishment> replnMap = new LinkedHashMap<>();
         replenishments.forEach(rep -> {
             if (!replnMap.containsKey(rep.getReplnWeek())) {
                 replnMap.put(rep.getReplnWeek(), new Replenishment(rep.getReplnWeek(), rep.getReplnWeekDesc(), 0L, 0L, 0L, 0L, 0L));
@@ -135,7 +130,7 @@ public class BuyQtyCommonUtil {
                   .orElse(Optional.ofNullable(rep.getDcInboundUnits()).orElse(0L));
             replnObjectMap.setDcInboundUnits(replnObjectMap.getDcInboundUnits() + units);
         });
-        return new ArrayList<>(replnMap.values());
+        return sortReplenishments(new ArrayList<>(replnMap.values()));
     }
 
     public static StoreQuantity createStoreQuantity(RFASizePackData rfaSizePackData, double perStoreQty, List<Integer> storeListWithOldQty, double totalUnits, Cluster volumeCluster) {
@@ -145,6 +140,7 @@ public class BuyQtyCommonUtil {
         storeQuantity.setVolumeCluster(rfaSizePackData.getVolume_group_cluster_id());
         storeQuantity.setSizeCluster(rfaSizePackData.getSize_cluster_id());
         storeQuantity.setStoreList(storeListWithOldQty);
+        storeQuantity.setRfaSizePackData(rfaSizePackData);
         if (volumeCluster.getFlowStrategy() != null)
             storeQuantity.setFlowStrategyCode(volumeCluster.getFlowStrategy());
         return storeQuantity;
@@ -192,5 +188,9 @@ public class BuyQtyCommonUtil {
                 .stream()
                 .flatMap(Collection::stream)
                 .anyMatch(style -> (style != null && style.getStyleId().equalsIgnoreCase(styleId)));
+    }
+
+    public static List<Replenishment> sortReplenishments(List<Replenishment> replenishments) {
+        return replenishments.stream().sorted(Comparator.comparing(Replenishment::getReplnWeek)).collect(Collectors.toList());
     }
 }

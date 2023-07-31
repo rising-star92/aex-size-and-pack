@@ -1,5 +1,6 @@
 package com.walmart.aex.sp.dto.buyquantity;
 
+import com.walmart.aex.sp.dto.assortproduct.RFASizePackData;
 import lombok.Data;
 
 import java.util.List;
@@ -13,4 +14,5 @@ public class StoreQuantity {
     private Integer volumeCluster;
     private List<BumpSetQuantity> bumpSets;
     private Integer flowStrategyCode;
+    private RFASizePackData rfaSizePackData;
 }

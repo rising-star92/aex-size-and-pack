@@ -19,10 +19,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
@@ -65,8 +62,8 @@ class AddStoreBuyQuantityServiceTest {
         calculateInitialSetQuantityService = new CalculateInitialSetQuantityService();
         calculateBumpPackQtyService = new CalculateBumpPackQtyService();
         buyQuantityConstraintService = new BuyQuantityConstraintService(calculateBumpPackQtyService);
-        addStoreBuyQuantityService = new AddStoreBuyQuantityService(objectMapper, calculateBumpPackQtyService, buyQuantityConstraintService, calculateInitialSetQuantityService);
-
+        addStoreBuyQuantityService = new AddStoreBuyQuantityService(objectMapper, calculateBumpPackQtyService, buyQuantityConstraintService, calculateInitialSetQuantityService, buyQtyProperties);
+        Mockito.when(buyQtyProperties.getOneUnitPerStoreFeatureFlag()).thenReturn("true");
     }
 
     @Test
@@ -125,12 +122,29 @@ class AddStoreBuyQuantityServiceTest {
         AddStoreBuyQuantity addStoreBuyQuantity = getAddStoreBuyQuantities(bqfpResponse, getStyleDTO(), getMerchMethodsDto(), getSizeDTO(), rfaSizePackDataList, getCustomerChoiceDTO());
         addStoreBuyQuantityService.addStoreBuyQuantities(addStoreBuyQuantity,buyQtyObj, 2);
         StoreQuantity storeQuantity = buyQtyObj.getBuyQtyStoreObj().getBuyQuantities().get(1);
-        assertEquals(2.0, storeQuantity.getTotalUnits());
-        assertEquals(2.0, storeQuantity.getIsUnits());
+        assertEquals(1.0, storeQuantity.getTotalUnits());
+        assertEquals(1.0, storeQuantity.getIsUnits());
     }
 
     @Test
     void addStoreBuyQuantitiesWithNullInitialSet() throws IOException {
+        String buyQtyJson = "{\"buyQtyStoreObj\":{\"buyQuantities\":[]},\"replenishments\":[{\"replnWeek\":12301,\"replnWeekDesc\":\"FYE2024WK01\",\"replnUnits\":null,\"adjReplnUnits\":5,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null},{\"replnWeek\":12305,\"replnWeekDesc\":\"FYE2024WK05\",\"replnUnits\":null,\"adjReplnUnits\":6,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null},{\"replnWeek\":12309,\"replnWeekDesc\":\"FYE2024WK09\",\"replnUnits\":null,\"adjReplnUnits\":6,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null},{\"replnWeek\":12313,\"replnWeekDesc\":\"FYE2024WK13\",\"replnUnits\":null,\"adjReplnUnits\":6,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null}],\"totalReplenishment\":23}";
+        BuyQtyObj buyQtyObj = deserializeBuyQtyObj(buyQtyJson);
+        String rfaSizePackData = "{\"rpt_lvl_0_nbr\":50000,\"rpt_lvl_1_nbr\":34,\"rpt_lvl_2_nbr\":1488,\"rpt_lvl_3_nbr\":9074,\"rpt_lvl_4_nbr\":7207,\"fineline_nbr\":4440,\"style_nbr\":\"34_4440_3_24_001\",\"customer_choice\":\"34_4440_3_24_001_001\",\"fixture_type\":\"RACKS\",\"fixture_group\":1,\"color_family\":\"default\",\"size_cluster_id\":1,\"volume_group_cluster_id\":1,\"store_list\":\"[945,100]\",\"store_cnt\":2,\"plan_id_partition\":72}";
+        List<RFASizePackData> rfaSizePackDataList = new ArrayList<>();
+        rfaSizePackDataList.add(getRFASizePackData(rfaSizePackData));
+        String bqfpJson = "{\"planId\":72,\"lvl0Nbr\":50000,\"lvl1Nbr\":34,\"lvl2Nbr\":1488,\"lvl3Nbr\":9074,\"lvl4Nbr\":7207,\"finelineNbr\":4440,\"volumeDeviationStrategyLevelSelection\":1,\"styles\":[{\"styleId\":\"34_4440_3_24_001\",\"styleName\":null,\"channelType\":null,\"metrics\":null,\"initialSet\":null,\"bumpList\":null,\"recon\":null,\"flowStrategy\":null,\"customerChoices\":[{\"ccId\":\"34_4440_3_24_001_001\",\"ccName\":null,\"planId\":null,\"lvl0Nbr\":null,\"lvl1Nbr\":null,\"lvl2Nbr\":null,\"lvl3Nbr\":null,\"lvl4Nbr\":null,\"channelType\":null,\"finelineId\":null,\"styleId\":null,\"metrics\":null,\"fixtures\":[{\"fixtureType\":\"RACKS\",\"fixtureTypeRollupId\":3,\"metrics\":null,\"initialSet\":null,\"bumpList\":null,\"recon\":null,\"clusters\":[{\"volClusterDesc\":null,\"volClusterLevel\":null,\"analyticsClusterId\":1,\"strategyId\":null,\"flowStrategy\":2,\"metrics\":{\"inStoredate\":null,\"markdownDate\":null,\"sellingWeeks\":null,\"minPresentationUnits\":null,\"maxPresentationUnits\":null,\"totalStoresAllocated\":null,\"storeProductivity\":null},\"initialSet\":null,\"bumpList\":[{\"unitPct\":null,\"units\":3408,\"weekDesc\":null,\"weeksOfSale\":null,\"wmYearWeek\":null,\"bumpPackNbr\":1}],\"recon\":null}],\"flowStrategy\":null,\"replenishments\":[{\"replnWeek\":12244,\"replnWeekDesc\":\"FYE2023WK44\",\"replnUnits\":2027,\"adjReplnUnits\":null,\"remainingUnits\":1996,\"dcInboundUnits\":12514,\"dcInboundAdjUnits\":0},{\"replnWeek\":12245,\"replnWeekDesc\":\"FYE2023WK45\",\"replnUnits\":2274,\"adjReplnUnits\":null,\"remainingUnits\":1996,\"dcInboundUnits\":0,\"dcInboundAdjUnits\":0},{\"replnWeek\":12246,\"replnWeekDesc\":\"FYE2023WK46\",\"replnUnits\":2466,\"adjReplnUnits\":null,\"remainingUnits\":1996,\"dcInboundUnits\":0,\"dcInboundAdjUnits\":0},{\"replnWeek\":12247,\"replnWeekDesc\":\"FYE2023WK47\",\"replnUnits\":3095,\"adjReplnUnits\":null,\"remainingUnits\":1996,\"dcInboundUnits\":0,\"dcInboundAdjUnits\":0},{\"replnWeek\":12248,\"replnWeekDesc\":\"FYE2023WK48\",\"replnUnits\":2652,\"adjReplnUnits\":null,\"remainingUnits\":1996,\"dcInboundUnits\":6627,\"dcInboundAdjUnits\":0},{\"replnWeek\":12249,\"replnWeekDesc\":\"FYE2023WK49\",\"replnUnits\":2600,\"adjReplnUnits\":null,\"remainingUnits\":1996,\"dcInboundUnits\":0,\"dcInboundAdjUnits\":0},{\"replnWeek\":12250,\"replnWeekDesc\":\"FYE2023WK50\",\"replnUnits\":2469,\"adjReplnUnits\":null,\"remainingUnits\":1996,\"dcInboundUnits\":0,\"dcInboundAdjUnits\":0},{\"replnWeek\":12251,\"replnWeekDesc\":\"FYE2023WK51\",\"replnUnits\":1558,\"adjReplnUnits\":null,\"remainingUnits\":1996,\"dcInboundUnits\":0,\"dcInboundAdjUnits\":0},{\"replnWeek\":12252,\"replnWeekDesc\":\"FYE2023WK52\",\"replnUnits\":0,\"adjReplnUnits\":null,\"remainingUnits\":1996,\"dcInboundUnits\":0,\"dcInboundAdjUnits\":0},{\"replnWeek\":12301,\"replnWeekDesc\":\"FYE2024WK01\",\"replnUnits\":0,\"adjReplnUnits\":null,\"remainingUnits\":1996,\"dcInboundUnits\":0,\"dcInboundAdjUnits\":0},{\"replnWeek\":12302,\"replnWeekDesc\":\"FYE2024WK02\",\"replnUnits\":0,\"adjReplnUnits\":null,\"remainingUnits\":1996,\"dcInboundUnits\":0,\"dcInboundAdjUnits\":0},{\"replnWeek\":12303,\"replnWeekDesc\":\"FYE2024WK03\",\"replnUnits\":0,\"adjReplnUnits\":null,\"remainingUnits\":1996,\"dcInboundUnits\":0,\"dcInboundAdjUnits\":0},{\"replnWeek\":12304,\"replnWeekDesc\":\"FYE2024WK04\",\"replnUnits\":null,\"adjReplnUnits\":null,\"remainingUnits\":1996,\"dcInboundUnits\":0,\"dcInboundAdjUnits\":0}],\"remainingUnits\":1996}],\"initialSet\":null,\"bumpList\":null,\"recon\":null,\"flowStrategy\":null,\"replenishments\":[]}],\"replenishment\":null}]}";
+        BQFPResponse bqfpResponse = bqfpResponseFromJson(bqfpJson);
+        AddStoreBuyQuantity addStoreBuyQuantity = getAddStoreBuyQuantities(bqfpResponse, getStyleDTO(), getMerchMethodsDto(), getSizeDTO(), rfaSizePackDataList, getCustomerChoiceDTO());
+        addStoreBuyQuantityService.addStoreBuyQuantities(addStoreBuyQuantity,buyQtyObj, 2);
+        StoreQuantity storeQuantity = buyQtyObj.getBuyQtyStoreObj().getBuyQuantities().get(0);
+        assertEquals(0.0, storeQuantity.getTotalUnits());
+        assertEquals(0.0, storeQuantity.getIsUnits());
+    }
+
+    @Test
+    void addStoreBuyQuantitiesWithNullInitialSetWithV1() throws IOException {
+        Mockito.when(buyQtyProperties.getOneUnitPerStoreFeatureFlag()).thenReturn("false");
         String buyQtyJson = "{\"buyQtyStoreObj\":{\"buyQuantities\":[]},\"replenishments\":[{\"replnWeek\":12301,\"replnWeekDesc\":\"FYE2024WK01\",\"replnUnits\":null,\"adjReplnUnits\":5,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null},{\"replnWeek\":12305,\"replnWeekDesc\":\"FYE2024WK05\",\"replnUnits\":null,\"adjReplnUnits\":6,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null},{\"replnWeek\":12309,\"replnWeekDesc\":\"FYE2024WK09\",\"replnUnits\":null,\"adjReplnUnits\":6,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null},{\"replnWeek\":12313,\"replnWeekDesc\":\"FYE2024WK13\",\"replnUnits\":null,\"adjReplnUnits\":6,\"remainingUnits\":null,\"dcInboundUnits\":null,\"dcInboundAdjUnits\":null}],\"totalReplenishment\":23}";
         BuyQtyObj buyQtyObj = deserializeBuyQtyObj(buyQtyJson);
         String rfaSizePackData = "{\"rpt_lvl_0_nbr\":50000,\"rpt_lvl_1_nbr\":34,\"rpt_lvl_2_nbr\":1488,\"rpt_lvl_3_nbr\":9074,\"rpt_lvl_4_nbr\":7207,\"fineline_nbr\":4440,\"style_nbr\":\"34_4440_3_24_001\",\"customer_choice\":\"34_4440_3_24_001_001\",\"fixture_type\":\"RACKS\",\"fixture_group\":1,\"color_family\":\"default\",\"size_cluster_id\":1,\"volume_group_cluster_id\":1,\"store_list\":\"[945,100]\",\"store_cnt\":2,\"plan_id_partition\":72}";

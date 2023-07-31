@@ -138,6 +138,11 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "12, 8, 9, 73"
+      "initialSet.oneUnitPerStoreFlag":
+        description: "Feature flag to enable the logic for making sure each store gets one unit"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "true"
   bqfpServiceConfig:
     description: ""
     resolutionPaths:
@@ -583,3 +588,20 @@ configOverrides:
           "rfa.table.sp.packoptimization.output": "output_stage"
           "analytics_data": "analytics_data_stage"
           "store.distribution.feature.flag": "true"
+  buyQtyConfig:
+    - name: "dev"
+      description: "Buy Qty config override for DEV profile"
+      pathElements:
+        envName: "dev"
+        envProfile: "dev"
+      value:
+        properties:
+          "initialSet.oneUnitPerStoreFlag": "true"
+    - name: "stage"
+      description: "Buy Qty config override for STAGE profile"
+      pathElements:
+        envName: "stage"
+        envProfile: "stage"
+      value:
+        properties:
+          "initialSet.oneUnitPerStoreFlag": "true"

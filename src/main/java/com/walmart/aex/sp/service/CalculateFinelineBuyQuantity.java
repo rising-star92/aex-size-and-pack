@@ -135,7 +135,7 @@ public class CalculateFinelineBuyQuantity {
             FinelineDto finelineDto = getFineline(buyQtyResponse);
             if (finelineDto != null) {
                 if (!CollectionUtils.isEmpty(finelineDto.getMerchMethods()) && ChannelType.STORE.getDescription().equalsIgnoreCase(calculateBuyQtyParallelRequest.getChannel())) {
-                    getMerchMethod(calculateBuyQtyParallelRequest, finelineDto, apResponse, bqfpResponseCompletableFuture.get(), calculateBuyQtyResponse, calculateBuyQtyRequest);
+                    getMerchMethod(calculateBuyQtyParallelRequest, finelineDto, apResponse, bqfpResponseCompletableFuture.get(), calculateBuyQtyResponse);
                 } else if (ChannelType.ONLINE.getDescription().equalsIgnoreCase(calculateBuyQtyParallelRequest.getChannel())) {
                     calculateBuyQtyResponse = calculateOnlineFinelineBuyQuantity.calculateOnlineBuyQty(calculateBuyQtyParallelRequest, finelineDto, bqfpResponseCompletableFuture.get(), calculateBuyQtyResponse);
                 } else log.info("Merchmethods or channel is empty: {}", buyQtyResponseCompletableFuture);
@@ -194,7 +194,7 @@ public class CalculateFinelineBuyQuantity {
     }
 
     private void getMerchMethod(CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, FinelineDto finelineDto, APResponse apResponse, BQFPResponse bqfpResponse,
-                                CalculateBuyQtyResponse calculateBuyQtyResponse, CalculateBuyQtyRequest calculateBuyQtyRequest) {
+                                CalculateBuyQtyResponse calculateBuyQtyResponse) {
         List<SpFineLineChannelFixture> spFineLineChannelFixtures = new ArrayList<>();
         Map<Integer, List<MerchMethodsDto>> merchCodeMap = new HashMap<>();
         Set<CustomerChoice> customerChoices = bqfpResponse.getStyles().stream().map(Style::getCustomerChoices)
@@ -208,8 +208,8 @@ public class CalculateFinelineBuyQuantity {
         merchCodeMap.forEach((merchMethodCode, merchMethodsDtos) -> {
             // Hard coded for temporary testing of calculating InitialSet, BumpSet and Replenishment
             FixtureTypeRollUpId fixtureTypeRollUpId = new FixtureTypeRollUpId(merchMethodCode);
-            SpFineLineChannelFixtureId spFineLineChannelFixtureId = new SpFineLineChannelFixtureId(fixtureTypeRollUpId, calculateBuyQtyRequest.getPlanId(), calculateBuyQtyRequest.getLvl0Nbr(),
-                    calculateBuyQtyRequest.getLvl1Nbr(), calculateBuyQtyRequest.getLvl2Nbr(), calculateBuyQtyParallelRequest.getLvl3Nbr(), calculateBuyQtyParallelRequest.getLvl4Nbr(), finelineDto.getFinelineNbr(), ChannelType.getChannelIdFromName(calculateBuyQtyRequest.getChannel()));
+            SpFineLineChannelFixtureId spFineLineChannelFixtureId = new SpFineLineChannelFixtureId(fixtureTypeRollUpId, calculateBuyQtyParallelRequest.getPlanId(), calculateBuyQtyParallelRequest.getLvl0Nbr(),
+                    calculateBuyQtyParallelRequest.getLvl1Nbr(), calculateBuyQtyParallelRequest.getLvl2Nbr(), calculateBuyQtyParallelRequest.getLvl3Nbr(), calculateBuyQtyParallelRequest.getLvl4Nbr(), finelineDto.getFinelineNbr(), ChannelType.getChannelIdFromName(calculateBuyQtyParallelRequest.getChannel()));
             log.info("Checking if Fineline Chan Fixture Id is existing: {}", spFineLineChannelFixtureId);
 
             SpFineLineChannelFixture spFineLineChannelFixture = new SpFineLineChannelFixture();
@@ -331,7 +331,7 @@ public class CalculateFinelineBuyQuantity {
                     .stream()
                     .flatMap(Collection::stream)
                     .filter(clustersDto1 -> clustersDto1.getClusterID().equals(0))
-                    .findFirst().ifPresent(clustersDto -> setReplenishmentSizes(clustersDto, replenishments, storeBuyQtyBySizeId, calculateBuyQtyParallelRequest.getLvl1Nbr(), calculateBuyQtyParallelRequest.getPlanId(), replenishmentCons.getCcSpMmReplPackConsMap()));
+                    .findFirst().ifPresent(clustersDto -> setReplenishmentSizes(clustersDto, replenishments, storeBuyQtyBySizeId));
         }
         customerChoiceDto.getClusters().forEach(clustersDto -> {
             if (!CollectionUtils.isEmpty(clustersDto.getSizes()) && !clustersDto.getClusterID().equals(0)) {
@@ -344,9 +344,9 @@ public class CalculateFinelineBuyQuantity {
         Set<SpCustomerChoiceChannelFixtureSize> spCustomerChoiceChannelFixtureSizes = Optional.ofNullable(spCustomerChoiceChannelFixture.getSpCustomerChoiceChannelFixtureSize()).orElse(new HashSet<>());
         Set<CcSpMmReplPack> ccSpMmReplPacks = new HashSet<>();
         Integer replenishmentThreshold = deptAdminRuleService.getReplenishmentThreshold(bqfpResponse.getPlanId(), bqfpResponse.getLvl1Nbr());
-        boolean isInitialSetDefined = isInitialSetDefined(bqfpResponse);
         for (Map.Entry<SizeDto, BuyQtyObj> entry : storeBuyQtyBySizeId.entrySet()) {
-            setSizeChanFixtureBuyQty(spCustomerChoiceChannelFixture, replenishments, spCustomerChoiceChannelFixtureSizes, ccSpMmReplPacks, entry, replenishmentThreshold, isInitialSetDefined);
+            Integer vendorPackQty = getVendorPackQty(replenishmentCons, entry);
+            setSizeChanFixtureBuyQty(spCustomerChoiceChannelFixture, replenishments, spCustomerChoiceChannelFixtureSizes, ccSpMmReplPacks, entry, replenishmentThreshold, vendorPackQty, calculateBuyQtyParallelRequest.getLvl1Nbr(), calculateBuyQtyParallelRequest.getPlanId());
         }
 
         if (!CollectionUtils.isEmpty(ccSpMmReplPacks)) {
@@ -357,6 +357,15 @@ public class CalculateFinelineBuyQuantity {
 
         spCustomerChoiceChannelFixture.setSpCustomerChoiceChannelFixtureSize(spCustomerChoiceChannelFixtureSizes);
         setCcChanFixtures(spCustomerChoiceChannelFixture, spCustomerChoiceChannelFixtureSizes);
+    }
+
+    private static Integer getVendorPackQty(ReplenishmentCons replenishmentCons, Map.Entry<SizeDto, BuyQtyObj> entry) {
+        Integer vendorPackQty = VP_DEFAULT;
+        Map<Integer, CcSpMmReplPack> cCSpMmReplPackSizeMap = replenishmentCons.getCcSpMmReplPackConsMap();
+        if (!CollectionUtils.isEmpty(cCSpMmReplPackSizeMap) && cCSpMmReplPackSizeMap.containsKey(entry.getKey().getAhsSizeId())) {
+            vendorPackQty = cCSpMmReplPackSizeMap.get(entry.getKey().getAhsSizeId()).getVendorPackCnt();
+        }
+        return vendorPackQty;
     }
 
     private void getClusterSizes(StyleDto styleDto, CustomerChoiceDto customerChoiceDto, ClustersDto clustersDto,
@@ -383,7 +392,9 @@ public class CalculateFinelineBuyQuantity {
                                           List<Replenishment> replenishments, Set<SpCustomerChoiceChannelFixtureSize> spCustomerChoiceChannelFixtureSizes,
                                           Set<CcSpMmReplPack> ccSpMmReplPacks,
                                           Map.Entry<SizeDto, BuyQtyObj> entry,
-                                          Integer replenishmentThreshold, boolean isInitialSetDefined) {
+                                          Integer replenishmentThreshold,
+                                          Integer vendorPackQty,
+                                          Integer lvl1Nbr, Long planId) {
         SpCustomerChoiceChannelFixtureSizeId spCustomerChoiceChannelFixtureSizeId = new SpCustomerChoiceChannelFixtureSizeId(spCustomerChoiceChannelFixture.getSpCustomerChoiceChannelFixtureId(), entry.getKey().getAhsSizeId());
         SpCustomerChoiceChannelFixtureSize spCustomerChoiceChannelFixtureSize = Optional.of(spCustomerChoiceChannelFixtureSizes)
                 .stream()
@@ -396,17 +407,25 @@ public class CalculateFinelineBuyQuantity {
         }
 
         entry.getValue().setTotalReplenishment(0L);
+        double bsBuyQty = getBsQty(entry);
+        double isBuyQty = getIsQty(entry);
         //Update Store Qty
         final BuyQtyObj allStoresBuyQty = entry.getValue();
         if (!CollectionUtils.isEmpty(allStoresBuyQty.getReplenishments()) && !CollectionUtils.isEmpty(allStoresBuyQty.getBuyQtyStoreObj().getBuyQuantities())) {
             allStoresBuyQty.setTotalReplenishment(buyQuantityConstraintService.getTotalReplenishment(allStoresBuyQty.getReplenishments()));
-            if (isInitialSetDefined) {
+            // IF calculated IS is greater than 0, then process the replenishment to be moved into InitialSet if it falls under minimum replenishment condition
+            if (isBuyQty > 0) {
                 buyQuantityConstraintService.processReplenishmentConstraints(entry, allStoresBuyQty.getTotalReplenishment(), replenishmentThreshold);
+            } else {
+                // Run DC Inbound Optimization when calculated IS is equal to 0 to consider the replenishment count for non initialSets
+                // Getting 0 IS from BQFP or User explicitly added SizePct as 0 where they dont need any IS
+                entry.getValue().setReplenishments(replenishmentsOptimizationServices.getUpdatedReplenishmentsPack(entry.getValue().getReplenishments(), vendorPackQty, SizeAndPackConstants.STORE_CHANNEL_ID, lvl1Nbr, planId));
+                entry.getValue().setTotalReplenishment(buyQuantityConstraintService.getTotalReplenishment(entry.getValue().getReplenishments()));
             }
         }
 
-        double bsBuyQty = getBsQty(entry);
-        double isBuyQty = getIsQty(entry);
+        bsBuyQty = getBsQty(entry);
+        isBuyQty = getIsQty(entry);
         double totalBuyQty = isBuyQty + bsBuyQty + entry.getValue().getTotalReplenishment();
         spCustomerChoiceChannelFixtureSize.setInitialSetQty((int) Math.round(isBuyQty));
         spCustomerChoiceChannelFixtureSize.setBumpPackQty((int) Math.round(bsBuyQty));
@@ -611,7 +630,7 @@ public class CalculateFinelineBuyQuantity {
         ccSpMmReplPacks.add(ccSpMmReplPack);
     }
 
-    private void setReplenishmentSizes(ClustersDto clustersDto, List<Replenishment> replenishments, Map<SizeDto, BuyQtyObj> storeBuyQtyBySizeId, Integer lvl1Nbr, Long planId, Map<Integer, CcSpMmReplPack> cCSpMmReplPackSizeMap) {
+    private void setReplenishmentSizes(ClustersDto clustersDto, List<Replenishment> replenishments, Map<SizeDto, BuyQtyObj> storeBuyQtyBySizeId) {
         clustersDto.getSizes().forEach(sizeDto -> {
             if (!storeBuyQtyBySizeId.containsKey(sizeDto)) {
                 storeBuyQtyBySizeId.put(sizeDto, new BuyQtyObj());
@@ -627,11 +646,7 @@ public class CalculateFinelineBuyQuantity {
                 replenishment1.setAdjReplnUnits(Math.round((units * getAvgSizePct(sizeDto)) / 100));
                 replObj.add(replenishment1);
             });
-            Integer vendorPackQty = VP_DEFAULT;
-            if (!CollectionUtils.isEmpty(cCSpMmReplPackSizeMap) && cCSpMmReplPackSizeMap.containsKey(sizeDto.getAhsSizeId())) {
-                vendorPackQty = cCSpMmReplPackSizeMap.get(sizeDto.getAhsSizeId()).getVendorPackCnt();
-            }
-            buyQtyObj.setReplenishments(replenishmentsOptimizationServices.getUpdatedReplenishmentsPack(replObj, vendorPackQty, SizeAndPackConstants.STORE_CHANNEL_ID, lvl1Nbr, planId));
+            buyQtyObj.setReplenishments(replObj);
         });
     }
 
@@ -643,20 +658,6 @@ public class CalculateFinelineBuyQuantity {
         } catch (JsonProcessingException e) {
             log.error("Unable to serialize response: {}", key, e);
         }
-    }
-
-    private boolean isInitialSetDefined(BQFPResponse bqfpResponse) {
-        return Optional.ofNullable(bqfpResponse.getStyles())
-                .stream()
-                .flatMap(Collection::stream)
-                .map(Style::getCustomerChoices)
-                .flatMap(Collection::stream)
-                .map(CustomerChoice::getFixtures)
-                .flatMap(Collection::stream)
-                .map(Fixture::getClusters)
-                .flatMap(Collection::stream)
-                .map(Cluster::getInitialSet)
-                .anyMatch(initialSet -> (initialSet != null && initialSet.getInitialSetUnitsPerFix() != null && initialSet.getInitialSetUnitsPerFix() > 0));
     }
 
     private boolean hasDcInboundUnits(List<Replenishment> replenishments) {

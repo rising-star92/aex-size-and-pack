@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Set;
 
 import com.walmart.aex.sp.entity.*;
-import org.jetbrains.annotations.NotNull;
 
 public class SizeAndPackTest {
 
@@ -100,7 +99,6 @@ public class SizeAndPackTest {
         return custChoicePlanId;
     }
 
-    @NotNull
     private static StylePlanId getStylePlanId() {
         StylePlanId stylePlanId = new StylePlanId();
         stylePlanId.setFinelinePlanId(getFinelinePlanId());
