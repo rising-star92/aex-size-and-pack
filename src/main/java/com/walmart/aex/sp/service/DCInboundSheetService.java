@@ -2,46 +2,74 @@ package com.walmart.aex.sp.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.type.DateTime;
 import com.walmart.aex.sp.dto.packoptimization.DCInboundExcelResponse;
 import com.walmart.aex.sp.dto.packoptimization.DCInboundResponse;
 import com.walmart.aex.sp.dto.packoptimization.DCinboundReplenishment;
+import com.walmart.aex.sp.dto.replenishment.DCInboundWorkbookResponse;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.repository.CcSpReplnPkConsRepository;
 import com.walmart.aex.sp.util.CommonUtil;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.entity.ContentType;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletResponse;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import static com.walmart.aex.sp.util.SizeAndPackConstants.DC_INBOUND_HEADER_KEY;
-import static com.walmart.aex.sp.util.SizeAndPackConstants.DC_INBOUND_REPORT_NAME;
+import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
 
 @Slf4j
 @Service
 public class DCInboundSheetService {
 
     private final CcSpReplnPkConsRepository ccSpReplnPkConsRepository;
+    private final DCInboundSheetExporter dcInboundSheetExporter;
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public DCInboundSheetService(CcSpReplnPkConsRepository ccSpReplnPkConsRepository) {
+    public DCInboundSheetService(CcSpReplnPkConsRepository ccSpReplnPkConsRepository, DCInboundSheetExporter dcInboundSheetExporter) {
         this.ccSpReplnPkConsRepository = ccSpReplnPkConsRepository;
+        this.dcInboundSheetExporter = dcInboundSheetExporter;
+    }
+
+    public DCInboundWorkbookResponse getDcInboundWorkbook(Long planId, String channelDesc) {
+        List<DCInboundExcelResponse> dcInboundData = getDCInboundExcelSheet(planId,channelDesc);
+        List<String> headers = getHeaders(dcInboundData);
+        Workbook dcInboundWorkbook = dcInboundSheetExporter.generate(headers,dcInboundData);
+        return new DCInboundWorkbookResponse(getDefaultFileName(), dcInboundWorkbook);
+    }
+
+    private String getDefaultFileName() {
+        final String FILE_EXTENSION = ".xlsx";
+        final String currentDateTime = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
+        return DC_INBOUND_REPORT_NAME.concat(currentDateTime).concat(FILE_EXTENSION);
     }
 
     public List<DCInboundExcelResponse> getDCInboundExcelSheet(Long planId, String channelDesc) {
         Integer channelId = CommonUtil.getChannelId(channelDesc);
+        long dbStart = System.currentTimeMillis();
         List<DCInboundResponse> response = ccSpReplnPkConsRepository.getDCInboundsByPlanIdAndChannelId(planId,channelId);
+
+        //TODO remove logging
+        log.info("DB TIME: {}", System.currentTimeMillis()-dbStart);
+        long transformStart = System.currentTimeMillis();
         List<DCInboundExcelResponse> dcInboundExcelData = setDCInboundExcelSheetResponseDTO(response);
+        List<String> headers = getHeaders(dcInboundExcelData);
+        log.info("TRANSFORM TIME: {}", System.currentTimeMillis()-transformStart);
         return dcInboundExcelData;
     }
 
-    public List<DCInboundExcelResponse> setDCInboundExcelSheetResponseDTO(List<DCInboundResponse> response) {
+        public List<DCInboundExcelResponse> setDCInboundExcelSheetResponseDTO(List<DCInboundResponse> response) {
         List<DCInboundExcelResponse> dcInboundExcelResponses = new ArrayList<>();
         List<DCinboundReplenishment> replenishmentDTO = new ArrayList<>();
         if (response != null) {
@@ -57,7 +85,9 @@ public class DCInboundSheetService {
                 dcInboundExcelResponse.setChannelDesc(r.getChannelDesc());
                 if (r.getReplenishment() != null) {
                     try {
-                        replenishmentDTO = Arrays.asList(objectMapper.readValue(r.getReplenishment(), DCinboundReplenishment[].class));
+                        replenishmentDTO = Arrays.stream(objectMapper.readValue(r.getReplenishment(), DCinboundReplenishment[].class))
+                              .sorted(Comparator.comparing(DCinboundReplenishment::getReplnWeek)).collect(Collectors.toList());
+
                         dcInboundExcelResponse.setReplenishment(replenishmentDTO);
                     } catch (JsonProcessingException jsonProcessingException) {
                         log.error("Error parsing replenishment object: ", jsonProcessingException);
@@ -71,15 +101,28 @@ public class DCInboundSheetService {
         }
         return dcInboundExcelResponses;
     }
-    public List<DCInboundExcelResponse> getDcInboundExcelResponses(Long planId,String channelDesc, HttpServletResponse response) {
-        response.setContentType(String.valueOf(ContentType.APPLICATION_OCTET_STREAM));
-        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
-        String currentDateTime = dateFormatter.format(new Date());
-        String headerKey = DC_INBOUND_HEADER_KEY;
-        String headerValue = "attachment; filename=" + DC_INBOUND_REPORT_NAME + currentDateTime + ".xlsx";
-        response.setHeader(headerKey, headerValue);
-        List<DCInboundExcelResponse> sheetData = getDCInboundExcelSheet(planId,channelDesc);
-        return sheetData;
-    }
 
+    private List<String> getHeaders(List<DCInboundExcelResponse> listDCInboundData) {
+        List<String> headers = new ArrayList<>();
+
+        headers.add(CATEGORY);
+        headers.add(SUB_CATEGORY);
+        headers.add(FINELINE);
+        headers.add(STYLE);
+        headers.add(CUSTOMER_CHOICE);
+        headers.add(MERCH_METHOD);
+        headers.add(SIZE);
+        headers.add(CHANNEL);
+
+        List<String> replenWeeks = listDCInboundData.stream().findFirst()
+              .get().getReplenishment().stream()
+              .map(DCinboundReplenishment::getReplnWeekDesc)
+              .distinct()
+              .collect(Collectors.toList());
+
+        headers.addAll(replenWeeks);
+        return headers;
+    }
 }
+
+
