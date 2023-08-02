@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 @ExtendWith(MockitoExtension.class)
-public class CommonUtilTest {
+class CommonUtilTest {
 
 	@InjectMocks
 	private CommonUtil commonUtil;
@@ -76,9 +76,7 @@ public class CommonUtilTest {
 		assertEquals("HANGING",case2);
 		assertEquals("ONLINE_MERCH_METHOD",case3);
 
-		Exception exception = assertThrows(RuntimeException.class, () -> {
-			CommonUtil.getMerchMethod(4);
-		});
+		Exception exception = assertThrows(RuntimeException.class, () -> CommonUtil.getMerchMethod(4));
 
 		String expectedMessage = "Merch Method does not Match";
 		String actualMessage = exception.getMessage();
@@ -98,9 +96,7 @@ public class CommonUtilTest {
 		assertEquals(2,case2);
 		assertEquals(3,case3);
 
-		Exception exception = assertThrows(RuntimeException.class, () -> {
-			CommonUtil.getChannelId("hi");
-		});
+		Exception exception = assertThrows(RuntimeException.class, () -> CommonUtil.getChannelId("hi"));
 
 		String expectedMessage = "Channel Type does not Match";
 		String actualMessage = exception.getMessage();
@@ -117,7 +113,7 @@ public class CommonUtilTest {
 		StrongKey strongKey = new StrongKey();
 		PlanSizeAndPackDeleteDTO planSizePackDeleteDto = new PlanSizeAndPackDeleteDTO();
 		planSizePackDeleteDto.setSizeAndPackPayloadDTO(planSizePackDto);
-		strongKey.setPlanId(100l);
+		strongKey.setPlanId(100L);
 		planSizePackDeleteDto.setStrongKey(strongKey);
 
 		planSizePackDeleteDto=commonUtil.cleanSPDeleteRequest(planSizePackDeleteDto);
@@ -140,8 +136,8 @@ public class CommonUtilTest {
 		String planSizePackString= String.valueOf(planSizePackDto);
 
 		assertTrue(planSizePackString.contains("finelineNbr=1234"));
-		assertTrue(planSizePackString.contains("styleNbr=6578u&amp;"));
-		assertTrue(planSizePackString.contains("ccId=567890&amp;"));
+		assertTrue(planSizePackString.contains("styleNbr=6578u&"));
+		assertTrue(planSizePackString.contains("ccId=567890&"));
 
 
 	}
@@ -197,7 +193,7 @@ public class CommonUtilTest {
 		lvl1List.add(lvl1);
 		planSizePackDto.setLvl1List(lvl1List);
 
-		planSizePackDto.setPlanId(481l);
+		planSizePackDto.setPlanId(481L);
 		planSizePackDto.setPlanDesc("ytui");
 		planSizePackDto.setLvl0Name("abc");
 		planSizePackDto.setLvl0Nbr(345);
