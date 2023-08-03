@@ -103,39 +103,6 @@ public class DCInboundSheetExporter {
         return font;
     }
 
-//    List<String> getHeaders(){
-//        List<String> headerList = new ArrayList<>();
-////        Set<String> replWeekList = listDCInboundData.stream().findFirst()
-////              .get().getReplenishment().stream().map(DCinboundReplenishment::getReplnWeekDesc).collect(Collectors.toSet());
-//        List<String> rwList = listDCInboundData.stream().findFirst()
-//              .get().getReplenishment().stream()
-//              .map(DCinboundReplenishment::getReplnWeekDesc)
-//              .distinct()
-//              .collect(Collectors.toList());;
-//        headerList.add(CATEGORY);
-//        headerList.add(SUB_CATEGORY);
-//        headerList.add(FINELINE);
-//        headerList.add(STYLE);
-//        headerList.add(CUSTOMER_CHOICE);
-//        headerList.add(MERCH_METHOD);
-//        headerList.add(SIZE);
-//        headerList.add(CHANNEL);
-//
-////        for (DCInboundExcelResponse obj:listDCInboundData) {
-////            List<DCinboundReplenishment> rep = obj.getReplenishment();
-////            for(DCinboundReplenishment r: rep){
-////                replWeekList.add(r.getReplnWeekDesc());
-////            }
-////        }
-//        // Sorting replenishment week desc
-//        //List<String> rwList = new ArrayList<>(replWeekList);
-//        //Collections.sort(rwList);
-//        headerList.addAll(rwList);
-//        //headers.addAll(rwList);
-//        headers = headerList;
-//        return headerList;
-//    }
-
     private void writeHeaderLine(Sheet sheet, CellStyle style, List<String> headers) {
         Row row = sheet.createRow(ZERO);
         int column_num = ZERO;
@@ -208,25 +175,5 @@ public class DCInboundSheetExporter {
         }
     }
 
-//    String getHeaderName(int columnCount)
-//    {
-//        return headers.get(columnCount);
-////        Row row = sheet.getRow(ZERO);
-////        Cell cell = row.getCell(columnCount);
-////        return cell.getStringCellValue();
-//    }
-
-    public void export(HttpServletResponse response) throws IOException {
-//        //TODO move to controller/service layer
-//        writeHeaderLine();
-//        writeDataLines();
-//
-//        ServletOutputStream outputStream = response.getOutputStream();
-//        workbook.write(outputStream);
-//        workbook.close();
-//
-//        outputStream.close();
-
-    }
 }
 

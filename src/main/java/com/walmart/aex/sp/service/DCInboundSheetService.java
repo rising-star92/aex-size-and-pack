@@ -2,7 +2,6 @@ package com.walmart.aex.sp.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.type.DateTime;
 import com.walmart.aex.sp.dto.packoptimization.DCInboundExcelResponse;
 import com.walmart.aex.sp.dto.packoptimization.DCInboundResponse;
 import com.walmart.aex.sp.dto.packoptimization.DCinboundReplenishment;
@@ -10,20 +9,15 @@ import com.walmart.aex.sp.dto.replenishment.DCInboundWorkbookResponse;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.repository.CcSpReplnPkConsRepository;
 import com.walmart.aex.sp.util.CommonUtil;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.stereotype.Service;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,7 +37,7 @@ public class DCInboundSheetService {
     }
 
     public DCInboundWorkbookResponse getDcInboundWorkbook(Long planId, String channelDesc) {
-        List<DCInboundExcelResponse> dcInboundData = getDCInboundExcelSheet(planId,channelDesc);
+        List<DCInboundExcelResponse> dcInboundData = getDCInboundData(planId,channelDesc);
         List<String> headers = getHeaders(dcInboundData);
         Workbook dcInboundWorkbook = dcInboundSheetExporter.generate(headers,dcInboundData);
         return new DCInboundWorkbookResponse(getDefaultFileName(), dcInboundWorkbook);
@@ -55,7 +49,7 @@ public class DCInboundSheetService {
         return DC_INBOUND_REPORT_NAME.concat(currentDateTime).concat(FILE_EXTENSION);
     }
 
-    public List<DCInboundExcelResponse> getDCInboundExcelSheet(Long planId, String channelDesc) {
+    public List<DCInboundExcelResponse> getDCInboundData(Long planId, String channelDesc) {
         Integer channelId = CommonUtil.getChannelId(channelDesc);
         long dbStart = System.currentTimeMillis();
         List<DCInboundResponse> response = ccSpReplnPkConsRepository.getDCInboundsByPlanIdAndChannelId(planId,channelId);
@@ -64,7 +58,6 @@ public class DCInboundSheetService {
         log.info("DB TIME: {}", System.currentTimeMillis()-dbStart);
         long transformStart = System.currentTimeMillis();
         List<DCInboundExcelResponse> dcInboundExcelData = setDCInboundExcelSheetResponseDTO(response);
-        List<String> headers = getHeaders(dcInboundExcelData);
         log.info("TRANSFORM TIME: {}", System.currentTimeMillis()-transformStart);
         return dcInboundExcelData;
     }
