@@ -1,5 +1,8 @@
 package com.walmart.aex.sp.util;
 
+import com.walmart.aex.sp.enums.RunStatusCodeType;
+import java.util.Set;
+
 public class SizeAndPackConstants {
 
     private SizeAndPackConstants() {
@@ -48,4 +51,10 @@ public class SizeAndPackConstants {
     public static final String BUMP_PACK_PATTERN = "^(\\d*)_(\\d*)-BP";
     public static final Integer ONLINE_CHANNEL_ID = 2;
     public static final Integer STORE_CHANNEL_ID = 1;
+    public static final Set<Integer> ANALYTICS_ERRORS_LIST = Set.of(RunStatusCodeType.N_JOBS_MSG_ERROR.getId(), RunStatusCodeType.INPUT_DATA_ERR_MSG.getId(),
+            RunStatusCodeType.INPUT_DATA_ERR_ZERO_INITIAL_BUMPSET_MSG.getId(), RunStatusCodeType.NUMTOTALCCS_VALUE_ERROR_MSG.getId(),
+            RunStatusCodeType.INITIAL_SET_CC_VALUE_ERROR_MSG.getId(), RunStatusCodeType.BUMP_SET_CC_VALUE_ERROR_MSG.getId(),
+            RunStatusCodeType.DATA_VALIDATIONS_MSG.getId(), RunStatusCodeType.DUPLICATE_DATA_ERROR_MSG.getId(),
+            RunStatusCodeType.MODEL_OUTPUT_MSG.getId(), RunStatusCodeType.MODEL_OUTPUT_COLUMNS.getId(),
+            RunStatusCodeType.SOLVER_NOT_SOLVE_ERROR_MSG.getId(), RunStatusCodeType.COMMON_ERR_MSG.getId());
 }
