@@ -1,5 +1,6 @@
 package com.walmart.aex.sp.controller;
 
+import com.walmart.aex.sp.dto.replenishment.DCInboundWorkbookResponse;
 import com.walmart.aex.sp.service.DCInboundSheetService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.entity.ContentType;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
@@ -30,13 +32,15 @@ public class DCInboundSheetController {
     @CrossOrigin
     @GetMapping("/dcInboundExportExcel")
     public void getDCInbountExcelSheet(@RequestParam("planId") Long planId, @RequestParam("channelDesc") String channelDesc,HttpServletResponse response) throws IOException {
-//        String headerKey = DC_INBOUND_HEADER_KEY;
-//        String headerValue = "attachment; filename=" + DC_INBOUND_REPORT_NAME + currentDateTime + ".xlsx";
-//        DC sheetData = dcInboundSheetService.getDcInboundWorkbook(planId, channelDesc);
-//        //DCInboundSheetExporter excelExporter = new DCInboundSheetExporter(sheetData);
-//        response.setContentType(String.valueOf(ContentType.APPLICATION_OCTET_STREAM));
-//        response.setHeader(headerKey, headerValue);
-//        excelExporter.export(response);
+        final String DEFAULT_FILENAME = "DcInboundReport.xlsx";
+        DCInboundWorkbookResponse dcInboundWorkbookResponse = dcInboundSheetService.getDcInboundWorkbook(planId, channelDesc);
+        final String fileName = dcInboundWorkbookResponse.getFileName() != null ? dcInboundWorkbookResponse.getFileName() : DEFAULT_FILENAME;
+        String headerValue = "attachment; filename=".concat(fileName);
+        response.setContentType(String.valueOf(ContentType.APPLICATION_OCTET_STREAM));
+        response.setHeader(DC_INBOUND_HEADER_KEY, headerValue);
+        ServletOutputStream outputStream = response.getOutputStream();
+        dcInboundWorkbookResponse.getWorkbook().write(outputStream);
+        dcInboundWorkbookResponse.getWorkbook().close();
     }
 
 }
