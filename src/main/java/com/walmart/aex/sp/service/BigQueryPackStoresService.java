@@ -36,6 +36,7 @@ import com.walmart.aex.sp.properties.BigQueryConnectionProperties;
 import com.walmart.aex.sp.properties.GraphQLProperties;
 
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
+import io.strati.libs.commons.collections.CollectionUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -57,12 +58,60 @@ public class BigQueryPackStoresService
 		 this.strategyFetchService = strategyFetchService;
 	 }
 	 
-	 public PackDetailsVolumeResponse getPackStoreDetailsByVolumeCluster(Long planId, FinelineVolume request) throws SizeAndPackException
+	 public PackDetailsVolumeResponse getPackStoreDetailsByVolumeCluster(Long planId, 
+			 FinelineVolume request) throws SizeAndPackException
+	 {
+	     QueryJobConfiguration queryConfig = QueryJobConfiguration.newBuilder(getSqlQuery(planId, 
+	    		 request)).build();
+	     List<PackStoreDTO> packStoreDTOs = new ArrayList<>();
+	     try 
+	     {
+	    	BigQuery bigQuery = BigQueryOptions.getDefaultInstance().getService();
+			TableResult tableResult = bigQuery.query(queryConfig);
+			Iterator<FieldValueList> iterator = tableResult.iterateAll().iterator();
+			while(iterator.hasNext())
+			{
+				for(FieldValue fieldValue : iterator.next())
+				{
+						PackStoreDTO packStoreDTO = objectMapper.readValue(
+								fieldValue.getValue().toString(), PackStoreDTO.class);
+						packStoreDTOs.add(packStoreDTO);
+				}
+			}
+		 }
+	     catch (JsonMappingException e)
+	     {
+				log.error("Exception occurred while mapping the pack store gcp table response data", e);
+				throw new SizeAndPackException("Exception occurred while mapping the pack store gcp table response data", e);
+		 }
+	     catch (JsonProcessingException e) 
+		 {
+				log.error("Exception occurred while processing the pack store gcp table response data", e);
+				throw new SizeAndPackException("Exception occurred while processing the pack store gcp table response data", e);
+		 }
+	     catch (JobException e) 
+		 {
+		    	log.error("The query for fetching store packs failed", e);
+		    	throw new SizeAndPackException("The query for fetching store packs failed", e);
+	     } 
+	     catch (InterruptedException e) 
+	     {
+				log.error("Thread to fetch store packs interrupted while waiting for query to complete", e);
+				throw new SizeAndPackException("Thread to fetch store packs interrupted while waiting for query to complete", e);
+		 }
+		 return PackDetailsVolumeResponse.builder()
+	    		 .finelineNbr(request.getFinelineNbr())
+	    		 .stylePackVolumes(getPackDetailsVolumeResponse(createVolumeFixtureMetrics(packStoreDTOs))).build();
+	 }
+	 
+	 private String getSqlQuery(Long planId, FinelineVolume request) throws SizeAndPackException
 	 {
 		 Integer finelineNbr = request.getFinelineNbr();
-		 StrategyVolumeDeviationResponse volumeDeviationResponse = strategyFetchService.getStrategyVolumeDeviation(planId, finelineNbr);
+		 StrategyVolumeDeviationResponse volumeDeviationResponse = strategyFetchService
+				 .getStrategyVolumeDeviation(planId, finelineNbr);
 		 String sqlQuery = "";
-		 if (null != volumeDeviationResponse && !volumeDeviationResponse.getFinelines().isEmpty()) 
+		 if (null != volumeDeviationResponse && CollectionUtils.isNotEmpty(volumeDeviationResponse
+				 .getFinelines())) 
 		 {
              FinelineVolumeDeviationDto finelineVolumeDeviationDto = volumeDeviationResponse.getFinelines().get(0);
              String volumeDeviationLevel = finelineVolumeDeviationDto.getVolumeDeviationLevel();
@@ -81,53 +130,78 @@ public class BigQueryPackStoresService
              log.error("Exception occurred while fetching Strategy Volume Deviation Response for plan id {} and fineline {}", planId, finelineNbr);
              throw new SizeAndPackException("Exception occurred while fetching Strategy Volume Deviation Response for plan id " + planId);
          }
-		 BigQuery bigQuery = BigQueryOptions.getDefaultInstance().getService();
-	     QueryJobConfiguration queryConfig = QueryJobConfiguration.newBuilder(sqlQuery).build();
-	     List<PackStoreDTO> packStoreDTOs = new ArrayList<>();
-	     try 
-	     {
-			TableResult tableResult = bigQuery.query(queryConfig);
-			Iterator<FieldValueList> iterator = tableResult.iterateAll().iterator();
-			while(iterator.hasNext())
-			{
-				for(FieldValue fieldValue : iterator.next())
-				{
-					try 
-					{
-						PackStoreDTO packStoreDTO = objectMapper.readValue(
-								fieldValue.getValue().toString(),
-								PackStoreDTO.class);
-						packStoreDTOs.add(packStoreDTO);
-					} 
-					catch (JsonMappingException e) 
-					{
-						log.error("Exception occurred while mapping the pack store gcp table response data", e);
-						throw new SizeAndPackException("Exception occurred while mapping the pack store gcp table response data", e);
-					} 
-					catch (JsonProcessingException e) 
-					{
-						log.error("Exception occurred while processing the pack store gcp table response data", e);
-						throw new SizeAndPackException("Exception occurred while processing the pack store gcp table response data", e);
-					}
-				}
-			}
-		 }
-	     catch (JobException e) 
-		    {
-		    	log.error("The query for fetching store packs completed unsuccessfully", e);
-		    	throw new SizeAndPackException("The query for fetching store packs completed unsuccessfully", e);
-			} 
-	     catch (InterruptedException e) 
-	     {
-				log.error("Thread to fetch store packs interrupted while waiting for query to complete", e);
-				throw new SizeAndPackException("Thread to fetch store packs interrupted while waiting for query to complete", e);
-		 }
-	     
-		 return PackDetailsVolumeResponse.builder()
-	    		 .finelineNbr(finelineNbr).stylePackVolumes(getPackDetailsVolumeResponse(createVolumeFixtureMetrics(packStoreDTOs))).build();
+		 return sqlQuery;
 	 }
 	 
-	 private List<StylePackVolume> getPackDetailsVolumeResponse(Map<StylePack, Map<VolumeFixtureAllocation, List<StoreMetrics>>> volFixtureMetrics)
+	 private String findSqlQuery(Long planId, FinelineVolume request, String volumeDeviationLevel) 
+	 {
+	        String tableNameSp = getProjectIdSp();
+	        String tableNameCc = getProjectIdCc();
+
+	        if (volumeDeviationLevel.equals(VdLevelCode.CATEGORY.getDescription())) 
+	        {
+	            return getStorePacksByVolumeCatClusterQuery(tableNameCc, tableNameSp, Math.toIntExact(planId), request.getFinelineNbr(), request.getLvl3Nbr(), bigQueryConnectionProperties.getAnalyticsData(),
+	            		request.getInterval(),request.getFiscalYear());
+	        } 
+            if (volumeDeviationLevel.equals(VdLevelCode.SUB_CATEGORY.getDescription())) 
+            {
+	            return geStorePacksByVolumeSubCatClusterQuery(tableNameCc, tableNameSp, Math.toIntExact(planId), request.getFinelineNbr(), request.getLvl4Nbr(), bigQueryConnectionProperties.getAnalyticsData(),
+	            		request.getInterval(),request.getFiscalYear(),request.getLvl3Nbr());
+	        }
+            if (volumeDeviationLevel.equals(VdLevelCode.FINELINE.getDescription())) 
+            {
+	            return getStorePacksByVolumeFinelineClusterQuery(tableNameCc, tableNameSp, Math.toIntExact(planId), request.getFinelineNbr(), bigQueryConnectionProperties.getAnalyticsData(),request.getInterval(),
+	            		request.getFiscalYear(),request.getLvl3Nbr(),request.getLvl4Nbr());
+	        }
+	        throw new RuntimeException("Invalid volume deviation level found : " +volumeDeviationLevel +  
+	        		", Fineline, Category and Subcategory are valid values");
+	 }
+	 
+	 
+	 private Map<StylePack, Map<VolumeFixtureAllocation, List<StoreMetrics>>> createVolumeFixtureMetrics(List<PackStoreDTO> packStoreDTOs)
+	 {
+		 Map<StylePack, Map<VolumeFixtureAllocation, List<StoreMetrics>>> volFixtureMetrics = new HashMap<>();
+		 for(PackStoreDTO packStoreDTO : packStoreDTOs)
+	     {
+	    	 Integer isQty = packStoreDTO.getIs_quantity();
+	    	 Integer bsQty = packStoreDTO.getBs_quantity();
+	    	 // Stores have allocated space in RFA but don't have any quantities
+	    	 if(isQty == null && bsQty == null)
+	    	 {
+	    		 populateVolumeFixtureMetrics(volFixtureMetrics, packStoreDTO, 0, 0);
+	    	 }
+	    	 if(isQty!=null && isQty > 0)
+	    	 {
+	    		 populateVolumeFixtureMetrics(volFixtureMetrics, packStoreDTO, 
+	    				 packStoreDTO.getIs_quantity(), packStoreDTO.getInitialSetPackMultiplier());
+	    	 }
+	    	 else if(bsQty!=null && bsQty > 0)
+	    	 {
+	    		 populateVolumeFixtureMetrics(volFixtureMetrics, packStoreDTO, 
+	    				 packStoreDTO.getBs_quantity(), packStoreDTO.getBumpSetPackMultiplier());
+	    	 }
+	     }
+		 return volFixtureMetrics;
+	 }
+	 
+	 private void populateVolumeFixtureMetrics(Map<StylePack, 
+			 Map<VolumeFixtureAllocation, List<StoreMetrics>>> volFixtureMetrics, PackStoreDTO packStoreDTO, 
+			 Integer qty, Integer multiplier)
+	 {
+		 volFixtureMetrics.computeIfAbsent(new StylePack(packStoreDTO.getStyle_nbr(),
+    			 packStoreDTO.getPackId()), x -> new HashMap<>()).computeIfAbsent(
+    					 VolumeFixtureAllocation.builder().ccId(packStoreDTO.getCc())
+    					 .volumeClusterId(packStoreDTO.getClusterId())
+    					 .fixtureType(packStoreDTO.getFixtureType())
+    					 .fixtureAllocation(new BigDecimal(packStoreDTO.getFixtureAllocation())
+    							 ).build(), y -> new ArrayList<>()).add(StoreMetrics.builder()
+    									 .multiplier(multiplier)
+    									 .store(packStoreDTO.getStore())
+    									 .qty(qty).build());
+	 }
+	 
+	 private List<StylePackVolume> getPackDetailsVolumeResponse(Map<StylePack, 
+			 Map<VolumeFixtureAllocation, List<StoreMetrics>>> volFixtureMetrics)
 	 {
 		 List<StylePackVolume> stylePackVolumes = new ArrayList<>();
 	     for(Map.Entry<StylePack, Map<VolumeFixtureAllocation, List<StoreMetrics>>> entry : 
@@ -153,79 +227,6 @@ public class BigQueryPackStoresService
 	     }
 		 return stylePackVolumes;
 	 }
-	 
-	 private Map<StylePack, Map<VolumeFixtureAllocation, List<StoreMetrics>>> createVolumeFixtureMetrics(List<PackStoreDTO> packStoreDTOs)
-	 {
-		 Map<StylePack, Map<VolumeFixtureAllocation, List<StoreMetrics>>> volFixtureMetrics = new HashMap<>();
-		 for(PackStoreDTO packStoreDTO : packStoreDTOs)
-	     {
-	    	 Integer isQty = packStoreDTO.getIs_quantity();
-	    	 Integer bsQty = packStoreDTO.getBs_quantity();
-	    	 if(isQty == null && bsQty == null)
-	    	 {
-	    		 volFixtureMetrics.computeIfAbsent(new StylePack(packStoreDTO.getStyle_nbr(),
-		    			 packStoreDTO.getPackId()), x -> new HashMap<>()).computeIfAbsent(
-		    					 VolumeFixtureAllocation.builder().ccId(packStoreDTO.getCc())
-		    					 .volumeClusterId(packStoreDTO.getClusterId())
-		    					 .fixtureType(packStoreDTO.getFixtureType())
-		    					 .fixtureAllocation(new BigDecimal(packStoreDTO.getFixtureAllocation())
-		    							 ).build(), y -> new ArrayList<>()).add(StoreMetrics.builder()
-		    									 .multiplier(0)
-		    									 .store(packStoreDTO.getStore())
-		    									 .qty(0).build());
-	    	 }
-	    	 if(isQty!=null && isQty > 0)
-	    	 {
-	    		 volFixtureMetrics.computeIfAbsent(new StylePack(packStoreDTO.getStyle_nbr(),
-		    			 packStoreDTO.getPackId()), x -> new HashMap<>()).computeIfAbsent(
-		    					 VolumeFixtureAllocation.builder().ccId(packStoreDTO.getCc())
-		    					 .volumeClusterId(packStoreDTO.getClusterId())
-		    					 .fixtureType(packStoreDTO.getFixtureType())
-		    					 .fixtureAllocation(new BigDecimal(packStoreDTO.getFixtureAllocation())
-		    							 ).build(), y -> new ArrayList<>()).add(StoreMetrics.builder()
-		    									 .multiplier(packStoreDTO.getInitialSetPackMultiplier())
-		    									 .store(packStoreDTO.getStore())
-		    									 .qty(packStoreDTO.getIs_quantity()).build());
-	    	 }
-	    	 else if(bsQty!=null && bsQty > 0)
-	    	 {
-	    		 volFixtureMetrics.computeIfAbsent(new StylePack(packStoreDTO.getStyle_nbr(),
-		    			 packStoreDTO.getPackId()), x -> new HashMap<>()).computeIfAbsent(
-		    					 VolumeFixtureAllocation.builder().ccId(packStoreDTO.getCc())
-		    					 .volumeClusterId(packStoreDTO.getClusterId())
-		    					 .fixtureType(packStoreDTO.getFixtureType())
-		    					 .fixtureAllocation(new BigDecimal(packStoreDTO.getFixtureAllocation())
-		    							 ).build(), y -> new ArrayList<>()).add(StoreMetrics.builder()
-		    									 .multiplier(packStoreDTO.getBumpSetPackMultiplier())
-		    									 .store(packStoreDTO.getStore())
-		    									 .qty(packStoreDTO.getBs_quantity()).build());
-	    	 }
-	     }
-		 return volFixtureMetrics;
-	 }
-	 
-	 private String findSqlQuery(Long planId, FinelineVolume request, String volumeDeviationLevel) 
-	 {
-	        String tableNameSp = getProjectIdSp();
-	        String tableNameCc = getProjectIdCc();
-
-	        if (volumeDeviationLevel.equals(VdLevelCode.CATEGORY.getDescription())) 
-	        {
-	            return getStorePacksByVolumeCatClusterQuery(tableNameCc, tableNameSp, Math.toIntExact(planId), request.getFinelineNbr(), request.getLvl3Nbr(), bigQueryConnectionProperties.getAnalyticsData(),
-	            		request.getInterval(),request.getFiscalYear());
-	        } 
-            if (volumeDeviationLevel.equals(VdLevelCode.SUB_CATEGORY.getDescription())) 
-            {
-	            return geStorePacksByVolumeSubCatClusterQuery(tableNameCc, tableNameSp, Math.toIntExact(planId), request.getFinelineNbr(), request.getLvl4Nbr(), bigQueryConnectionProperties.getAnalyticsData(),
-	            		request.getInterval(),request.getFiscalYear(),request.getLvl3Nbr());
-	        }
-            if (volumeDeviationLevel.equals(VdLevelCode.FINELINE.getDescription())) 
-            {
-	            return getStorePacksByVolumeFinelineClusterQuery(tableNameCc, tableNameSp, Math.toIntExact(planId), request.getFinelineNbr(), bigQueryConnectionProperties.getAnalyticsData(),request.getInterval(),
-	            		request.getFiscalYear(),request.getLvl3Nbr(),request.getLvl4Nbr());
-	        }
-	        throw new RuntimeException("Invalid Deviation Level, Fineline, Subcategory, Category are valid values");
-	  }
 	 
 	 private String getProjectIdSp() 
 	 {
