@@ -51,15 +51,8 @@ public class DCInboundSheetService {
 
     public List<DCInboundExcelResponse> getDCInboundData(Long planId, String channelDesc) {
         Integer channelId = CommonUtil.getChannelId(channelDesc);
-        long dbStart = System.currentTimeMillis();
         List<DCInboundResponse> response = ccSpReplnPkConsRepository.getDCInboundsByPlanIdAndChannelId(planId,channelId);
-
-        //TODO remove logging
-        log.info("DB TIME: {}", System.currentTimeMillis()-dbStart);
-        long transformStart = System.currentTimeMillis();
-        List<DCInboundExcelResponse> dcInboundExcelData = setDCInboundExcelSheetResponseDTO(response);
-        log.info("TRANSFORM TIME: {}", System.currentTimeMillis()-transformStart);
-        return dcInboundExcelData;
+        return setDCInboundExcelSheetResponseDTO(response);
     }
 
         public List<DCInboundExcelResponse> setDCInboundExcelSheetResponseDTO(List<DCInboundResponse> response) {

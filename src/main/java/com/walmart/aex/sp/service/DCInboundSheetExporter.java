@@ -3,38 +3,29 @@ package com.walmart.aex.sp.service;
 import com.walmart.aex.sp.dto.packoptimization.DCInboundExcelResponse;
 import com.walmart.aex.sp.dto.packoptimization.DCinboundReplenishment;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
-import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
+import static com.walmart.aex.sp.util.SizeAndPackConstants.DC_INBOUND_EXCEL_SHEET_NAME;
+import static com.walmart.aex.sp.util.SizeAndPackConstants.HEADER_FONT_HEIGHT;
+import static com.walmart.aex.sp.util.SizeAndPackConstants.ZERO;
 
 @Slf4j
 @Service
 public class DCInboundSheetExporter {
-//    private SXSSFWorkbook workbook;
-//    private SXSSFSheet sheet;
-//    private List<DCInboundExcelResponse> listDCInboundData;
-//
-//    private List<String> headers;
 
     public DCInboundSheetExporter() {
-        SXSSFWorkbook workbook;
-        SXSSFSheet sheet;
-
-//        this.listDCInboundData = listDCInboundData;
-//        this.headers = new ArrayList<>();
-//        workbook = new SXSSFWorkbook();
-//        workbook.setCompressTempFiles(true);
-
     }
 
     public Workbook generate(List<String> headers, List<DCInboundExcelResponse> listDCInboundData) {
@@ -110,9 +101,6 @@ public class DCInboundSheetExporter {
         for (String colName : headers) {
             createCell(row, column_num++, colName,style);
         }
-
-        //TODO do we need this? seems redundant
-        //row.getCell(ZERO).setCellStyle(style);
     }
 
     void createCell(Row row, int columnCount, Object value, CellStyle style) {
@@ -134,14 +122,8 @@ public class DCInboundSheetExporter {
 
     private void writeDataLines(Sheet sheet, CellStyle style, List<String> headers, List<DCInboundExcelResponse> listDCInboundData) {
         int rowCount = 1;
-//
-//        CellStyle style = workbook.createCellStyle();
-//        Font font = workbook.createFont();
-//        font.setFontHeightInPoints((short)14);
-//        style.setFont(font);
 
         for (DCInboundExcelResponse dcInboundData : listDCInboundData) {
-            long rowTime = System.currentTimeMillis();
             Row row = sheet.createRow(rowCount++);
             int columnCount = ZERO;
 
@@ -155,9 +137,7 @@ public class DCInboundSheetExporter {
             createCell(row, columnCount++, dcInboundData.getChannelDesc(), style);
 
             addReplenishmentUnitsCell(row, columnCount, style, headers, dcInboundData);
-            log.info("ROW TIME: {}", System.currentTimeMillis()-rowTime);
         }
-        log.info("ROW COUNT: {}", rowCount);
 
 
     }
@@ -174,6 +154,5 @@ public class DCInboundSheetExporter {
             }
         }
     }
-
 }
 
