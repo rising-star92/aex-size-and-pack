@@ -111,7 +111,7 @@ deploy:
                         -Dcom.walmart.platform.metrics.impl.type=MICROMETER
                         -Dcom.walmart.platform.txnmarking.otel.type=LOGGING
                         -Dcom.walmart.platform.logging.profile=OTEL"
-    - name: stg
+    - name: stage
       approvers:
         groups:
           - "apparel-precision-kitt-admins"
