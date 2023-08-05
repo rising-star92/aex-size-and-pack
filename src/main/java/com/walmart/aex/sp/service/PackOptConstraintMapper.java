@@ -1,37 +1,36 @@
 package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.mapper.FineLineMapperDto;
-import com.walmart.aex.sp.dto.packoptimization.ColorCombinationConstraints;
-import com.walmart.aex.sp.dto.packoptimization.Constraints;
-import com.walmart.aex.sp.dto.packoptimization.CustomerChoice;
-import com.walmart.aex.sp.dto.packoptimization.Fineline;
-import com.walmart.aex.sp.dto.packoptimization.FinelineLevelConstraints;
-import com.walmart.aex.sp.dto.packoptimization.PackOptimizationResponse;
-import com.walmart.aex.sp.dto.packoptimization.RunOptimization;
-import com.walmart.aex.sp.dto.packoptimization.Supplier;
+import com.walmart.aex.sp.dto.packoptimization.*;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
 import com.walmart.aex.sp.dto.planhierarchy.Style;
+import com.walmart.aex.sp.entity.AnalyticsMlChildSend;
+import com.walmart.aex.sp.entity.AnalyticsMlSend;
+import com.walmart.aex.sp.entity.RunStatusText;
 import com.walmart.aex.sp.enums.CategoryType;
 import com.walmart.aex.sp.enums.ChannelType;
+import com.walmart.aex.sp.repository.AnalyticsMlChildSendRepository;
+import com.walmart.aex.sp.repository.AnalyticsMlSendRepository;
+import com.walmart.aex.sp.repository.RunStatusTextRepository;
+import com.walmart.aex.sp.service.helper.PackOptConstraintMapperHelper;
+import com.walmart.aex.sp.util.PackOptimizationUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+
+import static com.walmart.aex.sp.util.SizeAndPackConstants.BUMP_PACK;
 
 @Service
 @Slf4j
 public class PackOptConstraintMapper {
 
     Map<String, Set<Supplier>> supplierMap;
+    @Autowired
+    PackOptConstraintMapperHelper packOptimizationUtil;
 
     public PackOptimizationResponse packOptDetails(
             List<FineLineMapperDto> fineLineMapperDtos) {
@@ -261,11 +260,11 @@ public class PackOptConstraintMapper {
     }
 
     private List<RunOptimization> getRunOptimizationDetails(FineLineMapperDto fineLineMapperDto) {
-
+        List<String> runStatusLongDescriptions = packOptimizationUtil.getRunStatusLongDescriptions(fineLineMapperDto);
         RunOptimization opt = new RunOptimization();
         opt.setName(fineLineMapperDto.getFirstName());
         opt.setReturnMessage(fineLineMapperDto.getReturnMessage());
-        opt.setRunStatusLongDesc(fineLineMapperDto.getRunStatusLongDesc());
+        opt.setRunStatusLongDesc(runStatusLongDescriptions);
         opt.setRunStatusCode(fineLineMapperDto.getRunStatusCode());
         opt.setStartTs(fineLineMapperDto.getStartTs());
         return List.of(opt);
