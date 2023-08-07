@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -34,9 +35,9 @@ import com.walmart.aex.sp.enums.VdLevelCode;
 import com.walmart.aex.sp.exception.SizeAndPackException;
 import com.walmart.aex.sp.properties.BigQueryConnectionProperties;
 import com.walmart.aex.sp.properties.GraphQLProperties;
+import static com.walmart.aex.sp.util.SizeAndPackConstants.PERCENT;
 
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
-import io.strati.libs.commons.collections.CollectionUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -63,6 +64,7 @@ public class BigQueryPackStoresService
 	 {
 	     QueryJobConfiguration queryConfig = QueryJobConfiguration.newBuilder(getSqlQuery(planId, 
 	    		 request)).build();
+
 	     List<PackStoreDTO> packStoreDTOs = new ArrayList<>();
 	     try 
 	     {
@@ -107,29 +109,30 @@ public class BigQueryPackStoresService
 	 private String getSqlQuery(Long planId, FinelineVolume request) throws SizeAndPackException
 	 {
 		 Integer finelineNbr = request.getFinelineNbr();
-		 StrategyVolumeDeviationResponse volumeDeviationResponse = strategyFetchService
-				 .getStrategyVolumeDeviation(planId, finelineNbr);
-		 String sqlQuery = "";
-		 if (null != volumeDeviationResponse && CollectionUtils.isNotEmpty(volumeDeviationResponse
-				 .getFinelines())) 
-		 {
-             FinelineVolumeDeviationDto finelineVolumeDeviationDto = volumeDeviationResponse.getFinelines().get(0);
-             String volumeDeviationLevel = finelineVolumeDeviationDto.getVolumeDeviationLevel();
-             if (StringUtils.isNotEmpty(volumeDeviationLevel)) 
-             {
-                 sqlQuery = findSqlQuery(planId, request, volumeDeviationLevel);
-             } 
-             else 
-             {
-                 log.error("Exception occurred while fetching Strategy Volume Deviation level for plan id {} and fineline {}", planId, finelineNbr);
-                 throw new SizeAndPackException("Exception occurred while fetching Strategy Volume Deviation level for plan id " + planId);
-             }
-         }
-		 else
-		 {
-             log.error("Exception occurred while fetching Strategy Volume Deviation Response for plan id {} and fineline {}", planId, finelineNbr);
-             throw new SizeAndPackException("Exception occurred while fetching Strategy Volume Deviation Response for plan id " + planId);
-         }
+		 String sqlQuery = findSqlQuery(planId, request, "Category");
+//		 StrategyVolumeDeviationResponse volumeDeviationResponse = strategyFetchService
+//				 .getStrategyVolumeDeviation(planId, finelineNbr);
+//		 String sqlQuery = "";
+//		 if (null != volumeDeviationResponse && CollectionUtils.isNotEmpty(volumeDeviationResponse
+//				 .getFinelines())) 
+//		 {
+//             FinelineVolumeDeviationDto finelineVolumeDeviationDto = volumeDeviationResponse.getFinelines().get(0);
+//             String volumeDeviationLevel = finelineVolumeDeviationDto.getVolumeDeviationLevel();
+//             if (StringUtils.isNotEmpty(volumeDeviationLevel)) 
+//             {
+//                 sqlQuery = findSqlQuery(planId, request, volumeDeviationLevel);
+//             } 
+//             else 
+//             {
+//                 log.error("Exception occurred while fetching Strategy Volume Deviation level for plan id {} and fineline {}", planId, finelineNbr);
+//                 throw new SizeAndPackException("Exception occurred while fetching Strategy Volume Deviation level for plan id " + planId);
+//             }
+//         }
+//		 else
+//		 {
+//             log.error("Exception occurred while fetching Strategy Volume Deviation Response for plan id {} and fineline {}", planId, finelineNbr);
+//             throw new SizeAndPackException("Exception occurred while fetching Strategy Volume Deviation Response for plan id " + planId);
+//         }
 		 return sqlQuery;
 	 }
 	 
@@ -247,7 +250,7 @@ public class BigQueryPackStoresService
 	 private String getStorePacksByVolumeFinelineClusterQuery(String ccTableName, String spTableName, Integer planId, Integer finelineNbr, String analyticsData, String interval, 
 			 Integer fiscalYear, Integer catNbr, Integer subCatNbr)
 	 {
-		 String prodFineline = planId + "_" + finelineNbr;
+		 String prodFineline = planId + "_" + finelineNbr + PERCENT;
          return "WITH MyTable AS (\n" +
                "select distinct\n" +
                "SP.productFineline,\n" +
@@ -299,7 +302,7 @@ public class BigQueryPackStoresService
 	 private String getStorePacksByVolumeCatClusterQuery(String ccTableName, String spTableName, Integer planId, Integer finelineNbr, Integer catNbr, String analyticsData, String interval, 
 			 Integer fiscalYear)
 	 {
-		 String prodFineline = planId + "_" + finelineNbr;
+		 String prodFineline = planId + "_" + finelineNbr + PERCENT;
          return "WITH MyTable AS (\n" +
                "select distinct\n" +
                "SP.productFineline,\n" +
@@ -351,7 +354,7 @@ public class BigQueryPackStoresService
 	 private String geStorePacksByVolumeSubCatClusterQuery(String ccTableName, String spTableName, Integer planId, Integer finelineNbr, Integer subCatNbr, String analyticsData, String interval, 
 			 Integer fiscalYear, Integer catNbr)
 	 {
-		 String prodFineline = planId + "_" + finelineNbr;
+		 String prodFineline = planId + "_" + finelineNbr + PERCENT;
          return "WITH MyTable AS (\n" +
                "select distinct\n" +
                "SP.productFineline,\n" +
