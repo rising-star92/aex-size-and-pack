@@ -31,12 +31,8 @@ public class DatabaseConfig {
         HikariConfig config = new HikariConfig();
         config.setDriverClassName(databaseProperties.getDriver());
         config.setJdbcUrl(databaseProperties.getUrl());
-//        config.setUsername(secretsProperties.fetchSQLServerUserName());
-//        config.setPassword(secretsProperties.fetchSQLServerPassword());
-        config.setUsername("SVCaexSPUser_US@svc.wmtcloud.com");
-        //config.setPassword("1HGr@^\\pRK+\\kVc{bjV");
-       // config.setPassword("d<7!@WJ&GPs?_L9"+"\\"+"H<y");
-        config.setPassword("fztGEuxCK4wNh19f");
+        config.setUsername(secretsProperties.fetchSQLServerUserName());
+        config.setPassword(secretsProperties.fetchSQLServerPassword());
         log.info("DataSource Properties Fetched Successfully ");
         return new HikariDataSource(config);
     }
