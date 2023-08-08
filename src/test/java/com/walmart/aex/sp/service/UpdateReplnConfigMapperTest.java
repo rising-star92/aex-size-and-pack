@@ -46,58 +46,12 @@ class UpdateReplnConfigMapperTest {
 	@InjectMocks
 	@Spy
 	private UpdateReplnConfigMapper replenishmentMapper;
-		
-	@Mock
-	private StyleReplnPkConsRepository styleReplnConsRepository;
-	
-	@Mock
-	private List<FinelineReplPack> finelineReplnPkConsList;
-	
-	@Mock
-	private FinelineReplnPkConsRepository finelineReplnPkConsRepository;
-	
-	@Mock
-	private CcReplnPkConsRepository ccReplnPkConsRepository;
-
-	@Mock
-	private List<MerchCatgReplPack> catgReplnPkConsList;
-
-	@Mock
-	private CatgReplnPkConsRepository catgReplnPkConsRepository;
-
-	@Mock
-	private List<SubCatgReplPack> SubcatgReplnPkConsList;
-
-	@Mock
-	private SubCatgReplnPkConsRepository subCatgReplnPkConsRepository;
-
-	@Mock
-	private CcMmReplnPkConsRepository ccMmReplnPkConsRepository;
-
-	@Mock
-	private List<CcSpMmReplPack> ccSpReplnPkConsList1;
-
-	@Mock
-	private CcSpReplnPkConsRepository ccSpReplnPkConsRepository;
 
 	@Mock
 	private ReplenishmentsOptimizationService replenishmentsOptimizationService;
 
-
 	@Captor
 	private ArgumentCaptor<List<CcSpMmReplPack>> ccSpMmReplPackArgumentCaptor;
-	@Captor
-	private ArgumentCaptor<List<CcMmReplPack>> ccMmReplPackArgumentCaptor;
-	@Captor
-	private ArgumentCaptor<List<CcReplPack>> ccReplPackArgumentCaptor;
-	@Captor
-	private ArgumentCaptor<List<StyleReplPack>> styleReplPackArgumentCaptor;
-	@Captor
-	private ArgumentCaptor<List<FinelineReplPack>> finelineReplPackArgumentCaptor;
-	@Captor
-	private ArgumentCaptor<List<SubCatgReplPack>> subCatgReplPackArgumentCaptor;
-	@Captor
-	private ArgumentCaptor<List<MerchCatgReplPack>> merchCatgReplPackArgumentCaptor;
 	@Spy
 	private ObjectMapper objectMapper;
 	@Test
@@ -227,38 +181,82 @@ class UpdateReplnConfigMapperTest {
 		replenishmentMapper.updateVnpkWhpkForCatgReplnConsMapper(catgReplnPkConsLst, 4, 2);
 		verify(replenishmentMapper,Mockito.times(1)).updateVnpkWhpkForCatgReplnConsMapper(any(), anyInt(), anyInt());
 
-		verify(catgReplnPkConsRepository,Mockito.times(1)).saveAll(merchCatgReplPackArgumentCaptor.capture());
-		verify(subCatgReplnPkConsRepository,Mockito.times(2)).saveAll(subCatgReplPackArgumentCaptor.capture());
-		verify(finelineReplnPkConsRepository,Mockito.times(4)).saveAll(finelineReplPackArgumentCaptor.capture());
-		verify(styleReplnConsRepository,Mockito.times(8)).saveAll(styleReplPackArgumentCaptor.capture());
-		verify(ccReplnPkConsRepository,Mockito.times(16)).saveAll(ccReplPackArgumentCaptor.capture());
-		verify(ccMmReplnPkConsRepository,Mockito.times(32)).saveAll(ccMmReplPackArgumentCaptor.capture());
-		verify(ccSpReplnPkConsRepository,Mockito.times(64)).saveAll(ccSpMmReplPackArgumentCaptor.capture());
+		assertEquals(List.of(58752, 58752), catgReplnPkConsLst.stream()
+				.map(MerchCatgReplPack::getReplUnits).collect(Collectors.toList()));
+		assertEquals(List.of(14688, 14688), catgReplnPkConsLst.stream()
+				.map(MerchCatgReplPack::getReplPackCnt).collect(Collectors.toList()));
 
-		assertEquals(List.of(58752, 58752), merchCatgReplPackArgumentCaptor.getAllValues().stream()
-				.map(val -> val.stream().map(MerchCatgReplPack::getReplUnits).collect(Collectors.toList())).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedList::new)));
-		assertEquals(List.of(14688, 14688), merchCatgReplPackArgumentCaptor.getAllValues().stream()
-				.map(val -> val.stream().map(MerchCatgReplPack::getReplPackCnt).collect(Collectors.toList())).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedList::new)));
+		assertEquals(List.of(29376, 29376, 29376, 29376), catgReplnPkConsLst.stream()
+				.map(MerchCatgReplPack::getSubReplPack).flatMap(Collection::stream)
+				.map(SubCatgReplPack::getReplUnits).collect(Collectors.toList()));
+		assertEquals(List.of(7344, 7344, 7344, 7344), catgReplnPkConsLst.stream()
+				.map(MerchCatgReplPack::getSubReplPack).flatMap(Collection::stream)
+				.map(SubCatgReplPack::getReplPackCnt).collect(Collectors.toList()));
 
-		assertEquals(List.of(29376, 29376, 29376, 29376), subCatgReplPackArgumentCaptor.getAllValues().stream()
-				.map(val -> val.stream().map(SubCatgReplPack::getReplUnits).collect(Collectors.toList())).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedList::new)));
-		assertEquals(List.of(7344, 7344, 7344, 7344), subCatgReplPackArgumentCaptor.getAllValues().stream()
-				.map(val -> val.stream().map(SubCatgReplPack::getReplPackCnt).collect(Collectors.toList())).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedList::new)));
+		assertEquals(117504, catgReplnPkConsLst.stream()
+				.map(MerchCatgReplPack::getSubReplPack).flatMap(Collection::stream)
+				.map(SubCatgReplPack::getFinelineReplPack).flatMap(Collection::stream)
+				.mapToInt(FinelineReplPack::getReplUnits).sum());
+		assertEquals(29376, catgReplnPkConsLst.stream()
+				.map(MerchCatgReplPack::getSubReplPack).flatMap(Collection::stream)
+				.map(SubCatgReplPack::getFinelineReplPack).flatMap(Collection::stream)
+				.mapToInt(FinelineReplPack::getReplPackCnt).sum());
 
-		assertEquals(117504, finelineReplPackArgumentCaptor.getAllValues().stream().mapToInt(val -> val.stream().mapToInt(FinelineReplPack::getReplUnits).sum()).sum());
-		assertEquals(29376, finelineReplPackArgumentCaptor.getAllValues().stream().mapToInt(val -> val.stream().mapToInt(FinelineReplPack::getReplPackCnt).sum()).sum());
+		assertEquals(117504, catgReplnPkConsLst.stream()
+				.map(MerchCatgReplPack::getSubReplPack).flatMap(Collection::stream)
+				.map(SubCatgReplPack::getFinelineReplPack).flatMap(Collection::stream)
+				.map(FinelineReplPack::getStyleReplPack).flatMap(Collection::stream)
+				.mapToInt(StyleReplPack::getReplUnits).sum());
+		assertEquals(29376, catgReplnPkConsLst.stream()
+				.map(MerchCatgReplPack::getSubReplPack).flatMap(Collection::stream)
+				.map(SubCatgReplPack::getFinelineReplPack).flatMap(Collection::stream)
+				.map(FinelineReplPack::getStyleReplPack).flatMap(Collection::stream)
+				.mapToInt(StyleReplPack::getReplPackCnt).sum());
 
-		assertEquals(117504, styleReplPackArgumentCaptor.getAllValues().stream().mapToInt(val -> val.stream().mapToInt(StyleReplPack::getReplUnits).sum()).sum());
-		assertEquals(29376, styleReplPackArgumentCaptor.getAllValues().stream().mapToInt(val -> val.stream().mapToInt(StyleReplPack::getReplPackCnt).sum()).sum());
+		assertEquals(117504, catgReplnPkConsLst.stream()
+				.map(MerchCatgReplPack::getSubReplPack).flatMap(Collection::stream)
+				.map(SubCatgReplPack::getFinelineReplPack).flatMap(Collection::stream)
+				.map(FinelineReplPack::getStyleReplPack).flatMap(Collection::stream)
+				.map(StyleReplPack::getCcReplPack).flatMap(Collection::stream)
+				.mapToInt(CcReplPack::getReplUnits).sum());
+		assertEquals(29376, catgReplnPkConsLst.stream()
+				.map(MerchCatgReplPack::getSubReplPack).flatMap(Collection::stream)
+				.map(SubCatgReplPack::getFinelineReplPack).flatMap(Collection::stream)
+				.map(FinelineReplPack::getStyleReplPack).flatMap(Collection::stream)
+				.map(StyleReplPack::getCcReplPack).flatMap(Collection::stream)
+				.mapToInt(CcReplPack::getReplPackCnt).sum());
 
-		assertEquals(117504, ccReplPackArgumentCaptor.getAllValues().stream().mapToInt(val -> val.stream().mapToInt(CcReplPack::getReplUnits).sum()).sum());
-		assertEquals(29376, ccReplPackArgumentCaptor.getAllValues().stream().mapToInt(val -> val.stream().mapToInt(CcReplPack::getReplPackCnt).sum()).sum());
+		assertEquals(117504, catgReplnPkConsLst.stream()
+				.map(MerchCatgReplPack::getSubReplPack).flatMap(Collection::stream)
+				.map(SubCatgReplPack::getFinelineReplPack).flatMap(Collection::stream)
+				.map(FinelineReplPack::getStyleReplPack).flatMap(Collection::stream)
+				.map(StyleReplPack::getCcReplPack).flatMap(Collection::stream)
+				.map(CcReplPack::getCcMmReplPack).flatMap(Collection::stream)
+				.mapToInt(CcMmReplPack::getReplUnits).sum());
+		assertEquals(29376, catgReplnPkConsLst.stream()
+				.map(MerchCatgReplPack::getSubReplPack).flatMap(Collection::stream)
+				.map(SubCatgReplPack::getFinelineReplPack).flatMap(Collection::stream)
+				.map(FinelineReplPack::getStyleReplPack).flatMap(Collection::stream)
+				.map(StyleReplPack::getCcReplPack).flatMap(Collection::stream)
+				.map(CcReplPack::getCcMmReplPack).flatMap(Collection::stream)
+				.mapToInt(CcMmReplPack::getReplPackCnt).sum());
 
-		assertEquals(117504, ccMmReplPackArgumentCaptor.getAllValues().stream().mapToInt(val -> val.stream().mapToInt(CcMmReplPack::getReplUnits).sum()).sum());
-		assertEquals(29376, ccMmReplPackArgumentCaptor.getAllValues().stream().mapToInt(val -> val.stream().mapToInt(CcMmReplPack::getReplPackCnt).sum()).sum());
-
-		assertEquals(117504, ccSpMmReplPackArgumentCaptor.getAllValues().stream().mapToInt(val -> val.stream().mapToInt(CcSpMmReplPack::getReplUnits).sum()).sum());
-		assertEquals(29376, ccSpMmReplPackArgumentCaptor.getAllValues().stream().mapToInt(val -> val.stream().mapToInt(CcSpMmReplPack::getReplPackCnt).sum()).sum());
+		assertEquals(117504, catgReplnPkConsLst.stream()
+				.map(MerchCatgReplPack::getSubReplPack).flatMap(Collection::stream)
+				.map(SubCatgReplPack::getFinelineReplPack).flatMap(Collection::stream)
+				.map(FinelineReplPack::getStyleReplPack).flatMap(Collection::stream)
+				.map(StyleReplPack::getCcReplPack).flatMap(Collection::stream)
+				.map(CcReplPack::getCcMmReplPack).flatMap(Collection::stream)
+				.map(CcMmReplPack::getCcSpMmReplPack).flatMap(Collection::stream)
+				.mapToInt(CcSpMmReplPack::getReplUnits).sum());
+		assertEquals(29376, catgReplnPkConsLst.stream()
+				.map(MerchCatgReplPack::getSubReplPack).flatMap(Collection::stream)
+				.map(SubCatgReplPack::getFinelineReplPack).flatMap(Collection::stream)
+				.map(FinelineReplPack::getStyleReplPack).flatMap(Collection::stream)
+				.map(StyleReplPack::getCcReplPack).flatMap(Collection::stream)
+				.map(CcReplPack::getCcMmReplPack).flatMap(Collection::stream)
+				.map(CcMmReplPack::getCcSpMmReplPack).flatMap(Collection::stream)
+				.mapToInt(CcSpMmReplPack::getReplPackCnt).sum());
 
 	}
 
@@ -280,8 +278,7 @@ class UpdateReplnConfigMapperTest {
 		Mockito.when(replenishmentsOptimizationService.getUpdatedReplenishmentsPack(getReplenishments(333L,100L), 4, 1, 34, 12L)).thenReturn(getReplenishments(436L,0L));
 
 		replenishmentMapper.updateVnpkWhpkForCcSpMmReplnPkConsMapper(ccSpMmReplPacks, 4,2);
-		verify(ccSpReplnPkConsRepository,Mockito.times(1)).saveAll(ccSpMmReplPackArgumentCaptor.capture());
-		CcSpMmReplPack ccSpMmReplPack1 = ccSpMmReplPackArgumentCaptor.getValue().iterator().next();
+		CcSpMmReplPack ccSpMmReplPack1 = ccSpMmReplPacks.get(0);
 		assertNotNull(ccSpMmReplPack1);
 		List<Replenishment> replenishments = Arrays.asList(objectMapper.readValue(ccSpMmReplPack1.getReplenObj(),Replenishment[].class));
 		assertEquals(436, replenishments.get(0).getAdjReplnUnits());
@@ -306,8 +303,7 @@ class UpdateReplnConfigMapperTest {
 		ccSpMmReplPacks.add(ccSpMmReplPack);
 		Mockito.when(replenishmentsOptimizationService.getUpdatedReplenishmentsPack(Mockito.any(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyLong())).thenReturn(getReplenishments(336L,100L));
 		replenishmentMapper.updateVnpkWhpkForCcSpMmReplnPkConsMapper(ccSpMmReplPacks, 4,2);
-		verify(ccSpReplnPkConsRepository,Mockito.times(1)).saveAll(ccSpMmReplPackArgumentCaptor.capture());
-		CcSpMmReplPack ccSpMmReplPack1 = ccSpMmReplPackArgumentCaptor.getValue().iterator().next();
+		CcSpMmReplPack ccSpMmReplPack1 = ccSpMmReplPacks.get(0);
 		assertNotNull(ccSpMmReplPack1);
 		List<Replenishment> replenishments = Arrays.asList(objectMapper.readValue(ccSpMmReplPack1.getReplenObj(),Replenishment[].class));
 		assertEquals(336, replenishments.get(0).getAdjReplnUnits());
@@ -332,8 +328,7 @@ class UpdateReplnConfigMapperTest {
 		ccSpMmReplPacks.add(ccSpMmReplPack);
 		Mockito.when(replenishmentsOptimizationService.getUpdatedReplenishmentsPack(Mockito.any(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyLong())).thenReturn(getReplenishments(400L,0L));
 		replenishmentMapper.updateVnpkWhpkForCcSpMmReplnPkConsMapper(ccSpMmReplPacks, 4,2);
-		verify(ccSpReplnPkConsRepository,Mockito.times(1)).saveAll(ccSpMmReplPackArgumentCaptor.capture());
-		CcSpMmReplPack ccSpMmReplPack1 = ccSpMmReplPackArgumentCaptor.getValue().iterator().next();
+		CcSpMmReplPack ccSpMmReplPack1 = ccSpMmReplPacks.get(0);
 		assertNotNull(ccSpMmReplPack1);
 		List<Replenishment> replenishments = Arrays.asList(objectMapper.readValue(ccSpMmReplPack1.getReplenObj(), Replenishment[].class));
 		assertEquals(400, replenishments.get(0).getAdjReplnUnits());
@@ -369,7 +364,7 @@ class UpdateReplnConfigMapperTest {
 		ccMmReplPack.add(ccMmReplPack1);
 
 		replenishmentMapper.updateVnpkWhpkForCcMmReplnPkConsMapper(ccMmReplPack,12,2);
-		verify(ccSpReplnPkConsRepository,Mockito.times(1)).saveAll(ccSpMmReplPackArgumentCaptor.capture());
+//		verify(ccSpReplnPkConsRepository,Mockito.times(1)).saveAll(ccSpMmReplPackArgumentCaptor.capture());
 		assertEquals(1,ccSpMmReplPackArgumentCaptor.getAllValues().size());
 		List<CcSpMmReplPack> allCcSpMmReplPackValues = ccSpMmReplPackArgumentCaptor.getAllValues().iterator().next();
 		for(CcSpMmReplPack ccSpMmReplPack:allCcSpMmReplPackValues){
@@ -381,7 +376,6 @@ class UpdateReplnConfigMapperTest {
 				}
 			}
 		}
-
 	}
 
 	private CcSpMmReplPackId getCcSpMmReplPackId(Integer channelId) {
