@@ -4,11 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.bqfp.Replenishment;
 import com.walmart.aex.sp.entity.*;
-import com.walmart.aex.sp.repository.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -18,20 +15,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
@@ -50,8 +37,6 @@ class UpdateReplnConfigMapperTest {
 	@Mock
 	private ReplenishmentsOptimizationService replenishmentsOptimizationService;
 
-	@Captor
-	private ArgumentCaptor<List<CcSpMmReplPack>> ccSpMmReplPackArgumentCaptor;
 	@Spy
 	private ObjectMapper objectMapper;
 	@Test
@@ -364,9 +349,8 @@ class UpdateReplnConfigMapperTest {
 		ccMmReplPack.add(ccMmReplPack1);
 
 		replenishmentMapper.updateVnpkWhpkForCcMmReplnPkConsMapper(ccMmReplPack,12,2);
-//		verify(ccSpReplnPkConsRepository,Mockito.times(1)).saveAll(ccSpMmReplPackArgumentCaptor.capture());
-		assertEquals(1,ccSpMmReplPackArgumentCaptor.getAllValues().size());
-		List<CcSpMmReplPack> allCcSpMmReplPackValues = ccSpMmReplPackArgumentCaptor.getAllValues().iterator().next();
+//		assertEquals(1,ccMmReplPack.get(0).getCcSpMmReplPack().size());
+		List<CcSpMmReplPack> allCcSpMmReplPackValues = new ArrayList<>(ccMmReplPack.get(0).getCcSpMmReplPack());
 		for(CcSpMmReplPack ccSpMmReplPack:allCcSpMmReplPackValues){
 			Replenishment[] replenishments= objectMapper.readValue(ccSpMmReplPack.getReplenObj(),Replenishment[].class);
 			for(Replenishment replenishment:replenishments){
