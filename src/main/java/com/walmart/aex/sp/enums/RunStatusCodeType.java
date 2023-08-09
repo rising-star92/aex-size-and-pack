@@ -17,7 +17,7 @@ public enum RunStatusCodeType {
     MODEL_OUTPUT_COLUMNS(19, "FINELINE FAILED"),
     SOLVER_NOT_SOLVE_ERROR_MSG(20, "MAX CAPACITY NOT ENOUGH"),
     COMMON_ERR_MSG(100, "FINELINE FAILED"),
-    ANALYTICS_ERROR(101, "ANALYTICS ERROR");
+    ERROR(101, "ANALYTICS ERROR");
 
     private Integer id;
     private String description;

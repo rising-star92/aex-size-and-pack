@@ -196,7 +196,7 @@ public class PackOptimizationService {
             analyticsMlSend.setRunStatusCode(RunStatusCodeType.ANALYTICS_RUN_COMPLETED.getId());
         }
         else if (SizeAndPackConstants.ANALYTICS_ERRORS_LIST.stream().anyMatch(runStatusCodeSentAndAnalyticsFailedSet::contains)) {
-            analyticsMlSend.setRunStatusCode(RunStatusCodeType.ANALYTICS_ERROR.getId());
+            analyticsMlSend.setRunStatusCode(RunStatusCodeType.ERROR.getId());
         }
         else if (runStatusCodeSentAndAnalyticsFailedSet.contains(RunStatusCodeType.SENT_TO_ANALYTICS.getId())) {
             analyticsMlSend.setRunStatusCode(RunStatusCodeType.SENT_TO_ANALYTICS.getId());
