@@ -130,6 +130,7 @@ public class BigQueryPackStoresService
              log.error("Exception occurred while fetching Strategy Volume Deviation Response for plan id {} and fineline {}", planId, finelineNbr);
              throw new SizeAndPackException("Exception occurred while fetching Strategy Volume Deviation Response for plan id " + planId);
          }
+         
 		 return sqlQuery;
 	 }
 	 
@@ -247,7 +248,7 @@ public class BigQueryPackStoresService
 	 private String getStorePacksByVolumeFinelineClusterQuery(String ccTableName, String spTableName, Integer planId, Integer finelineNbr, String analyticsData, String interval, 
 			 Integer fiscalYear, Integer catNbr, Integer subCatNbr)
 	 {
-		 String prodFineline = planId + "_" + finelineNbr;
+		 String prodFineline = planId + "_" + finelineNbr + "%";
          return "WITH MyTable AS (\n" +
                "select distinct\n" +
                "SP.productFineline,\n" +
@@ -299,7 +300,7 @@ public class BigQueryPackStoresService
 	 private String getStorePacksByVolumeCatClusterQuery(String ccTableName, String spTableName, Integer planId, Integer finelineNbr, Integer catNbr, String analyticsData, String interval, 
 			 Integer fiscalYear)
 	 {
-		 String prodFineline = planId + "_" + finelineNbr;
+		 String prodFineline = planId + "_" + finelineNbr + "%";
          return "WITH MyTable AS (\n" +
                "select distinct\n" +
                "SP.productFineline,\n" +
@@ -351,7 +352,7 @@ public class BigQueryPackStoresService
 	 private String geStorePacksByVolumeSubCatClusterQuery(String ccTableName, String spTableName, Integer planId, Integer finelineNbr, Integer subCatNbr, String analyticsData, String interval, 
 			 Integer fiscalYear, Integer catNbr)
 	 {
-		 String prodFineline = planId + "_" + finelineNbr;
+		 String prodFineline = planId + "_" + finelineNbr + "%";
          return "WITH MyTable AS (\n" +
                "select distinct\n" +
                "SP.productFineline,\n" +
