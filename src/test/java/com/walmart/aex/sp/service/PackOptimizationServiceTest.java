@@ -730,7 +730,7 @@ class PackOptimizationServiceTest {
         verify(analyticsMlSendRepository, times(1)).save(analyticsMlSendArgumentCaptor.capture());
         Set<AnalyticsMlChildSend> actualAnalyticsMlChildSendList = analyticsMlSendArgumentCaptor.getValue().getAnalyticsMlChildSend();
         assertEquals(3, actualAnalyticsMlChildSendList.size());
-        assertEquals(10, analyticsMlSendArgumentCaptor.getValue().getRunStatusCode());
+        assertEquals(RunStatusCodeType.ERROR.getId(), analyticsMlSendArgumentCaptor.getValue().getRunStatusCode());
         for (AnalyticsMlChildSend analyticsMlChildSend : actualAnalyticsMlChildSendList) {
             if (analyticsMlChildSend.getBumpPackNbr() == 1 || analyticsMlChildSend.getBumpPackNbr() == 3) {
                 assertEquals(6, analyticsMlChildSend.getRunStatusCode());

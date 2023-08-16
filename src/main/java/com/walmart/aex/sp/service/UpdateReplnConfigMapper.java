@@ -5,13 +5,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.bqfp.Replenishment;
 import com.walmart.aex.sp.entity.*;
-import com.walmart.aex.sp.repository.CatgReplnPkConsRepository;
-import com.walmart.aex.sp.repository.CcMmReplnPkConsRepository;
-import com.walmart.aex.sp.repository.CcReplnPkConsRepository;
-import com.walmart.aex.sp.repository.CcSpReplnPkConsRepository;
-import com.walmart.aex.sp.repository.FinelineReplnPkConsRepository;
-import com.walmart.aex.sp.repository.StyleReplnPkConsRepository;
-import com.walmart.aex.sp.repository.SubCatgReplnPkConsRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -22,35 +15,15 @@ import java.util.Set;
 @Service
 @Slf4j
 public class UpdateReplnConfigMapper {
-	private final CatgReplnPkConsRepository catgReplnPkConsRepository;
-	private final SubCatgReplnPkConsRepository subCatgReplnPkConsRepository;
-	private final FinelineReplnPkConsRepository finelineReplnPkConsRepository;
-	private final StyleReplnPkConsRepository styleReplnConsRepository;
-	private final CcReplnPkConsRepository ccReplnPkConsRepository;
-	private final CcMmReplnPkConsRepository ccMmReplnPkConsRepository;
-	private final CcSpReplnPkConsRepository ccSpReplnPkConsRepository;
 	private final ReplenishmentsOptimizationService replenishmentsOptimizationService;
 
 	private final ObjectMapper objectMapper;
-	public UpdateReplnConfigMapper(CatgReplnPkConsRepository catgReplnPkConsRepository, SubCatgReplnPkConsRepository subCatgReplnPkConsRepository,
-								   FinelineReplnPkConsRepository finelineReplnPkConsRepository,
-								   StyleReplnPkConsRepository styleReplnConsRepository, CcReplnPkConsRepository ccReplnPkConsRepository,
-								   CcMmReplnPkConsRepository ccMmReplnPkConsRepository,
-								   CcSpReplnPkConsRepository ccSpReplnPkConsRepository,
-								   ReplenishmentsOptimizationService replenishmentsOptimizationService, ObjectMapper objectMapper) {
-	   this.catgReplnPkConsRepository = catgReplnPkConsRepository;
-	   this.subCatgReplnPkConsRepository = subCatgReplnPkConsRepository;
-	   this.finelineReplnPkConsRepository = finelineReplnPkConsRepository;
-	   this.styleReplnConsRepository = styleReplnConsRepository;
-	   this.ccReplnPkConsRepository = ccReplnPkConsRepository;
-	   this.ccMmReplnPkConsRepository = ccMmReplnPkConsRepository;
-	   this.ccSpReplnPkConsRepository = ccSpReplnPkConsRepository;
+	public UpdateReplnConfigMapper(ReplenishmentsOptimizationService replenishmentsOptimizationService, ObjectMapper objectMapper) {
 		this.replenishmentsOptimizationService = replenishmentsOptimizationService;
 		this.objectMapper = objectMapper;
 	}
 
 	public void updateVnpkWhpkForCatgReplnConsMapper(List<MerchCatgReplPack> catgReplnPkConsList, Integer vnpk, Integer whpk) {
-		List<MerchCatgReplPack> udpatedMerchCatgReplPack = new ArrayList<>();
 		catgReplnPkConsList.forEach(catgReplnPkCons -> {
 			Set<SubCatgReplPack> subReplPack = catgReplnPkCons.getSubReplPack();
 			long replUnits = updateVnpkWhpkForSubCatgReplnConsMapper(new ArrayList<>(subReplPack), vnpk, whpk);
@@ -63,15 +36,11 @@ public class UpdateReplnConfigMapper {
 			catgReplnPkCons.setVnpkWhpkRatio(getVnpkWhpkRatio(catgReplnPkCons.getVendorPackCnt(), catgReplnPkCons.getWhsePackCnt()));
 			catgReplnPkCons.setReplUnits(Math.toIntExact(replUnits));
 			catgReplnPkCons.setReplPackCnt(getReplenishmentPackCount((int)replUnits, catgReplnPkCons.getVendorPackCnt()));
-			udpatedMerchCatgReplPack.add(catgReplnPkCons);
 		});
-
-		catgReplnPkConsRepository.saveAll(udpatedMerchCatgReplPack);
 	}
 
 	public long updateVnpkWhpkForSubCatgReplnConsMapper(List<SubCatgReplPack> subCatgReplPackList, Integer vnpk, Integer whpk) {
 		long totalReplUnits = 0L;
-		List<SubCatgReplPack> updatedSubCatgReplPack = new ArrayList<>();
 		for (SubCatgReplPack subCatgReplnPkCons: subCatgReplPackList) {
 			Set<FinelineReplPack> finelineReplPack = subCatgReplnPkCons.getFinelineReplPack();
 			long replUnits = updateVnpkWhpkForFinelineReplnConsMapper(new ArrayList<>(finelineReplPack), vnpk, whpk);
@@ -85,17 +54,13 @@ public class UpdateReplnConfigMapper {
 			subCatgReplnPkCons.setVnpkWhpkRatio(getVnpkWhpkRatio(subCatgReplnPkCons.getVendorPackCnt(), subCatgReplnPkCons.getWhsePackCnt()));
 			subCatgReplnPkCons.setReplUnits(Math.toIntExact(replUnits));
 			subCatgReplnPkCons.setReplPackCnt(getReplenishmentPackCount((int)replUnits, subCatgReplnPkCons.getVendorPackCnt()));
-			updatedSubCatgReplPack.add(subCatgReplnPkCons);
 			totalReplUnits += replUnits;
 		}
-
-		subCatgReplnPkConsRepository.saveAll(updatedSubCatgReplPack);
 		return totalReplUnits;
 	}
 
 	public long updateVnpkWhpkForFinelineReplnConsMapper(List<FinelineReplPack> finelineReplnPkConsList, Integer vnpk, Integer whpk) {
 		long totalReplUnits = 0L;
-		List<FinelineReplPack> updatedFinelineReplPack = new ArrayList<>();
 		for(FinelineReplPack finelieneReplnPkCons : finelineReplnPkConsList) {
 			Set<StyleReplPack> styleReplPack = finelieneReplnPkCons.getStyleReplPack();
 			long replUnits = updateVnpkWhpkForStyleReplnConsMapper(new ArrayList<>(styleReplPack), vnpk, whpk);
@@ -109,18 +74,13 @@ public class UpdateReplnConfigMapper {
 			finelieneReplnPkCons.setVnpkWhpkRatio(getVnpkWhpkRatio(finelieneReplnPkCons.getVendorPackCnt(), finelieneReplnPkCons.getWhsePackCnt()));
 			finelieneReplnPkCons.setReplUnits(Math.toIntExact(replUnits));
 			finelieneReplnPkCons.setReplPackCnt(getReplenishmentPackCount((int)replUnits, finelieneReplnPkCons.getVendorPackCnt()));
-			updatedFinelineReplPack.add(finelieneReplnPkCons);
 			totalReplUnits += replUnits;
 		}
-
-		finelineReplnPkConsRepository.saveAll(updatedFinelineReplPack);
 		return totalReplUnits;
 	}
 
-
 	public long updateVnpkWhpkForStyleReplnConsMapper(List<StyleReplPack> styleReplnPkConsList, Integer vnpk, Integer whpk) {
 		long totalReplUnits = 0L;
-		List<StyleReplPack> updatedStyleReplPack = new ArrayList<>();
 		for (StyleReplPack styleReplnPkCons: styleReplnPkConsList){
 			Set<CcReplPack> ccReplPack = styleReplnPkCons.getCcReplPack();
 			long replUnits = updateVnpkWhpkForCcReplnPkConsMapper(new ArrayList<>(ccReplPack), vnpk, whpk);
@@ -135,17 +95,13 @@ public class UpdateReplnConfigMapper {
 			styleReplnPkCons.setVnpkWhpkRatio(getVnpkWhpkRatio(styleReplnPkCons.getVendorPackCnt(), styleReplnPkCons.getWhsePackCnt()));
 			styleReplnPkCons.setReplUnits(Math.toIntExact(replUnits));
 			styleReplnPkCons.setReplPackCnt(getReplenishmentPackCount((int)replUnits, styleReplnPkCons.getVendorPackCnt()));
-			updatedStyleReplPack.add(styleReplnPkCons);
 			totalReplUnits += replUnits;
 		}
-
-		styleReplnConsRepository.saveAll(updatedStyleReplPack);
 		return totalReplUnits;
 	}
 
 	public long updateVnpkWhpkForCcReplnPkConsMapper(List<CcReplPack> ccReplnPkConsList, Integer vnpk, Integer whpk) {
 		long totalReplUnits = 0L;
-		List<CcReplPack> updatedCcReplPack = new ArrayList<>();
 		for (CcReplPack ccReplnPkCons: ccReplnPkConsList) {
 			Set<CcMmReplPack> ccMmReplPack = ccReplnPkCons.getCcMmReplPack();
 			long replUnits = updateVnpkWhpkForCcMmReplnPkConsMapper(new ArrayList<>(ccMmReplPack), vnpk, whpk);
@@ -159,17 +115,13 @@ public class UpdateReplnConfigMapper {
 			ccReplnPkCons.setVnpkWhpkRatio(getVnpkWhpkRatio(ccReplnPkCons.getVendorPackCnt(), ccReplnPkCons.getWhsePackCnt()));
 			ccReplnPkCons.setReplUnits(Math.toIntExact(replUnits));
 			ccReplnPkCons.setReplPackCnt(getReplenishmentPackCount((int)replUnits, ccReplnPkCons.getVendorPackCnt()));
-			updatedCcReplPack.add(ccReplnPkCons);
 			totalReplUnits += replUnits;
 		}
-
-		ccReplnPkConsRepository.saveAll(updatedCcReplPack);
 		return totalReplUnits;
 	}
 
 	public long updateVnpkWhpkForCcMmReplnPkConsMapper(List<CcMmReplPack> ccMmReplnPkConsList, Integer vnpk, Integer whpk) {
 		long totalReplUnits = 0L;
-		List<CcMmReplPack> updatedCcMmReplPack = new ArrayList<>();
 		for (CcMmReplPack ccMmReplnPkCons: ccMmReplnPkConsList) {
 			Set<CcSpMmReplPack> ccSpMmReplPack = ccMmReplnPkCons.getCcSpMmReplPack();
 			long replUnits = updateVnpkWhpkForCcSpMmReplnPkConsMapper(new ArrayList<>(ccSpMmReplPack), vnpk, whpk);
@@ -183,11 +135,8 @@ public class UpdateReplnConfigMapper {
 			ccMmReplnPkCons.setVnpkWhpkRatio(getVnpkWhpkRatio(ccMmReplnPkCons.getVendorPackCnt(), ccMmReplnPkCons.getWhsePackCnt()));
 			ccMmReplnPkCons.setReplUnits(Math.toIntExact(replUnits));
 			ccMmReplnPkCons.setReplPackCnt(getReplenishmentPackCount((int)replUnits, ccMmReplnPkCons.getVendorPackCnt()));
-			updatedCcMmReplPack.add(ccMmReplnPkCons);
 			totalReplUnits += replUnits;
 		}
-
-		ccMmReplnPkConsRepository.saveAll(updatedCcMmReplPack);
 		return totalReplUnits;
 	}
 
@@ -196,7 +145,6 @@ public class UpdateReplnConfigMapper {
 	}
 	public long updateVnpkWhpkForCcSpMmReplnPkConsMapper(List<CcSpMmReplPack> ccSpReplnPkConsList, Integer vnpk, Integer whpk) {
 		long totalReplUnits = 0L;
-		List<CcSpMmReplPack> updatedCcSpMmReplPack = new ArrayList<>();
 		for (CcSpMmReplPack ccSpReplnCons: ccSpReplnPkConsList) {
 			String replObjJson = ccSpReplnCons.getReplenObj();
 			long replUnits = 0L;
@@ -220,11 +168,8 @@ public class UpdateReplnConfigMapper {
 			ccSpReplnCons.setVnpkWhpkRatio(getVnpkWhpkRatio(ccSpReplnCons.getVendorPackCnt(), ccSpReplnCons.getWhsePackCnt()));
 			ccSpReplnCons.setReplUnits(Math.toIntExact(replUnits));
 			ccSpReplnCons.setReplPackCnt(getReplenishmentPackCount((int)replUnits, ccSpReplnCons.getVendorPackCnt()));
-			updatedCcSpMmReplPack.add(ccSpReplnCons);
 			totalReplUnits += replUnits;
 		}
-
-		ccSpReplnPkConsRepository.saveAll(updatedCcSpMmReplPack);
 		return totalReplUnits;
 	}
 
