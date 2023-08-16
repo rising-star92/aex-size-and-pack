@@ -40,6 +40,7 @@ import com.walmart.aex.sp.repository.SpFineLineChannelFixtureRepository;
 import com.walmart.aex.sp.repository.StyleCcPackOptConsRepository;
 import com.walmart.aex.sp.util.CommonGCPUtil;
 import com.walmart.aex.sp.util.CommonUtil;
+import com.walmart.aex.sp.util.SizeAndPackConstants;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
