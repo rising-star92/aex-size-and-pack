@@ -26,10 +26,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(MockitoExtension.class)
 class PackOptConstraintMapperTest {
+
     @Mock
     PackOptConstraintMapperHelper packOptConstraintMapperHelper;
     @InjectMocks
     private PackOptConstraintMapper packOptConstraintMapper;
+
     private static final Integer finelineNbr = 3470;
     private static final Long planId = 471L;
     private static final Integer vendorNbr6 = 123456;

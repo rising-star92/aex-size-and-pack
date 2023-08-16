@@ -76,7 +76,7 @@ public interface FinelinePackOptRepository
             "r.runStatusDesc,\n" +
             "r.runStatusLongDesc,\n" +
             "analytic.firstName, \n" +
-            "analytic.lastName, \n" +
+            "analytic.lastName,\n" +
             "analyticsChild.bumpPackNbr, \n" +
             "analyticsChild.runStatusCode) \n" +
             "FROM MerchCatPlan  merchCatPlan \n" +

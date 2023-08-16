@@ -235,16 +235,12 @@ public class PackOptConstraintMapper {
 
         finelineDtoList.stream()
                 .filter(finelineDto -> finelineDto.getFinelineNbr() != null && fineLineMapperDto.getFineLineNbr().equals(finelineDto.getFinelineNbr())).findFirst()
-                .ifPresentOrElse(finelineDto -> {
+                .ifPresentOrElse(
+                        finelineDto -> {
                             if (finelineDto.getOptimizationDetails() != null
-                                    && finelineDto.getOptimizationDetails().getStartTs() != null
-                                    && finelineDto.getOptimizationDetails().getStartTs()
-                                    .compareTo(fineLineMapperDto.getStartTs()) < 0) {
+                                    && finelineDto.getOptimizationDetails().getRunStatusLongDesc() != null) {
                                 finelineDtoList.remove(finelineDto);
                                 setPackOptFineLine(fineLineMapperDto, finelineDtoList, finelineBumpStatusMap);
-                            }
-                            if (fineLineMapperDto.getFineLineNbr() != null) {
-                                finelineDto.setStyles(getPackOptStyles(fineLineMapperDto, finelineDto));
                             }
                         },
                         () -> setPackOptFineLine(fineLineMapperDto, finelineDtoList, finelineBumpStatusMap));
