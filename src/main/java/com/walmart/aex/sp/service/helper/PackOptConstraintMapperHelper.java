@@ -1,18 +1,15 @@
 package com.walmart.aex.sp.service.helper;
 
 import com.walmart.aex.sp.dto.mapper.FineLineMapperDto;
-import com.walmart.aex.sp.entity.AnalyticsMlChildSend;
-import com.walmart.aex.sp.entity.RunStatusText;
-import com.walmart.aex.sp.repository.AnalyticsMlSendRepository;
-import com.walmart.aex.sp.repository.RunStatusTextRepository;
+import com.walmart.aex.sp.enums.RunStatusCodeType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.Map;
 
 import static com.walmart.aex.sp.util.SizeAndPackConstants.BUMP_PACK;
 
@@ -20,28 +17,26 @@ import static com.walmart.aex.sp.util.SizeAndPackConstants.BUMP_PACK;
 @Slf4j
 @Transactional
 public class PackOptConstraintMapperHelper {
-    private final RunStatusTextRepository runStatusTextRepository;
-    private final AnalyticsMlSendRepository analyticsMlSendRepository;
 
-    public PackOptConstraintMapperHelper(RunStatusTextRepository runStatusTextRepository, AnalyticsMlSendRepository analyticsMlSendRepository) {
-        this.runStatusTextRepository = runStatusTextRepository;
-        this.analyticsMlSendRepository = analyticsMlSendRepository;
-    }
-    public List<String> getRunStatusLongDescriptions(FineLineMapperDto fineLineMapperDto) {
-        Optional<Set<AnalyticsMlChildSend>> analyticsMlSend = analyticsMlSendRepository.findAnalyticsMlSendByPlanIdAndfinelineNbr(fineLineMapperDto.getPlanId(), fineLineMapperDto.getFineLineNbr());
-        List<String> runStatusLongDescriptions = new ArrayList<>();
-        if (analyticsMlSend.isPresent()) {
-            Set<AnalyticsMlChildSend> analyticsMlChildSendList = analyticsMlSend.get();
-            for (AnalyticsMlChildSend mlChild : analyticsMlChildSendList) {
-                Optional<RunStatusText> runStatusText = runStatusTextRepository.findById(mlChild.getRunStatusCode());
-                if(runStatusText.isPresent()){
-                    String runStatusLongDescForBumpPack = BUMP_PACK + mlChild.getBumpPackNbr() + " : " + runStatusText.get().getRunStatusLongDesc();
-                    runStatusLongDescriptions.add(runStatusLongDescForBumpPack);
-                }
+    public List<String> getRunStatusLongDescriptions(FineLineMapperDto fineLineMapperDto, Map<Integer, Map<Integer, String>> finelineBumpStatusMap) {
+        Map<Integer, String> runStatusLongDescriptions = new HashMap<>();
+        List<String> runStatusLongDesc = new ArrayList<>();
+        if (null != fineLineMapperDto.getRunStatusCode() && RunStatusCodeType.ANALYTICS_ERRORS_LIST.contains(fineLineMapperDto.getRunStatusCode())) {
+
+            if(null != finelineBumpStatusMap.get(fineLineMapperDto.getFineLineNbr())) {
+                runStatusLongDescriptions = finelineBumpStatusMap.get(fineLineMapperDto.getFineLineNbr());
+                runStatusLongDescriptions.put(fineLineMapperDto.getBumpPackNbr(), RunStatusCodeType.getRunStatusFromId(fineLineMapperDto.getRunStatusCode()));
             }
-            // Adding run status long desc for fineline
-            runStatusLongDescriptions.add(fineLineMapperDto.getRunStatusLongDesc());
+            else {
+                runStatusLongDescriptions.put(fineLineMapperDto.getBumpPackNbr(), RunStatusCodeType.getRunStatusFromId(fineLineMapperDto.getRunStatusCode()));
+                finelineBumpStatusMap.put(fineLineMapperDto.getFineLineNbr(), runStatusLongDescriptions);
+            }
         }
-        return runStatusLongDescriptions;
+        if(null != finelineBumpStatusMap.get(fineLineMapperDto.getFineLineNbr()))
+            for(Map.Entry<Integer,String> entry : finelineBumpStatusMap.get(fineLineMapperDto.getFineLineNbr()).entrySet()) {
+                String runStatusLongDescForBumpPack = BUMP_PACK + entry.getKey() + " : " + entry.getValue();
+                runStatusLongDesc.add(runStatusLongDescForBumpPack);
+            }
+        return runStatusLongDesc;
     }
 }

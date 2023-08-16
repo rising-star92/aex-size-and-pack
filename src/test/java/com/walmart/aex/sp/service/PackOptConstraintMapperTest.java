@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -43,7 +44,7 @@ class PackOptConstraintMapperTest {
     @Test
     void test_packOptDetails() {
         PackOptimizationResponse packOptimizationResponse = new PackOptimizationResponse();
-        Mockito.when(packOptConstraintMapperHelper.getRunStatusLongDescriptions(Mockito.any())).thenReturn(Mockito.anyList());
+        Mockito.when(packOptConstraintMapperHelper.getRunStatusLongDescriptions(Mockito.any(), Mockito.any())).thenReturn(new ArrayList<>());
         PackOptimizationResponse actual = packOptConstraintMapper.packOptDetails(Collections.singletonList(getFineLines().get(0)));
         assertNotNull(packOptimizationResponse);
         assertEquals(styleNbr, actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getStyleNbr());

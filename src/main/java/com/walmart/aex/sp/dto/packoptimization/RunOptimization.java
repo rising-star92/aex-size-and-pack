@@ -9,7 +9,6 @@ import java.util.List;
 @Data
 public class RunOptimization {
     private String name;
-    private String returnMessage;
     private List<String> runStatusLongDesc;
     private Date startTs;
     private Date endTs;

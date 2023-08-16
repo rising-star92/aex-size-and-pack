@@ -76,8 +76,9 @@ public interface FinelinePackOptRepository
             "r.runStatusDesc,\n" +
             "r.runStatusLongDesc,\n" +
             "analytic.firstName, \n" +
-            "analytic.lastName,\n" +
-            "analytic.returnMessage ) \n"+
+            "analytic.lastName, \n" +
+            "analyticsChild.bumpPackNbr, \n" +
+            "analyticsChild.runStatusCode) \n" +
             "FROM MerchCatPlan  merchCatPlan \n" +
             "inner JOIN SubCatPlan subCatPlan ON merchCatPlan.merchCatPlanId.lvl3Nbr = subCatPlan.merchCatPlan.merchCatPlanId.lvl3Nbr \n" +
             "AND merchCatPlan.merchCatPlanId.lvl2Nbr = subCatPlan.merchCatPlan.merchCatPlanId.lvl2Nbr \n" +
@@ -139,6 +140,9 @@ public interface FinelinePackOptRepository
             "left JOIN AnalyticsMlSend analytic " +
             " ON analytic.planId = finePlan.finelinePlanId.subCatPlanId.merchCatPlanId.planId \n" +
             " AND analytic.finelineNbr = finePlan.finelinePlanId.finelineNbr \n" +
+            "AND analytic.startTs = (SELECT MAX(analytic2.startTs) from AnalyticsMlSend analytic2 \n" +
+            "WHERE analytic2.finelineNbr = analytic.finelineNbr and analytic2.planId = analytic.planId) \n " +
+            "left JOIN AnalyticsMlChildSend analyticsChild ON analyticsChild.analyticsMlSend = analytic.analyticsSendId \n" +
             " left join RunStatusText r ON r.runStatusCode = analytic.runStatusCode.runStatusCode \n" +
             " WHERE  merchCatPlan.merchCatPlanId.channelId = ?2 and merchCatPlan.merchCatPlanId.planId =?1")
     List<FineLineMapperDto> findByFinePlanPackOptimizationIDPlanIdAndChannelTextChannelId(Long planId, Integer channelId);
