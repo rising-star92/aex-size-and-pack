@@ -235,14 +235,7 @@ public class PackOptConstraintMapper {
 
         finelineDtoList.stream()
                 .filter(finelineDto -> finelineDto.getFinelineNbr() != null && fineLineMapperDto.getFineLineNbr().equals(finelineDto.getFinelineNbr())).findFirst()
-                .ifPresentOrElse(
-                        finelineDto -> {
-                            if (finelineDto.getOptimizationDetails() != null
-                                    && finelineDto.getOptimizationDetails().getRunStatusLongDesc() != null) {
-                                finelineDtoList.remove(finelineDto);
-                                setPackOptFineLine(fineLineMapperDto, finelineDtoList, finelineBumpStatusMap);
-                            }
-                        },
+                .ifPresentOrElse(finelineDto -> updatePackOptFineLine(fineLineMapperDto, finelineDto, finelineBumpStatusMap),
                         () -> setPackOptFineLine(fineLineMapperDto, finelineDtoList, finelineBumpStatusMap));
         return finelineDtoList;
     }
@@ -260,6 +253,14 @@ public class PackOptConstraintMapper {
             fineline.setStyles(getPackOptStyles(fineLineMapperDto, fineline));
         }
         finelineDtoList.add(fineline);
+    }
+
+    private void updatePackOptFineLine(FineLineMapperDto fineLineMapperDto, Fineline fineline, Map<Integer, Map<Integer, String>> finelineBumpStatusMap) {
+        List<String> runStatusLongDescriptions = packOptimizationUtil.getRunStatusLongDescriptions(fineLineMapperDto, finelineBumpStatusMap);
+        fineline.getOptimizationDetails().setRunStatusLongDesc(runStatusLongDescriptions);
+        if (fineLineMapperDto.getFineLineNbr() != null) {
+            fineline.setStyles(getPackOptStyles(fineLineMapperDto, fineline));
+        }
     }
 
     private RunOptimization getRunOptimizationDetails(FineLineMapperDto fineLineMapperDto, Map<Integer, Map<Integer, String>> finelineBumpStatusMap) {
