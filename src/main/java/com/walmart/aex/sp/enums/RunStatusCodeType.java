@@ -1,7 +1,6 @@
 package com.walmart.aex.sp.enums;
 
 import java.util.Set;
-import java.util.stream.Stream;
 
 public enum RunStatusCodeType {
     NOT_SENT_TO_ANALYTICS(0, "NOT SENT TO ANALYTICS"),
@@ -62,11 +61,5 @@ public enum RunStatusCodeType {
      */
     public final void setDescription(String description) {
         this.description = description;
-    }
-
-    public static String getRunStatusFromId(Integer id) {
-        return Stream.of(values())
-                .filter(e -> e.id.equals(id))
-                .findFirst().map(RunStatusCodeType::getDescription).orElse(null);
     }
 }

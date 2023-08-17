@@ -25,10 +25,10 @@ public class PackOptConstraintMapperHelper {
 
             if(null != finelineBumpStatusMap.get(fineLineMapperDto.getFineLineNbr())) {
                 runStatusLongDescriptions = finelineBumpStatusMap.get(fineLineMapperDto.getFineLineNbr());
-                runStatusLongDescriptions.put(fineLineMapperDto.getBumpPackNbr(), RunStatusCodeType.getRunStatusFromId(fineLineMapperDto.getChildRunStatusCode()));
+                runStatusLongDescriptions.put(fineLineMapperDto.getBumpPackNbr(), fineLineMapperDto.getChildRunStatusCodeDesc());
             }
             else {
-                runStatusLongDescriptions.put(fineLineMapperDto.getBumpPackNbr(), RunStatusCodeType.getRunStatusFromId(fineLineMapperDto.getChildRunStatusCode()));
+                runStatusLongDescriptions.put(fineLineMapperDto.getBumpPackNbr(), fineLineMapperDto.getChildRunStatusCodeDesc());
                 finelineBumpStatusMap.put(fineLineMapperDto.getFineLineNbr(), runStatusLongDescriptions);
             }
         }
