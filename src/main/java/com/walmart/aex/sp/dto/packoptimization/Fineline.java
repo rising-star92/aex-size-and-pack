@@ -14,7 +14,5 @@ public class Fineline {
     private String packOptimizationStatus;
     private Constraints constraints;
     private List<Style> styles;
-    private List<RunOptimization> optimizationDetails;
-
-
+    private RunOptimization optimizationDetails;
 }
