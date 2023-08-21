@@ -240,7 +240,7 @@ type Fineline {
     finelineNbr: Int
     finelineName: String
     altFinelineName: String
-    optimizationDetails: RunOptimization
+    optimizationDetails: [RunOptimization]
     packOptimizationStatus: String
     constraints:Constraints
     styles:[Style]
@@ -249,7 +249,8 @@ type RunOptimization{
     name: String
     startTs: String
     endTs: String
-    runStatusLongDesc: [String]
+    returnMessage: String
+    runStatusLongDesc: String
     runStatusCode: Int
 }
 
