@@ -41,6 +41,7 @@ import com.walmart.aex.sp.repository.SpFineLineChannelFixtureRepository;
 import com.walmart.aex.sp.repository.StyleCcPackOptConsRepository;
 import com.walmart.aex.sp.util.CommonGCPUtil;
 import com.walmart.aex.sp.util.CommonUtil;
+import com.walmart.aex.sp.util.SizeAndPackConstants;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -187,16 +188,16 @@ public class PackOptimizationService {
         Set<AnalyticsMlChildSend> analyticsMlChildSendList = analyticsMlSend.getAnalyticsMlChildSend();
         Set<Integer> runStatusCodeSentAndAnalyticsFailedSet = analyticsMlChildSendList
                 .stream()
-                .filter(val -> Objects.equals(val.getRunStatusCode(), RunStatusCodeType.SENT_TO_ANALYTICS.getId()) ||
-                        Objects.equals(val.getRunStatusCode(), RunStatusCodeType.ANALYTICS_ERROR.getId()))
+                .filter(val -> Objects.equals(RunStatusCodeType.SENT_TO_ANALYTICS.getId(), val.getRunStatusCode()) ||
+                        SizeAndPackConstants.ANALYTICS_ERRORS_LIST.contains(val.getRunStatusCode()))
                 .map(AnalyticsMlChildSend::getRunStatusCode)
                 .collect(Collectors.toSet());
 
         if(runStatusCodeSentAndAnalyticsFailedSet.isEmpty()) {
             analyticsMlSend.setRunStatusCode(RunStatusCodeType.ANALYTICS_RUN_COMPLETED.getId());
         }
-        else if (runStatusCodeSentAndAnalyticsFailedSet.contains(RunStatusCodeType.ANALYTICS_ERROR.getId())) {
-            analyticsMlSend.setRunStatusCode(RunStatusCodeType.ANALYTICS_ERROR.getId());
+        else if (SizeAndPackConstants.ANALYTICS_ERRORS_LIST.stream().anyMatch(runStatusCodeSentAndAnalyticsFailedSet::contains)) {
+            analyticsMlSend.setRunStatusCode(RunStatusCodeType.ERROR.getId());
         }
         else if (runStatusCodeSentAndAnalyticsFailedSet.contains(RunStatusCodeType.SENT_TO_ANALYTICS.getId())) {
             analyticsMlSend.setRunStatusCode(RunStatusCodeType.SENT_TO_ANALYTICS.getId());
