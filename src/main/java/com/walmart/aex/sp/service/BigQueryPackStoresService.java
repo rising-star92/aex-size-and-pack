@@ -61,8 +61,8 @@ public class BigQueryPackStoresService
 	 public PackDetailsVolumeResponse getPackStoreDetailsByVolumeCluster(Long planId, 
 			 FinelineVolume request) throws SizeAndPackException
 	 {
-	     QueryJobConfiguration queryConfig = QueryJobConfiguration.newBuilder(getSqlQuery(planId, 
-	    		 request)).build();
+	     QueryJobConfiguration queryConfig = QueryJobConfiguration.newBuilder(findSqlQuery(planId, 
+	    		 request, getVolumeDeviation(planId, request.getFinelineNbr()))).build();
 	     List<PackStoreDTO> packStoreDTOs = new ArrayList<>();
 	     try 
 	     {
@@ -104,12 +104,10 @@ public class BigQueryPackStoresService
 	    		 .stylePackVolumes(getPackDetailsVolumeResponse(createVolumeFixtureMetrics(packStoreDTOs))).build();
 	 }
 	 
-	 private String getSqlQuery(Long planId, FinelineVolume request) throws SizeAndPackException
+	 private String getVolumeDeviation(Long planId, Integer finelineNbr) throws SizeAndPackException
 	 {
-		 Integer finelineNbr = request.getFinelineNbr();
 		 StrategyVolumeDeviationResponse volumeDeviationResponse = strategyFetchService
 				 .getStrategyVolumeDeviation(planId, finelineNbr);
-		 String sqlQuery = "";
 		 if (null != volumeDeviationResponse && CollectionUtils.isNotEmpty(volumeDeviationResponse
 				 .getFinelines())) 
 		 {
@@ -117,21 +115,16 @@ public class BigQueryPackStoresService
              String volumeDeviationLevel = finelineVolumeDeviationDto.getVolumeDeviationLevel();
              if (StringUtils.isNotEmpty(volumeDeviationLevel)) 
              {
-                 sqlQuery = findSqlQuery(planId, request, volumeDeviationLevel);
+                 return volumeDeviationLevel;
              } 
-             else 
-             {
-                 log.error("Exception occurred while fetching Strategy Volume Deviation level for plan id {} and fineline {}", planId, finelineNbr);
-                 throw new SizeAndPackException("Exception occurred while fetching Strategy Volume Deviation level for plan id " + planId);
-             }
+             log.error("Exception occurred while fetching Strategy Volume Deviation level for plan id {} and fineline {}", planId, finelineNbr);
+             throw new SizeAndPackException("Exception occurred while fetching Strategy Volume Deviation level for plan id " + planId);
          }
 		 else
 		 {
              log.error("Exception occurred while fetching Strategy Volume Deviation Response for plan id {} and fineline {}", planId, finelineNbr);
              throw new SizeAndPackException("Exception occurred while fetching Strategy Volume Deviation Response for plan id " + planId);
          }
-         
-		 return sqlQuery;
 	 }
 	 
 	 private String findSqlQuery(Long planId, FinelineVolume request, String volumeDeviationLevel) 
@@ -164,8 +157,8 @@ public class BigQueryPackStoresService
 		 Map<StylePack, Map<VolumeFixtureAllocation, List<StoreMetrics>>> volFixtureMetrics = new HashMap<>();
 		 for(PackStoreDTO packStoreDTO : packStoreDTOs)
 	     {
-	    	 Integer isQty = packStoreDTO.getIs_quantity();
-	    	 Integer bsQty = packStoreDTO.getBs_quantity();
+	    	 Integer isQty = packStoreDTO.getIsQuantity();
+	    	 Integer bsQty = packStoreDTO.getBsQuantity();
 	    	 // Stores have allocated space in RFA but don't have any quantities
 	    	 if(isQty == null && bsQty == null)
 	    	 {
@@ -174,12 +167,12 @@ public class BigQueryPackStoresService
 	    	 if(isQty!=null && isQty > 0)
 	    	 {
 	    		 populateVolumeFixtureMetrics(volFixtureMetrics, packStoreDTO, 
-	    				 packStoreDTO.getIs_quantity(), packStoreDTO.getInitialSetPackMultiplier());
+	    				 packStoreDTO.getIsQuantity(), packStoreDTO.getInitialSetPackMultiplier());
 	    	 }
 	    	 else if(bsQty!=null && bsQty > 0)
 	    	 {
 	    		 populateVolumeFixtureMetrics(volFixtureMetrics, packStoreDTO, 
-	    				 packStoreDTO.getBs_quantity(), packStoreDTO.getBumpSetPackMultiplier());
+	    				 packStoreDTO.getBsQuantity(), packStoreDTO.getBumpSetPackMultiplier());
 	    	 }
 	     }
 		 return volFixtureMetrics;
@@ -189,7 +182,7 @@ public class BigQueryPackStoresService
 			 Map<VolumeFixtureAllocation, List<StoreMetrics>>> volFixtureMetrics, PackStoreDTO packStoreDTO, 
 			 Integer qty, Integer multiplier)
 	 {
-		 volFixtureMetrics.computeIfAbsent(new StylePack(packStoreDTO.getStyle_nbr(),
+		 volFixtureMetrics.computeIfAbsent(new StylePack(packStoreDTO.getStyleNbr(),
     			 packStoreDTO.getPackId()), x -> new HashMap<>()).computeIfAbsent(
     					 VolumeFixtureAllocation.builder().ccId(packStoreDTO.getCc())
     					 .volumeClusterId(packStoreDTO.getClusterId())
@@ -254,9 +247,9 @@ public class BigQueryPackStoresService
                "SP.productFineline,\n" +
                "RFA.fineline,\n" +
                "RFA.cc,\n" +
-               "RFA.style_nbr,\n" +
-               "SUM(SP.is_quantity) AS is_quantity ,\n" +
-               "SUM(SP.bs_quantity) AS bs_quantity ,\n" +
+               "RFA.style_nbr AS styleNbr,\n" +
+               "SUM(SP.is_quantity) AS isQuantity ,\n" +
+               "SUM(SP.bs_quantity) AS bsQuantity ,\n" +
                "RFA.store,\n" +
                "CL.clusterId,\n" +
                "RFA.fixtureAllocation,\n" +
@@ -306,9 +299,9 @@ public class BigQueryPackStoresService
                "SP.productFineline,\n" +
                "RFA.fineline,\n" +
                "RFA.cc,\n" +
-               "RFA.style_nbr,\n" +
-               "SUM(SP.is_quantity) AS is_quantity ,\n" +
-               "SUM(SP.bs_quantity) AS bs_quantity ,\n" +
+               "RFA.style_nbr AS styleNbr,\n" +
+               "SUM(SP.is_quantity) AS isQuantity ,\n" +
+               "SUM(SP.bs_quantity) AS bsQuantity ,\n" +
                "RFA.store,\n" +
                "CL.clusterId,\n" +
                "RFA.fixtureAllocation,\n" +
@@ -358,9 +351,9 @@ public class BigQueryPackStoresService
                "SP.productFineline,\n" +
                "RFA.fineline,\n" +
                "RFA.cc,\n" +
-               "RFA.style_nbr,\n" +
-               "SUM(SP.is_quantity) AS is_quantity ,\n" +
-               "SUM(SP.bs_quantity) AS bs_quantity ,\n" +
+               "RFA.style_nbr AS styleNbr,\n" +
+               "SUM(SP.is_quantity) AS isQuantity ,\n" +
+               "SUM(SP.bs_quantity) AS bsQuantity ,\n" +
                "RFA.store,\n" +
                "CL.clusterId,\n" +
                "RFA.fixtureAllocation,\n" +

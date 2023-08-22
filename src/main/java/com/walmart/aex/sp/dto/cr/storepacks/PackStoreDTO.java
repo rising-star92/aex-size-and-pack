@@ -8,9 +8,9 @@ public class PackStoreDTO
 	private String productFineline;
 	private Integer fineline;
     private String cc;
-    private String style_nbr;
-    private Integer is_quantity;
-    private Integer bs_quantity;
+    private String styleNbr;
+    private Integer isQuantity;
+    private Integer bsQuantity;
     private Integer store;
     private Integer clusterId;
     private float fixtureAllocation;

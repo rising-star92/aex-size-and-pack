@@ -168,7 +168,7 @@ class BigQueryPackStoresServiceTest
         FieldValue isFieldValue1 = FieldValue.of(FieldValue.Attribute.PRIMITIVE, 
         		"{\"productFineline\":\"73_2840\",\"fineline\":\"2840\", "
         		+ "\"cc\":\"34_2840_1_21_2_003\","
-        		+ "\"style_nbr\":\"34_2840_1_21_2\",\"is_quantity\":8,"
+        		+ "\"styleNbr\":\"34_2840_1_21_2\",\"isQuantity\":8,"
         		+ "\"store\":1619,\"clusterId\":1,\"fixtureAllocation\":0.5,"
         		+ "\"fixtureType\":\"WALLS\",\"packId\":\"SP_is68_2840_0_34_2840_1_21_2_003_HANGING_2\","
         		+ "\"initialSetPackMultiplier\":\"1\"}");
@@ -176,7 +176,7 @@ class BigQueryPackStoresServiceTest
         FieldValue isFieldValue2 = FieldValue.of(FieldValue.Attribute.PRIMITIVE, 
         		"{\"productFineline\":\"73_2840\",\"fineline\":\"2840\", "
         		+ "\"cc\":\"34_2840_1_21_2_003\","
-        		+ "\"style_nbr\":\"34_2840_1_21_2\",\"is_quantity\":4,"
+        		+ "\"styleNbr\":\"34_2840_1_21_2\",\"isQuantity\":4,"
         		+ "\"store\":2631,\"clusterId\":1,\"fixtureAllocation\":0.5,"
         		+ "\"fixtureType\":\"WALLS\",\"packId\":\"SP_is68_2840_0_34_2840_1_21_2_003_HANGING_2\","
         		+ "\"initialSetPackMultiplier\":\"2\"}");
@@ -184,7 +184,7 @@ class BigQueryPackStoresServiceTest
         FieldValue isFieldValue3 = FieldValue.of(FieldValue.Attribute.PRIMITIVE, 
         		"{\"productFineline\":\"73_2840\",\"fineline\":\"2840\", "
         		+ "\"cc\":\"34_2840_1_21_2_007\","
-        		+ "\"style_nbr\":\"34_2840_1_21_2\",\"is_quantity\":8,"
+        		+ "\"styleNbr\":\"34_2840_1_21_2\",\"isQuantity\":8,"
         		+ "\"store\":4359,\"clusterId\":3,\"fixtureAllocation\":0.25,"
         		+ "\"fixtureType\":\"RACKS\",\"packId\":null,"
         		+ "\"initialSetPackMultiplier\":\"1\"}");
