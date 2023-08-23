@@ -65,6 +65,7 @@ public class SizeAndPackDeleteService {
                 log.info("Deleting ccId Buy Qty for ccId: {}, and planId: {}", cc.getCcId(), planId);
                 spCustomerChoiceChannelFixtureRepository.deleteBySpCustomerChoiceChannelFixtureId_SpStyleChannelFixtureId_SpFineLineChannelFixtureId_planIdAndSpCustomerChoiceChannelFixtureId_SpStyleChannelFixtureId_SpFineLineChannelFixtureId_lvl3NbrAndSpCustomerChoiceChannelFixtureId_SpStyleChannelFixtureId_SpFineLineChannelFixtureId_lvl4NbrAndSpCustomerChoiceChannelFixtureId_SpStyleChannelFixtureId_SpFineLineChannelFixtureId_fineLineNbrAndSpCustomerChoiceChannelFixtureId_SpStyleChannelFixtureId_styleNbrAndSpCustomerChoiceChannelFixtureId_customerChoice(
                         planId, lvl3Nbr, lvl4Nbr, finelineNbr, styleNbr, cc.getCcId());
+
             }
         }
     }
