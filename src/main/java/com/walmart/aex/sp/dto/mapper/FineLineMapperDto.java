@@ -68,9 +68,7 @@ public class FineLineMapperDto {
     private String runStatusLongDesc;
     private String firstName;
     private String lastName;
-    private Integer bumpPackNbr;
-    private Integer childRunStatusCode;
-    private String childRunStatusCodeDesc;
+    private String returnMessage;
     private String styleNbr;
     private String styleSupplierName;
     private Integer styleVendorNumber6;
@@ -117,8 +115,7 @@ public class FineLineMapperDto {
             Integer ccVendorNumber6, Integer ccGsmSupplierNumber, Integer ccVendorNumber9, String ccFactoryId,
             String ccPortOfOrigin, Integer ccSinglePackIndicator, String ccColorCombination,
             Integer ccMaxUnitsPerPack, Integer ccMaxPacks, String ccFactoryName, Date startTs, Date endTs, Integer runStatusCode,
-            String runStatusDesc, String runStatusLongDesc, String firstName, String lastName, Integer bumpPackNbr,
-            Integer childRunStatusCode, String childRunStatusCodeDesc) {
+            String runStatusDesc, String runStatusLongDesc, String firstName, String lastName, String returnMessage) {
         this.planId = planId;
         this.channelId = channelId;
         this.lvl0Nbr = lvl0Nbr;
@@ -171,9 +168,7 @@ public class FineLineMapperDto {
         this.runStatusLongDesc = runStatusLongDesc;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.bumpPackNbr = bumpPackNbr;
-        this.childRunStatusCode = childRunStatusCode;
-        this.childRunStatusCodeDesc = childRunStatusCodeDesc;
+        this.returnMessage = returnMessage;
         this.ccId = ccId;
         this.ccSupplierName = ccSupplierName;
         this.ccGsmSupplierNumber = ccGsmSupplierNumber;
