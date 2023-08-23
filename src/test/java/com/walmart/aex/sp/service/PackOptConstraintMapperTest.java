@@ -2,21 +2,16 @@ package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.mapper.FineLineMapperDto;
 import com.walmart.aex.sp.dto.packoptimization.CustomerChoice;
-import com.walmart.aex.sp.dto.packoptimization.FineLinePackOptimizationResponseDTO;
 import com.walmart.aex.sp.dto.packoptimization.Fineline;
 import com.walmart.aex.sp.dto.packoptimization.PackOptimizationResponse;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
 import com.walmart.aex.sp.dto.planhierarchy.Style;
-import com.walmart.aex.sp.service.helper.PackOptConstraintMapperHelper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -27,8 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @ExtendWith(MockitoExtension.class)
 class PackOptConstraintMapperTest {
 
-    @Mock
-    PackOptConstraintMapperHelper packOptConstraintMapperHelper;
     @InjectMocks
     private PackOptConstraintMapper packOptConstraintMapper;
 
@@ -46,7 +39,6 @@ class PackOptConstraintMapperTest {
     @Test
     void test_packOptDetails() {
         PackOptimizationResponse packOptimizationResponse = new PackOptimizationResponse();
-        Mockito.when(packOptConstraintMapperHelper.getRunStatusLongDescriptions(Mockito.any(), Mockito.any())).thenReturn(new ArrayList<>());
         PackOptimizationResponse actual = packOptConstraintMapper.packOptDetails(Collections.singletonList(getFineLines().get(0)));
         assertNotNull(packOptimizationResponse);
         assertEquals(styleNbr, actual.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getStyleNbr());

@@ -14,15 +14,12 @@ import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
 import com.walmart.aex.sp.dto.planhierarchy.Style;
 import com.walmart.aex.sp.enums.CategoryType;
 import com.walmart.aex.sp.enums.ChannelType;
-import com.walmart.aex.sp.service.helper.PackOptConstraintMapperHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -36,19 +33,15 @@ public class PackOptConstraintMapper {
 
     Map<String, Set<Supplier>> supplierMap;
 
-    @Autowired
-    PackOptConstraintMapperHelper packOptimizationUtil;
-
     public PackOptimizationResponse packOptDetails(
             List<FineLineMapperDto> fineLineMapperDtos) {
 
         PackOptimizationResponse packOptResp = new PackOptimizationResponse();
         fineLineMapperDtos = updateSupplierNames(fineLineMapperDtos);
-        Map<Integer, Map<Integer, String>> finelineBumpStatusMap = new HashMap<>();
         Optional.of(fineLineMapperDtos)
                 .stream()
                 .flatMap(Collection::stream)
-                .forEach(fineLineMapperDto -> mapPackOptLvl2(fineLineMapperDto, packOptResp, finelineBumpStatusMap));
+                .forEach(fineLineMapperDto -> mapPackOptLvl2(fineLineMapperDto, packOptResp));
 
         return packOptResp;
     }
@@ -167,7 +160,7 @@ public class PackOptConstraintMapper {
         return fineLineMapperDtoList;
     }
 
-    private void mapPackOptLvl2(FineLineMapperDto fineLineMapperDto, PackOptimizationResponse response, Map<Integer, Map<Integer, String>> finelineBumpStatusMap) {
+    private void mapPackOptLvl2(FineLineMapperDto fineLineMapperDto, PackOptimizationResponse response) {
         if (response.getPlanId() == null) {
             response.setPlanId(fineLineMapperDto.getPlanId());
         }
@@ -186,68 +179,80 @@ public class PackOptConstraintMapper {
         if (response.getChannel() == null) {
             response.setChannel(ChannelType.getChannelNameFromId(fineLineMapperDto.getChannelId()));
         }
-        response.setLvl3List(mapPackOptLvl3(fineLineMapperDto, response, finelineBumpStatusMap));
+        response.setLvl3List(mapPackOptLvl3(fineLineMapperDto, response));
     }
 
-    private List<Lvl3> mapPackOptLvl3(FineLineMapperDto fineLineMapperDto, PackOptimizationResponse response, Map<Integer, Map<Integer, String>> finelineBumpStatusMap) {
+    private List<Lvl3> mapPackOptLvl3(FineLineMapperDto fineLineMapperDto, PackOptimizationResponse response) {
         List<Lvl3> lvl3List = Optional.ofNullable(response.getLvl3List()).orElse(new ArrayList<>());
 
         lvl3List.stream()
                 .filter(lvl3 -> lvl3.getLvl3Nbr() != null && fineLineMapperDto.getLvl3Nbr().equals(lvl3.getLvl3Nbr())).findFirst()
-                .ifPresentOrElse(lvl3 -> lvl3.setLvl4List(getLvl4Sp(fineLineMapperDto, lvl3, finelineBumpStatusMap)),
-                        () -> setPackOptLvl3(fineLineMapperDto, lvl3List, finelineBumpStatusMap));
+                .ifPresentOrElse(lvl3 -> lvl3.setLvl4List(getLvl4Sp(fineLineMapperDto, lvl3)),
+                        () -> setPackOptLvl3(fineLineMapperDto, lvl3List));
         return lvl3List;
     }
 
-    private void setPackOptLvl3(FineLineMapperDto fineLineMapperDto, List<Lvl3> lvl3List, Map<Integer, Map<Integer, String>> finelineBumpStatusMap) {
+    private void setPackOptLvl3(FineLineMapperDto fineLineMapperDto, List<Lvl3> lvl3List) {
         Lvl3 lvl3 = new Lvl3();
         lvl3.setLvl0Nbr(fineLineMapperDto.getLvl0Nbr());
         lvl3.setLvl1Nbr(fineLineMapperDto.getLvl1Nbr());
         lvl3.setLvl2Nbr(fineLineMapperDto.getLvl2Nbr());
         lvl3.setLvl3Nbr(fineLineMapperDto.getLvl3Nbr());
         lvl3.setLvl3Name(fineLineMapperDto.getLvl3Desc());
-        lvl3.setLvl4List(getLvl4Sp(fineLineMapperDto, lvl3, finelineBumpStatusMap));
+        lvl3.setLvl4List(getLvl4Sp(fineLineMapperDto, lvl3));
         lvl3.setConstraints(getConstraints(fineLineMapperDto, CategoryType.MERCHANT));
         lvl3List.add(lvl3);
     }
 
-    private List<Lvl4> getLvl4Sp(FineLineMapperDto fineLineMapperDto, Lvl3 lvl3, Map<Integer, Map<Integer, String>> finelineBumpStatusMap) {
+    private List<Lvl4> getLvl4Sp(FineLineMapperDto fineLineMapperDto, Lvl3 lvl3) {
         List<Lvl4> lvl4DtoList = Optional.ofNullable(lvl3.getLvl4List()).orElse(new ArrayList<>());
 
         lvl4DtoList.stream()
                 .filter(lvl4 -> lvl4.getLvl4Nbr() != null && fineLineMapperDto.getLvl4Nbr().equals(lvl4.getLvl4Nbr())).findFirst()
-                .ifPresentOrElse(lvl4 -> lvl4.setFinelines(getFineLines(fineLineMapperDto, lvl4, finelineBumpStatusMap)),
-                        () -> setPackoptLvl4(fineLineMapperDto, lvl4DtoList, finelineBumpStatusMap));
+                .ifPresentOrElse(lvl4 -> lvl4.setFinelines(getFineLines(fineLineMapperDto, lvl4)),
+                        () -> setPackoptLvl4(fineLineMapperDto, lvl4DtoList));
         return lvl4DtoList;
     }
 
-    private void setPackoptLvl4(FineLineMapperDto fineLineMapperDto, List<Lvl4> lvl4DtoList, Map<Integer, Map<Integer, String>> finelineBumpStatusMap) {
+    private void setPackoptLvl4(FineLineMapperDto fineLineMapperDto, List<Lvl4> lvl4DtoList) {
         Lvl4 lvl4 = new Lvl4();
         lvl4.setLvl4Nbr(fineLineMapperDto.getLvl4Nbr());
         lvl4.setLvl4Name(fineLineMapperDto.getLvl4Desc());
-        lvl4.setFinelines(getFineLines(fineLineMapperDto, lvl4, finelineBumpStatusMap));
+        lvl4.setFinelines(getFineLines(fineLineMapperDto, lvl4));
         lvl4.setConstraints(getConstraints(fineLineMapperDto, CategoryType.SUB_CATEGORY));
         lvl4DtoList.add(lvl4);
     }
 
-    private List<Fineline> getFineLines(FineLineMapperDto fineLineMapperDto, Lvl4 lvl4, Map<Integer, Map<Integer, String>> finelineBumpStatusMap) {
+    private List<Fineline> getFineLines(FineLineMapperDto fineLineMapperDto, Lvl4 lvl4) {
         List<Fineline> finelineDtoList = Optional.ofNullable(lvl4.getFinelines()).orElse(new ArrayList<>());
 
         finelineDtoList.stream()
                 .filter(finelineDto -> finelineDto.getFinelineNbr() != null && fineLineMapperDto.getFineLineNbr().equals(finelineDto.getFinelineNbr())).findFirst()
-                .ifPresentOrElse(finelineDto -> updatePackOptFineLine(fineLineMapperDto, finelineDto, finelineBumpStatusMap),
-                        () -> setPackOptFineLine(fineLineMapperDto, finelineDtoList, finelineBumpStatusMap));
+                .ifPresentOrElse(finelineDto -> {
+                            if (finelineDto.getOptimizationDetails() != null &&
+                                    !finelineDto.getOptimizationDetails().isEmpty()
+                                    && finelineDto.getOptimizationDetails().get(0).getStartTs() != null
+                                    && finelineDto.getOptimizationDetails().get(0).getStartTs()
+                                    .compareTo(fineLineMapperDto.getStartTs()) < 0) {
+                                finelineDtoList.remove(finelineDto);
+                                setPackOptFineLine(fineLineMapperDto, finelineDtoList);
+                            }
+                            if (fineLineMapperDto.getFineLineNbr() != null) {
+                                finelineDto.setStyles(getPackOptStyles(fineLineMapperDto, finelineDto));
+                            }
+                        },
+                        () -> setPackOptFineLine(fineLineMapperDto, finelineDtoList));
         return finelineDtoList;
     }
 
-    private void setPackOptFineLine(FineLineMapperDto fineLineMapperDto, List<Fineline> finelineDtoList, Map<Integer, Map<Integer, String>> finelineBumpStatusMap) {
+    private void setPackOptFineLine(FineLineMapperDto fineLineMapperDto, List<Fineline> finelineDtoList) {
         Fineline fineline = new Fineline();
         String status = Optional.ofNullable(fineLineMapperDto.getRunStatusDesc()).orElse("NOT SENT");
         fineline.setFinelineNbr(fineLineMapperDto.getFineLineNbr());
         fineline.setFinelineName(fineLineMapperDto.getFineLineDesc());
         fineline.setAltFinelineName(fineLineMapperDto.getAltfineLineDesc());
         fineline.setPackOptimizationStatus(status);
-        fineline.setOptimizationDetails(getRunOptimizationDetails(fineLineMapperDto, finelineBumpStatusMap));
+        fineline.setOptimizationDetails(getRunOptimizationDetails(fineLineMapperDto));
         fineline.setConstraints(getConstraints(fineLineMapperDto, CategoryType.FINE_LINE));
         if (fineLineMapperDto.getFineLineNbr() != null) {
             fineline.setStyles(getPackOptStyles(fineLineMapperDto, fineline));
@@ -255,22 +260,15 @@ public class PackOptConstraintMapper {
         finelineDtoList.add(fineline);
     }
 
-    private void updatePackOptFineLine(FineLineMapperDto fineLineMapperDto, Fineline fineline, Map<Integer, Map<Integer, String>> finelineBumpStatusMap) {
-        List<String> runStatusLongDescriptions = packOptimizationUtil.getRunStatusLongDescriptions(fineLineMapperDto, finelineBumpStatusMap);
-        fineline.getOptimizationDetails().setRunStatusLongDesc(runStatusLongDescriptions);
-        if (fineLineMapperDto.getFineLineNbr() != null) {
-            fineline.setStyles(getPackOptStyles(fineLineMapperDto, fineline));
-        }
-    }
+    private List<RunOptimization> getRunOptimizationDetails(FineLineMapperDto fineLineMapperDto) {
 
-    private RunOptimization getRunOptimizationDetails(FineLineMapperDto fineLineMapperDto, Map<Integer, Map<Integer, String>> finelineBumpStatusMap) {
-        List<String> runStatusLongDescriptions = packOptimizationUtil.getRunStatusLongDescriptions(fineLineMapperDto, finelineBumpStatusMap);
         RunOptimization opt = new RunOptimization();
         opt.setName(fineLineMapperDto.getFirstName());
-        opt.setRunStatusLongDesc(runStatusLongDescriptions);
+        opt.setReturnMessage(fineLineMapperDto.getReturnMessage());
+        opt.setRunStatusLongDesc(fineLineMapperDto.getRunStatusLongDesc());
         opt.setRunStatusCode(fineLineMapperDto.getRunStatusCode());
         opt.setStartTs(fineLineMapperDto.getStartTs());
-        return opt;
+        return List.of(opt);
     }
 
     private List<Style> getPackOptStyles(FineLineMapperDto fineLineMapperDto, Fineline fineline) {
