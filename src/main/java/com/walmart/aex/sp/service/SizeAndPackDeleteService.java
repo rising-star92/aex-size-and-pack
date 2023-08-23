@@ -19,7 +19,7 @@ public class SizeAndPackDeleteService {
     private final SpCustomerChoiceChannelFixtureRepository spCustomerChoiceChannelFixtureRepository;
     private final SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository;
 
-    public SizeAndPackDeleteService(FineLineReplenishmentRepository finelineReplenishmentRepository, StyleReplnPkConsRepository styleReplnPkConsRepository, SpCustomerChoiceReplenishmentRepository spCustomerChoiceReplenishmentRepository, SpStyleChannelFixtureRepository spStyleChannelFixtureRepository, SpCustomerChoiceChannelFixtureRepository spCustomerChoiceChannelFixtureRepository, SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository, CcPackOptimizationRepository ccPackOptimizationRepository, StylePackOptimizationRepository stylePackOptimizationRepository, FinelinePackOptConsRepository finelinePackOptConsRepository) {
+    public SizeAndPackDeleteService(FineLineReplenishmentRepository finelineReplenishmentRepository, StyleReplnPkConsRepository styleReplnPkConsRepository, SpCustomerChoiceReplenishmentRepository spCustomerChoiceReplenishmentRepository, SpStyleChannelFixtureRepository spStyleChannelFixtureRepository, SpCustomerChoiceChannelFixtureRepository spCustomerChoiceChannelFixtureRepository, SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository) {
         this.finelineReplenishmentRepository = finelineReplenishmentRepository;
         this.styleReplnPkConsRepository = styleReplnPkConsRepository;
         this.spCustomerChoiceReplenishmentRepository = spCustomerChoiceReplenishmentRepository;
@@ -37,7 +37,7 @@ public class SizeAndPackDeleteService {
     }
 
     void deleteSizeAndPackDataAtStyleOrCC(List<Style> styles, Long planId, Integer lvl3Nbr, Integer lvl4Nbr, Integer finelineNbr) {
-        log.info("Deleting Style or CC info for finelineNbr: {}, and planId: {}", finelineNbr, planId);
+        log.info("Deleting fineline info for finelineNbr: {}, and planId: {}", finelineNbr, planId);
         for (Style style : styles) {
             if (style.getStyleNbr() != null && CollectionUtils.isEmpty(style.getCustomerChoices())) {
                 log.info("Deleting Style Replenishment for styleNbr: {}, and planId: {}", style.getStyleNbr(), planId);
