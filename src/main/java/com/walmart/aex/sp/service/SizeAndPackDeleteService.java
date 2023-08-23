@@ -18,9 +18,6 @@ public class SizeAndPackDeleteService {
     private final SpStyleChannelFixtureRepository spStyleChannelFixtureRepository;
     private final SpCustomerChoiceChannelFixtureRepository spCustomerChoiceChannelFixtureRepository;
     private final SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository;
-    private final CcPackOptimizationRepository ccPackOptimizationRepository;
-    private final StylePackOptimizationRepository stylePackOptimizationRepository;
-    private final FinelinePackOptConsRepository finelinePackOptConsRepository;
 
     public SizeAndPackDeleteService(FineLineReplenishmentRepository finelineReplenishmentRepository, StyleReplnPkConsRepository styleReplnPkConsRepository, SpCustomerChoiceReplenishmentRepository spCustomerChoiceReplenishmentRepository, SpStyleChannelFixtureRepository spStyleChannelFixtureRepository, SpCustomerChoiceChannelFixtureRepository spCustomerChoiceChannelFixtureRepository, SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository, CcPackOptimizationRepository ccPackOptimizationRepository, StylePackOptimizationRepository stylePackOptimizationRepository, FinelinePackOptConsRepository finelinePackOptConsRepository) {
         this.finelineReplenishmentRepository = finelineReplenishmentRepository;
@@ -29,9 +26,6 @@ public class SizeAndPackDeleteService {
         this.spStyleChannelFixtureRepository = spStyleChannelFixtureRepository;
         this.spCustomerChoiceChannelFixtureRepository = spCustomerChoiceChannelFixtureRepository;
         this.spFineLineChannelFixtureRepository = spFineLineChannelFixtureRepository;
-        this.ccPackOptimizationRepository = ccPackOptimizationRepository;
-        this.stylePackOptimizationRepository = stylePackOptimizationRepository;
-        this.finelinePackOptConsRepository = finelinePackOptConsRepository;
     }
 
     void deleteSizeAndPackDataAtFl(Long planId, Integer lvl3Nbr,
@@ -40,8 +34,6 @@ public class SizeAndPackDeleteService {
         finelineReplenishmentRepository.deleteByFinelineReplPackId_SubCatgReplPackId_MerchCatgReplPackId_planIdAndFinelineReplPackId_SubCatgReplPackId_MerchCatgReplPackId_repTLvl3AndFinelineReplPackId_SubCatgReplPackId_repTLvl4AndFinelineReplPackId_finelineNbr(planId, lvl3Nbr, lvl4Nbr, finelineNbr);
         log.info("Deleting fineline buy qty info for finelineNbr: {}, and planId: {}", finelineNbr, planId);
         spFineLineChannelFixtureRepository.deleteBySpFineLineChannelFixtureId_planIdAndSpFineLineChannelFixtureId_lvl3NbrAndSpFineLineChannelFixtureId_lvl4NbrAndSpFineLineChannelFixtureId_fineLineNbr(planId, lvl3Nbr, lvl4Nbr, finelineNbr);
-        log.info("Deleting fineline pack optimization info for finelineNbr: {}, and planId: {}", finelineNbr, planId);
-        finelinePackOptConsRepository.deleteByFinelinePackOptId_SubCatgPackOptimizationID_MerchantPackOptimizationID_planIdAndFinelinePackOptId_SubCatgPackOptimizationID_MerchantPackOptimizationID_repTLvl3AndFinelinePackOptId_SubCatgPackOptimizationID_repTLvl4AndFinelinePackOptId_finelineNbr(planId, lvl3Nbr, lvl4Nbr, finelineNbr);
     }
 
     void deleteSizeAndPackDataAtStyleOrCC(List<Style> styles, Long planId, Integer lvl3Nbr, Integer lvl4Nbr, Integer finelineNbr) {
@@ -53,9 +45,6 @@ public class SizeAndPackDeleteService {
                         planId, lvl3Nbr, lvl4Nbr, finelineNbr, style.getStyleNbr());
                 log.info("Deleting Style Buy Qty for styleNbr: {}, and planId: {}", style.getStyleNbr(), planId);
                 spStyleChannelFixtureRepository.deleteBySpStyleChannelFixtureId_SpFineLineChannelFixtureId_planIdAndSpStyleChannelFixtureId_SpFineLineChannelFixtureId_lvl3NbrAndSpStyleChannelFixtureId_SpFineLineChannelFixtureId_lvl4NbrAndSpStyleChannelFixtureId_SpFineLineChannelFixtureId_fineLineNbrAndSpStyleChannelFixtureId_styleNbr(
-                        planId, lvl3Nbr, lvl4Nbr, finelineNbr, style.getStyleNbr());
-                log.info("Deleting Style Pack Optimization for styleNbr: {}, and planId: {}", style.getStyleNbr(), planId);
-                stylePackOptimizationRepository.deleteByStylePackoptimizationId_FinelinePackOptimizationID_SubCatgPackOptimizationID_MerchantPackOptimizationID_planIdAndStylePackoptimizationId_FinelinePackOptimizationID_SubCatgPackOptimizationID_MerchantPackOptimizationID_repTLvl3AndStylePackoptimizationId_FinelinePackOptimizationID_SubCatgPackOptimizationID_repTLvl4AndStylePackoptimizationId_FinelinePackOptimizationID_finelineNbrAndStylePackoptimizationId_styleNbr(
                         planId, lvl3Nbr, lvl4Nbr, finelineNbr, style.getStyleNbr());
             } else if (!CollectionUtils.isEmpty(style.getCustomerChoices())) {
                 deleteSizeAndPackDataAtCc(style.getCustomerChoices(), planId,
@@ -76,8 +65,6 @@ public class SizeAndPackDeleteService {
                 log.info("Deleting ccId Buy Qty for ccId: {}, and planId: {}", cc.getCcId(), planId);
                 spCustomerChoiceChannelFixtureRepository.deleteBySpCustomerChoiceChannelFixtureId_SpStyleChannelFixtureId_SpFineLineChannelFixtureId_planIdAndSpCustomerChoiceChannelFixtureId_SpStyleChannelFixtureId_SpFineLineChannelFixtureId_lvl3NbrAndSpCustomerChoiceChannelFixtureId_SpStyleChannelFixtureId_SpFineLineChannelFixtureId_lvl4NbrAndSpCustomerChoiceChannelFixtureId_SpStyleChannelFixtureId_SpFineLineChannelFixtureId_fineLineNbrAndSpCustomerChoiceChannelFixtureId_SpStyleChannelFixtureId_styleNbrAndSpCustomerChoiceChannelFixtureId_customerChoice(
                         planId, lvl3Nbr, lvl4Nbr, finelineNbr, styleNbr, cc.getCcId());
-                log.info("Deleting ccId Pack Optimization for ccId: {}, and planId: {}", cc.getCcId(), planId);
-                ccPackOptimizationRepository.deleteByCcPackOptimizationId_StylePackOptimizationID_FinelinePackOptimizationID_SubCatgPackOptimizationID_MerchantPackOptimizationID_planIdAndCcPackOptimizationId_StylePackOptimizationID_FinelinePackOptimizationID_SubCatgPackOptimizationID_MerchantPackOptimizationID_repTLvl3AndCcPackOptimizationId_StylePackOptimizationID_FinelinePackOptimizationID_SubCatgPackOptimizationID_repTLvl4AndCcPackOptimizationId_StylePackOptimizationID_FinelinePackOptimizationID_finelineNbrAndCcPackOptimizationId_StylePackOptimizationID_styleNbrAndCcPackOptimizationId_customerChoice(planId, lvl3Nbr, lvl4Nbr, finelineNbr, styleNbr, cc.getCcId());
             }
         }
     }
