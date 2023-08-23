@@ -4,4 +4,5 @@ import com.walmart.aex.sp.entity.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface FinelinePackOptConsRepository extends JpaRepository<FineLinePackOptimization, FineLinePackOptimizationID> {
+    void deleteByFinelinePackOptId_SubCatgPackOptimizationID_MerchantPackOptimizationID_planIdAndFinelinePackOptId_SubCatgPackOptimizationID_MerchantPackOptimizationID_repTLvl3AndFinelinePackOptId_SubCatgPackOptimizationID_repTLvl4AndFinelinePackOptId_finelineNbr(Long planId, Integer lvl3Nbr, Integer lvl4Nbr,Integer fineLineNbr);
 }
