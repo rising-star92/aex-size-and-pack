@@ -18,7 +18,6 @@ import com.walmart.aex.sp.service.IntegrationHubService;
 import com.walmart.aex.sp.service.PackOptimizationService;
 import com.walmart.aex.sp.service.PostPackOptimizationService;
 import com.walmart.aex.sp.service.UpdateFromQuoteService;
-import com.walmart.aex.sp.util.SizeAndPackConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
@@ -96,7 +95,7 @@ public class PackOptimizationController {
     @PutMapping(path = "/api/packOptimization/plan/{planId}/fineline/{finelineNbr}/status/{status}")
     public UpdatePkOptResponse updatePackOptStatus(@PathVariable Long planId, @PathVariable String finelineNbr, @PathVariable Integer status) {
         UpdatePkOptResponse response = new UpdatePkOptResponse();
-        if (RunStatusCodeType.ANALYTICS_RUN_COMPLETED.getId().equals(status) || SizeAndPackConstants.ANALYTICS_ERRORS_LIST.contains(status)) {
+        if (RunStatusCodeType.ANALYTICS_RUN_COMPLETED.getId().equals(status) || RunStatusCodeType.ANALYTICS_ERRORS_LIST.contains(status)) {
             try {
                 packOptService.updatePackOptServiceStatus(planId, finelineNbr, status);
                 response.setStatus(SUCCESS_STATUS);

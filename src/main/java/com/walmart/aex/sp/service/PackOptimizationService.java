@@ -189,14 +189,14 @@ public class PackOptimizationService {
         Set<Integer> runStatusCodeSentAndAnalyticsFailedSet = analyticsMlChildSendList
                 .stream()
                 .filter(val -> Objects.equals(RunStatusCodeType.SENT_TO_ANALYTICS.getId(), val.getRunStatusCode()) ||
-                        SizeAndPackConstants.ANALYTICS_ERRORS_LIST.contains(val.getRunStatusCode()))
+                        RunStatusCodeType.ANALYTICS_ERRORS_LIST.contains(val.getRunStatusCode()))
                 .map(AnalyticsMlChildSend::getRunStatusCode)
                 .collect(Collectors.toSet());
 
         if(runStatusCodeSentAndAnalyticsFailedSet.isEmpty()) {
             analyticsMlSend.setRunStatusCode(RunStatusCodeType.ANALYTICS_RUN_COMPLETED.getId());
         }
-        else if (SizeAndPackConstants.ANALYTICS_ERRORS_LIST.stream().anyMatch(runStatusCodeSentAndAnalyticsFailedSet::contains)) {
+        else if (RunStatusCodeType.ANALYTICS_ERRORS_LIST.stream().anyMatch(runStatusCodeSentAndAnalyticsFailedSet::contains)) {
             analyticsMlSend.setRunStatusCode(RunStatusCodeType.ERROR.getId());
         }
         else if (runStatusCodeSentAndAnalyticsFailedSet.contains(RunStatusCodeType.SENT_TO_ANALYTICS.getId())) {
