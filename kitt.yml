@@ -39,7 +39,7 @@ deploy:
         memory: 600Mi
       max:
         cpu: 1
-        memory: 1Gi
+        memory: 2Gi
       scaling:
         cpuPercent: 70
         min: 2
