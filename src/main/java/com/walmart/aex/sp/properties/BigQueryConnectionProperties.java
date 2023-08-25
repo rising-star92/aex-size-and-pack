@@ -29,4 +29,7 @@ public interface BigQueryConnectionProperties {
 
 	@Property(propertyName = "store.distribution.feature.flag")
 	String getStoreDistributionFeatureFlag();
+	
+	@Property(propertyName = "pack.store.feature.flag")
+	String getPackStoreFeatureFlag();
 }
