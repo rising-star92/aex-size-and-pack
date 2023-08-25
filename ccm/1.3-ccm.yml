@@ -453,6 +453,11 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "true"
+      "pack.store.feature.flag":
+        description: "feature flag to enable pack store API"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "false" 
 configOverrides:
   graphQlConfig:
     - name: "dev"
