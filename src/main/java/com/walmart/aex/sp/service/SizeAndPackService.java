@@ -415,8 +415,7 @@ public class SizeAndPackService {
     
     public List<PackDetailsVolumeResponse> getPackStoreDetailsByVolumeCluster(InitialSetVolumeRequest request)
     {
-    	String packStoreFeatureFlag = bigQueryConnectionProperties.getPackStoreFeatureFlag();
-    	if(StringUtils.isNotBlank(packStoreFeatureFlag) && packStoreFeatureFlag.equalsIgnoreCase("false"))
+    	if(!Boolean.parseBoolean(bigQueryConnectionProperties.getPackStoreFeatureFlag()))
     	{
     		return Collections.emptyList();
     	}
