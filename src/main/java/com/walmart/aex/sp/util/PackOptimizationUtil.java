@@ -2,9 +2,12 @@ package com.walmart.aex.sp.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.walmart.aex.sp.dto.buyquantity.FinelineDto;
+import com.walmart.aex.sp.dto.buyquantity.Lvl3Dto;
+import com.walmart.aex.sp.dto.buyquantity.Lvl4Dto;
 import com.walmart.aex.sp.dto.integrationhub.IntegrationHubRequestDTO;
 import com.walmart.aex.sp.dto.integrationhub.IntegrationHubResponseDTO;
-import com.walmart.aex.sp.dto.packoptimization.LevelDto;
+import com.walmart.aex.sp.dto.packoptimization.InputRequest;
 import com.walmart.aex.sp.dto.packoptimization.RunPackOptRequest;
 import com.walmart.aex.sp.entity.AnalyticsMlChildSend;
 import com.walmart.aex.sp.entity.AnalyticsMlSend;
@@ -28,38 +31,43 @@ public class PackOptimizationUtil {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public static Set<AnalyticsMlSend> createAnalyticsMlSendEntry(RunPackOptRequest request, Map<Integer, LevelDto> finelineLevelMap,
-                                                                  Map<String, IntegrationHubResponseDTO> flWithIHResMap) {
+    public static Set<AnalyticsMlSend> createAnalyticsMlSendEntry(RunPackOptRequest request,
+                       Map<String, IntegrationHubResponseDTO> flWithIHResMap) {
         Set<AnalyticsMlSend> analyticsMlSendSet = new HashSet<>();
-        if (!ObjectUtils.isEmpty(request) && !finelineLevelMap.isEmpty()) {
-            for(Map.Entry<Integer, LevelDto> finelineEle : finelineLevelMap.entrySet()) {
-                AnalyticsMlSend analyticsMlSend = new AnalyticsMlSend();
-                analyticsMlSend.setPlanId(request.getPlanId());
-                analyticsMlSend.setStrategyId(null);
-                analyticsMlSend.setAnalyticsClusterId(null);
-                analyticsMlSend.setLvl0Nbr(finelineEle.getValue().getLvl0Nbr());
-                analyticsMlSend.setLvl1Nbr(finelineEle.getValue().getLvl1Nbr());
-                analyticsMlSend.setLvl2Nbr(finelineEle.getValue().getLvl2Nbr());
-                analyticsMlSend.setLvl3Nbr(finelineEle.getValue().getLvl3Nbr());
-                analyticsMlSend.setLvl4Nbr(finelineEle.getValue().getLvl4Nbr());
-                analyticsMlSend.setFinelineNbr(finelineEle.getKey());
-                analyticsMlSend.setFirstName(request.getRunUser());
-                analyticsMlSend.setLastName(request.getRunUser());
-                analyticsMlSend.setAnalyticsSendDesc("Sent");
-                //Setting the run status as 3, which is Sent to Analytics
-                analyticsMlSend.setRunStatusCode(RunStatusCodeType.SENT_TO_ANALYTICS.getId());
-                //todo - hard coding values as its non null property
-                IntegrationHubResponseDTO integrationHubResponseDTO = flWithIHResMap.getOrDefault(finelineEle.getKey().toString(), null);
-                Date startDate = null;
-                if(!ObjectUtils.isEmpty(integrationHubResponseDTO) &&
-                        StringUtils.isNotEmpty(integrationHubResponseDTO.getStarted_time())) {
-                    startDate = getDateFromString(integrationHubResponseDTO.getStarted_time());
+        InputRequest inputRequest = request.getInputRequest();
+        if (!ObjectUtils.isEmpty(request)) {
+            for (Lvl3Dto lvl3 : inputRequest.getLvl3List()) {
+                for (Lvl4Dto lv4 : lvl3.getLvl4List()) {
+                    for (FinelineDto fineline : lv4.getFinelines()) {
+                        AnalyticsMlSend analyticsMlSend = new AnalyticsMlSend();
+                        analyticsMlSend.setPlanId(request.getPlanId());
+                        analyticsMlSend.setStrategyId(null);
+                        analyticsMlSend.setAnalyticsClusterId(null);
+                        analyticsMlSend.setLvl0Nbr(inputRequest.getLvl0Nbr());
+                        analyticsMlSend.setLvl1Nbr(inputRequest.getLvl1Nbr());
+                        analyticsMlSend.setLvl2Nbr(inputRequest.getLvl2Nbr());
+                        analyticsMlSend.setLvl3Nbr(lvl3.getLvl3Nbr());
+                        analyticsMlSend.setLvl4Nbr(lv4.getLvl4Nbr());
+                        analyticsMlSend.setFinelineNbr(fineline.getFinelineNbr());
+                        analyticsMlSend.setFirstName(request.getRunUser());
+                        analyticsMlSend.setLastName(request.getRunUser());
+                        analyticsMlSend.setAnalyticsSendDesc("Sent");
+                        //Setting the run status as 3, which is Sent to Analytics
+                        analyticsMlSend.setRunStatusCode(RunStatusCodeType.SENT_TO_ANALYTICS.getId());
+                        //todo - hard coding values as its non null property
+                        IntegrationHubResponseDTO integrationHubResponseDTO = flWithIHResMap.getOrDefault(fineline.getFinelineNbr().toString(), null);
+                        Date startDate = null;
+                        if(!ObjectUtils.isEmpty(integrationHubResponseDTO) &&
+                                StringUtils.isNotEmpty(integrationHubResponseDTO.getStarted_time())) {
+                            startDate = getDateFromString(integrationHubResponseDTO.getStarted_time());
+                        }
+                        analyticsMlSend.setStartTs(startDate);
+                        analyticsMlSend.setEndTs(null);
+                        analyticsMlSend.setRetryCnt(0);
+                        analyticsMlSend.setReturnMessage(null);
+                        analyticsMlSendSet.add(analyticsMlSend);
+                    }
                 }
-                analyticsMlSend.setStartTs(startDate);
-                analyticsMlSend.setEndTs(null);
-                analyticsMlSend.setRetryCnt(0);
-                analyticsMlSend.setReturnMessage(null);
-                analyticsMlSendSet.add(analyticsMlSend);
             }
         }
 
