@@ -510,31 +510,6 @@ class PackOptimizationServiceTest {
         }
     }
 
-    @Test
-    void test_callIntegrationHubForPackOptByFinelineShouldNotSaveIfAlreadyPackOptRunning() throws IllegalAccessException {
-        RunPackOptRequest request = getRunPackOptRequestAndMockCallsForDuplicatePackOptRun();
-        packOptimizationService.callIntegrationHubForPackOptByFineline(request);
-
-        verify(analyticsMlSendRepository, times(0)).save(any());
-    }
-
-    @Test
-    void test_callIntegrationHubForPackOptByFinelineShouldOnlySaveIfNotAlreadyPackOptRunning() throws IllegalAccessException {
-        RunPackOptRequest request = getRunPackOptRequestAndMockCallsForExistingAndDuplicatePackOptRun();
-        packOptimizationService.callIntegrationHubForPackOptByFineline(request);
-
-        verify(analyticsMlSendRepository, times(1)).saveAll(analyticsMlSendRepoDataCaptor.capture());
-
-        assertEquals(1, analyticsMlSendRepoDataCaptor.getValue().size());
-        LinkedList<Integer> actualFineLines = analyticsMlSendRepoDataCaptor.getValue().stream().map(AnalyticsMlSend::getFinelineNbr).collect(Collectors.toCollection(LinkedList::new));
-        assertTrue(actualFineLines.contains(2829));
-
-        for (AnalyticsMlSend analyticsMlSend : analyticsMlSendRepoDataCaptor.getValue()) {
-            assertEquals(1, analyticsMlSend.getAnalyticsMlChildSend().size());
-            assertEquals(1, analyticsMlSend.getAnalyticsMlChildSend().iterator().next().getBumpPackNbr());
-        }
-    }
-
     private RunPackOptRequest getRunPackOptRequestAndMockCalls() throws IllegalAccessException {
         mockUrlForIntegrationHubProperties();
 
@@ -617,79 +592,6 @@ class PackOptimizationServiceTest {
         buyQntyResponseDTO1.setFinelineNbr(2819);
 
         List<BuyQntyResponseDTO> bumpPackCntByFinelines = new ArrayList<>(List.of(buyQntyResponseDTO1));
-        when(commonGCPUtil.delete(anyString(), anyString())).thenReturn(false);
-        when(integrationHubService.callIntegrationHubForPackOpt(any())).thenReturn(integrationHubResponseDto);
-        when(spFineLineChannelFixtureRepository.getBumpPackCntByFinelines(anyLong(), anyList())).thenReturn(bumpPackCntByFinelines);
-        return request;
-    }
-
-    private RunPackOptRequest getRunPackOptRequestAndMockCallsForDuplicatePackOptRun() throws IllegalAccessException {
-        InputRequest inputRequest = new InputRequest();
-        List<Lvl3Dto> lvl3List = new ArrayList<>();
-        Lvl3Dto lvl3Dto = new Lvl3Dto();
-        List<Lvl4Dto> lvl4List = new ArrayList<>();
-        Lvl4Dto lvl4Dto = new Lvl4Dto();
-
-        FinelineDto finelineDto1 = new FinelineDto();
-        finelineDto1.setFinelineNbr(2819);
-
-        List<FinelineDto> fineLines = new ArrayList<>(List.of(finelineDto1));
-
-        lvl4Dto.setFinelines(fineLines);
-        lvl4List.add(lvl4Dto);
-        lvl3Dto.setLvl4List(lvl4List);
-        lvl3List.add(lvl3Dto);
-        inputRequest.setLvl3List(lvl3List);
-
-        RunPackOptRequest request = new RunPackOptRequest();
-        request.setPlanId(12L);
-        request.setInputRequest(inputRequest);
-        request.setRunUser("RandomUser");
-
-        IntegrationHubResponseDTO integrationHubResponseDto = new IntegrationHubResponseDTO();
-        integrationHubResponseDto.setJobId("1234455");
-        integrationHubResponseDto.setWf_running_id("122222");
-
-        when(analyticsMlSendRepository.findExistingSentAnalyticsMlSendListByPlanIdAndFinelineNbrs(any(), anyList(), anyInt())).thenReturn(Set.of(2819));
-        return request;
-    }
-
-    private RunPackOptRequest getRunPackOptRequestAndMockCallsForExistingAndDuplicatePackOptRun() throws IllegalAccessException {
-        mockUrlForIntegrationHubProperties();
-
-        InputRequest inputRequest = new InputRequest();
-        List<Lvl3Dto> lvl3List = new ArrayList<>();
-        Lvl3Dto lvl3Dto = new Lvl3Dto();
-        List<Lvl4Dto> lvl4List = new ArrayList<>();
-        Lvl4Dto lvl4Dto = new Lvl4Dto();
-
-        FinelineDto finelineDto1 = new FinelineDto();
-        finelineDto1.setFinelineNbr(2819);
-        FinelineDto finelineDto2 = new FinelineDto();
-        finelineDto2.setFinelineNbr(2829);
-
-        List<FinelineDto> fineLines = new ArrayList<>(Arrays.asList(finelineDto1, finelineDto2));
-
-        lvl4Dto.setFinelines(fineLines);
-        lvl4List.add(lvl4Dto);
-        lvl3Dto.setLvl4List(lvl4List);
-        lvl3List.add(lvl3Dto);
-        inputRequest.setLvl3List(lvl3List);
-
-        RunPackOptRequest request = new RunPackOptRequest();
-        request.setPlanId(12L);
-        request.setInputRequest(inputRequest);
-        request.setRunUser("RandomUser");
-
-        IntegrationHubResponseDTO integrationHubResponseDto = new IntegrationHubResponseDTO();
-        integrationHubResponseDto.setJobId("1234455");
-        integrationHubResponseDto.setWf_running_id("122222");
-
-        BuyQntyResponseDTO buyQntyResponseDTO1 = new BuyQntyResponseDTO();
-        buyQntyResponseDTO1.setBumpPackCnt(1);
-        buyQntyResponseDTO1.setFinelineNbr(2829);
-        List<BuyQntyResponseDTO> bumpPackCntByFinelines = new ArrayList<>(Arrays.asList(buyQntyResponseDTO1));
-        when(analyticsMlSendRepository.findExistingSentAnalyticsMlSendListByPlanIdAndFinelineNbrs(any(), anyList(), anyInt())).thenReturn(Set.of(2819));
         when(commonGCPUtil.delete(anyString(), anyString())).thenReturn(false);
         when(integrationHubService.callIntegrationHubForPackOpt(any())).thenReturn(integrationHubResponseDto);
         when(spFineLineChannelFixtureRepository.getBumpPackCntByFinelines(anyLong(), anyList())).thenReturn(bumpPackCntByFinelines);

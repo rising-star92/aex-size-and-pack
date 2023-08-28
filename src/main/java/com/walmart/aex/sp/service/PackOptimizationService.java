@@ -16,7 +16,6 @@ import com.walmart.aex.sp.dto.packoptimization.Execution;
 import com.walmart.aex.sp.dto.packoptimization.FineLinePackOptimizationResponse;
 import com.walmart.aex.sp.dto.packoptimization.FineLinePackOptimizationResponseDTO;
 import com.walmart.aex.sp.dto.packoptimization.InputRequest;
-import com.walmart.aex.sp.dto.packoptimization.LevelDto;
 import com.walmart.aex.sp.dto.packoptimization.PackOptConstraintRequest;
 import com.walmart.aex.sp.dto.packoptimization.PackOptConstraintResponseDTO;
 import com.walmart.aex.sp.dto.packoptimization.PackOptimizationResponse;
@@ -365,8 +364,7 @@ public class PackOptimizationService {
         Map<String, IntegrationHubResponseDTO> fineLineWithIntegrationHubResponseDTOMap = new HashMap<>();
         Map<String, IntegrationHubRequestDTO> fineLineWithIntegrationHubRequestDTOMap = new HashMap<>();
         try {
-            Map<Integer, LevelDto> finelineLevelMap = new HashMap<>();
-            List<String> finelineIsBsList = getFinelineIsBsList(request, finelineLevelMap);
+            List<String> finelineIsBsList = getFinelineIsBsList(request);
             finelineIsBsList.forEach(finelineNbr -> {
                 IntegrationHubRequestDTO integrationHubRequestDTO = getIntegrationHubRequest(request.getPlanId(), finelineNbr);
                 if (!finelineNbr.contains(MULTI_BUMP_PACK_SUFFIX)) {
@@ -381,7 +379,7 @@ public class PackOptimizationService {
                     throw new CustomException("Unable to process the request to IntegrationHub. PlanId:" + request.getPlanId() + " & fineLineNbr: " + finelineNbr);
                 }
             });
-            saveAnalyticDataInDB(request, finelineLevelMap, fineLineWithIntegrationHubResponseDTOMap, fineLineWithIntegrationHubRequestDTOMap);
+            saveAnalyticDataInDB(request, fineLineWithIntegrationHubResponseDTOMap, fineLineWithIntegrationHubRequestDTOMap);
 
             //todo - for now, sending the Execution id as 1 in the response
             BigInteger bigInteger = BigInteger.ONE;
@@ -393,9 +391,8 @@ public class PackOptimizationService {
         }
     }
 
-    private void saveAnalyticDataInDB(RunPackOptRequest request, Map<Integer, LevelDto> finelineLevelMap,
-                                      Map<String, IntegrationHubResponseDTO> fineLineWithIntegrationHubResponseDTOMap, Map<String, IntegrationHubRequestDTO> fineLineWithIntegrationHubRequestDTOMap) {
-        Set<AnalyticsMlSend> analyticsMlSendSet = createAnalyticsMlSendEntry(request, finelineLevelMap, fineLineWithIntegrationHubResponseDTOMap);
+    private void saveAnalyticDataInDB(RunPackOptRequest request, Map<String, IntegrationHubResponseDTO> fineLineWithIntegrationHubResponseDTOMap, Map<String, IntegrationHubRequestDTO> fineLineWithIntegrationHubRequestDTOMap) {
+        Set<AnalyticsMlSend> analyticsMlSendSet = createAnalyticsMlSendEntry(request, fineLineWithIntegrationHubResponseDTOMap);
         if (!CollectionUtils.isEmpty(analyticsMlSendSet)) {
             analyticsMlSendSet = updateAnalyticsMlSendWithAnalyticsChildData(analyticsMlSendSet,
                     fineLineWithIntegrationHubResponseDTOMap, fineLineWithIntegrationHubRequestDTOMap);
@@ -425,7 +422,7 @@ public class PackOptimizationService {
         return fineLineWithBumpCntMap;
     }
 
-    private List<String> getFinelineIsBsList(RunPackOptRequest request, Map<Integer, LevelDto> finelineLevelMap) {
+    private List<String> getFinelineIsBsList(RunPackOptRequest request) {
         InputRequest inputRequest = request.getInputRequest();
         List<Integer> finelinesList = new ArrayList<>();
         List<String> finelineIsBsList = new ArrayList<>();
@@ -434,12 +431,9 @@ public class PackOptimizationService {
                 for (Lvl4Dto lv4 : lvl3.getLvl4List()) {
                     for (FinelineDto finelines : lv4.getFinelines()) {
                         finelinesList.add(finelines.getFinelineNbr());
-                        inputFinelineLevels(request, finelineLevelMap, lvl3, lv4, finelines);
                     }
                 }
             }
-            Set<Integer> existingAnalyticsMlSendFinelineList = analyticsMlSendRepository.findExistingSentAnalyticsMlSendListByPlanIdAndFinelineNbrs(request.getPlanId(), finelinesList, RunStatusCodeType.SENT_TO_ANALYTICS.getId());
-            eliminateExistingAnalyticsMlSend(existingAnalyticsMlSendFinelineList, finelinesList, finelineLevelMap);
             setFinelineIsBSList(request, finelinesList, finelineIsBsList);
         }
         return finelineIsBsList;
@@ -481,20 +475,5 @@ public class PackOptimizationService {
         integrationHubRequestContextDTO.setEnv(integrationHubServiceProperties.getEnv());
         integrationHubRequestDTO.setContext(integrationHubRequestContextDTO);
         return integrationHubRequestDTO;
-    }
-
-    private void inputFinelineLevels(RunPackOptRequest request, Map<Integer, LevelDto> finelineLevelMap, Lvl3Dto lvl3, Lvl4Dto lv4, FinelineDto finelines) {
-        LevelDto levelDto = new LevelDto();
-        levelDto.setLvl0Nbr(request.getInputRequest().getLvl0Nbr());
-        levelDto.setLvl1Nbr(request.getInputRequest().getLvl1Nbr());
-        levelDto.setLvl2Nbr(request.getInputRequest().getLvl2Nbr());
-        levelDto.setLvl3Nbr(lvl3.getLvl3Nbr());
-        levelDto.setLvl4Nbr(lv4.getLvl4Nbr());
-        finelineLevelMap.put(finelines.getFinelineNbr(), levelDto);
-    }
-
-    private void eliminateExistingAnalyticsMlSend(Set<Integer> existingAnalyticsMlSendFinelineList, List<Integer> finelineList, Map<Integer, LevelDto> finelineLevelMap) {
-        finelineList.removeIf(existingAnalyticsMlSendFinelineList::contains); //removes finelines from list if they are already present in analytics ml send table with status as SENT
-        finelineLevelMap.keySet().retainAll(finelineList); //the map holds only the finelines which is to be sent to integration hub with all levels as value in map
     }
 }
