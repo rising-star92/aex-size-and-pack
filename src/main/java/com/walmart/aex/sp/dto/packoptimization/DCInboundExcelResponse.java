@@ -14,5 +14,7 @@ public class DCInboundExcelResponse {
     private String ccId;
     private String channelDesc;
     private String merchMethodDesc;
+    private String colorName;
+    private String colorFamilyDesc;
     private List<DCinboundReplenishment> replenishment;
 }

@@ -38,6 +38,8 @@ public class DCInboundSheetExporter {
         headerList.add(FINELINE);
         headerList.add(STYLE);
         headerList.add(CUSTOMER_CHOICE);
+        headerList.add(COLOR_NAME);
+        headerList.add(COLOR_FAMILY);
         headerList.add(MERCH_METHOD);
         headerList.add(SIZE);
         headerList.add(CHANNEL);
@@ -111,6 +113,8 @@ public class DCInboundSheetExporter {
             createCell(row, columnCount++, dcInboundData.getFinelineDesc(), style);
             createCell(row, columnCount++, dcInboundData.getStyleNbr(), style);
             createCell(row, columnCount++, dcInboundData.getCcId(), style);
+            createCell(row, columnCount++, dcInboundData.getColorName(), style);
+            createCell(row, columnCount++, dcInboundData.getColorFamilyDesc(), style);
             createCell(row, columnCount++, dcInboundData.getMerchMethodDesc(), style);
             createCell(row, columnCount++, dcInboundData.getSizeDesc(), style);
             createCell(row, columnCount++, dcInboundData.getChannelDesc(), style);

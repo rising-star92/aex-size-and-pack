@@ -60,6 +60,8 @@ public interface CcSpReplnPkConsRepository extends JpaRepository<CcSpMmReplPack,
             " csmrp.sizeDesc , " +
             " COALESCE(ccp.altCcDesc, csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.customerChoice) , " +
             " csmrp.ccSpReplPackId.ahsSizeId , " +
+            " ccp.colorName , " +
+            " ccp.colorFamilyDesc , " +
             " csmrp.merchMethodDesc , " +
             " csmrp.replenObj ) " +
             "FROM SubCatPlan scp " +
@@ -106,7 +108,7 @@ public interface CcSpReplnPkConsRepository extends JpaRepository<CcSpMmReplPack,
             "WHERE scp.subCatPlanId.merchCatPlanId.planId=:planId AND csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId=:channelId GROUP BY " +
             "scp.subCatPlanId.merchCatPlanId.planId ,scp.subCatPlanId.merchCatPlanId.lvl0Nbr ,scp.lvl0Desc ,scp.subCatPlanId.merchCatPlanId.lvl1Nbr ,scp.lvl1Desc ,scp.subCatPlanId.merchCatPlanId.lvl2Nbr ,scp.lvl2Desc ," +
             "scp.subCatPlanId.merchCatPlanId.lvl3Nbr , scp.lvl3Desc, scp.subCatPlanId.lvl4Nbr ,scp.lvl4Desc, flp.finelinePlanId.finelineNbr ,flp.finelineDesc ,flp.altFinelineName ,stp.altStyleDesc ,ccp.altCcDesc , csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.styleNbr , csmrp.sizeDesc, " +
-            "csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.customerChoice, csmrp.merchMethodDesc , " +
+            "csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.customerChoice, csmrp.merchMethodDesc , ccp.colorName , ccp.colorFamilyDesc , " +
             "csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId , " +
             " ct.channelDesc , " +
             " csmrp.ccSpReplPackId.ahsSizeId , " +

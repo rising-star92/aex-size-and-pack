@@ -19,6 +19,8 @@ public class SizeAndPackConstants {
     public static final String MERCH_METHOD = "Merch Method";
     public static final String SIZE = "Size";
     public static final String CHANNEL = "Channel";
+    public static final String COLOR_NAME = "Color Name";
+    public static final String COLOR_FAMILY = "Color Family";
     public static final Integer HEADER_FONT_HEIGHT = 14;
     public static final Integer ROW_FONT_HEIGHT = 14;
     public static final Integer ZERO = 0;
