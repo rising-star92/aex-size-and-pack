@@ -50,15 +50,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.text.SimpleDateFormat;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.walmart.aex.sp.util.PackOptimizationUtil.createAnalyticsMlSendEntry;
@@ -167,9 +162,11 @@ public class PackOptimizationService {
                 );
                 if (analyticsMlSend.isPresent()) {
                     Set<AnalyticsMlChildSend> analyticsMlChildSendList = analyticsMlSend.get().getAnalyticsMlChildSend();
+                    analyticsMlSend.get().setEndTs(new Date());
                     for (AnalyticsMlChildSend analyticsMlChildSend : analyticsMlChildSendList) {
                         if (Objects.equals(analyticsMlChildSend.getBumpPackNbr(), bumpNbr)) {
                             analyticsMlChildSend.setRunStatusCode(status);
+                            analyticsMlChildSend.setEndTs(new Date());
                             updateParentRunStatusCode(analyticsMlSend.get());
                             break;
                         }
