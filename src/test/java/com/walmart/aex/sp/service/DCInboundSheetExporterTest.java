@@ -61,6 +61,8 @@ public class DCInboundSheetExporterTest {
         dcInboundExcelResponse.setMerchMethodDesc("FOLDED");
         dcInboundExcelResponse.setChannelDesc("Store");
         dcInboundExcelResponse.setCcId("34_5147_3_21_4_SEA TURTLE/DARK NAVY");
+        dcInboundExcelResponse.setColorFamilyDesc("Grey");
+        dcInboundExcelResponse.setColorName("BLACK CRYSTAL TIE DYE");
         dcInboundExcelResponse.setReplenishment(getDCinboundReplenishmentList());
         return dcInboundExcelResponse;
     }
