@@ -40,7 +40,6 @@ import com.walmart.aex.sp.repository.SpFineLineChannelFixtureRepository;
 import com.walmart.aex.sp.repository.StyleCcPackOptConsRepository;
 import com.walmart.aex.sp.util.CommonGCPUtil;
 import com.walmart.aex.sp.util.CommonUtil;
-import com.walmart.aex.sp.util.SizeAndPackConstants;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -50,9 +49,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigInteger;
-import java.text.SimpleDateFormat;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.*;
 import java.util.stream.Collectors;
 
