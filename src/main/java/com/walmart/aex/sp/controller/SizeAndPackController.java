@@ -12,7 +12,6 @@ import com.walmart.aex.sp.dto.storedistribution.PackInfoRequest;
 import com.walmart.aex.sp.dto.storedistribution.StoreDistributionResponse;
 import com.walmart.aex.sp.service.SizeAndPackService;
 import com.walmart.aex.sp.service.StoreDistributionService;
-import com.walmart.aex.sp.util.CommonUtil;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,15 +35,12 @@ import java.util.List;
 @Consumes(MediaType.APPLICATION_JSON_VALUE)
 public class SizeAndPackController {
 
-	private final CommonUtil commonUtil;
-
 	@Autowired
 	SizeAndPackService sizeAndPackService;
 
 	private final StoreDistributionService storeDistributionService;
 
-	public SizeAndPackController(CommonUtil commonUtil, StoreDistributionService storeDistributionService) {
-		this.commonUtil = commonUtil;
+	public SizeAndPackController(StoreDistributionService storeDistributionService) {
 		this.storeDistributionService = storeDistributionService;
 	}
 
@@ -54,33 +50,33 @@ public class SizeAndPackController {
         return ResponseEntity.status(HttpStatus.OK).body("Hello");
     }
 
-    @PostMapping(path = "/sizeAndPackService")
+    @PostMapping(path = "/sizeAndPackService", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody
     ResponseEntity<SizeAndPackResponse> createLinePlan(@RequestBody PlanSizeAndPackDTO request) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(sizeAndPackService.saveSizeAndPackData(commonUtil.cleanSPRequest(request)));
+            return ResponseEntity.status(HttpStatus.OK).body(sizeAndPackService.saveSizeAndPackData(request));
         } catch (Exception exp) {
             log.error("Exception occurred when creating a line plan: {}", exp.getMessage());
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
     }
 
-    @PutMapping(path = "/sizeAndPackService")
+    @PutMapping(path = "/sizeAndPackService", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody
     ResponseEntity<SizeAndPackResponse> updateLinePlan(@RequestBody PlanSizeAndPackDTO request) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(sizeAndPackService.updateSizeAndPackData(commonUtil.cleanSPRequest(request)));
+            return ResponseEntity.status(HttpStatus.OK).body(sizeAndPackService.updateSizeAndPackData(request));
         } catch (Exception exp) {
             log.error("Exception occurred when updating a line plan : {}", exp.getMessage());
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
     }
 
-    @DeleteMapping(path = "/sizeAndPackService")
+    @DeleteMapping(path = "/sizeAndPackService", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody
     ResponseEntity<SizeAndPackResponse> deleteLinePlan(@RequestBody PlanSizeAndPackDeleteDTO request) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(sizeAndPackService.deleteSizeAndPackData(commonUtil.cleanSPDeleteRequest(request)));
+            return ResponseEntity.status(HttpStatus.OK).body(sizeAndPackService.deleteSizeAndPackData(request));
         } catch (Exception exp) {
             log.error("Exception occurred when updating a line plan : {}", exp.getMessage());
         }

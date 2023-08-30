@@ -1,40 +1,27 @@
 package com.walmart.aex.sp.util;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.packoptimization.Fineline;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
-import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDTO;
-import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDeleteDTO;
 import com.walmart.aex.sp.exception.CustomException;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.jsoup.Jsoup;
-import org.jsoup.safety.Whitelist;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Component
 @Slf4j
 public class CommonUtil {
-    private final ObjectMapper objectMapper;
 
-    public CommonUtil(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
+    private CommonUtil() {
+
     }
 
     public static String getRequestedFlChannel(Lvl3 lvl3) {
@@ -84,16 +71,6 @@ public class CommonUtil {
                 throw new CustomException("Channel Type does not Match");
             }
         }
-    }
-
-    public PlanSizeAndPackDeleteDTO cleanSPDeleteRequest(PlanSizeAndPackDeleteDTO planSizeAndPackDeleteDTO) throws IOException {
-        return objectMapper.readValue(Jsoup.clean(StringEscapeUtils.escapeHtml(StringEscapeUtils.escapeSql(objectMapper.writeValueAsString(planSizeAndPackDeleteDTO))),
-                Whitelist.basic()), PlanSizeAndPackDeleteDTO.class);
-    }
-
-    public PlanSizeAndPackDTO cleanSPRequest(PlanSizeAndPackDTO planSizeAndPackDTO) throws IOException {
-        return objectMapper.readValue(Jsoup.clean(StringEscapeUtils.escapeHtml(StringEscapeUtils.escapeSql(objectMapper.writeValueAsString(planSizeAndPackDTO))),
-                Whitelist.basic()), PlanSizeAndPackDTO.class);
     }
 
     public static Date getDateFromString(String dateStr) {
