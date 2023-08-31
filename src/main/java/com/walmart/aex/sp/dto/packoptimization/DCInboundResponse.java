@@ -27,6 +27,8 @@ public class DCInboundResponse {
     private String sizeDesc;
     private String customerChoice;
     private Integer ahsSizeId;
+    private String colorName;
+    private String colorFamilyDesc;
     private String merchMethodDesc;
     private String replenishment;
 }

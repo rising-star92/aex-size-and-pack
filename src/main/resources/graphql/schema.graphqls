@@ -16,6 +16,7 @@ type Query {
      getInitialAndBumpSetDetailsByVolumeCluster(request: InitialSetVolumeRequest!): [InitialSetVolumeResponse]!
      getDeptAdminRules(deptNumbers: [Int]): [DeptAdminRuleResponse]!
      getReplItemRule(planId: Int!, lvl1Nbr: Int!): ReplItemResponse!
+     getPackStoreDetailsByVolumeCluster(request: InitialSetVolumeRequest!): [PackDetailsVolumeResponse]!
 }
 
 
@@ -240,7 +241,7 @@ type Fineline {
     finelineNbr: Int
     finelineName: String
     altFinelineName: String
-    optimizationDetails: [RunOptimization]
+    optimizationDetails: RunOptimization
     packOptimizationStatus: String
     constraints:Constraints
     styles:[Style]
@@ -249,8 +250,7 @@ type RunOptimization{
     name: String
     startTs: String
     endTs: String
-    returnMessage: String
-    runStatusLongDesc: String
+    runStatusLongDesc: [String]
     runStatusCode: Int
 }
 
@@ -572,3 +572,29 @@ type StoreDetail {
     store: Int!
     qty: Int!
 }
+
+type PackDetailsVolumeResponse {
+    finelineNbr : Int!
+    stylePackVolumes: [StylePackVolume]!
+}
+
+type StylePackVolume {
+    styleId: String!
+    packId: String
+    metrics: [VolumeFixtureMetrics]
+}
+
+type VolumeFixtureMetrics {
+    volumeClusterId: Int!
+    fixtureType: String
+    fixtureAllocation: Float
+    quantity: Int!
+    ccId: String
+    stores: [StoreMetrics]
+}
+
+type StoreMetrics {
+    store: Int
+    multiplier: Int
+    qty: Int
+}     

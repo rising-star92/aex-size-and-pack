@@ -132,7 +132,6 @@ public class BigQueryStoreDistributionService {
 			}
 			if (!storeDistributionList.isEmpty()) {
 				storeDistributionData.setStoreDistributionList(storeDistributionList);
-				log.info("Query performed successfully.");
 			}
 		} catch (Exception e) {
 			log.error("Exception details are ", e);

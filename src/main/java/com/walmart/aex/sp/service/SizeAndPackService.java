@@ -15,6 +15,7 @@ import com.walmart.aex.sp.dto.buyquantity.StyleDto;
 import com.walmart.aex.sp.dto.commitmentreport.InitialBumpSetResponse;
 import com.walmart.aex.sp.dto.commitmentreport.InitialSetPackRequest;
 import com.walmart.aex.sp.dto.commitmentreport.RFAInitialSetBumpSetResponse;
+import com.walmart.aex.sp.dto.cr.storepacks.PackDetailsVolumeResponse;
 import com.walmart.aex.sp.dto.isVolume.FinelineVolume;
 import com.walmart.aex.sp.dto.isVolume.InitialSetVolumeRequest;
 import com.walmart.aex.sp.dto.isVolume.InitialSetVolumeResponse;
@@ -30,19 +31,26 @@ import com.walmart.aex.sp.entity.MerchCatPlan;
 import com.walmart.aex.sp.entity.MerchantPackOptimization;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.exception.CustomException;
+import com.walmart.aex.sp.exception.SizeAndPackException;
+import com.walmart.aex.sp.properties.BigQueryConnectionProperties;
 import com.walmart.aex.sp.repository.MerchCatPlanRepository;
 import com.walmart.aex.sp.repository.MerchPackOptimizationRepository;
 import com.walmart.aex.sp.repository.SpCustomerChoiceChannelFixtureRepository;
 import com.walmart.aex.sp.repository.SpCustomerChoiceChannelFixtureSizeRepository;
 import com.walmart.aex.sp.repository.SpFineLineChannelFixtureRepository;
 import com.walmart.aex.sp.util.BuyQtyCommonUtil;
+
+import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
+
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -76,6 +84,8 @@ public class SizeAndPackService {
     
     private final BigQueryInitialSetPlanService bigQueryInitialSetPlanService;
     
+    private final BigQueryPackStoresService bigQueryPackStoresService;
+    
     private final InitialSetPlanMapper initialSetPlanMapper;
 
     private final MerchPackOptimizationRepository merchPackOptimizationRepository;
@@ -85,6 +95,9 @@ public class SizeAndPackService {
     private final PackOptAddDataMapper packOptAddDataMapper;
 
     private final ObjectMapper objectMapper;
+    
+    @ManagedConfiguration
+	BigQueryConnectionProperties bigQueryConnectionProperties;
 
     public SizeAndPackService(SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository, BuyQuantityMapper buyQuantityMapper,
                               SpCustomerChoiceChannelFixtureRepository spCustomerChoiceChannelFixtureRepository,
@@ -92,7 +105,9 @@ public class SizeAndPackService {
                               MerchCatPlanRepository merchCatPlanRepository, StrategyFetchService strategyFetchService,
                               SpCustomerChoiceChannelFixtureSizeRepository spCustomerChoiceChannelFixtureSizeRepository,
                               SizeAndPackDeleteService sizeAndPackDeleteService, SizeAndPackDeletePlanService sizeAndPackDeletePlanService
-            , BuyQtyCommonUtil buyQtyCommonUtil, BigQueryInitialSetPlanService bigQueryInitialSetPlanService, InitialSetPlanMapper initialSetPlanMapper, MerchPackOptimizationRepository merchPackOptimizationRepository, PackOptUpdateDataMapper packOptUpdateDataMapper, PackOptAddDataMapper packOptAddDataMapper) {
+            , BuyQtyCommonUtil buyQtyCommonUtil, BigQueryInitialSetPlanService bigQueryInitialSetPlanService, InitialSetPlanMapper initialSetPlanMapper, 
+            MerchPackOptimizationRepository merchPackOptimizationRepository, PackOptUpdateDataMapper packOptUpdateDataMapper, PackOptAddDataMapper packOptAddDataMapper,
+            BigQueryPackStoresService bigQueryPackStoresService) {
         this.spFineLineChannelFixtureRepository = spFineLineChannelFixtureRepository;
         this.buyQuantityMapper = buyQuantityMapper;
         this.spCustomerChoiceChannelFixtureRepository = spCustomerChoiceChannelFixtureRepository;
@@ -109,6 +124,7 @@ public class SizeAndPackService {
         this.merchPackOptimizationRepository = merchPackOptimizationRepository;
         this.packOptUpdateDataMapper = packOptUpdateDataMapper;
         this.packOptAddDataMapper = packOptAddDataMapper;
+        this.bigQueryPackStoresService = bigQueryPackStoresService;
         this.objectMapper = new ObjectMapper();
     }
 
@@ -395,5 +411,29 @@ public class SizeAndPackService {
             log.error("Exception While fetching Initial Set Cluster volume ", e);
         }
         return response;
+    }
+    
+    public List<PackDetailsVolumeResponse> getPackStoreDetailsByVolumeCluster(InitialSetVolumeRequest request)
+    {
+    	if(!Boolean.parseBoolean(bigQueryConnectionProperties.getPackStoreFeatureFlag()))
+    	{
+    		return Collections.emptyList();
+    	}
+    	
+    	List<PackDetailsVolumeResponse> responses = new ArrayList<>();
+    	for(FinelineVolume finelineVolume : request.getFinelines())
+    	{
+    		try
+    		{
+    			responses.add(bigQueryPackStoresService
+        				.getPackStoreDetailsByVolumeCluster(request.getPlanId(), 
+        						finelineVolume));
+    		}
+    		catch (SizeAndPackException e) 
+        	{
+        		log.error("Exception while fetching pack store details by volume cluster ", e);
+    		}
+    	}
+    	return responses;
     }
 }

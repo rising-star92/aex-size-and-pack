@@ -36,6 +36,8 @@ public class DCInboundSheetExporterTest {
     private final String merchMethodDesc = "FOLDED";
     private final String channelDesc = "Store";
     private final String ccDesc = "34_5147_3_21_4_SEA TURTLE/DARK NAVY";
+    private final String colorFamilyDesc = "Grey";
+    private final String colorName = "BLACK CRYSTAL TIE DYE";
 
     private final String sizeDesc = "XL";
     private final Integer replenWk = 12245;
@@ -100,6 +102,8 @@ public class DCInboundSheetExporterTest {
         dcInboundExcelResponse.setChannelDesc(channelDesc);
         dcInboundExcelResponse.setCcId(ccDesc);
         dcInboundExcelResponse.setSizeDesc(sizeDesc);
+        dcInboundExcelResponse.setColorName();
+        dcInboundExcelResponse.setColorFamilyDesc();
         dcInboundExcelResponse.setReplenishment(getDCinboundReplenishmentList());
         return dcInboundExcelResponse;
     }

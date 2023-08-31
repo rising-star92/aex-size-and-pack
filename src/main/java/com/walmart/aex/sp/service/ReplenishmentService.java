@@ -6,27 +6,22 @@ import com.walmart.aex.sp.dto.replenishment.cons.*;
 import com.walmart.aex.sp.entity.*;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.exception.CustomException;
-import com.walmart.aex.sp.repository.CatgReplnPkConsRepository;
-import com.walmart.aex.sp.repository.CcMmReplnPkConsRepository;
-import com.walmart.aex.sp.repository.CcReplnPkConsRepository;
-import com.walmart.aex.sp.repository.CcSpReplnPkConsRepository;
-import com.walmart.aex.sp.repository.FineLineReplenishmentRepository;
-import com.walmart.aex.sp.repository.FinelineReplnPkConsRepository;
-import com.walmart.aex.sp.repository.SizeLevelReplenishmentRepository;
-import com.walmart.aex.sp.repository.SizeListReplenishmentRepository;
-import com.walmart.aex.sp.repository.SpCustomerChoiceReplenishmentRepository;
-import com.walmart.aex.sp.repository.StyleReplnPkConsRepository;
-import com.walmart.aex.sp.repository.SubCatgReplnPkConsRepository;
+import com.walmart.aex.sp.repository.*;
 import com.walmart.aex.sp.util.BuyQtyCommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
 
 @Service
+@Transactional
 @Slf4j
 public class ReplenishmentService  {
 
@@ -236,7 +231,9 @@ public class ReplenishmentService  {
         Integer whpk = updateVnPkWhPkReplnRequest.getWhpk();
 
         List<MerchCatgReplPack> catgReplnPkConsList = catgReplnPkConsRepository.getCatgReplnConsData(planId, channelId, lvl3Nbr);
+
         updateReplnConfigMapper.updateVnpkWhpkForCatgReplnConsMapper(catgReplnPkConsList, vnpk, whpk);
+        catgReplnPkConsRepository.saveAll(catgReplnPkConsList);
 
     }
 
@@ -250,8 +247,10 @@ public class ReplenishmentService  {
         Integer vnpk = updateVnPkWhPkReplnRequest.getVnpk();
         Integer whpk = updateVnPkWhPkReplnRequest.getWhpk();
 
-        List<SubCatgReplPack> subCatgReplnConsData = subCatgReplnPkConsRepository.getSubCatgReplnConsData(planId, channelId, lvl3Nbr,lvl4Nbr);
-        updateReplnConfigMapper.updateVnpkWhpkForSubCatgReplnConsMapper(subCatgReplnConsData, vnpk, whpk);
+        List<SubCatgReplPack> subCatgReplnPkConsList = subCatgReplnPkConsRepository.getSubCatgReplnConsData(planId, channelId, lvl3Nbr,lvl4Nbr);
+
+        updateReplnConfigMapper.updateVnpkWhpkForSubCatgReplnConsMapper(subCatgReplnPkConsList, vnpk, whpk);
+        subCatgReplnPkConsRepository.saveAllAndFlush(subCatgReplnPkConsList);
         updateVnpkWhpkForCatgReplnCons(planId, channelId, lvl3Nbr);
     }
     public void updateVnpkWhpkForFinelineReplnCons(UpdateVnPkWhPkReplnRequest updateVnPkWhPkReplnRequest)
@@ -264,9 +263,10 @@ public class ReplenishmentService  {
         Integer vnpk = updateVnPkWhPkReplnRequest.getVnpk();
         Integer whpk = updateVnPkWhPkReplnRequest.getWhpk();
 
-        List<FinelineReplPack> ccReplnPkConsList = finelineReplnPkConsRepository.getFinelineReplnConsData(planId, channelId, lvl3Nbr, lvl4Nbr, fineline);
+        List<FinelineReplPack> finelineReplnPkConsList = finelineReplnPkConsRepository.getFinelineReplnConsData(planId, channelId, lvl3Nbr, lvl4Nbr, fineline);
 
-        updateReplnConfigMapper.updateVnpkWhpkForFinelineReplnConsMapper(ccReplnPkConsList, vnpk, whpk);
+        updateReplnConfigMapper.updateVnpkWhpkForFinelineReplnConsMapper(finelineReplnPkConsList, vnpk, whpk);
+        finelineReplnPkConsRepository.saveAllAndFlush(finelineReplnPkConsList);
         updateVnpkWhpkForCatgReplnCons(planId, channelId, lvl3Nbr);
 
     }
@@ -287,6 +287,7 @@ public class ReplenishmentService  {
                 channelId, lvl3Nbr, lvl4Nbr, fineline, style);
 
         updateReplnConfigMapper.updateVnpkWhpkForStyleReplnConsMapper(styleReplnPkConsList, vnpk, whpk);
+        styleReplnConsRepository.saveAllAndFlush(styleReplnPkConsList);
         updateVnpkWhpkForCatgReplnCons(planId, channelId, lvl3Nbr);
     }
 
@@ -305,6 +306,7 @@ public class ReplenishmentService  {
         List<CcReplPack> ccReplnPkConsList = ccReplnConsRepository.getCcReplnConsData(planId, channelId, lvl3Nbr, lvl4Nbr, fineline, style, customerChoice);
 
         updateReplnConfigMapper.updateVnpkWhpkForCcReplnPkConsMapper(ccReplnPkConsList, vnpk, whpk);
+        ccReplnConsRepository.saveAllAndFlush(ccReplnPkConsList);
         updateVnpkWhpkForCatgReplnCons(planId, channelId, lvl3Nbr);
     }
 
@@ -325,6 +327,7 @@ public class ReplenishmentService  {
                 customerChoice, merchmethodDesc);
 
         updateReplnConfigMapper.updateVnpkWhpkForCcMmReplnPkConsMapper(ccMmReplnPkConsList, vnpk, whpk);
+        ccMmReplnPkConsRepository.saveAllAndFlush(ccMmReplnPkConsList);
         updateVnpkWhpkForCatgReplnCons(planId, channelId, lvl3nbr);
     }
 
@@ -347,6 +350,7 @@ public class ReplenishmentService  {
 				stylenbr, customerChoice, merchmethodDesc, ahsSizeId);
 
         updateReplnConfigMapper.updateVnpkWhpkForCcSpMmReplnPkConsMapper(ccSpReplnPkConsList, vnpk, whpk);
+        ccSpReplnPkConsRepository.saveAllAndFlush(ccSpReplnPkConsList);
         updateVnpkWhpkForCatgReplnCons(planId, channelId, lvl3nbr);
     }
 
@@ -366,6 +370,7 @@ public class ReplenishmentService  {
     public void updateVnpkWhpkForCatgReplnCons(Long planId, Integer channelId, Integer lvl3Nbr) {
         List<MerchCatgReplPack> catgReplnPkConsList = catgReplnPkConsRepository.getCatgReplnConsData(planId, channelId, lvl3Nbr);
         updateReplnConfigMapper.updateVnpkWhpkForCatgReplnConsMapper(catgReplnPkConsList, null, null);
+        catgReplnPkConsRepository.saveAll(catgReplnPkConsList);
     }
 
     public ReplenishmentCons fetchHierarchyReplnCons(CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, MerchMethodsDto merchMethodsDto) {

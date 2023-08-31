@@ -69,6 +69,8 @@ public class DCInboundSheetService {
                 dcInboundExcelResponse.setMerchMethodDesc(r.getMerchMethodDesc());
                 dcInboundExcelResponse.setSizeDesc(r.getSizeDesc());
                 dcInboundExcelResponse.setChannelDesc(r.getChannelDesc());
+                dcInboundExcelResponse.setColorFamilyDesc(r.getColorFamilyDesc());
+                dcInboundExcelResponse.setColorName(r.getColorName());
                 if (r.getReplenishment() != null) {
                     try {
                         replenishmentDTO = Arrays.stream(objectMapper.readValue(r.getReplenishment(), DCinboundReplenishment[].class))

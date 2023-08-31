@@ -39,7 +39,7 @@ deploy:
         memory: 600Mi
       max:
         cpu: 1
-        memory: 1Gi
+        memory: 2Gi
       scaling:
         cpuPercent: 70
         min: 2
@@ -111,7 +111,7 @@ deploy:
                         -Dcom.walmart.platform.metrics.impl.type=MICROMETER
                         -Dcom.walmart.platform.txnmarking.otel.type=LOGGING
                         -Dcom.walmart.platform.logging.profile=OTEL"
-    - name: stg
+    - name: stage
       approvers:
         groups:
           - "apparel-precision-kitt-admins"

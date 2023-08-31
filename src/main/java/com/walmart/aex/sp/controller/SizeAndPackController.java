@@ -1,8 +1,28 @@
 package com.walmart.aex.sp.controller;
 
 
-import com.walmart.aex.sp.dto.commitmentreport.InitialSetPackRequest;
+import java.util.List;
+
+import javax.ws.rs.Consumes;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.QueryMapping;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.walmart.aex.sp.dto.commitmentreport.InitialBumpSetResponse;
+import com.walmart.aex.sp.dto.commitmentreport.InitialSetPackRequest;
+import com.walmart.aex.sp.dto.cr.storepacks.PackDetailsVolumeResponse;
 import com.walmart.aex.sp.dto.isVolume.InitialSetVolumeRequest;
 import com.walmart.aex.sp.dto.isVolume.InitialSetVolumeResponse;
 import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDTO;
@@ -13,21 +33,7 @@ import com.walmart.aex.sp.dto.storedistribution.StoreDistributionResponse;
 import com.walmart.aex.sp.service.SizeAndPackService;
 import com.walmart.aex.sp.service.StoreDistributionService;
 
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.graphql.data.method.annotation.Argument;
-import org.springframework.graphql.data.method.annotation.QueryMapping;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-
-
 import lombok.extern.slf4j.Slf4j;
-
-import javax.ws.rs.Consumes;
-import java.util.List;
 
 @Slf4j
 @RequestMapping("/size-and-pack/v1")
@@ -97,7 +103,12 @@ public class SizeAndPackController {
 	public StoreDistributionResponse getStoreDistributionByPlan(@Argument PackInfoRequest request) {
 		return storeDistributionService.fetchStoreDistributionResponse(request);
 	}
-
+    
+    @QueryMapping
+    public List<PackDetailsVolumeResponse> getPackStoreDetailsByVolumeCluster(@Argument InitialSetVolumeRequest request)
+    {
+    	return sizeAndPackService.getPackStoreDetailsByVolumeCluster(request);
+    }
 }
 
 

@@ -25,9 +25,7 @@ public interface CcSpReplnPkConsRepository extends JpaRepository<CcSpMmReplPack,
                         @Param("customer_choice") String customer_choice,@Param("ahs_size_id") Integer ahs_size_id, @Param("vnpk") Integer vnpk, @Param("whpk") Integer whpk,
                         @Param("vnpkWhpkRatio") Double vnpkWhpkRatio, @Param("replenishmentPackCount") Integer replenishmentPackCount,
                         @Param("merchMethodDesc") String merchMethodDesc);
-    
-    @Transactional
-    @Modifying(clearAutomatically = true, flushAutomatically = true)
+
     @Query(value = "select * from dbo.rc_cc_sp_mm_replpk_fixtr_cons where plan_id = :planId and \n"
             + "channel_id = :channelId and rpt_lvl_3_nbr=:lvl3Nbr and rpt_lvl_4_nbr=:lvl4Nbr and fineline_nbr=:fineline and style_nbr=:style and customer_choice=:customerChoice and merch_method_short_desc=:merchMethodDesc and ahs_size_id=:ahs_size_id ", nativeQuery = true)
 	List<CcSpMmReplPack> getCcSpMmReplnPkConsData(@Param("planId")Long planId, @Param("channelId") Integer channelId, @Param("lvl3Nbr") Integer lvl3Nbr, 
@@ -55,13 +53,15 @@ public interface CcSpReplnPkConsRepository extends JpaRepository<CcSpMmReplPack,
             " scp.subCatPlanId.lvl4Nbr , " +
             " scp.lvl4Desc , " +
             " flp.finelinePlanId.finelineNbr , " +
-            " flp.finelineDesc, " +
-            " csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.styleNbr , " +
+            " COALESCE(flp.altFinelineName, flp.finelineDesc) , " +
+            " COALESCE(stp.altStyleDesc ,csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.styleNbr) , " +
             " csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId , " +
             " ct.channelDesc , " +
             " csmrp.sizeDesc , " +
-            " csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.customerChoice , " +
+            " COALESCE(ccp.altCcDesc, csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.customerChoice) , " +
             " csmrp.ccSpReplPackId.ahsSizeId , " +
+            " ccp.colorName , " +
+            " ccp.colorFamilyDesc , " +
             " csmrp.merchMethodDesc , " +
             " csmrp.replenObj ) " +
             "FROM SubCatPlan scp " +
@@ -84,10 +84,31 @@ public interface CcSpReplnPkConsRepository extends JpaRepository<CcSpMmReplPack,
             "AND flp.finelinePlanId.subCatPlanId.merchCatPlanId.channelId=csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId " +
             "RIGHT JOIN ChannelText ct " +
             "ON ct.channelId=csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId " +
+            "RIGHT JOIN StylePlan stp " +
+            "ON stp.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.planId=csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.planId " +
+            "AND stp.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.lvl0Nbr=csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.repTLvl0 " +
+            "AND stp.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.lvl1Nbr=csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.repTLvl1 " +
+            "AND stp.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.lvl2Nbr=csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.repTLvl2 " +
+            "AND stp.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.lvl3Nbr=csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.repTLvl3 " +
+            "AND stp.stylePlanId.finelinePlanId.subCatPlanId.lvl4Nbr=csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.repTLvl4 " +
+            "AND stp.stylePlanId.finelinePlanId.finelineNbr=csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.finelineNbr " +
+            "AND stp.stylePlanId.styleNbr=csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.styleNbr " +
+            "AND stp.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId=csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId " +
+            "RIGHT JOIN CustChoicePlan ccp " +
+            "ON ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.planId=csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.planId " +
+            "AND ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.lvl0Nbr=csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.repTLvl0 " +
+            "AND ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.lvl1Nbr=csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.repTLvl1 " +
+            "AND ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.lvl2Nbr=csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.repTLvl2 " +
+            "AND ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.lvl3Nbr=csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.repTLvl3 " +
+            "AND ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.lvl4Nbr=csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.repTLvl4 " +
+            "AND ccp.custChoicePlanId.stylePlanId.finelinePlanId.finelineNbr=csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.finelineNbr " +
+            "AND ccp.custChoicePlanId.stylePlanId.styleNbr=csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.styleNbr " +
+            "AND ccp.custChoicePlanId.ccId=csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.customerChoice " +
+            "AND ccp.custChoicePlanId.stylePlanId.finelinePlanId.subCatPlanId.merchCatPlanId.channelId=csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId " +
             "WHERE scp.subCatPlanId.merchCatPlanId.planId=:planId AND csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId=:channelId GROUP BY " +
             "scp.subCatPlanId.merchCatPlanId.planId ,scp.subCatPlanId.merchCatPlanId.lvl0Nbr ,scp.lvl0Desc ,scp.subCatPlanId.merchCatPlanId.lvl1Nbr ,scp.lvl1Desc ,scp.subCatPlanId.merchCatPlanId.lvl2Nbr ,scp.lvl2Desc ," +
-            "scp.subCatPlanId.merchCatPlanId.lvl3Nbr , scp.lvl3Desc, scp.subCatPlanId.lvl4Nbr ,scp.lvl4Desc, flp.finelinePlanId.finelineNbr ,flp.finelineDesc, csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.styleNbr , csmrp.sizeDesc, " +
-            "csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.customerChoice, csmrp.merchMethodDesc , " +
+            "scp.subCatPlanId.merchCatPlanId.lvl3Nbr , scp.lvl3Desc, scp.subCatPlanId.lvl4Nbr ,scp.lvl4Desc, flp.finelinePlanId.finelineNbr ,flp.finelineDesc ,flp.altFinelineName ,stp.altStyleDesc ,ccp.altCcDesc , csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.styleNbr , csmrp.sizeDesc, " +
+            "csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.customerChoice, csmrp.merchMethodDesc , ccp.colorName , ccp.colorFamilyDesc , " +
             "csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId , " +
             " ct.channelDesc , " +
             " csmrp.ccSpReplPackId.ahsSizeId , " +
@@ -100,8 +121,6 @@ public interface CcSpReplnPkConsRepository extends JpaRepository<CcSpMmReplPack,
    @Query(value = "delete from rc_cc_sp_mm_replpk_fixtr_cons where plan_id = :planId and channel_id = :channelId and fineline_nbr in (:finelineNbrs)", nativeQuery = true)
    void deleteByPlanIdFinelineIdChannelId(@Param("planId") Long planId, @Param("channelId") Integer channelId, @Param("finelineNbrs") Set<Integer> finelineNbrs);
 
-    @Transactional
-    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(value = "select * from dbo.rc_cc_sp_mm_replpk_fixtr_cons where plan_id = :planId and \n"
             + "channel_id = :channelId and rpt_lvl_3_nbr=:lvl3Nbr and rpt_lvl_4_nbr=:lvl4Nbr and fineline_nbr=:fineline and style_nbr=:style and customer_choice=:customerChoice and merch_method_code=:merch_method_code ", nativeQuery = true)
     List<CcSpMmReplPack> getCcSpMmReplnPkVendorPackAndWhsePackCount(@Param("planId")Long planId, @Param("channelId") Integer channelId, @Param("lvl3Nbr") Integer lvl3Nbr,

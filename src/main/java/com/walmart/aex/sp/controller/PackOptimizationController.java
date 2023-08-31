@@ -13,6 +13,7 @@ import com.walmart.aex.sp.dto.packoptimization.UpdatePackOptConstraintRequestDTO
 import com.walmart.aex.sp.dto.packoptimization.UpdatePkOptResponse;
 import com.walmart.aex.sp.dto.packoptimization.isbpqty.ISAndBPQtyDTO;
 import com.walmart.aex.sp.enums.Action;
+import com.walmart.aex.sp.enums.RunStatusCodeType;
 import com.walmart.aex.sp.service.IntegrationHubService;
 import com.walmart.aex.sp.service.PackOptimizationService;
 import com.walmart.aex.sp.service.PostPackOptimizationService;
@@ -94,7 +95,7 @@ public class PackOptimizationController {
     @PutMapping(path = "/api/packOptimization/plan/{planId}/fineline/{finelineNbr}/status/{status}")
     public UpdatePkOptResponse updatePackOptStatus(@PathVariable Long planId, @PathVariable String finelineNbr, @PathVariable Integer status) {
         UpdatePkOptResponse response = new UpdatePkOptResponse();
-        if (status.equals(6) || status.equals(10)) {
+        if (RunStatusCodeType.ANALYTICS_RUN_COMPLETED.getId().equals(status) || RunStatusCodeType.ANALYTICS_ERRORS_LIST.contains(status)) {
             try {
                 packOptService.updatePackOptServiceStatus(planId, finelineNbr, status);
                 response.setStatus(SUCCESS_STATUS);

@@ -104,8 +104,6 @@ public class DCInboundSheetExporter {
     }
 
     void createCell(Row row, int columnCount, Object value, CellStyle style) {
-        //BAD BUG BELOW
-        //sheet.autoSizeColumn(columnCount);
         Cell cell = row.createCell(columnCount);
         if (value instanceof Integer) {
             cell.setCellValue((Integer) value);
@@ -132,6 +130,8 @@ public class DCInboundSheetExporter {
             createCell(row, columnCount++, dcInboundData.getFinelineDesc(), style);
             createCell(row, columnCount++, dcInboundData.getStyleNbr(), style);
             createCell(row, columnCount++, dcInboundData.getCcId(), style);
+            createCell(row, columnCount++, dcInboundData.getColorName(), style);
+            createCell(row, columnCount++, dcInboundData.getColorFamilyDesc(), style);
             createCell(row, columnCount++, dcInboundData.getMerchMethodDesc(), style);
             createCell(row, columnCount++, dcInboundData.getSizeDesc(), style);
             createCell(row, columnCount++, dcInboundData.getChannelDesc(), style);
