@@ -1,5 +1,8 @@
 package com.walmart.aex.sp.util;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class SizeAndPackConstants {
 
     private SizeAndPackConstants() {
@@ -50,4 +53,7 @@ public class SizeAndPackConstants {
     public static final String BUMP_PACK_PATTERN = "^(\\d*)_(\\d*)-BP";
     public static final Integer ONLINE_CHANNEL_ID = 2;
     public static final Integer STORE_CHANNEL_ID = 1;
+
+    //DC Inbound Report Headers
+    public static final List<String> DC_INBOUND_REPORT_DEFAULT_HEADERS = Arrays.asList(CATEGORY, SUB_CATEGORY, FINELINE, STYLE, CUSTOMER_CHOICE, COLOR_NAME, COLOR_FAMILY, MERCH_METHOD, SIZE, CHANNEL);
 }

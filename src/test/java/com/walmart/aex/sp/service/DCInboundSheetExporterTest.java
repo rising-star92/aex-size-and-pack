@@ -2,6 +2,7 @@ package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.packoptimization.DCInboundExcelResponse;
 import com.walmart.aex.sp.dto.packoptimization.DCinboundReplenishment;
+import com.walmart.aex.sp.util.SizeAndPackConstants;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -46,25 +47,16 @@ public class DCInboundSheetExporterTest {
 
     @BeforeEach
     public void init() {
-        MockitoAnnotations.openMocks(this);
         dcInboundSheetExporter = new DCInboundSheetExporter();
     }
 
     @Test
     void testAddReplenishmentUnitsCell() {
 
-        List<String> headers = new ArrayList<>();
-        headers.add(CATEGORY);
-        headers.add(SUB_CATEGORY);
-        headers.add(FINELINE);
-        headers.add(STYLE);
-        headers.add(CUSTOMER_CHOICE);
-        headers.add(MERCH_METHOD);
-        headers.add(SIZE);
-        headers.add(CHANNEL);
+        List<String> headers = new ArrayList<>(SizeAndPackConstants.DC_INBOUND_REPORT_DEFAULT_HEADERS);
         headers.add(replenWkDesc);
 
-        List<Object> dataRow = List.of(lvl3Desc, lvl4Desc, finelineDesc, styleDesc, ccDesc, merchMethodDesc, sizeDesc, channelDesc, replenUnits);
+        List<Object> dataRow = List.of(lvl3Desc, lvl4Desc, finelineDesc, styleDesc, ccDesc, colorName, colorFamilyDesc, merchMethodDesc, sizeDesc, channelDesc, replenUnits);
         try (Workbook workbook = dcInboundSheetExporter.generate(headers, getDCInboundExcelResponseList())) {
             Row headerRow = workbook.getSheet(DC_INBOUND_EXCEL_SHEET_NAME).getRow(0);
             Row bodyRow = workbook.getSheet(DC_INBOUND_EXCEL_SHEET_NAME).getRow(1);
@@ -75,16 +67,11 @@ public class DCInboundSheetExporterTest {
                     assertEquals(dataRow.get(i), (int) bodyRow.getCell(i).getNumericCellValue());
                 else
                     assertEquals(dataRow.get(i), bodyRow.getCell(i).getStringCellValue());
-
-
             }
         } catch (IOException e) {
             fail();
         }
-
     }
-
-
 
     private List<DCInboundExcelResponse> getDCInboundExcelResponseList(){
         List<DCInboundExcelResponse> dcInboundExcelResponseList = new ArrayList<>();
@@ -93,7 +80,6 @@ public class DCInboundSheetExporterTest {
     }
     private DCInboundExcelResponse getDCInboundExcelResponseDTO() {
         DCInboundExcelResponse dcInboundExcelResponse = new DCInboundExcelResponse();
-        dcInboundExcelResponse = new DCInboundExcelResponse();
         dcInboundExcelResponse.setLvl3Desc(lvl3Desc);
         dcInboundExcelResponse.setLvl4Desc(lvl4Desc);
         dcInboundExcelResponse.setFinelineDesc(finelineDesc);
@@ -102,8 +88,8 @@ public class DCInboundSheetExporterTest {
         dcInboundExcelResponse.setChannelDesc(channelDesc);
         dcInboundExcelResponse.setCcId(ccDesc);
         dcInboundExcelResponse.setSizeDesc(sizeDesc);
-        dcInboundExcelResponse.setColorName();
-        dcInboundExcelResponse.setColorFamilyDesc();
+        dcInboundExcelResponse.setColorName(colorName);
+        dcInboundExcelResponse.setColorFamilyDesc(colorFamilyDesc);
         dcInboundExcelResponse.setReplenishment(getDCinboundReplenishmentList());
         return dcInboundExcelResponse;
     }

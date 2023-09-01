@@ -21,7 +21,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
+import static com.walmart.aex.sp.util.SizeAndPackConstants.DC_INBOUND_REPORT_DEFAULT_HEADERS;
+import static com.walmart.aex.sp.util.SizeAndPackConstants.DC_INBOUND_REPORT_NAME;
 
 @Slf4j
 @Service
@@ -57,7 +58,6 @@ public class DCInboundSheetService {
 
         public List<DCInboundExcelResponse> setDCInboundExcelSheetResponseDTO(List<DCInboundResponse> response) {
         List<DCInboundExcelResponse> dcInboundExcelResponses = new ArrayList<>();
-        List<DCinboundReplenishment> replenishmentDTO = new ArrayList<>();
         if (response != null) {
             for (DCInboundResponse r : response) {
                 DCInboundExcelResponse dcInboundExcelResponse = new DCInboundExcelResponse();
@@ -73,7 +73,7 @@ public class DCInboundSheetService {
                 dcInboundExcelResponse.setColorName(r.getColorName());
                 if (r.getReplenishment() != null) {
                     try {
-                        replenishmentDTO = Arrays.stream(objectMapper.readValue(r.getReplenishment(), DCinboundReplenishment[].class))
+                        List<DCinboundReplenishment> replenishmentDTO = Arrays.stream(objectMapper.readValue(r.getReplenishment(), DCinboundReplenishment[].class))
                               .sorted(Comparator.comparing(DCinboundReplenishment::getReplnWeek)).collect(Collectors.toList());
 
                         dcInboundExcelResponse.setReplenishment(replenishmentDTO);
@@ -91,16 +91,7 @@ public class DCInboundSheetService {
     }
 
     private List<String> getHeaders(List<DCInboundExcelResponse> listDCInboundData) {
-        List<String> headers = new ArrayList<>();
-
-        headers.add(CATEGORY);
-        headers.add(SUB_CATEGORY);
-        headers.add(FINELINE);
-        headers.add(STYLE);
-        headers.add(CUSTOMER_CHOICE);
-        headers.add(MERCH_METHOD);
-        headers.add(SIZE);
-        headers.add(CHANNEL);
+        List<String> headers = new ArrayList<>(DC_INBOUND_REPORT_DEFAULT_HEADERS);
 
         List<String> replenWeeks = listDCInboundData.stream().findFirst()
               .get().getReplenishment().stream()
