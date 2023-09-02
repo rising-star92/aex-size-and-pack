@@ -56,7 +56,7 @@ public class PackOptConstraintMapperHelper {
             }else if(runStatusCode == 15){
                 return BUMP_PACK_ERROR + 1;
             }else{
-                return INITIAL_SET + " " + BUMP_PACK_ERROR + 1;
+                return INITIAL_SET + " + " + BUMP_PACK_ERROR + 1;
             }
         }
          return INITIAL_SET;
