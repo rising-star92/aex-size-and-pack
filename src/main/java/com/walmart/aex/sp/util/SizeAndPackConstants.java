@@ -48,7 +48,7 @@ public class SizeAndPackConstants {
     public static final String PERCENT = "%";
     public static final String BUMP_PACK = "BP";
     public static final String INITIAL_SET = "Initial Set";
-    public static final String INITIAL_SET_AND_BUMP_PACK = "Initial Set + BP1";
+    public static final String BUMP_PACK_ERROR = "Bump Pack ";
     public static final String BUMP_PACK_PATTERN = "^(\\d*)_(\\d*)-BP";
     public static final Integer ONLINE_CHANNEL_ID = 2;
     public static final Integer STORE_CHANNEL_ID = 1;
