@@ -40,7 +40,7 @@ public class PackOptConstraintMapperHelper {
             String errorDescription = entry.getKey();
             Set<Integer> bumpPacks = entry.getValue();
             String bumpPacksString = bumpPacks.stream()
-                    .map(bumpPack ->  bumpPack == 1 ? getInitialSetOrBumpPackError(fineLineMapperDto.getChildRunStatusCode()) : BUMP_PACK_ERROR + bumpPack)
+                    .map(bumpPack ->  bumpPack == 1 ? getInitialSetOrBumpPackError(bumpPacks,fineLineMapperDto.getChildRunStatusCode()) : BUMP_PACK_ERROR + bumpPack)
                     .collect(Collectors.joining(", "));
             String combinedDescription = bumpPacksString + " : " + errorDescription;
             runStatusLongDesc.add(combinedDescription);
@@ -49,12 +49,14 @@ public class PackOptConstraintMapperHelper {
 
     }
 
-    private String getInitialSetOrBumpPackError( Integer runStatusCode) {
-        if(runStatusCode == 14){
-            return INITIAL_SET;
-        }else if(runStatusCode == 15){
-            return BUMP_PACK_ERROR + 1;
+    private String getInitialSetOrBumpPackError(Set<Integer> bumpPacks, Integer runStatusCode) {
+        if(bumpPacks.size()>1){
+            if(runStatusCode == 14){
+                return INITIAL_SET;
+            }else if(runStatusCode == 15){
+                return BUMP_PACK_ERROR + 1;
+            }
         }
-        return null;
+         return INITIAL_SET;
     }
 }
