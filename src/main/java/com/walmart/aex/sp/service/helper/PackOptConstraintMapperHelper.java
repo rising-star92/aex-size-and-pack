@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.walmart.aex.sp.util.SizeAndPackConstants.BUMP_PACK;
+import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
 
 @Service
 @Slf4j
@@ -40,11 +40,16 @@ public class PackOptConstraintMapperHelper {
             String errorDescription = entry.getKey();
             Set<Integer> bumpPacks = entry.getValue();
             String bumpPacksString = bumpPacks.stream()
-                    .map(bumpPack -> BUMP_PACK + bumpPack)
+                    .map(bumpPack ->  bumpPack == 1 ? getInitialSetOrBumpPack(bumpPacks) : BUMP_PACK + bumpPack)
                     .collect(Collectors.joining(", "));
             String combinedDescription = bumpPacksString + " : " + errorDescription;
             runStatusLongDesc.add(combinedDescription);
         }
         return runStatusLongDesc;
+
+    }
+
+    private String getInitialSetOrBumpPack(Set<Integer> bumpPacks) {
+        return bumpPacks.size() > 1 ? INITIAL_SET : INITIAL_SET_AND_BUMP_PACK;
     }
 }
