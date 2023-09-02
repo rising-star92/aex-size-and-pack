@@ -50,6 +50,6 @@ public class PackOptConstraintMapperHelper {
     }
 
     private String getInitialSetOrBumpPack(Set<Integer> bumpPacks) {
-        return bumpPacks.size() > 1 ? INITIAL_SET : INITIAL_SET_AND_BUMP_PACK;
+        return bumpPacks.size() > 1 ? INITIAL_SET_AND_BUMP_PACK : INITIAL_SET;
     }
 }
