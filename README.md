@@ -1,4 +1,4 @@
-# size-and-pack-service..
+# size-and-pack-service...
 
 # Run in local with profile=local - SetUp Guide :
 
