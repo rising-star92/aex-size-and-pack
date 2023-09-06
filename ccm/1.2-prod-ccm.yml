@@ -452,5 +452,10 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "true"
+      "pack.store.feature.flag":
+        description: "feature flag to enable pack store API"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "false"
 apiVersion: "2.0"
 kind: "ServiceConfig"
