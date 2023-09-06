@@ -78,6 +78,8 @@ input UpdateVnPkWhPkReplnRequest {
 
 input CalculateBuyQtyRequest {
     planId: Int!
+    seasonCode: String
+    fiscalYear: Int
     channel: String!
     planDesc: String
     lvl0Nbr: Int
