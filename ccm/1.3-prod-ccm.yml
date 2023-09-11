@@ -432,11 +432,6 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "aex_pack_opt_prod"
-      "size.profile.cluster":
-        description: "svg_fl_cluster Table Name"
-        type: "STRING"
-        kind: "SINGLE"
-        defaultValue: "svg_fl_cluster"
       "rfa.table.sp.packoptimization.output":
         description: "RFA Output for SP Pack Optimization for Prod"
         type: "STRING"

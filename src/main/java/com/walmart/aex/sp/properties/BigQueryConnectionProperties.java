@@ -33,6 +33,4 @@ public interface BigQueryConnectionProperties {
 	@Property(propertyName = "pack.store.feature.flag")
 	String getPackStoreFeatureFlag();
 
-	@Property(propertyName = "size.profile.cluster")
-	String getSizeProfileCluster();
 }
