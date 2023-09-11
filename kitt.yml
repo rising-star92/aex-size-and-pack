@@ -95,7 +95,7 @@ deploy:
           metadata:
             labels:
               ccm.serviceId: AEX_SIZE_AND_PACK
-              ccm.serviceConfigVersion: "1.3"
+              ccm.serviceConfigVersion: "1.3-DEV"
               wm.app: AEX_SIZE_AND_PACK
               wm.env: 'dev'
           env:
@@ -126,7 +126,7 @@ deploy:
           metadata:
             labels:
               ccm.serviceId: AEX_SIZE_AND_PACK
-              ccm.serviceConfigVersion: "1.3"
+              ccm.serviceConfigVersion: "1.3-STAGE"
               wm.app: AEX_SIZE_AND_PACK
               wm.env: 'stg'
           env:
@@ -159,7 +159,7 @@ deploy:
           metadata:
             labels:
               ccm.serviceId: AEX_SIZE_AND_PACK
-              ccm.serviceConfigVersion: "1.2-PROD"
+              ccm.serviceConfigVersion: "1.3-PROD"
               wm.app: AEX_SIZE_AND_PACK
               wm.env: 'prod'
           env:
