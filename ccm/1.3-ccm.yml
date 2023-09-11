@@ -496,7 +496,7 @@ configOverrides:
           "buy.qty.rfa.consumer.env": "stg"
           "buy.qty.line.plan.weeks.url": "http://current-line-plan.aex.stg.walmart.net/graphql"
           "buy.qty.line.plan.consumer.env": "stg"
-          "buy.qty.line.plan.consumer.id": "buy.qty.line.plan.consumer.id"
+          "buy.qty.line.plan.consumer.id": "93c617a1-31ec-4333-a819-683ef7514cc0"
           "cbam.plan.definition.url": "https://plan-definition.cbam.stg.walmart.net/graphql"
           "cbam.plan.definition.consumer.id": "93c617a1-31ec-4333-a819-683ef7514cc0"
           "cbam.plan.definition.consumer.env": "stg"
