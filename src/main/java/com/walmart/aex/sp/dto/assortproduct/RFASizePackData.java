@@ -1,8 +1,14 @@
 package com.walmart.aex.sp.dto.assortproduct;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class RFASizePackData {
    private Integer rpt_lvl_0_nbr;
    private Integer rpt_lvl_1_nbr;
@@ -20,4 +26,5 @@ public class RFASizePackData {
    private String store_list;
    private Integer store_cnt;
    private Long plan_id_partition;
+
 }
