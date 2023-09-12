@@ -20,9 +20,13 @@ import java.util.List;
 @Service
 public class BigQueryPostProcessingService {
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper ;
     @ManagedConfiguration
     BigQueryConnectionProperties bigQueryConnectionProperties;
+
+    BigQueryPostProcessingService (ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
 
     public List<RFASizePackData> fetchRFASizePackData(RFASizePackRequest request, String volumeDeviationLevel) throws InterruptedException, JsonProcessingException {
         String gcpQuery = generateQuery(request, volumeDeviationLevel);
@@ -42,31 +46,31 @@ public class BigQueryPostProcessingService {
 
     private String generateQuery(RFASizePackRequest request, String volumeDeviationLevel) throws JsonProcessingException {
         StringBuilder queryBuilder = new StringBuilder();
-        queryBuilder.append("WITH data AS ( SELECT")
-                .append(objectMapper.writeValueAsString(request.getColors())).append(" AS json_array ),")
+        queryBuilder.append("WITH MyTable AS ( WITH data AS ( SELECT'")
+                .append(objectMapper.writeValueAsString(request.getColors())).append("' AS json_array ),")
                 .append(" plan_hierarchy AS ( select ")
                 .append(request.getPlan_id())
-                .append(" AS plan_id ")
+                .append(" AS plan_id ,")
                 .append(request.getRpt_lvl_0_nbr())
-                .append(" AS rpt_lvl_0_nbr ")
+                .append(" AS rpt_lvl_0_nbr, ")
                 .append(request.getRpt_lvl_1_nbr())
-                .append(" AS rpt_lvl_1_nbr ")
+                .append(" AS rpt_lvl_1_nbr, ")
                 .append(request.getRpt_lvl_2_nbr())
-                .append(" AS rpt_lvl_2_nbr ")
+                .append(" AS rpt_lvl_2_nbr, ")
                 .append(request.getRpt_lvl_3_nbr())
-                .append(" AS rpt_lvl_3_nbr ")
+                .append(" AS rpt_lvl_3_nbr, ")
                 .append(request.getRpt_lvl_4_nbr())
-                .append(" AS rpt_lvl_4_nbr ")
+                .append(" AS rpt_lvl_4_nbr, ")
                 .append(request.getFineline_nbr())
-                .append(" AS fineline_nbr ")
+                .append(" AS fineline_nbr ,")
                 .append(request.getLike_fineline_nbr())
-                .append(" AS like_fineline_nbr ")
+                .append(" AS like_fineline_nbr, ")
                 .append(request.getLike_lvl1_nbr())
-                .append(" AS like_lvl1_nbr ")
+                .append(" AS like_rpt_lvl_1_nbr ,")
                 .append(request.getFiscal_year())
-                .append(" AS fiscal_year ")
+                .append(" AS fiscal_year , '")
                 .append(request.getSeasonCode())
-                .append(" AS season_code ")
+                .append("' AS season_code ")
                 .append("), ");
 
         if (volumeDeviationLevel.equalsIgnoreCase("fineline")) {
@@ -76,12 +80,12 @@ public class BigQueryPostProcessingService {
         } else {
             queryBuilder.append(findCatQuery());
         }
+        queryBuilder.append(") SELECT TO_JSON_STRING(gcpTable) AS json FROM MyTable AS gcpTable;");
         return queryBuilder.toString();
     }
 
     private String findCatQuery() {
-        return ",\n" +
-                "cc_color_families AS (\n" +
+        return "cc_color_families AS (\n" +
                 "    SELECT JSON_EXTRACT_SCALAR(cc_color_families_json, '$.cc') AS cc,\n" +
                 "        JSON_EXTRACT_SCALAR(cc_color_families_json, '$.color_family_desc') AS color_family_desc\n" +
                 "    FROM data,\n" +
@@ -163,7 +167,7 @@ public class BigQueryPostProcessingService {
                 "                    svg_fl_clus.cluster_id,\n" +
                 "                    svg_fl_clus.fiscal_year,\n" +
                 "                    svg_fl_clus.season\n" +
-                "                FROM `"+ bigQueryConnectionProperties.getRFAProjectId() + "." + bigQueryConnectionProperties.getRFADataSetName() +".svg_category_cluster` AS svg_fl_clus,\n" +
+                "                FROM `"+ bigQueryConnectionProperties.getRFAProjectId() + "." + bigQueryConnectionProperties.getAnalyticsData() +".svg_category_cluster` AS svg_fl_clus,\n" +
                 "                    plan_hierarchy AS h\n" +
                 "                WHERE svg_fl_clus.dept_catg_nbr = h.rpt_lvl_3_nbr\n" +
                 "                    AND svg_fl_clus.dept_nbr = COALESCE(h.like_rpt_lvl_1_nbr, h.rpt_lvl_1_nbr)\n" +
@@ -182,7 +186,7 @@ public class BigQueryPostProcessingService {
                 "                    sc_clus.dept,\n" +
                 "                    sc_clus.fiscal_year,\n" +
                 "                    sc_clus.season\n" +
-                "                FROM `"+ bigQueryConnectionProperties.getRFAProjectId() + "." + bigQueryConnectionProperties.getRFADataSetName() +".sc_cluster` AS sc_clus,\n" +
+                "                FROM `"+ bigQueryConnectionProperties.getRFAProjectId() + "." + bigQueryConnectionProperties.getAnalyticsData() +".sc_cluster` AS sc_clus,\n" +
                 "                    plan_hierarchy AS h\n" +
                 "                WHERE sc_clus.dept_catg_nbr = h.rpt_lvl_3_nbr\n" +
                 "                    AND sc_clus.fineline_nbr = COALESCE(h.like_fineline_nbr, h.fineline_nbr)\n" +
@@ -200,7 +204,7 @@ public class BigQueryPostProcessingService {
                 "                    sco_clus.dept,\n" +
                 "                    sco_clus.fiscal_year,\n" +
                 "                    sco_clus.season\n" +
-                "                FROM `"+ bigQueryConnectionProperties.getRFAProjectId() + "." + bigQueryConnectionProperties.getRFADataSetName() +".sco_cluster` AS sco_clus,\n" +
+                "                FROM `"+ bigQueryConnectionProperties.getRFAProjectId() + "." + bigQueryConnectionProperties.getAnalyticsData() +".sco_cluster` AS sco_clus,\n" +
                 "                    plan_hierarchy AS h\n" +
                 "                WHERE sco_clus.dept_catg_nbr = h.rpt_lvl_3_nbr\n" +
                 "                    AND sco_clus.fineline_nbr = COALESCE(h.like_fineline_nbr, h.fineline_nbr)\n" +
@@ -233,7 +237,7 @@ public class BigQueryPostProcessingService {
                 "    fixture_group,\n" +
                 "    color_family,\n" +
                 "    size_cluster_id,\n" +
-                "    volume_group_cluster_id; ";
+                "    volume_group_cluster_id ";
     }
 
     private String findSubCatQuery() {
@@ -389,7 +393,7 @@ public class BigQueryPostProcessingService {
                 "    fixture_group,\n" +
                 "    color_family,\n" +
                 "    size_cluster_id,\n" +
-                "    volume_group_cluster_id; ";
+                "    volume_group_cluster_id ";
     }
 
     private String findFineLineQuery() {
@@ -493,7 +497,7 @@ public class BigQueryPostProcessingService {
                 "                    sc_clus.dept,\n" +
                 "                    sc_clus.fiscal_year,\n" +
                 "                    sc_clus.season\n" +
-                "                FROM `" + bigQueryConnectionProperties.getRFAProjectId() + "." + bigQueryConnectionProperties.getAnalyticsData() + "sc_cluster` AS sc_clus,\n" +
+                "                FROM `" + bigQueryConnectionProperties.getRFAProjectId() + "." + bigQueryConnectionProperties.getAnalyticsData() + ".sc_cluster` AS sc_clus,\n" +
                 "                    plan_hierarchy AS h\n" +
                 "                WHERE sc_clus.fineline_nbr = COALESCE(h.like_fineline_nbr, h.fineline_nbr)\n" +
                 "                    AND sc_clus.dept_nbr = COALESCE(h.like_rpt_lvl_1_nbr, h.rpt_lvl_1_nbr)\n" +
@@ -541,6 +545,6 @@ public class BigQueryPostProcessingService {
                 "    fixture_group,\n" +
                 "    color_family,\n" +
                 "    size_cluster_id,\n" +
-                "    volume_group_cluster_id;";
+                "    volume_group_cluster_id";
     }
 }
