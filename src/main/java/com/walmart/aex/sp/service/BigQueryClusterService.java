@@ -13,6 +13,7 @@ import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,43 +46,46 @@ public class BigQueryClusterService {
     }
 
     private String generateQuery(RFASizePackRequest request, String volumeDeviationLevel) throws JsonProcessingException {
-        StringBuilder queryBuilder = new StringBuilder();
-        queryBuilder.append("WITH MyTable AS ( WITH data AS ( SELECT'")
-                .append(objectMapper.writeValueAsString(request.getColors())).append("' AS json_array ),")
-                .append(" plan_hierarchy AS ( select ")
-                .append(request.getPlan_id())
-                .append(" AS plan_id ,")
-                .append(request.getRpt_lvl_0_nbr())
-                .append(" AS rpt_lvl_0_nbr, ")
-                .append(request.getRpt_lvl_1_nbr())
-                .append(" AS rpt_lvl_1_nbr, ")
-                .append(request.getRpt_lvl_2_nbr())
-                .append(" AS rpt_lvl_2_nbr, ")
-                .append(request.getRpt_lvl_3_nbr())
-                .append(" AS rpt_lvl_3_nbr, ")
-                .append(request.getRpt_lvl_4_nbr())
-                .append(" AS rpt_lvl_4_nbr, ")
-                .append(request.getFineline_nbr())
-                .append(" AS fineline_nbr ,")
-                .append(request.getLike_fineline_nbr())
-                .append(" AS like_fineline_nbr, ")
-                .append(request.getLike_lvl1_nbr())
-                .append(" AS like_rpt_lvl_1_nbr ,")
-                .append(request.getFiscal_year())
-                .append(" AS fiscal_year , '")
-                .append(request.getSeasonCode())
-                .append("' AS season_code ")
-                .append("), ");
+        String queryParams = "WITH MyTable AS ( \n" +
+                        "WITH data AS (\n" +
+                        "    SELECT 'in_colors' AS json_array\n" +
+                        "),\n" +
+                        "plan_hierarchy AS (\n" +
+                        "    SELECT in_plan_id AS plan_id,\n" +
+                        "        in_rpt_lvl_0_nbr AS rpt_lvl_0_nbr,\n" +
+                        "       in_rpt_lvl_1_nbr AS rpt_lvl_1_nbr,\n" +
+                        "        in_rpt_lvl_2_nbr AS rpt_lvl_2_nbr,\n" +
+                        "        in_rpt_lvl_3_nbr AS rpt_lvl_3_nbr,\n" +
+                        "        in_rpt_lvl_4_nbr AS rpt_lvl_4_nbr,\n" +
+                        "        in_fineline_nbr AS fineline_nbr,\n" +
+                        "        in_like_fineline_nbr AS like_fineline_nbr,\n" +
+                        "        in_like_rpt_lvl_1_nbr AS like_rpt_lvl_1_nbr,\n" +
+                        "        in_fiscal_year AS fiscal_year,\n" +
+                        "        \"in_season_code\" AS season_code\n" +
+                        "), ";
+        String query =  queryParams
+                .replace("in_colors",objectMapper.writeValueAsString(request.getColors()))
+                .replace("in_plan_id", String.valueOf(request.getPlan_id()))
+                .replace("in_rpt_lvl_0_nbr", String.valueOf(request.getRpt_lvl_0_nbr()))
+                .replace("in_rpt_lvl_1_nbr", String.valueOf(request.getRpt_lvl_1_nbr()))
+                .replace("in_rpt_lvl_2_nbr", String.valueOf(request.getRpt_lvl_2_nbr()))
+                .replace("in_rpt_lvl_3_nbr", String.valueOf(request.getRpt_lvl_3_nbr()))
+                .replace("in_rpt_lvl_4_nbr", String.valueOf(request.getRpt_lvl_4_nbr()))
+                .replace("in_fineline_nbr", String.valueOf(request.getFineline_nbr()))
+                .replace("in_like_fineline_nbr", String.valueOf(request.getLike_fineline_nbr()))
+                .replace("in_like_rpt_lvl_1_nbr", String.valueOf(request.getLike_lvl1_nbr()))
+                .replace("in_fiscal_year", String.valueOf(request.getFiscal_year()))
+                .replace("in_season_code", String.valueOf(request.getSeasonCode()));
 
         if (volumeDeviationLevel.equalsIgnoreCase("fineline")) {
-            queryBuilder.append(findFineLineQuery());
+            query += findFineLineQuery();
         } else if (volumeDeviationLevel.equalsIgnoreCase("subcategory")) {
-            queryBuilder.append(findSubCatQuery());
+            query+=findSubCatQuery();
         } else {
-            queryBuilder.append(findCatQuery());
+            query+=findCatQuery();
         }
-        queryBuilder.append(") SELECT TO_JSON_STRING(gcpTable) AS json FROM MyTable AS gcpTable;");
-        return queryBuilder.toString();
+        query+=") SELECT TO_JSON_STRING(gcpTable) AS json FROM MyTable AS gcpTable;";
+        return query;
     }
 
     private String findCatQuery() {
