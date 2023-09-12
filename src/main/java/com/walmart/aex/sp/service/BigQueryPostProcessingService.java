@@ -31,13 +31,11 @@ public class BigQueryPostProcessingService {
         TableResult resultsIs = bigQuery.query(queryConfigIs);
         List<RFASizePackData> results = new ArrayList<>();
         resultsIs.iterateAll().forEach(rows -> rows.forEach(row -> {
-            RFASizePackData rowValue = null;
             try {
-                rowValue = objectMapper.readValue(row.getValue().toString(), RFASizePackData.class);
+                results.add(objectMapper.readValue(row.getValue().toString(), RFASizePackData.class));
             } catch (JsonProcessingException e) {
                 log.error("Exception ", e);
             }
-            results.add(rowValue);
         }));
         return results;
     }
