@@ -18,13 +18,13 @@ import java.util.List;
 
 @Slf4j
 @Service
-public class BigQueryPostProcessingService {
+public class BigQueryClusterService {
 
     private final ObjectMapper objectMapper ;
     @ManagedConfiguration
     BigQueryConnectionProperties bigQueryConnectionProperties;
 
-    BigQueryPostProcessingService (ObjectMapper objectMapper) {
+    BigQueryClusterService (ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
 
