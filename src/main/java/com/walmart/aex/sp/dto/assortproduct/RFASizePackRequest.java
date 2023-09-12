@@ -26,6 +26,8 @@ public class RFASizePackRequest {
 
     private Integer like_fineline_nbr;
     private Integer like_lvl1_nbr;
+    private Integer like_lvl3_nbr;
+    private Integer like_lvl4_nbr;
     private List<ColorDefinition> colors;
 
 
