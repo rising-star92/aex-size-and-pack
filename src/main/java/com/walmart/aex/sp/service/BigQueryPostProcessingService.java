@@ -41,26 +41,38 @@ public class BigQueryPostProcessingService {
     }
 
     private String generateQuery(RFASizePackRequest request, String volumeDeviationLevel) throws JsonProcessingException {
-        String colorJson = "WITH data AS ( SELECT" + objectMapper.writeValueAsString(request.getColors()) + " AS json_array ),";
-        String planHierarchy = " plan_hierarchy AS ( select " +
-                request.getPlan_id() + " AS plan_id " +
-                request.getRpt_lvl_0_nbr() + " AS rpt_lvl_0_nbr " +
-                request.getRpt_lvl_1_nbr() + " AS rpt_lvl_1_nbr " +
-                request.getRpt_lvl_2_nbr() + " AS rpt_lvl_2_nbr " +
-                request.getRpt_lvl_3_nbr() + " AS rpt_lvl_3_nbr " +
-                request.getRpt_lvl_4_nbr() + " AS rpt_lvl_4_nbr " +
-                request.getFineline_nbr() + " AS fineline_nbr " +
-                request.getLike_fineline_nbr() + " AS like_fineline_nbr " +
-                request.getLike_lvl1_nbr() + " AS like_lvl1_nbr " +
-                request.getFiscal_year() + " AS fiscal_year " +
-                request.getSeasonCode() + " AS season_code " +
-                "), ";
-        StringBuilder queryBuilder = new StringBuilder(colorJson + planHierarchy);
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append("WITH data AS ( SELECT")
+                .append(objectMapper.writeValueAsString(request.getColors())).append(" AS json_array ),")
+                .append(" plan_hierarchy AS ( select ")
+                .append(request.getPlan_id())
+                .append(" AS plan_id ")
+                .append(request.getRpt_lvl_0_nbr())
+                .append(" AS rpt_lvl_0_nbr ")
+                .append(request.getRpt_lvl_1_nbr())
+                .append(" AS rpt_lvl_1_nbr ")
+                .append(request.getRpt_lvl_2_nbr())
+                .append(" AS rpt_lvl_2_nbr ")
+                .append(request.getRpt_lvl_3_nbr())
+                .append(" AS rpt_lvl_3_nbr ")
+                .append(request.getRpt_lvl_4_nbr())
+                .append(" AS rpt_lvl_4_nbr ")
+                .append(request.getFineline_nbr())
+                .append(" AS fineline_nbr ")
+                .append(request.getLike_fineline_nbr())
+                .append(" AS like_fineline_nbr ")
+                .append(request.getLike_lvl1_nbr())
+                .append(" AS like_lvl1_nbr ")
+                .append(request.getFiscal_year())
+                .append(" AS fiscal_year ")
+                .append(request.getSeasonCode())
+                .append(" AS season_code ")
+                .append("), ");
+
         if (volumeDeviationLevel.equalsIgnoreCase("fineline")) {
             queryBuilder.append(findFineLineQuery());
         } else if (volumeDeviationLevel.equalsIgnoreCase("subcategory")) {
             queryBuilder.append(findSubCatQuery());
-
         } else {
             queryBuilder.append(findCatQuery());
         }
