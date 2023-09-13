@@ -39,7 +39,7 @@ public class LinePlanWeeksServiceImpl implements ChannelWeeksService {
         data.put("finelineIds", Collections.singletonList(fineLineNbr));
         GraphQLResponse graphQLResponse = null;
         try {
-            graphQLResponse = graphQLService.post(graphQLProperties.getLinePlanWeeksUrl(),
+            graphQLResponse = graphQLService.post(graphQLProperties.getLinePlanUrl(),
                     graphQLProperties.getLinePlanWeeksQuery(),
                     headers, data);
         } catch (SizeAndPackException e) {

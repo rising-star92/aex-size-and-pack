@@ -71,8 +71,11 @@ public interface GraphQLProperties {
     @Property(propertyName = "buy.qty.line.plan.weeks.query")
     String getLinePlanWeeksQuery();
 
-    @Property(propertyName = "buy.qty.line.plan.weeks.url")
-    String getLinePlanWeeksUrl();
+    @Property(propertyName = "buy.qty.line.plan.url")
+    String getLinePlanUrl();
+
+    @Property(propertyName = "buy.qty.line.plan.like.fineline.query")
+    String getLinePlanLikeFinelineQuery();
 
     @Property(propertyName = "strategy.vg.deviation.level")
     String getStrategyVolumeDeviationLevel();

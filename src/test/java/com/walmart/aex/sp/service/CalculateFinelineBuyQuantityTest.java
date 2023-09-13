@@ -3,7 +3,9 @@ package com.walmart.aex.sp.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.assortproduct.APResponse;
-import com.walmart.aex.sp.dto.bqfp.*;
+import com.walmart.aex.sp.dto.bqfp.BQFPResponse;
+import com.walmart.aex.sp.dto.bqfp.CustomerChoice;
+import com.walmart.aex.sp.dto.bqfp.Style;
 import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixture;
 import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixtureSize;
@@ -23,6 +25,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -35,9 +38,7 @@ import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
@@ -136,19 +137,27 @@ class CalculateFinelineBuyQuantityTest {
     @Mock
     BuyQtyProperties buyQtyProperties;
 
+    @Mock
+    MidasServiceCall midasServiceCall;
+
+    @Mock
+    LinePlanService linePlanService;
+
+    @Mock
+    BigQueryClusterService bigQueryClusterService;
 
    @Spy
    ObjectMapper mapper = new ObjectMapper();
 
     @BeforeEach
 
-    void setUp() {
+    void setUp() throws SizeAndPackException {
        MockitoAnnotations.openMocks(this);
        calculateInitialSetQuantityService = new CalculateInitialSetQuantityService();
        calculateBumpPackQtyService = new CalculateBumpPackQtyService();
        buyQuantityConstraintService = new BuyQuantityConstraintService(calculateBumpPackQtyService);
        addStoreBuyQuantityService = new AddStoreBuyQuantityService(mapper, calculateBumpPackQtyService, buyQuantityConstraintService, calculateInitialSetQuantityService, buyQtyProperties);
-       replenishmentsOptimizationServices=new ReplenishmentsOptimizationService(deptAdminRuleService);
+       replenishmentsOptimizationServices = new ReplenishmentsOptimizationService(deptAdminRuleService);
        BuyQtyReplenishmentMapperService buyQtyReplenishmentMapperService = new BuyQtyReplenishmentMapperService();
        replenishmentService = new ReplenishmentService(fineLineReplenishmentRepository, spCustomerChoiceReplenishmentRepository, sizeListReplenishmentRepository, catgReplnPkConsRepository,
                subCatgReplnPkConsRepository, finelineReplnPkConsRepository, styleReplnConsRepository, ccReplnConsRepository,
@@ -156,19 +165,20 @@ class CalculateFinelineBuyQuantityTest {
                strategyFetchService, buyQtyCommonUtil, sizeLevelReplenishmentRepository,sizeLevelReplenishmentMapper);
        calculateOnlineFinelineBuyQuantity = new  CalculateOnlineFinelineBuyQuantity (mapper, buyQtyReplenishmentMapperService,replenishmentsOptimizationServices, replenishmentService );
        calculateFinelineBuyQuantity = new CalculateFinelineBuyQuantity(bqfpService, mapper, buyQtyReplenishmentMapperService, calculateOnlineFinelineBuyQuantity,
-               strategyFetchService,addStoreBuyQuantityService, buyQuantityConstraintService, deptAdminRuleService, replenishmentService, replenishmentsOptimizationServices);
-       lenient().when(buyQtyProperties.getOneUnitPerStoreFeatureFlag()).thenReturn("true");
+               strategyFetchService,addStoreBuyQuantityService, buyQuantityConstraintService, deptAdminRuleService, replenishmentService, replenishmentsOptimizationServices,
+               midasServiceCall, linePlanService, bigQueryClusterService);
+       setProperties();
     }
 
     @Test
-    void initialSetCalculationTest() throws SizeAndPackException, IOException {
+    void initialSetCalculationTest() throws SizeAndPackException, IOException, InterruptedException {
        final String path = "/plan72fineline1500";
        BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
        APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
        BuyQtyResponse buyQtyResponse = buyQtyResponseFromJson(path.concat("/BuyQtyResponse"));
        when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
        when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
-       when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
+       when(bigQueryClusterService.fetchRFASizePackData(any(), any())).thenReturn(rfaResponse.getRfaSizePackData());
        when(deptAdminRuleService.getInitialThreshold(anyLong(), anyInt())).thenReturn(2);
        CalculateBuyQtyRequest request = create("store", 50000, 34, 1488, 9071, 7205, 1500, 12L);
        CalculateBuyQtyParallelRequest pRequest = createFromRequest(request);
@@ -204,14 +214,14 @@ class CalculateFinelineBuyQuantityTest {
     }
 
     @Test
-    void replenishmentCalculationTest() throws IOException, SizeAndPackException {
+    void replenishmentCalculationTest() throws IOException, SizeAndPackException, InterruptedException {
         final String path = "/plan72fineline4440";
         BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
         APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
         BuyQtyResponse buyQtyResponse = buyQtyResponseFromJson(path.concat("/BuyQtyResponse"));
         when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
         when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
-        when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
+        when(bigQueryClusterService.fetchRFASizePackData(any(), any())).thenReturn(rfaResponse.getRfaSizePackData());
         CalculateBuyQtyRequest request = create("store", 50000, 34, 1488, 9074, 7207, 4440, 12L);
         CalculateBuyQtyParallelRequest pRequest = createFromRequest(request);
 
@@ -234,14 +244,14 @@ class CalculateFinelineBuyQuantityTest {
     }
 
     @Test
-    void bumpSetCalculationTest() throws IOException, SizeAndPackException {
+    void bumpSetCalculationTest() throws IOException, SizeAndPackException, InterruptedException {
         final String path = "/plan72fineline4440";
         BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponseWithBumpSet"));
         APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
         BuyQtyResponse buyQtyResponse = buyQtyResponseFromJson(path.concat("/BuyQtyResponse"));
         when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
         when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
-        when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
+        when(bigQueryClusterService.fetchRFASizePackData(any(), any())).thenReturn(rfaResponse.getRfaSizePackData());
         CalculateBuyQtyRequest request = create("store", 50000, 34, 1488, 9074, 7207, 4440, 12L);
         CalculateBuyQtyParallelRequest pRequest = createFromRequest(request);
 
@@ -285,7 +295,7 @@ class CalculateFinelineBuyQuantityTest {
     }
 
     @Test
-    void strategyVolumeDeviationLevelCategoryTest() throws SizeAndPackException, IOException {
+    void strategyVolumeDeviationLevelCategoryTest() throws SizeAndPackException, IOException, InterruptedException {
         final String path = "/plan72fineline1500";
         BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
         APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
@@ -293,7 +303,7 @@ class CalculateFinelineBuyQuantityTest {
         StrategyVolumeDeviationResponse strategyVolumeDeviationResponse = strategyVolumeDeviationResponseFromJsonFromJson(path.concat("/StrategyVolumeDeviationCategoryResponse"));
         when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
         when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
-        when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
+        when(bigQueryClusterService.fetchRFASizePackData(any(), any())).thenReturn(rfaResponse.getRfaSizePackData());
         when(strategyFetchService.getStrategyVolumeDeviation(anyLong(), anyInt())).thenReturn(strategyVolumeDeviationResponse);
         when(deptAdminRuleService.getInitialThreshold(anyLong(), anyInt())).thenReturn(2);
         CalculateBuyQtyRequest request = create("store", 50000, 34, 1488, 9071, 7205, 1500, 12L);
@@ -308,7 +318,7 @@ class CalculateFinelineBuyQuantityTest {
     }
 
     @Test
-    void strategyVolumeDeviationLevelSubCategoryTest() throws SizeAndPackException, IOException {
+    void strategyVolumeDeviationLevelSubCategoryTest() throws SizeAndPackException, IOException, InterruptedException {
         final String path = "/plan72fineline1500";
         BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
         APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
@@ -316,7 +326,7 @@ class CalculateFinelineBuyQuantityTest {
         StrategyVolumeDeviationResponse strategyVolumeDeviationResponse = strategyVolumeDeviationResponseFromJsonFromJson(path.concat("/StrategyVolumeDeviationSubCategoryResponse"));
         when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
         when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
-        when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
+        when(bigQueryClusterService.fetchRFASizePackData(any(), any())).thenReturn(rfaResponse.getRfaSizePackData());
         when(strategyFetchService.getStrategyVolumeDeviation(anyLong(), anyInt())).thenReturn(strategyVolumeDeviationResponse);
         CalculateBuyQtyRequest request = create("store", 50000, 34, 1488, 9071, 7205, 1500, 12L);
         CalculateBuyQtyParallelRequest pRequest = createFromRequest(request);
@@ -330,7 +340,7 @@ class CalculateFinelineBuyQuantityTest {
     }
 
     @Test
-    void strategyVolumeDeviationLevelFinelineTest() throws SizeAndPackException, IOException {
+    void strategyVolumeDeviationLevelFinelineTest() throws SizeAndPackException, IOException, InterruptedException {
         final String path = "/plan72fineline1500";
         BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
         APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
@@ -338,7 +348,7 @@ class CalculateFinelineBuyQuantityTest {
         StrategyVolumeDeviationResponse strategyVolumeDeviationResponse = strategyVolumeDeviationResponseFromJsonFromJson(path.concat("/StrategyVolumeDeviationFinelineResponse"));
         when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
         when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
-        when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
+        when(bigQueryClusterService.fetchRFASizePackData(any(), any())).thenReturn(rfaResponse.getRfaSizePackData());
         when(strategyFetchService.getStrategyVolumeDeviation(anyLong(), anyInt())).thenReturn(strategyVolumeDeviationResponse);
         when(deptAdminRuleService.getInitialThreshold(anyLong(), anyInt())).thenReturn(2);
         CalculateBuyQtyRequest request = create("store", 50000, 34, 1488, 9071, 7205, 1500, 12L);
@@ -353,14 +363,14 @@ class CalculateFinelineBuyQuantityTest {
     }
 
     @Test
-    void minReplenishmentRuleWithoutInitialSet() throws SizeAndPackException, IOException {
+    void minReplenishmentRuleWithoutInitialSet() throws SizeAndPackException, IOException, InterruptedException {
         final String path = "/plan236fineline5414";
         BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
         APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
         BuyQtyResponse buyQtyResponse = buyQtyResponseFromJson(path.concat("/BuyQtyResponse"));
         when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
         when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
-        when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
+        when(bigQueryClusterService.fetchRFASizePackData(any(), any())).thenReturn(rfaResponse.getRfaSizePackData());
         when(deptAdminRuleService.getInitialThreshold(anyLong(), anyInt())).thenReturn(2);
         CalculateBuyQtyRequest request = create("store", 50000, 34, 6420, 12238, 31526, 5414, 236L);
         CalculateBuyQtyParallelRequest pRequest = createFromRequest(request);
@@ -509,14 +519,14 @@ class CalculateFinelineBuyQuantityTest {
     }
 
     @Test
-    void multiMerchMethodTest() throws IOException, SizeAndPackException {
+    void multiMerchMethodTest() throws IOException, SizeAndPackException, InterruptedException {
         final String path = "/plan72fineline250";
         BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
         APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
         BuyQtyResponse buyQtyResponse = buyQtyResponseFromJson(path.concat("/BuyQtyResponse"));
         when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
         when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
-        when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
+        when(bigQueryClusterService.fetchRFASizePackData(any(), any())).thenReturn(rfaResponse.getRfaSizePackData());
         CalculateBuyQtyRequest request = create("store", 50000, 23, 3669, 8244, 16906, 250, 12L);
         CalculateBuyQtyParallelRequest pRequest = createFromRequest(request);
 
@@ -575,14 +585,14 @@ class CalculateFinelineBuyQuantityTest {
     }
 
     @Test
-    void test_calculateFinelineBuyQtyShouldUpdateBumpPackCount() throws SizeAndPackException, IOException {
+    void test_calculateFinelineBuyQtyShouldUpdateBumpPackCount() throws SizeAndPackException, IOException, InterruptedException {
         final String path = "/plan72fineline1500";
         BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponseWithBumpList"));
         APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
         BuyQtyResponse buyQtyResponse = buyQtyResponseFromJson(path.concat("/BuyQtyResponse"));
         when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
         when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
-        when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
+        when(bigQueryClusterService.fetchRFASizePackData(any(), any())).thenReturn(rfaResponse.getRfaSizePackData());
         when(deptAdminRuleService.getInitialThreshold(anyLong(), anyInt())).thenReturn(2);
         CalculateBuyQtyRequest request = create("store", 50000, 34, 1488, 9071, 7205, 1500, 12L);
         CalculateBuyQtyParallelRequest pRequest = createFromRequest(request);
@@ -628,7 +638,7 @@ class CalculateFinelineBuyQuantityTest {
     }
 
     @Test
-    void test_calculateInitialSetWithAtleast1UnitPerStore() throws SizeAndPackException, IOException {
+    void test_calculateInitialSetWithAtleast1UnitPerStore() throws SizeAndPackException, IOException, InterruptedException {
         final String path = "/plan69fineline468";
         BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
         APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
@@ -636,7 +646,7 @@ class CalculateFinelineBuyQuantityTest {
         StrategyVolumeDeviationResponse strategyVolumeDeviationResponse = strategyVolumeDeviationResponseFromJsonFromJson(path.concat("/VDResponse"));
         when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
         when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
-        when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
+        when(bigQueryClusterService.fetchRFASizePackData(any(), any())).thenReturn(rfaResponse.getRfaSizePackData());
         when(strategyFetchService.getStrategyVolumeDeviation(anyLong(), anyInt())).thenReturn(strategyVolumeDeviationResponse);
         when(deptAdminRuleService.getInitialThreshold(anyLong(), anyInt())).thenReturn(2);
         when(deptAdminRuleService.getReplenishmentThreshold(anyLong(), anyInt())).thenReturn(500);
@@ -675,7 +685,7 @@ class CalculateFinelineBuyQuantityTest {
     }
 
     @Test
-    void test_calculateInitialSetWithCombinationOfZeroAndGreaterThanZeroInitialSet() throws SizeAndPackException, IOException {
+    void test_calculateInitialSetWithCombinationOfZeroAndGreaterThanZeroInitialSet() throws SizeAndPackException, IOException, InterruptedException {
         final String path = "/plan133fineline3347";
         BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
         APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
@@ -683,7 +693,7 @@ class CalculateFinelineBuyQuantityTest {
         StrategyVolumeDeviationResponse strategyVolumeDeviationResponse = strategyVolumeDeviationResponseFromJsonFromJson(path.concat("/VDResponse"));
         when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
         when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
-        when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
+        when(bigQueryClusterService.fetchRFASizePackData(any(), any())).thenReturn(rfaResponse.getRfaSizePackData());
         when(strategyFetchService.getStrategyVolumeDeviation(anyLong(), anyInt())).thenReturn(strategyVolumeDeviationResponse);
         when(deptAdminRuleService.getInitialThreshold(anyLong(), anyInt())).thenReturn(2);
         when(deptAdminRuleService.getReplenishmentThreshold(anyLong(), anyInt())).thenReturn(750);
@@ -720,7 +730,7 @@ class CalculateFinelineBuyQuantityTest {
     }
 
     @Test
-    void test_calculateInitialSetWithCombinationOfZeroAndGreaterThanZeroInitialSet1() throws SizeAndPackException, IOException {
+    void test_calculateInitialSetWithCombinationOfZeroAndGreaterThanZeroInitialSet1() throws SizeAndPackException, IOException, InterruptedException {
         final String path = "/plan73fineline2810";
         BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
         APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
@@ -728,7 +738,7 @@ class CalculateFinelineBuyQuantityTest {
         StrategyVolumeDeviationResponse strategyVolumeDeviationResponse = strategyVolumeDeviationResponseFromJsonFromJson(path.concat("/VDResponse"));
         when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
         when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
-        when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
+        when(bigQueryClusterService.fetchRFASizePackData(any(), any())).thenReturn(rfaResponse.getRfaSizePackData());
         when(strategyFetchService.getStrategyVolumeDeviation(anyLong(), anyInt())).thenReturn(strategyVolumeDeviationResponse);
         when(deptAdminRuleService.getInitialThreshold(anyLong(), anyInt())).thenReturn(2);
         when(deptAdminRuleService.getReplenishmentThreshold(anyLong(), anyInt())).thenReturn(2500);
@@ -766,6 +776,15 @@ class CalculateFinelineBuyQuantityTest {
                 .filter(Objects::nonNull)
                 .mapToDouble(storeQuantity -> Optional.ofNullable(storeQuantity.getTotalUnits()).orElse((double) 0))
                 .sum());
+    }
+
+    private void setProperties() throws SizeAndPackException {
+        ReflectionTestUtils.setField(calculateFinelineBuyQuantity, "buyQtyProperties", buyQtyProperties);
+
+        lenient().when(buyQtyProperties.getOneUnitPerStoreFeatureFlag()).thenReturn("true");
+        lenient().when(buyQtyProperties.getRFAFromGCPFeatureFlag()).thenReturn("true");
+        lenient().when(midasServiceCall.fetchColorFamilies(Mockito.anyString(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt())).thenReturn(List.of("DEFAULT"));
+        lenient().when(linePlanService.getLikeAssociation(Mockito.anyLong(), Mockito.anyInt())).thenReturn(null);
     }
 
 }

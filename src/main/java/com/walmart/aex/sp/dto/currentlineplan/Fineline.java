@@ -20,4 +20,5 @@ public class Fineline  implements Serializable {
    private String channel;
    private String eCommChannel;
    private Metrics metrics;
+   private LikeAssociation likeAssociation;
 }

@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class LinePlanWeeksServiceImplTest {
+class LinePlanWeeksServiceImplTest {
 
     @InjectMocks
     private LinePlanWeeksServiceImpl linePlanWeeksService;
@@ -34,11 +34,11 @@ public class LinePlanWeeksServiceImplTest {
     private GraphQLProperties graphQLProperties;
 
     @Test
-    public void test_getWeeksByFinelineShouldReturnLinePlanWeeksResponse() throws SizeAndPackException {
+    void test_getWeeksByFinelineShouldReturnLinePlanWeeksResponse() throws SizeAndPackException {
         when(graphQLProperties.getBuyQtyLinePlanConsumerId()).thenReturn("testConsumerId");
         when(graphQLProperties.getBuyQtyLinePlanConsumerName()).thenReturn("testPlanConsumerName");
         when(graphQLProperties.getBuyQtyLinePlanConsumerEnv()).thenReturn("testENV");
-        when(graphQLProperties.getLinePlanWeeksUrl()).thenReturn("testURL");
+        when(graphQLProperties.getLinePlanUrl()).thenReturn("testURL");
         when(graphQLProperties.getLinePlanWeeksQuery()).thenReturn("testQuery");
         Map<String, String> headers = new HashMap<>();
         headers.put("WM_CONSUMER.ID", graphQLProperties.getBuyQtyLinePlanConsumerId());
@@ -76,11 +76,11 @@ public class LinePlanWeeksServiceImplTest {
     }
 
     @Test
-    public void test_getWeeksByFinelineShouldReturnNullWhenExceptionOccurs() throws SizeAndPackException {
+    void test_getWeeksByFinelineShouldReturnNullWhenExceptionOccurs() throws SizeAndPackException {
         when(graphQLProperties.getBuyQtyLinePlanConsumerId()).thenReturn("testConsumerId");
         when(graphQLProperties.getBuyQtyLinePlanConsumerName()).thenReturn("testPlanConsumerName");
         when(graphQLProperties.getBuyQtyLinePlanConsumerEnv()).thenReturn("testENV");
-        when(graphQLProperties.getLinePlanWeeksUrl()).thenReturn("testURL");
+        when(graphQLProperties.getLinePlanUrl()).thenReturn("testURL");
         when(graphQLProperties.getLinePlanWeeksQuery()).thenReturn("testQuery");
         Map<String, String> headers = new HashMap<>();
         headers.put("WM_CONSUMER.ID", graphQLProperties.getBuyQtyLinePlanConsumerId());

@@ -26,4 +26,7 @@ public interface MidasApiProperties {
 
    @Property(propertyName = "midas.historicalSizeMetricsQuery")
    String getMidasHistoricalMetricsQuery();
+
+   @Property(propertyName = "midas.colorFamiliesQuery")
+   String getMidasColorFamiliesQuery();
 }
