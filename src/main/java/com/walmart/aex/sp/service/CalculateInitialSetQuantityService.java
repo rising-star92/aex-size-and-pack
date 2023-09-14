@@ -41,13 +41,13 @@ public class CalculateInitialSetQuantityService {
                 // explicitly setting perStoreQty as 1
                  perStoreQty = 1.0;
                 // flag to identify this particular InitialSet is set to 1
-                initialSetQuantity.setZeroQtyPerStore(true); // rep
+                initialSetQuantity.setOneUnitPerStore(true); // rep
             }
             isQty = perStoreQty * rfaSizePackData.getStore_cnt();
         }
         initialSetQuantity.setIsQty(isQty);
         initialSetQuantity.setPerStoreQty(perStoreQty);
-        log.debug("| IS before constraints and isZeroQtyPerStore | : {} | {} | {} | {}  ", sizeDto.getSizeDesc(), isQty, perStoreQty, initialSetQuantity.isZeroQtyPerStore());
+        log.debug("| IS before constraints and isOneUnitPerStore | : {} | {} | {} | {}  ", sizeDto.getSizeDesc(), isQty, perStoreQty, initialSetQuantity.isOneUnitPerStore());
         return initialSetQuantity;
     }
 }

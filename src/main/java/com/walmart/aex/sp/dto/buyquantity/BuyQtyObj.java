@@ -9,5 +9,6 @@ import java.util.List;
 public class BuyQtyObj {
     private BuyQtyStoreObj buyQtyStoreObj;
     private List<Replenishment> replenishments;
+    private List<CalculateQuantityBySize> calculateQuantityBySizes;
     private long totalReplenishment;
 }

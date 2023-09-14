@@ -136,7 +136,7 @@ public class AddStoreBuyQuantityService {
         double perStoreQty = initialSetQuantity.getPerStoreQty();
         double isQty = initialSetQuantity.getIsQty();
         // Based on the flag which we get from calculateInitialSetQty method to figure our which one is explicitly been set to 1
-        if (initialSetQuantity.isZeroQtyPerStore() && (!CollectionUtils.isEmpty(buyQtyObj.getReplenishments()))) {
+        if (initialSetQuantity.isOneUnitPerStore() && (!CollectionUtils.isEmpty(buyQtyObj.getReplenishments()))) {
             long totalReplenishment = getTotalReplenishment(buyQtyObj);
             if (totalReplenishment > 0) {
                 double totalReducedReplenishment = rfaSizePackData.getStore_cnt();
