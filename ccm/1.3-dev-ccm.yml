@@ -148,11 +148,6 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "true"
-      "buyQty.rfaFromGcpFlag":
-        description: "Feature flag to enable the logic for fetching RFA data directly from GCP"
-        type: "STRING"
-        kind: "SINGLE"
-        defaultValue: "true"
   bqfpServiceConfig:
     description: ""
     resolutionPaths:

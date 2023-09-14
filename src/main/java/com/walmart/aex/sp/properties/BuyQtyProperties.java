@@ -16,7 +16,4 @@ public interface BuyQtyProperties {
 
     @Property(propertyName = "initialSet.oneUnitPerStoreFlag")
     String getOneUnitPerStoreFeatureFlag();
-
-    @Property(propertyName = "buyQty.rfaFromGcpFlag")
-    String getRFAFromGCPFeatureFlag();
 }

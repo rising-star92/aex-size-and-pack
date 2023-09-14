@@ -25,7 +25,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -781,7 +780,6 @@ class CalculateFinelineBuyQuantityTest {
     @Test
     void test_calculateBuyQtyWithGCPPayload() throws SizeAndPackException, IOException, InterruptedException {
         final String path = "/plan123fineline771";
-        when(buyQtyProperties.getRFAFromGCPFeatureFlag()).thenReturn("true");
         BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
         APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
         BuyQtyResponse buyQtyResponse = buyQtyResponseFromJson(path.concat("/BuyQtyResponse"));
@@ -799,7 +797,7 @@ class CalculateFinelineBuyQuantityTest {
         r.setMerchCatgReplPacks(new ArrayList<>());
         r.setSpFineLineChannelFixtures(new ArrayList<>());
 
-        CalculateBuyQtyResponse response = calculateFinelineBuyQuantity.calculateFinelineBuyQty(request, pRequest, r);
+        CalculateBuyQtyResponse response = calculateFinelineBuyQuantity.calculateFinelineBuyQtyV2(request, pRequest, r);
 
         SpFineLineChannelFixture fixture1 = response.getSpFineLineChannelFixtures().stream().
                 filter(f -> f.getSpFineLineChannelFixtureId().getFixtureTypeRollUpId().getFixtureTypeRollupId().equals(1)).findFirst().get();
@@ -825,10 +823,7 @@ class CalculateFinelineBuyQuantityTest {
     }
 
     private void setProperties() throws SizeAndPackException {
-        ReflectionTestUtils.setField(calculateFinelineBuyQuantity, "buyQtyProperties", buyQtyProperties);
-
         lenient().when(buyQtyProperties.getOneUnitPerStoreFeatureFlag()).thenReturn("true");
-        lenient().when(buyQtyProperties.getRFAFromGCPFeatureFlag()).thenReturn("false");
         lenient().when(midasServiceCall.fetchColorFamilies(Mockito.anyString(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt())).thenReturn(List.of("DEFAULT"));
         lenient().when(linePlanService.getLikeAssociation(Mockito.anyLong(), Mockito.anyInt())).thenReturn(null);
     }
