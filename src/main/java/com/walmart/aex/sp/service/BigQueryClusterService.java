@@ -114,7 +114,7 @@ public class BigQueryClusterService {
                 "    color_family,\n" +
                 "    size_cluster_id,\n" +
                 "    volume_group_cluster_id,\n" +
-                "    STRING_AGG(DISTINCT CAST(store_nbr AS STRING), ',') AS store_list,\n" +
+                "    CONCAT('[', STRING_AGG(DISTINCT CAST(store_nbr AS STRING), ', '), ']') AS store_list,\n" +
                 "    COUNT(DISTINCT store_nbr) AS store_cnt\n" +
                 "FROM(\n" +
                 "        SELECT rfa_output.rpt_lvl_0_nbr,\n" +
@@ -257,7 +257,7 @@ public class BigQueryClusterService {
                 "    color_family,\n" +
                 "    size_cluster_id,\n" +
                 "    volume_group_cluster_id,\n" +
-                "    STRING_AGG(DISTINCT CAST(store_nbr AS STRING), ',') AS store_list,\n" +
+                "    CONCAT('[', STRING_AGG(DISTINCT CAST(store_nbr AS STRING), ', '), ']') AS store_list,\n" +
                 "    COUNT(DISTINCT store_nbr) AS store_cnt\n" +
                 "FROM(\n" +
                 "        SELECT rfa_output.rpt_lvl_0_nbr,\n" +
@@ -410,7 +410,7 @@ public class BigQueryClusterService {
                 "    color_family,\n" +
                 "    size_cluster_id,\n" +
                 "    volume_group_cluster_id,\n" +
-                "    STRING_AGG(DISTINCT CAST(store_nbr AS STRING), ',') AS store_list,\n" +
+                "    CONCAT('[', STRING_AGG(DISTINCT CAST(store_nbr AS STRING), ', '), ']') AS store_list,\n" +
                 "    COUNT(DISTINCT store_nbr) AS store_cnt\n" +
                 "FROM(\n" +
                 "        SELECT rfa_output.rpt_lvl_0_nbr,\n" +
