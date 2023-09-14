@@ -300,13 +300,7 @@ public class AddStoreBuyQuantityService {
 
     private List<Integer> safeReadStoreList(String storeList) {
         try {
-            if (Boolean.parseBoolean(buyQtyProperties.getRFAFromGCPFeatureFlag())) {
-                List<String> stores = Arrays.asList(storeList.split(","));
-                return stores.stream().map(Integer::parseInt).collect(Collectors.toList());
-            }
-            else {
-                return Arrays.asList(objectMapper.readValue(storeList, Integer[].class));
-            }
+            return Arrays.asList(objectMapper.readValue(storeList, Integer[].class));
         } catch (JsonProcessingException e) {
             log.error("Error deserializing size object: {}", storeList);
             throw new CustomException("Error deserializing size object");
