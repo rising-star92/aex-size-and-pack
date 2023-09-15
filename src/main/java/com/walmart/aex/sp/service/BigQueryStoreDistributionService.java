@@ -37,10 +37,12 @@ import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
 @Slf4j
 public class BigQueryStoreDistributionService {
 
-	private static final ObjectMapper objectMapper = new ObjectMapper();
+	private final ObjectMapper objectMapper;
 	private final BQFPService bqfpService;
 	private final StrategyFetchService strategyFetchService;
 	private final GraphQLService graphQLService;
+
+	private final BigQuery bigQuery;
 
 	@ManagedConfiguration
 	private GraphQLProperties graphQLProperties;
@@ -48,10 +50,12 @@ public class BigQueryStoreDistributionService {
 	@ManagedConfiguration
 	BigQueryConnectionProperties bigQueryConnectionProperties;
 
-	public BigQueryStoreDistributionService(BQFPService bqfpService, StrategyFetchService strategyFetchService, GraphQLService graphQLService) {
+	public BigQueryStoreDistributionService(ObjectMapper objectMapper, BQFPService bqfpService, StrategyFetchService strategyFetchService, GraphQLService graphQLService, BigQuery bigQuery) {
+		this.objectMapper = objectMapper;
 		this.bqfpService = bqfpService;
 		this.strategyFetchService = strategyFetchService;
 		this.graphQLService = graphQLService;
+		this.bigQuery = bigQuery;
 	}
 
 	public StoreDistributionData getStoreDistributionData(PackData packData) {
@@ -72,7 +76,6 @@ public class BigQueryStoreDistributionService {
 			Long inStoreWeek = packData.getInStoreWeek();
 			String packId = packData.getPackId();
 			String planAndFineline = planId + "_" + fineline + PERCENT;
-			BigQuery bigQuery = BigQueryOptions.getDefaultInstance().getService();
 			if (!Boolean.parseBoolean(bigQueryConnectionProperties.getStoreDistributionFeatureFlag())) {
 				String storeDistributionQuery = getStoreDistributionQuery(parquetTableName, packOptOutputTableName,
 						planAndFineline, planId, fineline, inStoreWeek, packId);

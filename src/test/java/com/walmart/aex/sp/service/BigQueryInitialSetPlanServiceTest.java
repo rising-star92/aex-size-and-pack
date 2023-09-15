@@ -51,7 +51,7 @@ class BigQueryInitialSetPlanServiceTest {
     @BeforeEach
     void setUp() throws IOException {
         MockitoAnnotations.openMocks(this);
-        bigQueryInitialSetPlanService = new BigQueryInitialSetPlanService(bqfpService,strategyFetchService);
+        bigQueryInitialSetPlanService = new BigQueryInitialSetPlanService(bqfpService,strategyFetchService,bigQuery);
         ReflectionTestUtils.setField(bigQueryInitialSetPlanService, "bigQueryConnectionProperties", bigQueryConnectionProperties);
         setData();
         setProperties();
@@ -63,8 +63,6 @@ class BigQueryInitialSetPlanServiceTest {
         StrategyVolumeDeviationResponse volumeDeviationResponse = getVolumeDeviationStrategyResponse();
         when(strategyFetchService.getStrategyVolumeDeviation(planId, request.getFinelineNbr())).thenReturn(volumeDeviationResponse);
         try(MockedStatic<BigQueryOptions> mockBigQuery = mockStatic(BigQueryOptions.class)) {
-            mockBigQuery.when(BigQueryOptions::getDefaultInstance).thenReturn(bigQueryOptions);
-            when(bigQueryOptions.getService()).thenReturn(bigQuery);
             when(bigQuery.query(any(QueryJobConfiguration.class))).thenReturn(isResult);
             when(bqfpService.getBqfpResponse(anyInt(), anyInt())).thenReturn(bqfpResponse);
             List<InitialSetVolumeResponse> response = bigQueryInitialSetPlanService.getInitialAndBumpSetDetailsByVolumeCluster(planId,request);
@@ -82,8 +80,6 @@ class BigQueryInitialSetPlanServiceTest {
         Long planId = 73l;
         FinelineVolume request = getFinelineVolumeWithVolDeviation();
         try(MockedStatic<BigQueryOptions> mockBigQuery = mockStatic(BigQueryOptions.class)) {
-            mockBigQuery.when(BigQueryOptions::getDefaultInstance).thenReturn(bigQueryOptions);
-            when(bigQueryOptions.getService()).thenReturn(bigQuery);
             when(bigQuery.query(any(QueryJobConfiguration.class))).thenReturn(isResult);
             when(bqfpService.getBqfpResponse(anyInt(), anyInt())).thenReturn(bqfpResponse);
             List<InitialSetVolumeResponse> response = bigQueryInitialSetPlanService.getInitialAndBumpSetDetailsByVolumeCluster(planId,request);

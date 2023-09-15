@@ -18,15 +18,16 @@ import java.util.List;
 public class BigQueryClusterService {
 
     private final ObjectMapper objectMapper ;
+    private final BigQuery bigQuery;
     @ManagedConfiguration
     BigQueryConnectionProperties bigQueryConnectionProperties;
 
-    BigQueryClusterService (ObjectMapper objectMapper) {
+    public BigQueryClusterService(ObjectMapper objectMapper, BigQuery bigQuery) {
         this.objectMapper = objectMapper;
+        this.bigQuery = bigQuery;
     }
 
     public List<RFASizePackData> fetchRFASizePackData(RFASizePackRequest request, String volumeDeviationLevel) throws InterruptedException, JsonProcessingException {
-        BigQuery bigQuery = BigQueryOptions.getDefaultInstance().getService();
         QueryJobConfiguration queryConfig = QueryJobConfiguration.newBuilder(generateQuery(volumeDeviationLevel))
                 .addNamedParameter("colors", QueryParameterValue.string(objectMapper.writeValueAsString(request.getColors())))
                 .addNamedParameter("planId", QueryParameterValue.int64(request.getPlan_id()))
