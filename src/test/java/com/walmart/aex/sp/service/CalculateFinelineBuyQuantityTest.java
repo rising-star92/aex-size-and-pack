@@ -3,7 +3,9 @@ package com.walmart.aex.sp.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.assortproduct.APResponse;
-import com.walmart.aex.sp.dto.bqfp.*;
+import com.walmart.aex.sp.dto.bqfp.BQFPResponse;
+import com.walmart.aex.sp.dto.bqfp.CustomerChoice;
+import com.walmart.aex.sp.dto.bqfp.Style;
 import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixture;
 import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixtureSize;
@@ -35,9 +37,7 @@ import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
@@ -136,19 +136,27 @@ class CalculateFinelineBuyQuantityTest {
     @Mock
     BuyQtyProperties buyQtyProperties;
 
+    @Mock
+    MidasServiceCall midasServiceCall;
+
+    @Mock
+    LinePlanService linePlanService;
+
+    @Mock
+    BigQueryClusterService bigQueryClusterService;
 
    @Spy
    ObjectMapper mapper = new ObjectMapper();
 
     @BeforeEach
 
-    void setUp() {
+    void setUp() throws SizeAndPackException {
        MockitoAnnotations.openMocks(this);
        calculateInitialSetQuantityService = new CalculateInitialSetQuantityService();
        calculateBumpPackQtyService = new CalculateBumpPackQtyService();
        buyQuantityConstraintService = new BuyQuantityConstraintService(calculateBumpPackQtyService);
        addStoreBuyQuantityService = new AddStoreBuyQuantityService(mapper, calculateBumpPackQtyService, buyQuantityConstraintService, calculateInitialSetQuantityService, buyQtyProperties);
-       replenishmentsOptimizationServices=new ReplenishmentsOptimizationService(deptAdminRuleService);
+       replenishmentsOptimizationServices = new ReplenishmentsOptimizationService(deptAdminRuleService);
        BuyQtyReplenishmentMapperService buyQtyReplenishmentMapperService = new BuyQtyReplenishmentMapperService();
        replenishmentService = new ReplenishmentService(fineLineReplenishmentRepository, spCustomerChoiceReplenishmentRepository, sizeListReplenishmentRepository, catgReplnPkConsRepository,
                subCatgReplnPkConsRepository, finelineReplnPkConsRepository, styleReplnConsRepository, ccReplnConsRepository,
@@ -156,12 +164,13 @@ class CalculateFinelineBuyQuantityTest {
                strategyFetchService, buyQtyCommonUtil, sizeLevelReplenishmentRepository,sizeLevelReplenishmentMapper);
        calculateOnlineFinelineBuyQuantity = new  CalculateOnlineFinelineBuyQuantity (mapper, buyQtyReplenishmentMapperService,replenishmentsOptimizationServices, replenishmentService );
        calculateFinelineBuyQuantity = new CalculateFinelineBuyQuantity(bqfpService, mapper, buyQtyReplenishmentMapperService, calculateOnlineFinelineBuyQuantity,
-               strategyFetchService,addStoreBuyQuantityService, buyQuantityConstraintService, deptAdminRuleService, replenishmentService, replenishmentsOptimizationServices);
-       lenient().when(buyQtyProperties.getOneUnitPerStoreFeatureFlag()).thenReturn("true");
+               strategyFetchService,addStoreBuyQuantityService, buyQuantityConstraintService, deptAdminRuleService, replenishmentService, replenishmentsOptimizationServices,
+               midasServiceCall, linePlanService, bigQueryClusterService);
+       setProperties();
     }
 
     @Test
-    void initialSetCalculationTest() throws SizeAndPackException, IOException {
+    void initialSetCalculationTest() throws SizeAndPackException, IOException, InterruptedException {
        final String path = "/plan72fineline1500";
        BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
        APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
@@ -204,7 +213,7 @@ class CalculateFinelineBuyQuantityTest {
     }
 
     @Test
-    void replenishmentCalculationTest() throws IOException, SizeAndPackException {
+    void replenishmentCalculationTest() throws IOException, SizeAndPackException, InterruptedException {
         final String path = "/plan72fineline4440";
         BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
         APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
@@ -234,7 +243,7 @@ class CalculateFinelineBuyQuantityTest {
     }
 
     @Test
-    void bumpSetCalculationTest() throws IOException, SizeAndPackException {
+    void bumpSetCalculationTest() throws IOException, SizeAndPackException, InterruptedException {
         final String path = "/plan72fineline4440";
         BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponseWithBumpSet"));
         APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
@@ -285,7 +294,7 @@ class CalculateFinelineBuyQuantityTest {
     }
 
     @Test
-    void strategyVolumeDeviationLevelCategoryTest() throws SizeAndPackException, IOException {
+    void strategyVolumeDeviationLevelCategoryTest() throws SizeAndPackException, IOException, InterruptedException {
         final String path = "/plan72fineline1500";
         BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
         APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
@@ -308,7 +317,7 @@ class CalculateFinelineBuyQuantityTest {
     }
 
     @Test
-    void strategyVolumeDeviationLevelSubCategoryTest() throws SizeAndPackException, IOException {
+    void strategyVolumeDeviationLevelSubCategoryTest() throws SizeAndPackException, IOException, InterruptedException {
         final String path = "/plan72fineline1500";
         BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
         APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
@@ -330,7 +339,7 @@ class CalculateFinelineBuyQuantityTest {
     }
 
     @Test
-    void strategyVolumeDeviationLevelFinelineTest() throws SizeAndPackException, IOException {
+    void strategyVolumeDeviationLevelFinelineTest() throws SizeAndPackException, IOException, InterruptedException {
         final String path = "/plan72fineline1500";
         BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
         APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
@@ -353,7 +362,7 @@ class CalculateFinelineBuyQuantityTest {
     }
 
     @Test
-    void minReplenishmentRuleWithoutInitialSet() throws SizeAndPackException, IOException {
+    void minReplenishmentRuleWithoutInitialSet() throws SizeAndPackException, IOException, InterruptedException {
         final String path = "/plan236fineline5414";
         BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
         APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
@@ -509,7 +518,7 @@ class CalculateFinelineBuyQuantityTest {
     }
 
     @Test
-    void multiMerchMethodTest() throws IOException, SizeAndPackException {
+    void multiMerchMethodTest() throws IOException, SizeAndPackException, InterruptedException {
         final String path = "/plan72fineline250";
         BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
         APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
@@ -575,7 +584,7 @@ class CalculateFinelineBuyQuantityTest {
     }
 
     @Test
-    void test_calculateFinelineBuyQtyShouldUpdateBumpPackCount() throws SizeAndPackException, IOException {
+    void test_calculateFinelineBuyQtyShouldUpdateBumpPackCount() throws SizeAndPackException, IOException, InterruptedException {
         final String path = "/plan72fineline1500";
         BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponseWithBumpList"));
         APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
@@ -628,7 +637,7 @@ class CalculateFinelineBuyQuantityTest {
     }
 
     @Test
-    void test_calculateInitialSetWithAtleast1UnitPerStore() throws SizeAndPackException, IOException {
+    void test_calculateInitialSetWithAtleast1UnitPerStore() throws SizeAndPackException, IOException, InterruptedException {
         final String path = "/plan69fineline468";
         BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
         APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
@@ -675,7 +684,7 @@ class CalculateFinelineBuyQuantityTest {
     }
 
     @Test
-    void test_calculateInitialSetWithCombinationOfZeroAndGreaterThanZeroInitialSet() throws SizeAndPackException, IOException {
+    void test_calculateInitialSetWithCombinationOfZeroAndGreaterThanZeroInitialSet() throws SizeAndPackException, IOException, InterruptedException {
         final String path = "/plan133fineline3347";
         BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
         APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
@@ -720,7 +729,7 @@ class CalculateFinelineBuyQuantityTest {
     }
 
     @Test
-    void test_calculateInitialSetWithCombinationOfZeroAndGreaterThanZeroInitialSet1() throws SizeAndPackException, IOException {
+    void test_calculateInitialSetWithCombinationOfZeroAndGreaterThanZeroInitialSet1() throws SizeAndPackException, IOException, InterruptedException {
         final String path = "/plan73fineline2810";
         BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
         APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
@@ -766,6 +775,57 @@ class CalculateFinelineBuyQuantityTest {
                 .filter(Objects::nonNull)
                 .mapToDouble(storeQuantity -> Optional.ofNullable(storeQuantity.getTotalUnits()).orElse((double) 0))
                 .sum());
+    }
+
+    @Test
+    void test_calculateBuyQtyWithGCPPayload() throws SizeAndPackException, IOException, InterruptedException {
+        final String path = "/plan123fineline771";
+        BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
+        APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
+        BuyQtyResponse buyQtyResponse = buyQtyResponseFromJson(path.concat("/BuyQtyResponse"));
+        StrategyVolumeDeviationResponse strategyVolumeDeviationResponse = strategyVolumeDeviationResponseFromJsonFromJson(path.concat("/VDResponse"));
+        when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
+        when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
+        when(bigQueryClusterService.fetchRFASizePackData(any(), any())).thenReturn(rfaResponse.getRfaSizePackData());
+        when(strategyFetchService.getStrategyVolumeDeviation(anyLong(), anyInt())).thenReturn(strategyVolumeDeviationResponse);
+        when(deptAdminRuleService.getInitialThreshold(anyLong(), anyInt())).thenReturn(2);
+        when(deptAdminRuleService.getReplenishmentThreshold(anyLong(), anyInt())).thenReturn(500);
+        CalculateBuyQtyRequest request = create("store", 50000, 23, 3669, 7506, 16887, 771, 123L);
+        CalculateBuyQtyParallelRequest pRequest = createFromRequest(request);
+
+        CalculateBuyQtyResponse r = new CalculateBuyQtyResponse();
+        r.setMerchCatgReplPacks(new ArrayList<>());
+        r.setSpFineLineChannelFixtures(new ArrayList<>());
+
+        CalculateBuyQtyResponse response = calculateFinelineBuyQuantity.calculateFinelineBuyQtyV2(request, pRequest, r);
+
+        SpFineLineChannelFixture fixture1 = response.getSpFineLineChannelFixtures().stream().
+                filter(f -> f.getSpFineLineChannelFixtureId().getFixtureTypeRollUpId().getFixtureTypeRollupId().equals(1)).findFirst().get();
+        Set<SpCustomerChoiceChannelFixtureSize> fixture1Sizes = fixture1
+                .getSpStyleChannelFixtures().stream().filter(style -> style.getSpStyleChannelFixtureId().getStyleNbr().equals("23_771_1_25_002"))
+                .findFirst().get()
+                .getSpCustomerChoiceChannelFixture().stream().filter(cc -> cc.getSpCustomerChoiceChannelFixtureId().getCustomerChoice().equals("23_771_1_25_002_002"))
+                .findFirst().get().getSpCustomerChoiceChannelFixtureSize();
+
+        assertEquals(6, fixture1Sizes.size(), "Fixture 1 Should have 6 sizes present");
+        int fix1s = 2368;
+        int fix1m = 2572;
+        int fix1l = 2572;
+        int fix1xl = 2572;
+        int fix1xxl = 2610;
+        int fix1xxxl = 2328;
+        assertUnitValueBySize(fixture1Sizes, "S", fix1s, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
+        assertUnitValueBySize(fixture1Sizes, "M", fix1m, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
+        assertUnitValueBySize(fixture1Sizes, "L", fix1l, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
+        assertUnitValueBySize(fixture1Sizes, "XL", fix1xl, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
+        assertUnitValueBySize(fixture1Sizes, "2XL", fix1xxl, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
+        assertUnitValueBySize(fixture1Sizes, "3XL", fix1xxxl, SpCustomerChoiceChannelFixtureSize::getInitialSetQty);
+    }
+
+    private void setProperties() throws SizeAndPackException {
+        lenient().when(buyQtyProperties.getOneUnitPerStoreFeatureFlag()).thenReturn("true");
+        lenient().when(midasServiceCall.fetchColorFamilies(Mockito.anyString(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt())).thenReturn(List.of("DEFAULT"));
+        lenient().when(linePlanService.getLikeAssociation(Mockito.anyLong(), Mockito.anyInt())).thenReturn(null);
     }
 
 }

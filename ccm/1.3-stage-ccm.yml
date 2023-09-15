@@ -98,6 +98,11 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: '{"query":{"select":[{"field":"*"}],"from":"get_historical_size_metrics_fineline_cc","params":{"finelineNbr":%d,"lyCompWeekStart":%d,"lyCompWeekEnd":%d,"lvl0Nbr":%d,"lvl1Nbr":%d,"lvl2Nbr":%d,"lvl3Nbr":%d,"lvl4Nbr":%d,"channel":"%s"}}}'
+      "midas.colorFamiliesQuery":
+        "description": "Query for fetching color families"
+        "type": "STRING"
+        "kind": "SINGLE"
+        "defaultValue": '{"query":{"select":[{"field":"*"}],"from":"get_store_color_families","params":{"season":%s,"deptNbr":%d,"finelineNbr":%d,"year":%d}}}'
   httpConfig:
     description: "HTTP Configurations"
     resolutionPaths:
@@ -357,7 +362,7 @@ configDefinitions:
         description: "Consumer ID to call Assort Product"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "buy.qty.line.plan.consumer.id"
+        defaultValue: "93c617a1-31ec-4333-a819-683ef7514cc0"
       "buy.qty.line.plan.consumer.name":
         description: "Consumer service name"
         type: "STRING"
@@ -373,11 +378,16 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "query getLinePlanFinelines($planId : Int!, $finelineIds: [Int]!) {getLinePlanFinelines(planId : $planId, finelineIds: $finelineIds) {lvl3Nbr lvl4List {finelines {finelineName altFinelineName finelineId metrics {current {online {financialAttributes {transactableStart {wmYearWk} transactableEnd {wmYearWk}}}}}}}}}"
-      "buy.qty.line.plan.weeks.url":
+      "buy.qty.line.plan.url":
         description: "Get buy quantity Line Plan URL from buy quantity Service"
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "http://current-line-plan.aex.stg.walmart.net/graphql"
+      "buy.qty.line.plan.like.fineline.query":
+        description: "fetch likeFineline properties from LP"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "query getLinePlanFinelines($planId : Int!, $finelineIds: [Int]!) { getLinePlanFinelines(planId : $planId, finelineIds: $finelineIds) { lvl4List { finelines { finelineId likeAssociation { id name lvl0Nbr lvl1Nbr lvl2Nbr lvl3Nbr lvl4Nbr } } } } }"
       "strategy.vg.deviation.level":
         description: "Get Volume Deviation level fro strategy db"
         type: "STRING"
@@ -453,6 +463,31 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "analytics_data_stage"
+      "analytics.data.catg.volume.cluster":
+        description: "Category level Volume Cluster data from Data Science"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "svg_category_cluster"
+      "analytics.data.subcatg.volume.cluster":
+        description: "Sub Category level Volume Cluster data from Data Science"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "svg_subcategory_cluster"
+      "analytics.data.fineline.volume.cluster":
+        description: "Fineline level Volume Cluster data from Data Science"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "svg_fl_cluster"
+      "analytics.data.size.cluster":
+        description: "Size Cluster data from Data Science"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "sc_cluster"
+      "analytics.data.size.color.cluster":
+        description: "Size Cluster and Color data from Data Science"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "sco_cluster"
       "store.distribution.feature.flag":
         description: "enable v1/v2 of store distribution API"
         type: "STRING"

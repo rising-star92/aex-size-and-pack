@@ -27,7 +27,7 @@ public class BigQueryClusterService {
 
     public List<RFASizePackData> fetchRFASizePackData(RFASizePackRequest request, String volumeDeviationLevel) throws InterruptedException, JsonProcessingException {
         BigQuery bigQuery = BigQueryOptions.getDefaultInstance().getService();
-        QueryJobConfiguration queryConfigIs = QueryJobConfiguration.newBuilder(generateQuery(volumeDeviationLevel))
+        QueryJobConfiguration queryConfig = QueryJobConfiguration.newBuilder(generateQuery(volumeDeviationLevel))
                 .addNamedParameter("colors", QueryParameterValue.string(objectMapper.writeValueAsString(request.getColors())))
                 .addNamedParameter("planId", QueryParameterValue.int64(request.getPlan_id()))
                 .addNamedParameter("lvl0", QueryParameterValue.int64(request.getRpt_lvl_0_nbr()))
@@ -43,7 +43,7 @@ public class BigQueryClusterService {
                 .addNamedParameter("fiscalYear", QueryParameterValue.int64(request.getFiscal_year()))
                 .addNamedParameter("seasonCode", QueryParameterValue.string(request.getSeasonCode()))
                 .build();
-        TableResult resultsIs = bigQuery.query(queryConfigIs);
+        TableResult resultsIs = bigQuery.query(queryConfig);
         List<RFASizePackData> results = new ArrayList<>();
         resultsIs.iterateAll().forEach(rows -> rows.forEach(row -> {
             try {
@@ -56,6 +56,10 @@ public class BigQueryClusterService {
     }
 
     private String generateQuery(String volumeDeviationLevel)  {
+        String analyticsDataset = bigQueryConnectionProperties.getRFAProjectId() + "." + bigQueryConnectionProperties.getAnalyticsData();
+        String rfaCcTable = bigQueryConnectionProperties.getRFAProjectId() + "." + bigQueryConnectionProperties.getRFADataSetName() + "." + bigQueryConnectionProperties.getRFACCStageTable();
+        String sizeClusterTable = analyticsDataset + "." + bigQueryConnectionProperties.getSizeCluster();
+        String sizeColorClusterTable = analyticsDataset + "." + bigQueryConnectionProperties.getSizeColorCluster();
         String queryParams = "WITH MyTable AS ( \n" +
                         "WITH data AS (\n" +
                         "    SELECT @colors AS json_array\n" +
@@ -68,10 +72,10 @@ public class BigQueryClusterService {
                         "        @lvl3 AS rpt_lvl_3_nbr,\n" +
                         "        @lvl4 AS rpt_lvl_4_nbr,\n" +
                         "        @finelineNbr AS fineline_nbr,\n" +
-                        "        @likeFinelineNbr AS like_fineline_nbr,\n" +
                         "        @likeLvl1 AS like_rpt_lvl_1_nbr,\n" +
                         "        @likeLvl3 AS like_rpt_lvl_3_nbr,\n" +
                         "        @likeLvl4 AS like_rpt_lvl_4_nbr,\n" +
+                        "        @likeFinelineNbr AS like_fineline_nbr,\n" +
                         "        @fiscalYear AS fiscal_year,\n" +
                         "        @seasonCode AS season_code\n" +
                         "), " +
@@ -83,17 +87,20 @@ public class BigQueryClusterService {
                 ")";
 
         if (volumeDeviationLevel.equalsIgnoreCase("fineline")) {
-            queryParams += findFinelineQuery();
+            String finelineClusterTable = analyticsDataset + "." + bigQueryConnectionProperties.getFinelineVolumeCluster();
+            queryParams += findFinelineQuery(rfaCcTable, sizeClusterTable, sizeColorClusterTable, finelineClusterTable);
         } else if (volumeDeviationLevel.equalsIgnoreCase("subcategory")) {
-            queryParams+=findSubCatQuery();
+            String subCategoryClusterTable = analyticsDataset + "." + bigQueryConnectionProperties.getSubCategoryVolumeCluster();
+            queryParams += findSubCatQuery(rfaCcTable, sizeClusterTable, sizeColorClusterTable, subCategoryClusterTable);
         } else {
-            queryParams+=findCatQuery();
+            String categoryClusterTable = analyticsDataset + "." + bigQueryConnectionProperties.getCategoryVolumeCluster();
+            queryParams += findCatQuery(rfaCcTable, sizeClusterTable, sizeColorClusterTable, categoryClusterTable);
         }
-        queryParams+=") SELECT TO_JSON_STRING(gcpTable) AS json FROM MyTable AS gcpTable;";
+        queryParams += ") SELECT TO_JSON_STRING(gcpTable) AS json FROM MyTable AS gcpTable;";
         return queryParams;
     }
 
-    private String findFinelineQuery() {
+    private String findFinelineQuery(String rfaCcTable, String sizeClusterTable, String sizeColorClusterTable, String finelineClusterTable) {
         return  "SELECT rpt_lvl_0_nbr,\n" +
                 "    rpt_lvl_1_nbr,\n" +
                 "    rpt_lvl_2_nbr,\n" +
@@ -107,7 +114,7 @@ public class BigQueryClusterService {
                 "    color_family,\n" +
                 "    size_cluster_id,\n" +
                 "    volume_group_cluster_id,\n" +
-                "    STRING_AGG(DISTINCT CAST(store_nbr AS STRING), ',') AS store_list,\n" +
+                "    CONCAT('[', STRING_AGG(DISTINCT CAST(store_nbr AS STRING), ', '), ']') AS store_list,\n" +
                 "    COUNT(DISTINCT store_nbr) AS store_cnt\n" +
                 "FROM(\n" +
                 "        SELECT rfa_output.rpt_lvl_0_nbr,\n" +
@@ -136,7 +143,6 @@ public class BigQueryClusterService {
                 "                            *\n" +
                 "                        FROM (\n" +
                 "                                SELECT plan_id_partition,\n" +
-                "                                    h.like_rpt_lvl_1_nbr,\n" +
                 "                                    h.fiscal_year,\n" +
                 "                                    h.season_code,\n" +
                 "                                    week,\n" +
@@ -146,6 +152,7 @@ public class BigQueryClusterService {
                 "                                    h.rpt_lvl_2_nbr,\n" +
                 "                                    h.rpt_lvl_3_nbr,\n" +
                 "                                    h.rpt_lvl_4_nbr,\n" +
+                "                                    h.like_rpt_lvl_1_nbr,\n" +
                 "                                    h.like_fineline_nbr,\n" +
                 "                                    dept,\n" +
                 "                                    fineline,\n" +
@@ -154,7 +161,7 @@ public class BigQueryClusterService {
                 "                                    TRIM(style_nbr) AS style_nbr,\n" +
                 "                                    TRIM(cc) AS cc,\n" +
                 "                                    final_alloc_space\n" +
-                "                                FROM `" +bigQueryConnectionProperties.getRFAProjectId()+"."+bigQueryConnectionProperties.getRFADataSetName() +"."+bigQueryConnectionProperties.getRFACCStageTable()+ "`,\n" +
+                "                                FROM `" + rfaCcTable + "`,\n" +
                 "                                    plan_hierarchy AS h\n" +
                 "                                WHERE plan_id_partition = h.plan_id\n" +
                 "                                    AND fineline = h.fineline_nbr\n" +
@@ -170,7 +177,7 @@ public class BigQueryClusterService {
                 "                    svg_fl_clus.cluster_id,\n" +
                 "                    svg_fl_clus.fiscal_year,\n" +
                 "                    svg_fl_clus.season\n" +
-                "                FROM `" + bigQueryConnectionProperties.getRFAProjectId()+"."+bigQueryConnectionProperties.getAnalyticsData()+ ".svg_fl_cluster` AS svg_fl_clus,\n" +
+                "                FROM `" + finelineClusterTable + "` AS svg_fl_clus,\n" +
                 "                    plan_hierarchy AS h\n" +
                 "                WHERE svg_fl_clus.fineline_nbr = COALESCE(h.like_fineline_nbr, h.fineline_nbr)\n" +
                 "                    AND svg_fl_clus.dept_nbr = COALESCE(h.like_rpt_lvl_1_nbr, h.rpt_lvl_1_nbr)\n" +
@@ -188,7 +195,7 @@ public class BigQueryClusterService {
                 "                    sc_clus.dept,\n" +
                 "                    sc_clus.fiscal_year,\n" +
                 "                    sc_clus.season\n" +
-                "                FROM `" + bigQueryConnectionProperties.getRFAProjectId()+"."+bigQueryConnectionProperties.getAnalyticsData()+ ".sc_cluster` AS sc_clus,\n" +
+                "                FROM `" + sizeClusterTable + "` AS sc_clus,\n" +
                 "                    plan_hierarchy AS h\n" +
                 "                WHERE sc_clus.fineline_nbr = COALESCE(h.like_fineline_nbr, h.fineline_nbr)\n" +
                 "                    AND sc_clus.dept_nbr = COALESCE(h.like_rpt_lvl_1_nbr, h.rpt_lvl_1_nbr)\n" +
@@ -205,17 +212,14 @@ public class BigQueryClusterService {
                 "                    sco_clus.dept,\n" +
                 "                    sco_clus.fiscal_year,\n" +
                 "                    sco_clus.season\n" +
-                "                FROM `" + bigQueryConnectionProperties.getRFAProjectId()+"."+bigQueryConnectionProperties.getAnalyticsData()+ ".sco_cluster` AS sco_clus,\n" +
+                "                FROM `" + sizeColorClusterTable + "` AS sco_clus,\n" +
                 "                    plan_hierarchy AS h\n" +
                 "                WHERE sco_clus.fineline_nbr = COALESCE(h.like_fineline_nbr, h.fineline_nbr)\n" +
                 "                    and sco_clus.dept_nbr = COALESCE(h.like_rpt_lvl_1_nbr, h.rpt_lvl_1_nbr)\n" +
                 "                    AND sco_clus.season = h.season_code\n" +
                 "                    AND sco_clus.fiscal_year = h.fiscal_year\n" +
                 "            ) AS all_clus ON CAST(rfa_output.store AS INT64) = all_clus.store_nbr\n" +
-                "            AND all_clus.fineline_nbr = COALESCE(\n" +
-                "                rfa_output.like_fineline_nbr,\n" +
-                "                rfa_output.fineline\n" +
-                "            )\n" +
+                "            AND all_clus.fineline_nbr = COALESCE(rfa_output.like_fineline_nbr, rfa_output.fineline)\n" +
                 "            AND rfa_output.fiscal_year = all_clus.fiscal_year\n" +
                 "            AND rfa_output.season_code = all_clus.season\n" +
                 "            JOIN (\n" +
@@ -239,7 +243,7 @@ public class BigQueryClusterService {
                 "    volume_group_cluster_id ";
     }
 
-    private String findSubCatQuery() {
+    private String findSubCatQuery(String rfaCcTable, String sizeClusterTable, String sizeColorClusterTable, String subCategoryClusterTable) {
         return "SELECT rpt_lvl_0_nbr,\n" +
                 "    rpt_lvl_1_nbr,\n" +
                 "    rpt_lvl_2_nbr,\n" +
@@ -253,7 +257,7 @@ public class BigQueryClusterService {
                 "    color_family,\n" +
                 "    size_cluster_id,\n" +
                 "    volume_group_cluster_id,\n" +
-                "    STRING_AGG(DISTINCT CAST(store_nbr AS STRING), ',') AS store_list,\n" +
+                "    CONCAT('[', STRING_AGG(DISTINCT CAST(store_nbr AS STRING), ', '), ']') AS store_list,\n" +
                 "    COUNT(DISTINCT store_nbr) AS store_cnt\n" +
                 "FROM(\n" +
                 "        SELECT rfa_output.rpt_lvl_0_nbr,\n" +
@@ -282,7 +286,6 @@ public class BigQueryClusterService {
                 "                            *\n" +
                 "                        FROM (\n" +
                 "                                SELECT plan_id_partition,\n" +
-                "                                    h.like_rpt_lvl_1_nbr,\n" +
                 "                                    h.fiscal_year,\n" +
                 "                                    h.season_code,\n" +
                 "                                    week,\n" +
@@ -292,8 +295,9 @@ public class BigQueryClusterService {
                 "                                    h.rpt_lvl_2_nbr,\n" +
                 "                                    h.rpt_lvl_3_nbr,\n" +
                 "                                    h.rpt_lvl_4_nbr,\n" +
-                "                                    h.like_fineline_nbr,\n" +
+                "                                    h.like_rpt_lvl_1_nbr,\n" +
                 "                                    h.like_rpt_lvl_4_nbr,\n" +
+                "                                    h.like_fineline_nbr,\n" +
                 "                                    dept,\n" +
                 "                                    fineline,\n" +
                 "                                    final_pref,\n" +
@@ -301,7 +305,7 @@ public class BigQueryClusterService {
                 "                                    TRIM(style_nbr) AS style_nbr,\n" +
                 "                                    TRIM(cc) AS cc,\n" +
                 "                                    final_alloc_space\n" +
-                "                                FROM `" +bigQueryConnectionProperties.getRFAProjectId()+"."+bigQueryConnectionProperties.getRFADataSetName() +"."+bigQueryConnectionProperties.getRFACCStageTable()+ "`,\n" +
+                "                                FROM `" + rfaCcTable + "`,\n" +
                 "                                    plan_hierarchy AS h\n" +
                 "                                WHERE plan_id_partition = h.plan_id\n" +
                 "                                    AND fineline = h.fineline_nbr\n" +
@@ -317,7 +321,7 @@ public class BigQueryClusterService {
                 "                    svg_subcatg_clus.cluster_id,\n" +
                 "                    svg_subcatg_clus.fiscal_year,\n" +
                 "                    svg_subcatg_clus.season\n" +
-                "                FROM `" + bigQueryConnectionProperties.getRFAProjectId()+"."+bigQueryConnectionProperties.getAnalyticsData()+ ".svg_subcategory_cluster` AS svg_subcatg_clus,\n" +
+                "                FROM `" + subCategoryClusterTable + "` AS svg_subcatg_clus,\n" +
                 "                    plan_hierarchy AS h\n" +
                 "                WHERE svg_subcatg_clus.dept_subcatg_nbr = COALESCE(h.like_rpt_lvl_4_nbr,h.rpt_lvl_4_nbr)\n" +
                 "                    AND svg_subcatg_clus.dept_nbr = COALESCE(h.like_rpt_lvl_1_nbr, h.rpt_lvl_1_nbr)\n" +
@@ -335,7 +339,7 @@ public class BigQueryClusterService {
                 "                    sc_clus.dept,\n" +
                 "                    sc_clus.fiscal_year,\n" +
                 "                    sc_clus.season\n" +
-                "                FROM `" + bigQueryConnectionProperties.getRFAProjectId()+"."+bigQueryConnectionProperties.getAnalyticsData()+ ".sc_cluster` AS sc_clus,\n" +
+                "                FROM `" + sizeClusterTable + "` AS sc_clus,\n" +
                 "                    plan_hierarchy AS h\n" +
                 "                WHERE sc_clus.fineline_nbr = COALESCE(h.like_fineline_nbr, h.fineline_nbr)\n" +
                 "                    AND sc_clus.dept_nbr = COALESCE(h.like_rpt_lvl_1_nbr, h.rpt_lvl_1_nbr)\n" +
@@ -353,7 +357,7 @@ public class BigQueryClusterService {
                 "                    sco_clus.dept,\n" +
                 "                    sco_clus.fiscal_year,\n" +
                 "                    sco_clus.season\n" +
-                "                FROM `" + bigQueryConnectionProperties.getRFAProjectId()+"."+bigQueryConnectionProperties.getAnalyticsData()+ ".sco_cluster` AS sco_clus,\n" +
+                "                FROM `" + sizeColorClusterTable + "` AS sco_clus,\n" +
                 "                    plan_hierarchy AS h\n" +
                 "                WHERE sco_clus.fineline_nbr = COALESCE(h.like_fineline_nbr, h.fineline_nbr)\n" +
                 "                    and sco_clus.dept_nbr = COALESCE(h.like_rpt_lvl_1_nbr, h.rpt_lvl_1_nbr)\n" +
@@ -392,7 +396,7 @@ public class BigQueryClusterService {
                 "    volume_group_cluster_id ";
     }
 
-    private String findCatQuery() {
+    private String findCatQuery(String rfaCcTable, String sizeClusterTable, String sizeColorClusterTable, String categoryClusterTable) {
         return "SELECT rpt_lvl_0_nbr,\n" +
                 "    rpt_lvl_1_nbr,\n" +
                 "    rpt_lvl_2_nbr,\n" +
@@ -406,7 +410,7 @@ public class BigQueryClusterService {
                 "    color_family,\n" +
                 "    size_cluster_id,\n" +
                 "    volume_group_cluster_id,\n" +
-                "    STRING_AGG(DISTINCT CAST(store_nbr AS STRING), ',') AS store_list,\n" +
+                "    CONCAT('[', STRING_AGG(DISTINCT CAST(store_nbr AS STRING), ', '), ']') AS store_list,\n" +
                 "    COUNT(DISTINCT store_nbr) AS store_cnt\n" +
                 "FROM(\n" +
                 "        SELECT rfa_output.rpt_lvl_0_nbr,\n" +
@@ -435,7 +439,6 @@ public class BigQueryClusterService {
                 "                            *\n" +
                 "                        FROM (\n" +
                 "                                SELECT plan_id_partition,\n" +
-                "                                    h.like_rpt_lvl_1_nbr,\n" +
                 "                                    h.fiscal_year,\n" +
                 "                                    h.season_code,\n" +
                 "                                    week,\n" +
@@ -445,8 +448,9 @@ public class BigQueryClusterService {
                 "                                    h.rpt_lvl_2_nbr,\n" +
                 "                                    h.rpt_lvl_3_nbr,\n" +
                 "                                    h.rpt_lvl_4_nbr,\n" +
-                "                                    h.like_fineline_nbr,\n" +
+                "                                    h.like_rpt_lvl_1_nbr,\n" +
                 "                                    h.like_rpt_lvl_3_nbr,\n" +
+                "                                    h.like_fineline_nbr,\n" +
                 "                                    dept,\n" +
                 "                                    fineline,\n" +
                 "                                    final_pref,\n" +
@@ -454,7 +458,7 @@ public class BigQueryClusterService {
                 "                                    TRIM(style_nbr) AS style_nbr,\n" +
                 "                                    TRIM(cc) AS cc,\n" +
                 "                                    final_alloc_space\n" +
-                "                                FROM `" +bigQueryConnectionProperties.getRFAProjectId()+"."+bigQueryConnectionProperties.getRFADataSetName() +"."+bigQueryConnectionProperties.getRFACCStageTable()+ "`,\n" +
+                "                                FROM `" + rfaCcTable + "`,\n" +
                 "                                    plan_hierarchy AS h\n" +
                 "                                WHERE plan_id_partition = h.plan_id\n" +
                 "                                    AND fineline = h.fineline_nbr\n" +
@@ -470,7 +474,7 @@ public class BigQueryClusterService {
                 "                    svg_catg_clus.cluster_id,\n" +
                 "                    svg_catg_clus.fiscal_year,\n" +
                 "                    svg_catg_clus.season\n" +
-                "                FROM `" + bigQueryConnectionProperties.getRFAProjectId()+"."+bigQueryConnectionProperties.getAnalyticsData()+ ".svg_category_cluster` AS svg_catg_clus,\n" +
+                "                FROM `" +  categoryClusterTable + "` AS svg_catg_clus,\n" +
                 "                    plan_hierarchy AS h\n" +
                 "                WHERE svg_catg_clus.dept_catg_nbr = COALESCE(h.like_rpt_lvl_3_nbr,h.rpt_lvl_3_nbr)\n" +
                 "                    AND svg_catg_clus.dept_nbr = COALESCE(h.like_rpt_lvl_1_nbr, h.rpt_lvl_1_nbr)\n" +
@@ -488,7 +492,7 @@ public class BigQueryClusterService {
                 "                    sc_clus.dept,\n" +
                 "                    sc_clus.fiscal_year,\n" +
                 "                    sc_clus.season\n" +
-                "                FROM `" + bigQueryConnectionProperties.getRFAProjectId()+"."+bigQueryConnectionProperties.getAnalyticsData()+ ".sc_cluster` AS sc_clus,\n" +
+                "                FROM `" + sizeClusterTable + "` AS sc_clus,\n" +
                 "                    plan_hierarchy AS h\n" +
                 "                WHERE sc_clus.dept_catg_nbr = COALESCE(h.like_rpt_lvl_3_nbr,h.rpt_lvl_3_nbr)\n" +
                 "                    AND sc_clus.fineline_nbr = COALESCE(h.like_fineline_nbr, h.fineline_nbr)\n" +
@@ -506,7 +510,7 @@ public class BigQueryClusterService {
                 "                    sco_clus.dept,\n" +
                 "                    sco_clus.fiscal_year,\n" +
                 "                    sco_clus.season\n" +
-                "                FROM `" + bigQueryConnectionProperties.getRFAProjectId()+"."+bigQueryConnectionProperties.getAnalyticsData()+ ".sco_cluster` AS sco_clus,\n" +
+                "                FROM `" + sizeColorClusterTable + "` AS sco_clus,\n" +
                 "                    plan_hierarchy AS h\n" +
                 "                WHERE sco_clus.dept_catg_nbr = COALESCE(h.like_rpt_lvl_3_nbr,h.rpt_lvl_3_nbr)\n" +
                 "                    AND sco_clus.fineline_nbr = COALESCE(h.like_fineline_nbr, h.fineline_nbr)\n" +

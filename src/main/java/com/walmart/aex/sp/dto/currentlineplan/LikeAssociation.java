@@ -11,14 +11,13 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Fineline  implements Serializable {
-   private Integer finelineId;
-   private String finelineName;
-   private String altFinelineName;
-   private String channel;
-   private String eCommChannel;
-   private Metrics metrics;
-   private LikeAssociation likeAssociation;
+public class LikeAssociation implements Serializable {
+    private String id;
+    private String name;
+    private Integer lvl0Nbr;
+    private Integer lvl1Nbr;
+    private Integer lvl2Nbr;
+    private Integer lvl3Nbr;
+    private Integer lvl4Nbr;
 }
