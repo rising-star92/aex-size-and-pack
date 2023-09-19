@@ -257,8 +257,8 @@ public class CalculateFinelineBuyQuantity {
                 .map(StyleDto::getCustomerChoices)
                 .flatMap(Collection::stream)
                 .forEach(cc -> {
-                    if (colorFamiliesFromMidas.contains(cc.getColorFamilyDesc())) {
-                        colorDefinitions.add(ColorDefinition.builder().cc(cc.getCcId()).color_family_desc(cc.getColorFamilyDesc()).build());
+                    if (cc.getColorFamily() != null && colorFamiliesFromMidas.contains(cc.getColorFamily().toUpperCase())) {
+                        colorDefinitions.add(ColorDefinition.builder().cc(cc.getCcId()).color_family_desc(cc.getColorFamily().toUpperCase()).build());
                     } else {
                         colorDefinitions.add(ColorDefinition.builder().cc(cc.getCcId()).color_family_desc(DEFAULT_COLOR_FAMILY).build());
                     }
