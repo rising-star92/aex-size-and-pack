@@ -40,8 +40,6 @@ class BigQueryStoreDistributionServiceTest {
     @Mock
     private BigQuery bigQuery;
     @Mock
-    private BigQueryOptions bigQueryOptions;
-    @Mock
     private BQFPService bqfpService;
     @Mock
     private StrategyFetchService strategyFetchService;
@@ -106,7 +104,7 @@ class BigQueryStoreDistributionServiceTest {
         graphQLResponse.setData(payload);
         graphQLResponse.setErrors(new ArrayList<>());
 
-        try (MockedStatic<BigQueryOptions> mockBigQuery = mockStatic(BigQueryOptions.class)) {
+        try {
             when(bigQuery.query(Mockito.any(QueryJobConfiguration.class))).thenReturn(result).thenReturn(bsResult);
             when(strategyFetchService.getStrategyVolumeDeviation(anyLong(), anyInt())).thenReturn(strategyVolumeDeviationResponse);
             when(graphQLService.post(anyString(), anyString(), anyMap(), anyMap())).thenReturn(graphQLResponse);
@@ -151,7 +149,7 @@ class BigQueryStoreDistributionServiceTest {
         graphQLResponse.setData(payload);
         graphQLResponse.setErrors(new ArrayList<>());
 
-        try (MockedStatic<BigQueryOptions> mockBigQuery = mockStatic(BigQueryOptions.class)) {
+        try {
             when(bigQuery.query(Mockito.any(QueryJobConfiguration.class))).thenReturn(result).thenReturn(bsResult);
             when(strategyFetchService.getStrategyVolumeDeviation(anyLong(), anyInt())).thenReturn(strategyVolumeDeviationResponse);
             when(graphQLService.post(anyString(), anyString(), anyMap(), anyMap())).thenReturn(graphQLResponse);
@@ -198,7 +196,7 @@ class BigQueryStoreDistributionServiceTest {
         graphQLResponse.setData(payload);
         graphQLResponse.setErrors(new ArrayList<>());
 
-        try (MockedStatic<BigQueryOptions> mockBigQuery = mockStatic(BigQueryOptions.class)) {
+        try {
             when(bigQuery.query(Mockito.any(QueryJobConfiguration.class))).thenReturn(result).thenReturn(bsResult);
             when(strategyFetchService.getStrategyVolumeDeviation(anyLong(), anyInt())).thenReturn(strategyVolumeDeviationResponse);
             when(graphQLService.post(anyString(), anyString(), anyMap(), anyMap())).thenReturn(graphQLResponse);

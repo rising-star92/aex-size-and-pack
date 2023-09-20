@@ -48,9 +48,7 @@ class BigQueryPackStoresServiceTest
 {
     @Mock
     private BigQuery bigQuery;
-    
-    @Mock
-    private BigQueryOptions bigQueryOptions;
+
     private TableResult isResult;
     
     @Mock

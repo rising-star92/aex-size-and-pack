@@ -35,8 +35,6 @@ import static org.mockito.Mockito.times;
 class BigQueryInitialSetPlanServiceTest {
     @Mock
     private BigQuery bigQuery;
-    @Mock
-    private BigQueryOptions bigQueryOptions;
     private TableResult isResult;
     private BQFPResponse bqfpResponse;
     @Mock
@@ -97,8 +95,7 @@ class BigQueryInitialSetPlanServiceTest {
         Long planId = 73l;
         FinelineVolume request = getFinelineVolume();
         when(strategyFetchService.getStrategyVolumeDeviation(planId, request.getFinelineNbr())).thenReturn(null);
-        try(MockedStatic<BigQueryOptions> mockBigQuery = mockStatic(BigQueryOptions.class)) {
-            mockBigQuery.when(BigQueryOptions::getDefaultInstance).thenReturn(bigQueryOptions);
+        try {
             List<InitialSetVolumeResponse> response = bigQueryInitialSetPlanService.getInitialAndBumpSetDetailsByVolumeCluster(planId, request);
             assertEquals(0, response.size());
             verify(bigQuery, times(2)).query(any(QueryJobConfiguration.class));
