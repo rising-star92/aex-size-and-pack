@@ -174,6 +174,7 @@ public class CalculateFinelineBuyQuantity {
         CompletableFuture<Void> combinedFuture = CompletableFuture.allOf(buyQtyResponseCompletableFuture, bqfpResponseCompletableFuture, strategyVolumeDeviationResponseCompletableFuture, likeFinelineDetailsCompletableFuture, colorFamiliesCompletableFuture);
         try {
             combinedFuture.join();
+            log.info("All futures completed");
             final BuyQtyResponse buyQtyResponse = buyQtyResponseCompletableFuture.get();
             final BQFPResponse bqfpResponse = bqfpResponseCompletableFuture.get();
             final StrategyVolumeDeviationResponse strategyVolumeDeviationResponse = strategyVolumeDeviationResponseCompletableFuture.get();
@@ -633,7 +634,9 @@ public class CalculateFinelineBuyQuantity {
         APResponse apResponse = new APResponse();
         if (ChannelType.STORE.getDescription().equalsIgnoreCase(calculateBuyQtyParallelRequest.getChannel())) {
             RFASizePackRequest rfaSizePackRequest = createRFASizePackRequest(calculateBuyQtyRequest, calculateBuyQtyParallelRequest, likeFinelineResponse, colorDefinitions);
+            log.info("Invoking BQ query to get RFA Data for fineline: {}", rfaSizePackRequest.getFineline_nbr());
             List<RFASizePackData> rfaSizePackDataList = bigQueryClusterService.fetchRFASizePackData(rfaSizePackRequest, volumeDeviation);
+            log.info("RFA Data from BQ: {}", Arrays.toString(rfaSizePackDataList.toArray()));
             apResponse.setRfaSizePackData(rfaSizePackDataList);
         }
         return apResponse;
