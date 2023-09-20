@@ -1,5 +1,6 @@
 package com.walmart.aex.sp.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.cloud.PageImpl;
 import com.google.cloud.bigquery.*;
 import com.walmart.aex.sp.dto.bqfp.BQFPResponse;
@@ -49,7 +50,7 @@ class BigQueryInitialSetPlanServiceTest {
     @BeforeEach
     void setUp() throws IOException {
         MockitoAnnotations.openMocks(this);
-        bigQueryInitialSetPlanService = new BigQueryInitialSetPlanService(bqfpService,strategyFetchService,bigQuery);
+        bigQueryInitialSetPlanService = new BigQueryInitialSetPlanService(new ObjectMapper(),bqfpService,strategyFetchService,bigQuery);
         ReflectionTestUtils.setField(bigQueryInitialSetPlanService, "bigQueryConnectionProperties", bigQueryConnectionProperties);
         setData();
         setProperties();

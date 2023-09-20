@@ -70,8 +70,7 @@ class BigQueryPackStoresServiceTest
     void setUp() throws IOException 
     {
         MockitoAnnotations.openMocks(this);
-        bigQueryInitialSetPlanService = new BigQueryInitialSetPlanService(bqfpService,
-        		strategyFetchService,bigQuery);
+        bigQueryInitialSetPlanService = new BigQueryInitialSetPlanService(new ObjectMapper(),bqfpService,strategyFetchService,bigQuery);
         bigQueryPackStoresService = new BigQueryPackStoresService(new ObjectMapper(), bigQuery, strategyFetchService);
         ReflectionTestUtils.setField(bigQueryInitialSetPlanService, "bigQueryConnectionProperties", 
         		bigQueryConnectionProperties);
