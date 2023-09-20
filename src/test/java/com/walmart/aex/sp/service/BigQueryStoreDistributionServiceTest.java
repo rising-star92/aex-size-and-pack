@@ -1,5 +1,6 @@
 package com.walmart.aex.sp.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.gax.paging.Pages;
 import com.google.cloud.PageImpl;
 import com.google.cloud.bigquery.*;
@@ -39,8 +40,6 @@ class BigQueryStoreDistributionServiceTest {
     @Mock
     private BigQuery bigQuery;
     @Mock
-    private BigQueryOptions bigQueryOptions;
-    @Mock
     private BQFPService bqfpService;
     @Mock
     private StrategyFetchService strategyFetchService;
@@ -58,7 +57,7 @@ class BigQueryStoreDistributionServiceTest {
     @BeforeEach
     void setUp() throws IOException {
         MockitoAnnotations.openMocks(this);
-        bigQueryStoreDistributionService = new BigQueryStoreDistributionService(bqfpService, strategyFetchService, graphQLService);
+        bigQueryStoreDistributionService = new BigQueryStoreDistributionService(new ObjectMapper(), bqfpService, strategyFetchService, graphQLService, bigQuery);
         ReflectionTestUtils.setField(bigQueryStoreDistributionService, "bigQueryConnectionProperties", bigQueryConnectionProperties);
         ReflectionTestUtils.setField(bigQueryStoreDistributionService, "graphQLProperties", graphQLProperties);
         setData();
@@ -69,8 +68,6 @@ class BigQueryStoreDistributionServiceTest {
     void getStoreDistributionDataISTest() {
         packData.setPackId("SP_is73_3483_0_34_3483_4_19_8_CHGYHT_HANGING_1");
         try (MockedStatic<BigQueryOptions> mockBigQuery = mockStatic(BigQueryOptions.class)) {
-            mockBigQuery.when(BigQueryOptions::getDefaultInstance).thenReturn(bigQueryOptions);
-            when(bigQueryOptions.getService()).thenReturn(bigQuery);
             when(bigQuery.query(any(QueryJobConfiguration.class))).thenReturn(isResult);
             StoreDistributionData response = bigQueryStoreDistributionService.getStoreDistributionData(packData);
             StoreDistributionDTO storeDistributionDTO = response.getStoreDistributionList().stream()
@@ -107,9 +104,7 @@ class BigQueryStoreDistributionServiceTest {
         graphQLResponse.setData(payload);
         graphQLResponse.setErrors(new ArrayList<>());
 
-        try (MockedStatic<BigQueryOptions> mockBigQuery = mockStatic(BigQueryOptions.class)) {
-            mockBigQuery.when(BigQueryOptions::getDefaultInstance).thenReturn(bigQueryOptions);
-            when(bigQueryOptions.getService()).thenReturn(bigQuery);
+        try {
             when(bigQuery.query(Mockito.any(QueryJobConfiguration.class))).thenReturn(result).thenReturn(bsResult);
             when(strategyFetchService.getStrategyVolumeDeviation(anyLong(), anyInt())).thenReturn(strategyVolumeDeviationResponse);
             when(graphQLService.post(anyString(), anyString(), anyMap(), anyMap())).thenReturn(graphQLResponse);
@@ -154,9 +149,7 @@ class BigQueryStoreDistributionServiceTest {
         graphQLResponse.setData(payload);
         graphQLResponse.setErrors(new ArrayList<>());
 
-        try (MockedStatic<BigQueryOptions> mockBigQuery = mockStatic(BigQueryOptions.class)) {
-            mockBigQuery.when(BigQueryOptions::getDefaultInstance).thenReturn(bigQueryOptions);
-            when(bigQueryOptions.getService()).thenReturn(bigQuery);
+        try {
             when(bigQuery.query(Mockito.any(QueryJobConfiguration.class))).thenReturn(result).thenReturn(bsResult);
             when(strategyFetchService.getStrategyVolumeDeviation(anyLong(), anyInt())).thenReturn(strategyVolumeDeviationResponse);
             when(graphQLService.post(anyString(), anyString(), anyMap(), anyMap())).thenReturn(graphQLResponse);
@@ -203,9 +196,7 @@ class BigQueryStoreDistributionServiceTest {
         graphQLResponse.setData(payload);
         graphQLResponse.setErrors(new ArrayList<>());
 
-        try (MockedStatic<BigQueryOptions> mockBigQuery = mockStatic(BigQueryOptions.class)) {
-            mockBigQuery.when(BigQueryOptions::getDefaultInstance).thenReturn(bigQueryOptions);
-            when(bigQueryOptions.getService()).thenReturn(bigQuery);
+        try {
             when(bigQuery.query(Mockito.any(QueryJobConfiguration.class))).thenReturn(result).thenReturn(bsResult);
             when(strategyFetchService.getStrategyVolumeDeviation(anyLong(), anyInt())).thenReturn(strategyVolumeDeviationResponse);
             when(graphQLService.post(anyString(), anyString(), anyMap(), anyMap())).thenReturn(graphQLResponse);

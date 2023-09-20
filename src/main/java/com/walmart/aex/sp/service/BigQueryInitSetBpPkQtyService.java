@@ -24,10 +24,16 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class BigQueryInitSetBpPkQtyService {
 
-	private static final ObjectMapper objectMapper = new ObjectMapper();
+	private final ObjectMapper objectMapper;
+	private final BigQuery bigQuery;
 
 	@ManagedConfiguration
 	BigQueryConnectionProperties bigQueryConnectionProperties;
+
+	public BigQueryInitSetBpPkQtyService(ObjectMapper objectMapper, BigQuery bigQuery) {
+		this.objectMapper = objectMapper;
+		this.bigQuery = bigQuery;
+	}
 
 	public InitSetBumpPackData fetchInitialSetBumpPackDataFromGCP(BuyQtyRequest request) {
 		InitSetBumpPackData initSetBpPkData = new InitSetBumpPackData();
@@ -40,7 +46,6 @@ public class BigQueryInitSetBpPkQtyService {
 			Long planId = request.getPlanId();
 			Integer finelineNbr = request.getFinelineNbr();
 			String initSetBpPkQtyRFAQuery = getInitSetBpPkGCPQuery(projectIdDatasetNameTableNameRFA,projectIdDatasetNameTableNameSp, planId,finelineNbr);
-			BigQuery bigQuery = BigQueryOptions.getDefaultInstance().getService();
 			QueryJobConfiguration queryConfig = QueryJobConfiguration.newBuilder(initSetBpPkQtyRFAQuery).build();
 			TableResult results = bigQuery.query(queryConfig);
 			results.iterateAll().forEach(rows -> rows.forEach(row -> {
