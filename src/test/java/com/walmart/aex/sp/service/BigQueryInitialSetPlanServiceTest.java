@@ -62,7 +62,7 @@ class BigQueryInitialSetPlanServiceTest {
         FinelineVolume request = getFinelineVolume();
         StrategyVolumeDeviationResponse volumeDeviationResponse = getVolumeDeviationStrategyResponse();
         when(strategyFetchService.getStrategyVolumeDeviation(planId, request.getFinelineNbr())).thenReturn(volumeDeviationResponse);
-        try(MockedStatic<BigQueryOptions> mockBigQuery = mockStatic(BigQueryOptions.class)) {
+        try {
             when(bigQuery.query(any(QueryJobConfiguration.class))).thenReturn(isResult);
             when(bqfpService.getBqfpResponse(anyInt(), anyInt())).thenReturn(bqfpResponse);
             List<InitialSetVolumeResponse> response = bigQueryInitialSetPlanService.getInitialAndBumpSetDetailsByVolumeCluster(planId,request);
@@ -79,7 +79,7 @@ class BigQueryInitialSetPlanServiceTest {
     void getInitialAndBumpSetDetailsByVolumeClusterTestWhenVolumeDeviationIsPassed() throws SizeAndPackException {
         Long planId = 73l;
         FinelineVolume request = getFinelineVolumeWithVolDeviation();
-        try(MockedStatic<BigQueryOptions> mockBigQuery = mockStatic(BigQueryOptions.class)) {
+        try {
             when(bigQuery.query(any(QueryJobConfiguration.class))).thenReturn(isResult);
             when(bqfpService.getBqfpResponse(anyInt(), anyInt())).thenReturn(bqfpResponse);
             List<InitialSetVolumeResponse> response = bigQueryInitialSetPlanService.getInitialAndBumpSetDetailsByVolumeCluster(planId,request);
