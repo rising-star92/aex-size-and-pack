@@ -32,7 +32,7 @@ import java.util.stream.IntStream;
 @Slf4j
 public class BigQueryInitialSetPlanService {
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
     private final BQFPService bqfpService;
     private final StrategyFetchService strategyFetchService;
 
@@ -43,7 +43,8 @@ public class BigQueryInitialSetPlanService {
     @ManagedConfiguration
     private GraphQLProperties graphQLProperties;
 
-    public BigQueryInitialSetPlanService(BQFPService bqfpService, StrategyFetchService strategyFetchService, BigQuery bigQuery) {
+    public BigQueryInitialSetPlanService(ObjectMapper objectMapper, BQFPService bqfpService, StrategyFetchService strategyFetchService, BigQuery bigQuery) {
+        this.objectMapper = objectMapper;
         this.bqfpService = bqfpService;
         this.strategyFetchService = strategyFetchService;
         this.bigQuery = bigQuery;
