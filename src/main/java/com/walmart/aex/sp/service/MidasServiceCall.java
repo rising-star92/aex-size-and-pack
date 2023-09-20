@@ -109,6 +109,7 @@ public class MidasServiceCall {
             log.error("Error retrieving historical size metrics: {}", result.getBody().getErrors());
             return emptyList;
          } else {
+            log.info("Response from Midas: {}", result.getBody());
             String response = (Optional.ofNullable(result.getBody()).stream()
                     .map(MidasResponse::getPayload)
                     .map(Payload::getResult)
