@@ -71,17 +71,17 @@ configDefinitions:
         description: "Connection Timeout for HTTP Calls"
         type: "INTEGER"
         kind: "SINGLE"
-        defaultValue: 18000
+        defaultValue: 5000
       http.connectionRequestTimeout:
         description: "Connection Request Timeout for HTTP Calls"
         type: "INTEGER"
         kind: "SINGLE"
-        defaultValue: 18000
+        defaultValue: 5000
       http.readTimeout:
         description: "Read Timeout for HTTP calls"
         type: "INTEGER"
         kind: "SINGLE"
-        defaultValue: 18000
+        defaultValue: 5000
   plmApiConfig:
     description: "PLM Configurations"
     resolutionPaths:
