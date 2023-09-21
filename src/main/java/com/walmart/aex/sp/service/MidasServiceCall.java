@@ -14,7 +14,6 @@ import com.walmart.aex.sp.properties.MidasApiProperties;
 import com.walmart.aex.sp.properties.SecretsProperties;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -38,17 +37,20 @@ public class MidasServiceCall {
 
    private static final String DEFAULT_HISTORICAL_METRICS_QUERY = "{\"query\":{\"select\":[{\"field\":\"*\"}],\"from\":\"get_historical_size_metrics_fineline_cc\",\"params\":{\"finelineNbr\":%d,\"lyCompWeekStart\":%d,\"lyCompWeekEnd\":%d,\"lvl0Nbr\":%d,\"lvl1Nbr\":%d,\"lvl2Nbr\":%d,\"lvl3Nbr\":%d,\"lvl4Nbr\":%d,\"channel\":\"%s\"}}}";
 
-   @Autowired
    private RestTemplate restTemplate;
 
    @ManagedConfiguration
    private MidasApiProperties midasProperties;
 
-   @Autowired
    SecretsProperties secretsProperties;
 
-   @Autowired
    ObjectMapper objectMapper;
+
+   MidasServiceCall(RestTemplate restTemplate, SecretsProperties secretsProperties, ObjectMapper objectMapper) {
+      this.restTemplate = restTemplate;
+      this.secretsProperties = secretsProperties;
+      this.objectMapper = objectMapper;
+   }
 
    @Retryable(backoff = @Backoff(delay = 1000))
    public HistoricalMetricsResponse fetchHistoricalMetrics(HistoricalMetricsRequest request) {
