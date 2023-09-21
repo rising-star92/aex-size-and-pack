@@ -90,6 +90,7 @@ public class MidasServiceCall {
       return response;
    }
 
+   @Retryable(backoff = @Backoff(delay = 1000))
    public List<String> fetchColorFamilies(String season, Integer fiscalYear, Integer deptNbr, Integer finelineNbr) {
       List<String> emptyList = new ArrayList<>();
       try {
@@ -122,6 +123,12 @@ public class MidasServiceCall {
       } catch (Exception e) {
          throw new CustomException("Exception in fetching color families: " + e);
       }
+   }
+
+   @Recover
+   public List<String> recover(Exception e, String season, Integer fiscalYear, Integer deptNbr, Integer finelineNbr) {
+      log.error("Failed midas call after 3 retries for color families : ", e);
+      return new ArrayList<>();
    }
 
    private HttpHeaders getHeadersForMidas() throws IOException {
