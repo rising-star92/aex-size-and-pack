@@ -491,6 +491,6 @@ configDefinitions:
         description: "feature flag to enable pack store API"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "false"
+        defaultValue: "true"
 apiVersion: "2.0"
 kind: "ServiceConfig"
