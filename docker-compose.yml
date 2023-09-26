@@ -1,0 +1,20 @@
+version: "3.8"
+services:
+  mssql:
+    image: azcr.docker.prod.walmart.com/azure-sql-edge:latest
+    ports:
+      - "1433:1433"
+    environment:
+      ACCEPT_EULA: 1
+      MSSQL_SA_PASSWORD: yourStrong(!)Password
+    volumes:
+      - ./src/test/resources/db:/scripts
+  mssql_setup:
+    image: azcr.docker.prod.walmart.com/mssql-tools:latest
+    restart: "no"
+    volumes:
+      - ./src/test/resources/db:/scripts
+    #Note the single ticks on the password
+    command: ["/scripts/init.sh", "mssql", "sa", "yourStrong(!)Password"]
+    #entrypoint: ["/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "yourStrong(!)Password", "-i", "scripts/schema.sql"]
+#    entrypoint: ["bash", "-c", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "yourStrong(!)Password", "-i" "scripts/schema.sql"]
