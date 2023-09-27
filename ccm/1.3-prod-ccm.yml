@@ -148,7 +148,7 @@ configDefinitions:
         kind: "SINGLE"
         defaultValue: '{"query":{"select":[{"field":"*"}],"from":"get_historical_size_metrics_fineline_cc","params":{"finelineNbr":%d,"lyCompWeekStart":%d,"lyCompWeekEnd":%d,"lvl0Nbr":%d,"lvl1Nbr":%d,"lvl2Nbr":%d,"lvl3Nbr":%d,"lvl4Nbr":%d,"channel":"%s"}}}'
       "midas.colorFamiliesQuery":
-        "description": "Query for fetching color families"
+        "description": "Query for fetching color families "
         "type": "STRING"
         "kind": "SINGLE"
         "defaultValue": '{"query":{"select":[{"field":"*"}],"from":"get_store_color_families","params":{"season":%s,"deptNbr":%d,"finelineNbr":%d,"year":%d}}}'
