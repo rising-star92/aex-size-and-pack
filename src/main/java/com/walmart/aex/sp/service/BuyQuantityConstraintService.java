@@ -71,7 +71,7 @@ public class BuyQuantityConstraintService {
                 long result = getRoundedDifference(replenishment.getAdjReplnUnits(), remainingUnits);
                 replenishment.setAdjReplnUnits(getAdjustedDifference(result));
                 if (result < 0)
-                    remainingUnits = remainingUnits + Math.abs(result);
+                    remainingUnits = Math.abs(result);
                 else
                     remainingUnits = 0;
             }
@@ -86,7 +86,9 @@ public class BuyQuantityConstraintService {
         List<Replenishment> replnsWithUnits = getReplnsWithUnits(buyQtyObj);
         List<Integer> storeListWithOldQty = storeList.subList(storeCntWithNewQty, storeList.size());
         StoreQuantity storeQtyCopy = BuyQtyCommonUtil.createStoreQuantity(rfaSizePackData, perStoreQty, storeListWithOldQty, perStoreQty * storeListWithOldQty.size(), volumeCluster);
-        storeQtyCopy.setBumpSets(calculateBumpPackQtyService.calculateBumpPackQty(sizeDto, rfaSizePackData, volumeCluster, storeListWithOldQty.size()));
+        if (sizeDto != null) {
+            storeQtyCopy.setBumpSets(calculateBumpPackQtyService.calculateBumpPackQty(sizeDto, rfaSizePackData, volumeCluster, storeListWithOldQty.size()));
+        }
         replnsWithUnits.forEach(replenishment -> replenishment.setAdjReplnUnits(0L));
         storeList = storeList.subList(0, storeCntWithNewQty);
         perStoreQty = initialThreshold;
@@ -96,6 +98,10 @@ public class BuyQuantityConstraintService {
         initialSetWithReplnsConstraint.setIsQty(isQty);
         initialSetWithReplnsConstraint.setPerStoreQty(perStoreQty);
         return initialSetWithReplnsConstraint;
+    }
+
+    public InitialSetWithReplnsConstraint getISWithLessReplenConstraint(BuyQtyObj buyQtyObj, int storeCntWithNewQty, List<Integer> storeList, double perStoreQty, RFASizePackData rfaSizePackData, Cluster volumeCluster, Integer initialThreshold) {
+        return getISWithLessReplenConstraint(buyQtyObj, storeCntWithNewQty, storeList, perStoreQty, rfaSizePackData, volumeCluster, null, initialThreshold);
     }
 
     public void processReplenishmentConstraints(Map.Entry<SizeDto, BuyQtyObj> entry, long totalReplenishment, Integer replenishmentThreshold) {
