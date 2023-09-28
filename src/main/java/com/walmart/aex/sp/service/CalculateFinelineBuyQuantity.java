@@ -546,12 +546,10 @@ public class CalculateFinelineBuyQuantity {
         // Adjust constraints
         for (Map.Entry<SizeDto, BuyQtyObj> entry : storeBuyQtyBySizeId.entrySet()) {
             BuyQtyObj buyQtyObj = entry.getValue();
-            BuyQtyStoreObj buyQtyStoreObj = Optional.ofNullable(buyQtyObj)
-                    .map(BuyQtyObj::getBuyQtyStoreObj)
+            BuyQtyStoreObj buyQtyStoreObj = Optional.ofNullable(buyQtyObj.getBuyQtyStoreObj())
                     .orElse(new BuyQtyStoreObj());
 
-            List<StoreQuantity> storeQuantities = Optional.of(buyQtyStoreObj)
-                    .map(BuyQtyStoreObj::getBuyQuantities)
+            List<StoreQuantity> storeQuantities = Optional.ofNullable(buyQtyStoreObj.getBuyQuantities())
                     .orElse(new ArrayList<>());
 
             List<StoreQuantity> processStoreQuantities = new ArrayList<>();
