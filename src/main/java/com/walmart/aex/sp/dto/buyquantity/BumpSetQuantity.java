@@ -9,4 +9,5 @@ public class BumpSetQuantity {
     private String weekDesc;
     private Double bsUnits;
     private Double totalUnits;
+    private String sizeDesc;
 }
