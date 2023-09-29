@@ -271,7 +271,7 @@ configDefinitions:
         description: "Get Size Profile URL from strategy Service"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "https://strategy.aex.dev.walmart.net/graphql"
+        defaultValue: "https://strategy.aex.prod.walmart.net/graphql"
       "size.profile.query":
         description: "Size Profile Query for GraphQL Call"
         type: "STRING"
@@ -296,7 +296,7 @@ configDefinitions:
         description: "Consumer ID to call Strategy Service"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "19ce2bf5-4c24-4bbf-bee9-84496dd07e3c"
+        defaultValue: "80eac37e-62ff-4d41-a106-c5bff13827e9"
       "size.profile.consumer.name":
         description: "Consumer service name"
         type: "STRING"
@@ -306,12 +306,12 @@ configDefinitions:
         description: "Consumer Environment"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "dev"
+        defaultValue: "prod"
       "size.profile.assortproduct.url":
         description: "Get RFA output from Assort Product Service"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "https://assortproduct.aex.dev.walmart.net/graphql"
+        defaultValue: "https://assortproduct.aex.prod.walmart.net/graphql"
       "size.profile.assortproduct.query":
         description: "Query to retrieve RFA output"
         type: "STRING"
@@ -321,7 +321,7 @@ configDefinitions:
         description: "Consumer ID to call Assort Product"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "19ce2bf5-4c24-4bbf-bee9-84496dd07e3c"
+        defaultValue: "80eac37e-62ff-4d41-a106-c5bff13827e9"
       "size.profile.assortproduct.consumer.name":
         description: "Consumer service name"
         type: "STRING"
@@ -331,7 +331,7 @@ configDefinitions:
         description: "Consumer Environment"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "dev"
+        defaultValue: "prod"
       "buy.qty.rfa.weeks.query":
         description: "markDownWeek and inStoreWeek Query for GraphQL Call"
         type: "STRING"
