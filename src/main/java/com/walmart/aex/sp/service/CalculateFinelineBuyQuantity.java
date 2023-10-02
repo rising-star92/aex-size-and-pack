@@ -81,8 +81,7 @@ public class CalculateFinelineBuyQuantity {
                                         LinePlanService linePlanService,
                                         BigQueryClusterService bigQueryClusterService,
                                         CalculateInitialSetQuantityService calculateInitialSetQuantityService,
-                                        CalculateBumpPackQtyService calculateBumpPackQtyService,
-                                        BuyQtyProperties buyQtyProperties) {
+                                        CalculateBumpPackQtyService calculateBumpPackQtyService) {
         this.bqfpService = bqfpService;
         this.objectMapper = objectMapper;
         this.strategyFetchService = strategyFetchService;
@@ -98,7 +97,6 @@ public class CalculateFinelineBuyQuantity {
         this.bigQueryClusterService = bigQueryClusterService;
         this.calculateInitialSetQuantityService = calculateInitialSetQuantityService;
         this.calculateBumpPackQtyService = calculateBumpPackQtyService;
-        this.buyQtyProperties = buyQtyProperties;
     }
 
     public CalculateBuyQtyResponse calculateFinelineBuyQty(CalculateBuyQtyRequest calculateBuyQtyRequest, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, CalculateBuyQtyResponse calculateBuyQtyResponse) throws CustomException {
