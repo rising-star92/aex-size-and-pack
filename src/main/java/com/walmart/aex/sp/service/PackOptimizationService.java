@@ -154,6 +154,8 @@ public class PackOptimizationService {
         Integer bumpNbr = fineLineAndBumpCount.size() > 1 ? fineLineAndBumpCount.get(1) : 1;
         if (fineLineNumber != null) {
             try {
+                log.info("Pack Optimization for planId:{} and fineLineNbr:{} and bumpPack:{} has RunStatusCode:{}",
+                        planId,finelineNbr,bumpNbr,status);
                 Optional<AnalyticsMlSend> analyticsMlSend = analyticsMlSendRepository.findByPlanIdAndFinelineNbrAndRunStatusCode(planId, fineLineNumber, RunStatusCodeType.SENT_TO_ANALYTICS.getId()
                 );
                 if (analyticsMlSend.isPresent()) {
