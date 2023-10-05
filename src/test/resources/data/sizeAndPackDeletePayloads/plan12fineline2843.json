@@ -1,0 +1,116 @@
+{
+  "strongKey": {
+    "planId": 12,
+    "planDesc": "S3 - FYE 2024",
+    "lvl0Nbr": 50000,
+    "lvl1Nbr": 34,
+    "lvl2Nbr": 6419,
+    "lvl3Nbr": 12228,
+    "lvl4Nbr": 31507,
+    "fineline": {
+      "finelineNbr": 2843,
+      "finelineName": null,
+      "altFinelineName": null,
+      "channel": null,
+      "packOptimizationStatus": null,
+      "constraints": null,
+      "styles": [
+        {
+          "styleNbr": "34_2843_3_24_001",
+          "altStyleDesc": null,
+          "channel": null,
+          "constraints": null,
+          "customerChoices": [
+            {
+              "ccId": "34_2843_3_24_001_001",
+              "altCcDesc": null,
+              "colorName": null,
+              "colorFamily": null,
+              "channel": null,
+              "constraints": null
+            }
+          ]
+        }
+      ],
+      "optimizationDetails": null
+    }
+  },
+  "sizeAndPackPayloadDTO": {
+    "planId": 12,
+    "planDesc": "S3 - FYE 2024",
+    "lvl0Nbr": 50000,
+    "lvl0Name": "Apparel",
+    "lvl1List": [
+      {
+        "lvl1Nbr": 34,
+        "lvl1Name": "D34 - Womens Apparel",
+        "lvl2List": [
+          {
+            "lvl2Nbr": 6419,
+            "lvl2Name": "Plus Womens",
+            "lvl3List": [
+              {
+                "lvl0Nbr": null,
+                "lvl1Nbr": null,
+                "lvl2Nbr": null,
+                "lvl3Nbr": 12228,
+                "lvl3Name": "Tops Plus Womens",
+                "constraints": null,
+                "lvl4List": [
+                  {
+                    "lvl4Nbr": 31507,
+                    "lvl4Name": "Ls Tops Plus Womens",
+                    "constraints": null,
+                    "finelines": [
+                      {
+                        "finelineNbr": 2843,
+                        "finelineName": "2843 - FG Popover Knit",
+                        "altFinelineName": null,
+                        "channel": "Store",
+                        "packOptimizationStatus": null,
+                        "constraints": null,
+                        "styles": [
+                          {
+                            "styleNbr": "34_2843_3_24_001",
+                            "altStyleDesc": null,
+                            "channel": "Store",
+                            "constraints": null,
+                            "customerChoices": [
+                              {
+                                "ccId": "34_2843_3_24_001_001",
+                                "altCcDesc": null,
+                                "colorName": null,
+                                "colorFamily": "Black",
+                                "channel": "Store",
+                                "constraints": {
+                                  "supplierConstraints": null,
+                                  "ccLevelConstraints": null,
+                                  "colorCombinationConstraints": {
+                                    "suppliers": null,
+                                    "factoryId": null,
+                                    "portOfOrigin": null,
+                                    "singlePackIndicator": null,
+                                    "colorCombination": null
+                                  },
+                                  "finelineLevelConstraints": {
+                                    "maxPacks": null,
+                                    "maxUnitsPerPack": null
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        ],
+                        "optimizationDetails": null
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
