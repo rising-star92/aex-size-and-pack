@@ -22,7 +22,7 @@ public class MerchantPackOptimization {
 	private MerchantPackOptimizationID merchantPackOptimizationID;
 	
 	@OneToMany(mappedBy = "merchantPackOptimization", fetch = FetchType.LAZY,
-            orphanRemoval = true)
+            cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<SubCatgPackOptimization> subCatgPackOptimization;
 
     @Column(name="vendor_nbr_6")
