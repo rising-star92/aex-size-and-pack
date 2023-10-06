@@ -3,20 +3,15 @@
     "planId": 12,
     "planDesc": "S4 - FYE 2024",
     "lvl0Nbr": 50000,
-    "lvl0GenDesc1": null,
     "lvl1Nbr": 34,
-    "lvl1GenDesc1": null,
-    "lvl2Nbr": 6419,
-    "lvl2GenDesc1": null,
-    "lvl3Nbr": 12228,
-    "lvl4Nbr": 31507,
+    "lvl2Nbr": 1056308,
+    "lvl3Nbr": 1056309,
+    "lvl4Nbr": 1056384,
     "fineline": {
-      "finelineNbr": 2963,
+      "finelineNbr": 198,
       "finelineName": null,
-      "traitChoice": null,
       "channel": null,
-      "styles": null,
-      "strategy": null
+      "styles": null
     }
   },
   "sizeAndPackPayloadDTO": {
@@ -30,19 +25,19 @@
         "lvl1Name": "D34 - Womens Apparel",
         "lvl2List": [
           {
-            "lvl2Nbr": 6419,
+            "lvl2Nbr": 1056308,
             "lvl2Name": "Plus Womens",
             "lvl3List": [
               {
-                "lvl3Nbr": 12228,
+                "lvl3Nbr": 1056309,
                 "lvl3Name": null,
                 "lvl4List": [
                   {
-                    "lvl4Nbr": 31507,
+                    "lvl4Nbr": 1056384,
                     "lvl4Name": null,
                     "finelines": [
                       {
-                        "finelineNbr": 2963,
+                        "finelineNbr": 198,
                         "finelineName": null,
                         "altFinelineName": null,
                         "channel": null,
