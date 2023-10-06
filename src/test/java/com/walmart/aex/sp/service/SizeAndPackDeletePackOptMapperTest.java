@@ -14,12 +14,11 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
-import static org.junit.Assert.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
-public class SizeAndPackDeletePackOptServiceTest {
+public class SizeAndPackDeletePackOptMapperTest {
     @InjectMocks
-    private SizeAndPackDeletePackOptService sizeAndPackDeletePackOptService;
+    private SizeAndPackDeletePackOptMapper sizeAndPackDeletePackOptMapper;
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -27,7 +26,7 @@ public class SizeAndPackDeletePackOptServiceTest {
     void testUpdateMerchantPackOptForDeleteingGivenStyle() throws IOException {
         PlanSizeAndPackDeleteDTO planSizeAndPackDeleteDTO = spDeletePayloadFromJson("deleteGivenStyleInputPayload");
         List<MerchantPackOptimization> merchantPackOptList = getMerchantPackOptimizations();
-        Set<MerchantPackOptimization>  updatedMerchantPackOptSet = sizeAndPackDeletePackOptService.updateMerchantPackOpt(merchantPackOptList,planSizeAndPackDeleteDTO.getSizeAndPackPayloadDTO().getLvl1List().get(0).getLvl2List().get(0).getLvl3List().get(0) ,planSizeAndPackDeleteDTO.getStrongKey().getFineline());
+        Set<MerchantPackOptimization>  updatedMerchantPackOptSet = sizeAndPackDeletePackOptMapper.updateMerchantPackOpt(merchantPackOptList,planSizeAndPackDeleteDTO.getSizeAndPackPayloadDTO().getLvl1List().get(0).getLvl2List().get(0).getLvl3List().get(0) ,planSizeAndPackDeleteDTO.getStrongKey().getFineline());
         Assertions.assertEquals(1, updatedMerchantPackOptSet.size());
         Assertions.assertEquals(1, updatedMerchantPackOptSet.stream().map(MerchantPackOptimization::getSubCatgPackOptimization).count());
         Assertions.assertEquals(1, updatedMerchantPackOptSet.iterator().next().getSubCatgPackOptimization().iterator().next().getFinelinepackOptimization().size());
@@ -41,7 +40,7 @@ public class SizeAndPackDeletePackOptServiceTest {
     void testUpdateMerchantPackOptForDeleteingGivenCC() throws IOException {
         PlanSizeAndPackDeleteDTO planSizeAndPackDeleteDTO = spDeletePayloadFromJson("deleteGivenCCInputPayload");
         List<MerchantPackOptimization> merchantPackOptList = getMerchantPackOptimizations();
-        Set<MerchantPackOptimization>  updatedMerchantPackOptSet = sizeAndPackDeletePackOptService.updateMerchantPackOpt(merchantPackOptList,planSizeAndPackDeleteDTO.getSizeAndPackPayloadDTO().getLvl1List().get(0).getLvl2List().get(0).getLvl3List().get(0) ,planSizeAndPackDeleteDTO.getStrongKey().getFineline());
+        Set<MerchantPackOptimization>  updatedMerchantPackOptSet = sizeAndPackDeletePackOptMapper.updateMerchantPackOpt(merchantPackOptList,planSizeAndPackDeleteDTO.getSizeAndPackPayloadDTO().getLvl1List().get(0).getLvl2List().get(0).getLvl3List().get(0) ,planSizeAndPackDeleteDTO.getStrongKey().getFineline());
         Assertions.assertEquals(1, updatedMerchantPackOptSet.size());
         Assertions.assertEquals(1, updatedMerchantPackOptSet.stream().map(MerchantPackOptimization::getSubCatgPackOptimization).count());
         Assertions.assertEquals(1, updatedMerchantPackOptSet.iterator().next().getSubCatgPackOptimization().iterator().next().getFinelinepackOptimization().size());
@@ -54,7 +53,7 @@ public class SizeAndPackDeletePackOptServiceTest {
     void testUpdateMerchantPackOptForDeleteingGivenFineline() throws IOException {
         PlanSizeAndPackDeleteDTO planSizeAndPackDeleteDTO = spDeletePayloadFromJson("deleteGivenFinelineInputPayload");
         List<MerchantPackOptimization> merchantPackOptList = getMerchantPackOptimizations();
-        Set<MerchantPackOptimization>  updatedMerchantPackOptSet = sizeAndPackDeletePackOptService.updateMerchantPackOpt(merchantPackOptList,planSizeAndPackDeleteDTO.getSizeAndPackPayloadDTO().getLvl1List().get(0).getLvl2List().get(0).getLvl3List().get(0) ,planSizeAndPackDeleteDTO.getStrongKey().getFineline());
+        Set<MerchantPackOptimization>  updatedMerchantPackOptSet = sizeAndPackDeletePackOptMapper.updateMerchantPackOpt(merchantPackOptList,planSizeAndPackDeleteDTO.getSizeAndPackPayloadDTO().getLvl1List().get(0).getLvl2List().get(0).getLvl3List().get(0) ,planSizeAndPackDeleteDTO.getStrongKey().getFineline());
         Assertions.assertEquals(0, updatedMerchantPackOptSet.size());
     }
 

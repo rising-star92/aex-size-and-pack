@@ -95,7 +95,7 @@ public class SizeAndPackService {
 
     private final ObjectMapper objectMapper;
 
-    private final SizeAndPackDeletePackOptService sizeAndPackDeletePackOptService;
+    private final SizeAndPackDeletePackOptMapper sizeAndPackDeletePackOptMapper;
 
     @ManagedConfiguration
 	BigQueryConnectionProperties bigQueryConnectionProperties;
@@ -108,7 +108,7 @@ public class SizeAndPackService {
                               SizeAndPackDeleteService sizeAndPackDeleteService, SizeAndPackDeletePlanService sizeAndPackDeletePlanService
             , BuyQtyCommonUtil buyQtyCommonUtil, BigQueryInitialSetPlanService bigQueryInitialSetPlanService, InitialSetPlanMapper initialSetPlanMapper,
                               MerchPackOptimizationRepository merchPackOptimizationRepository, PackOptUpdateDataMapper packOptUpdateDataMapper, PackOptAddDataMapper packOptAddDataMapper,
-                              BigQueryPackStoresService bigQueryPackStoresService, SizeAndPackDeletePackOptService sizeAndPackDeletePackOptService) {
+                              BigQueryPackStoresService bigQueryPackStoresService, SizeAndPackDeletePackOptMapper sizeAndPackDeletePackOptMapper) {
         this.spFineLineChannelFixtureRepository = spFineLineChannelFixtureRepository;
         this.buyQuantityMapper = buyQuantityMapper;
         this.spCustomerChoiceChannelFixtureRepository = spCustomerChoiceChannelFixtureRepository;
@@ -125,7 +125,7 @@ public class SizeAndPackService {
         this.packOptUpdateDataMapper = packOptUpdateDataMapper;
         this.packOptAddDataMapper = packOptAddDataMapper;
         this.bigQueryPackStoresService = bigQueryPackStoresService;
-        this.sizeAndPackDeletePackOptService = sizeAndPackDeletePackOptService;
+        this.sizeAndPackDeletePackOptMapper = sizeAndPackDeletePackOptMapper;
         this.objectMapper = new ObjectMapper();
     }
 
@@ -376,7 +376,7 @@ public class SizeAndPackService {
                         List<MerchantPackOptimization> merchantPackOptimizationList = merchPackOptimizationRepository.findMerchantPackOptimizationByMerchantPackOptimizationID_planIdAndMerchantPackOptimizationID_repTLvl0AndMerchantPackOptimizationID_repTLvl1AndMerchantPackOptimizationID_repTLvl2AndMerchantPackOptimizationID_repTLvl3(sizeAndPackPayloadDTO.getPlanId(),
                                 sizeAndPackPayloadDTO.getLvl0Nbr(), lvl1.getLvl1Nbr(), lvl2.getLvl2Nbr(), lvl3.getLvl3Nbr());
                         if (!CollectionUtils.isEmpty(merchantPackOptimizationList)) {
-                            Set<MerchantPackOptimization> merchantPackOptimizationSet = sizeAndPackDeletePackOptService.updateMerchantPackOpt(merchantPackOptimizationList, lvl3, fineline);
+                            Set<MerchantPackOptimization> merchantPackOptimizationSet = sizeAndPackDeletePackOptMapper.updateMerchantPackOpt(merchantPackOptimizationList, lvl3, fineline);
                             if (!CollectionUtils.isEmpty(merchantPackOptimizationSet)) {
                                 merchPackOptimizationRepository.saveAll(merchantPackOptimizationSet);
                             }

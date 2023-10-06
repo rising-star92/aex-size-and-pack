@@ -14,7 +14,7 @@ import static com.walmart.aex.sp.util.SizeAndPackConstants.STORE_CHANNEL_ID;
 
 @Service
 @Slf4j
-public class SizeAndPackDeletePackOptService {
+public class SizeAndPackDeletePackOptMapper {
 
     public Set<MerchantPackOptimization> updateMerchantPackOpt(List<MerchantPackOptimization> merchantPackOpts, Lvl3 lvl3, Fineline strongKeyFineline) {
         Set<MerchantPackOptimization> merchantPackOptimizationSet = new HashSet<>(merchantPackOpts);
