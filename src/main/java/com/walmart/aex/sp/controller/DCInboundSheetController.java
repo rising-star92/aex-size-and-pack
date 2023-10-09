@@ -32,7 +32,7 @@ public class DCInboundSheetController {
     @CrossOrigin
     @GetMapping("/dcInboundExportExcel")
     public void getDCInbountExcelSheet(@RequestParam("planId") Long planId, @RequestParam("channelDesc") String channelDesc,HttpServletResponse response) throws IOException {
-        final String DEFAULT_FILENAME = "DcInboundReport.xlsx";
+        final String DEFAULT_FILENAME = DC_INBOUND_REPORT_NAME.concat(".xlsx");
         DCInboundWorkbookResponse dcInboundWorkbookResponse = dcInboundSheetService.getDcInboundWorkbook(planId, channelDesc);
         final String fileName = dcInboundWorkbookResponse.getFileName() != null ? dcInboundWorkbookResponse.getFileName() : DEFAULT_FILENAME;
         String headerValue = "attachment; filename=".concat(fileName);
