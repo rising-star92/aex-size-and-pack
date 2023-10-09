@@ -16,4 +16,7 @@ public interface BuyQtyProperties {
 
     @Property(propertyName = "initialSet.oneUnitPerStoreFlag")
     String getOneUnitPerStoreFeatureFlag();
+
+    @Property(propertyName = "buyQty.deviationFlag")
+    String getDeviationFlag();
 }

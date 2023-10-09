@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,9 +48,7 @@ class BigQueryPackStoresServiceTest
 {
     @Mock
     private BigQuery bigQuery;
-    
-    @Mock
-    private BigQueryOptions bigQueryOptions;
+
     private TableResult isResult;
     
     @Mock
@@ -71,9 +70,8 @@ class BigQueryPackStoresServiceTest
     void setUp() throws IOException 
     {
         MockitoAnnotations.openMocks(this);
-        bigQueryInitialSetPlanService = new BigQueryInitialSetPlanService(bqfpService,
-        		strategyFetchService);
-        bigQueryPackStoresService = new BigQueryPackStoresService(strategyFetchService);
+        bigQueryInitialSetPlanService = new BigQueryInitialSetPlanService(new ObjectMapper(),bqfpService,strategyFetchService,bigQuery);
+        bigQueryPackStoresService = new BigQueryPackStoresService(new ObjectMapper(), bigQuery, strategyFetchService);
         ReflectionTestUtils.setField(bigQueryInitialSetPlanService, "bigQueryConnectionProperties", 
         		bigQueryConnectionProperties);
         ReflectionTestUtils.setField(bigQueryPackStoresService, "bigQueryConnectionProperties", 
@@ -92,8 +90,6 @@ class BigQueryPackStoresServiceTest
           thenReturn(volumeDeviationResponse);
           try(MockedStatic<BigQueryOptions> mockBigQuery = mockStatic(BigQueryOptions.class)) 
           {
-              mockBigQuery.when(BigQueryOptions::getDefaultInstance).thenReturn(bigQueryOptions);
-              when(bigQueryOptions.getService()).thenReturn(bigQuery);
               when(bigQuery.query(any(QueryJobConfiguration.class))).thenReturn(isResult);
               PackDetailsVolumeResponse packDetailsVolumeResponse = bigQueryPackStoresService
             		  .getPackStoreDetailsByVolumeCluster(planId, request);

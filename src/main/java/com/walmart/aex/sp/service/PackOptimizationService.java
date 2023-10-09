@@ -40,7 +40,6 @@ import com.walmart.aex.sp.repository.SpFineLineChannelFixtureRepository;
 import com.walmart.aex.sp.repository.StyleCcPackOptConsRepository;
 import com.walmart.aex.sp.util.CommonGCPUtil;
 import com.walmart.aex.sp.util.CommonUtil;
-import com.walmart.aex.sp.util.SizeAndPackConstants;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -50,15 +49,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.walmart.aex.sp.util.PackOptimizationUtil.createAnalyticsMlSendEntry;
@@ -163,13 +154,17 @@ public class PackOptimizationService {
         Integer bumpNbr = fineLineAndBumpCount.size() > 1 ? fineLineAndBumpCount.get(1) : 1;
         if (fineLineNumber != null) {
             try {
+                log.info("Pack Optimization completed for planId:{} and fineLineNbr:{} and bumpPack:{} with RunStatusCode:{}",
+                        planId,finelineNbr,bumpNbr,status);
                 Optional<AnalyticsMlSend> analyticsMlSend = analyticsMlSendRepository.findByPlanIdAndFinelineNbrAndRunStatusCode(planId, fineLineNumber, RunStatusCodeType.SENT_TO_ANALYTICS.getId()
                 );
                 if (analyticsMlSend.isPresent()) {
                     Set<AnalyticsMlChildSend> analyticsMlChildSendList = analyticsMlSend.get().getAnalyticsMlChildSend();
+                    analyticsMlSend.get().setEndTs(new Date());
                     for (AnalyticsMlChildSend analyticsMlChildSend : analyticsMlChildSendList) {
                         if (Objects.equals(analyticsMlChildSend.getBumpPackNbr(), bumpNbr)) {
                             analyticsMlChildSend.setRunStatusCode(status);
+                            analyticsMlChildSend.setEndTs(new Date());
                             updateParentRunStatusCode(analyticsMlSend.get());
                             break;
                         }

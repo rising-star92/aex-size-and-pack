@@ -10,7 +10,6 @@ public class SizeAndPackConstants {
 
     public static final Integer DEFAULT_REPL_ITEM_PIECE_RULE = 2;
     public static final Integer DEFAULT_MIN_REPL_ITEM_UNITS = 2500;
-
     public static final String SUCCESS_STATUS = "Success";
     public static final String FAILED_STATUS = "Failed";
     public static final String REQUEST_INVALID = "Request is invalid";
@@ -50,9 +49,12 @@ public class SizeAndPackConstants {
     public static final Integer DEFAULT_SINGLE_PACK_INDICATOR = 1;
     public static final String PERCENT = "%";
     public static final String BUMP_PACK = "BP";
+    public static final String INITIAL_SET = "Initial Set";
+    public static final String BUMP_PACK_ERROR = "Bump Pack ";
     public static final String BUMP_PACK_PATTERN = "^(\\d*)_(\\d*)-BP";
     public static final Integer ONLINE_CHANNEL_ID = 2;
     public static final Integer STORE_CHANNEL_ID = 1;
+    public static final String DEFAULT_COLOR_FAMILY = "DEFAULT";
 
     //DC Inbound Report Headers
     public static final List<String> DC_INBOUND_REPORT_DEFAULT_HEADERS = Arrays.asList(CATEGORY, SUB_CATEGORY, FINELINE, STYLE, CUSTOMER_CHOICE, COLOR_NAME, COLOR_FAMILY, MERCH_METHOD, SIZE, CHANNEL);

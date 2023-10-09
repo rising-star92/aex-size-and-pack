@@ -43,7 +43,6 @@ import com.walmart.aex.sp.util.BuyQtyCommonUtil;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -340,6 +339,7 @@ public class SizeAndPackService {
     public SizeAndPackResponse deleteSizeAndPackData(PlanSizeAndPackDeleteDTO request) {
         SizeAndPackResponse sizeAndPackResponse = new SizeAndPackResponse();
         try {
+            log.info("Received the Delete payload from Size and Pack listener for CLP: {}", objectMapper.writeValueAsString(request));
             StrongKey strongKey = Optional.ofNullable(request.getStrongKey()).orElse(null);
             if (strongKey != null) {
                 if (strongKey.getFineline().getFinelineNbr() != null && CollectionUtils.isEmpty(strongKey.getFineline().getStyles())) {

@@ -1,7 +1,11 @@
 package com.walmart.aex.sp.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.walmart.aex.sp.dto.historicalmetrics.HistoricalMetric;
 import com.walmart.aex.sp.dto.historicalmetrics.HistoricalMetricsRequest;
 import com.walmart.aex.sp.dto.historicalmetrics.HistoricalMetricsResponse;
+import com.walmart.aex.sp.dto.midas.ColorFamilyDTO;
 import com.walmart.aex.sp.dto.midas.MidasResponse;
 import com.walmart.aex.sp.dto.midas.Payload;
 import com.walmart.aex.sp.dto.midas.Result;
@@ -10,7 +14,6 @@ import com.walmart.aex.sp.properties.MidasApiProperties;
 import com.walmart.aex.sp.properties.SecretsProperties;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -25,9 +28,8 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -35,14 +37,20 @@ public class MidasServiceCall {
 
    private static final String DEFAULT_HISTORICAL_METRICS_QUERY = "{\"query\":{\"select\":[{\"field\":\"*\"}],\"from\":\"get_historical_size_metrics_fineline_cc\",\"params\":{\"finelineNbr\":%d,\"lyCompWeekStart\":%d,\"lyCompWeekEnd\":%d,\"lvl0Nbr\":%d,\"lvl1Nbr\":%d,\"lvl2Nbr\":%d,\"lvl3Nbr\":%d,\"lvl4Nbr\":%d,\"channel\":\"%s\"}}}";
 
-   @Autowired
    private RestTemplate restTemplate;
 
    @ManagedConfiguration
    private MidasApiProperties midasProperties;
 
-   @Autowired
    SecretsProperties secretsProperties;
+
+   ObjectMapper objectMapper;
+
+   MidasServiceCall(RestTemplate restTemplate, SecretsProperties secretsProperties, ObjectMapper objectMapper) {
+      this.restTemplate = restTemplate;
+      this.secretsProperties = secretsProperties;
+      this.objectMapper = objectMapper;
+   }
 
    @Retryable(backoff = @Backoff(delay = 1000))
    public HistoricalMetricsResponse fetchHistoricalMetrics(HistoricalMetricsRequest request) {
@@ -60,14 +68,16 @@ public class MidasServiceCall {
          if (!result.getStatusCode().is2xxSuccessful())
             return response;
 
-         if (result.getBody() != null && !CollectionUtils.isEmpty(result.getBody().getErrors())) {
+         if (null != result.getBody() && !CollectionUtils.isEmpty(result.getBody().getErrors())) {
             log.error("Error retrieving historical size metrics: {}", result.getBody().getErrors());
          } else {
             response.setMetrics(Optional.ofNullable(result.getBody()).stream()
-                  .map(MidasResponse::getPayload)
-                  .map(Payload::getResult)
-                  .map(Result::getResponse)
-                  .findFirst().orElse(new ArrayList<>()));
+                    .map(MidasResponse::getPayload)
+                    .map(Payload::getResult)
+                    .map(Result::getResponse)
+                    .flatMap(Collection::stream)
+                    .map(resp -> objectMapper.convertValue(resp, HistoricalMetric.class))
+                    .collect(Collectors.toList()));
          }
       } catch (Exception e) {
          throw new CustomException("Exception in fetching historical metrics: " + e);
@@ -82,10 +92,51 @@ public class MidasServiceCall {
       return response;
    }
 
+   @Retryable(backoff = @Backoff(delay = 1000))
+   public List<String> fetchColorFamilies(String season, Integer fiscalYear, Integer deptNbr, Integer finelineNbr) {
+      List<String> emptyList = new ArrayList<>();
+      try {
+         String seasonString = "'" + season + "'";
+         final String query = String.format(midasProperties.getMidasColorFamiliesQuery(), seasonString, deptNbr, finelineNbr, fiscalYear);
+         String url = midasProperties.getMidasApiBaseURL();
+         log.info("Invoking Midas API for Create event with URL : {} and query : {}", url, query);
+
+         ResponseEntity<MidasResponse> result =
+                 restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(query, getHeadersForMidas()), MidasResponse.class);
+
+         if (!result.getStatusCode().is2xxSuccessful())
+            return emptyList;
+
+         if (null != result.getBody() && !CollectionUtils.isEmpty(result.getBody().getErrors())) {
+            log.error("Error retrieving historical size metrics: {}", result.getBody().getErrors());
+            return emptyList;
+         } else {
+            log.info("Response from Midas: {}", result.getBody());
+            String response = (Optional.ofNullable(result.getBody()).stream()
+                    .map(MidasResponse::getPayload)
+                    .map(Payload::getResult)
+                    .map(Result::getResponse)
+                    .flatMap(Collection::stream)
+                    .map(resp -> objectMapper.convertValue(resp, ColorFamilyDTO.class))
+                    .map(ColorFamilyDTO::getColorFamilies)
+                    .findFirst().orElse(null));
+            return objectMapper.readValue(response, new TypeReference<>() {});
+         }
+      } catch (Exception e) {
+         throw new CustomException("Exception in fetching color families: " + e);
+      }
+   }
+
+   @Recover
+   public List<String> recover(Exception e, String season, Integer fiscalYear, Integer deptNbr, Integer finelineNbr) {
+      log.error("Failed midas call after 3 retries for color families : ", e);
+      return new ArrayList<>();
+   }
+
    private HttpHeaders getHeadersForMidas() throws IOException {
       HttpHeaders headers = new HttpHeaders();
       headers.setContentType(MediaType.APPLICATION_JSON);
-      headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+      headers.setAccept(List.of(MediaType.APPLICATION_JSON));
       headers.set("consumer", midasProperties.getMidasHeaderConsumer());
       headers.set("signature_key_version", midasProperties.getMidasHeaderSignatureKeyVersion());
       headers.set("signature_ts", midasProperties.getMidasHeaderSignatureTS());

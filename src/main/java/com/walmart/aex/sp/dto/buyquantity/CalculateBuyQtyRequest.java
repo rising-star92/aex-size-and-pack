@@ -7,6 +7,8 @@ import java.util.List;
 @Data
 public class CalculateBuyQtyRequest {
     private Long planId;
+    private String seasonCode;
+    private Integer fiscalYear;
     private String channel;
     private Integer lvl0Nbr;
     private Integer lvl1Nbr;

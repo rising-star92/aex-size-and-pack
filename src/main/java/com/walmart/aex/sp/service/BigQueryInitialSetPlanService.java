@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.cloud.bigquery.BigQuery;
-import com.google.cloud.bigquery.BigQueryOptions;
 import com.google.cloud.bigquery.QueryJobConfiguration;
 import com.google.cloud.bigquery.TableResult;
 import com.walmart.aex.sp.dto.bqfp.*;
@@ -33,20 +32,23 @@ import java.util.stream.IntStream;
 @Slf4j
 public class BigQueryInitialSetPlanService {
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
     private final BQFPService bqfpService;
     private final StrategyFetchService strategyFetchService;
+
+    private final BigQuery bigQuery;
     @ManagedConfiguration
     BigQueryConnectionProperties bigQueryConnectionProperties;
 
     @ManagedConfiguration
     private GraphQLProperties graphQLProperties;
 
-    public BigQueryInitialSetPlanService(BQFPService bqfpService, StrategyFetchService strategyFetchService) {
+    public BigQueryInitialSetPlanService(ObjectMapper objectMapper, BQFPService bqfpService, StrategyFetchService strategyFetchService, BigQuery bigQuery) {
+        this.objectMapper = objectMapper;
         this.bqfpService = bqfpService;
         this.strategyFetchService = strategyFetchService;
+        this.bigQuery = bigQuery;
     }
-
 
     public List<RFAInitialSetBumpSetResponse> getInitialAndBumpSetDetails(InitialSetPackRequest rfaSizePackRequest) {
         List<RFAInitialSetBumpSetResponse> rfaInitialSetBumpSetResponses = new ArrayList<>();
@@ -57,7 +59,6 @@ public class BigQueryInitialSetPlanService {
 
             String spQueryStringIs = getSizePackIntialSetQueryString(projectIdDatasetNameTableNameCc, projectIdDatasetNameTableNameSp, rfaSizePackRequest.getPlanId(), rfaSizePackRequest.getFinelineNbr());
             String spQueryStringBs = getSizePackBumpSetQueryString(projectIdDatasetNameTableNameSp, rfaSizePackRequest.getPlanId(), rfaSizePackRequest.getFinelineNbr());
-            BigQuery bigQuery = BigQueryOptions.getDefaultInstance().getService();
             QueryJobConfiguration queryConfigIs = QueryJobConfiguration.newBuilder(spQueryStringIs).build();
             TableResult resultsIs = bigQuery.query(queryConfigIs);
             resultsIs.iterateAll().forEach(rows -> rows.forEach(row -> {
@@ -427,7 +428,7 @@ public class BigQueryInitialSetPlanService {
         }else{
             sqlQuery = findSqlQuery(planId, request,volumeDeviationLevel);
         }
-        BigQuery bigQuery = BigQueryOptions.getDefaultInstance().getService();
+
         QueryJobConfiguration queryConfigIs = QueryJobConfiguration.newBuilder(sqlQuery).build();
         TableResult resultsIs = bigQuery.query(queryConfigIs);
         HashMap<VolumeQueryId, List<VolumeClusterDTO>> uniqueRows = new HashMap<>();
@@ -456,7 +457,6 @@ public class BigQueryInitialSetPlanService {
                 log.error("Error Occurred while fetching Strategy Volume Deviation level for plan ID {} and fineline {}", planId, request.getFinelineNbr());
                 throw new SizeAndPackException("Error Occurred while fetching Strategy Volume Deviation level for plan ID " + planId);
             }
-            bigQuery = BigQueryOptions.getDefaultInstance().getService();
             queryConfigIs = QueryJobConfiguration.newBuilder(sqlQuery).build();
             resultsIs = bigQuery.query(queryConfigIs);
             resultsIs.iterateAll().forEach(rows -> rows.forEach(row -> {

@@ -14,7 +14,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.cloud.bigquery.BigQuery;
-import com.google.cloud.bigquery.BigQueryOptions;
 import com.google.cloud.bigquery.FieldValue;
 import com.google.cloud.bigquery.FieldValueList;
 import com.google.cloud.bigquery.JobException;
@@ -43,7 +42,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class BigQueryPackStoresService 
 {
-	 private static final ObjectMapper objectMapper = new ObjectMapper();
+	 private final ObjectMapper objectMapper;
+
+	 private final BigQuery bigQuery;
 	 
 	 private final StrategyFetchService strategyFetchService;
 	 
@@ -52,21 +53,21 @@ public class BigQueryPackStoresService
 
 	 @ManagedConfiguration
 	 private GraphQLProperties graphQLProperties;
-	 
-	 public BigQueryPackStoresService(StrategyFetchService strategyFetchService)
-	 {
-		 this.strategyFetchService = strategyFetchService;
-	 }
-	 
-	 public PackDetailsVolumeResponse getPackStoreDetailsByVolumeCluster(Long planId, 
-			 FinelineVolume request) throws SizeAndPackException
+
+	public BigQueryPackStoresService(ObjectMapper objectMapper, BigQuery bigQuery, StrategyFetchService strategyFetchService) {
+		this.objectMapper = objectMapper;
+		this.bigQuery = bigQuery;
+		this.strategyFetchService = strategyFetchService;
+	}
+
+	public PackDetailsVolumeResponse getPackStoreDetailsByVolumeCluster(Long planId,
+																							  FinelineVolume request) throws SizeAndPackException
 	 {
 	     QueryJobConfiguration queryConfig = QueryJobConfiguration.newBuilder(findSqlQuery(planId, 
 	    		 request, getVolumeDeviation(planId, request.getFinelineNbr()))).build();
 	     List<PackStoreDTO> packStoreDTOs = new ArrayList<>();
 	     try 
 	     {
-	    	BigQuery bigQuery = BigQueryOptions.getDefaultInstance().getService();
 			TableResult tableResult = bigQuery.query(queryConfig);
 			Iterator<FieldValueList> iterator = tableResult.iterateAll().iterator();
 			while(iterator.hasNext())

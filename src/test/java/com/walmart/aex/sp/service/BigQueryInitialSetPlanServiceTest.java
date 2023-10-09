@@ -1,5 +1,6 @@
 package com.walmart.aex.sp.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.cloud.PageImpl;
 import com.google.cloud.bigquery.*;
 import com.walmart.aex.sp.dto.bqfp.BQFPResponse;
@@ -35,8 +36,6 @@ import static org.mockito.Mockito.times;
 class BigQueryInitialSetPlanServiceTest {
     @Mock
     private BigQuery bigQuery;
-    @Mock
-    private BigQueryOptions bigQueryOptions;
     private TableResult isResult;
     private BQFPResponse bqfpResponse;
     @Mock
@@ -51,7 +50,7 @@ class BigQueryInitialSetPlanServiceTest {
     @BeforeEach
     void setUp() throws IOException {
         MockitoAnnotations.openMocks(this);
-        bigQueryInitialSetPlanService = new BigQueryInitialSetPlanService(bqfpService,strategyFetchService);
+        bigQueryInitialSetPlanService = new BigQueryInitialSetPlanService(new ObjectMapper(),bqfpService,strategyFetchService,bigQuery);
         ReflectionTestUtils.setField(bigQueryInitialSetPlanService, "bigQueryConnectionProperties", bigQueryConnectionProperties);
         setData();
         setProperties();
@@ -62,9 +61,7 @@ class BigQueryInitialSetPlanServiceTest {
         FinelineVolume request = getFinelineVolume();
         StrategyVolumeDeviationResponse volumeDeviationResponse = getVolumeDeviationStrategyResponse();
         when(strategyFetchService.getStrategyVolumeDeviation(planId, request.getFinelineNbr())).thenReturn(volumeDeviationResponse);
-        try(MockedStatic<BigQueryOptions> mockBigQuery = mockStatic(BigQueryOptions.class)) {
-            mockBigQuery.when(BigQueryOptions::getDefaultInstance).thenReturn(bigQueryOptions);
-            when(bigQueryOptions.getService()).thenReturn(bigQuery);
+        try {
             when(bigQuery.query(any(QueryJobConfiguration.class))).thenReturn(isResult);
             when(bqfpService.getBqfpResponse(anyInt(), anyInt())).thenReturn(bqfpResponse);
             List<InitialSetVolumeResponse> response = bigQueryInitialSetPlanService.getInitialAndBumpSetDetailsByVolumeCluster(planId,request);
@@ -81,9 +78,7 @@ class BigQueryInitialSetPlanServiceTest {
     void getInitialAndBumpSetDetailsByVolumeClusterTestWhenVolumeDeviationIsPassed() throws SizeAndPackException {
         Long planId = 73l;
         FinelineVolume request = getFinelineVolumeWithVolDeviation();
-        try(MockedStatic<BigQueryOptions> mockBigQuery = mockStatic(BigQueryOptions.class)) {
-            mockBigQuery.when(BigQueryOptions::getDefaultInstance).thenReturn(bigQueryOptions);
-            when(bigQueryOptions.getService()).thenReturn(bigQuery);
+        try {
             when(bigQuery.query(any(QueryJobConfiguration.class))).thenReturn(isResult);
             when(bqfpService.getBqfpResponse(anyInt(), anyInt())).thenReturn(bqfpResponse);
             List<InitialSetVolumeResponse> response = bigQueryInitialSetPlanService.getInitialAndBumpSetDetailsByVolumeCluster(planId,request);
@@ -101,8 +96,7 @@ class BigQueryInitialSetPlanServiceTest {
         Long planId = 73l;
         FinelineVolume request = getFinelineVolume();
         when(strategyFetchService.getStrategyVolumeDeviation(planId, request.getFinelineNbr())).thenReturn(null);
-        try(MockedStatic<BigQueryOptions> mockBigQuery = mockStatic(BigQueryOptions.class)) {
-            mockBigQuery.when(BigQueryOptions::getDefaultInstance).thenReturn(bigQueryOptions);
+        try {
             List<InitialSetVolumeResponse> response = bigQueryInitialSetPlanService.getInitialAndBumpSetDetailsByVolumeCluster(planId, request);
             assertEquals(0, response.size());
             verify(bigQuery, times(2)).query(any(QueryJobConfiguration.class));

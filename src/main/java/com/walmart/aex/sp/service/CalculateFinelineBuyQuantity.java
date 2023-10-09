@@ -2,9 +2,7 @@ package com.walmart.aex.sp.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.walmart.aex.sp.dto.assortproduct.APRequest;
-import com.walmart.aex.sp.dto.assortproduct.APResponse;
-import com.walmart.aex.sp.dto.assortproduct.RFASizePackData;
+import com.walmart.aex.sp.dto.assortproduct.*;
 import com.walmart.aex.sp.dto.bqfp.*;
 import com.walmart.aex.sp.dto.buyquantity.AddStoreBuyQuantity;
 import com.walmart.aex.sp.dto.buyquantity.BuyQtyObj;
@@ -23,6 +21,7 @@ import com.walmart.aex.sp.dto.buyquantity.SizeDto;
 import com.walmart.aex.sp.dto.buyquantity.StoreQuantity;
 import com.walmart.aex.sp.dto.buyquantity.StrategyVolumeDeviationResponse;
 import com.walmart.aex.sp.dto.buyquantity.StyleDto;
+import com.walmart.aex.sp.dto.currentlineplan.LikeAssociation;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
 import com.walmart.aex.sp.dto.replenishment.cons.ReplenishmentCons;
 import com.walmart.aex.sp.entity.CcSpMmReplPack;
@@ -42,8 +41,10 @@ import com.walmart.aex.sp.enums.FixtureTypeRollup;
 import com.walmart.aex.sp.enums.VdLevelCode;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.exception.SizeAndPackException;
+import com.walmart.aex.sp.properties.BuyQtyProperties;
 import com.walmart.aex.sp.util.BuyQtyCommonUtil;
 import com.walmart.aex.sp.util.SizeAndPackConstants;
+import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Marker;
 import org.slf4j.helpers.BasicMarkerFactory;
@@ -51,21 +52,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
-import static com.walmart.aex.sp.util.SizeAndPackConstants.VP_DEFAULT;
+import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
 
 @Service
 @Slf4j
@@ -82,6 +74,9 @@ public class CalculateFinelineBuyQuantity {
     private final DeptAdminRuleService deptAdminRuleService;
     private final ReplenishmentService replenishmentService;
     private final ReplenishmentsOptimizationService replenishmentsOptimizationServices;
+    private MidasServiceCall midasServiceCall;
+    private LinePlanService linePlanService;
+    private BigQueryClusterService bigQueryClusterService;
 
     public CalculateFinelineBuyQuantity(BQFPService bqfpService,
                                         ObjectMapper objectMapper,
@@ -92,7 +87,10 @@ public class CalculateFinelineBuyQuantity {
                                         BuyQuantityConstraintService buyQuantityConstraintService,
                                         DeptAdminRuleService deptAdminRuleService,
                                         ReplenishmentService replenishmentService,
-                                        ReplenishmentsOptimizationService replenishmentsOptimizationServices) {
+                                        ReplenishmentsOptimizationService replenishmentsOptimizationServices,
+                                        MidasServiceCall midasServiceCall,
+                                        LinePlanService linePlanService,
+                                        BigQueryClusterService bigQueryClusterService) {
         this.bqfpService = bqfpService;
         this.objectMapper = objectMapper;
         this.strategyFetchService = strategyFetchService;
@@ -103,13 +101,15 @@ public class CalculateFinelineBuyQuantity {
         this.deptAdminRuleService = deptAdminRuleService;
         this.replenishmentService = replenishmentService;
         this.replenishmentsOptimizationServices = replenishmentsOptimizationServices;
+        this.midasServiceCall = midasServiceCall;
+        this.linePlanService = linePlanService;
+        this.bigQueryClusterService = bigQueryClusterService;
     }
 
     public CalculateBuyQtyResponse calculateFinelineBuyQty(CalculateBuyQtyRequest calculateBuyQtyRequest, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, CalculateBuyQtyResponse calculateBuyQtyResponse) throws CustomException {
         log.info("Calculating buy quantity for planId: {}, finelineNbr: {}, channel: {}", calculateBuyQtyParallelRequest.getPlanId(), calculateBuyQtyParallelRequest.getFinelineNbr(), calculateBuyQtyParallelRequest.getChannel());
         CompletableFuture<BuyQtyResponse> buyQtyResponseCompletableFuture = getBuyQtyResponseCompletableFuture(calculateBuyQtyRequest, calculateBuyQtyParallelRequest);
         CompletableFuture<BQFPResponse> bqfpResponseCompletableFuture = getBqfpResponseCompletableFuture(calculateBuyQtyRequest, calculateBuyQtyParallelRequest);
-
         //Set Volume Deviation from Strategy
         CompletableFuture<StrategyVolumeDeviationResponse> strategyVolumeDeviationResponseCompletableFuture = getStrategyVolumeDeviationCompletableFuture(calculateBuyQtyRequest.getPlanId(), calculateBuyQtyParallelRequest.getFinelineNbr());
 
@@ -120,8 +120,9 @@ public class CalculateFinelineBuyQuantity {
             final BuyQtyResponse buyQtyResponse = buyQtyResponseCompletableFuture.get();
             final BQFPResponse bqfpResponse = bqfpResponseCompletableFuture.get();
             final StrategyVolumeDeviationResponse strategyVolumeDeviationResponse = strategyVolumeDeviationResponseCompletableFuture.get();
-            if (null != strategyVolumeDeviationResponse) {
-                setStrategyVolumeDeviation(bqfpResponse, strategyVolumeDeviationResponse);
+            String volumeDeviation = getStrategyVolumeDeviation(strategyVolumeDeviationResponse);
+            if (null != volumeDeviation) {
+                bqfpResponse.setVolumeDeviationStrategyLevelSelection(BigDecimal.valueOf(VdLevelCode.getVdLevelCodeIdFromName(volumeDeviation)));
             }
             APResponse apResponse = null;
             if (ChannelType.STORE.getDescription().equalsIgnoreCase(calculateBuyQtyParallelRequest.getChannel()))
@@ -157,16 +158,123 @@ public class CalculateFinelineBuyQuantity {
         }
     }
 
-    private void setStrategyVolumeDeviation(BQFPResponse bqfpResponse, StrategyVolumeDeviationResponse strategyVolumeDeviationResponse) {
-        Optional.ofNullable(strategyVolumeDeviationResponse)
+    public CalculateBuyQtyResponse calculateFinelineBuyQtyV2(CalculateBuyQtyRequest calculateBuyQtyRequest, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, CalculateBuyQtyResponse calculateBuyQtyResponse) throws CustomException {
+        log.info("Calculating buy quantity for planId: {}, finelineNbr: {}, channel: {}", calculateBuyQtyParallelRequest.getPlanId(), calculateBuyQtyParallelRequest.getFinelineNbr(), calculateBuyQtyParallelRequest.getChannel());
+        CompletableFuture<BuyQtyResponse> buyQtyResponseCompletableFuture = getBuyQtyResponseCompletableFuture(calculateBuyQtyRequest, calculateBuyQtyParallelRequest);
+        CompletableFuture<BQFPResponse> bqfpResponseCompletableFuture = getBqfpResponseCompletableFuture(calculateBuyQtyRequest, calculateBuyQtyParallelRequest);
+        //Set Volume Deviation from Strategy
+        CompletableFuture<StrategyVolumeDeviationResponse> strategyVolumeDeviationResponseCompletableFuture = getStrategyVolumeDeviationCompletableFuture(calculateBuyQtyRequest.getPlanId(), calculateBuyQtyParallelRequest.getFinelineNbr());
+
+        // Like Fineline details
+        CompletableFuture<LikeAssociation> likeFinelineDetailsCompletableFuture = getLikeAssociationCompletableFuture(calculateBuyQtyRequest, calculateBuyQtyParallelRequest);
+        // Color Families for original fineline
+        CompletableFuture<List<String>> colorFamiliesCompletableFuture = getColorFamiliesCompleteFuture(calculateBuyQtyRequest, calculateBuyQtyParallelRequest);
+
+        //wrapper future completes when all futures have completed
+        CompletableFuture<Void> combinedFuture = CompletableFuture.allOf(buyQtyResponseCompletableFuture, bqfpResponseCompletableFuture, strategyVolumeDeviationResponseCompletableFuture, likeFinelineDetailsCompletableFuture, colorFamiliesCompletableFuture);
+        try {
+            combinedFuture.join();
+            log.info("All futures completed");
+            final BuyQtyResponse buyQtyResponse = buyQtyResponseCompletableFuture.get();
+            final BQFPResponse bqfpResponse = bqfpResponseCompletableFuture.get();
+            final StrategyVolumeDeviationResponse strategyVolumeDeviationResponse = strategyVolumeDeviationResponseCompletableFuture.get();
+            final LikeAssociation likeFinelineResponse = likeFinelineDetailsCompletableFuture.get();
+            final List<ColorDefinition> colorDefinitions = getColorDefinitions(calculateBuyQtyRequest, colorFamiliesCompletableFuture, buyQtyResponse, likeFinelineResponse);
+            String volumeDeviation = getStrategyVolumeDeviation(strategyVolumeDeviationResponse);
+            if (null != volumeDeviation) {
+                bqfpResponse.setVolumeDeviationStrategyLevelSelection(BigDecimal.valueOf(VdLevelCode.getVdLevelCodeIdFromName(volumeDeviation)));
+            }
+            APResponse apResponse = getRFAResponse(calculateBuyQtyRequest, calculateBuyQtyParallelRequest, bqfpResponse, likeFinelineResponse, colorDefinitions, volumeDeviation);
+
+            if (log.isDebugEnabled()) {
+                logExtResponse("Size Profiles", buyQtyResponse);
+                logExtResponse("BQFP", bqfpResponse);
+                logExtResponse("RFA", apResponse);
+            }
+            FinelineDto finelineDto = getFineline(buyQtyResponse);
+            if (finelineDto != null) {
+                if (!CollectionUtils.isEmpty(finelineDto.getMerchMethods()) && ChannelType.STORE.getDescription().equalsIgnoreCase(calculateBuyQtyParallelRequest.getChannel())) {
+                    getMerchMethod(calculateBuyQtyParallelRequest, finelineDto, apResponse, bqfpResponseCompletableFuture.get(), calculateBuyQtyResponse);
+                } else if (ChannelType.ONLINE.getDescription().equalsIgnoreCase(calculateBuyQtyParallelRequest.getChannel())) {
+                    calculateBuyQtyResponse = calculateOnlineFinelineBuyQuantity.calculateOnlineBuyQty(calculateBuyQtyParallelRequest, finelineDto, bqfpResponseCompletableFuture.get(), calculateBuyQtyResponse);
+                } else log.info("Merchmethods or channel is empty: {}", buyQtyResponseCompletableFuture);
+            } else log.info("Size Profile Fineline is null: {}", bqfpResponseCompletableFuture);
+            return calculateBuyQtyResponse;
+        } catch (InterruptedException ie) {
+            log.error("CalculateBuyQty failed due to interruption. plan: {}, finelineNbr: {}",
+                    calculateBuyQtyRequest.getPlanId(), calculateBuyQtyParallelRequest.getFinelineNbr());
+            Thread.currentThread().interrupt();
+            return calculateBuyQtyResponse;
+        } catch (ExecutionException e) {
+            log.error("CalculateBuyQty failed due to external dependency failure.  plan: {}, finelineNbr: {}",
+                    calculateBuyQtyRequest.getPlanId(), calculateBuyQtyParallelRequest.getFinelineNbr(), e.getCause());
+            return calculateBuyQtyResponse;
+        } catch (Exception e) {
+            log.error("CalculateBuyQty failed.  plan: {}, finelineNbr: {}",
+                    calculateBuyQtyRequest.getPlanId(), calculateBuyQtyParallelRequest.getFinelineNbr(), e);
+            throw new CustomException("CalculateBuyQty failed");
+        }
+    }
+
+    private List<ColorDefinition> getColorDefinitions(CalculateBuyQtyRequest calculateBuyQtyRequest, CompletableFuture<List<String>> colorFamiliesCompletableFuture, BuyQtyResponse buyQtyResponse, LikeAssociation likeFinelineResponse) throws InterruptedException, ExecutionException, SizeAndPackException {
+        List<String> colorFamiliesFromMidas;
+        if (null == likeFinelineResponse) {
+            colorFamiliesFromMidas = colorFamiliesCompletableFuture.get();
+        } else {
+            colorFamiliesFromMidas = getColorFamilies(calculateBuyQtyRequest.getSeasonCode(), calculateBuyQtyRequest.getFiscalYear(), likeFinelineResponse.getLvl1Nbr(), Integer.parseInt(likeFinelineResponse.getId()));
+        }
+        // Match the colors between DS and Strategy, if not found then use DEFAULT
+        return getAssociatedColorFamilies(colorFamiliesFromMidas, buyQtyResponse);
+    }
+
+    private RFASizePackRequest createRFASizePackRequest(CalculateBuyQtyRequest calculateBuyQtyRequest, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, LikeAssociation likeFinelineResponse, List<ColorDefinition> colorDefinitions) {
+        return RFASizePackRequest.builder()
+                .plan_id(Math.toIntExact(calculateBuyQtyRequest.getPlanId()))
+                .fiscal_year(calculateBuyQtyRequest.getFiscalYear())
+                .seasonCode(calculateBuyQtyRequest.getSeasonCode())
+                .rpt_lvl_0_nbr(calculateBuyQtyParallelRequest.getLvl0Nbr())
+                .rpt_lvl_1_nbr(calculateBuyQtyParallelRequest.getLvl1Nbr())
+                .rpt_lvl_2_nbr(calculateBuyQtyParallelRequest.getLvl2Nbr())
+                .rpt_lvl_3_nbr(calculateBuyQtyParallelRequest.getLvl3Nbr())
+                .rpt_lvl_4_nbr(calculateBuyQtyParallelRequest.getLvl4Nbr())
+                .fineline_nbr(calculateBuyQtyParallelRequest.getFinelineNbr())
+                .like_lvl1_nbr(null != likeFinelineResponse ? likeFinelineResponse.getLvl1Nbr() : null)
+                .like_lvl3_nbr(null != likeFinelineResponse ? likeFinelineResponse.getLvl3Nbr() : null)
+                .like_lvl4_nbr(null != likeFinelineResponse ? likeFinelineResponse.getLvl4Nbr() : null)
+                .like_fineline_nbr(null != likeFinelineResponse ? Integer.parseInt(likeFinelineResponse.getId()) : null)
+                .colors(colorDefinitions)
+                .build();
+    }
+
+    private List<ColorDefinition> getAssociatedColorFamilies(List<String> colorFamiliesFromMidas, BuyQtyResponse buyQtyResponse) {
+        List<ColorDefinition> colorDefinitions = new ArrayList<>();
+        buyQtyResponse.getLvl3List().stream()
+                .map(Lvl3Dto::getLvl4List)
+                .flatMap(Collection::stream)
+                .map(Lvl4Dto::getFinelines)
+                .flatMap(Collection::stream)
+                .map(FinelineDto::getStyles)
+                .flatMap(Collection::stream)
+                .map(StyleDto::getCustomerChoices)
+                .flatMap(Collection::stream)
+                .forEach(cc -> {
+                    if (cc.getColorFamily() != null && colorFamiliesFromMidas.contains(cc.getColorFamily().toUpperCase())) {
+                        colorDefinitions.add(ColorDefinition.builder().cc(cc.getCcId()).color_family_desc(cc.getColorFamily().toUpperCase()).build());
+                    } else {
+                        colorDefinitions.add(ColorDefinition.builder().cc(cc.getCcId()).color_family_desc(DEFAULT_COLOR_FAMILY).build());
+                    }
+                });
+
+        return colorDefinitions;
+    }
+
+    private String getStrategyVolumeDeviation(StrategyVolumeDeviationResponse strategyVolumeDeviationResponse) {
+        return Optional.ofNullable(strategyVolumeDeviationResponse)
                 .map(StrategyVolumeDeviationResponse::getFinelines)
                 .stream()
                 .flatMap(Collection::stream)
                 .findFirst()
-                .map(FinelineVolumeDeviationDto::getVolumeDeviationLevel).ifPresent(volumeDeviationLevel -> {
-                    log.info("Strategy Volume Deviation for plan: {} : fineline: {} is : {}", bqfpResponse.getPlanId(),bqfpResponse.getFinelineNbr(),volumeDeviationLevel);
-                    bqfpResponse.setVolumeDeviationStrategyLevelSelection(BigDecimal.valueOf(VdLevelCode.getVdLevelCodeIdFromName(volumeDeviationLevel)));
-        });
+                .map(FinelineVolumeDeviationDto::getVolumeDeviationLevel).orElse(null);
     }
 
     private CompletableFuture<BQFPResponse> getBqfpResponseCompletableFuture(CalculateBuyQtyRequest calculateBuyQtyRequest, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest) {
@@ -178,7 +286,7 @@ public class CalculateFinelineBuyQuantity {
             try {
                 return strategyFetchService.getStrategyVolumeDeviation(planId, finelineNbr);
             } catch (SizeAndPackException e) {
-                throw new CustomException("Failed to fetch buyQtyResponse");
+                throw new CustomException("Failed to fetch Strategy Volume Deviation");
             }
         });
     }
@@ -189,6 +297,26 @@ public class CalculateFinelineBuyQuantity {
                 return getSizeProfiles(calculateBuyQtyRequest, calculateBuyQtyParallelRequest);
             } catch (SizeAndPackException e) {
                 throw new CustomException("Failed to fetch buyQtyResponse");
+            }
+        });
+    }
+
+    private CompletableFuture<LikeAssociation> getLikeAssociationCompletableFuture(CalculateBuyQtyRequest calculateBuyQtyRequest, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return linePlanService.getLikeAssociation(calculateBuyQtyRequest.getPlanId(), calculateBuyQtyParallelRequest.getFinelineNbr());
+            } catch (SizeAndPackException e) {
+                throw new CustomException("Failed to fetch Like Association");
+            }
+        });
+    }
+
+    private CompletableFuture<List<String>> getColorFamiliesCompleteFuture(CalculateBuyQtyRequest calculateBuyQtyRequest, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return getColorFamilies(calculateBuyQtyRequest.getSeasonCode(), calculateBuyQtyRequest.getFiscalYear(), calculateBuyQtyParallelRequest.getLvl1Nbr(), calculateBuyQtyParallelRequest.getFinelineNbr());
+            } catch (SizeAndPackException e) {
+                throw new CustomException("Failed to fetch Color Families");
             }
         });
     }
@@ -502,6 +630,18 @@ public class CalculateFinelineBuyQuantity {
         }
     }
 
+    private APResponse getRFAResponse(CalculateBuyQtyRequest calculateBuyQtyRequest, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, BQFPResponse bqfpResponse, LikeAssociation likeFinelineResponse, List<ColorDefinition> colorDefinitions, String volumeDeviation) throws InterruptedException, JsonProcessingException {
+        APResponse apResponse = new APResponse();
+        if (ChannelType.STORE.getDescription().equalsIgnoreCase(calculateBuyQtyParallelRequest.getChannel())) {
+            RFASizePackRequest rfaSizePackRequest = createRFASizePackRequest(calculateBuyQtyRequest, calculateBuyQtyParallelRequest, likeFinelineResponse, colorDefinitions);
+            log.info("Invoking BQ query to get RFA Data for fineline: {}", rfaSizePackRequest.getFineline_nbr());
+            List<RFASizePackData> rfaSizePackDataList = bigQueryClusterService.fetchRFASizePackData(rfaSizePackRequest, volumeDeviation);
+            log.info("RFA Data from BQ: {}", Arrays.toString(rfaSizePackDataList.toArray()));
+            apResponse.setRfaSizePackData(rfaSizePackDataList);
+        }
+        return apResponse;
+    }
+
     private BQFPResponse getBqfpResponse(CalculateBuyQtyRequest calculateBuyQtyRequest, Integer finelineNbr) {
         BQFPRequest bqfpRequest = new BQFPRequest();
         bqfpRequest.setPlanId(calculateBuyQtyRequest.getPlanId());
@@ -509,6 +649,15 @@ public class CalculateFinelineBuyQuantity {
         bqfpRequest.setFinelineNbr(finelineNbr);
         log.info("BQFPRequest payload for planId {} : {}", bqfpRequest, calculateBuyQtyRequest.getPlanId());
         return bqfpService.getBuyQuantityUnits(bqfpRequest);
+    }
+
+    private List<String> getColorFamilies(String season, Integer fiscalYear, Integer deptNbr, Integer finelineNbr) throws SizeAndPackException {
+        try {
+            return midasServiceCall.fetchColorFamilies(season, fiscalYear, deptNbr, finelineNbr);
+        } catch (CustomException e) {
+            log.error("An exception occurred while fetching color families from midas: {}", e.getMessage());
+            throw new SizeAndPackException("An exception occurred while fetching color families from midas");
+        }
     }
 
     private List<RFASizePackData> getSizeVolumeClustersFromRfa(APResponse apResponse, Integer sizeCluster, String styleNbr, String ccId, List<Integer> fixtureTypeRollUpIds) {

@@ -135,8 +135,11 @@ public class CalculateBuyQuantityService {
                     calculateBuyQtyResponse.setMerchCatgReplPacks(merchCatgReplPacks1);
 
                     try {
-
-                        calculateBuyQtyResponse =  calculateFinelineBuyQuantity.calculateFinelineBuyQty(calculateBuyQtyRequest, calculateBuyQtyParallelRequest, calculateBuyQtyResponse);
+                        if (null != calculateBuyQtyRequest.getSeasonCode() && null != calculateBuyQtyRequest.getFiscalYear()) {
+                            calculateBuyQtyResponse = calculateFinelineBuyQuantity.calculateFinelineBuyQtyV2(calculateBuyQtyRequest, calculateBuyQtyParallelRequest, calculateBuyQtyResponse);
+                        } else {
+                            calculateBuyQtyResponse =  calculateFinelineBuyQuantity.calculateFinelineBuyQty(calculateBuyQtyRequest, calculateBuyQtyParallelRequest, calculateBuyQtyResponse);
+                        }
 
                         Set<SpFineLineChannelFixture> spFineLineChannelFixturesSet = new HashSet<>(calculateBuyQtyResponse.getSpFineLineChannelFixtures());
                         Set<MerchCatgReplPack> merchCatgReplPacksSet = new HashSet<>(calculateBuyQtyResponse.getMerchCatgReplPacks());
