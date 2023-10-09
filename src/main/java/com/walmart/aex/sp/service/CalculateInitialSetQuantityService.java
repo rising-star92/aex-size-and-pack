@@ -18,8 +18,6 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class CalculateInitialSetQuantityService {
-
-    private static final double FOUR_PRECISION = 10000;
     private static final Long DEFAULT_IS_QTY = 0L;
     private static final Long DEFAULT_TOTAL_IS_QTY = 1L;
 
@@ -85,7 +83,7 @@ public class CalculateInitialSetQuantityService {
         // if sizePct is > 0 and initialSetUnitsPerFix > 0, then perform the logic to promote perStoreQty to 1 incase if the calculation gives us 0
         if (sizePct > 0.0 && volumeCluster.getInitialSet().getInitialSetUnitsPerFix() != null && volumeCluster.getInitialSet().getInitialSetUnitsPerFix() > 0) {
             isQty = (isCalculatedBq * sizePct) / 100;
-            perStoreQty = ((isQty / rfaSizePackData.getStore_cnt()) * FOUR_PRECISION) / FOUR_PRECISION;
+            perStoreQty = (isQty / rfaSizePackData.getStore_cnt());
             if (perStoreQty < 0.5) {
                 // flag to identify this particular InitialSet is set to 1
                 initialSetQuantity.setOneUnitPerStore(true); // rep
