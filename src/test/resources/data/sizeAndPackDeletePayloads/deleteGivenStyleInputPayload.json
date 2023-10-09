@@ -1,0 +1,76 @@
+{
+  "strongKey": {
+    "planId": 12,
+    "planDesc": "S3 - FYE 2024",
+    "lvl0Nbr": 50000,
+    "lvl1Nbr": 34,
+    "lvl2Nbr": 1056308,
+    "lvl3Nbr": 1056309,
+    "lvl4Nbr": 1056384,
+    "fineline": {
+      "finelineNbr": 198,
+      "finelineName": null,
+      "altFinelineName": null,
+      "channel": null,
+      "packOptimizationStatus": null,
+      "constraints": null,
+      "styles": [
+        {
+          "styleNbr": "34_198_1_13_1",
+          "altStyleDesc": null,
+          "channel": null,
+          "constraints": null,
+          "customerChoices": []
+        }
+      ],
+      "optimizationDetails": null
+    }
+  },
+  "sizeAndPackPayloadDTO": {
+    "planId": 12,
+    "planDesc": "S3 - FYE 2024",
+    "lvl0Nbr": 50000,
+    "lvl0Name": "Apparel",
+    "lvl1List": [
+      {
+        "lvl1Nbr": 34,
+        "lvl1Name": "D34 - Womens Apparel",
+        "lvl2List": [
+          {
+            "lvl2Nbr": 1056308,
+            "lvl2Name": "Plus Womens",
+            "lvl3List": [
+              {
+                "lvl0Nbr": null,
+                "lvl1Nbr": null,
+                "lvl2Nbr": null,
+                "lvl3Nbr": 1056309,
+                "lvl3Name": "Tops Plus Womens",
+                "constraints": null,
+                "lvl4List": [
+                  {
+                    "lvl4Nbr": 1056384,
+                    "lvl4Name": "Ls Tops Plus Womens",
+                    "constraints": null,
+                    "finelines": [
+                      {
+                        "finelineNbr": 198,
+                        "finelineName": "198 - TS LS CORE VNECK TEE",
+                        "altFinelineName": null,
+                        "channel": "Store",
+                        "packOptimizationStatus": null,
+                        "constraints": null,
+                        "styles": [],
+                        "optimizationDetails": null
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

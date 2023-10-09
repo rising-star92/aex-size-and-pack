@@ -84,5 +84,4 @@ public interface CcPackOptimizationRepository extends JpaRepository<CcPackOptimi
             "sccf.fineline_nbr =:finelineNbr and " +
             "sccf.channel_id=1 ) as t", nativeQuery = true)
     Integer getTotalCCsAcrossAllSetsByPlanIdFineline(@Param("planId") Long planId, @Param("finelineNbr")Integer finelineNbr);
-    void deleteByCcPackOptimizationId_StylePackOptimizationID_FinelinePackOptimizationID_SubCatgPackOptimizationID_MerchantPackOptimizationID_planIdAndCcPackOptimizationId_StylePackOptimizationID_FinelinePackOptimizationID_SubCatgPackOptimizationID_MerchantPackOptimizationID_repTLvl3AndCcPackOptimizationId_StylePackOptimizationID_FinelinePackOptimizationID_SubCatgPackOptimizationID_repTLvl4AndCcPackOptimizationId_StylePackOptimizationID_FinelinePackOptimizationID_finelineNbrAndCcPackOptimizationId_StylePackOptimizationID_styleNbrAndCcPackOptimizationId_customerChoice(Long planId, Integer lvl3Nbr, Integer lvl4Nbr, Integer finelineNbr, String styleNbr, String customerChoice);
 }
