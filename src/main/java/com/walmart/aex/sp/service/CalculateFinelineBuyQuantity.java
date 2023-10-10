@@ -517,7 +517,7 @@ public class CalculateFinelineBuyQuantity {
      */
     private void getClusterSizesV2(StyleDto styleDto, CustomerChoiceDto customerChoiceDto, ClustersDto clustersDto, BQFPResponse bqfpResponse, Map<SizeDto, BuyQtyObj> storeBuyQtyBySizeId, List<RFASizePackData> rfaSizePackDataList, Integer initialThreshold) {
         List<CalculateQuantityByUnit> calculateQuantityByUnits = new ArrayList<>();
-        // Calculate only IS
+        // Calculate IS and BS
         for (SizeDto sizeDto: clustersDto.getSizes()) {
             if (!storeBuyQtyBySizeId.containsKey(sizeDto)) {
                 storeBuyQtyBySizeId.put(sizeDto, new BuyQtyObj());

@@ -122,19 +122,20 @@ public class CalculateInitialSetQuantityService {
     private void reduceISUnits(Long unitsToReduce, List<InitialSetQuantity> initialSetQuantities, Integer storeCount) {
         List<InitialSetQuantity> sortedInitialSetQuantities = initialSetQuantities.stream()
                 .filter(isQty -> getDecimalDifference(isQty) >= 0.5 && isQty.getRoundedPerStoreQty() > 1)
-                .sorted(Comparator.comparing(CalculateInitialSetQuantityService::getDecimalDifference))
+                .sorted(
+                        Comparator.comparing(CalculateInitialSetQuantityService::getDecimalDifference)
+                                .thenComparing(InitialSetQuantity::getSizePct, Comparator.reverseOrder()))
                 .collect(Collectors.toList());
 //        If all the IS are having 1 unit
         if (sortedInitialSetQuantities.isEmpty()) {
             sortedInitialSetQuantities = initialSetQuantities.stream()
                     .filter(isQty -> getDecimalDifference(isQty) >= 0.5)
-                    .sorted(Comparator.comparing(CalculateInitialSetQuantityService::getDecimalDifference))
+                    .sorted(
+                            Comparator.comparing(CalculateInitialSetQuantityService::getDecimalDifference)
+                                    .thenComparing(InitialSetQuantity::getSizePct, Comparator.reverseOrder()))
                     .collect(Collectors.toList());
         }
-        if (!sortedInitialSetQuantities.isEmpty() &&  sortedInitialSetQuantities.size() > 1 &&
-                getDecimalDifference(sortedInitialSetQuantities.get(0)) == getDecimalDifference(sortedInitialSetQuantities.get(1))) {
-            sortedInitialSetQuantities = sortedInitialSetQuantities.stream().sorted(Comparator.comparing(InitialSetQuantity::getSizePct).reversed()).collect(Collectors.toList());
-        }
+
         adjustUnits(unitsToReduce, sortedInitialSetQuantities, storeCount, true);
     }
 
@@ -151,16 +152,17 @@ public class CalculateInitialSetQuantityService {
     private void distributeISUnits(Long unitsToIncrease, List<InitialSetQuantity> initialSetQuantities, Integer storeCount) {
         List<InitialSetQuantity> isQuantitiesWithOneUnitRule = initialSetQuantities.stream()
                 .filter(InitialSetQuantity::isOneUnitPerStore).collect(Collectors.toList());
+
         List<InitialSetQuantity> sortedInitialSetQuantities = initialSetQuantities.stream()
-                .filter(isQty -> getDecimalDifference(isQty) < 0.5)
-                .sorted(Comparator.comparing(CalculateInitialSetQuantityService::getDecimalDifference).reversed())
+                .filter(isQty -> getDecimalDifference(isQty) < 0.5 && !isQty.isOneUnitPerStore())
+                .sorted(
+                        Comparator.comparing(CalculateInitialSetQuantityService::getDecimalDifference, Comparator.reverseOrder())
+                                .thenComparing(InitialSetQuantity::getSizePct))
                 .collect(Collectors.toList());
-        if (!sortedInitialSetQuantities.isEmpty() &&  sortedInitialSetQuantities.size() > 1 &&
-                getDecimalDifference(sortedInitialSetQuantities.get(0)) == getDecimalDifference(sortedInitialSetQuantities.get(1))) {
-            sortedInitialSetQuantities = sortedInitialSetQuantities.stream().sorted(Comparator.comparing(InitialSetQuantity::getSizePct)).collect(Collectors.toList());
-        }
+
         unitsToIncrease = adjustUnits(unitsToIncrease, isQuantitiesWithOneUnitRule, storeCount, false);
-        adjustUnits(unitsToIncrease, sortedInitialSetQuantities, storeCount, false);
+        if (unitsToIncrease > 0)
+            adjustUnits(unitsToIncrease, sortedInitialSetQuantities, storeCount, false);
     }
 
     /**

@@ -550,17 +550,17 @@ class CalculateFinelineBuyQuantityTest {
         int fix40x32 = 11448;
         int fix36x30 = 17403;
         int fix38x32 = 14076;
-        int fix40x30 = 11425;
-        int fix44x30 = 9759;
-        int fix42x30 = 11774;
-        int fix38x30 = 13917;
+        int fix40x30 = 11445;
+        int fix44x30 = 9673;
+        int fix42x30 = 11840;
+        int fix38x30 = 13983;
         int fix32x32 = 17240;
         int fix34x30 = 17257;
         int fix34x32 = 19745;
         int fix36x32 = 16303;
         int fix29x30 = 7215;
         int fix30x32 = 11412;
-        int fix33x30 = 7637;
+        int fix33x30 = 7571;
         int fix32x30 = 17133;
         int expectedTotalFix1InitialSetQty = IntStream.of(fix30x30, fix40x32, fix36x30, fix38x32, fix40x30, fix44x30, fix42x30,
                 fix38x30, fix32x32, fix34x30, fix34x32, fix36x32, fix29x30, fix30x32, fix33x30, fix32x30).sum();
