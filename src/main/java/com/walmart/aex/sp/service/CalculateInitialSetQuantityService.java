@@ -122,21 +122,22 @@ public class CalculateInitialSetQuantityService {
     private void reduceISUnits(Long unitsToReduce, List<InitialSetQuantity> initialSetQuantities, Integer storeCount) {
         List<InitialSetQuantity> sortedInitialSetQuantities = initialSetQuantities.stream()
                 .filter(isQty -> getDecimalDifference(isQty) >= 0.5 && isQty.getRoundedPerStoreQty() > 1)
-                .sorted(
-                        Comparator.comparing(CalculateInitialSetQuantityService::getDecimalDifference)
-                                .thenComparing(InitialSetQuantity::getSizePct, Comparator.reverseOrder()))
+                .sorted(getUnitsComparator(true))
                 .collect(Collectors.toList());
 //        If all the IS are having 1 unit
         if (sortedInitialSetQuantities.isEmpty()) {
             sortedInitialSetQuantities = initialSetQuantities.stream()
                     .filter(isQty -> getDecimalDifference(isQty) >= 0.5)
-                    .sorted(
-                            Comparator.comparing(CalculateInitialSetQuantityService::getDecimalDifference)
-                                    .thenComparing(InitialSetQuantity::getSizePct, Comparator.reverseOrder()))
+                    .sorted(getUnitsComparator(true))
                     .collect(Collectors.toList());
         }
 
         adjustUnits(unitsToReduce, sortedInitialSetQuantities, storeCount, true);
+    }
+
+    private static Comparator<InitialSetQuantity> getUnitsComparator(boolean reduceUnits) {
+        return Comparator.comparing(CalculateInitialSetQuantityService::getDecimalDifference, reduceUnits ? Comparator.naturalOrder() : Comparator.reverseOrder())
+                .thenComparing(InitialSetQuantity::getSizePct, reduceUnits ? Comparator.reverseOrder() : Comparator.naturalOrder());
     }
 
     /**
@@ -155,9 +156,7 @@ public class CalculateInitialSetQuantityService {
 
         List<InitialSetQuantity> sortedInitialSetQuantities = initialSetQuantities.stream()
                 .filter(isQty -> getDecimalDifference(isQty) < 0.5 && !isQty.isOneUnitPerStore())
-                .sorted(
-                        Comparator.comparing(CalculateInitialSetQuantityService::getDecimalDifference, Comparator.reverseOrder())
-                                .thenComparing(InitialSetQuantity::getSizePct))
+                .sorted(getUnitsComparator(false))
                 .collect(Collectors.toList());
 
         unitsToIncrease = adjustUnits(unitsToIncrease, isQuantitiesWithOneUnitRule, storeCount, false);
