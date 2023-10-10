@@ -148,7 +148,11 @@ public class DCInboundSheetExporter {
             while (currColCount < headers.size()) {
                 if (headers.get(currColCount).equalsIgnoreCase(r.getReplnWeekDesc())) {
                     createCell(row, currColCount, r.getAdjReplnUnits(), style);
-                    break;
+                } else {
+                    if (row.getCell(currColCount) == null) {
+                        //Fill with zero if we have no week value
+                        createCell(row, currColCount, ZERO, style);
+                    }
                 }
                 currColCount++;
             }
