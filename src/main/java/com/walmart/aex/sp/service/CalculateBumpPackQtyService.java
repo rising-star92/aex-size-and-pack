@@ -28,8 +28,31 @@ public class CalculateBumpPackQtyService {
             bumpSetQuantity.setSetNbr(bumpSet.getBumpPackNbr());
             bumpSetQuantity.setWeekDesc(bumpSet.getWeekDesc());
             bumpSetQuantity.setWmYearWeek(String.valueOf(bumpSet.getWmYearWeek()));
+            bumpSetQuantity.setSizeDesc(sizeDto.getSizeDesc());
             bumpPackQuantities.add(bumpSetQuantity);
         });
         return bumpPackQuantities;
+    }
+
+    public List<BumpSetQuantity> calculateBumpPackQtyV2(SizeDto sizeDto, RFASizePackData rfaSizePackData, Cluster volumeCluster) {
+        return calculateBumpPackQty(sizeDto, rfaSizePackData, volumeCluster, rfaSizePackData.getStore_cnt());
+    }
+
+    public List<BumpSetQuantity> adjustBumpSet(List<BumpSetQuantity> bumpSetQuantities, int storeCount) {
+        List<BumpSetQuantity> bumpSetQuantityList = new ArrayList<>();
+        for (BumpSetQuantity bumpSetQuantity: bumpSetQuantities) {
+            double newTotalUnits = bumpSetQuantity.getBsUnits() * storeCount;
+            BumpSetQuantity bumpSetQuantityNew = new BumpSetQuantity();
+            bumpSetQuantityNew.setSetNbr(bumpSetQuantity.getSetNbr());
+            bumpSetQuantityNew.setBsUnits(bumpSetQuantity.getBsUnits());
+            bumpSetQuantityNew.setWeekDesc(bumpSetQuantity.getWeekDesc());
+            bumpSetQuantityNew.setSizeDesc(bumpSetQuantity.getSizeDesc());
+            bumpSetQuantityNew.setWmYearWeek(bumpSetQuantity.getWmYearWeek());
+            bumpSetQuantityNew.setTotalUnits(newTotalUnits);
+            bumpSetQuantityList.add(bumpSetQuantityNew);
+
+            bumpSetQuantity.setTotalUnits(Math.abs(bumpSetQuantity.getTotalUnits() - newTotalUnits));
+        }
+        return bumpSetQuantityList;
     }
 }

@@ -63,7 +63,8 @@ class AddStoreBuyQuantityServiceTest {
         calculateBumpPackQtyService = new CalculateBumpPackQtyService();
         buyQuantityConstraintService = new BuyQuantityConstraintService(calculateBumpPackQtyService);
         addStoreBuyQuantityService = new AddStoreBuyQuantityService(objectMapper, calculateBumpPackQtyService, buyQuantityConstraintService, calculateInitialSetQuantityService, buyQtyProperties);
-        Mockito.when(buyQtyProperties.getOneUnitPerStoreFeatureFlag()).thenReturn("true");
+        Mockito.lenient().when(buyQtyProperties.getOneUnitPerStoreFeatureFlag()).thenReturn("true");
+        Mockito.lenient().when(buyQtyProperties.getDeviationFlag()).thenReturn("true");
     }
 
     @Test
@@ -194,7 +195,7 @@ class AddStoreBuyQuantityServiceTest {
         assertEquals(18124.0, bumpSetQuantity.getTotalUnits());
     }
 
-    private AddStoreBuyQuantity getAddStoreBuyQuantities(BQFPResponse bqfpResponse, StyleDto styleDto, MerchMethodsDto merchMethodsDto, SizeDto sizeDto, List<RFASizePackData> rfaSizePackDataList, CustomerChoiceDto customerChoiceDto) throws IOException {
+    private AddStoreBuyQuantity getAddStoreBuyQuantities(BQFPResponse bqfpResponse, StyleDto styleDto, MerchMethodsDto merchMethodsDto, SizeDto sizeDto, List<RFASizePackData> rfaSizePackDataList, CustomerChoiceDto customerChoiceDto) {
         AddStoreBuyQuantity addStoreBuyQuantity = new AddStoreBuyQuantity();
         addStoreBuyQuantity.setBqfpResponse(bqfpResponse);
         addStoreBuyQuantity.setStyleDto(styleDto);

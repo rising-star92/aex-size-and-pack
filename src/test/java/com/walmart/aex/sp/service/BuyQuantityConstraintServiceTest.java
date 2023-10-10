@@ -105,7 +105,7 @@ class BuyQuantityConstraintServiceTest {
         BuyQtyObj bqo = deserializeBuyQtyObj(bqoJson);
         RFASizePackData rfaSizePackData = new RFASizePackData();
         rfaSizePackData.setStore_cnt(100);
-        InitialSetWithReplnsConstraint setWithReplnsConstraint = buyQuantityConstraintService.getISWithMoreReplenConstraint(bqo, 800, rfaSizePackData, 2);
+        buyQuantityConstraintService.getISWithMoreReplenConstraint(bqo, 800, rfaSizePackData, 2);
 
         List<Replenishment> adjustedReplns = bqo.getReplenishments();
         assertTrue(adjustedReplns.stream().allMatch(replenishment -> replenishment.getAdjReplnUnits() >= 0), "Reduction of all repln units should not produce negative value");
@@ -117,7 +117,7 @@ class BuyQuantityConstraintServiceTest {
         BuyQtyObj bqo = deserializeBuyQtyObj(bqoJson);
         RFASizePackData rfaSizePackData = new RFASizePackData();
         rfaSizePackData.setStore_cnt(739);
-        InitialSetWithReplnsConstraint setWithReplnsConstraint = buyQuantityConstraintService.getISWithMoreReplenConstraint(bqo, 739, rfaSizePackData, 2);
+        buyQuantityConstraintService.getISWithMoreReplenConstraint(bqo, 739, rfaSizePackData, 2);
 
         List<Replenishment> adjustedReplns = bqo.getReplenishments();
         assertTrue(adjustedReplns.stream().allMatch(replenishment -> replenishment.getAdjReplnUnits() >= 0), "Reduction of all repln units should not produce negative value");

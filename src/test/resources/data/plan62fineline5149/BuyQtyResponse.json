@@ -1,0 +1,190 @@
+{
+  "planId": 62,
+  "lvl0Nbr": 50000,
+  "lvl1Nbr": 34,
+  "lvl2Nbr": 6419,
+  "lvl3List": [
+    {
+      "lvl3Nbr": 12231,
+      "lvl4List": [
+        {
+          "lvl4Nbr": 31513,
+          "finelines": [
+            {
+              "finelineNbr": 5149,
+              "merchMethods": [
+                {
+                  "fixtureTypeRollupId": 3,
+                  "merchMethod": "HANGING",
+                  "merchMethodCode": 1
+                }
+              ],
+              "metrics": {
+                "sizeProfilePct": null,
+                "adjSizeProfilePct": null,
+                "avgSizeProfilePct": null,
+                "adjAvgSizeProfilePct": null
+              },
+              "clusters": null,
+              "styles": [
+                {
+                  "styleNbr": "34_5149_2_22_4",
+                  "metrics": {
+                    "sizeProfilePct": null,
+                    "adjSizeProfilePct": null,
+                    "avgSizeProfilePct": null,
+                    "adjAvgSizeProfilePct": null
+                  },
+                  "clusters": null,
+                  "customerChoices": [
+                    {
+                      "ccId": "34_5149_2_22_4_001",
+                      "metrics": {
+                        "sizeProfilePct": null,
+                        "adjSizeProfilePct": null,
+                        "avgSizeProfilePct": 0.0,
+                        "adjAvgSizeProfilePct": 99.5
+                      },
+                      "clusters": [
+                        {
+                          "clusterID": 0,
+                          "sizes": [
+                            {
+                              "ahsSizeId": 348,
+                              "sizeDesc": "0X",
+                              "metrics": {
+                                "sizeProfilePct": 0.0,
+                                "adjSizeProfilePct": 12.5,
+                                "avgSizeProfilePct": 0.0,
+                                "adjAvgSizeProfilePct": 12.5
+                              }
+                            },
+                            {
+                              "ahsSizeId": 349,
+                              "sizeDesc": "1X",
+                              "metrics": {
+                                "sizeProfilePct": 0.0,
+                                "adjSizeProfilePct": 17.0,
+                                "avgSizeProfilePct": 0.0,
+                                "adjAvgSizeProfilePct": 17.0
+                              }
+                            },
+                            {
+                              "ahsSizeId": 350,
+                              "sizeDesc": "2X",
+                              "metrics": {
+                                "sizeProfilePct": 0.0,
+                                "adjSizeProfilePct": 23.0,
+                                "avgSizeProfilePct": 0.0,
+                                "adjAvgSizeProfilePct": 23.0
+                              }
+                            },
+                            {
+                              "ahsSizeId": 351,
+                              "sizeDesc": "3X",
+                              "metrics": {
+                                "sizeProfilePct": 0.0,
+                                "adjSizeProfilePct": 27.0,
+                                "avgSizeProfilePct": 0.0,
+                                "adjAvgSizeProfilePct": 27.0
+                              }
+                            },
+                            {
+                              "ahsSizeId": 352,
+                              "sizeDesc": "4X",
+                              "metrics": {
+                                "sizeProfilePct": 0.0,
+                                "adjSizeProfilePct": 15.0,
+                                "avgSizeProfilePct": 0.0,
+                                "adjAvgSizeProfilePct": 15.0
+                              }
+                            },
+                            {
+                              "ahsSizeId": 353,
+                              "sizeDesc": "5X",
+                              "metrics": {
+                                "sizeProfilePct": 0.0,
+                                "adjSizeProfilePct": 5.0,
+                                "avgSizeProfilePct": 0.0,
+                                "adjAvgSizeProfilePct": 5.0
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "clusterID": 1,
+                          "sizes": [
+                            {
+                              "ahsSizeId": 348,
+                              "sizeDesc": "0X",
+                              "metrics": {
+                                "sizeProfilePct": 0.0,
+                                "adjSizeProfilePct": 12.5,
+                                "avgSizeProfilePct": null,
+                                "adjAvgSizeProfilePct": null
+                              }
+                            },
+                            {
+                              "ahsSizeId": 349,
+                              "sizeDesc": "1X",
+                              "metrics": {
+                                "sizeProfilePct": 0.0,
+                                "adjSizeProfilePct": 17.0,
+                                "avgSizeProfilePct": null,
+                                "adjAvgSizeProfilePct": null
+                              }
+                            },
+                            {
+                              "ahsSizeId": 350,
+                              "sizeDesc": "2X",
+                              "metrics": {
+                                "sizeProfilePct": 0.0,
+                                "adjSizeProfilePct": 23.0,
+                                "avgSizeProfilePct": null,
+                                "adjAvgSizeProfilePct": null
+                              }
+                            },
+                            {
+                              "ahsSizeId": 351,
+                              "sizeDesc": "3X",
+                              "metrics": {
+                                "sizeProfilePct": 0.0,
+                                "adjSizeProfilePct": 27.0,
+                                "avgSizeProfilePct": null,
+                                "adjAvgSizeProfilePct": null
+                              }
+                            },
+                            {
+                              "ahsSizeId": 352,
+                              "sizeDesc": "4X",
+                              "metrics": {
+                                "sizeProfilePct": 0.0,
+                                "adjSizeProfilePct": 15.0,
+                                "avgSizeProfilePct": null,
+                                "adjAvgSizeProfilePct": null
+                              }
+                            },
+                            {
+                              "ahsSizeId": 353,
+                              "sizeDesc": "5X",
+                              "metrics": {
+                                "sizeProfilePct": 0.0,
+                                "adjSizeProfilePct": 5.0,
+                                "avgSizeProfilePct": null,
+                                "adjAvgSizeProfilePct": null
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

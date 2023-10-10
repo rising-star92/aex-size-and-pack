@@ -4,23 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.assortproduct.*;
 import com.walmart.aex.sp.dto.bqfp.*;
-import com.walmart.aex.sp.dto.buyquantity.AddStoreBuyQuantity;
-import com.walmart.aex.sp.dto.buyquantity.BuyQtyObj;
-import com.walmart.aex.sp.dto.buyquantity.BuyQtyRequest;
-import com.walmart.aex.sp.dto.buyquantity.BuyQtyResponse;
-import com.walmart.aex.sp.dto.buyquantity.CalculateBuyQtyParallelRequest;
-import com.walmart.aex.sp.dto.buyquantity.CalculateBuyQtyRequest;
-import com.walmart.aex.sp.dto.buyquantity.CalculateBuyQtyResponse;
-import com.walmart.aex.sp.dto.buyquantity.ClustersDto;
-import com.walmart.aex.sp.dto.buyquantity.CustomerChoiceDto;
-import com.walmart.aex.sp.dto.buyquantity.FinelineDto;
-import com.walmart.aex.sp.dto.buyquantity.FinelineVolumeDeviationDto;
-import com.walmart.aex.sp.dto.buyquantity.Lvl3Dto;
-import com.walmart.aex.sp.dto.buyquantity.Lvl4Dto;
-import com.walmart.aex.sp.dto.buyquantity.SizeDto;
-import com.walmart.aex.sp.dto.buyquantity.StoreQuantity;
-import com.walmart.aex.sp.dto.buyquantity.StrategyVolumeDeviationResponse;
-import com.walmart.aex.sp.dto.buyquantity.StyleDto;
+import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.dto.currentlineplan.LikeAssociation;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
 import com.walmart.aex.sp.dto.replenishment.cons.ReplenishmentCons;
@@ -46,6 +30,7 @@ import com.walmart.aex.sp.util.BuyQtyCommonUtil;
 import com.walmart.aex.sp.util.SizeAndPackConstants;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Marker;
 import org.slf4j.helpers.BasicMarkerFactory;
 import org.springframework.stereotype.Service;
@@ -74,9 +59,13 @@ public class CalculateFinelineBuyQuantity {
     private final DeptAdminRuleService deptAdminRuleService;
     private final ReplenishmentService replenishmentService;
     private final ReplenishmentsOptimizationService replenishmentsOptimizationServices;
-    private MidasServiceCall midasServiceCall;
-    private LinePlanService linePlanService;
-    private BigQueryClusterService bigQueryClusterService;
+    private final MidasServiceCall midasServiceCall;
+    private final LinePlanService linePlanService;
+    private final BigQueryClusterService bigQueryClusterService;
+    private final CalculateInitialSetQuantityService calculateInitialSetQuantityService;
+    private final CalculateBumpPackQtyService calculateBumpPackQtyService;
+    @ManagedConfiguration
+    BuyQtyProperties buyQtyProperties;
 
     public CalculateFinelineBuyQuantity(BQFPService bqfpService,
                                         ObjectMapper objectMapper,
@@ -90,7 +79,9 @@ public class CalculateFinelineBuyQuantity {
                                         ReplenishmentsOptimizationService replenishmentsOptimizationServices,
                                         MidasServiceCall midasServiceCall,
                                         LinePlanService linePlanService,
-                                        BigQueryClusterService bigQueryClusterService) {
+                                        BigQueryClusterService bigQueryClusterService,
+                                        CalculateInitialSetQuantityService calculateInitialSetQuantityService,
+                                        CalculateBumpPackQtyService calculateBumpPackQtyService) {
         this.bqfpService = bqfpService;
         this.objectMapper = objectMapper;
         this.strategyFetchService = strategyFetchService;
@@ -104,6 +95,8 @@ public class CalculateFinelineBuyQuantity {
         this.midasServiceCall = midasServiceCall;
         this.linePlanService = linePlanService;
         this.bigQueryClusterService = bigQueryClusterService;
+        this.calculateInitialSetQuantityService = calculateInitialSetQuantityService;
+        this.calculateBumpPackQtyService = calculateBumpPackQtyService;
     }
 
     public CalculateBuyQtyResponse calculateFinelineBuyQty(CalculateBuyQtyRequest calculateBuyQtyRequest, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, CalculateBuyQtyResponse calculateBuyQtyResponse) throws CustomException {
@@ -184,7 +177,7 @@ public class CalculateFinelineBuyQuantity {
             if (null != volumeDeviation) {
                 bqfpResponse.setVolumeDeviationStrategyLevelSelection(BigDecimal.valueOf(VdLevelCode.getVdLevelCodeIdFromName(volumeDeviation)));
             }
-            APResponse apResponse = getRFAResponse(calculateBuyQtyRequest, calculateBuyQtyParallelRequest, bqfpResponse, likeFinelineResponse, colorDefinitions, volumeDeviation);
+            APResponse apResponse = getRFAResponse(calculateBuyQtyRequest, calculateBuyQtyParallelRequest, likeFinelineResponse, colorDefinitions, volumeDeviation);
 
             if (log.isDebugEnabled()) {
                 logExtResponse("Size Profiles", buyQtyResponse);
@@ -450,7 +443,7 @@ public class CalculateFinelineBuyQuantity {
         List<Replenishment> replenishments = BuyQtyCommonUtil.getReplenishments(merchMethodsDtos, bqfpResponse, styleDto, customerChoiceDto);
         log.info("Get All Replenishments if exists for customerchoice: {} and fixtureType: {}", customerChoiceDto.getCcId(), spCustomerChoiceChannelFixture.getSpCustomerChoiceChannelFixtureId().getSpStyleChannelFixtureId().getSpFineLineChannelFixtureId().getFixtureTypeRollUpId().getFixtureTypeRollupId());
         if (!CollectionUtils.isEmpty(replenishments)) {
-            /** Query the Replenishment constraint if Replenishment unit exists **/
+            // Query the Replenishment constraint if Replenishment unit exist
             if(hasDcInboundUnits(replenishments)){
                 replenishmentService.setCcsReplenishmentCons(replenishmentCons, calculateBuyQtyParallelRequest, merchMethodsDtos.get(0), styleDto, customerChoiceDto);
             }
@@ -466,7 +459,11 @@ public class CalculateFinelineBuyQuantity {
                 List<RFASizePackData> rfaSizePackDataList = getSizeVolumeClustersFromRfa(apResponse, clustersDto.getClusterID(), styleDto.getStyleNbr(), customerChoiceDto.getCcId(),
                         merchMethodsDtos.stream().map(MerchMethodsDto::getFixtureTypeRollupId).distinct().collect(Collectors.toList()));
                 //Set Initial Set and Bump Set for Size Map
-                getClusterSizes(styleDto, customerChoiceDto, clustersDto, bqfpResponse, storeBuyQtyBySizeId, rfaSizePackDataList, initialThreshold);
+                if (Boolean.parseBoolean(buyQtyProperties.getDeviationFlag())) {
+                    getClusterSizesV2(styleDto, customerChoiceDto, clustersDto, bqfpResponse, storeBuyQtyBySizeId, rfaSizePackDataList, initialThreshold);
+                } else {
+                    getClusterSizes(styleDto, customerChoiceDto, clustersDto, bqfpResponse, storeBuyQtyBySizeId, rfaSizePackDataList, initialThreshold);
+                }
             }
         });
         Set<SpCustomerChoiceChannelFixtureSize> spCustomerChoiceChannelFixtureSizes = Optional.ofNullable(spCustomerChoiceChannelFixture.getSpCustomerChoiceChannelFixtureSize()).orElse(new HashSet<>());
@@ -499,7 +496,6 @@ public class CalculateFinelineBuyQuantity {
     private void getClusterSizes(StyleDto styleDto, CustomerChoiceDto customerChoiceDto, ClustersDto clustersDto,
                                  BQFPResponse bqfpResponse, Map<SizeDto, BuyQtyObj> storeBuyQtyBySizeId, List<RFASizePackData> rfaSizePackDataList, Integer initialThreshold) {
         clustersDto.getSizes().forEach(sizeDto -> {
-
             if (!storeBuyQtyBySizeId.containsKey(sizeDto)) {
                 storeBuyQtyBySizeId.put(sizeDto, new BuyQtyObj());
             }
@@ -514,6 +510,144 @@ public class CalculateFinelineBuyQuantity {
             addStoreBuyQuantityService.addStoreBuyQuantities(addStoreBuyQuantity, buyQtyObj, initialThreshold);
             storeBuyQtyBySizeId.put(sizeDto, buyQtyObj);
         });
+    }
+
+    /**
+     *  Calculate Buy Qty V2 to reduce deviation
+     */
+    private void getClusterSizesV2(StyleDto styleDto, CustomerChoiceDto customerChoiceDto, ClustersDto clustersDto, BQFPResponse bqfpResponse, Map<SizeDto, BuyQtyObj> storeBuyQtyBySizeId, List<RFASizePackData> rfaSizePackDataList, Integer initialThreshold) {
+        List<CalculateQuantityByUnit> calculateQuantityByUnits = new ArrayList<>();
+        // Calculate IS and BS
+        for (SizeDto sizeDto: clustersDto.getSizes()) {
+            if (!storeBuyQtyBySizeId.containsKey(sizeDto)) {
+                storeBuyQtyBySizeId.put(sizeDto, new BuyQtyObj());
+            }
+            rfaSizePackDataList.forEach(rfaSizePackData -> {
+                Cluster volumeCluster = BuyQtyCommonUtil.getVolumeCluster(styleDto.getStyleNbr(), customerChoiceDto.getCcId(), bqfpResponse, rfaSizePackData);
+                if (volumeCluster != null) {
+                    calculateInitialSetQuantityService.setDefaultValueForNullInitialSet(volumeCluster);
+                    CalculateQuantityByUnit calculateQuantityByUnit = getCalculateQuantityByUnit(calculateQuantityByUnits, rfaSizePackData, volumeCluster.getInitialSet().getInitialSetUnitsPerFix());
+                    // Initial Set
+                    calculateInitialSetQuantityService.calculateInitialSet(calculateQuantityByUnit.getCalculateInitialSet(), sizeDto, volumeCluster, rfaSizePackData);
+                    // Bump Set
+                    calculateQuantityByUnit.getCalculateBumpSet().getBumpSetQuantities().addAll(calculateBumpPackQtyService.calculateBumpPackQtyV2(sizeDto, rfaSizePackData, volumeCluster));
+                }
+            });
+        }
+        // Adjust IS units if they don't match with total BQ units and split them into sizes
+        for (CalculateQuantityByUnit calculateQuantityByUnit : calculateQuantityByUnits) {
+            calculateInitialSetQuantityService.adjustInitialSetUnits(calculateQuantityByUnit);
+            // TODO: add bumpset adjustment
+            // Segregate IS and BS by size to be used in adjusting the constraints
+            setISAndBSBySize(calculateQuantityByUnit, storeBuyQtyBySizeId);
+        }
+        // Adjust constraints
+        for (Map.Entry<SizeDto, BuyQtyObj> entry : storeBuyQtyBySizeId.entrySet()) {
+            BuyQtyObj buyQtyObj = entry.getValue();
+            BuyQtyStoreObj buyQtyStoreObj = Optional.ofNullable(buyQtyObj.getBuyQtyStoreObj())
+                    .orElse(new BuyQtyStoreObj());
+
+            List<StoreQuantity> storeQuantities = Optional.ofNullable(buyQtyStoreObj.getBuyQuantities())
+                    .orElse(new ArrayList<>());
+
+            List<StoreQuantity> processStoreQuantities = new ArrayList<>();
+            if (null != buyQtyObj.getCalculateQuantityBySizes() && !buyQtyObj.getCalculateQuantityBySizes().isEmpty()) {
+                addStoreBuyQuantityService.adjustISForOneUnitPerStoreV2(buyQtyObj, processStoreQuantities);
+                addStoreBuyQuantityService.adjustISWithConstraint(processStoreQuantities, buyQtyObj, initialThreshold, entry.getKey().getSizeDesc());
+                addStoreBuyQuantityService.adjustBSWithConstraint(buyQtyObj.getCalculateQuantityBySizes(), processStoreQuantities);
+            }
+            processStoreQuantities.forEach(quantity -> {
+                quantity.setRfaSizePackData(null);
+                quantity.setCluster(null);
+            });
+            buyQtyObj.setCalculateQuantityBySizes(null);
+            storeQuantities.addAll(processStoreQuantities);
+            buyQtyStoreObj.setBuyQuantities(storeQuantities);
+            if(!ObjectUtils.isEmpty(buyQtyObj)) {
+                buyQtyObj.setBuyQtyStoreObj(buyQtyStoreObj);
+            }
+        }
+    }
+
+    /**
+     * Get unique CalculateQuantity group by units - volumeCluster, fixtureType, fixtureGroup and totalUnits from BQ
+     */
+    private static CalculateQuantityByUnit getCalculateQuantityByUnit(List<CalculateQuantityByUnit> calculateQuantityByUnits, RFASizePackData rfaSizePackData, long initialSetUnitsPerFix) {
+        long totalSizeUnits = Math.round(rfaSizePackData.getFixture_group() * initialSetUnitsPerFix);
+        Optional<CalculateQuantityByUnit> optionalCalculateQuantityByUnit = calculateQuantityByUnits.stream()
+                .filter(cq -> cq.getVolumeGroupClusterId().equals(rfaSizePackData.getVolume_group_cluster_id()) &&
+                        cq.getFixtureType().equals(rfaSizePackData.getFixture_type()) &&
+                        cq.getFixtureGroup().equals(rfaSizePackData.getFixture_group()) &&
+                        cq.getTotalUnitsFromBQ().equals(totalSizeUnits))
+                .findFirst();
+        if (optionalCalculateQuantityByUnit.isEmpty()) {
+            CalculateQuantityByUnit calculateQuantityByUnit = CalculateQuantityByUnit.builder()
+                    .volumeGroupClusterId(rfaSizePackData.getVolume_group_cluster_id())
+                    .fixtureType(rfaSizePackData.getFixture_type())
+                    .fixtureGroup(rfaSizePackData.getFixture_group())
+                    .totalUnitsFromBQ(totalSizeUnits)
+                    .storeCount(rfaSizePackData.getStore_cnt())
+                    .calculateInitialSet(CalculateInitialSet.builder().totalUnits(0L).initialSetQuantities(new ArrayList<>()).build())
+                    .calculateBumpSet(CalculateBumpSet.builder().totalUnits(0L).bumpSetQuantities(new ArrayList<>()).build())
+                    .build();
+            calculateQuantityByUnits.add(calculateQuantityByUnit);
+            return calculateQuantityByUnit;
+        } else {
+            return optionalCalculateQuantityByUnit.get();
+        }
+    }
+
+    /**
+     * Get unique CalculateQuantity group by size
+     */
+    private static CalculateQuantityBySize getCalculateQuantityBySize(List<CalculateQuantityBySize> calculateQuantityBySizeList, Integer volumeClusterId, Float fixtureGroup, String fixtureType, String sizeDesc) {
+        Optional<CalculateQuantityBySize> optionalCalculateQuantityBySize = calculateQuantityBySizeList.stream()
+                .filter(cq -> cq.getVolumeGroupClusterId().equals(volumeClusterId) &&
+                        cq.getFixtureType().equals(fixtureType) &&
+                        cq.getFixtureGroup().equals(fixtureGroup) &&
+                        cq.getSizeDesc().equals(sizeDesc))
+                .findFirst();
+        if (optionalCalculateQuantityBySize.isEmpty()) {
+            CalculateQuantityBySize calculateQuantityBySize = CalculateQuantityBySize.builder()
+                    .volumeGroupClusterId(volumeClusterId)
+                    .fixtureType(fixtureType)
+                    .fixtureGroup(fixtureGroup)
+                    .sizeDesc(sizeDesc)
+                    .bumpSetQuantities((new ArrayList<>()))
+                    .build();
+            calculateQuantityBySizeList.add(calculateQuantityBySize);
+            return calculateQuantityBySize;
+        } else {
+            return optionalCalculateQuantityBySize.get();
+        }
+    }
+
+    /**
+     * Split calculated IS and BS by size and store it in buyQtyObj for further processing
+     */
+    private void setISAndBSBySize(CalculateQuantityByUnit calculateQuantityByUnit, Map<SizeDto, BuyQtyObj> storeBuyQtyBySizeId) {
+        for (Map.Entry<SizeDto, BuyQtyObj> entry : storeBuyQtyBySizeId.entrySet()) {
+            SizeDto sizeDto = entry.getKey();
+            BuyQtyObj buyQtyObj = entry.getValue();
+            List<CalculateQuantityBySize> calculateQuantityBySizes = Optional.ofNullable(buyQtyObj.getCalculateQuantityBySizes()).orElse(new ArrayList<>());
+            CalculateQuantityBySize calculateQuantityBySize = getCalculateQuantityBySize(calculateQuantityBySizes, calculateQuantityByUnit.getVolumeGroupClusterId(),
+                    calculateQuantityByUnit.getFixtureGroup(), calculateQuantityByUnit.getFixtureType(), sizeDto.getSizeDesc());
+            List<BumpSetQuantity> bumpSetQuantitiesBySize = calculateQuantityBySize.getBumpSetQuantities();
+
+            List<InitialSetQuantity> initialSetQuantities = calculateQuantityByUnit.getCalculateInitialSet().getInitialSetQuantities();
+            Optional<InitialSetQuantity> optionalInitialSetQuantity = initialSetQuantities.stream()
+                    .filter(isQty -> isQty.getSizeDesc().equals(sizeDto.getSizeDesc()))
+                    .findFirst();
+            optionalInitialSetQuantity.ifPresent(calculateQuantityBySize::setInitialSetQuantity);
+
+            // BS Split By Size
+            List<BumpSetQuantity> bumpSetQuantityList = calculateQuantityByUnit.getCalculateBumpSet().getBumpSetQuantities();
+            List<BumpSetQuantity> bumpSetQuantities = bumpSetQuantityList.stream()
+                    .filter(bsQty -> bsQty.getSizeDesc().equals(sizeDto.getSizeDesc()))
+                    .collect(Collectors.toList());
+            bumpSetQuantitiesBySize.addAll(bumpSetQuantities);
+            buyQtyObj.setCalculateQuantityBySizes(calculateQuantityBySizes);
+        }
     }
 
     private void setSizeChanFixtureBuyQty(SpCustomerChoiceChannelFixture spCustomerChoiceChannelFixture,
@@ -535,7 +669,6 @@ public class CalculateFinelineBuyQuantity {
         }
 
         entry.getValue().setTotalReplenishment(0L);
-        double bsBuyQty = getBsQty(entry);
         double isBuyQty = getIsQty(entry);
         //Update Store Qty
         final BuyQtyObj allStoresBuyQty = entry.getValue();
@@ -552,8 +685,8 @@ public class CalculateFinelineBuyQuantity {
             }
         }
 
-        bsBuyQty = getBsQty(entry);
         isBuyQty = getIsQty(entry);
+        double bsBuyQty = getBsQty(entry);
         double totalBuyQty = isBuyQty + bsBuyQty + entry.getValue().getTotalReplenishment();
         spCustomerChoiceChannelFixtureSize.setInitialSetQty((int) Math.round(isBuyQty));
         spCustomerChoiceChannelFixtureSize.setBumpPackQty((int) Math.round(bsBuyQty));
@@ -630,7 +763,7 @@ public class CalculateFinelineBuyQuantity {
         }
     }
 
-    private APResponse getRFAResponse(CalculateBuyQtyRequest calculateBuyQtyRequest, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, BQFPResponse bqfpResponse, LikeAssociation likeFinelineResponse, List<ColorDefinition> colorDefinitions, String volumeDeviation) throws InterruptedException, JsonProcessingException {
+    private APResponse getRFAResponse(CalculateBuyQtyRequest calculateBuyQtyRequest, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, LikeAssociation likeFinelineResponse, List<ColorDefinition> colorDefinitions, String volumeDeviation) throws InterruptedException, JsonProcessingException {
         APResponse apResponse = new APResponse();
         if (ChannelType.STORE.getDescription().equalsIgnoreCase(calculateBuyQtyParallelRequest.getChannel())) {
             RFASizePackRequest rfaSizePackRequest = createRFASizePackRequest(calculateBuyQtyRequest, calculateBuyQtyParallelRequest, likeFinelineResponse, colorDefinitions);

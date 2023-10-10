@@ -4,6 +4,7 @@ import com.walmart.aex.sp.dto.assortproduct.RFASizePackData;
 import com.walmart.aex.sp.dto.bqfp.*;
 import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
+import com.walmart.aex.sp.enums.FixtureTypeRollup;
 import com.walmart.aex.sp.service.BuyQuantityMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -141,6 +142,8 @@ public class BuyQtyCommonUtil {
         storeQuantity.setSizeCluster(rfaSizePackData.getSize_cluster_id());
         storeQuantity.setStoreList(storeListWithOldQty);
         storeQuantity.setRfaSizePackData(rfaSizePackData);
+        storeQuantity.setCluster(volumeCluster);
+        storeQuantity.setBumpSets(new ArrayList<>());
         if (volumeCluster.getFlowStrategy() != null)
             storeQuantity.setFlowStrategyCode(volumeCluster.getFlowStrategy());
         return storeQuantity;
@@ -148,7 +151,7 @@ public class BuyQtyCommonUtil {
 
     public static BumpSet getBumpSet(BQFPResponse bqfpResponse, String productFineline, String styleNbr, String ccId, String fixtureType, Integer clusterId) {
         Integer bumpPackNumber = StringUtils.isNotEmpty(productFineline) && productFineline.contains(BUMP_PACK) ?
-                Integer.valueOf(productFineline.replaceFirst(BUMP_PACK_PATTERN, "")) : 1;
+                Integer.parseInt(productFineline.replaceFirst(BUMP_PACK_PATTERN, "")) : 1;
         return Optional.ofNullable(bqfpResponse).stream().
                 flatMap( styles -> styles.getStyles().stream())
                 .filter((StringUtils.isNotEmpty(styleNbr)) ? style -> styleNbr.contains(style.getStyleId()) : style -> true)
@@ -192,5 +195,29 @@ public class BuyQtyCommonUtil {
 
     public static List<Replenishment> sortReplenishments(List<Replenishment> replenishments) {
         return replenishments.stream().sorted(Comparator.comparing(Replenishment::getReplnWeek)).collect(Collectors.toList());
+    }
+
+    public static Cluster getVolumeCluster(String styleNbr, String ccId, BQFPResponse bqfpResponse, RFASizePackData rfaSizePackData) {
+        return Optional.ofNullable(bqfpResponse.getStyles())
+                .stream()
+                .flatMap(Collection::stream)
+                .filter(style -> style.getStyleId().equalsIgnoreCase(styleNbr))
+                .findFirst()
+                .map(Style::getCustomerChoices)
+                .stream()
+                .flatMap(Collection::stream)
+                .filter(customerChoice -> customerChoice.getCcId().equalsIgnoreCase(ccId))
+                .findFirst()
+                .map(CustomerChoice::getFixtures)
+                .stream()
+                .flatMap(Collection::stream)
+                .filter(fixture -> fixture.getFixtureTypeRollupId().equals(FixtureTypeRollup.getFixtureIdFromName(rfaSizePackData.getFixture_type())))
+                .findFirst()
+                .map(Fixture::getClusters)
+                .stream()
+                .flatMap(Collection::stream)
+                .filter(cluster -> cluster.getAnalyticsClusterId().equals(rfaSizePackData.getVolume_group_cluster_id()))
+                .findFirst()
+                .orElse(null);
     }
 }
