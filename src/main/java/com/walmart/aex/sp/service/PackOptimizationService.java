@@ -189,12 +189,13 @@ public class PackOptimizationService {
 
         if(runStatusCodeSentAndAnalyticsFailedSet.isEmpty()) {
             analyticsMlSend.setRunStatusCode(RunStatusCodeType.ANALYTICS_RUN_COMPLETED.getId());
-        }
-        else if (RunStatusCodeType.ANALYTICS_ERRORS_LIST.stream().anyMatch(runStatusCodeSentAndAnalyticsFailedSet::contains)) {
-            analyticsMlSend.setRunStatusCode(RunStatusCodeType.ERROR.getId());
-        }
-        else if (runStatusCodeSentAndAnalyticsFailedSet.contains(RunStatusCodeType.SENT_TO_ANALYTICS.getId())) {
-            analyticsMlSend.setRunStatusCode(RunStatusCodeType.SENT_TO_ANALYTICS.getId());
+        } else {
+            if (RunStatusCodeType.ANALYTICS_ERRORS_LIST.stream().anyMatch(runStatusCodeSentAndAnalyticsFailedSet::contains)) {
+                analyticsMlSend.setRunStatusCode(RunStatusCodeType.ERROR.getId());
+            }
+            if (runStatusCodeSentAndAnalyticsFailedSet.contains(RunStatusCodeType.SENT_TO_ANALYTICS.getId())) {
+                analyticsMlSend.setRunStatusCode(RunStatusCodeType.SENT_TO_ANALYTICS.getId());
+            }
         }
 
     }
