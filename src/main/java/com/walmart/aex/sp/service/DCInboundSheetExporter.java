@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 import static com.walmart.aex.sp.util.SizeAndPackConstants.DC_INBOUND_EXCEL_SHEET_NAME;
-import static com.walmart.aex.sp.util.SizeAndPackConstants.HEADER_FONT_HEIGHT;
+import static com.walmart.aex.sp.util.SizeAndPackConstants.DEFAULT_FONT_HEIGHT;
 import static com.walmart.aex.sp.util.SizeAndPackConstants.ZERO;
 
 @Slf4j
@@ -90,7 +90,7 @@ public class DCInboundSheetExporter {
 
     private Font createDefaultFont(Workbook workbook) {
         Font font = workbook.createFont();
-        font.setFontHeightInPoints(HEADER_FONT_HEIGHT.shortValue());
+        font.setFontHeightInPoints(DEFAULT_FONT_HEIGHT.shortValue());
         return font;
     }
 

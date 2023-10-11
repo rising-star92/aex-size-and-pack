@@ -23,8 +23,7 @@ public class SizeAndPackConstants {
     public static final String CHANNEL = "Channel";
     public static final String COLOR_NAME = "Color Name";
     public static final String COLOR_FAMILY = "Color Family";
-    public static final Integer HEADER_FONT_HEIGHT = 14;
-    public static final Integer ROW_FONT_HEIGHT = 14;
+    public static final Integer DEFAULT_FONT_HEIGHT = 14;
     public static final Integer ZERO = 0;
     public static final String ZERO_STRING = "0";
     public static final String DC_INBOUND_EXCEL_SHEET_NAME = "DCInboundData";
