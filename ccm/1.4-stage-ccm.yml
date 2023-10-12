@@ -1,7 +1,7 @@
 apiVersion: "2.0"
 kind: "ServiceConfig"
 metadata:
-  serviceConfigVersion: "1.3-DEV"
+  serviceConfigVersion: "1.4-STAGE"
   serviceId: AEX_SIZE_AND_PACK
   authzPolicies:
     adminUI:
@@ -27,7 +27,7 @@ configDefinitions:
         description: "SP SQL Server DB URL"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "jdbc:sqlserver://us-wm-aex-dev-spo-nonprod-625febf5.database.windows.net:1433;database=us_wm_aex_spo;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;authentication=ActiveDirectoryPassword"
+        defaultValue: "jdbc:sqlserver://us-wm-aex-stg-spo-nonprod-62cd5875-failover-group.database.windows.net:1433;database=us_wm_aex_spo;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;authentication=ActiveDirectoryPassword"
       "sqlServer.driverClassName":
         description: "SQL Server Driver Class Name"
         type: "STRING"
@@ -137,7 +137,7 @@ configDefinitions:
         description: "Replenishment threshold"
         type: "INTEGER"
         kind: "SINGLE"
-        defaultValue: 500
+        defaultValue: 0
       "s3Plans2024.constraint":
         description: "2024 S3 Plans for dev and stg list"
         type: "STRING"
@@ -162,12 +162,12 @@ configDefinitions:
         description: "BQFP Service URL"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "https://flow-plan.aex.dev.walmart.net/flow-plan/v1/getBuyQtyFromFlowPlan"
+        defaultValue: "https://flow-plan.aex.stg.walmart.net/flow-plan/v1/getBuyQtyFromFlowPlan"
       "flow.plan.url":
         description: "URL to get data from Flow Plan"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "https://flow-plan.aex.dev.walmart.net/graphql"
+        defaultValue: "https://flow-plan.aex.stg.walmart.net/graphql"
       "flow.plan.finelineMetricsWeek.query":
         description: "Query to retrieve bump set in store week"
         type: "STRING"
@@ -177,12 +177,12 @@ configDefinitions:
         description: "BQFP SR Consumer ID"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "19ce2bf5-4c24-4bbf-bee9-84496dd07e3c"
+        defaultValue: "93c617a1-31ec-4333-a819-683ef7514cc0"
       "bqfp.env":
         description: "BQFP SR Env"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "dev"
+        defaultValue: "stg"
       "bqfp.svcName":
         description: "BQFP SR Service Name"
         type: "STRING"
@@ -202,12 +202,12 @@ configDefinitions:
         description: "SizeAndPack Base URL"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "http://aex-size-and-pack.aex.dev.walmart.net"
+        defaultValue: "http://aex-size-and-pack.aex.stg.walmart.net"
       "integrationhub.env":
         description: "Env we want to run the optimization for"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "dev"
+        defaultValue: "stage"
   plmApiConfig:
     description: "PLM Configurations"
     resolutionPaths:
@@ -217,12 +217,12 @@ configDefinitions:
         description: "Plm Base URL"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "https://plm-services.aex.dev.walmart.net/"
+        defaultValue: "https://plm-services.aex.stg.walmart.net/"
       "plm.consumerId":
         description: "Plm Consumer Id"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "19ce2bf5-4c24-4bbf-bee9-84496dd07e3c"
+        defaultValue: "93c617a1-31ec-4333-a819-683ef7514cc0"
       "plm.svcName":
         description: "Plm Service Name"
         type: "STRING"
@@ -232,7 +232,7 @@ configDefinitions:
         description: "Plm Env"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "dev"
+        defaultValue: "stg"
   sourcingFactoryServiceConfig:
     description: "Sourcing Factory Service Config"
     resolutionPaths:
@@ -272,7 +272,7 @@ configDefinitions:
         description: "Get Size Profile URL from strategy Service"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "https://strategy.aex.dev.walmart.net/graphql"
+        defaultValue: "https://strategy.aex.stg.walmart.net/graphql"
       "size.profile.query":
         description: "Size Profile Query for GraphQL Call"
         type: "STRING"
@@ -297,7 +297,7 @@ configDefinitions:
         description: "Consumer ID to call Strategy Service"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "19ce2bf5-4c24-4bbf-bee9-84496dd07e3c"
+        defaultValue: "93c617a1-31ec-4333-a819-683ef7514cc0"
       "size.profile.consumer.name":
         description: "Consumer service name"
         type: "STRING"
@@ -307,12 +307,12 @@ configDefinitions:
         description: "Consumer Environment"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "dev"
+        defaultValue: "stg"
       "size.profile.assortproduct.url":
         description: "Get RFA output from Assort Product Service"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "https://assortproduct.aex.dev.walmart.net/graphql"
+        defaultValue: "https://assortproduct.aex.stg.walmart.net/graphql"
       "size.profile.assortproduct.query":
         description: "Query to retrieve RFA output"
         type: "STRING"
@@ -322,7 +322,7 @@ configDefinitions:
         description: "Consumer ID to call Assort Product"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "19ce2bf5-4c24-4bbf-bee9-84496dd07e3c"
+        defaultValue: "93c617a1-31ec-4333-a819-683ef7514cc0"
       "size.profile.assortproduct.consumer.name":
         description: "Consumer service name"
         type: "STRING"
@@ -332,7 +332,7 @@ configDefinitions:
         description: "Consumer Environment"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "dev"
+        defaultValue: "stg"
       "buy.qty.rfa.weeks.query":
         description: "markDownWeek and inStoreWeek Query for GraphQL Call"
         type: "STRING"
@@ -342,12 +342,12 @@ configDefinitions:
         description: "Get buy quantity rfaweek URL from buy quantity Service"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "http://buy-quantification.aex.dev.walmart.net/graphql"
+        defaultValue: "http://buy-quantification.aex.stg.walmart.net/graphql"
       "buy.qty.rfa.consumer.id":
         description: "Consumer ID to call Assort Product"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "19ce2bf5-4c24-4bbf-bee9-84496dd07e3c"
+        defaultValue: "93c617a1-31ec-4333-a819-683ef7514cc0"
       "buy.qty.rfa.consumer.name":
         description: "Consumer service name"
         type: "STRING"
@@ -357,12 +357,12 @@ configDefinitions:
         description: "Consumer Environment"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "dev"
+        defaultValue: "stg"
       "buy.qty.line.plan.consumer.id":
         description: "Consumer ID to call Assort Product"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "19ce2bf5-4c24-4bbf-bee9-84496dd07e3c"
+        defaultValue: "93c617a1-31ec-4333-a819-683ef7514cc0"
       "buy.qty.line.plan.consumer.name":
         description: "Consumer service name"
         type: "STRING"
@@ -372,7 +372,7 @@ configDefinitions:
         description: "Consumer Environment"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "dev"
+        defaultValue: "stg"
       "buy.qty.line.plan.weeks.query":
         description: "markDownWeek and inStoreWeek Query for GraphQL Call"
         type: "STRING"
@@ -382,7 +382,7 @@ configDefinitions:
         description: "Get buy quantity Line Plan URL from buy quantity Service"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "http://current-line-plan.aex.dev.walmart.net/graphql"
+        defaultValue: "http://current-line-plan.aex.stg.walmart.net/graphql"
       "buy.qty.line.plan.like.fineline.query":
         description: "fetch likeFineline properties from LP"
         type: "STRING"
@@ -397,7 +397,7 @@ configDefinitions:
         description: "Get Plan definition from Line Plan"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "https://plan-definition.cbam.dev.walmart.net/graphql"
+        defaultValue: "https://plan-definition.cbam.stg.walmart.net/graphql"
       "cbam.plan.definition.query":
         description: "get plan information from LP query"
         type: "STRING"
@@ -407,7 +407,7 @@ configDefinitions:
         description: "Consumer ID to call Assort Product"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "19ce2bf5-4c24-4bbf-bee9-84496dd07e3c"
+        defaultValue: "93c617a1-31ec-4333-a819-683ef7514cc0"
       "cbam.plan.definition.consumer.name":
         description: "Consumer service name"
         type: "STRING"
@@ -417,7 +417,7 @@ configDefinitions:
         description: "Consumer Environment"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "dev"
+        defaultValue: "stg"
   bigQueryConfig:
     description: "Big Query Config to connect with GCP tables"
     resolutionPaths:
@@ -437,7 +437,7 @@ configDefinitions:
         description: "RFA OUTPUT"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "commitment_report_rfa_output"
+        defaultValue: "commitment_report_rfa_output_stg"
       "ml.datasetName":
         description: "ML OUTPUT"
         type: "STRING"
@@ -452,7 +452,7 @@ configDefinitions:
         description: "RFA Output for SP Pack Optimization for DEV"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "output_dev"
+        defaultValue: "output_stage"
       "rfa.table.sp.cc.output":
         description: "RFA Output for SP Pack Optimization"
         type: "STRING"
@@ -462,7 +462,7 @@ configDefinitions:
         description: "RFA Output for SP Pack Optimization"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "analytics_data_dev"
+        defaultValue: "analytics_data_stage"
       "analytics.data.catg.volume.cluster":
         description: "Category level Volume Cluster data from Data Science"
         type: "STRING"
@@ -479,12 +479,12 @@ configDefinitions:
         kind: "SINGLE"
         defaultValue: "svg_fl_cluster"
       "analytics.data.size.cluster":
-        description: "Size Cluster with default Color family data from Data Science"
+        description: "Size Cluster data from Data Science"
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "sc_cluster"
       "analytics.data.size.color.cluster":
-        description: "Size Cluster and Color family data from Data Science"
+        description: "Size Cluster and Color data from Data Science"
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "sco_cluster"
