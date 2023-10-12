@@ -168,7 +168,7 @@ configDefinitions:
         kind: "SINGLE"
         defaultValue: 0
       "s3Plans2024.constraint":
-        description: "2025 S2 Plans which need DC replenishment min constraint to 0"
+        description: "S2 season 2025 Plans which need DC replenishment min constraint to 0"
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "161, 176"
