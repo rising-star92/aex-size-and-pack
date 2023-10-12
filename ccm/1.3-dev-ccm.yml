@@ -137,7 +137,7 @@ configDefinitions:
         description: "Replenishment threshold"
         type: "INTEGER"
         kind: "SINGLE"
-        defaultValue: 500
+        defaultValue: 0
       "s3Plans2024.constraint":
         description: "2024 S3 Plans for dev and stg list"
         type: "STRING"
