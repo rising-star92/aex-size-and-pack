@@ -90,7 +90,7 @@ public class BigQueryClusterService {
         if (volumeDeviationLevel.equalsIgnoreCase("fineline")) {
             String finelineClusterTable = analyticsDataset + "." + bigQueryConnectionProperties.getFinelineVolumeCluster();
             queryParams += findFinelineQuery(rfaCcTable, sizeClusterTable, sizeColorClusterTable, finelineClusterTable);
-        } else if (volumeDeviationLevel.equalsIgnoreCase("subcategory")) {
+        } else if (volumeDeviationLevel.equalsIgnoreCase("sub_category")) {
             String subCategoryClusterTable = analyticsDataset + "." + bigQueryConnectionProperties.getSubCategoryVolumeCluster();
             queryParams += findSubCatQuery(rfaCcTable, sizeClusterTable, sizeColorClusterTable, subCategoryClusterTable);
         } else {
