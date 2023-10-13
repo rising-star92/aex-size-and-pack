@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.cloud.bigquery.*;
 import com.walmart.aex.sp.dto.assortproduct.RFASizePackData;
 import com.walmart.aex.sp.dto.assortproduct.RFASizePackRequest;
+import com.walmart.aex.sp.enums.VdLevelCode;
 import com.walmart.aex.sp.properties.BigQueryConnectionProperties;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
@@ -87,10 +88,10 @@ public class BigQueryClusterService {
                 "        UNNEST(JSON_EXTRACT_ARRAY(json_array)) AS cc_color_families_json\n" +
                 ")";
 
-        if (volumeDeviationLevel.equalsIgnoreCase("fineline")) {
+        if (volumeDeviationLevel.equalsIgnoreCase(VdLevelCode.FINELINE.getDescription())) {
             String finelineClusterTable = analyticsDataset + "." + bigQueryConnectionProperties.getFinelineVolumeCluster();
             queryParams += findFinelineQuery(rfaCcTable, sizeClusterTable, sizeColorClusterTable, finelineClusterTable);
-        } else if (volumeDeviationLevel.equalsIgnoreCase("subcategory")) {
+        } else if (volumeDeviationLevel.equalsIgnoreCase(VdLevelCode.SUB_CATEGORY.getDescription())) {
             String subCategoryClusterTable = analyticsDataset + "." + bigQueryConnectionProperties.getSubCategoryVolumeCluster();
             queryParams += findSubCatQuery(rfaCcTable, sizeClusterTable, sizeColorClusterTable, subCategoryClusterTable);
         } else {
