@@ -177,6 +177,11 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "true"
+      "buyQty.deviationFlag":
+        description: "Feature flag to enable the logic with handling deviation and without deviation"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "false"
   bqfpServiceConfig:
     description: ""
     resolutionPaths:
