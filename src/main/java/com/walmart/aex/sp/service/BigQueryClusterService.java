@@ -180,12 +180,12 @@ public class BigQueryClusterService {
                 "                    svg_fl_clus.season\n" +
                 "                FROM `" + finelineClusterTable + "` AS svg_fl_clus,\n" +
                 "                    plan_hierarchy AS h\n" +
-                "                WHERE svg_fl_clus.fineline_nbr = COALESCE(h.like_fineline_nbr, h.fineline_nbr)\n" +
-                "                    AND svg_fl_clus.dept_nbr = COALESCE(h.like_rpt_lvl_1_nbr, h.rpt_lvl_1_nbr)\n" +
+                "                WHERE svg_fl_clus.fineline_nbr = h.fineline_nbr\n" +
+                "                    AND svg_fl_clus.dept_nbr = h.rpt_lvl_1_nbr\n" +
                 "                    AND svg_fl_clus.season = h.season_code\n" +
                 "                    AND svg_fl_clus.fiscal_year = h.fiscal_year\n" +
                 "            ) AS fl_clus ON CAST(rfa_output.store AS INT64) = fl_clus.store_nbr\n" +
-                "            JOIN (\n" +
+                "            LEFT JOIN (\n" +
                 "                SELECT sc_clus.fineline_nbr,\n" +
                 "                    sc_clus.dept_nbr,\n" +
                 "                    sc_clus.store_nbr,\n" +
@@ -223,11 +223,12 @@ public class BigQueryClusterService {
                 "            AND all_clus.fineline_nbr = COALESCE(rfa_output.like_fineline_nbr, rfa_output.fineline)\n" +
                 "            AND rfa_output.fiscal_year = all_clus.fiscal_year\n" +
                 "            AND rfa_output.season_code = all_clus.season\n" +
-                "            JOIN (\n" +
+                "            LEFT JOIN (\n" +
                 "                SELECT *\n" +
                 "                FROM cc_color_families\n" +
                 "            ) AS cc_color ON rfa_output.cc = cc_color.cc\n" +
                 "        WHERE UPPER(TRIM(all_clus.color_family)) = UPPER(TRIM(cc_color.color_family_desc))\n" +
+                "        OR all_clus.fineline_nbr is NULL\n" +
                 "    )\n" +
                 "GROUP BY rpt_lvl_0_nbr,\n" +
                 "    rpt_lvl_1_nbr,\n" +
@@ -324,12 +325,12 @@ public class BigQueryClusterService {
                 "                    svg_subcatg_clus.season\n" +
                 "                FROM `" + subCategoryClusterTable + "` AS svg_subcatg_clus,\n" +
                 "                    plan_hierarchy AS h\n" +
-                "                WHERE svg_subcatg_clus.dept_subcatg_nbr = COALESCE(h.like_rpt_lvl_4_nbr,h.rpt_lvl_4_nbr)\n" +
-                "                    AND svg_subcatg_clus.dept_nbr = COALESCE(h.like_rpt_lvl_1_nbr, h.rpt_lvl_1_nbr)\n" +
+                "                WHERE svg_subcatg_clus.dept_subcatg_nbr = h.rpt_lvl_4_nbr\n" +
+                "                    AND svg_subcatg_clus.dept_nbr = h.rpt_lvl_1_nbr\n" +
                 "                    AND svg_subcatg_clus.season = h.season_code\n" +
                 "                    AND svg_subcatg_clus.fiscal_year = h.fiscal_year\n" +
                 "            ) AS subcatg_clus ON CAST(rfa_output.store AS INT64) = subcatg_clus.store_nbr\n" +
-                "            JOIN (\n" +
+                "            LEFT JOIN (\n" +
                 "                SELECT sc_clus.fineline_nbr,\n" +
                 "                    sc_clus.dept_nbr,\n" +
                 "                    sc_clus.store_nbr,\n" +
@@ -376,11 +377,12 @@ public class BigQueryClusterService {
                 "            )\n" +
                 "            AND rfa_output.fiscal_year = all_clus.fiscal_year\n" +
                 "            AND rfa_output.season_code = all_clus.season\n" +
-                "            JOIN (\n" +
+                "            LEFT JOIN (\n" +
                 "                SELECT *\n" +
                 "                FROM cc_color_families\n" +
                 "            ) AS cc_color ON rfa_output.cc = cc_color.cc\n" +
                 "        WHERE UPPER(TRIM(all_clus.color_family)) = UPPER(TRIM(cc_color.color_family_desc))\n" +
+                "        OR all_clus.fineline_nbr is NULL\n" +
                 "    )\n" +
                 "GROUP BY rpt_lvl_0_nbr,\n" +
                 "    rpt_lvl_1_nbr,\n" +
@@ -477,12 +479,12 @@ public class BigQueryClusterService {
                 "                    svg_catg_clus.season\n" +
                 "                FROM `" +  categoryClusterTable + "` AS svg_catg_clus,\n" +
                 "                    plan_hierarchy AS h\n" +
-                "                WHERE svg_catg_clus.dept_catg_nbr = COALESCE(h.like_rpt_lvl_3_nbr,h.rpt_lvl_3_nbr)\n" +
-                "                    AND svg_catg_clus.dept_nbr = COALESCE(h.like_rpt_lvl_1_nbr, h.rpt_lvl_1_nbr)\n" +
+                "                WHERE svg_catg_clus.dept_catg_nbr = h.rpt_lvl_3_nbr\n" +
+                "                    AND svg_catg_clus.dept_nbr = h.rpt_lvl_1_nbr\n" +
                 "                    AND svg_catg_clus.season = h.season_code\n" +
                 "                    AND svg_catg_clus.fiscal_year = h.fiscal_year\n" +
                 "            ) AS catg_clus ON CAST(rfa_output.store AS INT64) = catg_clus.store_nbr\n" +
-                "            JOIN (\n" +
+                "            LEFT JOIN (\n" +
                 "                SELECT sc_clus.fineline_nbr,\n" +
                 "                    sc_clus.dept_nbr,\n" +
                 "                    sc_clus.store_nbr,\n" +
@@ -529,11 +531,12 @@ public class BigQueryClusterService {
                 "            )\n" +
                 "            AND rfa_output.fiscal_year = all_clus.fiscal_year\n" +
                 "            AND rfa_output.season_code = all_clus.season\n" +
-                "            JOIN (\n" +
+                "            LEFT JOIN (\n" +
                 "                SELECT *\n" +
                 "                FROM cc_color_families\n" +
                 "            ) AS cc_color ON rfa_output.cc = cc_color.cc\n" +
                 "        WHERE UPPER(TRIM(all_clus.color_family)) = UPPER(TRIM(cc_color.color_family_desc))\n" +
+                "        OR all_clus.fineline_nbr is NULL\n" +
                 "    )\n" +
                 "GROUP BY rpt_lvl_0_nbr,\n" +
                 "    rpt_lvl_1_nbr,\n" +
