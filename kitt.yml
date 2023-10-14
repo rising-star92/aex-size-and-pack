@@ -186,3 +186,4 @@ alerts:
 setup:
   featureFlagMap:
     isGoldenSignalGateEnabled: true
+    
