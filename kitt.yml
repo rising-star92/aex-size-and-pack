@@ -152,7 +152,6 @@ deploy:
       target:
         cluster_id:
           - eus2-prod-a10
-          - wus-prod-a91
           - uswest-prod-az-015
       helm:
         values:
