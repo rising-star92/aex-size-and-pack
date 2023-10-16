@@ -54,11 +54,11 @@ public interface CcSpReplnPkConsRepository extends JpaRepository<CcSpMmReplPack,
             " scp.lvl4Desc , " +
             " flp.finelinePlanId.finelineNbr , " +
             " COALESCE(flp.altFinelineName, flp.finelineDesc) , " +
-            " COALESCE(stp.altStyleDesc ,csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.styleNbr) , " +
+            " COALESCE(stp.altStyleDesc ,csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.styleNbr) as styleNbr, " +
             " csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId , " +
             " ct.channelDesc , " +
             " csmrp.sizeDesc , " +
-            " COALESCE(ccp.altCcDesc, csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.customerChoice) , " +
+            " COALESCE(ccp.altCcDesc, csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.customerChoice) as customerChoice, " +
             " csmrp.ccSpReplPackId.ahsSizeId , " +
             " ccp.colorName , " +
             " ccp.colorFamilyDesc , " +
@@ -113,7 +113,8 @@ public interface CcSpReplnPkConsRepository extends JpaRepository<CcSpMmReplPack,
             " ct.channelDesc , " +
             " csmrp.ccSpReplPackId.ahsSizeId , " +
             " csmrp.merchMethodDesc , " +
-            " csmrp.replenObj")
+            " csmrp.replenObj " +
+            "order by scp.lvl0Desc, scp.lvl1Desc, scp.lvl2Desc, scp.lvl3Desc, scp.lvl4Desc, flp.finelinePlanId.finelineNbr, styleNbr, customerChoice")
     List<DCInboundResponse> getDCInboundsByPlanIdAndChannelId(@Param("planId") Long planId ,@Param("channelId") Integer channelId);
 
    @Transactional

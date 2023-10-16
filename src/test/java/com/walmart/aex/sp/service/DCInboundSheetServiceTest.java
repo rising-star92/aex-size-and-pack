@@ -36,7 +36,7 @@ public class DCInboundSheetServiceTest {
         MockitoAnnotations.openMocks(this);
     }
     @Test
-    void testGetDCInboundExcelSheet() throws JsonProcessingException {
+    void testGetDCInboundExcelSheet()  {
         //Arrange
         DCInboundResponse dcInboundResponse = getDCInboundResponseDTO();
         List<DCInboundResponse> response = new ArrayList<>();
@@ -44,7 +44,7 @@ public class DCInboundSheetServiceTest {
         when(ccSpReplnPkConsRepository.getDCInboundsByPlanIdAndChannelId(planId, 1)).thenReturn(response);
 
         //Act
-        List<DCInboundExcelResponse> dcInboundExcelData = dcInboundSheetService.getDCInboundExcelSheet(planId,channelDesc);
+        List<DCInboundExcelResponse> dcInboundExcelData = dcInboundSheetService.getDCInboundData(planId,channelDesc);
 
         // Assert
         assertNotNull(dcInboundExcelData);
@@ -78,7 +78,7 @@ public class DCInboundSheetServiceTest {
         when(ccSpReplnPkConsRepository.getDCInboundsByPlanIdAndChannelId(planId,1)).thenReturn(response);
 
         //Act
-        List<DCInboundExcelResponse> dcInboundExcelData = dcInboundSheetService.getDCInboundExcelSheet(planId,channelDesc);
+        List<DCInboundExcelResponse> dcInboundExcelData = dcInboundSheetService.getDCInboundData(planId,channelDesc);
 
         // Assert
         assertNotNull(dcInboundExcelData);
@@ -89,13 +89,12 @@ public class DCInboundSheetServiceTest {
     @Test
     void testGetDcInboundExcelResponses() {
         //Arrange
-        HttpServletResponse httpServletResponse = new MockHttpServletResponse();
         DCInboundResponse dcInboundResponse = getDCInboundResponseDTO();
         List<DCInboundResponse> response = new ArrayList<>();
         response.add(dcInboundResponse);
         when(ccSpReplnPkConsRepository.getDCInboundsByPlanIdAndChannelId(planId,1)).thenReturn(response);
         //Act
-        List<DCInboundExcelResponse> sheetData = dcInboundSheetService.getDcInboundExcelResponses(planId,channelDesc,httpServletResponse);
+        List<DCInboundExcelResponse> sheetData = dcInboundSheetService.getDCInboundData(planId, channelDesc);
 
         // Assert
         assertNotNull(sheetData);

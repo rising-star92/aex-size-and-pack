@@ -1,5 +1,8 @@
 package com.walmart.aex.sp.util;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class SizeAndPackConstants {
 
     private SizeAndPackConstants() {
@@ -20,8 +23,7 @@ public class SizeAndPackConstants {
     public static final String CHANNEL = "Channel";
     public static final String COLOR_NAME = "Color Name";
     public static final String COLOR_FAMILY = "Color Family";
-    public static final Integer HEADER_FONT_HEIGHT = 14;
-    public static final Integer ROW_FONT_HEIGHT = 14;
+    public static final Integer DEFAULT_FONT_HEIGHT = 14;
     public static final Integer ZERO = 0;
     public static final String ZERO_STRING = "0";
     public static final String DC_INBOUND_EXCEL_SHEET_NAME = "DCInboundData";
@@ -52,4 +54,7 @@ public class SizeAndPackConstants {
     public static final Integer ONLINE_CHANNEL_ID = 2;
     public static final Integer STORE_CHANNEL_ID = 1;
     public static final String DEFAULT_COLOR_FAMILY = "DEFAULT";
+
+    //DC Inbound Report Headers
+    public static final List<String> DC_INBOUND_REPORT_DEFAULT_HEADERS = Arrays.asList(CATEGORY, SUB_CATEGORY, FINELINE, STYLE, CUSTOMER_CHOICE, COLOR_NAME, COLOR_FAMILY, MERCH_METHOD, SIZE, CHANNEL);
 }
