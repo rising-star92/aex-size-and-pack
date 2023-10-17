@@ -56,7 +56,7 @@ flows:
         method: POST
         connectTimeout: 1800000
         requestTimeout: 1800000
-        url: "${fetchPackOptRunStatusUrl}"
+        url: "${url}"
         request: json
         body: "${requestBody}"
         headers:
