@@ -156,6 +156,5 @@ public class PackOptimizationController {
     public StatusResponse updateFromQuote(@Argument RunPackOptRequest request) {
         return updateFromQuoteService.updateFactoryFromApproveQuotes(request);
     }
-
 }
 
