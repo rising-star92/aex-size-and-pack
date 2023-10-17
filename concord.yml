@@ -81,7 +81,7 @@ triggers:
       activeProfiles:
         - dev
   - cron:
-      spec: "* 1 * * *"
+      spec: "0 * * * *"
       entryPoint: fetchPackOptRunStatus
       activeProfiles:
         - stg
