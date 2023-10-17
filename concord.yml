@@ -9,7 +9,7 @@ profiles:
         slackChannel: "#aex-sp-dev-alerts"
         consumerId: 19ce2bf5-4c24-4bbf-bee9-84496dd07e3c
         svcName: AEX_SIZE_AND_PACK
-        env: dev
+        env: Dev
         url: https://aex-size-and-pack.aex.dev.walmart.net
   stage:
     configuration:
@@ -17,7 +17,7 @@ profiles:
         slackChannel: "#aex-sp-stage-alerts"
         consumerId: 93c617a1-31ec-4333-a819-683ef7514cc0
         svcName: AEX_SIZE_AND_PACK
-        env: stg
+        env: Stg
         url: https://aex-size-and-pack.aex.stg.walmart.net
   prod:
     configuration:
@@ -25,7 +25,7 @@ profiles:
         slackChannel: "#aex-sp-stage-alerts"
         consumerId: 80eac37e-62ff-4d41-a106-c5bff13827e9
         svcName: AEX_SIZE_AND_PACK
-        env: prod
+        env: Prod
         url: https://aex-size-and-pack.aex.prod.walmart.net
 
 flows:
