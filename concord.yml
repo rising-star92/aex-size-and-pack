@@ -19,7 +19,7 @@ flows:
         method: POST
         connectTimeout: 1800000
         requestTimeout: 1800000
-        url: "${dev}/graphql/"
+        url: "${dev}/graphql"
         request: json
         body: {"query":"mutation{\n  hourlyPackOptRunStatusUpdateJob{\n    status\n  }\n}","variables":null}
         headers:
@@ -56,7 +56,7 @@ flows:
         method: POST
         connectTimeout: 1800000
         requestTimeout: 1800000
-        url: "${stg}/graphql/"
+        url: "${stg}/graphql"
         request: json
         body: { "query": "mutation{\n  hourlyPackOptRunStatusUpdateJob{\n    status\n  }\n}","variables": null }
         headers:
@@ -93,7 +93,7 @@ flows:
         method: POST
         connectTimeout: 1800000
         requestTimeout: 1800000
-        url: "${prod}/graphql/"
+        url: "${prod}/graphql"
         request: json
         body: { "query": "mutation{\n  hourlyPackOptRunStatusUpdateJob{\n    status\n  }\n}","variables": null }
         headers:
