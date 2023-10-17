@@ -36,7 +36,6 @@ type Mutation {
     addDeptAdminRules(deptAdminRuleRequests: [DeptAdminRuleRequest]!): StatusResponse
     updateDeptAdminRules(deptAdminRuleRequests: [DeptAdminRuleRequest]!): StatusResponse
     deleteDeptAdminRules(deptNbrs: [Int]!): StatusResponse
-    hourlyPackOptRunStatusUpdateJob: StatusResponse
 }
 
 input UpdatePackOptConstraintRequestDTO {

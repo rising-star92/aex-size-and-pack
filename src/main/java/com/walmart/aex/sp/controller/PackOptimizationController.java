@@ -157,11 +157,5 @@ public class PackOptimizationController {
         return updateFromQuoteService.updateFactoryFromApproveQuotes(request);
     }
 
-    @MutationMapping
-    public StatusResponse hourlyPackOptRunStatusUpdateJob() {
-        StatusResponse response = new StatusResponse();
-        response.setStatus("Success");
-        return response;
-    }
 }
 
