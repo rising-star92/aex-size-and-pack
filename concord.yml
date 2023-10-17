@@ -21,7 +21,7 @@ flows:
         requestTimeout: 1800000
         url: "${dev}/graphql"
         request: json
-        body: {"query":"mutation{\n  hourlyPackOptRunStatusUpdateJob{\n    status\n  }\n}","variables":null}
+        body: {"query":"mutation{ \n    hourlyPackOptRunStatusUpdateJob{    \n        status  \n        }\n    }","variables":{}}
         headers:
           WM_CONSUMER.ID: 19ce2bf5-4c24-4bbf-bee9-84496dd07e3c
           WM_SVC.NAME: AEX_SIZE_AND_PACK
@@ -58,7 +58,7 @@ flows:
         requestTimeout: 1800000
         url: "${stg}/graphql"
         request: json
-        body: { "query": "mutation{\n  hourlyPackOptRunStatusUpdateJob{\n    status\n  }\n}","variables": null }
+        body: {"query":"mutation{ \n    hourlyPackOptRunStatusUpdateJob{    \n        status  \n        }\n    }","variables":{}}
         headers:
           WM_CONSUMER.ID: 93c617a1-31ec-4333-a819-683ef7514cc0
           WM_SVC.NAME: AEX_SIZE_AND_PACK
@@ -95,7 +95,7 @@ flows:
         requestTimeout: 1800000
         url: "${prod}/graphql"
         request: json
-        body: { "query": "mutation{\n  hourlyPackOptRunStatusUpdateJob{\n    status\n  }\n}","variables": null }
+        body: {"query":"mutation{ \n    hourlyPackOptRunStatusUpdateJob{    \n        status  \n        }\n    }","variables":{}}
         headers:
           WM_CONSUMER.ID: 80eac37e-62ff-4d41-a106-c5bff13827e9
           WM_SVC.NAME: AEX_SIZE_AND_PACK
