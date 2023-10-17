@@ -27,17 +27,18 @@ profiles:
         svcName: AEX_SIZE_AND_PACK
         env: prod
         url: https://aex-size-and-pack.aex.prod.walmart.net
+
 flows:
   fetchPackOptRunStatus:
     - log: "${env} Size and Pack ResetRunPackOptStatus Job"
     - call: post
       in:
         fetchPackOptRunStatusUrl: "${url}/graphql"
-        fetchPackOptRunStatusBody: '{"query": "\nquery ($planid: Int!, $channelid: Int!) {\n  getPackOptimizationValues(planid:$planid,channelid:$channelid) {\n    planId\n    lvl0Nbr\n    lvl0Desc\n    lvl1Nbr\n    lvl1Desc\n    lvl2Nbr\n    lvl2Desc\n    lvl3List {\n      lvl3Nbr\n      lvl3Name\n      constraints {\n        finelineLevelConstraints {\n          maxUnitsPerPack \n          maxPacks \n        }\n        colorCombinationConstraints {\n          factoryId\n          portOfOrigin\n          suppliers {\n            supplierName\n            vendorNumber6\n            gsmSupplierNumber\n            vendorNumber9\n          }\n          colorCombination\n          singlePackIndicator \n        }\n      }\n      lvl4List {\n        lvl4Nbr\n        lvl4Name\n          constraints {\n            finelineLevelConstraints { \n              maxUnitsPerPack \n              maxPacks\n            }\n            colorCombinationConstraints {\n              factoryId\n              portOfOrigin\n              suppliers {\n                supplierName\n                vendorNumber6\n                gsmSupplierNumber\n                vendorNumber9\n              }\n              colorCombination\n              singlePackIndicator \n            }\n          }\n        finelines {\n          finelineNbr\n          finelineName\n          altFinelineName\n          optimizationDetails{\n            name\n            startTs\n            endTs\n            runStatusLongDesc\n            runStatusCode\n          }\n          packOptimizationStatus \n          constraints {\n            finelineLevelConstraints { \n              maxUnitsPerPack \n              maxPacks\n            }\n            colorCombinationConstraints {\n              factoryId\n              portOfOrigin\n              suppliers {\n                supplierName\n                vendorNumber6\n                gsmSupplierNumber\n                vendorNumber9\n              }\n              colorCombination\n              singlePackIndicator \n            }\n          }\n        }\n      }\n    }\n  }\n}","variables": { "planid": 12, "channelid": 1 }}'
+        requestBody: {"query": "\nquery ($planid: Int!, $channelid: Int!) {\n  getPackOptimizationValues(planid:$planid,channelid:$channelid) {\n    planId\n    lvl0Nbr\n    lvl0Desc\n    lvl1Nbr\n    lvl1Desc\n    lvl2Nbr\n    lvl2Desc\n    lvl3List {\n      lvl3Nbr\n      lvl3Name\n      constraints {\n        finelineLevelConstraints {\n          maxUnitsPerPack \n          maxPacks \n        }\n        colorCombinationConstraints {\n          factoryId\n          portOfOrigin\n          suppliers {\n            supplierName\n            vendorNumber6\n            gsmSupplierNumber\n            vendorNumber9\n          }\n          colorCombination\n          singlePackIndicator \n        }\n      }\n      lvl4List {\n        lvl4Nbr\n        lvl4Name\n          constraints {\n            finelineLevelConstraints { \n              maxUnitsPerPack \n              maxPacks\n            }\n            colorCombinationConstraints {\n              factoryId\n              portOfOrigin\n              suppliers {\n                supplierName\n                vendorNumber6\n                gsmSupplierNumber\n                vendorNumber9\n              }\n              colorCombination\n              singlePackIndicator \n            }\n          }\n        finelines {\n          finelineNbr\n          finelineName\n          altFinelineName\n          optimizationDetails{\n            name\n            startTs\n            endTs\n            runStatusLongDesc\n            runStatusCode\n          }\n          packOptimizationStatus \n          constraints {\n            finelineLevelConstraints { \n              maxUnitsPerPack \n              maxPacks\n            }\n            colorCombinationConstraints {\n              factoryId\n              portOfOrigin\n              suppliers {\n                supplierName\n                vendorNumber6\n                gsmSupplierNumber\n                vendorNumber9\n              }\n              colorCombination\n              singlePackIndicator \n            }\n          }\n        }\n      }\n    }\n  }\n}","variables": { "planid": 12, "channelid": 1 }}
       error:
         - call: notifySlack
           in:
-            slackErrorText: "${env} - Failed to run Size and Pack ResetRunPackOptStatus Job "
+            slackErrorText: "${env} - Failed to run Size and Pack ResetRunPackOptStatus Job"
         - exit
     - log: "INFO : ${env} Size and Pack ResetRunPackOptStatus Job : Success: ${jsonResponse}"
     - if: ${jsonResponse.success}
@@ -57,7 +58,7 @@ flows:
         requestTimeout: 1800000
         url: "${fetchPackOptRunStatusUrl}"
         request: json
-        body: "${fetchPackOptRunStatusBody}"
+        body: "${requestBody}"
         headers:
           WM_CONSUMER.ID: "${consumerId}"
           WM_SVC.NAME: "${svcName}"
