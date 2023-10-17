@@ -30,8 +30,6 @@ profiles:
 
 flows:
   fetchPackOptRunStatus:
-    - set:
-        profile: ${env}
     - log: "${env} Size and Pack ResetRunPackOptStatus Job"
     - call: post
       in:
@@ -83,7 +81,7 @@ triggers:
       activeProfiles:
         - dev
   - cron:
-      spec: "0/5 * * * *"
+      spec: "* 1 * * *"
       entryPoint: fetchPackOptRunStatus
       activeProfiles:
         - stg
