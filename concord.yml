@@ -40,7 +40,6 @@ flows:
             text: '${env} - Failed to run Size and Pack ResetRunPackOptStatus Job '
         - exit
     - log: "INFO : ${env} Size and Pack ResetRunPackOptStatus Job : Success: ${jsonResponse}"
-
     - if: ${jsonResponse.success}
       then:
         - log: '${env} Size and Pack ResetRunPackOptStatus Job Successfully triggered.'
@@ -49,6 +48,7 @@ flows:
           in:
             text: '${env}: Failed to run Size and Pack ResetRunPackOptStatus Job'
         - exit
+
   post:
     - task: http
       in:
@@ -64,6 +64,7 @@ flows:
           WM_SVC.ENV: '${env}'
         response: json
         out: jsonResponse
+
   notifySlack:
     - task: slack
       in:
@@ -71,6 +72,7 @@ flows:
         text: '${text}'
         username: 'Pipeline'
         iconEmoji: ':concord:'
+
 triggers:
   - cron:
     spec: "0/5 * * * *"
