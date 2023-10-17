@@ -125,5 +125,5 @@ flows:
         - exit
 triggers:
   - cron:
-      spec: "0 5 * * * *"
+      spec: "0 5 * * * "
       entryPoint: ProdBatch
