@@ -7,7 +7,6 @@ configuration:
     prod: https://aex-size-and-pack.aex.prod.walmart.net
     slack_channel: '#aex-sp-stage-alerts'
     slack_channel_non_prod: '#aex-sp-dev-alerts'
-
 flows:
   default:
     - log: "Trigger Size and Pack Hourly Job"
@@ -36,16 +35,16 @@ flows:
             username: 'Pipeline'
             iconEmoji: ':concord:'
         - exit
-    - log: "INFO : DEV Size and Pack Hourly Job : Success: ${jsonResponse}"
+    - log: "INFO : DEV Size and Pack ResetRunPackOptStatus Job : Success: ${jsonResponse}"
 
     - if: ${jsonResponse.success}
       then:
-        - log: 'DEV Size and Pack Hourly Job Successfully triggered.'
+        - log: 'DEV Size and Pack ResetRunPackOptStatus Job Successfully triggered.'
       else:
         - task: slack
           in:
             channelId: '${slack_channel_non_prod}'
-            text: 'DEV: Failed to run Size and Pack Hourly Job'
+            text: 'DEV: Failed to run Size and Pack ResetRunPackOptStatus Job'
             username: 'Pipeline'
             iconEmoji: ':concord:'
         - exit
@@ -69,25 +68,25 @@ flows:
         - task: slack
           in:
             channelId: '${slack_channel_non_prod}'
-            text: 'STG - Failed to run Size and Pack Hourly Job '
+            text: 'STG - Failed to run Size and Pack ResetRunPackOptStatus Job '
             username: 'Pipeline'
             iconEmoji: ':concord:'
         - exit
-    - log: "INFO : STG Size and Pack Hourly Job : Success: ${jsonResponse}"
+    - log: "INFO : STG Size and Pack ResetRunPackOptStatus Job : Success: ${jsonResponse}"
 
     - if: ${jsonResponse.success}
       then:
-        - log: 'STG Size and Pack Hourly Job Successfully triggered.'
+        - log: 'STG Size and Pack ResetRunPackOptStatus Job Successfully triggered.'
       else:
         - task: slack
           in:
             channelId: '${slack_channel_non_prod}'
-            text: 'STG: Failed to run Size and Pack Hourly Job'
+            text: 'STG: Failed to run Size and Pack ResetRunPackOptStatus Job'
             username: 'Pipeline'
             iconEmoji: ':concord:'
         - exit
   ProdBatch:
-    - log: "PROD Size and Pack Hourly Job"
+    - log: "PROD Size and Pack ResetRunPackOptStatus Job"
     - task: http
       in:
         method: POST
@@ -106,24 +105,24 @@ flows:
         - task: slack
           in:
             channelId: '${slack_channel}'
-            text: 'PROD - Failed to run Size and Pack Hourly Job '
+            text: 'PROD - Failed to run Size and Pack ResetRunPackOptStatus Job '
             username: 'Pipeline'
             iconEmoji: ':concord:'
         - exit
-    - log: "INFO : PROD Size and Pack Hourly Job : Success: ${jsonResponse}"
+    - log: "INFO : PROD Size and Pack ResetRunPackOptStatus Job : Success: ${jsonResponse}"
 
     - if: ${jsonResponse.success}
       then:
-        - log: 'PROD Size and Pack Hourly Job Successfully triggered.'
+        - log: 'PROD Size and Pack ResetRunPackOptStatus Job Successfully triggered.'
       else:
         - task: slack
           in:
             channelId: '${slack_channel}'
-            text: 'PROD: Failed to run Size and Pack Hourly Job'
+            text: 'PROD: Failed to run Size and Pack ResetRunPackOptStatus Job'
             username: 'Pipeline'
             iconEmoji: ':concord:'
         - exit
 triggers:
   - cron:
-      spec: "0 5 * * * "
-      entryPoint: ProdBatch
+      spec: "5 * * * * "
+      entryPoint: DevBatch
