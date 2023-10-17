@@ -78,17 +78,17 @@ flows:
 
 triggers:
   - cron:
-    spec: "0/5 * * * *"
-    entryPoint: fetchPackOptRunStatus
-    activeProfiles:
-      - dev
+      spec: "0/5 * * * *"
+      entryPoint: fetchPackOptRunStatus
+      activeProfiles:
+        - dev
   - cron:
-    spec: "0/5 * * * *"
-    entryPoint: fetchPackOptRunStatus
-    activeProfiles:
-      - stg
+      spec: "0/5 * * * *"
+      entryPoint: fetchPackOptRunStatus
+      activeProfiles:
+        - stg
   - cron:
-    spec: "* 1 * * *"
-    entryPoint: fetchPackOptRunStatus
-    activeProfiles:
-      - prod
+      spec: "* 1 * * *"
+      entryPoint: fetchPackOptRunStatus
+      activeProfiles:
+        - prod
