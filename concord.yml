@@ -32,12 +32,12 @@ flows:
     - log: "${env} Size and Pack ResetRunPackOptStatus Job"
     - call: post
       in:
-        url: "${url}/graphql"
-        body: { "query": "\nquery ($planid: Int!, $channelid: Int!) {\n  getPackOptimizationValues(planid:$planid,channelid:$channelid) {\n    planId\n    lvl0Nbr\n    lvl0Desc\n    lvl1Nbr\n    lvl1Desc\n    lvl2Nbr\n    lvl2Desc\n    lvl3List {\n      lvl3Nbr\n      lvl3Name\n      constraints {\n        finelineLevelConstraints {\n          maxUnitsPerPack \n          maxPacks \n        }\n        colorCombinationConstraints {\n          factoryId\n          portOfOrigin\n          suppliers {\n            supplierName\n            vendorNumber6\n            gsmSupplierNumber\n            vendorNumber9\n          }\n          colorCombination\n          singlePackIndicator \n        }\n      }\n      lvl4List {\n        lvl4Nbr\n        lvl4Name\n          constraints {\n            finelineLevelConstraints { \n              maxUnitsPerPack \n              maxPacks\n            }\n            colorCombinationConstraints {\n              factoryId\n              portOfOrigin\n              suppliers {\n                supplierName\n                vendorNumber6\n                gsmSupplierNumber\n                vendorNumber9\n              }\n              colorCombination\n              singlePackIndicator \n            }\n          }\n        finelines {\n          finelineNbr\n          finelineName\n          altFinelineName\n          optimizationDetails{\n            name\n            startTs\n            endTs\n            runStatusLongDesc\n            runStatusCode\n          }\n          packOptimizationStatus \n          constraints {\n            finelineLevelConstraints { \n              maxUnitsPerPack \n              maxPacks\n            }\n            colorCombinationConstraints {\n              factoryId\n              portOfOrigin\n              suppliers {\n                supplierName\n                vendorNumber6\n                gsmSupplierNumber\n                vendorNumber9\n              }\n              colorCombination\n              singlePackIndicator \n            }\n          }\n        }\n      }\n    }\n  }\n}","variables": { "planid": 12,"channelid": 1 } }
+        fetchPackOptRunStatusUrl: "${url}/graphql"
+        fetchPackOptRunStatusBody: { "query": "\nquery ($planid: Int!, $channelid: Int!) {\n  getPackOptimizationValues(planid:$planid,channelid:$channelid) {\n    planId\n    lvl0Nbr\n    lvl0Desc\n    lvl1Nbr\n    lvl1Desc\n    lvl2Nbr\n    lvl2Desc\n    lvl3List {\n      lvl3Nbr\n      lvl3Name\n      constraints {\n        finelineLevelConstraints {\n          maxUnitsPerPack \n          maxPacks \n        }\n        colorCombinationConstraints {\n          factoryId\n          portOfOrigin\n          suppliers {\n            supplierName\n            vendorNumber6\n            gsmSupplierNumber\n            vendorNumber9\n          }\n          colorCombination\n          singlePackIndicator \n        }\n      }\n      lvl4List {\n        lvl4Nbr\n        lvl4Name\n          constraints {\n            finelineLevelConstraints { \n              maxUnitsPerPack \n              maxPacks\n            }\n            colorCombinationConstraints {\n              factoryId\n              portOfOrigin\n              suppliers {\n                supplierName\n                vendorNumber6\n                gsmSupplierNumber\n                vendorNumber9\n              }\n              colorCombination\n              singlePackIndicator \n            }\n          }\n        finelines {\n          finelineNbr\n          finelineName\n          altFinelineName\n          optimizationDetails{\n            name\n            startTs\n            endTs\n            runStatusLongDesc\n            runStatusCode\n          }\n          packOptimizationStatus \n          constraints {\n            finelineLevelConstraints { \n              maxUnitsPerPack \n              maxPacks\n            }\n            colorCombinationConstraints {\n              factoryId\n              portOfOrigin\n              suppliers {\n                supplierName\n                vendorNumber6\n                gsmSupplierNumber\n                vendorNumber9\n              }\n              colorCombination\n              singlePackIndicator \n            }\n          }\n        }\n      }\n    }\n  }\n}","variables": { "planid": 12,"channelid": 1 } }
       error:
         - call: notifySlack
           in:
-            text: '${env} - Failed to run Size and Pack ResetRunPackOptStatus Job '
+            slackErrorText: '${env} - Failed to run Size and Pack ResetRunPackOptStatus Job '
         - exit
     - log: "INFO : ${env} Size and Pack ResetRunPackOptStatus Job : Success: ${jsonResponse}"
     - if: ${jsonResponse.success}
@@ -46,7 +46,7 @@ flows:
       else:
         - call: notifySlack
           in:
-            text: '${env}: Failed to run Size and Pack ResetRunPackOptStatus Job'
+            slackErrorText: '${env}: Failed to run Size and Pack ResetRunPackOptStatus Job'
         - exit
 
   post:
@@ -55,9 +55,9 @@ flows:
         method: POST
         connectTimeout: 1800000
         requestTimeout: 1800000
-        url: "${url}/graphql"
+        url: "${fetchPackOptRunStatusUrl}"
         request: json
-        body: '${body}'
+        body: '${fetchPackOptRunStatusBody}'
         headers:
           WM_CONSUMER.ID: '${consumerId}'
           WM_SVC.NAME: '${svcName}'
@@ -69,7 +69,7 @@ flows:
     - task: slack
       in:
         channelId: '${slackChannel}'
-        text: '${text}'
+        text: '${slackErrorText}'
         username: 'Pipeline'
         iconEmoji: ':concord:'
 
