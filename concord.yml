@@ -30,6 +30,8 @@ profiles:
 
 flows:
   fetchPackOptRunStatus:
+    - set:
+        profile: ${env}
     - log: "${env} Size and Pack ResetRunPackOptStatus Job"
     - call: post
       in:
