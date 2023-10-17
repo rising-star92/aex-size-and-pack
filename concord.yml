@@ -10,10 +10,10 @@ configuration:
 
 flows:
   default:
-    - log: "Trigger Size and Pack Daily Job"
+    - log: "Trigger Size and Pack Hourly Job"
 
   DevBatch:
-    - log: "DEV Size and Pack Daily Job"
+    - log: "DEV Size and Pack Hourly Job"
     - task: http
       in:
         method: POST
@@ -21,7 +21,7 @@ flows:
         requestTimeout: 1800000
         url: "${dev}/graphql/"
         request: json
-        body: {"query":"mutation{\n  weeklyPlanMetricsMigration{\n    status\n  }\n}","variables":null}
+        body: {"query":"mutation{\n  hourlyPackOptRunStatusUpdateJob{\n    status\n  }\n}","variables":null}
         headers:
           WM_CONSUMER.ID: 19ce2bf5-4c24-4bbf-bee9-84496dd07e3c
           WM_SVC.NAME: AEX_SIZE_AND_PACK
@@ -32,25 +32,25 @@ flows:
         - task: slack
           in:
             channelId: '${slack_channel_non_prod}'
-            text: 'DEV - Failed to run Size and Pack Daily Job '
+            text: 'DEV - Failed to run Size and Pack Hourly Job '
             username: 'Pipeline'
             iconEmoji: ':concord:'
         - exit
-    - log: "INFO : DEV Size and Pack Daily Job : Success: ${jsonResponse}"
+    - log: "INFO : DEV Size and Pack Hourly Job : Success: ${jsonResponse}"
 
     - if: ${jsonResponse.success}
       then:
-        - log: 'DEV Size and Pack Daily Job Successfully triggered.'
+        - log: 'DEV Size and Pack Hourly Job Successfully triggered.'
       else:
         - task: slack
           in:
             channelId: '${slack_channel_non_prod}'
-            text: 'DEV: Failed to run Size and Pack Daily Job'
+            text: 'DEV: Failed to run Size and Pack Hourly Job'
             username: 'Pipeline'
             iconEmoji: ':concord:'
         - exit
   StgBatch:
-    - log: "STG Size and Pack Daily Job"
+    - log: "STG Size and Pack Hourly Job"
     - task: http
       in:
         method: POST
@@ -58,7 +58,7 @@ flows:
         requestTimeout: 1800000
         url: "${stg}/graphql/"
         request: json
-        body: { "query": "mutation{\n  weeklyPlanMetricsMigration{\n    status\n  }\n}","variables": null }
+        body: { "query": "mutation{\n  hourlyPackOptRunStatusUpdateJob{\n    status\n  }\n}","variables": null }
         headers:
           WM_CONSUMER.ID: 93c617a1-31ec-4333-a819-683ef7514cc0
           WM_SVC.NAME: AEX_SIZE_AND_PACK
@@ -69,25 +69,25 @@ flows:
         - task: slack
           in:
             channelId: '${slack_channel_non_prod}'
-            text: 'STG - Failed to run Size and Pack Daily Job '
+            text: 'STG - Failed to run Size and Pack Hourly Job '
             username: 'Pipeline'
             iconEmoji: ':concord:'
         - exit
-    - log: "INFO : STG Size and Pack Daily Job : Success: ${jsonResponse}"
+    - log: "INFO : STG Size and Pack Hourly Job : Success: ${jsonResponse}"
 
     - if: ${jsonResponse.success}
       then:
-        - log: 'STG Size and Pack Daily Job Successfully triggered.'
+        - log: 'STG Size and Pack Hourly Job Successfully triggered.'
       else:
         - task: slack
           in:
             channelId: '${slack_channel_non_prod}'
-            text: 'STG: Failed to run Size and Pack Daily Job'
+            text: 'STG: Failed to run Size and Pack Hourly Job'
             username: 'Pipeline'
             iconEmoji: ':concord:'
         - exit
   ProdBatch:
-    - log: "PROD Size and Pack Daily Job"
+    - log: "PROD Size and Pack Hourly Job"
     - task: http
       in:
         method: POST
@@ -95,7 +95,7 @@ flows:
         requestTimeout: 1800000
         url: "${prod}/graphql/"
         request: json
-        body: { "query": "mutation{\n  weeklyPlanMetricsMigration{\n    status\n  }\n}","variables": null }
+        body: { "query": "mutation{\n  hourlyPackOptRunStatusUpdateJob{\n    status\n  }\n}","variables": null }
         headers:
           WM_CONSUMER.ID: 80eac37e-62ff-4d41-a106-c5bff13827e9
           WM_SVC.NAME: AEX_SIZE_AND_PACK
@@ -106,24 +106,24 @@ flows:
         - task: slack
           in:
             channelId: '${slack_channel}'
-            text: 'PROD - Failed to run Size and Pack Daily Job '
+            text: 'PROD - Failed to run Size and Pack Hourly Job '
             username: 'Pipeline'
             iconEmoji: ':concord:'
         - exit
-    - log: "INFO : PROD Size and Pack Daily Job : Success: ${jsonResponse}"
+    - log: "INFO : PROD Size and Pack Hourly Job : Success: ${jsonResponse}"
 
     - if: ${jsonResponse.success}
       then:
-        - log: 'PROD Size and Pack Daily Job Successfully triggered.'
+        - log: 'PROD Size and Pack Hourly Job Successfully triggered.'
       else:
         - task: slack
           in:
             channelId: '${slack_channel}'
-            text: 'PROD: Failed to run Size and Pack Daily Job'
+            text: 'PROD: Failed to run Size and Pack Hourly Job'
             username: 'Pipeline'
             iconEmoji: ':concord:'
         - exit
 triggers:
   - cron:
-      spec: "0 0 * * MON"
+      spec: "0 5 * * * *"
       entryPoint: ProdBatch
