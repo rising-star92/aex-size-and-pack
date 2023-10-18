@@ -75,16 +75,17 @@ flows:
         iconEmoji: ":concord:"
 
 triggers:
-  - cron:
-      spec: "0/5 * * * *"
-      entryPoint: fetchPackOptRunStatus
-      activeProfiles:
-        - dev
-  - cron:
-      spec: "0 * * * *"
-      entryPoint: fetchPackOptRunStatus
-      activeProfiles:
-        - stg
+# TODO we will uncomment this once we have the fetchPackOpt API in place
+#  - cron:
+#      spec: "0/5 * * * *"
+#      entryPoint: fetchPackOptRunStatus
+#      activeProfiles:
+#        - dev
+#  - cron:
+#      spec: "0 * * * *"
+#      entryPoint: fetchPackOptRunStatus
+#      activeProfiles:
+#        - stg
 #  - cron:
 #      spec: "* 1 * * *"
 #      entryPoint: fetchPackOptRunStatus
