@@ -12,6 +12,7 @@ import com.walmart.aex.sp.dto.packoptimization.RunPackOptRequest;
 import com.walmart.aex.sp.entity.AnalyticsMlChildSend;
 import com.walmart.aex.sp.entity.AnalyticsMlSend;
 import com.walmart.aex.sp.enums.RunStatusCodeType;
+import com.walmart.aex.sp.repository.RunStatusTextRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -30,6 +31,11 @@ import static com.walmart.aex.sp.util.SizeAndPackConstants.MULTI_BUMP_PACK_SUFFI
 public class PackOptimizationUtil {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
+    private final RunStatusTextRepository runStatusTextRepository;
+
+    public PackOptimizationUtil(RunStatusTextRepository runStatusTextRepository) {
+        this.runStatusTextRepository = runStatusTextRepository;
+    }
 
     public static Set<AnalyticsMlSend> createAnalyticsMlSendEntry(RunPackOptRequest request,
                        Map<String, IntegrationHubResponseDTO> flWithIHResMap) {
@@ -119,6 +125,15 @@ public class PackOptimizationUtil {
         analyticsMlChildSend.setAnalyticsJobId(analyticsJobId);
         analyticsMlChildSend.setBumpPackNbr(bumpNumber);
         return analyticsMlChildSend;
+    }
+
+    /***
+     * Method to validate if pack opt status code is a valid status code or not
+     * @param status
+     * @return boolean
+     */
+    public boolean isValidPackOptStatus(Integer status) {
+        return runStatusTextRepository.findAll().stream().anyMatch(runStatusText -> status.equals(runStatusText.getRunStatusCode()));
     }
 
 }
