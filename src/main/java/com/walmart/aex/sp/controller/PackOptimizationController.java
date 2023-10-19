@@ -151,7 +151,7 @@ public class PackOptimizationController {
     }
 
     @QueryMapping
-    public List<PackOptFinelinesByStatusResponse> fetchPackOptFinelinesByStatus(@Argument Integer request) {
+    public List<PackOptFinelinesByStatusResponse> fetchPackOptFinelinesByStatus(@Argument List<Integer> request) {
         return packOptService.getPackOptFinelinesByStatus(request);
     }
 }

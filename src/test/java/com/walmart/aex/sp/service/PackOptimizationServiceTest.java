@@ -14,6 +14,7 @@ import com.walmart.aex.sp.dto.planhierarchy.Style;
 import com.walmart.aex.sp.entity.AnalyticsMlChildSend;
 import com.walmart.aex.sp.entity.AnalyticsMlSend;
 import com.walmart.aex.sp.entity.CcPackOptimization;
+import com.walmart.aex.sp.entity.RunStatusText;
 import com.walmart.aex.sp.enums.RunStatusCodeType;
 import com.walmart.aex.sp.properties.IntegrationHubServiceProperties;
 import com.walmart.aex.sp.repository.AnalyticsMlSendRepository;
@@ -809,6 +810,10 @@ class PackOptimizationServiceTest {
         analyticsMlSend.setRunStatusCode(3);
         analyticsMlSend.setStartTs(new Date());
         analyticsMlSend.setEndTs(new Date());
+        RunStatusText text = new RunStatusText();
+        text.setRunStatusCode(3);
+        text.setRunStatusDesc("SENT");
+        analyticsMlSend.setRunStatusText(text);
         analyticsMlSendList.add(analyticsMlSend);
         when(analyticsMlSendRepository.getAllFinelinesByStatus(anyList()))
                 .thenReturn(analyticsMlSendList);

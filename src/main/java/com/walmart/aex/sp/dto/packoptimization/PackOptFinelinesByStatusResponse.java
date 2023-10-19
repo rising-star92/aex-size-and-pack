@@ -2,7 +2,7 @@ package com.walmart.aex.sp.dto.packoptimization;
 
 import lombok.*;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -11,8 +11,8 @@ import java.util.Date;
 public class PackOptFinelinesByStatusResponse {
     private Long planId;
     private Integer finelineNbr;
-    private Date startTs;
-    private Date endTs;
+    private LocalDateTime startTs;
+    private LocalDateTime endTs;
     private Integer runStatusCode;
     private String runStatusDesc;
 }
