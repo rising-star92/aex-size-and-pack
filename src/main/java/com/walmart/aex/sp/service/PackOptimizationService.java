@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigInteger;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -471,10 +472,10 @@ public class PackOptimizationService {
                 finelineByStatusResponse.setFinelineNbr(result.getFinelineNbr());
                 finelineByStatusResponse.setRunStatusCode(result.getRunStatusCode());
                 finelineByStatusResponse.setRunStatusDesc(result.getRunStatusText().getRunStatusDesc());
-                if(result.getStartTs()!= null)
-                    finelineByStatusResponse.setStartTs(result.getStartTs().toInstant().atOffset(ZoneOffset.UTC).toLocalDateTime().minusHours(4)) ;
-                if(result.getEndTs()!= null)
-                    finelineByStatusResponse.setEndTs(result.getEndTs().toInstant().atOffset(ZoneOffset.UTC).toLocalDateTime().minusHours(4));
+                if (result.getStartTs() != null)
+                    finelineByStatusResponse.setStartTs(result.getStartTs().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+                if (result.getEndTs() != null)
+                    finelineByStatusResponse.setEndTs(result.getEndTs().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
                 finelinesByStatus.add(finelineByStatusResponse);
             });
         } else {
