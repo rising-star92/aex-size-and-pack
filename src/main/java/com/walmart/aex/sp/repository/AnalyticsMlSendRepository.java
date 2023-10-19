@@ -19,8 +19,8 @@ public interface AnalyticsMlSendRepository extends JpaRepository<AnalyticsMlSend
                                                                @Param("finelineNbr") Integer finelineNbr,
                                                                @Param("runStatusCode") Integer runStatusCode);
 
-    @Query(value = "select * from dbo.analytics_ml_send t where t.run_status_code = :runStatus and \n" +
+    @Query(value = "select * from dbo.analytics_ml_send t where t.run_status_code IN :runStatus and \n" +
             "t.start_ts = ( SELECT MAX(start_ts) FROM analytics_ml_send WHERE fineline_nbr = t.fineline_nbr\n" +
             ") ", nativeQuery = true)
-    List<AnalyticsMlSend> getAllFinelinesByStatus(@Param("runStatus") Integer channelId);
+    List<AnalyticsMlSend> getAllFinelinesByStatus(@Param("runStatus") List<Integer> runStatus);
 }

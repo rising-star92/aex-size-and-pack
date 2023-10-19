@@ -460,31 +460,23 @@ public class PackOptimizationService {
         return integrationHubRequestDTO;
     }
 
-    public List<PackOptFinelinesByStatusResponse> getPackOptFinelinesByStatus(Integer status) {
-        boolean isValidStatus = packOptimizationUtil.isValidPackOptStatus(status);
-        if (isValidStatus) {
-            List<PackOptFinelinesByStatusResponse> finelinesByStatus = new ArrayList<>();
-            List<AnalyticsMlSend> analyticsMlSend = analyticsMlSendRepository.getAllFinelinesByStatus(status);
-            if (!CollectionUtils.isEmpty(analyticsMlSend)) {
-                analyticsMlSend.forEach(result -> {
-                    PackOptFinelinesByStatusResponse finelineByStatusResponse = new PackOptFinelinesByStatusResponse();
-                    finelineByStatusResponse.setPlanId(result.getPlanId());
-                    finelineByStatusResponse.setFinelineNbr(result.getFinelineNbr());
-                    finelineByStatusResponse.setRunStatusCode(result.getRunStatusCode());
-                    finelineByStatusResponse.setStartTs(result.getStartTs());
-
-                    finelineByStatusResponse.setEndTs(result.getEndTs());
-                    finelinesByStatus.add(finelineByStatusResponse);
-                });
-                return finelinesByStatus;
-            } else {
-                log.info("No Pack Optimization finelines present with status code : {}", status);
-                return new ArrayList<>();
-            }
+    public List<PackOptFinelinesByStatusResponse> getPackOptFinelinesByStatus(List<Integer> status) {
+        List<PackOptFinelinesByStatusResponse> finelinesByStatus = new ArrayList<>();
+        List<AnalyticsMlSend> analyticsMlSend = analyticsMlSendRepository.getAllFinelinesByStatus(status);
+        if (!CollectionUtils.isEmpty(analyticsMlSend)) {
+            analyticsMlSend.forEach(result -> {
+                PackOptFinelinesByStatusResponse finelineByStatusResponse = new PackOptFinelinesByStatusResponse();
+                finelineByStatusResponse.setPlanId(result.getPlanId());
+                finelineByStatusResponse.setFinelineNbr(result.getFinelineNbr());
+                finelineByStatusResponse.setRunStatusCode(result.getRunStatusCode());
+                finelineByStatusResponse.setRunStatusDesc(result.getRunStatusText().getRunStatusDesc());
+                finelineByStatusResponse.setStartTs(result.getStartTs());
+                finelineByStatusResponse.setEndTs(result.getEndTs());
+                finelinesByStatus.add(finelineByStatusResponse);
+            });
         } else {
-            log.info("Invalid Pack Optimization status code {} provided", status);
-            return new ArrayList<>();
+            log.info("No Pack Optimization finelines found with status code : {}", status);
         }
+        return finelinesByStatus;
     }
-
 }

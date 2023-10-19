@@ -14,4 +14,5 @@ public class PackOptFinelinesByStatusResponse {
     private Date startTs;
     private Date endTs;
     private Integer runStatusCode;
+    private String runStatusDesc;
 }

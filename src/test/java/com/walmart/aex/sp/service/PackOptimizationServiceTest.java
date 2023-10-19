@@ -91,7 +91,7 @@ class PackOptimizationServiceTest {
     @Mock
     private SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository;
 
-    @Mock
+    @Spy
     private PackOptimizationUtil packOptimizationUtil;
     @Mock
     private CommonGCPUtil commonGCPUtil;
@@ -810,19 +810,21 @@ class PackOptimizationServiceTest {
         analyticsMlSend.setStartTs(new Date());
         analyticsMlSend.setEndTs(new Date());
         analyticsMlSendList.add(analyticsMlSend);
-        when(analyticsMlSendRepository.getAllFinelinesByStatus(anyInt()))
+        when(analyticsMlSendRepository.getAllFinelinesByStatus(anyList()))
                 .thenReturn(analyticsMlSendList);
-        when(packOptimizationUtil.isValidPackOptStatus(anyInt()))
-                .thenReturn(Boolean.TRUE);
-        List<PackOptFinelinesByStatusResponse> finelines = packOptimizationService.getPackOptFinelinesByStatus(3);
+        List<Integer> statusList = new ArrayList<>();
+        statusList.add(3);
+        List<PackOptFinelinesByStatusResponse> finelines = packOptimizationService.getPackOptFinelinesByStatus(statusList);
         assertEquals(1,finelines.size());
     }
 
     @Test
     void test_getPackOptFinelinesByStatusWhenStatusCodeIsInValid() {
-        when(packOptimizationUtil.isValidPackOptStatus(anyInt()))
-                .thenReturn(Boolean.FALSE);
-        List<PackOptFinelinesByStatusResponse> finelines = packOptimizationService.getPackOptFinelinesByStatus(1);
+        when(analyticsMlSendRepository.getAllFinelinesByStatus(anyList()))
+                .thenReturn(new ArrayList<>());
+        List<Integer> statusList = new ArrayList<>();
+        statusList.add(1);
+        List<PackOptFinelinesByStatusResponse> finelines = packOptimizationService.getPackOptFinelinesByStatus(statusList);
         assertEquals(0,finelines.size());
     }
 
