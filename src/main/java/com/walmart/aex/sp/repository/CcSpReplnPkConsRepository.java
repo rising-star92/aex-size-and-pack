@@ -53,12 +53,12 @@ public interface CcSpReplnPkConsRepository extends JpaRepository<CcSpMmReplPack,
             " scp.subCatPlanId.lvl4Nbr , " +
             " scp.lvl4Desc , " +
             " flp.finelinePlanId.finelineNbr , " +
-            " COALESCE(flp.altFinelineName, flp.finelineDesc) , " +
-            " COALESCE(stp.altStyleDesc ,csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.styleNbr) as styleNbr, " +
+            " COALESCE(nullif(flp.altFinelineName,''), flp.finelineDesc) , " +
+            " COALESCE(nullif(stp.altStyleDesc,''), csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.styleNbr) as styleNbr, " +
             " csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.channelId , " +
             " ct.channelDesc , " +
             " csmrp.sizeDesc , " +
-            " COALESCE(ccp.altCcDesc, csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.customerChoice) as customerChoice, " +
+            " COALESCE(nullif(ccp.altCcDesc,''), csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.customerChoice) as customerChoice, " +
             " csmrp.ccSpReplPackId.ahsSizeId , " +
             " ccp.colorName , " +
             " ccp.colorFamilyDesc , " +
