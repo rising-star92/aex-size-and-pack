@@ -32,10 +32,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigInteger;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.walmart.aex.sp.util.CommonUtil.getLocalDateTime;
 import static com.walmart.aex.sp.util.PackOptimizationUtil.createAnalyticsMlSendEntry;
 import static com.walmart.aex.sp.util.PackOptimizationUtil.setAnalyticsChildDataToAnalyticsMlSend;
 import static com.walmart.aex.sp.util.SizeAndPackConstants.BUMPPACK_DETAILS_SUFFIX;
@@ -468,9 +470,9 @@ public class PackOptimizationService {
                 finelineByStatusResponse.setRunStatusCode(result.getRunStatusCode());
                 finelineByStatusResponse.setRunStatusDesc(result.getRunStatusText().getRunStatusDesc());
                 if (result.getStartTs() != null)
-                    finelineByStatusResponse.setStartTs(result.getStartTs().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+                    finelineByStatusResponse.setStartTs(getLocalDateTime(result.getStartTs()));
                 if (result.getEndTs() != null)
-                    finelineByStatusResponse.setEndTs(result.getEndTs().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+                    finelineByStatusResponse.setEndTs(getLocalDateTime(result.getEndTs()));
                 finelinesByStatus.add(finelineByStatusResponse);
             });
         } else {
@@ -478,4 +480,5 @@ public class PackOptimizationService {
         }
         return finelinesByStatus;
     }
+
 }
