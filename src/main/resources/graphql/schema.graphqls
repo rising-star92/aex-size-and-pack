@@ -17,7 +17,7 @@ type Query {
      getDeptAdminRules(deptNumbers: [Int]): [DeptAdminRuleResponse]!
      getReplItemRule(planId: Int!, lvl1Nbr: Int!): ReplItemResponse!
      getPackStoreDetailsByVolumeCluster(request: InitialSetVolumeRequest!): [PackDetailsVolumeResponse]!
-     fetchPackOptFinelinesByStatus(request: [Int]!): [PackOptFinelinesByStatusResponse]!
+     fetchPackOptFinelinesByStatus(statusCodes: [Int]!): [PackOptFinelinesByStatusResponse]!
 }
 
 
