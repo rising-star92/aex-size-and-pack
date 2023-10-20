@@ -23,7 +23,6 @@ import com.walmart.aex.sp.properties.IntegrationHubServiceProperties;
 import com.walmart.aex.sp.repository.*;
 import com.walmart.aex.sp.util.CommonGCPUtil;
 import com.walmart.aex.sp.util.CommonUtil;
-import com.walmart.aex.sp.util.PackOptimizationUtil;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -34,7 +33,6 @@ import org.springframework.util.CollectionUtils;
 
 import java.math.BigInteger;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -67,8 +65,6 @@ public class PackOptimizationService {
 
     private final IntegrationHubService integrationHubService;
 
-    private final PackOptimizationUtil packOptimizationUtil;
-
     @ManagedConfiguration
     private IntegrationHubServiceProperties integrationHubServiceProperties;
     private final CommonGCPUtil commonGCPUtil;
@@ -84,7 +80,7 @@ public class PackOptimizationService {
                                    MerchPackOptimizationRepository merchPackOptimizationRepository,
                                    UpdatePackOptimizationMapper updatePackOptimizationMapper,
                                    CcPackOptimizationRepository ccPackOptimizationRepository,
-                                   SourcingFactoryService sourcingFactoryService, SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository, IntegrationHubService integrationHubService, PackOptimizationUtil packOptimizationUtil, CommonGCPUtil commonGCPUtil) {
+                                   SourcingFactoryService sourcingFactoryService, SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository, IntegrationHubService integrationHubService, CommonGCPUtil commonGCPUtil) {
         this.finelinePackOptimizationRepository = finelinePackOptimizationRepository;
         this.packOptfineplanRepo = packOptfineplanRepo;
         this.packOptimizationMapper = packOptimizationMapper;
@@ -97,7 +93,6 @@ public class PackOptimizationService {
         this.sourcingFactoryService = sourcingFactoryService;
         this.spFineLineChannelFixtureRepository = spFineLineChannelFixtureRepository;
         this.integrationHubService = integrationHubService;
-        this.packOptimizationUtil = packOptimizationUtil;
         this.commonGCPUtil = commonGCPUtil;
     }
 

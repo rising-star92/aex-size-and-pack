@@ -24,7 +24,6 @@ import com.walmart.aex.sp.repository.FinelinePackOptRepository;
 import com.walmart.aex.sp.repository.SpFineLineChannelFixtureRepository;
 import com.walmart.aex.sp.repository.StyleCcPackOptConsRepository;
 import com.walmart.aex.sp.util.CommonGCPUtil;
-import com.walmart.aex.sp.util.PackOptimizationUtil;
 import com.walmart.aex.sp.util.SizeAndPackConstants;
 import org.hibernate.HibernateException;
 import org.junit.jupiter.api.Test;
@@ -34,7 +33,6 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.util.ReflectionUtils;
 
@@ -42,7 +40,6 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.walmart.aex.sp.util.SizeAndPackConstants.FINELINE;
 import static com.walmart.aex.sp.util.SizeAndPackConstants.MULTI_BUMP_PACK_SUFFIX;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -92,8 +89,6 @@ class PackOptimizationServiceTest {
     @Mock
     private SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository;
 
-    @Spy
-    private PackOptimizationUtil packOptimizationUtil;
     @Mock
     private CommonGCPUtil commonGCPUtil;
     @Captor
