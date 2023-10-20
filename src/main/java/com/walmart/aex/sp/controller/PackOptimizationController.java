@@ -2,15 +2,7 @@ package com.walmart.aex.sp.controller;
 
 
 import com.walmart.aex.sp.dto.StatusResponse;
-import com.walmart.aex.sp.dto.packoptimization.ColorCombinationRequest;
-import com.walmart.aex.sp.dto.packoptimization.Execution;
-import com.walmart.aex.sp.dto.packoptimization.FineLinePackOptimizationResponse;
-import com.walmart.aex.sp.dto.packoptimization.PackOptConstraintRequest;
-import com.walmart.aex.sp.dto.packoptimization.PackOptimizationResponse;
-import com.walmart.aex.sp.dto.packoptimization.RunPackOptRequest;
-import com.walmart.aex.sp.dto.packoptimization.RunPackOptResponse;
-import com.walmart.aex.sp.dto.packoptimization.UpdatePackOptConstraintRequestDTO;
-import com.walmart.aex.sp.dto.packoptimization.UpdatePkOptResponse;
+import com.walmart.aex.sp.dto.packoptimization.*;
 import com.walmart.aex.sp.dto.packoptimization.isbpqty.ISAndBPQtyDTO;
 import com.walmart.aex.sp.enums.Action;
 import com.walmart.aex.sp.enums.RunStatusCodeType;
@@ -33,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.ws.rs.Consumes;
 import java.math.BigInteger;
+import java.util.List;
 
 import static com.walmart.aex.sp.util.SizeAndPackConstants.FAILED_STATUS;
 import static com.walmart.aex.sp.util.SizeAndPackConstants.INCORRECT_ACTION_MSG;
@@ -155,6 +148,11 @@ public class PackOptimizationController {
     @MutationMapping
     public StatusResponse updateFromQuote(@Argument RunPackOptRequest request) {
         return updateFromQuoteService.updateFactoryFromApproveQuotes(request);
+    }
+
+    @QueryMapping
+    public List<PackOptFinelinesByStatusResponse> fetchPackOptFinelinesByStatus(@Argument List<Integer> statusCodes) {
+        return packOptService.getPackOptFinelinesByStatus(statusCodes);
     }
 }
 

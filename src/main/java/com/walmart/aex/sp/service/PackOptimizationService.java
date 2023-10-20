@@ -10,18 +10,7 @@ import com.walmart.aex.sp.dto.integrationhub.IntegrationHubRequestDTO;
 import com.walmart.aex.sp.dto.integrationhub.IntegrationHubResponseDTO;
 import com.walmart.aex.sp.dto.mapper.FineLineMapper;
 import com.walmart.aex.sp.dto.mapper.FineLineMapperDto;
-import com.walmart.aex.sp.dto.packoptimization.ColorCombinationRequest;
-import com.walmart.aex.sp.dto.packoptimization.ColorCombinationStyle;
-import com.walmart.aex.sp.dto.packoptimization.Execution;
-import com.walmart.aex.sp.dto.packoptimization.FineLinePackOptimizationResponse;
-import com.walmart.aex.sp.dto.packoptimization.FineLinePackOptimizationResponseDTO;
-import com.walmart.aex.sp.dto.packoptimization.InputRequest;
-import com.walmart.aex.sp.dto.packoptimization.PackOptConstraintRequest;
-import com.walmart.aex.sp.dto.packoptimization.PackOptConstraintResponseDTO;
-import com.walmart.aex.sp.dto.packoptimization.PackOptimizationResponse;
-import com.walmart.aex.sp.dto.packoptimization.RunPackOptRequest;
-import com.walmart.aex.sp.dto.packoptimization.RunPackOptResponse;
-import com.walmart.aex.sp.dto.packoptimization.UpdatePackOptConstraintRequestDTO;
+import com.walmart.aex.sp.dto.packoptimization.*;
 import com.walmart.aex.sp.dto.packoptimization.sourcingFactory.FactoryDetailsResponse;
 import com.walmart.aex.sp.entity.AnalyticsMlChildSend;
 import com.walmart.aex.sp.entity.AnalyticsMlSend;
@@ -31,13 +20,7 @@ import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.enums.RunStatusCodeType;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.properties.IntegrationHubServiceProperties;
-import com.walmart.aex.sp.repository.AnalyticsMlSendRepository;
-import com.walmart.aex.sp.repository.CcPackOptimizationRepository;
-import com.walmart.aex.sp.repository.FineLinePackOptimizationRepository;
-import com.walmart.aex.sp.repository.FinelinePackOptRepository;
-import com.walmart.aex.sp.repository.MerchPackOptimizationRepository;
-import com.walmart.aex.sp.repository.SpFineLineChannelFixtureRepository;
-import com.walmart.aex.sp.repository.StyleCcPackOptConsRepository;
+import com.walmart.aex.sp.repository.*;
 import com.walmart.aex.sp.util.CommonGCPUtil;
 import com.walmart.aex.sp.util.CommonUtil;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
@@ -49,9 +32,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigInteger;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.walmart.aex.sp.util.CommonUtil.getLocalDateTime;
 import static com.walmart.aex.sp.util.PackOptimizationUtil.createAnalyticsMlSendEntry;
 import static com.walmart.aex.sp.util.PackOptimizationUtil.setAnalyticsChildDataToAnalyticsMlSend;
 import static com.walmart.aex.sp.util.SizeAndPackConstants.BUMPPACK_DETAILS_SUFFIX;
@@ -472,4 +458,27 @@ public class PackOptimizationService {
         integrationHubRequestDTO.setContext(integrationHubRequestContextDTO);
         return integrationHubRequestDTO;
     }
+
+    public List<PackOptFinelinesByStatusResponse> getPackOptFinelinesByStatus(List<Integer> status) {
+        List<PackOptFinelinesByStatusResponse> finelinesByStatus = new ArrayList<>();
+        List<AnalyticsMlSend> analyticsMlSend = analyticsMlSendRepository.getAllFinelinesByStatus(status);
+        if (!CollectionUtils.isEmpty(analyticsMlSend)) {
+            analyticsMlSend.forEach(result -> {
+                PackOptFinelinesByStatusResponse finelineByStatusResponse = new PackOptFinelinesByStatusResponse();
+                finelineByStatusResponse.setPlanId(result.getPlanId());
+                finelineByStatusResponse.setFinelineNbr(result.getFinelineNbr());
+                finelineByStatusResponse.setRunStatusCode(result.getRunStatusCode());
+                finelineByStatusResponse.setRunStatusDesc(result.getRunStatusText().getRunStatusDesc());
+                if (result.getStartTs() != null)
+                    finelineByStatusResponse.setStartTs(getLocalDateTime(result.getStartTs()));
+                if (result.getEndTs() != null)
+                    finelineByStatusResponse.setEndTs(getLocalDateTime(result.getEndTs()));
+                finelinesByStatus.add(finelineByStatusResponse);
+            });
+        } else {
+            log.info("No Pack Optimization finelines found with status code : {}", status);
+        }
+        return finelinesByStatus;
+    }
+
 }

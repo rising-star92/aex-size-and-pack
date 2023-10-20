@@ -14,6 +14,7 @@ import com.walmart.aex.sp.dto.planhierarchy.Style;
 import com.walmart.aex.sp.entity.AnalyticsMlChildSend;
 import com.walmart.aex.sp.entity.AnalyticsMlSend;
 import com.walmart.aex.sp.entity.CcPackOptimization;
+import com.walmart.aex.sp.entity.RunStatusText;
 import com.walmart.aex.sp.enums.RunStatusCodeType;
 import com.walmart.aex.sp.properties.IntegrationHubServiceProperties;
 import com.walmart.aex.sp.repository.AnalyticsMlSendRepository;
@@ -23,7 +24,6 @@ import com.walmart.aex.sp.repository.FinelinePackOptRepository;
 import com.walmart.aex.sp.repository.SpFineLineChannelFixtureRepository;
 import com.walmart.aex.sp.repository.StyleCcPackOptConsRepository;
 import com.walmart.aex.sp.util.CommonGCPUtil;
-import com.walmart.aex.sp.util.PackOptimizationUtil;
 import com.walmart.aex.sp.util.SizeAndPackConstants;
 import org.hibernate.HibernateException;
 import org.junit.jupiter.api.Test;
@@ -33,19 +33,11 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.walmart.aex.sp.util.SizeAndPackConstants.MULTI_BUMP_PACK_SUFFIX;
@@ -97,8 +89,6 @@ class PackOptimizationServiceTest {
     @Mock
     private SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository;
 
-    @Spy
-    private PackOptimizationUtil packOptimizationUtil;
     @Mock
     private CommonGCPUtil commonGCPUtil;
     @Captor
@@ -804,6 +794,38 @@ class PackOptimizationServiceTest {
                 assertEquals(10, analyticsMlChildSend.getRunStatusCode());
             }
         }
+    }
+
+    @Test
+    void test_getPackOptFinelinesByStatusWhenStatusCodeIsValid() {
+        List<AnalyticsMlSend> analyticsMlSendList = new ArrayList<>();
+        AnalyticsMlSend analyticsMlSend = new AnalyticsMlSend();
+        analyticsMlSend.setPlanId(12l);
+        analyticsMlSend.setFinelineNbr(1234);
+        analyticsMlSend.setRunStatusCode(3);
+        analyticsMlSend.setStartTs(new Date());
+        analyticsMlSend.setEndTs(new Date());
+        RunStatusText text = new RunStatusText();
+        text.setRunStatusCode(3);
+        text.setRunStatusDesc("SENT");
+        analyticsMlSend.setRunStatusText(text);
+        analyticsMlSendList.add(analyticsMlSend);
+        when(analyticsMlSendRepository.getAllFinelinesByStatus(anyList()))
+                .thenReturn(analyticsMlSendList);
+        List<Integer> statusList = new ArrayList<>();
+        statusList.add(3);
+        List<PackOptFinelinesByStatusResponse> finelines = packOptimizationService.getPackOptFinelinesByStatus(statusList);
+        assertEquals(1,finelines.size());
+    }
+
+    @Test
+    void test_getPackOptFinelinesByStatusWhenStatusCodeIsInValid() {
+        when(analyticsMlSendRepository.getAllFinelinesByStatus(anyList()))
+                .thenReturn(new ArrayList<>());
+        List<Integer> statusList = new ArrayList<>();
+        statusList.add(1);
+        List<PackOptFinelinesByStatusResponse> finelines = packOptimizationService.getPackOptFinelinesByStatus(statusList);
+        assertEquals(0,finelines.size());
     }
 
 }

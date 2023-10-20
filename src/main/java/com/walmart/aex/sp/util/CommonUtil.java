@@ -12,6 +12,8 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -106,5 +108,9 @@ public class CommonUtil {
             numbers.add(Integer.valueOf(matcher.group()));
         }
         return numbers;
+    }
+
+    public static LocalDateTime getLocalDateTime(Date result) {
+        return result.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
 }

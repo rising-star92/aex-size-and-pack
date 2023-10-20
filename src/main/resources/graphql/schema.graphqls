@@ -17,6 +17,7 @@ type Query {
      getDeptAdminRules(deptNumbers: [Int]): [DeptAdminRuleResponse]!
      getReplItemRule(planId: Int!, lvl1Nbr: Int!): ReplItemResponse!
      getPackStoreDetailsByVolumeCluster(request: InitialSetVolumeRequest!): [PackDetailsVolumeResponse]!
+     fetchPackOptFinelinesByStatus(statusCodes: [Int]!): [PackOptFinelinesByStatusResponse]!
 }
 
 
@@ -599,4 +600,13 @@ type StoreMetrics {
     store: Int
     multiplier: Int
     qty: Int
-}     
+}
+
+type PackOptFinelinesByStatusResponse{
+    planId: Int
+    finelineNbr: Int
+    startTs: String
+    endTs: String
+    runStatusCode: Int
+    runStatusDesc: String
+}
