@@ -119,7 +119,7 @@ class PackOptimizationServiceTest {
         Integer channelId = 1;
 
         FineLineMapperDto merchpackOptObj = new FineLineMapperDto();
-        List<FineLineMapperDto> merchantPackOptimizationlist = new ArrayList();
+        List<FineLineMapperDto> merchantPackOptimizationlist = new ArrayList<>();
 
         merchpackOptObj.setPlanId(362L);
         merchpackOptObj.setLvl0Nbr(0);
@@ -271,9 +271,9 @@ class PackOptimizationServiceTest {
 
     @Test
     void testGetPackOptFinelineDetails() {
-        finelinePackOptimizationResponseList = new ArrayList<FineLinePackOptimizationResponseDTO>();
+        finelinePackOptimizationResponseList = new ArrayList<>();
         FineLinePackOptimizationResponseDTO fineLinePackOptimizationResponse = new FineLinePackOptimizationResponseDTO();
-        fineLinePackOptimizationResponse.setPlanId(483l);
+        fineLinePackOptimizationResponse.setPlanId(483L);
         fineLinePackOptimizationResponse.setAhsSizeDesc("XL");
         fineLinePackOptimizationResponse.setCcId("34_5147_3_21_4_SEA TURTLE/DARK NAVY");
         fineLinePackOptimizationResponse.setFinelineNbr(5147);
@@ -282,10 +282,10 @@ class PackOptimizationServiceTest {
         fineLinePackOptimizationResponse.setPlanDesc("Black");
         finelinePackOptimizationResponseList.add(fineLinePackOptimizationResponse);
         lenient().doNothing().when(packOptimizationMapper).mapPackOptimizationFineline(fineLinePackOptimizationResponse,
-                finelinePackOptimizationResponse, 483l, 1,1);
-        when(finelinePackOptimizationRepository.getPackOptByFineline(483l, 5147))
+                finelinePackOptimizationResponse, 483L, 1,1);
+        when(finelinePackOptimizationRepository.getPackOptByFineline(483L, 5147))
                 .thenReturn(finelinePackOptimizationResponseList);
-        finelinePackOptimizationResponse = packOptimizationService.getPackOptFinelineDetails(483l, 5147, 1);
+        finelinePackOptimizationResponse = packOptimizationService.getPackOptFinelineDetails(483L, 5147, 1);
         Mockito.verify(packOptimizationMapper, Mockito.times(1)).mapPackOptimizationFineline(Mockito.any(),
                 Mockito.any(), Mockito.any(), Mockito.any(),Mockito.any());
         assertNotNull(fineLinePackOptimizationResponse);
@@ -483,6 +483,78 @@ class PackOptimizationServiceTest {
     }
 
     @Test
+    void test_callIntegrationHubForPackOptByFinelineShouldSaveParentAndChildRecordsAndUpdatedStatusForFailedFromIH() throws IllegalAccessException {
+
+        RunPackOptRequest request = getRunPackOptRequestAndMockCallsWithOneFailure();
+        packOptimizationService.callIntegrationHubForPackOptByFineline(request);
+
+        verify(analyticsMlSendRepository, times(1)).saveAll(analyticsMlSendRepoDataCaptor.capture());
+
+        assertEquals(2, analyticsMlSendRepoDataCaptor.getValue().size());
+        LinkedList<Integer> actualFineLines = analyticsMlSendRepoDataCaptor.getValue().stream().map(AnalyticsMlSend::getFinelineNbr).collect(Collectors.toCollection(LinkedList::new));
+        assertTrue(actualFineLines.containsAll(List.of(2829, 2819)));
+
+        for (AnalyticsMlSend analyticsMlSend : analyticsMlSendRepoDataCaptor.getValue()) {
+            if (analyticsMlSend.getFinelineNbr() == 2829) {
+                assertEquals(1, analyticsMlSend.getAnalyticsMlChildSend().size());
+                assertEquals(1, analyticsMlSend.getAnalyticsMlChildSend().iterator().next().getBumpPackNbr());
+                assertEquals("{\"context\":{\"getPackOptFinelineDetails\":\"testBaseUrl/api/packOptimization/plan/{planId}/fineline/{finelineNbr}\",\"updatePackOptFinelineStatus\":\"testBaseUrl/api/packOptimization/plan/{planId}/fineline/{finelineNbr}/status/{status}\",\"planId\":12,\"finelineNbrs\":[\"2829\"],\"env\":null}}", analyticsMlSend.getAnalyticsMlChildSend().iterator().next().getPayloadObj());
+            } else {
+                assertEquals(2, analyticsMlSend.getAnalyticsMlChildSend().size());
+                assertTrue(analyticsMlSend.getAnalyticsMlChildSend().stream().map(AnalyticsMlChildSend::getBumpPackNbr).collect(Collectors.toList()).containsAll(List.of(1, 2)));
+                Set<AnalyticsMlChildSend> analyticsMlChildSendSet = analyticsMlSend.getAnalyticsMlChildSend();
+                for (AnalyticsMlChildSend analyticsMlChildSend : analyticsMlChildSendSet) {
+                    if (analyticsMlChildSend.getBumpPackNbr() == 2) {
+                        assertEquals("{\"context\":{\"getPackOptFinelineDetails\":\"testBaseUrl/api/packOptimization/plan/{planId}/fineline/{finelineNbr}/bumppack/{bumpPackNbr}\",\"updatePackOptFinelineStatus\":\"testBaseUrl/api/packOptimization/plan/{planId}/fineline/{finelineNbr}/status/{status}\",\"planId\":12,\"finelineNbrs\":[\"2819-BP2\"],\"env\":null}}", analyticsMlChildSend.getPayloadObj());
+                        assertEquals("133333", analyticsMlChildSend.getAnalyticsJobId());
+                        assertEquals(analyticsMlSend.getRunStatusCode(), analyticsMlChildSend.getRunStatusCode());
+                        assertNull(analyticsMlChildSend.getEndTs());
+                    } else if (analyticsMlChildSend.getBumpPackNbr() == 1) {
+                        assertEquals("{\"context\":{\"getPackOptFinelineDetails\":\"testBaseUrl/api/packOptimization/plan/{planId}/fineline/{finelineNbr}\",\"updatePackOptFinelineStatus\":\"testBaseUrl/api/packOptimization/plan/{planId}/fineline/{finelineNbr}/status/{status}\",\"planId\":12,\"finelineNbrs\":[\"2819\"],\"env\":null}}", analyticsMlChildSend.getPayloadObj());
+                        assertEquals("122222", analyticsMlChildSend.getAnalyticsJobId());
+                        assertEquals(RunStatusCodeType.INTEGRATION_HUB_TECHNICAL_ERROR.getId(), analyticsMlChildSend.getRunStatusCode());
+                        assertNotNull(analyticsMlChildSend.getEndTs());
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    void test_callIHShouldSaveParentAndChildRecordsWithFailedStatusWhenIHFails() throws IllegalAccessException {
+
+        RunPackOptRequest request = getRunPackOptRequestAndMockCallsWithAllFailure();
+        packOptimizationService.callIntegrationHubForPackOptByFineline(request);
+
+        verify(analyticsMlSendRepository, times(1)).saveAll(analyticsMlSendRepoDataCaptor.capture());
+
+        assertEquals(1, analyticsMlSendRepoDataCaptor.getValue().size());
+        LinkedList<Integer> actualFineLines = analyticsMlSendRepoDataCaptor.getValue().stream().map(AnalyticsMlSend::getFinelineNbr).collect(Collectors.toCollection(LinkedList::new));
+        assertTrue(actualFineLines.contains(2819));
+
+        for (AnalyticsMlSend analyticsMlSend : analyticsMlSendRepoDataCaptor.getValue()) {
+            assertEquals(2, analyticsMlSend.getAnalyticsMlChildSend().size());
+            assertTrue(analyticsMlSend.getAnalyticsMlChildSend().stream().map(AnalyticsMlChildSend::getBumpPackNbr).collect(Collectors.toList()).containsAll(List.of(1, 2)));
+            assertEquals(RunStatusCodeType.ERROR.getId(), analyticsMlSend.getRunStatusCode());
+            assertNotNull(analyticsMlSend.getEndTs());
+            Set<AnalyticsMlChildSend> analyticsMlChildSendSet = analyticsMlSend.getAnalyticsMlChildSend();
+            for (AnalyticsMlChildSend analyticsMlChildSend : analyticsMlChildSendSet) {
+                if (analyticsMlChildSend.getBumpPackNbr() == 2) {
+                    assertEquals("{\"context\":{\"getPackOptFinelineDetails\":\"testBaseUrl/api/packOptimization/plan/{planId}/fineline/{finelineNbr}/bumppack/{bumpPackNbr}\",\"updatePackOptFinelineStatus\":\"testBaseUrl/api/packOptimization/plan/{planId}/fineline/{finelineNbr}/status/{status}\",\"planId\":12,\"finelineNbrs\":[\"2819-BP2\"],\"env\":null}}", analyticsMlChildSend.getPayloadObj());
+                    assertEquals("122222", analyticsMlChildSend.getAnalyticsJobId());
+                    assertEquals(RunStatusCodeType.INTEGRATION_HUB_TECHNICAL_ERROR.getId(), analyticsMlChildSend.getRunStatusCode());
+                    assertNotNull(analyticsMlChildSend.getEndTs());
+                } else if (analyticsMlChildSend.getBumpPackNbr() == 1) {
+                    assertEquals("{\"context\":{\"getPackOptFinelineDetails\":\"testBaseUrl/api/packOptimization/plan/{planId}/fineline/{finelineNbr}\",\"updatePackOptFinelineStatus\":\"testBaseUrl/api/packOptimization/plan/{planId}/fineline/{finelineNbr}/status/{status}\",\"planId\":12,\"finelineNbrs\":[\"2819\"],\"env\":null}}", analyticsMlChildSend.getPayloadObj());
+                    assertEquals("122222", analyticsMlChildSend.getAnalyticsJobId());
+                    assertEquals(RunStatusCodeType.INTEGRATION_HUB_TECHNICAL_ERROR.getId(), analyticsMlChildSend.getRunStatusCode());
+                    assertNotNull(analyticsMlChildSend.getEndTs());
+                }
+            }
+        }
+    }
+
+    @Test
     void test_callIntegrationHubForPackOptByFinelineShouldSave1ChildIfBumpCountIs0() throws IllegalAccessException {
 
         RunPackOptRequest request = getRunPackOptRequestAndMockCallsForZeroBumpPack();
@@ -530,10 +602,12 @@ class PackOptimizationServiceTest {
         IntegrationHubResponseDTO integrationHubResponseDto1 = new IntegrationHubResponseDTO();
         integrationHubResponseDto1.setJobId("1234455");
         integrationHubResponseDto1.setWf_running_id("122222");
+        integrationHubResponseDto1.setStatus("QUEUE");
 
         IntegrationHubResponseDTO integrationHubResponseDto2 = new IntegrationHubResponseDTO();
         integrationHubResponseDto2.setJobId("1234566");
         integrationHubResponseDto2.setWf_running_id("133333");
+        integrationHubResponseDto2.setStatus("QUEUE");
 
         BuyQntyResponseDTO buyQntyResponseDTO1 = new BuyQntyResponseDTO();
         buyQntyResponseDTO1.setBumpPackCnt(2);
@@ -544,6 +618,96 @@ class PackOptimizationServiceTest {
         List<BuyQntyResponseDTO> bumpPackCntByFinelines = new ArrayList<>(Arrays.asList(buyQntyResponseDTO1, buyQntyResponseDTO2));
         when(commonGCPUtil.delete(anyString(), anyString())).thenReturn(false);
         when(integrationHubService.callIntegrationHubForPackOpt(any())).thenReturn(integrationHubResponseDto1).thenReturn(integrationHubResponseDto2);
+        when(spFineLineChannelFixtureRepository.getBumpPackCntByFinelines(anyLong(), anyList())).thenReturn(bumpPackCntByFinelines);
+        return request;
+    }
+
+    private RunPackOptRequest getRunPackOptRequestAndMockCallsWithOneFailure() throws IllegalAccessException {
+        mockUrlForIntegrationHubProperties();
+
+        InputRequest inputRequest = new InputRequest();
+        List<Lvl3Dto> lvl3List = new ArrayList<>();
+        Lvl3Dto lvl3Dto = new Lvl3Dto();
+        List<Lvl4Dto> lvl4List = new ArrayList<>();
+        Lvl4Dto lvl4Dto = new Lvl4Dto();
+
+        FinelineDto finelineDto1 = new FinelineDto();
+        finelineDto1.setFinelineNbr(2819);
+        FinelineDto finelineDto2 = new FinelineDto();
+        finelineDto2.setFinelineNbr(2829);
+
+        List<FinelineDto> fineLines = new ArrayList<>(Arrays.asList(finelineDto1, finelineDto2));
+
+        lvl4Dto.setFinelines(fineLines);
+        lvl4List.add(lvl4Dto);
+        lvl3Dto.setLvl4List(lvl4List);
+        lvl3List.add(lvl3Dto);
+        inputRequest.setLvl3List(lvl3List);
+
+        RunPackOptRequest request = new RunPackOptRequest();
+        request.setPlanId(12L);
+        request.setInputRequest(inputRequest);
+        request.setRunUser("RandomUser");
+
+        IntegrationHubResponseDTO integrationHubResponseDto1 = new IntegrationHubResponseDTO();
+        integrationHubResponseDto1.setJobId("1234455");
+        integrationHubResponseDto1.setWf_running_id("122222");
+        integrationHubResponseDto1.setStatus("FAILED");
+
+        IntegrationHubResponseDTO integrationHubResponseDto2 = new IntegrationHubResponseDTO();
+        integrationHubResponseDto2.setJobId("1234566");
+        integrationHubResponseDto2.setWf_running_id("133333");
+        integrationHubResponseDto2.setStatus("QUEUE");
+
+        BuyQntyResponseDTO buyQntyResponseDTO1 = new BuyQntyResponseDTO();
+        buyQntyResponseDTO1.setBumpPackCnt(2);
+        buyQntyResponseDTO1.setFinelineNbr(2819);
+        BuyQntyResponseDTO buyQntyResponseDTO2 = new BuyQntyResponseDTO();
+        buyQntyResponseDTO2.setBumpPackCnt(1);
+        buyQntyResponseDTO2.setFinelineNbr(2829);
+        List<BuyQntyResponseDTO> bumpPackCntByFinelines = new ArrayList<>(Arrays.asList(buyQntyResponseDTO1, buyQntyResponseDTO2));
+        when(commonGCPUtil.delete(anyString(), anyString())).thenReturn(false);
+        when(integrationHubService.callIntegrationHubForPackOpt(any())).thenReturn(integrationHubResponseDto1).thenReturn(integrationHubResponseDto2);
+        when(spFineLineChannelFixtureRepository.getBumpPackCntByFinelines(anyLong(), anyList())).thenReturn(bumpPackCntByFinelines);
+        return request;
+    }
+
+    private RunPackOptRequest getRunPackOptRequestAndMockCallsWithAllFailure() throws IllegalAccessException {
+        mockUrlForIntegrationHubProperties();
+
+        InputRequest inputRequest = new InputRequest();
+        List<Lvl3Dto> lvl3List = new ArrayList<>();
+        Lvl3Dto lvl3Dto = new Lvl3Dto();
+        List<Lvl4Dto> lvl4List = new ArrayList<>();
+        Lvl4Dto lvl4Dto = new Lvl4Dto();
+
+        FinelineDto finelineDto1 = new FinelineDto();
+        finelineDto1.setFinelineNbr(2819);
+
+        List<FinelineDto> fineLines = new ArrayList<>(List.of(finelineDto1));
+
+        lvl4Dto.setFinelines(fineLines);
+        lvl4List.add(lvl4Dto);
+        lvl3Dto.setLvl4List(lvl4List);
+        lvl3List.add(lvl3Dto);
+        inputRequest.setLvl3List(lvl3List);
+
+        RunPackOptRequest request = new RunPackOptRequest();
+        request.setPlanId(12L);
+        request.setInputRequest(inputRequest);
+        request.setRunUser("RandomUser");
+
+        IntegrationHubResponseDTO integrationHubResponseDto1 = new IntegrationHubResponseDTO();
+        integrationHubResponseDto1.setJobId("1234455");
+        integrationHubResponseDto1.setWf_running_id("122222");
+        integrationHubResponseDto1.setStatus("FAILED");
+
+        BuyQntyResponseDTO buyQntyResponseDTO1 = new BuyQntyResponseDTO();
+        buyQntyResponseDTO1.setBumpPackCnt(2);
+        buyQntyResponseDTO1.setFinelineNbr(2819);
+        List<BuyQntyResponseDTO> bumpPackCntByFinelines = new ArrayList<>(List.of(buyQntyResponseDTO1));
+        when(commonGCPUtil.delete(anyString(), anyString())).thenReturn(false);
+        when(integrationHubService.callIntegrationHubForPackOpt(any())).thenReturn(integrationHubResponseDto1);
         when(spFineLineChannelFixtureRepository.getBumpPackCntByFinelines(anyLong(), anyList())).thenReturn(bumpPackCntByFinelines);
         return request;
     }
@@ -576,6 +740,7 @@ class PackOptimizationServiceTest {
         IntegrationHubResponseDTO integrationHubResponseDto = new IntegrationHubResponseDTO();
         integrationHubResponseDto.setJobId("1234455");
         integrationHubResponseDto.setWf_running_id("122222");
+        integrationHubResponseDto.setStatus("QUEUE");
 
         BuyQntyResponseDTO buyQntyResponseDTO1 = new BuyQntyResponseDTO();
         buyQntyResponseDTO1.setBumpPackCnt(0);
@@ -800,7 +965,7 @@ class PackOptimizationServiceTest {
     void test_getPackOptFinelinesByStatusWhenStatusCodeIsValid() {
         List<AnalyticsMlSend> analyticsMlSendList = new ArrayList<>();
         AnalyticsMlSend analyticsMlSend = new AnalyticsMlSend();
-        analyticsMlSend.setPlanId(12l);
+        analyticsMlSend.setPlanId(12L);
         analyticsMlSend.setFinelineNbr(1234);
         analyticsMlSend.setRunStatusCode(3);
         analyticsMlSend.setStartTs(new Date());
