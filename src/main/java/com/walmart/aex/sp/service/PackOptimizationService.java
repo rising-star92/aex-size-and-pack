@@ -32,8 +32,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigInteger;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -342,7 +340,7 @@ public class PackOptimizationService {
     }
 
     public RunPackOptResponse callIntegrationHubForPackOptByFineline(RunPackOptRequest request) {
-        RunPackOptResponse runPackOptResponse = null;
+        RunPackOptResponse runPackOptResponse;
         Map<String, IntegrationHubResponseDTO> fineLineWithIntegrationHubResponseDTOMap = new HashMap<>();
         Map<String, IntegrationHubRequestDTO> fineLineWithIntegrationHubRequestDTOMap = new HashMap<>();
         try {
@@ -391,6 +389,10 @@ public class PackOptimizationService {
         Map<Integer, Integer> fineLineWithBumpCntMap = getBumpPackByFineLineMap(planId, fineLines);
         for (AnalyticsMlSend analyticsMlSend : analyticsMlSendSet) {
             Set<AnalyticsMlChildSend> analyticsMlChildSendSet = setAnalyticsChildDataToAnalyticsMlSend(flWithIHResMap, fineLineWithBumpCntMap, analyticsMlSend, flWithIHReqMap);
+            if (analyticsMlChildSendSet.stream().allMatch(c -> c.getRunStatusCode().equals(RunStatusCodeType.INTEGRATION_HUB_TECHNICAL_ERROR.getId()))) {
+                analyticsMlSend.setRunStatusCode(RunStatusCodeType.ERROR.getId());
+                analyticsMlSend.setEndTs(new Date());
+            }
             analyticsMlSend.setAnalyticsMlChildSend(analyticsMlChildSendSet);
             res.add(analyticsMlSend);
         }

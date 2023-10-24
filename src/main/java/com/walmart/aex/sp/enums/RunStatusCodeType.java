@@ -17,6 +17,7 @@ public enum RunStatusCodeType {
     MODEL_OUTPUT_MSG(18, "Fineline failed, please contact the support team"),
     MODEL_OUTPUT_COLUMNS(19, "Fineline failed, please contact the support team"),
     SOLVER_NOT_SOLVE_ERROR_MSG(20, "Fineline failed, the max capacity is not enough to meet the pack requirements. Please increase max capacity"),
+    INTEGRATION_HUB_TECHNICAL_ERROR(22, "Request failed due to system error, please retrigger Pack Optimization"),
     COMMON_ERR_MSG(100, "Fineline failed, please contact the support team"),
     ERROR(101, "ANALYTICS ERROR");
 
@@ -33,7 +34,7 @@ public enum RunStatusCodeType {
             RunStatusCodeType.INITIAL_SET_CC_VALUE_ERROR_MSG.getId(), RunStatusCodeType.BUMP_SET_CC_VALUE_ERROR_MSG.getId(),
             RunStatusCodeType.DATA_VALIDATIONS_MSG.getId(), RunStatusCodeType.DUPLICATE_DATA_ERROR_MSG.getId(),
             RunStatusCodeType.MODEL_OUTPUT_MSG.getId(), RunStatusCodeType.MODEL_OUTPUT_COLUMNS.getId(),
-            RunStatusCodeType.SOLVER_NOT_SOLVE_ERROR_MSG.getId(), RunStatusCodeType.COMMON_ERR_MSG.getId());
+            RunStatusCodeType.SOLVER_NOT_SOLVE_ERROR_MSG.getId(), RunStatusCodeType.COMMON_ERR_MSG.getId(), RunStatusCodeType.INTEGRATION_HUB_TECHNICAL_ERROR.getId());
 
     /**
      * @return the id
@@ -42,12 +43,6 @@ public enum RunStatusCodeType {
         return id;
     }
 
-    /**
-     * @param id the id to set
-     */
-    public final void setId(Integer id) {
-        this.id = id;
-    }
 
     /**
      * @return the description
@@ -56,10 +51,4 @@ public enum RunStatusCodeType {
         return description;
     }
 
-    /**
-     * @param description the description to set
-     */
-    public final void setDescription(String description) {
-        this.description = description;
-    }
 }

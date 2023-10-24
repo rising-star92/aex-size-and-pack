@@ -82,32 +82,39 @@ public class PackOptimizationUtil {
 
         Set<AnalyticsMlChildSend> analyticsMlChildSendSet = new HashSet<>();
         Integer bumpCount = fineLineWithBumpCntMap.get(analyticsMlSend.getFinelineNbr());
-        String fineLineNbr = analyticsMlSend.getFinelineNbr().toString();
-        String analyticsJobId = flWithIHResMap.get(fineLineNbr).getWf_running_id();
-        IntegrationHubRequestDTO integrationHubRequestDTO = flWithIHReqMap.get(fineLineNbr);
-        AnalyticsMlChildSend analyticsMlChildSend = getAnalyticsMlChildSend(analyticsJobId, analyticsMlSend, integrationHubRequestDTO, 1);
-        analyticsMlChildSendSet.add(analyticsMlChildSend);
 
-        for (int bumpNumber = 2; bumpNumber <= bumpCount; bumpNumber++) {
-            fineLineNbr = analyticsMlSend.getFinelineNbr().toString() + MULTI_BUMP_PACK_SUFFIX + bumpNumber;
-            analyticsJobId = flWithIHResMap.get(fineLineNbr).getWf_running_id();
-            integrationHubRequestDTO = flWithIHReqMap.get(fineLineNbr);
-            analyticsMlChildSend = getAnalyticsMlChildSend(analyticsJobId, analyticsMlSend, integrationHubRequestDTO, bumpNumber);
-            analyticsMlChildSendSet.add(analyticsMlChildSend);
+        if (bumpCount > 0) {
+            for (int bumpNumber = 1; bumpNumber <= bumpCount; bumpNumber++) {
+                setAnalyticsMlChildSend(flWithIHResMap, analyticsMlSend, flWithIHReqMap, analyticsMlChildSendSet, bumpNumber);
+            }
+        } else {
+            setAnalyticsMlChildSend(flWithIHResMap, analyticsMlSend, flWithIHReqMap, analyticsMlChildSendSet, 0);
         }
 
         return analyticsMlChildSendSet;
     }
 
-    private static AnalyticsMlChildSend getAnalyticsMlChildSend(String analyticsJobId, AnalyticsMlSend analyticsMlSend,
-               IntegrationHubRequestDTO integrationHubRequestDTO, int bumpNumber) {
+    private static void setAnalyticsMlChildSend(Map<String, IntegrationHubResponseDTO> flWithIHResMap, AnalyticsMlSend analyticsMlSend, Map<String, IntegrationHubRequestDTO> flWithIHReqMap, Set<AnalyticsMlChildSend> analyticsMlChildSendSet, int bumpNumber) {
+        String fineLineNbr = analyticsMlSend.getFinelineNbr().toString() + (bumpNumber > 1 ? MULTI_BUMP_PACK_SUFFIX + bumpNumber : "");
+        IntegrationHubResponseDTO integrationHubResponseDTO = flWithIHResMap.get(fineLineNbr);
+        IntegrationHubRequestDTO integrationHubRequestDTO = flWithIHReqMap.get(fineLineNbr);
+        AnalyticsMlChildSend analyticsMlChildSend = getAnalyticsMlChildSend(analyticsMlSend, integrationHubRequestDTO, integrationHubResponseDTO, Math.max(bumpNumber, 1));
+        analyticsMlChildSendSet.add(analyticsMlChildSend);
+    }
+
+    private static AnalyticsMlChildSend getAnalyticsMlChildSend(AnalyticsMlSend analyticsMlSend,
+               IntegrationHubRequestDTO integrationHubRequestDTO, IntegrationHubResponseDTO integrationHubResponseDTO, int bumpNumber) {
         AnalyticsMlChildSend analyticsMlChildSend = new AnalyticsMlChildSend();
         analyticsMlChildSend.setAnalyticsMlSend(analyticsMlSend);
         analyticsMlChildSend.setRunStatusCode(analyticsMlSend.getRunStatusCode());
         analyticsMlChildSend.setAnalyticsSendDesc("Sent");
+        analyticsMlChildSend.setRetryCnt(analyticsMlSend.getRetryCnt());
         analyticsMlChildSend.setStartTs(analyticsMlSend.getStartTs());
         analyticsMlChildSend.setEndTs(analyticsMlSend.getEndTs());
-        analyticsMlChildSend.setRetryCnt(analyticsMlSend.getRetryCnt());
+        if (integrationHubResponseDTO.getStatus().equalsIgnoreCase("FAILED")) {
+            analyticsMlChildSend.setRunStatusCode(RunStatusCodeType.INTEGRATION_HUB_TECHNICAL_ERROR.getId());
+            analyticsMlChildSend.setEndTs(new Date());
+        }
         String reqPayload = null;
         try {
             reqPayload = objectMapper.writeValueAsString(integrationHubRequestDTO);
@@ -116,7 +123,7 @@ public class PackOptimizationUtil {
         }
         analyticsMlChildSend.setPayloadObj(reqPayload);
         analyticsMlChildSend.setReturnMessage(analyticsMlSend.getReturnMessage());
-        analyticsMlChildSend.setAnalyticsJobId(analyticsJobId);
+        analyticsMlChildSend.setAnalyticsJobId(integrationHubResponseDTO.getWf_running_id());
         analyticsMlChildSend.setBumpPackNbr(bumpNumber);
         return analyticsMlChildSend;
     }
