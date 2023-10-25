@@ -181,7 +181,7 @@ configDefinitions:
         description: "Feature flag to enable the logic with handling deviation and without deviation"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "false"
+        defaultValue: "true"
   bqfpServiceConfig:
     description: ""
     resolutionPaths:
