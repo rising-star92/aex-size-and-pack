@@ -27,7 +27,7 @@ configDefinitions:
         description: "SP SQL Server DB URL"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "jdbc:sqlserver://us-wm-aex-stg-spo-nonprod-62cd5875-failover-group.database.windows.net:1433;database=us_wm_aex_spo;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;authentication=ActiveDirectoryPassword"
+        defaultValue: "jdbc:sqlserver://us-wm-aex-stg-spo-nonprod-62cd5875.database.windows.net:1433;database=us_wm_aex_spo;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;authentication=ActiveDirectoryPassword"
       "sqlServer.driverClassName":
         description: "SQL Server Driver Class Name"
         type: "STRING"
