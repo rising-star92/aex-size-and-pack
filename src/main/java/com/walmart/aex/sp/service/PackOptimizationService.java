@@ -132,26 +132,38 @@ public class PackOptimizationService {
     }
 
     @Transactional
-    public void updatePackOptServiceStatus(Long planId, String finelineNbr, Integer status) {
+    public void updatePackOptServiceStatus(Long planId, String finelineNbr, Integer status, Boolean isResetPackOptStatusCronFlow) {
         List<Integer> fineLineAndBumpCount = CommonUtil.getNumbersFromString(finelineNbr);
         Integer fineLineNumber = !fineLineAndBumpCount.isEmpty() ? fineLineAndBumpCount.get(0) : null;
         Integer bumpNbr = fineLineAndBumpCount.size() > 1 ? fineLineAndBumpCount.get(1) : 1;
         if (fineLineNumber != null) {
             try {
-                log.info("Pack Optimization completed for planId:{} and fineLineNbr:{} and bumpPack:{} with RunStatusCode:{}",
-                        planId,finelineNbr,bumpNbr,status);
+                log.info("Pack Optimization updated for planId:{} and fineLineNbr:{} with RunStatusCode:{}",
+                        planId,finelineNbr,status);
                 Optional<AnalyticsMlSend> analyticsMlSend = analyticsMlSendRepository.findByPlanIdAndFinelineNbrAndRunStatusCode(planId, fineLineNumber, RunStatusCodeType.SENT_TO_ANALYTICS.getId()
                 );
+
                 if (analyticsMlSend.isPresent()) {
                     Set<AnalyticsMlChildSend> analyticsMlChildSendList = analyticsMlSend.get().getAnalyticsMlChildSend();
                     analyticsMlSend.get().setEndTs(new Date());
                     for (AnalyticsMlChildSend analyticsMlChildSend : analyticsMlChildSendList) {
-                        if (Objects.equals(analyticsMlChildSend.getBumpPackNbr(), bumpNbr)) {
-                            analyticsMlChildSend.setRunStatusCode(status);
-                            analyticsMlChildSend.setEndTs(new Date());
-                            updateParentRunStatusCode(analyticsMlSend.get());
-                            break;
+                        if(Boolean.FALSE.equals(isResetPackOptStatusCronFlow)){
+                            if (Objects.equals(analyticsMlChildSend.getBumpPackNbr(), bumpNbr)) {
+                                analyticsMlChildSend.setRunStatusCode(status);
+                                analyticsMlChildSend.setEndTs(new Date());
+                                updateParentRunStatusCode(analyticsMlSend.get());
+                                break;
+                            }
                         }
+                        else{
+                            if(analyticsMlChildSend.getRunStatusCode().equals(RunStatusCodeType.SENT_TO_ANALYTICS.getId())){
+                                analyticsMlChildSend.setRunStatusCode(status);
+                                analyticsMlChildSend.setEndTs(new Date());
+                            }
+                        }
+                    }
+                    if(Boolean.TRUE.equals(isResetPackOptStatusCronFlow)){
+                        updateParentRunStatusCode(analyticsMlSend.get());
                     }
                     analyticsMlSendRepository.save(analyticsMlSend.get());
                 }

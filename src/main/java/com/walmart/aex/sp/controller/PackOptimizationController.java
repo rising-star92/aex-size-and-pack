@@ -16,12 +16,7 @@ import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.ws.rs.Consumes;
 import java.math.BigInteger;
@@ -86,11 +81,11 @@ public class PackOptimizationController {
     }
 
     @PutMapping(path = "/api/packOptimization/plan/{planId}/fineline/{finelineNbr}/status/{status}")
-    public UpdatePkOptResponse updatePackOptStatus(@PathVariable Long planId, @PathVariable String finelineNbr, @PathVariable Integer status) {
+    public UpdatePkOptResponse updatePackOptStatus(@PathVariable Long planId, @PathVariable String finelineNbr, @PathVariable Integer status, @RequestParam(value = "isResetPackOptStatusCronFlow", required = false, defaultValue = "false") Boolean isResetPackOptStatusCronFlow ) {
         UpdatePkOptResponse response = new UpdatePkOptResponse();
         if (RunStatusCodeType.ANALYTICS_RUN_COMPLETED.getId().equals(status) || RunStatusCodeType.ANALYTICS_ERRORS_LIST.contains(status)) {
             try {
-                packOptService.updatePackOptServiceStatus(planId, finelineNbr, status);
+                packOptService.updatePackOptServiceStatus(planId, finelineNbr, status , isResetPackOptStatusCronFlow );
                 response.setStatus(SUCCESS_STATUS);
             } catch (Exception e) {
                 response.setStatus(FAILURE_STATUS);
