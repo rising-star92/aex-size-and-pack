@@ -132,7 +132,7 @@ public class PackOptimizationService {
     }
 
     @Transactional
-    public void updatePackOptServiceStatus(Long planId, String finelineNbr, Integer status, Boolean isResetPackOptStatusCronFlow) {
+    public void updatePackOptServiceStatus(Long planId, String finelineNbr, Integer status, Boolean isResetPackOptStatusFlag) {
         List<Integer> fineLineAndBumpCount = CommonUtil.getNumbersFromString(finelineNbr);
         Integer fineLineNumber = !fineLineAndBumpCount.isEmpty() ? fineLineAndBumpCount.get(0) : null;
         Integer bumpNbr = fineLineAndBumpCount.size() > 1 ? fineLineAndBumpCount.get(1) : 1;
@@ -147,7 +147,7 @@ public class PackOptimizationService {
                     Set<AnalyticsMlChildSend> analyticsMlChildSendList = analyticsMlSend.get().getAnalyticsMlChildSend();
                     analyticsMlSend.get().setEndTs(new Date());
                     for (AnalyticsMlChildSend analyticsMlChildSend : analyticsMlChildSendList) {
-                        if(Boolean.FALSE.equals(isResetPackOptStatusCronFlow)){
+                        if(Boolean.FALSE.equals(isResetPackOptStatusFlag)){
                             if (Objects.equals(analyticsMlChildSend.getBumpPackNbr(), bumpNbr)) {
                                 analyticsMlChildSend.setRunStatusCode(status);
                                 analyticsMlChildSend.setEndTs(new Date());
@@ -162,7 +162,7 @@ public class PackOptimizationService {
                             }
                         }
                     }
-                    if(Boolean.TRUE.equals(isResetPackOptStatusCronFlow)){
+                    if(Boolean.TRUE.equals(isResetPackOptStatusFlag)){
                         updateParentRunStatusCode(analyticsMlSend.get());
                     }
                     analyticsMlSendRepository.save(analyticsMlSend.get());

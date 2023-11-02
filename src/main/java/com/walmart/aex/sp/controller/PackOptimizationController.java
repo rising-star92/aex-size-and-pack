@@ -81,11 +81,11 @@ public class PackOptimizationController {
     }
 
     @PutMapping(path = "/api/packOptimization/plan/{planId}/fineline/{finelineNbr}/status/{status}")
-    public UpdatePkOptResponse updatePackOptStatus(@PathVariable Long planId, @PathVariable String finelineNbr, @PathVariable Integer status, @RequestParam(value = "isResetPackOptStatusCronFlow", required = false, defaultValue = "false") Boolean isResetPackOptStatusCronFlow ) {
+    public UpdatePkOptResponse updatePackOptStatus(@PathVariable Long planId, @PathVariable String finelineNbr, @PathVariable Integer status, @RequestParam(value = "isResetPackOptStatusFlag", required = false, defaultValue = "false") Boolean isResetPackOptStatusFlag ) {
         UpdatePkOptResponse response = new UpdatePkOptResponse();
         if (RunStatusCodeType.ANALYTICS_RUN_COMPLETED.getId().equals(status) || RunStatusCodeType.ANALYTICS_ERRORS_LIST.contains(status)) {
             try {
-                packOptService.updatePackOptServiceStatus(planId, finelineNbr, status , isResetPackOptStatusCronFlow );
+                packOptService.updatePackOptServiceStatus(planId, finelineNbr, status , isResetPackOptStatusFlag );
                 response.setStatus(SUCCESS_STATUS);
             } catch (Exception e) {
                 response.setStatus(FAILURE_STATUS);
