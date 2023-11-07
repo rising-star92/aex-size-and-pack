@@ -81,7 +81,7 @@ public class PackOptimizationController {
     }
 
     @PutMapping(path = "/api/packOptimization/plan/{planId}/fineline/{finelineNbr}/status/{status}")
-    public UpdatePkOptResponse updatePackOptStatus(@PathVariable Long planId, @PathVariable String finelineNbr, @PathVariable Integer status, @RequestParam(value = "isResetPackOptStatusFlag", required = false, defaultValue = "false") Boolean isResetPackOptStatusFlag ) {
+    public UpdatePkOptResponse updatePackOptStatus(@PathVariable Long planId, @PathVariable String finelineNbr, @PathVariable Integer status, @RequestParam(value = "isResetPackOptStatusFlag", required = false, defaultValue = "false") boolean isResetPackOptStatusFlag ) {
         UpdatePkOptResponse response = new UpdatePkOptResponse();
         if (RunStatusCodeType.ANALYTICS_RUN_COMPLETED.getId().equals(status) || RunStatusCodeType.ANALYTICS_ERRORS_LIST.contains(status)) {
             try {
