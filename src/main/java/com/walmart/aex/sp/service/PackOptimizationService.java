@@ -364,6 +364,7 @@ public class PackOptimizationService {
                 }
                 IntegrationHubResponseDTO integrationHubResponseDTO = integrationHubService.callIntegrationHubForPackOpt(integrationHubRequestDTO);
                 if (null != integrationHubResponseDTO) {
+                    log.info("IntegrationHub Response DTO for PlanId:{} & fineLineNbr: {} is : {} ", request.getPlanId(), finelineNbr,integrationHubResponseDTO);
                     fineLineWithIntegrationHubResponseDTOMap.put(finelineNbr, integrationHubResponseDTO);
                     fineLineWithIntegrationHubRequestDTOMap.put(finelineNbr, integrationHubRequestDTO);
                     log.info("Successfully processed request to IntegrationHub. PlanId:{} & fineLineNbr: {}", request.getPlanId(), finelineNbr);
