@@ -362,6 +362,7 @@ public class PackOptimizationService {
                 if (!finelineNbr.contains(MULTI_BUMP_PACK_SUFFIX)) {
                     deleteMultiBumpPackDataSet(request.getPlanId(), Integer.valueOf(finelineNbr), integrationHubServiceProperties.getEnv());
                 }
+                log.info("IntegrationHub Request DTO for PlanId:{} & fineLineNbr: {} is : {} ", request.getPlanId(), finelineNbr,integrationHubRequestDTO);
                 IntegrationHubResponseDTO integrationHubResponseDTO = integrationHubService.callIntegrationHubForPackOpt(integrationHubRequestDTO);
                 if (null != integrationHubResponseDTO) {
                     log.info("IntegrationHub Response DTO for PlanId:{} & fineLineNbr: {} is : {} ", request.getPlanId(), finelineNbr,integrationHubResponseDTO);
