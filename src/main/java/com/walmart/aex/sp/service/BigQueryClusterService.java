@@ -102,6 +102,10 @@ public class BigQueryClusterService {
         return queryParams;
     }
 
+    /**
+     * Fineline SVG query
+     * When likeFL is available apply it in filter clause on SVG and SC tables
+     */
     private String findFinelineQuery(String rfaCcTable, String sizeClusterTable, String sizeColorClusterTable, String finelineClusterTable) {
         return  "SELECT rpt_lvl_0_nbr,\n" +
                 "    rpt_lvl_1_nbr,\n" +
@@ -246,6 +250,10 @@ public class BigQueryClusterService {
                 "    volume_group_cluster_id ";
     }
 
+    /**
+     * Sub Category SVG query
+     * When likeFL is available apply it in filter clause only on SC tables
+     */
     private String findSubCatQuery(String rfaCcTable, String sizeClusterTable, String sizeColorClusterTable, String subCategoryClusterTable) {
         return "SELECT rpt_lvl_0_nbr,\n" +
                 "    rpt_lvl_1_nbr,\n" +
@@ -326,8 +334,8 @@ public class BigQueryClusterService {
                 "                    svg_subcatg_clus.season\n" +
                 "                FROM `" + subCategoryClusterTable + "` AS svg_subcatg_clus,\n" +
                 "                    plan_hierarchy AS h\n" +
-                "                WHERE svg_subcatg_clus.dept_subcatg_nbr = COALESCE(h.like_rpt_lvl_4_nbr, h.rpt_lvl_4_nbr)\n" +
-                "                    AND svg_subcatg_clus.dept_nbr = COALESCE(h.like_rpt_lvl_1_nbr, h.rpt_lvl_1_nbr)\n" +
+                "                WHERE svg_subcatg_clus.dept_subcatg_nbr = h.rpt_lvl_4_nbr\n" +
+                "                    AND svg_subcatg_clus.dept_nbr = h.rpt_lvl_1_nbr\n" +
                 "                    AND svg_subcatg_clus.season = h.season_code\n" +
                 "                    AND svg_subcatg_clus.fiscal_year = h.fiscal_year\n" +
                 "            ) AS subcatg_clus ON CAST(rfa_output.store AS INT64) = subcatg_clus.store_nbr\n" +
@@ -400,6 +408,10 @@ public class BigQueryClusterService {
                 "    volume_group_cluster_id ";
     }
 
+    /**
+     * Category SVG query
+     * When likeFL is available apply it in filter clause only on SC tables
+     */
     private String findCatQuery(String rfaCcTable, String sizeClusterTable, String sizeColorClusterTable, String categoryClusterTable) {
         return "SELECT rpt_lvl_0_nbr,\n" +
                 "    rpt_lvl_1_nbr,\n" +
@@ -480,8 +492,8 @@ public class BigQueryClusterService {
                 "                    svg_catg_clus.season\n" +
                 "                FROM `" +  categoryClusterTable + "` AS svg_catg_clus,\n" +
                 "                    plan_hierarchy AS h\n" +
-                "                WHERE svg_catg_clus.dept_catg_nbr = COALESCE(h.like_rpt_lvl_3_nbr, h.rpt_lvl_3_nbr)\n" +
-                "                    AND svg_catg_clus.dept_nbr = COALESCE(h.like_rpt_lvl_1_nbr, h.rpt_lvl_1_nbr)\n" +
+                "                WHERE svg_catg_clus.dept_catg_nbr = h.rpt_lvl_3_nbr\n" +
+                "                    AND svg_catg_clus.dept_nbr = h.rpt_lvl_1_nbr\n" +
                 "                    AND svg_catg_clus.season = h.season_code\n" +
                 "                    AND svg_catg_clus.fiscal_year = h.fiscal_year\n" +
                 "            ) AS catg_clus ON CAST(rfa_output.store AS INT64) = catg_clus.store_nbr\n" +
