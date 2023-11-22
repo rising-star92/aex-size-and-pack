@@ -20,6 +20,7 @@ import com.walmart.aex.sp.dto.isVolume.FinelineVolume;
 import com.walmart.aex.sp.dto.isVolume.InitialSetVolumeRequest;
 import com.walmart.aex.sp.dto.isVolume.InitialSetVolumeResponse;
 import com.walmart.aex.sp.dto.packoptimization.Fineline;
+import com.walmart.aex.sp.dto.packoptimization.packDescription.PackDescriptionDetail;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl1;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl2;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
@@ -27,17 +28,15 @@ import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDTO;
 import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDeleteDTO;
 import com.walmart.aex.sp.dto.planhierarchy.SizeAndPackResponse;
 import com.walmart.aex.sp.dto.planhierarchy.StrongKey;
+import com.walmart.aex.sp.entity.CustChoicePlan;
+import com.walmart.aex.sp.entity.FinelinePlan;
 import com.walmart.aex.sp.entity.MerchCatPlan;
 import com.walmart.aex.sp.entity.MerchantPackOptimization;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.exception.SizeAndPackException;
 import com.walmart.aex.sp.properties.BigQueryConnectionProperties;
-import com.walmart.aex.sp.repository.MerchCatPlanRepository;
-import com.walmart.aex.sp.repository.MerchPackOptimizationRepository;
-import com.walmart.aex.sp.repository.SpCustomerChoiceChannelFixtureRepository;
-import com.walmart.aex.sp.repository.SpCustomerChoiceChannelFixtureSizeRepository;
-import com.walmart.aex.sp.repository.SpFineLineChannelFixtureRepository;
+import com.walmart.aex.sp.repository.*;
 import com.walmart.aex.sp.util.BuyQtyCommonUtil;
 
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
@@ -47,13 +46,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -96,6 +89,8 @@ public class SizeAndPackService {
     private final ObjectMapper objectMapper;
 
     private final SizeAndPackDeletePackOptMapper sizeAndPackDeletePackOptMapper;
+    private final FinelinePlanRepository finelinePlanRepository;
+    private final CustomerChoiceRepository customerChoiceRepository;
 
     @ManagedConfiguration
 	BigQueryConnectionProperties bigQueryConnectionProperties;
@@ -108,7 +103,7 @@ public class SizeAndPackService {
                               SizeAndPackDeleteService sizeAndPackDeleteService, SizeAndPackDeletePlanService sizeAndPackDeletePlanService
             , BuyQtyCommonUtil buyQtyCommonUtil, BigQueryInitialSetPlanService bigQueryInitialSetPlanService, InitialSetPlanMapper initialSetPlanMapper,
                               MerchPackOptimizationRepository merchPackOptimizationRepository, PackOptUpdateDataMapper packOptUpdateDataMapper, PackOptAddDataMapper packOptAddDataMapper,
-                              BigQueryPackStoresService bigQueryPackStoresService, SizeAndPackDeletePackOptMapper sizeAndPackDeletePackOptMapper) {
+                              BigQueryPackStoresService bigQueryPackStoresService, SizeAndPackDeletePackOptMapper sizeAndPackDeletePackOptMapper, FinelinePlanRepository finelinePlanRepository, CustomerChoiceRepository customerChoiceRepository) {
         this.spFineLineChannelFixtureRepository = spFineLineChannelFixtureRepository;
         this.buyQuantityMapper = buyQuantityMapper;
         this.spCustomerChoiceChannelFixtureRepository = spCustomerChoiceChannelFixtureRepository;
@@ -126,6 +121,8 @@ public class SizeAndPackService {
         this.packOptAddDataMapper = packOptAddDataMapper;
         this.bigQueryPackStoresService = bigQueryPackStoresService;
         this.sizeAndPackDeletePackOptMapper = sizeAndPackDeletePackOptMapper;
+        this.finelinePlanRepository = finelinePlanRepository;
+        this.customerChoiceRepository = customerChoiceRepository;
         this.objectMapper = new ObjectMapper();
     }
 
@@ -414,16 +411,66 @@ public class SizeAndPackService {
 			if (request.getPlanId() != null && request.getFinelineNbr() != null) {
 				rfaInitialSetBumpSetResponses = bigQueryInitialSetPlanService.getInitialAndBumpSetDetails(request);
 			}
-			Optional.of(rfaInitialSetBumpSetResponses).stream().flatMap(Collection::stream).forEach(
-					intialSetResponseOne -> initialSetPlanMapper.mapInitialSetPlan(intialSetResponseOne, response, request.getFinelineNbr()));
 
-
+            Optional.of(rfaInitialSetBumpSetResponses).stream().flatMap(Collection::stream).forEach(
+					intialSetResponseOne ->
+                        initialSetPlanMapper.mapInitialSetPlan(intialSetResponseOne, response, request.getFinelineNbr()));
 		} catch (Exception e) {
 			log.error("Exception While fetching Initial Set Pack Quantities :", e);
 		}
-
 		return response;
 	}
+
+    protected Map<String, String> createPackDescription(Integer planId, Integer finelineNbr, Map<String, Set<String>> packIdCustomerChoiceMap) {
+        List<PackDescriptionDetail> packDescriptionDetails = getPackDescriptionDetails(planId, finelineNbr, packIdCustomerChoiceMap);
+        // TODO : Formulate the pack description using packDescriptionDetails obj here and add it to a map which contains packId as key and Pack desc as the value , and return it
+        return new HashMap<>();
+    }
+
+    protected List<PackDescriptionDetail> getPackDescriptionDetails(Integer planId, Integer finelineNbr, Map<String, Set<String>> packIdCustomerChoiceMap) {
+        List<PackDescriptionDetail> packDescriptionDetails = new ArrayList<>();
+        String altFineline = getAltFinelineDesc(planId, finelineNbr);
+        packIdCustomerChoiceMap.forEach((packId, ccList) ->{
+            PackDescriptionDetail packDescriptionDetail = new PackDescriptionDetail();
+            packDescriptionDetail.setPackId(packId);
+            packDescriptionDetail.setAltFinelineDesc(altFineline);
+            Set<CustChoicePlan> customerChoices = customerChoiceRepository.getCustomerChoicesByPlanIdFinelineNbrAndCc(Long.valueOf(planId),ChannelType.STORE.getId(), finelineNbr,ccList);
+            List<String> colorNames = customerChoices.stream().map(CustChoicePlan::getColorName).distinct().collect(Collectors.toList());
+           if(colorNames.size()==1){
+               packDescriptionDetail.setColor(colorNames.get(0));
+           }
+            packDescriptionDetails.add(packDescriptionDetail);
+        });
+        return packDescriptionDetails;
+    }
+
+    private Map<String, Set<String>> getPackIdCustomerChoiceMap(List<RFAInitialSetBumpSetResponse> rfaInitialSetBumpSetResponses) {
+        Map<String,Set<String>> packIdCustomerChoiceMap = new HashMap<>();
+        rfaInitialSetBumpSetResponses.forEach(rfaInitialSetBumpSetResponse-> {
+            Set<String> customerChoicesForPackId;
+            if(packIdCustomerChoiceMap.containsKey(rfaInitialSetBumpSetResponse.getPack_id())){
+                customerChoicesForPackId = packIdCustomerChoiceMap.get(rfaInitialSetBumpSetResponse.getPack_id());
+            }else{
+                customerChoicesForPackId = new HashSet<>();
+            }
+            customerChoicesForPackId.add(rfaInitialSetBumpSetResponse.getCc());
+            packIdCustomerChoiceMap.put(rfaInitialSetBumpSetResponse.getPack_id(),customerChoicesForPackId);
+        });
+        return packIdCustomerChoiceMap;
+    }
+
+
+    private String getAltFinelineDesc(Integer planId, Integer finelineNbr) {
+        FinelinePlan fineline = finelinePlanRepository.findByFinelinePlanId_SubCatPlanId_MerchCatPlanId_PlanIdAndFinelinePlanId_FinelineNbrAndFinelinePlanId_SubCatPlanId_MerchCatPlanId_ChannelId(Long.valueOf(planId),
+                        finelineNbr,
+                        ChannelType.STORE.getId())
+                .orElse(null);
+        if (fineline == null) {
+            log.warn("No matching record found for fineline for planId: {}, fineline: {}", planId, finelineNbr);
+            return null;
+        }
+        return fineline.getAltFinelineName();
+    }
 
 
     public List<InitialSetVolumeResponse> getInitialAndBumpSetDetailsByVolumeCluster(InitialSetVolumeRequest request) {
