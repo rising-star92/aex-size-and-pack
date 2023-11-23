@@ -205,6 +205,8 @@ public class BigQueryClusterService {
                 "                    plan_hierarchy AS h\n" +
                 "                WHERE sc_clus.fineline_nbr = COALESCE(h.like_fineline_nbr, h.fineline_nbr)\n" +
                 "                    AND sc_clus.dept_nbr = COALESCE(h.like_rpt_lvl_1_nbr, h.rpt_lvl_1_nbr)\n" +
+                "                    AND sc_clus.dept_catg_nbr = COALESCE(h.like_rpt_lvl_3_nbr, h.rpt_lvl_3_nbr)\n" +
+                "                    AND sc_clus.dept_subcatg_nbr = COALESCE(h.like_rpt_lvl_4_nbr, h.rpt_lvl_4_nbr)\n" +
                 "                    AND sc_clus.season = h.season_code\n" +
                 "                    AND sc_clus.fiscal_year = h.fiscal_year\n" +
                 "                UNION ALL\n" +
@@ -221,7 +223,9 @@ public class BigQueryClusterService {
                 "                FROM `" + sizeColorClusterTable + "` AS sco_clus,\n" +
                 "                    plan_hierarchy AS h\n" +
                 "                WHERE sco_clus.fineline_nbr = COALESCE(h.like_fineline_nbr, h.fineline_nbr)\n" +
-                "                    and sco_clus.dept_nbr = COALESCE(h.like_rpt_lvl_1_nbr, h.rpt_lvl_1_nbr)\n" +
+                "                    AND sco_clus.dept_nbr = COALESCE(h.like_rpt_lvl_1_nbr, h.rpt_lvl_1_nbr)\n" +
+                "                    AND sco_clus.dept_catg_nbr = COALESCE(h.like_rpt_lvl_3_nbr, h.rpt_lvl_3_nbr)\n" +
+                "                    AND sco_clus.dept_subcatg_nbr = COALESCE(h.like_rpt_lvl_4_nbr, h.rpt_lvl_4_nbr)\n" +
                 "                    AND sco_clus.season = h.season_code\n" +
                 "                    AND sco_clus.fiscal_year = h.fiscal_year\n" +
                 "            ) AS all_clus ON CAST(rfa_output.store AS INT64) = all_clus.store_nbr\n" +
@@ -354,9 +358,10 @@ public class BigQueryClusterService {
                 "                    plan_hierarchy AS h\n" +
                 "                WHERE sc_clus.fineline_nbr = COALESCE(h.like_fineline_nbr, h.fineline_nbr)\n" +
                 "                    AND sc_clus.dept_nbr = COALESCE(h.like_rpt_lvl_1_nbr, h.rpt_lvl_1_nbr)\n" +
+                "                    AND sc_clus.dept_catg_nbr = COALESCE(h.like_rpt_lvl_3_nbr, h.rpt_lvl_3_nbr)\n" +
+                "                    AND sc_clus.dept_subcatg_nbr = COALESCE(h.like_rpt_lvl_4_nbr, h.rpt_lvl_4_nbr)\n" +
                 "                    AND sc_clus.season = h.season_code\n" +
                 "                    AND sc_clus.fiscal_year = h.fiscal_year\n" +
-                "                    AND sc_clus.dept_subcatg_nbr = COALESCE(h.like_rpt_lvl_4_nbr,h.rpt_lvl_4_nbr)\n" +
                 "                UNION ALL\n" +
                 "                SELECT sco_clus.fineline_nbr,\n" +
                 "                    sco_clus.dept_nbr,\n" +
@@ -371,8 +376,9 @@ public class BigQueryClusterService {
                 "                FROM `" + sizeColorClusterTable + "` AS sco_clus,\n" +
                 "                    plan_hierarchy AS h\n" +
                 "                WHERE sco_clus.fineline_nbr = COALESCE(h.like_fineline_nbr, h.fineline_nbr)\n" +
-                "                    and sco_clus.dept_nbr = COALESCE(h.like_rpt_lvl_1_nbr, h.rpt_lvl_1_nbr)\n" +
-                "                    AND sco_clus.dept_subcatg_nbr = COALESCE(h.like_rpt_lvl_4_nbr,h.rpt_lvl_4_nbr)\n" +
+                "                    AND sco_clus.dept_nbr = COALESCE(h.like_rpt_lvl_1_nbr, h.rpt_lvl_1_nbr)\n" +
+                "                    AND sco_clus.dept_catg_nbr = COALESCE(h.like_rpt_lvl_3_nbr, h.rpt_lvl_3_nbr)\n" +
+                "                    AND sco_clus.dept_subcatg_nbr = COALESCE(h.like_rpt_lvl_4_nbr, h.rpt_lvl_4_nbr)\n" +
                 "                    AND sco_clus.season = h.season_code\n" +
                 "                    AND sco_clus.fiscal_year = h.fiscal_year\n" +
                 "            ) AS all_clus ON CAST(rfa_output.store AS INT64) = all_clus.store_nbr\n" +
@@ -510,9 +516,10 @@ public class BigQueryClusterService {
                 "                    sc_clus.season\n" +
                 "                FROM `" + sizeClusterTable + "` AS sc_clus,\n" +
                 "                    plan_hierarchy AS h\n" +
-                "                WHERE sc_clus.dept_catg_nbr = COALESCE(h.like_rpt_lvl_3_nbr,h.rpt_lvl_3_nbr)\n" +
-                "                    AND sc_clus.fineline_nbr = COALESCE(h.like_fineline_nbr, h.fineline_nbr)\n" +
+                "                WHERE sc_clus.fineline_nbr = COALESCE(h.like_fineline_nbr, h.fineline_nbr)\n" +
                 "                    AND sc_clus.dept_nbr = COALESCE(h.like_rpt_lvl_1_nbr, h.rpt_lvl_1_nbr)\n" +
+                "                    AND sc_clus.dept_catg_nbr = COALESCE(h.like_rpt_lvl_3_nbr, h.rpt_lvl_3_nbr)\n" +
+                "                    AND sc_clus.dept_subcatg_nbr = COALESCE(h.like_rpt_lvl_4_nbr, h.rpt_lvl_4_nbr)\n" +
                 "                    AND sc_clus.season = h.season_code\n" +
                 "                    AND sc_clus.fiscal_year = h.fiscal_year\n" +
                 "                UNION ALL\n" +
@@ -528,9 +535,10 @@ public class BigQueryClusterService {
                 "                    sco_clus.season\n" +
                 "                FROM `" + sizeColorClusterTable + "` AS sco_clus,\n" +
                 "                    plan_hierarchy AS h\n" +
-                "                WHERE sco_clus.dept_catg_nbr = COALESCE(h.like_rpt_lvl_3_nbr,h.rpt_lvl_3_nbr)\n" +
-                "                    AND sco_clus.fineline_nbr = COALESCE(h.like_fineline_nbr, h.fineline_nbr)\n" +
-                "                    and sco_clus.dept_nbr = COALESCE(h.like_rpt_lvl_1_nbr, h.rpt_lvl_1_nbr)\n" +
+                "                WHERE sco_clus.fineline_nbr = COALESCE(h.like_fineline_nbr, h.fineline_nbr)\n" +
+                "                    AND sco_clus.dept_nbr = COALESCE(h.like_rpt_lvl_1_nbr, h.rpt_lvl_1_nbr)\n" +
+                "                    AND sco_clus.dept_catg_nbr = COALESCE(h.like_rpt_lvl_3_nbr, h.rpt_lvl_3_nbr)\n" +
+                "                    AND sco_clus.dept_subcatg_nbr = COALESCE(h.like_rpt_lvl_4_nbr, h.rpt_lvl_4_nbr)\n" +
                 "                    AND sco_clus.season = h.season_code\n" +
                 "                    AND sco_clus.fiscal_year = h.fiscal_year\n" +
                 "            ) AS all_clus ON CAST(rfa_output.store AS INT64) = all_clus.store_nbr\n" +
