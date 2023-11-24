@@ -62,7 +62,6 @@ public class SizeAndPackTest {
         FinelinePlanId finelinePlanId = getFinelinePlanId();
         finelinePlan.setFinelinePlanId(finelinePlanId);
         finelinePlan.setStylePlans(getStylePlanSet());
-        finelinePlan.setAltFinelineName("Blue Soot Heather");
         return finelinePlan;
     }
 

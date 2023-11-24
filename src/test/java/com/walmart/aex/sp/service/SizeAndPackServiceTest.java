@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static com.walmart.aex.sp.util.BuyQtyResponseInputs.convertChannelToStore;
-import static com.walmart.aex.sp.util.SizeAndPackTest.getPlanSizeAndPackDeleteDTO;;
+import static com.walmart.aex.sp.util.SizeAndPackTest.getPlanSizeAndPackDeleteDTO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -50,10 +50,6 @@ public class SizeAndPackServiceTest {
 
     @Mock
     private SizeAndPackDeleteService sizeAndPackDeleteService;
-    @Mock
-    private CustomerChoiceRepository customerChoiceRepository;
-    @Mock
-    private FinelinePlanRepository finelinePlanRepository;
 
     private final ObjectMapper mapper = new ObjectMapper();
     private static Integer fineline1Nbr = 151;
