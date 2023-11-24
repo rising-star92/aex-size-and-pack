@@ -471,7 +471,6 @@ public class SizeAndPackService {
     			responses.add(bigQueryPackStoresService
         				.getPackStoreDetailsByVolumeCluster(request.getPlanId(), 
         						finelineVolume));
-
             }
     		catch (SizeAndPackException e) 
         	{
@@ -480,5 +479,4 @@ public class SizeAndPackService {
     	}
     	return responses;
     }
-
 }

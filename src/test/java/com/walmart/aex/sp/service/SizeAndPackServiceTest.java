@@ -4,11 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.buyquantity.BuyQntyResponseDTO;
 import com.walmart.aex.sp.dto.buyquantity.BuyQtyRequest;
 import com.walmart.aex.sp.dto.buyquantity.BuyQtyResponse;
-import com.walmart.aex.sp.dto.packoptimization.packDescription.PackDescCustChoiceDTO;
 import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDeleteDTO;
 import com.walmart.aex.sp.dto.planhierarchy.SizeAndPackResponse;
-import com.walmart.aex.sp.entity.CustChoicePlan;
-import com.walmart.aex.sp.entity.FinelinePlan;
 import com.walmart.aex.sp.exception.SizeAndPackException;
 import com.walmart.aex.sp.repository.*;
 import com.walmart.aex.sp.util.BuyQtyCommonUtil;
@@ -22,10 +19,10 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.List;
 
 import static com.walmart.aex.sp.util.BuyQtyResponseInputs.convertChannelToStore;
-import static com.walmart.aex.sp.util.SizeAndPackTest.*;
+import static com.walmart.aex.sp.util.SizeAndPackTest.getPlanSizeAndPackDeleteDTO;;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
