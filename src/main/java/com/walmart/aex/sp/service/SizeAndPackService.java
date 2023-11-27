@@ -32,7 +32,6 @@ import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.exception.SizeAndPackException;
 import com.walmart.aex.sp.properties.BigQueryConnectionProperties;
-import com.walmart.aex.sp.properties.GraphQLProperties;
 import com.walmart.aex.sp.repository.*;
 import com.walmart.aex.sp.util.BuyQtyCommonUtil;
 
@@ -410,7 +409,7 @@ public class SizeAndPackService {
             Optional.of(rfaInitialSetBumpSetResponses).stream().flatMap(Collection::stream).forEach(
 					intialSetResponseOne ->
                         initialSetPlanMapper.mapInitialSetPlan(intialSetResponseOne, response, request.getFinelineNbr()));
-            if(Boolean.parseBoolean(bigQueryConnectionProperties.getPackDescriptionFeatrureFlag())){
+            if(Boolean.parseBoolean(bigQueryConnectionProperties.getPackDescriptionFeatureFlag())){
                 List<PackDescCustChoiceDTO> packDescCustChoiceDTO = customerChoiceRepository.getCustomerChoicesByFinelineAndPlanId(Long.valueOf(request.getPlanId()),request.getFinelineNbr(),ChannelType.STORE.getId());
                 if (!CollectionUtils.isEmpty(packDescCustChoiceDTO)) {
                     String altFinelineDesc = packDescCustChoiceDTO.get(0).getAltFinelineDesc() != null ? packDescCustChoiceDTO.get(0).getAltFinelineDesc() : String.valueOf(request.getFinelineNbr());
