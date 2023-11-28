@@ -426,7 +426,6 @@ public class SizeAndPackService {
         List<PackDescCustChoiceDTO> packDescCustChoiceDTO = customerChoiceRepository.getCustomerChoicesByFinelineAndPlanId(Long.valueOf(request.getPlanId()), request.getFinelineNbr(), ChannelType.STORE.getId());
         if (!CollectionUtils.isEmpty(packDescCustChoiceDTO)) {
             AtomicInteger sequenceNumber = new AtomicInteger(0);
-            DecimalFormat sequenceFormatter = new DecimalFormat("00");
             String altFinelineDesc = packDescCustChoiceDTO.get(0).getAltFinelineDesc() != null ? packDescCustChoiceDTO.get(0).getAltFinelineDesc() : String.valueOf(request.getFinelineNbr());
             response.getIntialSetStyles().forEach(initialSetStyle -> initialSetStyle.getInitialSetPlan().stream().flatMap(initialSetPlan -> initialSetPlan.getPackDetails().stream()).forEach(
                     packDetails -> {
@@ -436,7 +435,7 @@ public class SizeAndPackService {
                             if (packDescCustChoice.getCcId().equalsIgnoreCase(cc) && !colors.contains(packDescCustChoice.getColorName()))
                                 colors.add(packDescCustChoice.getColorName());
                         }));
-                        packDetails.setPackDescription(createPackDescription(packDetails.getPackId(), packDetails.getBumpPackNbr(), colors, altFinelineDesc, sequenceFormatter.format(sequenceNumber.getAndIncrement())));
+                        packDetails.setPackDescription(createPackDescription(packDetails.getMetrics().get(0).getMerchMethod(), packDetails.getBumpPackNbr(), colors, altFinelineDesc, String.format("%02d",sequenceNumber.getAndIncrement())));
                     }
             ));
         } else {
@@ -444,11 +443,11 @@ public class SizeAndPackService {
         }
     }
 
-    private String createPackDescription(String packId, Integer bumpPackNumber, List<String> colors, String altFinelineDesc, String sequenceNbr) {
+    private String createPackDescription(String merchMethod, Integer bumpPackNumber, List<String> colors, String altFinelineDesc, String sequenceNbr) {
         return new StringBuilder().append(altFinelineDesc.trim()).append(UNDERSCORE)
                 .append(colors.size() == 1 ? colors.get(0) + UNDERSCORE : EMPTY_STRING)
-                .append(packId.contains(MerchMethod.HANGING.getDescription()) ? MerchMethod.HANGING.getDescription() : MerchMethod.FOLDED.getDescription()).append(UNDERSCORE)
-                .append(packId.startsWith(PACK_OPT_IS_PREFIX) ? INITIAL_SET_IDENTIFIER : BUMP_PACK + bumpPackNumber).append(UNDERSCORE)
+                .append(merchMethod).append(UNDERSCORE)
+                .append(null == bumpPackNumber ? INITIAL_SET_IDENTIFIER : BUMP_PACK + bumpPackNumber).append(UNDERSCORE)
                 .append(sequenceNbr)
                 .toString();
     }
