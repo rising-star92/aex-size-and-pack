@@ -54,6 +54,10 @@ public class SizeAndPackConstants {
     public static final Integer ONLINE_CHANNEL_ID = 2;
     public static final Integer STORE_CHANNEL_ID = 1;
     public static final String DEFAULT_COLOR_FAMILY = "DEFAULT";
+    public static final String UNDERSCORE = "_";
+    public static final String EMPTY_STRING = "";
+    public static final String PACK_OPT_IS_PREFIX = "SP_is";
+    public static final String INITIAL_SET_IDENTIFIER = "IS";
 
     //DC Inbound Report Headers
     public static final List<String> DC_INBOUND_REPORT_DEFAULT_HEADERS = Arrays.asList(CATEGORY, SUB_CATEGORY, FINELINE, STYLE, CUSTOMER_CHOICE, COLOR_NAME, COLOR_FAMILY, MERCH_METHOD, SIZE, CHANNEL);

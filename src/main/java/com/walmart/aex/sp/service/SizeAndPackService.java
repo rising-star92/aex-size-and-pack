@@ -29,12 +29,14 @@ import com.walmart.aex.sp.dto.planhierarchy.StrongKey;
 import com.walmart.aex.sp.entity.MerchCatPlan;
 import com.walmart.aex.sp.entity.MerchantPackOptimization;
 import com.walmart.aex.sp.enums.ChannelType;
+import com.walmart.aex.sp.enums.MerchMethod;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.exception.SizeAndPackException;
 import com.walmart.aex.sp.properties.BigQueryConnectionProperties;
 import com.walmart.aex.sp.repository.*;
 import com.walmart.aex.sp.util.BuyQtyCommonUtil;
 
+import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,7 +44,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.text.DecimalFormat;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
@@ -407,26 +411,10 @@ public class SizeAndPackService {
 			}
 
             Optional.of(rfaInitialSetBumpSetResponses).stream().flatMap(Collection::stream).forEach(
-					intialSetResponseOne ->
-                        initialSetPlanMapper.mapInitialSetPlan(intialSetResponseOne, response, request.getFinelineNbr()));
-            if(Boolean.parseBoolean(bigQueryConnectionProperties.getPackDescriptionFeatureFlag())){
-                List<PackDescCustChoiceDTO> packDescCustChoiceDTO = customerChoiceRepository.getCustomerChoicesByFinelineAndPlanId(Long.valueOf(request.getPlanId()),request.getFinelineNbr(),ChannelType.STORE.getId());
-                if (!CollectionUtils.isEmpty(packDescCustChoiceDTO)) {
-                    String altFinelineDesc = packDescCustChoiceDTO.get(0).getAltFinelineDesc() != null ? packDescCustChoiceDTO.get(0).getAltFinelineDesc() : String.valueOf(request.getFinelineNbr());
-                    response.getIntialSetStyles().forEach(initialSetStyle -> initialSetStyle.getInitialSetPlan().stream().flatMap(initialSetPlan -> initialSetPlan.getPackDetails().stream()).forEach(
-                            packDetails -> {
-                                Set<String> ccs = packDetails.getMetrics().stream().map(Metrics::getCcId).collect(Collectors.toSet());
-                                List<String> colors = new ArrayList<>();
-                                ccs.forEach(cc-> packDescCustChoiceDTO.forEach(packDescCustChoice -> {
-                                    if(packDescCustChoice.getCcId().equalsIgnoreCase(cc))
-                                        colors.add(packDescCustChoice.getColorName());
-                                }));
-                                // TODO : set pack description by calling createPackDescription(request.getPlanId(), request.getFinelineNbr(), colors, altFinelineDesc);
-                            }
-                    ));
-                }else{
-                    log.warn("No matching record found for fineline for planId: {}, fineline: {}", request.getPlanId(), request.getFinelineNbr());
-                }
+                    intialSetResponseOne ->
+                            initialSetPlanMapper.mapInitialSetPlan(intialSetResponseOne, response, request.getFinelineNbr()));
+            if (Boolean.parseBoolean(bigQueryConnectionProperties.getPackDescriptionFeatureFlag())) {
+                setPackDescription(request, response);
             }
 		} catch (Exception e) {
 			log.error("Exception While fetching Initial Set Pack Quantities :", e);
@@ -434,13 +422,35 @@ public class SizeAndPackService {
 		return response;
 	}
 
-    protected String createPackDescription(Integer planId, Integer finelineNbr, List<String> colors , String altFinelineDesc) {
-        String color = null;
-        if(colors.size()==1){
-            color = colors.get(0);
+    private void setPackDescription(InitialSetPackRequest request, InitialBumpSetResponse response) {
+        List<PackDescCustChoiceDTO> packDescCustChoiceDTO = customerChoiceRepository.getCustomerChoicesByFinelineAndPlanId(Long.valueOf(request.getPlanId()), request.getFinelineNbr(), ChannelType.STORE.getId());
+        if (!CollectionUtils.isEmpty(packDescCustChoiceDTO)) {
+            AtomicInteger sequenceNumber = new AtomicInteger(0);
+            DecimalFormat sequenceFormatter = new DecimalFormat("00");
+            String altFinelineDesc = packDescCustChoiceDTO.get(0).getAltFinelineDesc() != null ? packDescCustChoiceDTO.get(0).getAltFinelineDesc() : String.valueOf(request.getFinelineNbr());
+            response.getIntialSetStyles().forEach(initialSetStyle -> initialSetStyle.getInitialSetPlan().stream().flatMap(initialSetPlan -> initialSetPlan.getPackDetails().stream()).forEach(
+                    packDetails -> {
+                        Set<String> ccs = packDetails.getMetrics().stream().map(Metrics::getCcId).collect(Collectors.toSet());
+                        List<String> colors = new ArrayList<>();
+                        ccs.forEach(cc -> packDescCustChoiceDTO.forEach(packDescCustChoice -> {
+                            if (packDescCustChoice.getCcId().equalsIgnoreCase(cc) && !colors.contains(packDescCustChoice.getColorName()))
+                                colors.add(packDescCustChoice.getColorName());
+                        }));
+                        packDetails.setPackDescription(createPackDescription(packDetails.getPackId(), packDetails.getBumpPackNbr(), colors, altFinelineDesc, sequenceFormatter.format(sequenceNumber.getAndIncrement())));
+                    }
+            ));
+        } else {
+            log.warn("No matching record found for fineline for planId: {}, fineline: {}", request.getPlanId(), request.getFinelineNbr());
         }
-        // TODO : Formulate the pack description and return it
-        return null;
+    }
+
+    private String createPackDescription(String packId, Integer bumpPackNumber, List<String> colors, String altFinelineDesc, String sequenceNbr) {
+        return new StringBuilder().append(altFinelineDesc.trim()).append(UNDERSCORE)
+                .append(colors.size() == 1 ? colors.get(0) + UNDERSCORE : EMPTY_STRING)
+                .append(packId.contains(MerchMethod.HANGING.getDescription()) ? MerchMethod.HANGING.getDescription() : MerchMethod.FOLDED.getDescription()).append(UNDERSCORE)
+                .append(packId.startsWith(PACK_OPT_IS_PREFIX) ? INITIAL_SET_IDENTIFIER : BUMP_PACK + bumpPackNumber).append(UNDERSCORE)
+                .append(sequenceNbr)
+                .toString();
     }
 
     public List<InitialSetVolumeResponse> getInitialAndBumpSetDetailsByVolumeCluster(InitialSetVolumeRequest request) {
