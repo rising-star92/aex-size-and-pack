@@ -22,6 +22,7 @@ import com.walmart.aex.sp.exception.SizeAndPackException;
 import com.walmart.aex.sp.properties.BigQueryConnectionProperties;
 import com.walmart.aex.sp.repository.*;
 import com.walmart.aex.sp.util.BuyQtyCommonUtil;
+import com.walmart.aex.sp.util.PackOptimizationUtil;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,10 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-
-import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
 
 @Service
 @Slf4j
@@ -410,31 +408,21 @@ public class SizeAndPackService {
     private void setPackDescription(InitialSetPackRequest request, InitialBumpSetResponse response) {
         List<PackDescCustChoiceDTO> packDescCustChoiceDTO = customerChoiceRepository.getCustomerChoicesByFinelineAndPlanId(Long.valueOf(request.getPlanId()), request.getFinelineNbr(), ChannelType.STORE.getId());
         if (!CollectionUtils.isEmpty(packDescCustChoiceDTO)) {
-            AtomicInteger sequenceNumber = new AtomicInteger(0);
             String altFinelineDesc = packDescCustChoiceDTO.get(0).getAltFinelineDesc() != null ? packDescCustChoiceDTO.get(0).getAltFinelineDesc() : String.valueOf(request.getFinelineNbr());
             response.getIntialSetStyles().forEach(initialSetStyle -> initialSetStyle.getInitialSetPlan().stream().flatMap(initialSetPlan -> initialSetPlan.getPackDetails().stream()).forEach(
                     packDetails -> {
                         Set<String> ccs = packDetails.getMetrics().stream().map(Metrics::getCcId).collect(Collectors.toSet());
-                        List<String> colors = new ArrayList<>();
+                        Set<String> colors = new HashSet<>();
                         ccs.forEach(cc -> packDescCustChoiceDTO.forEach(packDescCustChoice -> {
-                            if (packDescCustChoice.getCcId().equalsIgnoreCase(cc) && !colors.contains(packDescCustChoice.getColorName()))
+                            if (packDescCustChoice.getCcId().equalsIgnoreCase(cc))
                                 colors.add(packDescCustChoice.getColorName());
                         }));
-                        packDetails.setPackDescription(createPackDescription(packDetails.getMetrics().get(0).getMerchMethod(), packDetails.getBumpPackNbr(), colors, altFinelineDesc, String.format("%02d",sequenceNumber.getAndIncrement())));
+                        packDetails.setPackDescription(PackOptimizationUtil.createPackDescription(packDetails.getPackId(), packDetails.getMetrics().get(0).getMerchMethod(), packDetails.getBumpPackNbr(), List.copyOf(colors), altFinelineDesc));
                     }
             ));
         } else {
             log.warn("No matching record found for fineline for planId: {}, fineline: {}", request.getPlanId(), request.getFinelineNbr());
         }
-    }
-
-    private String createPackDescription(String merchMethod, Integer bumpPackNumber, List<String> colors, String altFinelineDesc, String sequenceNbr) {
-        return new StringBuilder().append(altFinelineDesc.trim()).append(UNDERSCORE)
-                .append(colors.size() == 1 ? colors.get(0) + UNDERSCORE : EMPTY_STRING)
-                .append(merchMethod).append(UNDERSCORE)
-                .append(null == bumpPackNumber ? INITIAL_SET_IDENTIFIER : BUMP_PACK + bumpPackNumber).append(UNDERSCORE)
-                .append(sequenceNbr)
-                .toString();
     }
 
     public List<InitialSetVolumeResponse> getInitialAndBumpSetDetailsByVolumeCluster(InitialSetVolumeRequest request) {

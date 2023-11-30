@@ -194,7 +194,7 @@ class SizeAndPackServiceTest {
         assertEquals("34_3463_2_21_3", response.getIntialSetStyles().get(0).getStyleId());
         assertEquals(3, response.getIntialSetStyles().get(0).getInitialSetPlan().size());
         assertNotNull(packDetails);
-        assertEquals("3463 - FINELINE DESC_WHITE_HANGING_BP1_01", packDetails.getPackDescription());
+        assertEquals("3463 - FINELINE DESC_WHITE_HANGING_BP1_0", packDetails.getPackDescription());
         assertEquals(1, packDetails.getBumpPackNbr());
         assertEquals("4d820910-5b63-4bda-97d8-7b1d79de89a8", packDetails.getUuId());
     }
