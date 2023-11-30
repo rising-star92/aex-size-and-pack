@@ -88,7 +88,7 @@ public class BigQueryClusterService {
                 "    FROM data,\n" +
                 "        UNNEST(JSON_EXTRACT_ARRAY(json_array)) AS cc_color_families_json\n" +
                 ")";
-        if(Boolean.parseBoolean(bigQueryConnectionProperties.getGCPNewTableFeatureFlag())){
+        if(Boolean.parseBoolean(bigQueryConnectionProperties.getDESizeClusterFeatureFlag())){
             if (volumeDeviationLevel.equalsIgnoreCase(VdLevelCode.FINELINE.getDescription())) {
                 String finelineClusterTable = analyticsDataset + "." + bigQueryConnectionProperties.getFinelineVolumeCluster();
                 queryParams += findFinelineQuery(rfaCcTable,sizeClusterStoreFlTable , finelineClusterTable);
@@ -297,8 +297,8 @@ public class BigQueryClusterService {
                 "            rfa_output.cc AS customer_choice,\n" +
                 "            rfa_output.final_pref AS fixture_type,\n" +
                 "            rfa_output.final_alloc_space AS fixture_group,\n" +
-                "            COALESCE(all_clus.color_family, 'DEFAULT') AS color_family,\n" +
-                "            COALESCE(all_clus.cluster_id, 1) AS size_cluster_id,\n" +
+                "            COALESCE(size_clus.color_family, 'DEFAULT') AS color_family,\n" +
+                "            COALESCE(size_clus.cluster_id, 1) AS size_cluster_id,\n" +
                 "            fl_clus.cluster_id AS volume_group_cluster_id,\n" +
                 "            fl_clus.store_nbr\n" +
                 "        FROM (\n" +
@@ -372,16 +372,16 @@ public class BigQueryClusterService {
                 "                    AND sc_store_fl.dept_subcatg_nbr = COALESCE(h.like_rpt_lvl_4_nbr, h.rpt_lvl_4_nbr)\n" +
                 "                    AND sc_store_fl.season = h.season_code\n" +
                 "                    AND sc_store_fl.fiscal_year = h.fiscal_year\n" +
-                "            ) AS all_clus ON CAST(rfa_output.store AS INT64) = all_clus.store_nbr\n" +
-                "            AND all_clus.fineline_nbr = COALESCE(rfa_output.like_fineline_nbr, rfa_output.fineline)\n" +
-                "            AND rfa_output.fiscal_year = all_clus.fiscal_year\n" +
-                "            AND rfa_output.season_code = all_clus.season\n" +
+                "            ) AS size_clus ON CAST(rfa_output.store AS INT64) = size_clus.store_nbr\n" +
+                "            AND size_clus.fineline_nbr = COALESCE(rfa_output.like_fineline_nbr, rfa_output.fineline)\n" +
+                "            AND rfa_output.fiscal_year = size_clus.fiscal_year\n" +
+                "            AND rfa_output.season_code = size_clus.season\n" +
                 "            LEFT JOIN (\n" +
                 "                SELECT *\n" +
                 "                FROM cc_color_families\n" +
                 "            ) AS cc_color ON rfa_output.cc = cc_color.cc\n" +
-                "        WHERE UPPER(TRIM(all_clus.color_family)) = UPPER(TRIM(cc_color.color_family_desc))\n" +
-                "        OR all_clus.fineline_nbr is NULL\n" +
+                "        WHERE UPPER(TRIM(size_clus.color_family)) = UPPER(TRIM(cc_color.color_family_desc))\n" +
+                "        OR size_clus.fineline_nbr is NULL\n" +
                 "    )\n" +
                 "GROUP BY rpt_lvl_0_nbr,\n" +
                 "    rpt_lvl_1_nbr,\n" +
@@ -589,8 +589,8 @@ public class BigQueryClusterService {
                 "            rfa_output.cc AS customer_choice,\n" +
                 "            rfa_output.final_pref AS fixture_type,\n" +
                 "            rfa_output.final_alloc_space AS fixture_group,\n" +
-                "            COALESCE(all_clus.color_family, 'DEFAULT') AS color_family,\n" +
-                "            COALESCE(all_clus.cluster_id, 1) AS size_cluster_id,\n" +
+                "            COALESCE(size_clus.color_family, 'DEFAULT') AS color_family,\n" +
+                "            COALESCE(size_clus.cluster_id, 1) AS size_cluster_id,\n" +
                 "            subcatg_clus.cluster_id AS volume_group_cluster_id,\n" +
                 "            subcatg_clus.store_nbr\n" +
                 "        FROM (\n" +
@@ -664,23 +664,23 @@ public class BigQueryClusterService {
                 "                    AND sc_store_fl.dept_subcatg_nbr = COALESCE(h.like_rpt_lvl_4_nbr, h.rpt_lvl_4_nbr)\n" +
                 "                    AND sc_store_fl.season = h.season_code\n" +
                 "                    AND sc_store_fl.fiscal_year = h.fiscal_year\n" +
-                "            ) AS all_clus ON CAST(rfa_output.store AS INT64) = all_clus.store_nbr\n" +
-                "            AND all_clus.fineline_nbr = COALESCE(\n" +
+                "            ) AS size_clus ON CAST(rfa_output.store AS INT64) = size_clus.store_nbr\n" +
+                "            AND size_clus.fineline_nbr = COALESCE(\n" +
                 "                rfa_output.like_fineline_nbr,\n" +
                 "                rfa_output.fineline\n" +
                 "            )\n" +
-                "            AND all_clus.dept_subcatg_nbr = COALESCE(\n" +
+                "            AND size_clus.dept_subcatg_nbr = COALESCE(\n" +
                 "                rfa_output.like_rpt_lvl_4_nbr,\n" +
                 "                rfa_output.rpt_lvl_4_nbr\n" +
                 "            )\n" +
-                "            AND rfa_output.fiscal_year = all_clus.fiscal_year\n" +
-                "            AND rfa_output.season_code = all_clus.season\n" +
+                "            AND rfa_output.fiscal_year = size_clus.fiscal_year\n" +
+                "            AND rfa_output.season_code = size_clus.season\n" +
                 "            LEFT JOIN (\n" +
                 "                SELECT *\n" +
                 "                FROM cc_color_families\n" +
                 "            ) AS cc_color ON rfa_output.cc = cc_color.cc\n" +
-                "        WHERE UPPER(TRIM(all_clus.color_family)) = UPPER(TRIM(cc_color.color_family_desc))\n" +
-                "        OR all_clus.fineline_nbr is NULL\n" +
+                "        WHERE UPPER(TRIM(size_clus.color_family)) = UPPER(TRIM(cc_color.color_family_desc))\n" +
+                "        OR size_clus.fineline_nbr is NULL\n" +
                 "    )\n" +
                 "GROUP BY rpt_lvl_0_nbr,\n" +
                 "    rpt_lvl_1_nbr,\n" +
@@ -888,8 +888,8 @@ public class BigQueryClusterService {
                 "            rfa_output.cc AS customer_choice,\n" +
                 "            rfa_output.final_pref AS fixture_type,\n" +
                 "            rfa_output.final_alloc_space AS fixture_group,\n" +
-                "            COALESCE(all_clus.color_family, 'DEFAULT') AS color_family,\n" +
-                "            COALESCE(all_clus.cluster_id, 1) AS size_cluster_id,\n" +
+                "            COALESCE(size_clus.color_family, 'DEFAULT') AS color_family,\n" +
+                "            COALESCE(size_clus.cluster_id, 1) AS size_cluster_id,\n" +
                 "            catg_clus.cluster_id AS volume_group_cluster_id,\n" +
                 "            catg_clus.store_nbr\n" +
                 "        FROM (\n" +
@@ -964,23 +964,23 @@ public class BigQueryClusterService {
                 "                    AND sc_store_fl.dept_subcatg_nbr = COALESCE(h.like_rpt_lvl_4_nbr, h.rpt_lvl_4_nbr)\n" +
                 "                    AND sc_store_fl.season = h.season_code\n" +
                 "                    AND sc_store_fl.fiscal_year = h.fiscal_year\n" +
-                "            ) AS all_clus ON CAST(rfa_output.store AS INT64) = all_clus.store_nbr\n" +
-                "            AND all_clus.dept_catg_nbr = COALESCE(\n" +
+                "            ) AS size_clus ON CAST(rfa_output.store AS INT64) = size_clus.store_nbr\n" +
+                "            AND size_clus.dept_catg_nbr = COALESCE(\n" +
                 "                rfa_output.like_rpt_lvl_3_nbr,\n" +
                 "                rfa_output.rpt_lvl_3_nbr\n" +
                 "                )\n" +
-                "            AND all_clus.fineline_nbr = COALESCE(\n" +
+                "            AND size_clus.fineline_nbr = COALESCE(\n" +
                 "                rfa_output.like_fineline_nbr,\n" +
                 "                rfa_output.fineline\n" +
                 "            )\n" +
-                "            AND rfa_output.fiscal_year = all_clus.fiscal_year\n" +
-                "            AND rfa_output.season_code = all_clus.season\n" +
+                "            AND rfa_output.fiscal_year = size_clus.fiscal_year\n" +
+                "            AND rfa_output.season_code = size_clus.season\n" +
                 "            LEFT JOIN (\n" +
                 "                SELECT *\n" +
                 "                FROM cc_color_families\n" +
                 "            ) AS cc_color ON rfa_output.cc = cc_color.cc\n" +
-                "        WHERE UPPER(TRIM(all_clus.color_family)) = UPPER(TRIM(cc_color.color_family_desc))\n" +
-                "        OR all_clus.fineline_nbr is NULL\n" +
+                "        WHERE UPPER(TRIM(size_clus.color_family)) = UPPER(TRIM(cc_color.color_family_desc))\n" +
+                "        OR size_clus.fineline_nbr is NULL\n" +
                 "    )\n" +
                 "GROUP BY rpt_lvl_0_nbr,\n" +
                 "    rpt_lvl_1_nbr,\n" +
