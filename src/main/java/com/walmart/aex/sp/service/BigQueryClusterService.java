@@ -88,26 +88,26 @@ public class BigQueryClusterService {
                 "    FROM data,\n" +
                 "        UNNEST(JSON_EXTRACT_ARRAY(json_array)) AS cc_color_families_json\n" +
                 ")";
-        if(Boolean.parseBoolean(bigQueryConnectionProperties.getDESizeClusterFeatureFlag())){
+        if (Boolean.parseBoolean(bigQueryConnectionProperties.getDESizeClusterFeatureFlag())) {
             if (volumeDeviationLevel.equalsIgnoreCase(VdLevelCode.FINELINE.getDescription())) {
-                String finelineClusterTable = analyticsDataset + "." + bigQueryConnectionProperties.getFinelineVolumeCluster();
-                queryParams += findFinelineQuery(rfaCcTable,sizeClusterStoreFlTable , finelineClusterTable);
+                String finelineClusterTable = String.join(".", analyticsDataset, bigQueryConnectionProperties.getFinelineVolumeCluster());
+                queryParams += findFinelineQuery(rfaCcTable, sizeClusterStoreFlTable, finelineClusterTable);
             } else if (volumeDeviationLevel.equalsIgnoreCase(VdLevelCode.SUB_CATEGORY.getDescription())) {
-                String subCategoryClusterTable = analyticsDataset + "." + bigQueryConnectionProperties.getSubCategoryVolumeCluster();
+                String subCategoryClusterTable = String.join(".", analyticsDataset, bigQueryConnectionProperties.getSubCategoryVolumeCluster());
                 queryParams += findSubCatQuery(rfaCcTable, sizeClusterStoreFlTable, subCategoryClusterTable);
             } else {
-                String categoryClusterTable = analyticsDataset + "." + bigQueryConnectionProperties.getCategoryVolumeCluster();
+                String categoryClusterTable = String.join(".", analyticsDataset, bigQueryConnectionProperties.getCategoryVolumeCluster());
                 queryParams += findCatQuery(rfaCcTable, sizeClusterStoreFlTable, categoryClusterTable);
             }
-        }else{
+        } else {
             if (volumeDeviationLevel.equalsIgnoreCase(VdLevelCode.FINELINE.getDescription())) {
-                String finelineClusterTable = analyticsDataset + "." + bigQueryConnectionProperties.getFinelineVolumeCluster();
+                String finelineClusterTable = String.join(".", analyticsDataset, bigQueryConnectionProperties.getFinelineVolumeCluster());
                 queryParams += findFinelineQuery(rfaCcTable, sizeClusterTable, sizeColorClusterTable, finelineClusterTable);
             } else if (volumeDeviationLevel.equalsIgnoreCase(VdLevelCode.SUB_CATEGORY.getDescription())) {
-                String subCategoryClusterTable = analyticsDataset + "." + bigQueryConnectionProperties.getSubCategoryVolumeCluster();
+                String subCategoryClusterTable = String.join(".", analyticsDataset, bigQueryConnectionProperties.getSubCategoryVolumeCluster());
                 queryParams += findSubCatQuery(rfaCcTable, sizeClusterTable, sizeColorClusterTable, subCategoryClusterTable);
             } else {
-                String categoryClusterTable = analyticsDataset + "." + bigQueryConnectionProperties.getCategoryVolumeCluster();
+                String categoryClusterTable = String.join(".", analyticsDataset, bigQueryConnectionProperties.getCategoryVolumeCluster());
                 queryParams += findCatQuery(rfaCcTable, sizeClusterTable, sizeColorClusterTable, categoryClusterTable);
             }
         }
