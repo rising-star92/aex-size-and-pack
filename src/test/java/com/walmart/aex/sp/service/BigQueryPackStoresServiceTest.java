@@ -2,7 +2,7 @@ package com.walmart.aex.sp.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
@@ -16,6 +16,8 @@ import java.util.Collections;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.walmart.aex.sp.dto.packoptimization.packDescription.PackDescCustChoiceDTO;
+import com.walmart.aex.sp.repository.CustomerChoiceRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -66,13 +68,16 @@ class BigQueryPackStoresServiceTest
     @Mock
     private BQFPService bqfpService;
 
+    @Mock
+    private CustomerChoiceRepository customerChoiceRepository;
+
     @BeforeEach
     void setUp() throws IOException 
     {
         MockitoAnnotations.openMocks(this);
         bigQueryInitialSetPlanService = new BigQueryInitialSetPlanService(new ObjectMapper(),bqfpService,strategyFetchService,bigQuery);
-        bigQueryPackStoresService = new BigQueryPackStoresService(new ObjectMapper(), bigQuery, strategyFetchService);
-        ReflectionTestUtils.setField(bigQueryInitialSetPlanService, "bigQueryConnectionProperties", 
+        bigQueryPackStoresService = new BigQueryPackStoresService(new ObjectMapper(), bigQuery, strategyFetchService, customerChoiceRepository);
+        ReflectionTestUtils.setField(bigQueryInitialSetPlanService, "bigQueryConnectionProperties",
         		bigQueryConnectionProperties);
         ReflectionTestUtils.setField(bigQueryPackStoresService, "bigQueryConnectionProperties", 
         		bigQueryConnectionProperties);
@@ -88,6 +93,8 @@ class BigQueryPackStoresServiceTest
           StrategyVolumeDeviationResponse volumeDeviationResponse = getVolumeDeviationStrategyResponse();
           when(strategyFetchService.getStrategyVolumeDeviation(planId, request.getFinelineNbr())).
           thenReturn(volumeDeviationResponse);
+          when(customerChoiceRepository.getCustomerChoicesByFinelineAndPlanId(anyLong(), anyInt(), anyInt()))
+                  .thenReturn(getPackDescCustChoiceDTO());
           try(MockedStatic<BigQueryOptions> mockBigQuery = mockStatic(BigQueryOptions.class)) 
           {
               when(bigQuery.query(any(QueryJobConfiguration.class))).thenReturn(isResult);
@@ -122,6 +129,7 @@ class BigQueryPackStoresServiceTest
             	  else
             	  {
             		  VolumeFixtureMetrics metrics2 = volumeFixtureMetrics.get(0);
+                      assertEquals("2840 - FINELINE DESC_WHITE_HANGING_IS_2", stylePackVolume.getPackDescription());
             		  assertEquals("34_2840_1_21_2_003", metrics2.getCcId());
             		  assertEquals("WALLS", metrics2.getFixtureType());
             		  assertEquals(BigDecimal.valueOf(0.5), metrics2.getFixtureAllocation());
@@ -167,7 +175,8 @@ class BigQueryPackStoresServiceTest
         		+ "\"styleNbr\":\"34_2840_1_21_2\",\"isQuantity\":8,"
         		+ "\"store\":1619,\"clusterId\":1,\"fixtureAllocation\":0.5,"
         		+ "\"fixtureType\":\"WALLS\",\"packId\":\"SP_is68_2840_0_34_2840_1_21_2_003_HANGING_2\","
-        		+ "\"initialSetPackMultiplier\":\"1\"}");
+                + "\"initialSetPackMultiplier\":\"1\","
+                + "\"merchMethod\":\"HANGING\"}");
         
         FieldValue isFieldValue2 = FieldValue.of(FieldValue.Attribute.PRIMITIVE, 
         		"{\"productFineline\":\"73_2840\",\"fineline\":\"2840\", "
@@ -175,7 +184,8 @@ class BigQueryPackStoresServiceTest
         		+ "\"styleNbr\":\"34_2840_1_21_2\",\"isQuantity\":4,"
         		+ "\"store\":2631,\"clusterId\":1,\"fixtureAllocation\":0.5,"
         		+ "\"fixtureType\":\"WALLS\",\"packId\":\"SP_is68_2840_0_34_2840_1_21_2_003_HANGING_2\","
-        		+ "\"initialSetPackMultiplier\":\"2\"}");
+                + "\"initialSetPackMultiplier\":\"2\","
+                + "\"merchMethod\":\"HANGING\"}");
         
         FieldValue isFieldValue3 = FieldValue.of(FieldValue.Attribute.PRIMITIVE, 
         		"{\"productFineline\":\"73_2840\",\"fineline\":\"2840\", "
@@ -183,7 +193,8 @@ class BigQueryPackStoresServiceTest
         		+ "\"styleNbr\":\"34_2840_1_21_2\",\"isQuantity\":8,"
         		+ "\"store\":4359,\"clusterId\":3,\"fixtureAllocation\":0.25,"
         		+ "\"fixtureType\":\"RACKS\",\"packId\":null,"
-        		+ "\"initialSetPackMultiplier\":\"1\"}");
+        		+ "\"initialSetPackMultiplier\":\"1\","
+                + "\"merchMethod\":\"HANGING\"}");
         
         FieldValueList isFieldValueList = FieldValueList.of(List.of(isFieldValue1, isFieldValue2, isFieldValue3));
         isResult = new TableResult(null, 2L, new PageImpl<>(null, null, 
@@ -199,6 +210,8 @@ class BigQueryPackStoresServiceTest
         lenient().when(bigQueryConnectionProperties.getRFAProjectId()).thenReturn("wmt-e12743607538928");
         lenient().when(bigQueryConnectionProperties.getRFADataSetName()).thenReturn("commitment_report_rfa_output_stg");
         lenient().when(bigQueryConnectionProperties.getRFACCStageTable()).thenReturn("rfa_cc_out_parquet");
+
+        lenient().when(bigQueryConnectionProperties.getPackDescriptionFeatureFlag()).thenReturn("true");
     }
 
     private StrategyVolumeDeviationResponse getVolumeDeviationStrategyResponse() 
@@ -216,5 +229,18 @@ class BigQueryPackStoresServiceTest
         finelines.add(finelineVolumeDeviationDto);
         volumeDeviationResponse.setFinelines(finelines);
         return volumeDeviationResponse;
+    }
+
+    private List<PackDescCustChoiceDTO> getPackDescCustChoiceDTO() {
+        PackDescCustChoiceDTO packDescCustChoiceDTO1 = new PackDescCustChoiceDTO();
+        packDescCustChoiceDTO1.setCcId("34_2840_1_21_2_003");
+        packDescCustChoiceDTO1.setColorName("WHITE");
+        packDescCustChoiceDTO1.setAltFinelineDesc("2840 - FINELINE DESC");
+
+        PackDescCustChoiceDTO packDescCustChoiceDTO2 = new PackDescCustChoiceDTO();
+        packDescCustChoiceDTO2.setCcId("34_2840_1_21_2_007");
+        packDescCustChoiceDTO2.setColorName("BLUE");
+        packDescCustChoiceDTO2.setAltFinelineDesc("2840 - FINELINE DESC");
+        return List.of(packDescCustChoiceDTO1, packDescCustChoiceDTO2);
     }
 }

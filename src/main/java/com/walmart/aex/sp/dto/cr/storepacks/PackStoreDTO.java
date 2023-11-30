@@ -18,4 +18,5 @@ public class PackStoreDTO
     private String packId;
     private Integer initialSetPackMultiplier;
     private Integer bumpSetPackMultiplier;
+    private String merchMethod;
 }

@@ -135,7 +135,7 @@ public class PackOptimizationUtil {
                 .append(colors.size() == 1 ? colors.get(0) + UNDERSCORE : EMPTY_STRING)
                 .append(merchMethod).append(UNDERSCORE)
                 .append(null == bumpPackNumber ? INITIAL_SET_IDENTIFIER : BUMP_PACK + bumpPackNumber).append(UNDERSCORE)
-                .append(packId.substring(packId.lastIndexOf(UNDERSCORE) + 1))
+                .append(null != packId ? packId.substring(packId.lastIndexOf(UNDERSCORE) + 1) : null)
                 .toString();
     }
 
