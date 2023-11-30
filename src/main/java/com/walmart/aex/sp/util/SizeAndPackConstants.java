@@ -56,7 +56,6 @@ public class SizeAndPackConstants {
     public static final String DEFAULT_COLOR_FAMILY = "DEFAULT";
     public static final String UNDERSCORE = "_";
     public static final String EMPTY_STRING = "";
-    public static final String PACK_OPT_IS_PREFIX = "SP_is";
     public static final String INITIAL_SET_IDENTIFIER = "IS";
 
     //DC Inbound Report Headers

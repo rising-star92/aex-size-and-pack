@@ -125,6 +125,11 @@ public class PackOptimizationUtil {
         return analyticsMlChildSend;
     }
 
+    /**
+     * Generates Pack Description in this format - FinelineDesc_ColorName_MerchMethod_BumpPackNumber_SequenceNumber
+     * Ex BumpSet - 3463 - GV EK CHASE CAPRIS_WHITE_HANGING_BP1_0
+     * Ex InitialSet - 3463 - GV EK CHASE CAPRIS_WHITE_HANGING_IS_0
+     */
     public static String createPackDescription(String packId, String merchMethod, Integer bumpPackNumber, List<String> colors, String altFinelineDesc) {
         return new StringBuilder().append(altFinelineDesc.trim()).append(UNDERSCORE)
                 .append(colors.size() == 1 ? colors.get(0) + UNDERSCORE : EMPTY_STRING)
