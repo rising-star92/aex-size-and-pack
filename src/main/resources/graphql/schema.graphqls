@@ -138,6 +138,7 @@ type InitialSetPlan{
 
 type PackDetails{
 	packId: String
+	packDescription: String
 	uuId: String
 	metrics: [Metrics]
 	bumpPackNbr: Int

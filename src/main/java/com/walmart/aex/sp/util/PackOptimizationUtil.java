@@ -17,13 +17,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static com.walmart.aex.sp.util.CommonUtil.getDateFromString;
-import static com.walmart.aex.sp.util.SizeAndPackConstants.MULTI_BUMP_PACK_SUFFIX;
+import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
 
 @Component
 @Slf4j
@@ -126,6 +123,20 @@ public class PackOptimizationUtil {
         analyticsMlChildSend.setAnalyticsJobId(integrationHubResponseDTO.getWf_running_id());
         analyticsMlChildSend.setBumpPackNbr(bumpNumber);
         return analyticsMlChildSend;
+    }
+
+    /**
+     * Generates Pack Description in this format - FinelineDesc_ColorName_MerchMethod_BumpPackNumber_SequenceNumber
+     * Ex BumpSet - 3463 - GV EK CHASE CAPRIS_WHITE_HANGING_BP1_0
+     * Ex InitialSet - 3463 - GV EK CHASE CAPRIS_WHITE_HANGING_IS_0
+     */
+    public static String createPackDescription(String packId, String merchMethod, Integer bumpPackNumber, List<String> colors, String altFinelineDesc) {
+        return new StringBuilder().append(altFinelineDesc.trim()).append(UNDERSCORE)
+                .append(colors.size() == 1 ? colors.get(0) + UNDERSCORE : EMPTY_STRING)
+                .append(merchMethod).append(UNDERSCORE)
+                .append(null == bumpPackNumber ? INITIAL_SET_IDENTIFIER : BUMP_PACK + bumpPackNumber).append(UNDERSCORE)
+                .append(packId.substring(packId.lastIndexOf(UNDERSCORE) + 1))
+                .toString();
     }
 
 }

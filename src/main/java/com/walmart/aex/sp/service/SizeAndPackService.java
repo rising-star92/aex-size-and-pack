@@ -2,30 +2,18 @@ package com.walmart.aex.sp.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.walmart.aex.sp.dto.buyquantity.BuyQntyResponseDTO;
-import com.walmart.aex.sp.dto.buyquantity.BuyQtyRequest;
-import com.walmart.aex.sp.dto.buyquantity.BuyQtyResponse;
-import com.walmart.aex.sp.dto.buyquantity.ClustersDto;
-import com.walmart.aex.sp.dto.buyquantity.CustomerChoiceDto;
-import com.walmart.aex.sp.dto.buyquantity.FinelineDto;
-import com.walmart.aex.sp.dto.buyquantity.Lvl3Dto;
-import com.walmart.aex.sp.dto.buyquantity.Lvl4Dto;
-import com.walmart.aex.sp.dto.buyquantity.SizeDto;
-import com.walmart.aex.sp.dto.buyquantity.StyleDto;
-import com.walmart.aex.sp.dto.commitmentreport.*;
+import com.walmart.aex.sp.dto.buyquantity.*;
+import com.walmart.aex.sp.dto.commitmentreport.InitialBumpSetResponse;
+import com.walmart.aex.sp.dto.commitmentreport.InitialSetPackRequest;
+import com.walmart.aex.sp.dto.commitmentreport.Metrics;
+import com.walmart.aex.sp.dto.commitmentreport.RFAInitialSetBumpSetResponse;
 import com.walmart.aex.sp.dto.cr.storepacks.PackDetailsVolumeResponse;
 import com.walmart.aex.sp.dto.isVolume.FinelineVolume;
 import com.walmart.aex.sp.dto.isVolume.InitialSetVolumeRequest;
 import com.walmart.aex.sp.dto.isVolume.InitialSetVolumeResponse;
 import com.walmart.aex.sp.dto.packoptimization.Fineline;
 import com.walmart.aex.sp.dto.packoptimization.packDescription.PackDescCustChoiceDTO;
-import com.walmart.aex.sp.dto.planhierarchy.Lvl1;
-import com.walmart.aex.sp.dto.planhierarchy.Lvl2;
-import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
-import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDTO;
-import com.walmart.aex.sp.dto.planhierarchy.PlanSizeAndPackDeleteDTO;
-import com.walmart.aex.sp.dto.planhierarchy.SizeAndPackResponse;
-import com.walmart.aex.sp.dto.planhierarchy.StrongKey;
+import com.walmart.aex.sp.dto.planhierarchy.*;
 import com.walmart.aex.sp.entity.MerchCatPlan;
 import com.walmart.aex.sp.entity.MerchantPackOptimization;
 import com.walmart.aex.sp.enums.ChannelType;
@@ -34,10 +22,9 @@ import com.walmart.aex.sp.exception.SizeAndPackException;
 import com.walmart.aex.sp.properties.BigQueryConnectionProperties;
 import com.walmart.aex.sp.repository.*;
 import com.walmart.aex.sp.util.BuyQtyCommonUtil;
-
+import com.walmart.aex.sp.util.PackOptimizationUtil;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -407,26 +394,10 @@ public class SizeAndPackService {
 			}
 
             Optional.of(rfaInitialSetBumpSetResponses).stream().flatMap(Collection::stream).forEach(
-					intialSetResponseOne ->
-                        initialSetPlanMapper.mapInitialSetPlan(intialSetResponseOne, response, request.getFinelineNbr()));
-            if(Boolean.parseBoolean(bigQueryConnectionProperties.getPackDescriptionFeatureFlag())){
-                List<PackDescCustChoiceDTO> packDescCustChoiceDTO = customerChoiceRepository.getCustomerChoicesByFinelineAndPlanId(Long.valueOf(request.getPlanId()),request.getFinelineNbr(),ChannelType.STORE.getId());
-                if (!CollectionUtils.isEmpty(packDescCustChoiceDTO)) {
-                    String altFinelineDesc = packDescCustChoiceDTO.get(0).getAltFinelineDesc() != null ? packDescCustChoiceDTO.get(0).getAltFinelineDesc() : String.valueOf(request.getFinelineNbr());
-                    response.getIntialSetStyles().forEach(initialSetStyle -> initialSetStyle.getInitialSetPlan().stream().flatMap(initialSetPlan -> initialSetPlan.getPackDetails().stream()).forEach(
-                            packDetails -> {
-                                Set<String> ccs = packDetails.getMetrics().stream().map(Metrics::getCcId).collect(Collectors.toSet());
-                                List<String> colors = new ArrayList<>();
-                                ccs.forEach(cc-> packDescCustChoiceDTO.forEach(packDescCustChoice -> {
-                                    if(packDescCustChoice.getCcId().equalsIgnoreCase(cc))
-                                        colors.add(packDescCustChoice.getColorName());
-                                }));
-                                // TODO : set pack description by calling createPackDescription(request.getPlanId(), request.getFinelineNbr(), colors, altFinelineDesc);
-                            }
-                    ));
-                }else{
-                    log.warn("No matching record found for fineline for planId: {}, fineline: {}", request.getPlanId(), request.getFinelineNbr());
-                }
+                    intialSetResponseOne ->
+                            initialSetPlanMapper.mapInitialSetPlan(intialSetResponseOne, response, request.getFinelineNbr()));
+            if (Boolean.parseBoolean(bigQueryConnectionProperties.getPackDescriptionFeatureFlag())) {
+                setPackDescription(request, response);
             }
 		} catch (Exception e) {
 			log.error("Exception While fetching Initial Set Pack Quantities :", e);
@@ -434,13 +405,24 @@ public class SizeAndPackService {
 		return response;
 	}
 
-    protected String createPackDescription(Integer planId, Integer finelineNbr, List<String> colors , String altFinelineDesc) {
-        String color = null;
-        if(colors.size()==1){
-            color = colors.get(0);
+    private void setPackDescription(InitialSetPackRequest request, InitialBumpSetResponse response) {
+        List<PackDescCustChoiceDTO> packDescCustChoiceDTO = customerChoiceRepository.getCustomerChoicesByFinelineAndPlanId(Long.valueOf(request.getPlanId()), request.getFinelineNbr(), ChannelType.STORE.getId());
+        if (!CollectionUtils.isEmpty(packDescCustChoiceDTO)) {
+            String altFinelineDesc = packDescCustChoiceDTO.get(0).getAltFinelineDesc() != null ? packDescCustChoiceDTO.get(0).getAltFinelineDesc() : String.valueOf(request.getFinelineNbr());
+            response.getIntialSetStyles().forEach(initialSetStyle -> initialSetStyle.getInitialSetPlan().stream().flatMap(initialSetPlan -> initialSetPlan.getPackDetails().stream()).forEach(
+                    packDetails -> {
+                        Set<String> ccs = packDetails.getMetrics().stream().map(Metrics::getCcId).collect(Collectors.toSet());
+                        Set<String> colors = new HashSet<>();
+                        ccs.forEach(cc -> packDescCustChoiceDTO.forEach(packDescCustChoice -> {
+                            if (packDescCustChoice.getCcId().equalsIgnoreCase(cc))
+                                colors.add(packDescCustChoice.getColorName());
+                        }));
+                        packDetails.setPackDescription(PackOptimizationUtil.createPackDescription(packDetails.getPackId(), packDetails.getMetrics().get(0).getMerchMethod(), packDetails.getBumpPackNbr(), List.copyOf(colors), altFinelineDesc));
+                    }
+            ));
+        } else {
+            log.warn("No matching record found for fineline for planId: {}, fineline: {}", request.getPlanId(), request.getFinelineNbr());
         }
-        // TODO : Formulate the pack description and return it
-        return null;
     }
 
     public List<InitialSetVolumeResponse> getInitialAndBumpSetDetailsByVolumeCluster(InitialSetVolumeRequest request) {

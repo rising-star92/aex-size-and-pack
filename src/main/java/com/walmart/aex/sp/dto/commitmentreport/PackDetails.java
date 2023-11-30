@@ -8,6 +8,7 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PackDetails {
 	  private String packId;
+	  private String packDescription;
 	  private List<Metrics> metrics;
 	  private String uuId;
 	  private Integer bumpPackNbr;
