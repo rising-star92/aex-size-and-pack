@@ -57,12 +57,12 @@ public class BigQueryClusterService {
         return results;
     }
 
-    private String generateQuery(String volumeDeviationLevel)  {
-        String analyticsDataset = bigQueryConnectionProperties.getRFAProjectId() + "." + bigQueryConnectionProperties.getAnalyticsData();
-        String rfaCcTable = bigQueryConnectionProperties.getRFAProjectId() + "." + bigQueryConnectionProperties.getRFADataSetName() + "." + bigQueryConnectionProperties.getRFACCStageTable();
-        String sizeClusterStoreFlTable = bigQueryConnectionProperties.getRFAProjectId() + "." + bigQueryConnectionProperties.getRFADataSetName() + "." + bigQueryConnectionProperties.getSizeClusterStoreFl();
-        String sizeClusterTable = analyticsDataset + "." + bigQueryConnectionProperties.getSizeCluster();
-        String sizeColorClusterTable = analyticsDataset + "." + bigQueryConnectionProperties.getSizeColorCluster();
+    protected String generateQuery(String volumeDeviationLevel)  {
+        String analyticsDataset = String.join(".", bigQueryConnectionProperties.getRFAProjectId(), bigQueryConnectionProperties.getAnalyticsData());
+        String rfaCcTable = String.join(".", bigQueryConnectionProperties.getRFAProjectId(), bigQueryConnectionProperties.getRFADataSetName(), bigQueryConnectionProperties.getRFACCStageTable());
+        String sizeClusterStoreFlTable = String.join(".", bigQueryConnectionProperties.getRFAProjectId(), bigQueryConnectionProperties.getRFADataSetName(), bigQueryConnectionProperties.getSizeClusterStoreFl());
+        String sizeClusterTable = String.join(".", analyticsDataset, bigQueryConnectionProperties.getSizeCluster());
+        String sizeColorClusterTable = String.join(".", analyticsDataset, bigQueryConnectionProperties.getSizeColorCluster());
         String queryParams = "WITH MyTable AS ( \n" +
                         "WITH data AS (\n" +
                         "    SELECT @colors AS json_array\n" +
@@ -996,4 +996,5 @@ public class BigQueryClusterService {
                 "    size_cluster_id,\n" +
                 "    volume_group_cluster_id";
     }
+
 }
