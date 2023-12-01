@@ -50,4 +50,10 @@ public interface BigQueryConnectionProperties {
 
 	@Property(propertyName = "pack.description.feature.flag")
 	String getPackDescriptionFeatureFlag();
+
+	@Property(propertyName = "de.size.cluster.table.feature.flag")
+	String getDESizeClusterFeatureFlag();
+
+	@Property(propertyName = "analytics.data.size.cluster.store.fineline")
+	String getSizeClusterStoreFl();
 }

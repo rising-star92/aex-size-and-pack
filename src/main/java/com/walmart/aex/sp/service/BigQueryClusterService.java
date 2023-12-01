@@ -57,11 +57,12 @@ public class BigQueryClusterService {
         return results;
     }
 
-    private String generateQuery(String volumeDeviationLevel)  {
-        String analyticsDataset = bigQueryConnectionProperties.getRFAProjectId() + "." + bigQueryConnectionProperties.getAnalyticsData();
-        String rfaCcTable = bigQueryConnectionProperties.getRFAProjectId() + "." + bigQueryConnectionProperties.getRFADataSetName() + "." + bigQueryConnectionProperties.getRFACCStageTable();
-        String sizeClusterTable = analyticsDataset + "." + bigQueryConnectionProperties.getSizeCluster();
-        String sizeColorClusterTable = analyticsDataset + "." + bigQueryConnectionProperties.getSizeColorCluster();
+    protected String generateQuery(String volumeDeviationLevel)  {
+        String analyticsDataset = String.join(".", bigQueryConnectionProperties.getRFAProjectId(), bigQueryConnectionProperties.getAnalyticsData());
+        String rfaCcTable = String.join(".", bigQueryConnectionProperties.getRFAProjectId(), bigQueryConnectionProperties.getRFADataSetName(), bigQueryConnectionProperties.getRFACCStageTable());
+        String sizeClusterStoreFlTable = String.join(".", bigQueryConnectionProperties.getRFAProjectId(), bigQueryConnectionProperties.getRFADataSetName(), bigQueryConnectionProperties.getSizeClusterStoreFl());
+        String sizeClusterTable = String.join(".", analyticsDataset, bigQueryConnectionProperties.getSizeCluster());
+        String sizeColorClusterTable = String.join(".", analyticsDataset, bigQueryConnectionProperties.getSizeColorCluster());
         String queryParams = "WITH MyTable AS ( \n" +
                         "WITH data AS (\n" +
                         "    SELECT @colors AS json_array\n" +
@@ -87,16 +88,28 @@ public class BigQueryClusterService {
                 "    FROM data,\n" +
                 "        UNNEST(JSON_EXTRACT_ARRAY(json_array)) AS cc_color_families_json\n" +
                 ")";
-
-        if (volumeDeviationLevel.equalsIgnoreCase(VdLevelCode.FINELINE.getDescription())) {
-            String finelineClusterTable = analyticsDataset + "." + bigQueryConnectionProperties.getFinelineVolumeCluster();
-            queryParams += findFinelineQuery(rfaCcTable, sizeClusterTable, sizeColorClusterTable, finelineClusterTable);
-        } else if (volumeDeviationLevel.equalsIgnoreCase(VdLevelCode.SUB_CATEGORY.getDescription())) {
-            String subCategoryClusterTable = analyticsDataset + "." + bigQueryConnectionProperties.getSubCategoryVolumeCluster();
-            queryParams += findSubCatQuery(rfaCcTable, sizeClusterTable, sizeColorClusterTable, subCategoryClusterTable);
+        if (Boolean.parseBoolean(bigQueryConnectionProperties.getDESizeClusterFeatureFlag())) {
+            if (volumeDeviationLevel.equalsIgnoreCase(VdLevelCode.FINELINE.getDescription())) {
+                String finelineClusterTable = String.join(".", analyticsDataset, bigQueryConnectionProperties.getFinelineVolumeCluster());
+                queryParams += findFinelineQuery(rfaCcTable, sizeClusterStoreFlTable, finelineClusterTable);
+            } else if (volumeDeviationLevel.equalsIgnoreCase(VdLevelCode.SUB_CATEGORY.getDescription())) {
+                String subCategoryClusterTable = String.join(".", analyticsDataset, bigQueryConnectionProperties.getSubCategoryVolumeCluster());
+                queryParams += findSubCatQuery(rfaCcTable, sizeClusterStoreFlTable, subCategoryClusterTable);
+            } else {
+                String categoryClusterTable = String.join(".", analyticsDataset, bigQueryConnectionProperties.getCategoryVolumeCluster());
+                queryParams += findCatQuery(rfaCcTable, sizeClusterStoreFlTable, categoryClusterTable);
+            }
         } else {
-            String categoryClusterTable = analyticsDataset + "." + bigQueryConnectionProperties.getCategoryVolumeCluster();
-            queryParams += findCatQuery(rfaCcTable, sizeClusterTable, sizeColorClusterTable, categoryClusterTable);
+            if (volumeDeviationLevel.equalsIgnoreCase(VdLevelCode.FINELINE.getDescription())) {
+                String finelineClusterTable = String.join(".", analyticsDataset, bigQueryConnectionProperties.getFinelineVolumeCluster());
+                queryParams += findFinelineQuery(rfaCcTable, sizeClusterTable, sizeColorClusterTable, finelineClusterTable);
+            } else if (volumeDeviationLevel.equalsIgnoreCase(VdLevelCode.SUB_CATEGORY.getDescription())) {
+                String subCategoryClusterTable = String.join(".", analyticsDataset, bigQueryConnectionProperties.getSubCategoryVolumeCluster());
+                queryParams += findSubCatQuery(rfaCcTable, sizeClusterTable, sizeColorClusterTable, subCategoryClusterTable);
+            } else {
+                String categoryClusterTable = String.join(".", analyticsDataset, bigQueryConnectionProperties.getCategoryVolumeCluster());
+                queryParams += findCatQuery(rfaCcTable, sizeClusterTable, sizeColorClusterTable, categoryClusterTable);
+            }
         }
         queryParams += ") SELECT TO_JSON_STRING(gcpTable) AS json FROM MyTable AS gcpTable;";
         return queryParams;
@@ -238,6 +251,137 @@ public class BigQueryClusterService {
                 "            ) AS cc_color ON rfa_output.cc = cc_color.cc\n" +
                 "        WHERE UPPER(TRIM(all_clus.color_family)) = UPPER(TRIM(cc_color.color_family_desc))\n" +
                 "        OR all_clus.fineline_nbr is NULL\n" +
+                "    )\n" +
+                "GROUP BY rpt_lvl_0_nbr,\n" +
+                "    rpt_lvl_1_nbr,\n" +
+                "    rpt_lvl_2_nbr,\n" +
+                "    rpt_lvl_3_nbr,\n" +
+                "    rpt_lvl_4_nbr,\n" +
+                "    fineline_nbr,\n" +
+                "    style_nbr,\n" +
+                "    customer_choice,\n" +
+                "    fixture_type,\n" +
+                "    fixture_group,\n" +
+                "    color_family,\n" +
+                "    size_cluster_id,\n" +
+                "    volume_group_cluster_id ";
+    }
+    /**
+     * Fineline SVG query
+     * When likeFL is available apply it in filter clause on SVG and SC tables
+     */
+    private String findFinelineQuery(String rfaCcTable, String sizeClusterStoreFlTable, String finelineClusterTable) {
+        return  "SELECT rpt_lvl_0_nbr,\n" +
+                "    rpt_lvl_1_nbr,\n" +
+                "    rpt_lvl_2_nbr,\n" +
+                "    rpt_lvl_3_nbr,\n" +
+                "    rpt_lvl_4_nbr,\n" +
+                "    fineline_nbr,\n" +
+                "    style_nbr,\n" +
+                "    customer_choice,\n" +
+                "    fixture_type,\n" +
+                "    fixture_group,\n" +
+                "    color_family,\n" +
+                "    size_cluster_id,\n" +
+                "    volume_group_cluster_id,\n" +
+                "    CONCAT('[', STRING_AGG(DISTINCT CAST(store_nbr AS STRING), ', '), ']') AS store_list,\n" +
+                "    COUNT(DISTINCT store_nbr) AS store_cnt\n" +
+                "FROM(\n" +
+                "        SELECT rfa_output.rpt_lvl_0_nbr,\n" +
+                "            rfa_output.rpt_lvl_1_nbr,\n" +
+                "            rfa_output.rpt_lvl_2_nbr,\n" +
+                "            rfa_output.rpt_lvl_3_nbr,\n" +
+                "            rfa_output.rpt_lvl_4_nbr,\n" +
+                "            rfa_output.fineline AS fineline_nbr,\n" +
+                "            rfa_output.style_nbr,\n" +
+                "            rfa_output.cc AS customer_choice,\n" +
+                "            rfa_output.final_pref AS fixture_type,\n" +
+                "            rfa_output.final_alloc_space AS fixture_group,\n" +
+                "            COALESCE(size_clus.color_family, 'DEFAULT') AS color_family,\n" +
+                "            COALESCE(size_clus.cluster_id, 1) AS size_cluster_id,\n" +
+                "            fl_clus.cluster_id AS volume_group_cluster_id,\n" +
+                "            fl_clus.store_nbr\n" +
+                "        FROM (\n" +
+                "                SELECT *\n" +
+                "                FROM (\n" +
+                "                        SELECT RANK() OVER (\n" +
+                "                                PARTITION BY store,\n" +
+                "                                fineline,\n" +
+                "                                cc\n" +
+                "                                ORDER BY week\n" +
+                "                            ) row_nbr,\n" +
+                "                            *\n" +
+                "                        FROM (\n" +
+                "                                SELECT plan_id_partition,\n" +
+                "                                    h.fiscal_year,\n" +
+                "                                    h.season_code,\n" +
+                "                                    week,\n" +
+                "                                    store,\n" +
+                "                                    h.rpt_lvl_0_nbr,\n" +
+                "                                    h.rpt_lvl_1_nbr,\n" +
+                "                                    h.rpt_lvl_2_nbr,\n" +
+                "                                    h.rpt_lvl_3_nbr,\n" +
+                "                                    h.rpt_lvl_4_nbr,\n" +
+                "                                    h.like_rpt_lvl_1_nbr,\n" +
+                "                                    h.like_fineline_nbr,\n" +
+                "                                    dept,\n" +
+                "                                    fineline,\n" +
+                "                                    final_pref,\n" +
+                "                                    allocated,\n" +
+                "                                    TRIM(style_nbr) AS style_nbr,\n" +
+                "                                    TRIM(cc) AS cc,\n" +
+                "                                    final_alloc_space\n" +
+                "                                FROM `" + rfaCcTable + "`,\n" +
+                "                                    plan_hierarchy AS h\n" +
+                "                                WHERE plan_id_partition = h.plan_id\n" +
+                "                                    AND fineline = h.fineline_nbr\n" +
+                "                                    AND final_alloc_space > 0\n" +
+                "                            )\n" +
+                "                    ) AS rfa_cc_output\n" +
+                "                WHERE rfa_cc_output.row_nbr = 1\n" +
+                "            ) AS rfa_output\n" +
+                "            JOIN (\n" +
+                "                SELECT svg_fl_clus.dept_nbr,\n" +
+                "                    svg_fl_clus.fineline_nbr,\n" +
+                "                    svg_fl_clus.store_nbr,\n" +
+                "                    svg_fl_clus.cluster_id,\n" +
+                "                    svg_fl_clus.fiscal_year,\n" +
+                "                    svg_fl_clus.season\n" +
+                "                FROM `" + finelineClusterTable + "` AS svg_fl_clus,\n" +
+                "                    plan_hierarchy AS h\n" +
+                "                WHERE svg_fl_clus.fineline_nbr = COALESCE(h.like_fineline_nbr, h.fineline_nbr)\n" +
+                "                    AND svg_fl_clus.dept_nbr = COALESCE(h.like_rpt_lvl_1_nbr, h.rpt_lvl_1_nbr)\n" +
+                "                    AND svg_fl_clus.season = h.season_code\n" +
+                "                    AND svg_fl_clus.fiscal_year = h.fiscal_year\n" +
+                "            ) AS fl_clus ON CAST(rfa_output.store AS INT64) = fl_clus.store_nbr\n" +
+                "            LEFT JOIN (\n" +
+                "                SELECT sc_store_fl.fineline_nbr,\n" +
+                "                    sc_store_fl.dept_nbr,\n" +
+                "                    sc_store_fl.store_nbr,\n" +
+                "                    sc_store_fl.cluster_id,\n" +
+                "                    sc_store_fl.dept_catg_nbr,\n" +
+                "                    sc_store_fl.dept_subcatg_nbr,\n" +
+                "                    sc_store_fl.color_family,\n" +
+                "                    sc_store_fl.fiscal_year,\n" +
+                "                    sc_store_fl.season\n" +
+                "                FROM `" + sizeClusterStoreFlTable + "` AS sc_store_fl,\n" +
+                "                    plan_hierarchy AS h\n" +
+                "                WHERE sc_store_fl.fineline_nbr = COALESCE(h.like_fineline_nbr, h.fineline_nbr)\n" +
+                "                    AND sc_store_fl.dept_nbr = COALESCE(h.like_rpt_lvl_1_nbr, h.rpt_lvl_1_nbr)\n" +
+                "                    AND sc_store_fl.dept_catg_nbr = COALESCE(h.like_rpt_lvl_3_nbr, h.rpt_lvl_3_nbr)\n" +
+                "                    AND sc_store_fl.dept_subcatg_nbr = COALESCE(h.like_rpt_lvl_4_nbr, h.rpt_lvl_4_nbr)\n" +
+                "                    AND sc_store_fl.season = h.season_code\n" +
+                "                    AND sc_store_fl.fiscal_year = h.fiscal_year\n" +
+                "            ) AS size_clus ON CAST(rfa_output.store AS INT64) = size_clus.store_nbr\n" +
+                "            AND size_clus.fineline_nbr = COALESCE(rfa_output.like_fineline_nbr, rfa_output.fineline)\n" +
+                "            AND rfa_output.fiscal_year = size_clus.fiscal_year\n" +
+                "            AND rfa_output.season_code = size_clus.season\n" +
+                "            LEFT JOIN (\n" +
+                "                SELECT *\n" +
+                "                FROM cc_color_families\n" +
+                "            ) AS cc_color ON rfa_output.cc = cc_color.cc\n" +
+                "        WHERE UPPER(TRIM(size_clus.color_family)) = UPPER(TRIM(cc_color.color_family_desc))\n" +
+                "        OR size_clus.fineline_nbr is NULL\n" +
                 "    )\n" +
                 "GROUP BY rpt_lvl_0_nbr,\n" +
                 "    rpt_lvl_1_nbr,\n" +
@@ -415,6 +559,145 @@ public class BigQueryClusterService {
     }
 
     /**
+     * Sub Category SVG query
+     * When likeFL is available apply it in filter clause only on SC tables
+     */
+    private String findSubCatQuery(String rfaCcTable, String sizeClusterStoreFlTable, String subCategoryClusterTable) {
+        return "SELECT rpt_lvl_0_nbr,\n" +
+                "    rpt_lvl_1_nbr,\n" +
+                "    rpt_lvl_2_nbr,\n" +
+                "    rpt_lvl_3_nbr,\n" +
+                "    rpt_lvl_4_nbr,\n" +
+                "    fineline_nbr,\n" +
+                "    style_nbr,\n" +
+                "    customer_choice,\n" +
+                "    fixture_type,\n" +
+                "    fixture_group,\n" +
+                "    color_family,\n" +
+                "    size_cluster_id,\n" +
+                "    volume_group_cluster_id,\n" +
+                "    CONCAT('[', STRING_AGG(DISTINCT CAST(store_nbr AS STRING), ', '), ']') AS store_list,\n" +
+                "    COUNT(DISTINCT store_nbr) AS store_cnt\n" +
+                "FROM(\n" +
+                "        SELECT rfa_output.rpt_lvl_0_nbr,\n" +
+                "            rfa_output.rpt_lvl_1_nbr,\n" +
+                "            rfa_output.rpt_lvl_2_nbr,\n" +
+                "            rfa_output.rpt_lvl_3_nbr,\n" +
+                "            rfa_output.rpt_lvl_4_nbr,\n" +
+                "            rfa_output.fineline AS fineline_nbr,\n" +
+                "            rfa_output.style_nbr,\n" +
+                "            rfa_output.cc AS customer_choice,\n" +
+                "            rfa_output.final_pref AS fixture_type,\n" +
+                "            rfa_output.final_alloc_space AS fixture_group,\n" +
+                "            COALESCE(size_clus.color_family, 'DEFAULT') AS color_family,\n" +
+                "            COALESCE(size_clus.cluster_id, 1) AS size_cluster_id,\n" +
+                "            subcatg_clus.cluster_id AS volume_group_cluster_id,\n" +
+                "            subcatg_clus.store_nbr\n" +
+                "        FROM (\n" +
+                "                SELECT *\n" +
+                "                FROM (\n" +
+                "                        SELECT RANK() OVER (\n" +
+                "                                PARTITION BY store,\n" +
+                "                                fineline,\n" +
+                "                                cc\n" +
+                "                                ORDER BY week\n" +
+                "                            ) row_nbr,\n" +
+                "                            *\n" +
+                "                        FROM (\n" +
+                "                                SELECT plan_id_partition,\n" +
+                "                                    h.fiscal_year,\n" +
+                "                                    h.season_code,\n" +
+                "                                    week,\n" +
+                "                                    store,\n" +
+                "                                    h.rpt_lvl_0_nbr,\n" +
+                "                                    h.rpt_lvl_1_nbr,\n" +
+                "                                    h.rpt_lvl_2_nbr,\n" +
+                "                                    h.rpt_lvl_3_nbr,\n" +
+                "                                    h.rpt_lvl_4_nbr,\n" +
+                "                                    h.like_rpt_lvl_1_nbr,\n" +
+                "                                    h.like_rpt_lvl_4_nbr,\n" +
+                "                                    h.like_fineline_nbr,\n" +
+                "                                    dept,\n" +
+                "                                    fineline,\n" +
+                "                                    final_pref,\n" +
+                "                                    allocated,\n" +
+                "                                    TRIM(style_nbr) AS style_nbr,\n" +
+                "                                    TRIM(cc) AS cc,\n" +
+                "                                    final_alloc_space\n" +
+                "                                FROM `" + rfaCcTable + "`,\n" +
+                "                                    plan_hierarchy AS h\n" +
+                "                                WHERE plan_id_partition = h.plan_id\n" +
+                "                                    AND fineline = h.fineline_nbr\n" +
+                "                                    AND final_alloc_space > 0\n" +
+                "                            )\n" +
+                "                    ) AS rfa_cc_output\n" +
+                "                WHERE rfa_cc_output.row_nbr = 1\n" +
+                "            ) AS rfa_output\n" +
+                "            JOIN (\n" +
+                "                SELECT svg_subcatg_clus.dept_nbr,\n" +
+                "                    svg_subcatg_clus.dept_subcatg_nbr,\n" +
+                "                    svg_subcatg_clus.store_nbr,\n" +
+                "                    svg_subcatg_clus.cluster_id,\n" +
+                "                    svg_subcatg_clus.fiscal_year,\n" +
+                "                    svg_subcatg_clus.season\n" +
+                "                FROM `" + subCategoryClusterTable + "` AS svg_subcatg_clus,\n" +
+                "                    plan_hierarchy AS h\n" +
+                "                WHERE svg_subcatg_clus.dept_subcatg_nbr = h.rpt_lvl_4_nbr\n" +
+                "                    AND svg_subcatg_clus.dept_nbr = h.rpt_lvl_1_nbr\n" +
+                "                    AND svg_subcatg_clus.season = h.season_code\n" +
+                "                    AND svg_subcatg_clus.fiscal_year = h.fiscal_year\n" +
+                "            ) AS subcatg_clus ON CAST(rfa_output.store AS INT64) = subcatg_clus.store_nbr\n" +
+                "            LEFT JOIN (\n" +
+                "                SELECT sc_store_fl.fineline_nbr,\n" +
+                "                    sc_store_fl.store_nbr,\n" +
+                "                    sc_store_fl.cluster_id,\n" +
+                "                    sc_store_fl.dept_catg_nbr,\n" +
+                "                    sc_store_fl.dept_subcatg_nbr,\n" +
+                "                    sc_store_fl.color_family,\n" +
+                "                    sc_store_fl.fiscal_year,\n" +
+                "                    sc_store_fl.season\n" +
+                "                FROM `" + sizeClusterStoreFlTable + "` AS sc_store_fl,\n" +
+                "                    plan_hierarchy AS h\n" +
+                "                WHERE sc_store_fl.fineline_nbr = COALESCE(h.like_fineline_nbr, h.fineline_nbr)\n" +
+                "                    AND sc_store_fl.dept_nbr = COALESCE(h.like_rpt_lvl_1_nbr, h.rpt_lvl_1_nbr)\n" +
+                "                    AND sc_store_fl.dept_catg_nbr = COALESCE(h.like_rpt_lvl_3_nbr, h.rpt_lvl_3_nbr)\n" +
+                "                    AND sc_store_fl.dept_subcatg_nbr = COALESCE(h.like_rpt_lvl_4_nbr, h.rpt_lvl_4_nbr)\n" +
+                "                    AND sc_store_fl.season = h.season_code\n" +
+                "                    AND sc_store_fl.fiscal_year = h.fiscal_year\n" +
+                "            ) AS size_clus ON CAST(rfa_output.store AS INT64) = size_clus.store_nbr\n" +
+                "            AND size_clus.fineline_nbr = COALESCE(\n" +
+                "                rfa_output.like_fineline_nbr,\n" +
+                "                rfa_output.fineline\n" +
+                "            )\n" +
+                "            AND size_clus.dept_subcatg_nbr = COALESCE(\n" +
+                "                rfa_output.like_rpt_lvl_4_nbr,\n" +
+                "                rfa_output.rpt_lvl_4_nbr\n" +
+                "            )\n" +
+                "            AND rfa_output.fiscal_year = size_clus.fiscal_year\n" +
+                "            AND rfa_output.season_code = size_clus.season\n" +
+                "            LEFT JOIN (\n" +
+                "                SELECT *\n" +
+                "                FROM cc_color_families\n" +
+                "            ) AS cc_color ON rfa_output.cc = cc_color.cc\n" +
+                "        WHERE UPPER(TRIM(size_clus.color_family)) = UPPER(TRIM(cc_color.color_family_desc))\n" +
+                "        OR size_clus.fineline_nbr is NULL\n" +
+                "    )\n" +
+                "GROUP BY rpt_lvl_0_nbr,\n" +
+                "    rpt_lvl_1_nbr,\n" +
+                "    rpt_lvl_2_nbr,\n" +
+                "    rpt_lvl_3_nbr,\n" +
+                "    rpt_lvl_4_nbr,\n" +
+                "    fineline_nbr,\n" +
+                "    style_nbr,\n" +
+                "    customer_choice,\n" +
+                "    fixture_type,\n" +
+                "    fixture_group,\n" +
+                "    color_family,\n" +
+                "    size_cluster_id,\n" +
+                "    volume_group_cluster_id ";
+    }
+
+    /**
      * Category SVG query
      * When likeFL is available apply it in filter clause only on SC tables
      */
@@ -573,4 +856,145 @@ public class BigQueryClusterService {
                 "    size_cluster_id,\n" +
                 "    volume_group_cluster_id";
     }
+
+    /**
+     * Category SVG query
+     * When likeFL is available apply it in filter clause only on SC tables
+     */
+    private String findCatQuery(String rfaCcTable, String sizeClusterStoreFlTable, String categoryClusterTable) {
+        return "SELECT rpt_lvl_0_nbr,\n" +
+                "    rpt_lvl_1_nbr,\n" +
+                "    rpt_lvl_2_nbr,\n" +
+                "    rpt_lvl_3_nbr,\n" +
+                "    rpt_lvl_4_nbr,\n" +
+                "    fineline_nbr,\n" +
+                "    style_nbr,\n" +
+                "    customer_choice,\n" +
+                "    fixture_type,\n" +
+                "    fixture_group,\n" +
+                "    color_family,\n" +
+                "    size_cluster_id,\n" +
+                "    volume_group_cluster_id,\n" +
+                "    CONCAT('[', STRING_AGG(DISTINCT CAST(store_nbr AS STRING), ', '), ']') AS store_list,\n" +
+                "    COUNT(DISTINCT store_nbr) AS store_cnt\n" +
+                "FROM(\n" +
+                "        SELECT rfa_output.rpt_lvl_0_nbr,\n" +
+                "            rfa_output.rpt_lvl_1_nbr,\n" +
+                "            rfa_output.rpt_lvl_2_nbr,\n" +
+                "            rfa_output.rpt_lvl_3_nbr,\n" +
+                "            rfa_output.rpt_lvl_4_nbr,\n" +
+                "            rfa_output.fineline AS fineline_nbr,\n" +
+                "            rfa_output.style_nbr,\n" +
+                "            rfa_output.cc AS customer_choice,\n" +
+                "            rfa_output.final_pref AS fixture_type,\n" +
+                "            rfa_output.final_alloc_space AS fixture_group,\n" +
+                "            COALESCE(size_clus.color_family, 'DEFAULT') AS color_family,\n" +
+                "            COALESCE(size_clus.cluster_id, 1) AS size_cluster_id,\n" +
+                "            catg_clus.cluster_id AS volume_group_cluster_id,\n" +
+                "            catg_clus.store_nbr\n" +
+                "        FROM (\n" +
+                "                SELECT *\n" +
+                "                FROM (\n" +
+                "                        SELECT RANK() OVER (\n" +
+                "                                PARTITION BY store,\n" +
+                "                                fineline,\n" +
+                "                                cc\n" +
+                "                                ORDER BY week\n" +
+                "                            ) row_nbr,\n" +
+                "                            *\n" +
+                "                        FROM (\n" +
+                "                                SELECT plan_id_partition,\n" +
+                "                                    h.fiscal_year,\n" +
+                "                                    h.season_code,\n" +
+                "                                    week,\n" +
+                "                                    store,\n" +
+                "                                    h.rpt_lvl_0_nbr,\n" +
+                "                                    h.rpt_lvl_1_nbr,\n" +
+                "                                    h.rpt_lvl_2_nbr,\n" +
+                "                                    h.rpt_lvl_3_nbr,\n" +
+                "                                    h.rpt_lvl_4_nbr,\n" +
+                "                                    h.like_rpt_lvl_1_nbr,\n" +
+                "                                    h.like_rpt_lvl_3_nbr,\n" +
+                "                                    h.like_fineline_nbr,\n" +
+                "                                    dept,\n" +
+                "                                    fineline,\n" +
+                "                                    final_pref,\n" +
+                "                                    allocated,\n" +
+                "                                    TRIM(style_nbr) AS style_nbr,\n" +
+                "                                    TRIM(cc) AS cc,\n" +
+                "                                    final_alloc_space\n" +
+                "                                FROM `" + rfaCcTable + "`,\n" +
+                "                                    plan_hierarchy AS h\n" +
+                "                                WHERE plan_id_partition = h.plan_id\n" +
+                "                                    AND fineline = h.fineline_nbr\n" +
+                "                                    AND final_alloc_space > 0\n" +
+                "                            )\n" +
+                "                    ) AS rfa_cc_output\n" +
+                "                WHERE rfa_cc_output.row_nbr = 1\n" +
+                "            ) AS rfa_output\n" +
+                "            JOIN (\n" +
+                "                SELECT svg_catg_clus.dept_nbr,\n" +
+                "                    svg_catg_clus.dept_catg_nbr,\n" +
+                "                    svg_catg_clus.store_nbr,\n" +
+                "                    svg_catg_clus.cluster_id,\n" +
+                "                    svg_catg_clus.fiscal_year,\n" +
+                "                    svg_catg_clus.season\n" +
+                "                FROM `" +  categoryClusterTable + "` AS svg_catg_clus,\n" +
+                "                    plan_hierarchy AS h\n" +
+                "                WHERE svg_catg_clus.dept_catg_nbr = h.rpt_lvl_3_nbr\n" +
+                "                    AND svg_catg_clus.dept_nbr = h.rpt_lvl_1_nbr\n" +
+                "                    AND svg_catg_clus.season = h.season_code\n" +
+                "                    AND svg_catg_clus.fiscal_year = h.fiscal_year\n" +
+                "            ) AS catg_clus ON CAST(rfa_output.store AS INT64) = catg_clus.store_nbr\n" +
+                "            LEFT JOIN (\n" +
+                "                SELECT sc_store_fl.fineline_nbr,\n" +
+                "                    sc_store_fl.dept_nbr,\n" +
+                "                    sc_store_fl.store_nbr,\n" +
+                "                    sc_store_fl.cluster_id,\n" +
+                "                    sc_store_fl.dept_catg_nbr,\n" +
+                "                    sc_store_fl.dept_subcatg_nbr,\n" +
+                "                    sc_store_fl.color_family,\n" +
+                "                    sc_store_fl.fiscal_year,\n" +
+                "                    sc_store_fl.season\n" +
+                "                FROM `" + sizeClusterStoreFlTable + "` AS sc_store_fl,\n" +
+                "                    plan_hierarchy AS h\n" +
+                "                WHERE sc_store_fl.fineline_nbr = COALESCE(h.like_fineline_nbr, h.fineline_nbr)\n" +
+                "                    AND sc_store_fl.dept_nbr = COALESCE(h.like_rpt_lvl_1_nbr, h.rpt_lvl_1_nbr)\n" +
+                "                    AND sc_store_fl.dept_catg_nbr = COALESCE(h.like_rpt_lvl_3_nbr, h.rpt_lvl_3_nbr)\n" +
+                "                    AND sc_store_fl.dept_subcatg_nbr = COALESCE(h.like_rpt_lvl_4_nbr, h.rpt_lvl_4_nbr)\n" +
+                "                    AND sc_store_fl.season = h.season_code\n" +
+                "                    AND sc_store_fl.fiscal_year = h.fiscal_year\n" +
+                "            ) AS size_clus ON CAST(rfa_output.store AS INT64) = size_clus.store_nbr\n" +
+                "            AND size_clus.dept_catg_nbr = COALESCE(\n" +
+                "                rfa_output.like_rpt_lvl_3_nbr,\n" +
+                "                rfa_output.rpt_lvl_3_nbr\n" +
+                "                )\n" +
+                "            AND size_clus.fineline_nbr = COALESCE(\n" +
+                "                rfa_output.like_fineline_nbr,\n" +
+                "                rfa_output.fineline\n" +
+                "            )\n" +
+                "            AND rfa_output.fiscal_year = size_clus.fiscal_year\n" +
+                "            AND rfa_output.season_code = size_clus.season\n" +
+                "            LEFT JOIN (\n" +
+                "                SELECT *\n" +
+                "                FROM cc_color_families\n" +
+                "            ) AS cc_color ON rfa_output.cc = cc_color.cc\n" +
+                "        WHERE UPPER(TRIM(size_clus.color_family)) = UPPER(TRIM(cc_color.color_family_desc))\n" +
+                "        OR size_clus.fineline_nbr is NULL\n" +
+                "    )\n" +
+                "GROUP BY rpt_lvl_0_nbr,\n" +
+                "    rpt_lvl_1_nbr,\n" +
+                "    rpt_lvl_2_nbr,\n" +
+                "    rpt_lvl_3_nbr,\n" +
+                "    rpt_lvl_4_nbr,\n" +
+                "    fineline_nbr,\n" +
+                "    style_nbr,\n" +
+                "    customer_choice,\n" +
+                "    fixture_type,\n" +
+                "    fixture_group,\n" +
+                "    color_family,\n" +
+                "    size_cluster_id,\n" +
+                "    volume_group_cluster_id";
+    }
+
 }
