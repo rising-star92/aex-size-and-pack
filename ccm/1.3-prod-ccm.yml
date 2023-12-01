@@ -487,6 +487,11 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "sco_cluster"
+      "analytics.data.size.cluster.store.fineline":
+        description: "Size Cluster and Color family data from Data Science"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "size_clust_store_fineline"
       "store.distribution.feature.flag":
         description: "enable v1/v2  of store distribution API"
         type: "STRING"
@@ -494,6 +499,16 @@ configDefinitions:
         defaultValue: "true"
       "pack.store.feature.flag":
         description: "feature flag to enable pack store API"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "true"
+      "pack.description.feature.flag":
+        description: "Flag to enable packDescription feature"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "true"
+      "de.size.cluster.feature.flag":
+        description: "Flag to enable usage of GCP size_clust_store_fineline Tables in the big query"
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "true"
