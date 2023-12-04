@@ -1,7 +1,6 @@
 package com.walmart.aex.sp.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mockStatic;
@@ -113,6 +112,7 @@ class BigQueryPackStoresServiceTest
             	  if(packId == null)
             	  {
             		  VolumeFixtureMetrics metrics1 = volumeFixtureMetrics.get(0);
+                      assertNull(stylePackVolume.getPackDescription());
             		  assertEquals("34_2840_1_21_2_007", metrics1.getCcId());
             		  assertEquals("RACKS", metrics1.getFixtureType());
             		  assertEquals(BigDecimal.valueOf(0.25), metrics1.getFixtureAllocation());
