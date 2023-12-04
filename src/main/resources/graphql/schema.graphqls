@@ -585,6 +585,7 @@ type PackDetailsVolumeResponse {
 type StylePackVolume {
     styleId: String!
     packId: String
+    packDescription: String
     metrics: [VolumeFixtureMetrics]
 }
 

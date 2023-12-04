@@ -11,5 +11,6 @@ public class StylePackVolume
 {
 	private String styleId;
 	private String packId;
+	private String packDescription;
 	private List<VolumeFixtureMetrics> metrics;
 }
