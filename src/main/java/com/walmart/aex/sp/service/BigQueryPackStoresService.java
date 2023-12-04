@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -227,7 +228,7 @@ public class BigQueryPackStoresService
 	    	 stylePackVolumes.add(StylePackVolume.builder()
 					 .styleId(stylePack.getStyleId())
 	    			 .packId(stylePack.getPackId())
-					 .packDescription(Boolean.parseBoolean(bigQueryConnectionProperties.getPackDescriptionFeatureFlag()) ?
+					 .packDescription(Boolean.parseBoolean(bigQueryConnectionProperties.getPackDescriptionFeatureFlag()) && null != stylePack.getPackId() ?
 							 PackOptimizationUtil.createPackDescription(stylePack.getPackId(),
 									 stylePack.getMerchMethod(),
 									 stylePack.getBumpPackNbr(),
