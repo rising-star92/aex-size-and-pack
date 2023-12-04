@@ -511,6 +511,6 @@ configDefinitions:
         description: "Flag to enable usage of GCP size_clust_store_fineline Tables in the big query"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "true"
+        defaultValue: "false"
 apiVersion: "2.0"
 kind: "ServiceConfig"
