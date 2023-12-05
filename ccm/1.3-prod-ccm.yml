@@ -497,5 +497,10 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "true"
+      "pack.description.feature.flag":
+        description: "Flag to enable packDescription feature"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "true"
 apiVersion: "2.0"
 kind: "ServiceConfig"
