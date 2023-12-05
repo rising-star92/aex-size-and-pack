@@ -502,11 +502,6 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "true"
-      "pack.description.feature.flag":
-        description: "Flag to enable packDescription feature"
-        type: "STRING"
-        kind: "SINGLE"
-        defaultValue: "true"
       "de.size.cluster.feature.flag":
         description: "Flag to enable usage of GCP size_clust_store_fineline Tables in the big query"
         type: "STRING"
