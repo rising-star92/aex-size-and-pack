@@ -139,4 +139,8 @@ public class PackOptimizationUtil {
                 .toString();
     }
 
+    public static String getFinelineDescription(String finelineDesc, Integer finelineNbr) {
+        return StringUtils.isNotEmpty(finelineDesc) ? finelineDesc : String.valueOf(finelineNbr);
+    }
+
 }

@@ -70,12 +70,15 @@ class BigQueryPackStoresServiceTest
     @Mock
     private CustomerChoiceRepository customerChoiceRepository;
 
+    @Mock
+    private LinePlanService linePlanService;
+
     @BeforeEach
     void setUp() throws IOException 
     {
         MockitoAnnotations.openMocks(this);
-        bigQueryInitialSetPlanService = new BigQueryInitialSetPlanService(new ObjectMapper(),bqfpService,strategyFetchService,bigQuery);
-        bigQueryPackStoresService = new BigQueryPackStoresService(new ObjectMapper(), bigQuery, strategyFetchService, customerChoiceRepository);
+        bigQueryInitialSetPlanService = new BigQueryInitialSetPlanService(new ObjectMapper(), bqfpService, strategyFetchService, linePlanService, bigQuery);
+        bigQueryPackStoresService = new BigQueryPackStoresService(new ObjectMapper(), bigQuery, strategyFetchService, customerChoiceRepository, linePlanService);
         ReflectionTestUtils.setField(bigQueryInitialSetPlanService, "bigQueryConnectionProperties",
         		bigQueryConnectionProperties);
         ReflectionTestUtils.setField(bigQueryPackStoresService, "bigQueryConnectionProperties", 
