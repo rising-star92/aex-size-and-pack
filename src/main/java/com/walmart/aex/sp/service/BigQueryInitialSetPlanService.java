@@ -11,6 +11,7 @@ import com.walmart.aex.sp.dto.buyquantity.FinelineVolumeDeviationDto;
 import com.walmart.aex.sp.dto.buyquantity.StrategyVolumeDeviationResponse;
 import com.walmart.aex.sp.dto.commitmentreport.InitialSetPackRequest;
 import com.walmart.aex.sp.dto.commitmentreport.RFAInitialSetBumpSetResponse;
+import com.walmart.aex.sp.dto.currentlineplan.LikeAssociation;
 import com.walmart.aex.sp.dto.isVolume.*;
 import com.walmart.aex.sp.enums.VdLevelCode;
 import com.walmart.aex.sp.exception.SizeAndPackException;
@@ -19,6 +20,7 @@ import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
 
 import com.walmart.aex.sp.properties.GraphQLProperties;
 import com.walmart.aex.sp.util.BuyQtyCommonUtil;
+import com.walmart.aex.sp.util.CommonGCPUtil;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -35,18 +37,19 @@ public class BigQueryInitialSetPlanService {
     private final ObjectMapper objectMapper;
     private final BQFPService bqfpService;
     private final StrategyFetchService strategyFetchService;
-
     private final BigQuery bigQuery;
+    private final LinePlanService linePlanService;
     @ManagedConfiguration
     BigQueryConnectionProperties bigQueryConnectionProperties;
 
     @ManagedConfiguration
     private GraphQLProperties graphQLProperties;
 
-    public BigQueryInitialSetPlanService(ObjectMapper objectMapper, BQFPService bqfpService, StrategyFetchService strategyFetchService, BigQuery bigQuery) {
+    public BigQueryInitialSetPlanService(ObjectMapper objectMapper, BQFPService bqfpService, StrategyFetchService strategyFetchService, LinePlanService linePlanService, BigQuery bigQuery) {
         this.objectMapper = objectMapper;
         this.bqfpService = bqfpService;
         this.strategyFetchService = strategyFetchService;
+        this.linePlanService = linePlanService;
         this.bigQuery = bigQuery;
     }
 
@@ -134,8 +137,9 @@ public class BigQueryInitialSetPlanService {
         return "WITH MyTable AS ( select distinct SP.ProductFineline as product_fineline, reverse( SUBSTR(REVERSE(ProductCustomerChoice), STRPOS(REVERSE(ProductCustomerChoice), \"_\")+1)) as style_id, SP.ProductCustomerChoice as cc, SP.MerchMethod AS merch_method, SP.UUID AS uuid, SP.SPPackID as pack_id,SP.Size as size, (SP.SPBumpSetPackSizeRatio) AS bumppack_ratio, SUM(SP.SPPackBumpOutput) AS bs_quantity FROM `" + spTableName + "` AS SP where SP.ProductFineline LIKE '" + prodFineline + "' and SPBumpSetPackSizeRatio>0 GROUP BY product_fineline,style_id,cc,merch_method,size,pack_id,uuid,bumppack_ratio order by product_fineline,style_id,cc,merch_method,size,pack_id,uuid,bumppack_ratio ) SELECT TO_JSON_STRING(rfaTable) AS json FROM MyTable AS rfaTable";
     }
 
-    private String getISByVolumeFinelineClusterQuery(String ccTableName, String spTableName, Integer planId, Integer finelineNbr, String analyticsData,String interval, Integer fiscalYear, Integer catNbr, Integer subCatNbr) {
+    private String getISByVolumeFinelineClusterQuery(String ccTableName, String spTableName, Integer planId, Integer finelineNbr, String interval, Integer fiscalYear, Integer catNbr, Integer subCatNbr, LikeAssociation likeAssociation) {
         String prodFineline = planId + "_" + finelineNbr;
+        String finelineTable = bigQueryConnectionProperties.getAnalyticsData() + "." + bigQueryConnectionProperties.getFinelineVolumeCluster();
           /*
         Min week is added as a join condition to RFA. This is to prevent any inconsistent allocations in RFA.
         For example- CC 1 in store 400 could have only 1 Fixture type and allocation. RFA , as of 14 Dec 2021, could allocate a new fixture
@@ -173,7 +177,7 @@ public class BigQueryInitialSetPlanService {
                 ") as SP\n" +
                 "on RFA.store = SP.store and RFA.cc = SP.cc\n" +
                 "join (\n" +
-                "select store_nbr as store,cluster_id  as clusterId from `" + analyticsData + ".svg_fl_cluster` where dept_catg_nbr = " + catNbr + " and dept_subcatg_nbr = " + subCatNbr + " and fineline_nbr = " + finelineNbr + " and season = '"+interval+"' and fiscal_year = " +fiscalYear + " \n" +
+                CommonGCPUtil.getFinelineVolumeClusterQuery(finelineTable, catNbr, subCatNbr, finelineNbr, interval, fiscalYear, likeAssociation) +
                 ") as CL\n" +
                 "on RFA.store = CL.store\n" +
                 "GROUP BY RFA.in_store_week,RFA.style_nbr, RFA.cc, CL.clusterId,CL.store ,RFA.fixtureAllocation, RFA.fixtureType order by RFA.in_store_week,RFA.style_nbr,RFA.cc,CL.clusterId,CL.store, RFA.fixtureAllocation, RFA.fixtureType\n" +
@@ -366,8 +370,9 @@ public class BigQueryInitialSetPlanService {
     Change for S4
     Adding filter on dept_subcatg_nbr, dept_subcatg_nbr to get  records for dept.
      */
-    private String getBumpQTYVolumeFinelineClusterQuery(String ccTableName, String spTableName, Integer planId, Integer finelineNbr,  String analyticsData,String interval, Integer fiscalYear, Integer catNbr, Integer subCatNbr) {
+    private String getBumpQTYVolumeFinelineClusterQuery(String ccTableName, String spTableName, Integer planId, Integer finelineNbr,String interval, Integer fiscalYear, Integer catNbr, Integer subCatNbr, LikeAssociation likeAssociation) {
         String prodFineline = planId + "_" + finelineNbr + PERCENT;
+        String finelineTable = bigQueryConnectionProperties.getAnalyticsData() + "." + bigQueryConnectionProperties.getFinelineVolumeCluster();
         return "WITH MyTable AS (\n" +
                 "select distinct\n" +
                 "SP.productFineline,\n" +
@@ -399,7 +404,7 @@ public class BigQueryInitialSetPlanService {
                 ") as SP\n" +
                 "on RFA.store = SP.store and RFA.cc = SP.cc\n" +
                 "join (\n" +
-                "select store_nbr as store,cluster_id  as clusterId from `" + analyticsData + ".svg_fl_cluster` where dept_catg_nbr = " + catNbr + " and dept_subcatg_nbr = " + subCatNbr + " and fineline_nbr = " + finelineNbr + " and season = '"+interval+"' and fiscal_year = " +fiscalYear + " \n" +
+                CommonGCPUtil.getFinelineVolumeClusterQuery(finelineTable, catNbr, subCatNbr, finelineNbr, interval, fiscalYear, likeAssociation) +
                 ") as CL\n" +
                 "on RFA.store = CL.store\n" +
                 "GROUP BY SP.productFineline,RFA.style_nbr,RFA.cc, CL.clusterId,CL.store ,RFA.fixtureAllocation, RFA.fixtureType order by RFA.style_nbr,RFA.cc,CL.clusterId,CL.store, RFA.fixtureAllocation, RFA.fixtureType\n" +
@@ -429,6 +434,7 @@ public class BigQueryInitialSetPlanService {
             sqlQuery = findSqlQuery(planId, request,volumeDeviationLevel);
         }
 
+        log.debug("sqlQuery: {}", sqlQuery);
         QueryJobConfiguration queryConfigIs = QueryJobConfiguration.newBuilder(sqlQuery).build();
         TableResult resultsIs = bigQuery.query(queryConfigIs);
         HashMap<VolumeQueryId, List<VolumeClusterDTO>> uniqueRows = new HashMap<>();
@@ -453,6 +459,7 @@ public class BigQueryInitialSetPlanService {
             BQFPResponse bqfpResponse = bqfpService.getBqfpResponse(planId.intValue(), request.getFinelineNbr());
             if (StringUtils.isNotEmpty(volumeDeviationLevel)) {
                 sqlQuery = findBumpSqlQuery(planId, request, volumeDeviationLevel);
+                log.debug("sqlQuery: {}", sqlQuery);
             } else {
                 log.error("Error Occurred while fetching Strategy Volume Deviation level for plan ID {} and fineline {}", planId, request.getFinelineNbr());
                 throw new SizeAndPackException("Error Occurred while fetching Strategy Volume Deviation level for plan ID " + planId);
@@ -484,7 +491,7 @@ public class BigQueryInitialSetPlanService {
         return formatUniqueRows(request, uniqueRows);
     }
 
-    private String findBumpSqlQuery(Long planId, FinelineVolume request, String volumeDeviationLevel) {
+    private String findBumpSqlQuery(Long planId, FinelineVolume request, String volumeDeviationLevel) throws SizeAndPackException {
         String tableNameSp = getProjectIdSp();
         String tableNameCc = getProjectIdCc();
 
@@ -493,7 +500,9 @@ public class BigQueryInitialSetPlanService {
         } else if (volumeDeviationLevel.equals(VdLevelCode.SUB_CATEGORY.getDescription())) {
             return getBumpQTYVolumeSubCatClusterQuery(tableNameCc, tableNameSp, Math.toIntExact(planId), request.getFinelineNbr(), request.getLvl4Nbr(), bigQueryConnectionProperties.getAnalyticsData(),request.getInterval(),request.getFiscalYear(),request.getLvl3Nbr());
         } else if (volumeDeviationLevel.equals(VdLevelCode.FINELINE.getDescription())) {
-            return getBumpQTYVolumeFinelineClusterQuery(tableNameCc, tableNameSp, Math.toIntExact(planId), request.getFinelineNbr(), bigQueryConnectionProperties.getAnalyticsData(),request.getInterval(),request.getFiscalYear(),request.getLvl3Nbr(),request.getLvl4Nbr());
+            LikeAssociation likeAssociation = linePlanService.getLikeAssociation(planId, request.getFinelineNbr());
+            log.debug("LikeFineline details - originalFineline: {} | likeFineline: {}", request.getFinelineNbr(), null != likeAssociation ? likeAssociation.getId() : null);
+            return getBumpQTYVolumeFinelineClusterQuery(tableNameCc, tableNameSp, Math.toIntExact(planId), request.getFinelineNbr(), request.getInterval(), request.getFiscalYear(), request.getLvl3Nbr(), request.getLvl4Nbr(), likeAssociation);
         }
         throw new RuntimeException("Invalid Deviation Level, Fineline, Subcategory, Category are valid values");
     }
@@ -577,7 +586,7 @@ public class BigQueryInitialSetPlanService {
         return metricsVolume;
     }
 
-    private String findSqlQuery(Long planId, FinelineVolume request, String volumeDeviationLevel) {
+    private String findSqlQuery(Long planId, FinelineVolume request, String volumeDeviationLevel) throws SizeAndPackException {
         String tableNameSp = getProjectIdSp();
         String tableNameCc = getProjectIdCc();
 
@@ -586,7 +595,9 @@ public class BigQueryInitialSetPlanService {
         } else if (volumeDeviationLevel.equals(VdLevelCode.SUB_CATEGORY.getDescription())) {
             return getISByVolumeSubCatClusterQuery(tableNameCc, tableNameSp, Math.toIntExact(planId), request.getFinelineNbr(), request.getLvl4Nbr(), bigQueryConnectionProperties.getAnalyticsData(),request.getInterval(),request.getFiscalYear(),request.getLvl3Nbr());
         } else if (volumeDeviationLevel.equals(VdLevelCode.FINELINE.getDescription())) {
-            return getISByVolumeFinelineClusterQuery(tableNameCc, tableNameSp, Math.toIntExact(planId), request.getFinelineNbr(), bigQueryConnectionProperties.getAnalyticsData(),request.getInterval(),request.getFiscalYear(),request.getLvl3Nbr(),request.getLvl4Nbr());
+            LikeAssociation likeAssociation = linePlanService.getLikeAssociation(planId, request.getFinelineNbr());
+            log.debug("LikeFineline details - originalFineline: {} | likeFineline: {}", request.getFinelineNbr(), null != likeAssociation ? likeAssociation.getId() : null);
+            return getISByVolumeFinelineClusterQuery(tableNameCc, tableNameSp, Math.toIntExact(planId), request.getFinelineNbr(), request.getInterval(), request.getFiscalYear(), request.getLvl3Nbr(), request.getLvl4Nbr(), likeAssociation);
         }
         throw new RuntimeException("Invalid Deviation Level, Fineline, Subcategory, Category are valid values");
     }

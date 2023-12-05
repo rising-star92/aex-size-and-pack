@@ -47,6 +47,8 @@ class BigQueryStoreDistributionServiceTest {
     private GraphQLService graphQLService;
     @Mock
     private GraphQLProperties graphQLProperties;
+    @Mock
+    private LinePlanService linePlanService;
     @InjectMocks
     private BigQueryStoreDistributionService bigQueryStoreDistributionService;
     private PackData packData;
@@ -57,7 +59,7 @@ class BigQueryStoreDistributionServiceTest {
     @BeforeEach
     void setUp() throws IOException {
         MockitoAnnotations.openMocks(this);
-        bigQueryStoreDistributionService = new BigQueryStoreDistributionService(new ObjectMapper(), bqfpService, strategyFetchService, graphQLService, bigQuery);
+        bigQueryStoreDistributionService = new BigQueryStoreDistributionService(new ObjectMapper(), bqfpService, strategyFetchService, graphQLService, linePlanService, bigQuery);
         ReflectionTestUtils.setField(bigQueryStoreDistributionService, "bigQueryConnectionProperties", bigQueryConnectionProperties);
         ReflectionTestUtils.setField(bigQueryStoreDistributionService, "graphQLProperties", graphQLProperties);
         setData();

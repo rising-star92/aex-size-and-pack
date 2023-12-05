@@ -46,11 +46,13 @@ class BigQueryInitialSetPlanServiceTest {
     private BigQueryConnectionProperties bigQueryConnectionProperties;
     @Mock
     private BQFPService bqfpService;
+    @Mock
+    private LinePlanService linePlanService;
 
     @BeforeEach
     void setUp() throws IOException {
         MockitoAnnotations.openMocks(this);
-        bigQueryInitialSetPlanService = new BigQueryInitialSetPlanService(new ObjectMapper(),bqfpService,strategyFetchService,bigQuery);
+        bigQueryInitialSetPlanService = new BigQueryInitialSetPlanService(new ObjectMapper(), bqfpService, strategyFetchService, linePlanService, bigQuery);
         ReflectionTestUtils.setField(bigQueryInitialSetPlanService, "bigQueryConnectionProperties", bigQueryConnectionProperties);
         setData();
         setProperties();
