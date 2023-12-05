@@ -139,7 +139,7 @@ public class BigQueryInitialSetPlanService {
 
     private String getISByVolumeFinelineClusterQuery(String ccTableName, String spTableName, Integer planId, Integer finelineNbr, String interval, Integer fiscalYear, Integer catNbr, Integer subCatNbr, LikeAssociation likeAssociation) {
         String prodFineline = planId + "_" + finelineNbr;
-        String finelineTable = bigQueryConnectionProperties.getAnalyticsData() + "." + bigQueryConnectionProperties.getFinelineVolumeCluster();
+        String finelineTable = CommonGCPUtil.formatTable(bigQueryConnectionProperties.getAnalyticsData(), bigQueryConnectionProperties.getFinelineVolumeCluster());
           /*
         Min week is added as a join condition to RFA. This is to prevent any inconsistent allocations in RFA.
         For example- CC 1 in store 400 could have only 1 Fixture type and allocation. RFA , as of 14 Dec 2021, could allocate a new fixture
@@ -415,13 +415,14 @@ public class BigQueryInitialSetPlanService {
 //      TODO: Remove this code when commit report is ready with the change, i.e. volu,e deviation should be always fetched from the Strategy Service
         String volumeDeviationLevel = request.getVolumeDeviationLevel();
         String sqlQuery = null;
+        LikeAssociation likeAssociation = linePlanService.getLikeAssociation(planId, request.getFinelineNbr());
         if(null == volumeDeviationLevel || volumeDeviationLevel.isBlank()){
             StrategyVolumeDeviationResponse volumeDeviationResponse = strategyFetchService.getStrategyVolumeDeviation(planId, request.getFinelineNbr());
             if (null != volumeDeviationResponse && !volumeDeviationResponse.getFinelines().isEmpty()) {
                 FinelineVolumeDeviationDto finelineVolumeDeviationDto = volumeDeviationResponse.getFinelines().get(0);
                 volumeDeviationLevel = finelineVolumeDeviationDto.getVolumeDeviationLevel();
                 if (StringUtils.isNotEmpty(volumeDeviationLevel)) {
-                    sqlQuery = findSqlQuery(planId, request, volumeDeviationLevel);
+                    sqlQuery = findSqlQuery(planId, request, volumeDeviationLevel, likeAssociation);
                 } else {
                     log.error("Error Occurred while fetching Strategy Volume Deviation level for plan ID {} and fineline {}", planId, request.getFinelineNbr());
                     throw new SizeAndPackException("Error Occurred while fetching Strategy Volume Deviation level for plan ID " + planId);
@@ -431,7 +432,7 @@ public class BigQueryInitialSetPlanService {
                 throw new SizeAndPackException("Error Occurred while fetching Strategy Volume Deviation Response for plan ID " + planId);
             }
         }else{
-            sqlQuery = findSqlQuery(planId, request,volumeDeviationLevel);
+            sqlQuery = findSqlQuery(planId, request,volumeDeviationLevel, likeAssociation);
         }
 
         log.debug("sqlQuery: {}", sqlQuery);
@@ -458,7 +459,7 @@ public class BigQueryInitialSetPlanService {
         try{
             BQFPResponse bqfpResponse = bqfpService.getBqfpResponse(planId.intValue(), request.getFinelineNbr());
             if (StringUtils.isNotEmpty(volumeDeviationLevel)) {
-                sqlQuery = findBumpSqlQuery(planId, request, volumeDeviationLevel);
+                sqlQuery = findBumpSqlQuery(planId, request, volumeDeviationLevel, likeAssociation);
                 log.debug("sqlQuery: {}", sqlQuery);
             } else {
                 log.error("Error Occurred while fetching Strategy Volume Deviation level for plan ID {} and fineline {}", planId, request.getFinelineNbr());
@@ -491,7 +492,7 @@ public class BigQueryInitialSetPlanService {
         return formatUniqueRows(request, uniqueRows);
     }
 
-    private String findBumpSqlQuery(Long planId, FinelineVolume request, String volumeDeviationLevel) throws SizeAndPackException {
+    private String findBumpSqlQuery(Long planId, FinelineVolume request, String volumeDeviationLevel, LikeAssociation likeAssociation) {
         String tableNameSp = getProjectIdSp();
         String tableNameCc = getProjectIdCc();
 
@@ -500,8 +501,7 @@ public class BigQueryInitialSetPlanService {
         } else if (volumeDeviationLevel.equals(VdLevelCode.SUB_CATEGORY.getDescription())) {
             return getBumpQTYVolumeSubCatClusterQuery(tableNameCc, tableNameSp, Math.toIntExact(planId), request.getFinelineNbr(), request.getLvl4Nbr(), bigQueryConnectionProperties.getAnalyticsData(),request.getInterval(),request.getFiscalYear(),request.getLvl3Nbr());
         } else if (volumeDeviationLevel.equals(VdLevelCode.FINELINE.getDescription())) {
-            LikeAssociation likeAssociation = linePlanService.getLikeAssociation(planId, request.getFinelineNbr());
-            log.debug("LikeFineline details - originalFineline: {} | likeFineline: {}", request.getFinelineNbr(), null != likeAssociation ? likeAssociation.getId() : null);
+            log.debug("LikeFineline details - planId: {} | originalFineline: {} | likeFineline: {}", planId, request.getFinelineNbr(), null != likeAssociation ? likeAssociation.getId() : null);
             return getBumpQTYVolumeFinelineClusterQuery(tableNameCc, tableNameSp, Math.toIntExact(planId), request.getFinelineNbr(), request.getInterval(), request.getFiscalYear(), request.getLvl3Nbr(), request.getLvl4Nbr(), likeAssociation);
         }
         throw new RuntimeException("Invalid Deviation Level, Fineline, Subcategory, Category are valid values");
@@ -586,7 +586,7 @@ public class BigQueryInitialSetPlanService {
         return metricsVolume;
     }
 
-    private String findSqlQuery(Long planId, FinelineVolume request, String volumeDeviationLevel) throws SizeAndPackException {
+    private String findSqlQuery(Long planId, FinelineVolume request, String volumeDeviationLevel, LikeAssociation likeAssociation) {
         String tableNameSp = getProjectIdSp();
         String tableNameCc = getProjectIdCc();
 
@@ -595,8 +595,7 @@ public class BigQueryInitialSetPlanService {
         } else if (volumeDeviationLevel.equals(VdLevelCode.SUB_CATEGORY.getDescription())) {
             return getISByVolumeSubCatClusterQuery(tableNameCc, tableNameSp, Math.toIntExact(planId), request.getFinelineNbr(), request.getLvl4Nbr(), bigQueryConnectionProperties.getAnalyticsData(),request.getInterval(),request.getFiscalYear(),request.getLvl3Nbr());
         } else if (volumeDeviationLevel.equals(VdLevelCode.FINELINE.getDescription())) {
-            LikeAssociation likeAssociation = linePlanService.getLikeAssociation(planId, request.getFinelineNbr());
-            log.debug("LikeFineline details - originalFineline: {} | likeFineline: {}", request.getFinelineNbr(), null != likeAssociation ? likeAssociation.getId() : null);
+            log.debug("LikeFineline details - planId: {} | originalFineline: {} | likeFineline: {}", planId, request.getFinelineNbr(), null != likeAssociation ? likeAssociation.getId() : null);
             return getISByVolumeFinelineClusterQuery(tableNameCc, tableNameSp, Math.toIntExact(planId), request.getFinelineNbr(), request.getInterval(), request.getFiscalYear(), request.getLvl3Nbr(), request.getLvl4Nbr(), likeAssociation);
         }
         throw new RuntimeException("Invalid Deviation Level, Fineline, Subcategory, Category are valid values");

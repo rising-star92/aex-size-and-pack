@@ -53,4 +53,8 @@ public class CommonGCPUtil {
                         "  AND dept_subcatg_nbr = " + lvl4Nbr + "\n" +
                         "  AND fineline_nbr = " + finelineNbr + "\n") ;
     }
+
+    public static String formatTable(String... tableProperties) {
+        return String.join(".", tableProperties);
+    }
 }

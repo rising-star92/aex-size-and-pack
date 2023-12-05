@@ -142,7 +142,7 @@ public class BigQueryPackStoresService
             if (volumeDeviationLevel.equals(VdLevelCode.FINELINE.getDescription())) 
             {
 				LikeAssociation likeAssociation = linePlanService.getLikeAssociation(planId, request.getFinelineNbr());
-				log.debug("LikeFineline details - originalFineline: {} | likeFineline: {}", request.getFinelineNbr(), null != likeAssociation ? likeAssociation.getId() : null);
+				log.debug("LikeFineline details - planId: {} | originalFineline: {} | likeFineline: {}", planId, request.getFinelineNbr(), null != likeAssociation ? likeAssociation.getId() : null);
 	            return getStorePacksByVolumeFinelineClusterQuery(tableNameCc, tableNameSp, Math.toIntExact(planId), request.getFinelineNbr(), bigQueryConnectionProperties.getAnalyticsData(),request.getInterval(),
 	            		request.getFiscalYear(),request.getLvl3Nbr(),request.getLvl4Nbr(), likeAssociation);
 	        }
@@ -193,7 +193,7 @@ public class BigQueryPackStoresService
 						 packStoreDTO.getPackId(),
 						 packStoreDTO.getMerchMethod(),
 						 bumpPackNbr,
-						 null != packDescCustChoiceDTO.getAltFinelineDesc() ? packDescCustChoiceDTO.getAltFinelineDesc() : packStoreDTO.getFineline().toString()),
+						 PackOptimizationUtil.getFinelineDescription(packDescCustChoiceDTO.getAltFinelineDesc(), packStoreDTO.getFineline())),
 				 x -> new HashMap<>()).computeIfAbsent(
     					 VolumeFixtureAllocation.builder()
 								 .ccId(packStoreDTO.getCc())
@@ -234,7 +234,7 @@ public class BigQueryPackStoresService
 	    	 stylePackVolumes.add(StylePackVolume.builder()
 					 .styleId(stylePack.getStyleId())
 	    			 .packId(stylePack.getPackId())
-					 .packDescription(Boolean.parseBoolean(bigQueryConnectionProperties.getPackDescriptionFeatureFlag()) && null != stylePack.getPackId() && !colors.isEmpty() ?
+					 .packDescription(Boolean.parseBoolean(bigQueryConnectionProperties.getPackDescriptionFeatureFlag()) && null != stylePack.getPackId() ?
 							 PackOptimizationUtil.createPackDescription(stylePack.getPackId(),
 									 stylePack.getMerchMethod(),
 									 stylePack.getBumpPackNbr(),
@@ -264,7 +264,7 @@ public class BigQueryPackStoresService
 	private String getStorePacksByVolumeFinelineClusterQuery(String ccTableName, String spTableName, Integer planId, Integer finelineNbr, String analyticsData, String interval,
 															 Integer fiscalYear, Integer catNbr, Integer subCatNbr, LikeAssociation likeAssociation) {
 		String prodFineline = planId + "_" + finelineNbr + "%";
-		String finelineTable = bigQueryConnectionProperties.getAnalyticsData() + "." + bigQueryConnectionProperties.getFinelineVolumeCluster();
+		String finelineTable = CommonGCPUtil.formatTable(bigQueryConnectionProperties.getAnalyticsData(), bigQueryConnectionProperties.getFinelineVolumeCluster());
 		return "WITH MyTable AS (\n" +
 				"select distinct\n" +
 				"SP.productFineline,\n" +

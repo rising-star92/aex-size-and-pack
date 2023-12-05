@@ -406,23 +406,21 @@ public class SizeAndPackService {
 	}
 
     private void setPackDescription(InitialSetPackRequest request, InitialBumpSetResponse response) {
-        List<PackDescCustChoiceDTO> packDescCustChoiceDTO = customerChoiceRepository.getCustomerChoicesByFinelineAndPlanId(Long.valueOf(request.getPlanId()), request.getFinelineNbr(), ChannelType.STORE.getId());
-        if (!CollectionUtils.isEmpty(packDescCustChoiceDTO)) {
-            String altFinelineDesc = packDescCustChoiceDTO.get(0).getAltFinelineDesc() != null ? packDescCustChoiceDTO.get(0).getAltFinelineDesc() : String.valueOf(request.getFinelineNbr());
-            response.getIntialSetStyles().forEach(initialSetStyle -> initialSetStyle.getInitialSetPlan().stream().flatMap(initialSetPlan -> initialSetPlan.getPackDetails().stream()).forEach(
-                    packDetails -> {
-                        Set<String> ccs = packDetails.getMetrics().stream().map(Metrics::getCcId).collect(Collectors.toSet());
-                        Set<String> colors = new HashSet<>();
-                        ccs.forEach(cc -> packDescCustChoiceDTO.forEach(packDescCustChoice -> {
-                            if (packDescCustChoice.getCcId().equalsIgnoreCase(cc))
-                                colors.add(packDescCustChoice.getColorName());
-                        }));
-                        packDetails.setPackDescription(PackOptimizationUtil.createPackDescription(packDetails.getPackId(), packDetails.getMetrics().get(0).getMerchMethod(), packDetails.getBumpPackNbr(), List.copyOf(colors), altFinelineDesc));
-                    }
-            ));
-        } else {
-            log.warn("No matching record found for fineline for planId: {}, fineline: {}", request.getPlanId(), request.getFinelineNbr());
-        }
+        List<PackDescCustChoiceDTO> packDescCustChoiceDTOList = customerChoiceRepository.getCustomerChoicesByFinelineAndPlanId(Long.valueOf(request.getPlanId()), request.getFinelineNbr(), ChannelType.STORE.getId());
+        String finelineDesc = !packDescCustChoiceDTOList.isEmpty() ?
+                PackOptimizationUtil.getFinelineDescription(packDescCustChoiceDTOList.get(0).getAltFinelineDesc(), request.getFinelineNbr())
+                : String.valueOf(request.getFinelineNbr());
+        response.getIntialSetStyles().forEach(initialSetStyle -> initialSetStyle.getInitialSetPlan().stream().flatMap(initialSetPlan -> initialSetPlan.getPackDetails().stream()).forEach(
+                packDetails -> {
+                    Set<String> ccs = packDetails.getMetrics().stream().map(Metrics::getCcId).collect(Collectors.toSet());
+                    Set<String> colors = new HashSet<>();
+                    ccs.forEach(cc -> packDescCustChoiceDTOList.forEach(packDescCustChoice -> {
+                        if (packDescCustChoice.getCcId().equalsIgnoreCase(cc))
+                            colors.add(packDescCustChoice.getColorName());
+                    }));
+                    packDetails.setPackDescription(PackOptimizationUtil.createPackDescription(packDetails.getPackId(), packDetails.getMetrics().get(0).getMerchMethod(), packDetails.getBumpPackNbr(), List.copyOf(colors), finelineDesc));
+                }
+        ));
     }
 
     public List<InitialSetVolumeResponse> getInitialAndBumpSetDetailsByVolumeCluster(InitialSetVolumeRequest request) {

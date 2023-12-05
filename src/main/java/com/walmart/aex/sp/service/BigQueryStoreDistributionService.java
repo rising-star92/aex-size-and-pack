@@ -245,9 +245,9 @@ public class BigQueryStoreDistributionService {
 					" and  sc.season = '" + season + "' and sc.fiscal_year = " + fiscalYear;
 
 		else if (finelineVolumeDeviationDto.getVolumeDeviationLevel().equals(VdLevelCode.FINELINE.getDescription())) {
-			String finelineTable = bigQueryConnectionProperties.getAnalyticsData() + "." + bigQueryConnectionProperties.getFinelineVolumeCluster();
+			String finelineTable = CommonGCPUtil.formatTable(bigQueryConnectionProperties.getAnalyticsData(), bigQueryConnectionProperties.getFinelineVolumeCluster());
 			LikeAssociation likeAssociation = linePlanService.getLikeAssociation(finelineVolumeDeviationDto.getPlanId(), finelineVolumeDeviationDto.getFinelineId());
-			log.debug("LikeFineline details - originalFineline: {} | likeFineline: {}", finelineVolumeDeviationDto.getFinelineId(), null != likeAssociation ? likeAssociation.getId() : null);
+			log.debug("LikeFineline details - planId: {} | originalFineline: {} | likeFineline: {}", finelineVolumeDeviationDto.getPlanId(), finelineVolumeDeviationDto.getFinelineId(), null != likeAssociation ? likeAssociation.getId() : null);
 			return CommonGCPUtil.getFinelineVolumeClusterQuery(finelineTable,
 							finelineVolumeDeviationDto.getLvl3Nbr(),
 							finelineVolumeDeviationDto.getLvl4Nbr(),
