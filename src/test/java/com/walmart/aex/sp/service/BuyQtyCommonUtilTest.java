@@ -65,7 +65,7 @@ class BuyQtyCommonUtilTest {
     void getBumpSetTest() throws IOException {
         try (MockedStatic<BuyQtyCommonUtil> mockedStatic = Mockito.mockStatic(BuyQtyCommonUtil.class, invocationOnMock -> {
             Method method = invocationOnMock.getMethod();
-            if ("getBumpSet".equals(method.getName())) {
+            if ("getBumpSet".equals(method.getName()) || "getBumpPackNbr".equals(method.getName())) {
                 return invocationOnMock.callRealMethod();
             } else {
                 return invocationOnMock.getMock();
@@ -86,7 +86,7 @@ class BuyQtyCommonUtilTest {
     void getBumpSetNullTest() throws IOException {
         try (MockedStatic<BuyQtyCommonUtil> mockedStatic = Mockito.mockStatic(BuyQtyCommonUtil.class, invocationOnMock -> {
             Method method = invocationOnMock.getMethod();
-            if ("getBumpSet".equals(method.getName())) {
+            if ("getBumpSet".equals(method.getName()) || "getBumpPackNbr".equals(method.getName())) {
                 return invocationOnMock.callRealMethod();
             } else {
                 return invocationOnMock.getMock();

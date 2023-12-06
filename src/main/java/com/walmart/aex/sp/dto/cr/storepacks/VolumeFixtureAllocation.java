@@ -15,4 +15,5 @@ public final class VolumeFixtureAllocation
 	 private final String fixtureType;
 	 private final BigDecimal fixtureAllocation;
 	 private final String ccId;
+	 private final String colorName;
 }

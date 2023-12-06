@@ -150,8 +150,7 @@ public class BuyQtyCommonUtil {
     }
 
     public static BumpSet getBumpSet(BQFPResponse bqfpResponse, String productFineline, String styleNbr, String ccId, String fixtureType, Integer clusterId) {
-        Integer bumpPackNumber = StringUtils.isNotEmpty(productFineline) && productFineline.contains(BUMP_PACK) ?
-                Integer.parseInt(productFineline.replaceFirst(BUMP_PACK_PATTERN, "")) : 1;
+        Integer bumpPackNumber = getBumpPackNbr(productFineline);
         return Optional.ofNullable(bqfpResponse).stream().
                 flatMap( styles -> styles.getStyles().stream())
                 .filter((StringUtils.isNotEmpty(styleNbr)) ? style -> styleNbr.contains(style.getStyleId()) : style -> true)
@@ -164,6 +163,11 @@ public class BuyQtyCommonUtil {
                 .flatMap(bump -> bump.getBumpList().stream())
                 .filter(bump -> null != bump && bump.getBumpPackNbr().equals(bumpPackNumber)  && StringUtils.isNotEmpty(bump.getWeekDesc()))
                 .findFirst().orElse(new BumpSet());
+    }
+
+    public static Integer getBumpPackNbr(String productFineline) {
+        return StringUtils.isNotEmpty(productFineline) && productFineline.contains(BUMP_PACK) ?
+                Integer.parseInt(productFineline.replaceFirst(BUMP_PACK_PATTERN, "")) : 1;
     }
 
     public static String getInStoreWeek(BumpSet bp) {

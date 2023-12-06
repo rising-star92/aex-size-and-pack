@@ -11,4 +11,7 @@ public final class StylePack
 {
 	private final String styleId;
 	private final String packId;
+	private final String merchMethod;
+	private final Integer bumpPackNbr;
+	private final String finelineDesc;
 }

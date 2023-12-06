@@ -9,18 +9,19 @@ import com.walmart.aex.sp.dto.bqfp.BQFPResponse;
 import com.walmart.aex.sp.dto.bqfp.BumpSet;
 import com.walmart.aex.sp.dto.buyquantity.FinelineVolumeDeviationDto;
 import com.walmart.aex.sp.dto.buyquantity.StrategyVolumeDeviationResponse;
+import com.walmart.aex.sp.dto.currentlineplan.LikeAssociation;
 import com.walmart.aex.sp.dto.gql.GraphQLResponse;
 import com.walmart.aex.sp.enums.VdLevelCode;
 import com.walmart.aex.sp.exception.SizeAndPackException;
 import com.walmart.aex.sp.properties.GraphQLProperties;
 import com.walmart.aex.sp.util.BuyQtyCommonUtil;
+import com.walmart.aex.sp.util.CommonGCPUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.cloud.bigquery.BigQuery;
-import com.google.cloud.bigquery.BigQueryOptions;
 import com.google.cloud.bigquery.QueryJobConfiguration;
 import com.google.cloud.bigquery.TableResult;
 import com.walmart.aex.sp.dto.storedistribution.PackData;
@@ -41,7 +42,7 @@ public class BigQueryStoreDistributionService {
 	private final BQFPService bqfpService;
 	private final StrategyFetchService strategyFetchService;
 	private final GraphQLService graphQLService;
-
+	private LinePlanService linePlanService;
 	private final BigQuery bigQuery;
 
 	@ManagedConfiguration
@@ -50,11 +51,12 @@ public class BigQueryStoreDistributionService {
 	@ManagedConfiguration
 	BigQueryConnectionProperties bigQueryConnectionProperties;
 
-	public BigQueryStoreDistributionService(ObjectMapper objectMapper, BQFPService bqfpService, StrategyFetchService strategyFetchService, GraphQLService graphQLService, BigQuery bigQuery) {
+	public BigQueryStoreDistributionService(ObjectMapper objectMapper, BQFPService bqfpService, StrategyFetchService strategyFetchService, GraphQLService graphQLService, LinePlanService linePlanService, BigQuery bigQuery) {
 		this.objectMapper = objectMapper;
 		this.bqfpService = bqfpService;
 		this.strategyFetchService = strategyFetchService;
 		this.graphQLService = graphQLService;
+		this.linePlanService = linePlanService;
 		this.bigQuery = bigQuery;
 	}
 
@@ -93,7 +95,7 @@ public class BigQueryStoreDistributionService {
 			} else {
 				String sqlQuery = getInitialSetQuery(parquetTableName, packOptOutputTableName,
 						planAndFineline, planId, fineline, packId, inStoreWeek);
-
+				log.debug("InitialSet Query: {}", sqlQuery);
 				QueryJobConfiguration queryConfig = QueryJobConfiguration.newBuilder(sqlQuery).build();
 				TableResult results = bigQuery.query(queryConfig);
 				results.iterateAll().forEach(rows -> rows.forEach(row -> {
@@ -108,6 +110,7 @@ public class BigQueryStoreDistributionService {
 				if (storeDistributionList.isEmpty()) {
 					sqlQuery = getBumpSetStoreDistributionQuery(parquetTableName, packOptOutputTableName,
 							planAndFineline, planId, fineline, packId);
+					log.debug("BumpSet Query: {}", sqlQuery);
 					if (StringUtils.isNotEmpty(sqlQuery)) {
 						queryConfig = QueryJobConfiguration.newBuilder(sqlQuery).build();
 						results = bigQuery.query(queryConfig);
@@ -165,6 +168,7 @@ public class BigQueryStoreDistributionService {
 	private String getBumpSetStoreDistributionQuery(String parquetTableName, String packOptOutputTableName, String planAndFineline, Long planId, Integer fineline, String packId) throws SizeAndPackException {
 		StrategyVolumeDeviationResponse volumeDeviationResponse = strategyFetchService.getStrategyVolumeDeviation(planId, fineline);
 		String planDesc = getPlanDescById(Math.toIntExact(planId));
+		log.debug("volumeDeviation: {}", volumeDeviationResponse.getFinelines().get(0).getVolumeDeviationLevel());
 		if (StringUtils.isNotEmpty(planDesc) && planDesc.length() > 3) {
 			String season = planDesc.substring(0, 2);
 			Integer fiscalYear = Integer.valueOf(planDesc.substring(planDesc.length() - 4));
@@ -240,10 +244,16 @@ public class BigQueryStoreDistributionService {
 					"where sc.dept_catg_nbr = " + finelineVolumeDeviationDto.getLvl3Nbr() + " and sc.dept_subcatg_nbr = " + finelineVolumeDeviationDto.getLvl4Nbr() +
 					" and  sc.season = '" + season + "' and sc.fiscal_year = " + fiscalYear;
 
-		else if (finelineVolumeDeviationDto.getVolumeDeviationLevel().equals(VdLevelCode.FINELINE.getDescription()))
-			return "select store_nbr as store,cluster_id as clusterId from `" + bigQueryConnectionProperties.getAnalyticsData() + ".svg_fl_cluster` " +
-					"where dept_catg_nbr = " + finelineVolumeDeviationDto.getLvl3Nbr() + " and dept_subcatg_nbr = " + finelineVolumeDeviationDto.getLvl4Nbr() +
-					" and fineline_nbr = " + finelineVolumeDeviationDto.getFinelineId() + " and season = '" + season + "' and fiscal_year = " + fiscalYear;
+		else if (finelineVolumeDeviationDto.getVolumeDeviationLevel().equals(VdLevelCode.FINELINE.getDescription())) {
+			String finelineTable = CommonGCPUtil.formatTable(bigQueryConnectionProperties.getAnalyticsData(), bigQueryConnectionProperties.getFinelineVolumeCluster());
+			LikeAssociation likeAssociation = linePlanService.getLikeAssociation(finelineVolumeDeviationDto.getPlanId(), finelineVolumeDeviationDto.getFinelineId());
+			log.debug("LikeFineline details - planId: {} | originalFineline: {} | likeFineline: {}", finelineVolumeDeviationDto.getPlanId(), finelineVolumeDeviationDto.getFinelineId(), null != likeAssociation ? likeAssociation.getId() : null);
+			return CommonGCPUtil.getFinelineVolumeClusterQuery(finelineTable,
+							finelineVolumeDeviationDto.getLvl3Nbr(),
+							finelineVolumeDeviationDto.getLvl4Nbr(),
+							finelineVolumeDeviationDto.getFinelineId(),
+							season, fiscalYear, likeAssociation);
+		}
 
 		throw new SizeAndPackException("Invalid Deviation Level, Fineline, Subcategory, Category are valid values");
 	}
