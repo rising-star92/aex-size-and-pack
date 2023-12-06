@@ -50,7 +50,7 @@ applications:
           - applicationKey: OMNISAGE-EXECUTIONSERVICES
             environment: stg
           - applicationKey: AEX-SIZE-AND-PACK-CRON-JOBS
-            environment: stg
+            environment: stage
         consumerIdInfos:
         - consumerId: 93c617a1-31ec-4333-a819-683ef7514cc0
           publicKey: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2BfPidV+Tpn/tz8iY4xK/gAV7mcA6wK/PwnVMC+FtycgfMiohvnesAVhc3O35HpZo8id9MecwigItXAgFgPv+vxRcBjn+M5mRsmYBxXTHVuGsYP0e9XV6MJSTQ5vJYnzf5BJjDat7y7jLVIHWz32FXwIKa23E1dTIgVpQtoCiIuOGB6Y7RPG2KYXZSuONJMCpkW1iFYoC8GpvRni1UiTRtnhOKESQ7wkfj3nuiK0Hc8a7db53abqngW6SikB8Crp5tIdmlTgJ2dR0CWm0WdBdEvsz5K1dLGSsJQFSlbsPNQnc146CnTHkl+yQQA7xSpvPuPxHQX4aoqFwTWI/M56LQIDAQAB
