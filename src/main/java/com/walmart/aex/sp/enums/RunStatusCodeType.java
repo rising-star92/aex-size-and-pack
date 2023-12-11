@@ -12,7 +12,7 @@ public enum RunStatusCodeType {
     NUMTOTALCCS_VALUE_ERROR_MSG(13, "Fineline failed, please contact the support team"),
     INITIAL_SET_CC_VALUE_ERROR_MSG(14, "Fineline has an initial set with less than 6 units. Please adjust units or consider combining colors."),
     BUMP_SET_CC_VALUE_ERROR_MSG(15, "Fineline has a bump set with less than 6 units. Please adjust units or consider combining colors."),
-    DATA_VALIDATIONS_MSG(16, "No Solution: Review Max no of pack configurations."),
+    DATA_VALIDATIONS_MSG(16, "Fineline failed, please contact the support team"),
     DUPLICATE_DATA_ERROR_MSG(17, "Duplicate data in initial data set, please contact the support team"),
     MODEL_OUTPUT_MSG(18, "Fineline failed, please contact the support team"),
     MODEL_OUTPUT_COLUMNS(19, "Fineline failed, please contact the support team"),
