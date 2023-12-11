@@ -157,20 +157,13 @@ public class BigQueryPackStoresService
 		 //CC
 		 List<PackDescCustChoiceDTO> packDescCustChoiceDTOList = customerChoiceRepository.getCustomerChoicesByFinelineAndPlanId(planId, finelineNbr, ChannelType.STORE.getId());
 
+		 String finelineDesc = PackOptimizationUtil.getFinelineDescription(packDescCustChoiceDTOList, finelineNbr);
+
 		 for(PackStoreDTO packStoreDTO : packStoreDTOs)
 	     {
 			 Integer isQty = packStoreDTO.getIsQuantity();
 			 Integer bsQty = packStoreDTO.getBsQuantity();
-			 PackDescCustChoiceDTO packDescCustChoiceDTO = packDescCustChoiceDTOList.stream()
-					 .filter(cc -> cc.getCcId().equalsIgnoreCase(packStoreDTO.getCc())).findFirst()
-					 .orElse(
-							 new PackDescCustChoiceDTO(
-									 packStoreDTO.getCc(),
-									 null,
-									 PackOptimizationUtil.getFinelineDescription(!packDescCustChoiceDTOList.isEmpty() ? packDescCustChoiceDTOList.get(0).getAltFinelineDesc() : null,
-											 packStoreDTO.getFineline())
-							 )
-					 );
+			 PackDescCustChoiceDTO packDescCustChoiceDTO = getPackDescCustChoiceDTO(packDescCustChoiceDTOList, packStoreDTO, finelineDesc);
 
 	    	 // Stores have allocated space in RFA but don't have any quantities
 	    	 if(isQty == null && bsQty == null)
@@ -191,6 +184,14 @@ public class BigQueryPackStoresService
 	     }
 		 return volFixtureMetrics;
 	 }
+
+	private PackDescCustChoiceDTO getPackDescCustChoiceDTO(List<PackDescCustChoiceDTO> packDescCustChoiceDTOList, PackStoreDTO packStoreDTO, String finelineDesc) {
+		PackDescCustChoiceDTO packDescCustChoiceDTO = packDescCustChoiceDTOList.stream()
+				.filter(cc -> cc.getCcId().equalsIgnoreCase(packStoreDTO.getCc())).findFirst()
+				.orElse(new PackDescCustChoiceDTO());
+		packDescCustChoiceDTO.setAltFinelineDesc(finelineDesc);
+		return packDescCustChoiceDTO;
+	}
 
 	private void populateVolumeFixtureMetrics(Map<StylePack,
 			 Map<VolumeFixtureAllocation, List<StoreMetrics>>> volFixtureMetrics, PackStoreDTO packStoreDTO, 

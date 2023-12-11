@@ -9,6 +9,7 @@ import com.walmart.aex.sp.dto.integrationhub.IntegrationHubRequestDTO;
 import com.walmart.aex.sp.dto.integrationhub.IntegrationHubResponseDTO;
 import com.walmart.aex.sp.dto.packoptimization.InputRequest;
 import com.walmart.aex.sp.dto.packoptimization.RunPackOptRequest;
+import com.walmart.aex.sp.dto.packoptimization.packDescription.PackDescCustChoiceDTO;
 import com.walmart.aex.sp.entity.AnalyticsMlChildSend;
 import com.walmart.aex.sp.entity.AnalyticsMlSend;
 import com.walmart.aex.sp.enums.RunStatusCodeType;
@@ -139,8 +140,13 @@ public class PackOptimizationUtil {
                 .toString();
     }
 
-    public static String getFinelineDescription(String finelineDesc, Integer finelineNbr) {
-        return StringUtils.isNotEmpty(finelineDesc) ? finelineDesc : String.valueOf(finelineNbr);
+    public static String getFinelineDescription(List<PackDescCustChoiceDTO> packDescCustChoiceDTOList, Integer finelineNbr) {
+        if (!packDescCustChoiceDTOList.isEmpty()) {
+            String finelineDesc = packDescCustChoiceDTOList.get(0).getAltFinelineDesc();
+            return StringUtils.isNotEmpty(finelineDesc) ? finelineDesc : String.valueOf(finelineNbr);
+        }
+        else
+            return String.valueOf(finelineNbr);
     }
 
 }
