@@ -18,6 +18,7 @@ import com.walmart.aex.sp.properties.BigQueryConnectionProperties;
 import com.walmart.aex.sp.properties.GraphQLProperties;
 import com.walmart.aex.sp.util.BuyQtyResponseInputs;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
@@ -30,6 +31,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -217,6 +219,21 @@ class BigQueryStoreDistributionServiceTest {
             verify(strategyFetchService, times(1)).getStrategyVolumeDeviation(anyLong(), anyInt());
         } catch (InterruptedException | SizeAndPackException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    @DisplayName("When the PO Distribution override list has a planId that's matched from the request, it will use the override query (one call)")
+    void poDistributionOverrideRoutesToCorrectQuery() {
+        final String poOverridePlanIdsJson = "[123]";
+        packData.setPlanId(123L);
+        when(bigQueryConnectionProperties.getPODistributionOverridePlanIds()).thenReturn(poOverridePlanIdsJson);
+
+        try {
+            bigQueryStoreDistributionService.getStoreDistributionData(packData);
+            verify(bigQuery, times(1)).query(any(QueryJobConfiguration.class));
+        } catch (InterruptedException e) {
+            fail(e);
         }
     }
 
