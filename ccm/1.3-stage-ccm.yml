@@ -513,3 +513,18 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "true"
+      "po.distribution.override.datasetName":
+        description: "Dataset name which contains overridden store distribution"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "po_reallocation_stg"
+      "po.distribution.override.tableName":
+        description: "Table name which contains overridden store distribution by plan/fineline/pack/instoreWeek"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "aex_po_svg_final_s2_all"
+      "po.distribution.override.planIds":
+        description: "JSON integer array to hold which stores' distribution should be retrieved from PO distribution overridden data"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "[155, 161, 162, 163, 167, 171, 172, 174, 176, 183]"
