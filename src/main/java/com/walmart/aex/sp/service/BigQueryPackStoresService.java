@@ -159,10 +159,18 @@ public class BigQueryPackStoresService
 
 		 for(PackStoreDTO packStoreDTO : packStoreDTOs)
 	     {
-	    	 Integer isQty = packStoreDTO.getIsQuantity();
-	    	 Integer bsQty = packStoreDTO.getBsQuantity();
+			 Integer isQty = packStoreDTO.getIsQuantity();
+			 Integer bsQty = packStoreDTO.getBsQuantity();
 			 PackDescCustChoiceDTO packDescCustChoiceDTO = packDescCustChoiceDTOList.stream()
-					 .filter(cc -> cc.getCcId().equalsIgnoreCase(packStoreDTO.getCc())).findFirst().orElse(new PackDescCustChoiceDTO());
+					 .filter(cc -> cc.getCcId().equalsIgnoreCase(packStoreDTO.getCc())).findFirst()
+					 .orElse(
+							 new PackDescCustChoiceDTO(
+									 packStoreDTO.getCc(),
+									 null,
+									 PackOptimizationUtil.getFinelineDescription(!packDescCustChoiceDTOList.isEmpty() ? packDescCustChoiceDTOList.get(0).getAltFinelineDesc() : null,
+											 packStoreDTO.getFineline())
+							 )
+					 );
 
 	    	 // Stores have allocated space in RFA but don't have any quantities
 	    	 if(isQty == null && bsQty == null)
@@ -193,7 +201,7 @@ public class BigQueryPackStoresService
 						 packStoreDTO.getPackId(),
 						 packStoreDTO.getMerchMethod(),
 						 bumpPackNbr,
-						 PackOptimizationUtil.getFinelineDescription(packDescCustChoiceDTO.getAltFinelineDesc(), packStoreDTO.getFineline())),
+						 packDescCustChoiceDTO.getAltFinelineDesc()),
 				 x -> new HashMap<>()).computeIfAbsent(
     					 VolumeFixtureAllocation.builder()
 								 .ccId(packStoreDTO.getCc())
