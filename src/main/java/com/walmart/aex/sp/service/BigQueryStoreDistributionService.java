@@ -187,12 +187,12 @@ public class BigQueryStoreDistributionService {
 	private String getBumpSetStoreDistributionQuery(String parquetTableName, String packOptOutputTableName, String planAndFineline, Long planId, Integer fineline, String packId) throws SizeAndPackException {
 		StrategyVolumeDeviationResponse volumeDeviationResponse = strategyFetchService.getStrategyVolumeDeviation(planId, fineline);
 		String planDesc = getPlanDescById(Math.toIntExact(planId));
-		log.debug("volumeDeviation: {}", volumeDeviationResponse.getFinelines().get(0).getVolumeDeviationLevel());
 		if (StringUtils.isNotEmpty(planDesc) && planDesc.length() > 3) {
 			String season = planDesc.substring(0, 2);
 			Integer fiscalYear = Integer.valueOf(planDesc.substring(planDesc.length() - 4));
 			if (null != volumeDeviationResponse && !volumeDeviationResponse.getFinelines().isEmpty()) {
 				FinelineVolumeDeviationDto finelineVolumeDeviationDto = volumeDeviationResponse.getFinelines().get(0);
+				log.debug("planId: {}, finelineNbr: {}, volumeDeviation: {}", planId, fineline, finelineVolumeDeviationDto.getVolumeDeviationLevel());
 				String analyticsQuery = getAnalyticsQueryByDeviation(finelineVolumeDeviationDto, season, fiscalYear);
 				return getStoreDistributionBumpQuery(parquetTableName, packOptOutputTableName, planAndFineline, planId, fineline, packId, analyticsQuery);
 			}
