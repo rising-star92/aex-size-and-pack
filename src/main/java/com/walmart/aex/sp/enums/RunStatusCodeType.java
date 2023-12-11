@@ -12,13 +12,15 @@ public enum RunStatusCodeType {
     NUMTOTALCCS_VALUE_ERROR_MSG(13, "Fineline failed, please contact the support team"),
     INITIAL_SET_CC_VALUE_ERROR_MSG(14, "Fineline has an initial set with less than 6 units. Please adjust units or consider combining colors."),
     BUMP_SET_CC_VALUE_ERROR_MSG(15, "Fineline has a bump set with less than 6 units. Please adjust units or consider combining colors."),
-    DATA_VALIDATIONS_MSG(16, "Fineline failed, please contact the support team"),
+    DATA_VALIDATIONS_MSG(16, "No Solution: Review Max no of pack configurations."),
     DUPLICATE_DATA_ERROR_MSG(17, "Duplicate data in initial data set, please contact the support team"),
     MODEL_OUTPUT_MSG(18, "Fineline failed, please contact the support team"),
     MODEL_OUTPUT_COLUMNS(19, "Fineline failed, please contact the support team"),
     SOLVER_NOT_SOLVE_ERROR_MSG(20, "Fineline failed, the max capacity is not enough to meet the pack requirements. Please increase max capacity"),
     TIMEOUT_ERROR(21, "Request failed due to system error, please retrigger Pack Optimization"),
     INTEGRATION_HUB_TECHNICAL_ERROR(22, "Request failed due to system error, please retrigger Pack Optimization"),
+
+    MAX_PACK_CONFIG_ERROR(23, "No Solution: problem not feasible"),
     COMMON_ERR_MSG(100, "Fineline failed, please contact the support team"),
     ERROR(101, "ANALYTICS ERROR");
 
@@ -36,7 +38,7 @@ public enum RunStatusCodeType {
             RunStatusCodeType.DATA_VALIDATIONS_MSG.getId(), RunStatusCodeType.DUPLICATE_DATA_ERROR_MSG.getId(),
             RunStatusCodeType.MODEL_OUTPUT_MSG.getId(), RunStatusCodeType.MODEL_OUTPUT_COLUMNS.getId(),
             RunStatusCodeType.SOLVER_NOT_SOLVE_ERROR_MSG.getId(), RunStatusCodeType.COMMON_ERR_MSG.getId(), RunStatusCodeType.INTEGRATION_HUB_TECHNICAL_ERROR.getId(),
-            RunStatusCodeType.TIMEOUT_ERROR.getId());
+            RunStatusCodeType.TIMEOUT_ERROR.getId(),RunStatusCodeType.MAX_PACK_CONFIG_ERROR.getId());
 
     /**
      * @return the id

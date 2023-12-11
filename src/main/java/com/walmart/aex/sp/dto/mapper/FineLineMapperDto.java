@@ -71,6 +71,7 @@ public class FineLineMapperDto {
     private Integer bumpPackNbr;
     private Integer childRunStatusCode;
     private String childRunStatusCodeDesc;
+    private String childReturnMessage;
     private String styleNbr;
     private String styleSupplierName;
     private Integer styleVendorNumber6;
@@ -118,7 +119,7 @@ public class FineLineMapperDto {
             String ccPortOfOrigin, Integer ccSinglePackIndicator, String ccColorCombination,
             Integer ccMaxUnitsPerPack, Integer ccMaxPacks, String ccFactoryName, Date startTs, Date endTs, Integer runStatusCode,
             String runStatusDesc, String runStatusLongDesc, String firstName, String lastName, Integer bumpPackNbr,
-            Integer childRunStatusCode, String childRunStatusCodeDesc) {
+            Integer childRunStatusCode, String childRunStatusCodeDesc, String childReturnMessage) {
         this.planId = planId;
         this.channelId = channelId;
         this.lvl0Nbr = lvl0Nbr;
@@ -174,6 +175,7 @@ public class FineLineMapperDto {
         this.bumpPackNbr = bumpPackNbr;
         this.childRunStatusCode = childRunStatusCode;
         this.childRunStatusCodeDesc = childRunStatusCodeDesc;
+        this.childReturnMessage = childReturnMessage;
         this.ccId = ccId;
         this.ccSupplierName = ccSupplierName;
         this.ccGsmSupplierNumber = ccGsmSupplierNumber;

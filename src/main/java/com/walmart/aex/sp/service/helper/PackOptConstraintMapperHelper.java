@@ -31,7 +31,12 @@ public class PackOptConstraintMapperHelper {
         Map<String, Set<Integer>> errorsToBumpPacks = new HashMap<>();
         for (Map.Entry<Integer, String> entry : runStatusLongDescriptions.entrySet()) {
             int bumpPackNbr = entry.getKey();
-            String errorDescription = entry.getValue();
+            String errorDescription = null;
+            if(fineLineMapperDto.getChildRunStatusCode().equals(RunStatusCodeType.MAX_PACK_CONFIG_ERROR.getId()) && !fineLineMapperDto.getChildReturnMessage().isBlank()){
+                errorDescription = entry.getValue().replace(MAX_PACK_CONFIG_NUM,fineLineMapperDto.getChildReturnMessage().trim());
+            }else{
+                errorDescription = entry.getValue();
+            }
             errorsToBumpPacks.computeIfAbsent(errorDescription, k -> new HashSet<>()).add(bumpPackNbr);
         }
 
@@ -39,11 +44,15 @@ public class PackOptConstraintMapperHelper {
         for (Map.Entry<String, Set<Integer>> entry : errorsToBumpPacks.entrySet()) {
             String errorDescription = entry.getKey();
             Set<Integer> bumpPacks = entry.getValue();
-            String bumpPacksString = bumpPacks.stream()
-                    .map(bumpPack ->  bumpPack == 1 ? getInitialSetOrBumpPackError(bumpPacks,fineLineMapperDto.getChildRunStatusCode()) : BUMP_PACK_ERROR + bumpPack)
-                    .collect(Collectors.joining(", "));
-            String combinedDescription = bumpPacksString + " : " + errorDescription;
-            runStatusLongDesc.add(combinedDescription);
+            if(!fineLineMapperDto.getChildRunStatusCode().equals(RunStatusCodeType.MAX_PACK_CONFIG_ERROR.getId())) {
+                String bumpPacksString = bumpPacks.stream()
+                        .map(bumpPack -> bumpPack == 1 ? getInitialSetOrBumpPackError(bumpPacks, fineLineMapperDto.getChildRunStatusCode()) : BUMP_PACK_ERROR + bumpPack)
+                        .collect(Collectors.joining(", "));
+                String combinedDescription = bumpPacksString + " : " + errorDescription;
+                runStatusLongDesc.add(combinedDescription);
+            }else{
+                runStatusLongDesc.add(errorDescription);
+            }
         }
         return runStatusLongDesc;
 
@@ -55,6 +64,8 @@ public class PackOptConstraintMapperHelper {
                 return INITIAL_SET;
             }else if(runStatusCode == 15){
                 return BUMP_PACK_ERROR + 1;
+            }else if(runStatusCode == 23){
+                return null;
             }
            if((bumpPacks.size()>1) && (runStatusCode != 14 || runStatusCode != 15)){
               return INITIAL_SET + " + " + BUMP_PACK_ERROR + 1;

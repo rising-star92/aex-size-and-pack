@@ -132,7 +132,7 @@ public class PackOptimizationService {
     }
 
     @Transactional
-    public void updatePackOptServiceStatus(Long planId, String finelineNbr, Integer status, boolean isResetPackOptStatusFlag) {
+    public void updatePackOptServiceStatus(Long planId, String finelineNbr, Integer status, boolean isResetPackOptStatusFlag, UpdatePackOptStatusRequest request) {
         List<Integer> fineLineAndBumpCount = CommonUtil.getNumbersFromString(finelineNbr);
         Integer fineLineNumber = !fineLineAndBumpCount.isEmpty() ? fineLineAndBumpCount.get(0) : null;
         Integer bumpNbr = fineLineAndBumpCount.size() > 1 ? fineLineAndBumpCount.get(1) : 1;
@@ -151,6 +151,7 @@ public class PackOptimizationService {
                             if (Objects.equals(analyticsMlChildSend.getBumpPackNbr(), bumpNbr)) {
                                 analyticsMlChildSend.setRunStatusCode(status);
                                 analyticsMlChildSend.setEndTs(new Date());
+                                analyticsMlChildSend.setReturnMessage(request.getMessage());
                                 updateParentRunStatusCode(analyticsMlSend.get());
                                 break;
                             }
