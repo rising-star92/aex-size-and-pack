@@ -151,7 +151,8 @@ public class PackOptimizationService {
                             if (Objects.equals(analyticsMlChildSend.getBumpPackNbr(), bumpNbr)) {
                                 analyticsMlChildSend.setRunStatusCode(status);
                                 analyticsMlChildSend.setEndTs(new Date());
-                                analyticsMlChildSend.setReturnMessage(request.getMessage());
+                                if(null!=request && !request.getMessage().isBlank())
+                                    analyticsMlChildSend.setReturnMessage(request.getMessage());
                                 updateParentRunStatusCode(analyticsMlSend.get());
                                 break;
                             }
