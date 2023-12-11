@@ -83,7 +83,7 @@ public class BigQueryStoreDistributionService {
 			String poDistrOverrideDatsetName = bigQueryConnectionProperties.getPODistributionOverrideDatasetName();
 			String poDistrOverrideTableName = bigQueryConnectionProperties.getPODistributionOverrideTableName();
 
-			List<Long> poDistrOverriddenPlanIds = getPoOverrideDistributionPlanIds();
+			List<Long> poDistrOverriddenPlanIds = getPoDistributionOverridePlanIds();
 
 			QueryJobConfiguration queryConfig;
 
@@ -139,7 +139,7 @@ public class BigQueryStoreDistributionService {
 		return storeDistributionData;
 	}
 
-	private List<Long> getPoOverrideDistributionPlanIds() {
+	private List<Long> getPoDistributionOverridePlanIds() {
 		try {
 			return Arrays.asList(objectMapper.readValue(bigQueryConnectionProperties.getPODistributionOverridePlanIds(), Long[].class));
 		} catch (Exception e) {
