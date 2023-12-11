@@ -56,4 +56,14 @@ public interface BigQueryConnectionProperties {
 
 	@Property(propertyName = "analytics.data.size.cluster.store.fineline")
 	String getSizeClusterStoreFl();
+
+	@Property(propertyName = "po.distribution.override.datasetName")
+	String getPODistributionOverrideDatasetName();
+
+	@Property(propertyName = "po.distribution.override.tableName")
+	String getPODistributionOverrideTableName();
+
+	@Property(propertyName = "po.distribution.override.planIds")
+	String getPODistributionOverridePlanIds();
+
 }
