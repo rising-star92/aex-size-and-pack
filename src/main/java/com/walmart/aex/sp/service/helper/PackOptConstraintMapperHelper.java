@@ -45,7 +45,7 @@ public class PackOptConstraintMapperHelper {
             if(fineLineMapperDto.getChildRunStatusCode().equals(RunStatusCodeType.MAX_PACK_CONFIG_ERROR.getId()) && null!=fineLineMapperDto.getChildReturnMessage()){
                 try{
                     UpdatePackOptStatusRequest statusRequest = objectMapper.readValue(fineLineMapperDto.getChildReturnMessage(),UpdatePackOptStatusRequest.class);
-                    errorDescription = entry.getValue().replace(MAX_PACK_CONFIG_NUM,statusRequest.getMessage().trim());
+                    errorDescription = statusRequest.getStatusLongDesc().trim();
                 }catch(JsonProcessingException exception){
                     log.error("Exception while setting the child update pack optimization status for planId:{} and finelineNbr: {} ",fineLineMapperDto.getPlanId(), fineLineMapperDto.getFineLineNbr());
                 }

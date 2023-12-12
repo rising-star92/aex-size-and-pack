@@ -11,5 +11,4 @@ public class UpdatePackOptStatusRequest {
     private Integer statusCode;
     private String statusDesc;
     private String statusLongDesc;
-    private String message;
 }

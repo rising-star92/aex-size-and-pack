@@ -1071,8 +1071,7 @@ class PackOptimizationServiceTest {
         UpdatePackOptStatusRequest request = new UpdatePackOptStatusRequest();
         request.setStatusCode(23);
         request.setStatusDesc("MAX_PACK_CONFIG_ERROR");
-        request.setStatusLongDesc("No Solution: Review Max no of pack configurations. Need >#number");
-        request.setMessage("100");
+        request.setStatusLongDesc("No Solution: Review Max no of pack configurations. Need >1");
         when(objectMapper.writeValueAsString(request)).thenReturn("{\n" +
                 "    \"statusCode\": 23,\n" +
                 "    \"statusDesc\": \"MAX_PACK_CONFIG_ERROR\",\n" +
