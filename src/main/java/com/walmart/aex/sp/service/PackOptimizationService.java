@@ -1,5 +1,6 @@
 package com.walmart.aex.sp.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.StatusResponse;
 import com.walmart.aex.sp.dto.buyquantity.BuyQntyResponseDTO;
 import com.walmart.aex.sp.dto.buyquantity.FinelineDto;
@@ -64,7 +65,7 @@ public class PackOptimizationService {
     private final SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository;
 
     private final IntegrationHubService integrationHubService;
-
+    private final ObjectMapper objectMapper;
     @ManagedConfiguration
     private IntegrationHubServiceProperties integrationHubServiceProperties;
     private final CommonGCPUtil commonGCPUtil;
@@ -80,7 +81,7 @@ public class PackOptimizationService {
                                    MerchPackOptimizationRepository merchPackOptimizationRepository,
                                    UpdatePackOptimizationMapper updatePackOptimizationMapper,
                                    CcPackOptimizationRepository ccPackOptimizationRepository,
-                                   SourcingFactoryService sourcingFactoryService, SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository, IntegrationHubService integrationHubService, CommonGCPUtil commonGCPUtil) {
+                                   SourcingFactoryService sourcingFactoryService, SpFineLineChannelFixtureRepository spFineLineChannelFixtureRepository, IntegrationHubService integrationHubService, ObjectMapper objectMapper, CommonGCPUtil commonGCPUtil) {
         this.finelinePackOptimizationRepository = finelinePackOptimizationRepository;
         this.packOptfineplanRepo = packOptfineplanRepo;
         this.packOptimizationMapper = packOptimizationMapper;
@@ -93,6 +94,7 @@ public class PackOptimizationService {
         this.sourcingFactoryService = sourcingFactoryService;
         this.spFineLineChannelFixtureRepository = spFineLineChannelFixtureRepository;
         this.integrationHubService = integrationHubService;
+        this.objectMapper = objectMapper;
         this.commonGCPUtil = commonGCPUtil;
     }
 
@@ -151,8 +153,8 @@ public class PackOptimizationService {
                             if (Objects.equals(analyticsMlChildSend.getBumpPackNbr(), bumpNbr)) {
                                 analyticsMlChildSend.setRunStatusCode(status);
                                 analyticsMlChildSend.setEndTs(new Date());
-                                if(null!=request && !request.getMessage().isBlank())
-                                    analyticsMlChildSend.setReturnMessage(request.getMessage());
+                                if(null!=request)
+                                    analyticsMlChildSend.setReturnMessage(objectMapper.writeValueAsString(request));
                                 updateParentRunStatusCode(analyticsMlSend.get());
                                 break;
                             }
