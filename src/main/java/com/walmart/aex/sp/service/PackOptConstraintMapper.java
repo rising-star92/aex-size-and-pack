@@ -263,7 +263,7 @@ public class PackOptConstraintMapper {
         }
     }
 
-    private RunOptimization getRunOptimizationDetails(FineLineMapperDto fineLineMapperDto, Map<Integer, Map<Integer, String>> finelineBumpStatusMap){
+    private RunOptimization getRunOptimizationDetails(FineLineMapperDto fineLineMapperDto, Map<Integer, Map<Integer, String>> finelineBumpStatusMap) {
         List<String> runStatusLongDescriptions = packOptimizationUtil.getRunStatusLongDescriptions(fineLineMapperDto, finelineBumpStatusMap);
         RunOptimization opt = new RunOptimization();
         opt.setName(fineLineMapperDto.getFirstName());
