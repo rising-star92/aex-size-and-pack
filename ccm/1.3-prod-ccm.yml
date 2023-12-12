@@ -516,7 +516,7 @@ configDefinitions:
         description: "Dataset name which contains overridden store distribution"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "po_reallocation_stg"
+        defaultValue: "po_reallocation_prod"
       "po.distribution.override.tableName":
         description: "Table name which contains overridden store distribution by plan/fineline/pack/instoreWeek"
         type: "STRING"
