@@ -407,9 +407,7 @@ public class SizeAndPackService {
 
     private void setPackDescription(InitialSetPackRequest request, InitialBumpSetResponse response) {
         List<PackDescCustChoiceDTO> packDescCustChoiceDTOList = customerChoiceRepository.getCustomerChoicesByFinelineAndPlanId(Long.valueOf(request.getPlanId()), request.getFinelineNbr(), ChannelType.STORE.getId());
-        String finelineDesc = !packDescCustChoiceDTOList.isEmpty() ?
-                PackOptimizationUtil.getFinelineDescription(packDescCustChoiceDTOList.get(0).getAltFinelineDesc(), request.getFinelineNbr())
-                : String.valueOf(request.getFinelineNbr());
+        String finelineDesc = PackOptimizationUtil.getFinelineDescription(packDescCustChoiceDTOList, request.getFinelineNbr());
         response.getIntialSetStyles().forEach(initialSetStyle -> initialSetStyle.getInitialSetPlan().stream().flatMap(initialSetPlan -> initialSetPlan.getPackDetails().stream()).forEach(
                 packDetails -> {
                     Set<String> ccs = packDetails.getMetrics().stream().map(Metrics::getCcId).collect(Collectors.toSet());
