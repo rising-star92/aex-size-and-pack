@@ -74,6 +74,8 @@ public class SizeAndPackService {
     private final SizeAndPackDeletePackOptMapper sizeAndPackDeletePackOptMapper;
     private final CustomerChoiceRepository customerChoiceRepository;
 
+    private final SPFactoryService spFactoryService;
+
     @ManagedConfiguration
 	BigQueryConnectionProperties bigQueryConnectionProperties;
 
@@ -85,7 +87,7 @@ public class SizeAndPackService {
                               SizeAndPackDeleteService sizeAndPackDeleteService, SizeAndPackDeletePlanService sizeAndPackDeletePlanService
             , BuyQtyCommonUtil buyQtyCommonUtil, BigQueryInitialSetPlanService bigQueryInitialSetPlanService, InitialSetPlanMapper initialSetPlanMapper,
                               MerchPackOptimizationRepository merchPackOptimizationRepository, PackOptUpdateDataMapper packOptUpdateDataMapper, PackOptAddDataMapper packOptAddDataMapper,
-                              BigQueryPackStoresService bigQueryPackStoresService, SizeAndPackDeletePackOptMapper sizeAndPackDeletePackOptMapper, CustomerChoiceRepository customerChoiceRepository) {
+                              BigQueryPackStoresService bigQueryPackStoresService, SizeAndPackDeletePackOptMapper sizeAndPackDeletePackOptMapper, CustomerChoiceRepository customerChoiceRepository,SPFactoryService spFactoryService) {
         this.spFineLineChannelFixtureRepository = spFineLineChannelFixtureRepository;
         this.buyQuantityMapper = buyQuantityMapper;
         this.spCustomerChoiceChannelFixtureRepository = spCustomerChoiceChannelFixtureRepository;
@@ -105,10 +107,10 @@ public class SizeAndPackService {
         this.sizeAndPackDeletePackOptMapper = sizeAndPackDeletePackOptMapper;
         this.customerChoiceRepository = customerChoiceRepository;
         this.objectMapper = new ObjectMapper();
+        this.spFactoryService  = spFactoryService;
     }
 
     public BuyQtyResponse fetchFinelineBuyQnty(BuyQtyRequest buyQtyRequest) {
-        BuyQtyResponse buyQtyResponse = new BuyQtyResponse();
         try {
             List<BuyQntyResponseDTO> buyQntyResponseDTOS;
             if (buyQtyRequest.getChannel() != null) {
@@ -116,7 +118,7 @@ public class SizeAndPackService {
                 if (finelinesWithSizesFromStrategy != null) {
                     buyQntyResponseDTOS = spFineLineChannelFixtureRepository
                             .getBuyQntyByPlanChannel(buyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(buyQtyRequest.getChannel()));
-                    buyQtyResponse = buyQtyCommonUtil.filterFinelinesWithSizes(buyQntyResponseDTOS, finelinesWithSizesFromStrategy);
+                    return buyQtyCommonUtil.filterFinelinesWithSizes(buyQntyResponseDTOS, finelinesWithSizesFromStrategy);
                 }
             } else {
                 BuyQtyResponse buyQtyResponseAllChannels = new BuyQtyResponse();
@@ -127,14 +129,14 @@ public class SizeAndPackService {
                         .flatMap(Collection::stream)
                         .forEach(buyQntyResponseDTO -> buyQuantityMapper
                                 .mapBuyQntyLvl2Sp(buyQntyResponseDTO, buyQtyResponseAllChannels, null));
+                spFactoryService.setFactoriesForFinelines(buyQtyRequest,buyQtyResponseAllChannels);
                 return buyQtyResponseAllChannels;
             }
-            return buyQtyResponse;
-
         } catch (Exception e) {
             log.error("Exception While fetching Fineline Buy Qunatities with Sizes :", e);
             throw new CustomException("Failed to fetch Fineline Buy Qunatities with Sizes, due to" + e);
         }
+        return new BuyQtyResponse();
     }
 
     public BuyQtyResponse fetchCcBuyQnty(BuyQtyRequest buyQtyRequest, Integer finelineNbr) {
@@ -164,6 +166,8 @@ public class SizeAndPackService {
                         .filter(buyQntyResponseDTO -> ccsWithSizes.get(buyQntyResponseDTO.getChannelId()).contains(buyQntyResponseDTO.getCcId()))
                         .forEach(buyQntyResponseDTO -> buyQuantityMapper
                         .mapBuyQntyLvl2Sp(buyQntyResponseDTO, buyQtyResponseAllChannels, finelineNbr));
+                spFactoryService.setFactoriesForCCs(buyQtyRequest,buyQtyResponseAllChannels);
+
                 return buyQtyResponseAllChannels;
             }
             return buyQtyResponse;
