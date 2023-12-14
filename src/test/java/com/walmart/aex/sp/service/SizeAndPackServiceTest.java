@@ -93,7 +93,10 @@ class SizeAndPackServiceTest {
     private BigQueryConnectionProperties bigQueryConnectionProperties;
 
     @Mock
-    private SPFactoryService spFactoryService;
+    private BQFactoryMapper BQFactoryMapper;
+
+    @Mock
+    private CcPackOptimizationRepository ccPackOptimizationRepository;
 
     private static Integer fineline1Nbr = 151;
     private static String styleNbr = "151_2_23_001";
@@ -105,7 +108,7 @@ class SizeAndPackServiceTest {
         sizeAndPackService = new SizeAndPackService(spFineLineChannelFixtureRepository, buyQuantityMapper, spCustomerChoiceChannelFixtureRepository, sizeAndPackObjectMapper,
                 merchCatPlanRepository, strategyFetchService, spCustomerChoiceChannelFixtureSizeRepository, sizeAndPackDeleteService, sizeAndPackDeletePlanService,
                 buyQtyCommonUtil, bigQueryInitialSetPlanService, initialSetPlanMapper, merchPackOptimizationRepository, packOptUpdateDataMapper, packOptAddDataMapper,
-                bigQueryPackStoresService, sizeAndPackDeletePackOptMapper, customerChoiceRepository,spFactoryService);
+                bigQueryPackStoresService, sizeAndPackDeletePackOptMapper, customerChoiceRepository, BQFactoryMapper, ccPackOptimizationRepository);
         ReflectionTestUtils.setField(sizeAndPackService, "bigQueryConnectionProperties", bigQueryConnectionProperties);
         lenient().when(bigQueryConnectionProperties.getPackDescriptionFeatureFlag()).thenReturn("true");
     }

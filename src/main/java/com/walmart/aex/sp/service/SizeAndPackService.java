@@ -74,7 +74,9 @@ public class SizeAndPackService {
     private final SizeAndPackDeletePackOptMapper sizeAndPackDeletePackOptMapper;
     private final CustomerChoiceRepository customerChoiceRepository;
 
-    private final SPFactoryService spFactoryService;
+    private final BQFactoryMapper BQFactoryMapper;
+
+    private final CcPackOptimizationRepository ccPackOptimizationRepository;
 
     @ManagedConfiguration
 	BigQueryConnectionProperties bigQueryConnectionProperties;
@@ -87,7 +89,7 @@ public class SizeAndPackService {
                               SizeAndPackDeleteService sizeAndPackDeleteService, SizeAndPackDeletePlanService sizeAndPackDeletePlanService
             , BuyQtyCommonUtil buyQtyCommonUtil, BigQueryInitialSetPlanService bigQueryInitialSetPlanService, InitialSetPlanMapper initialSetPlanMapper,
                               MerchPackOptimizationRepository merchPackOptimizationRepository, PackOptUpdateDataMapper packOptUpdateDataMapper, PackOptAddDataMapper packOptAddDataMapper,
-                              BigQueryPackStoresService bigQueryPackStoresService, SizeAndPackDeletePackOptMapper sizeAndPackDeletePackOptMapper, CustomerChoiceRepository customerChoiceRepository,SPFactoryService spFactoryService) {
+                              BigQueryPackStoresService bigQueryPackStoresService, SizeAndPackDeletePackOptMapper sizeAndPackDeletePackOptMapper, CustomerChoiceRepository customerChoiceRepository, BQFactoryMapper BQFactoryMapper,CcPackOptimizationRepository ccPackOptimizationRepository) {
         this.spFineLineChannelFixtureRepository = spFineLineChannelFixtureRepository;
         this.buyQuantityMapper = buyQuantityMapper;
         this.spCustomerChoiceChannelFixtureRepository = spCustomerChoiceChannelFixtureRepository;
@@ -107,7 +109,8 @@ public class SizeAndPackService {
         this.sizeAndPackDeletePackOptMapper = sizeAndPackDeletePackOptMapper;
         this.customerChoiceRepository = customerChoiceRepository;
         this.objectMapper = new ObjectMapper();
-        this.spFactoryService  = spFactoryService;
+        this.BQFactoryMapper = BQFactoryMapper;
+        this.ccPackOptimizationRepository = ccPackOptimizationRepository;
     }
 
     public BuyQtyResponse fetchFinelineBuyQnty(BuyQtyRequest buyQtyRequest) {
@@ -129,7 +132,8 @@ public class SizeAndPackService {
                         .flatMap(Collection::stream)
                         .forEach(buyQntyResponseDTO -> buyQuantityMapper
                                 .mapBuyQntyLvl2Sp(buyQntyResponseDTO, buyQtyResponseAllChannels, null));
-                spFactoryService.setFactoriesForFinelines(buyQtyRequest,buyQtyResponseAllChannels);
+                List<FactoryDTO> factoryDTOS = ccPackOptimizationRepository.getFactoriesByPlanId(buyQtyRequest.getPlanId(), null);
+                BQFactoryMapper.setFactoriesForFinelines(factoryDTOS,buyQtyResponseAllChannels);
                 return buyQtyResponseAllChannels;
             }
         } catch (Exception e) {
@@ -166,7 +170,8 @@ public class SizeAndPackService {
                         .filter(buyQntyResponseDTO -> ccsWithSizes.get(buyQntyResponseDTO.getChannelId()).contains(buyQntyResponseDTO.getCcId()))
                         .forEach(buyQntyResponseDTO -> buyQuantityMapper
                         .mapBuyQntyLvl2Sp(buyQntyResponseDTO, buyQtyResponseAllChannels, finelineNbr));
-                spFactoryService.setFactoriesForCCs(buyQtyRequest,buyQtyResponseAllChannels);
+                List<FactoryDTO> factoryDTOS = ccPackOptimizationRepository.getFactoriesByPlanId(buyQtyRequest.getPlanId(), buyQtyRequest.getFinelineNbr());
+                BQFactoryMapper.setFactoriesForCCs(factoryDTOS,buyQtyResponseAllChannels);
 
                 return buyQtyResponseAllChannels;
             }

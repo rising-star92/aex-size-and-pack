@@ -10,17 +10,16 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class SPFactoryService {
+public class BQFactoryMapper {
 
     private final CcPackOptimizationRepository ccPackOptimizationRepository;
 
 
-    public SPFactoryService(CcPackOptimizationRepository ccPackOptimizationRepository) {
+    public BQFactoryMapper(CcPackOptimizationRepository ccPackOptimizationRepository) {
         this.ccPackOptimizationRepository = ccPackOptimizationRepository;
     }
 
-    public void setFactoriesForFinelines(BuyQtyRequest buyQtyRequest, BuyQtyResponse buyQtyResponse) {
-        List<FactoryDTO> factoryDTOS = ccPackOptimizationRepository.getFactoriesByPlanId(buyQtyRequest.getPlanId(), null);
+    public void setFactoriesForFinelines(List<FactoryDTO> factoryDTOS, BuyQtyResponse buyQtyResponse) {
         buyQtyResponse.getLvl3List().forEach(lvl3Dto -> lvl3Dto.getLvl4List()
                 .forEach(lvl4Dto -> lvl4Dto.getFinelines()
                         .forEach(finelineDto -> {
@@ -33,8 +32,7 @@ public class SPFactoryService {
     }
 
 
-    public void setFactoriesForCCs(BuyQtyRequest buyQtyRequest, BuyQtyResponse buyQtyResponse) {
-        List<FactoryDTO> factoryDTOS = ccPackOptimizationRepository.getFactoriesByPlanId(buyQtyRequest.getPlanId(), buyQtyRequest.getFinelineNbr());
+    public void setFactoriesForCCs(List<FactoryDTO> factoryDTOS, BuyQtyResponse buyQtyResponse) {
         buyQtyResponse.getLvl3List().forEach(lvl3Dto -> lvl3Dto.getLvl4List()
                 .forEach(lvl4Dto -> lvl4Dto.getFinelines()
                         .forEach(finelineDto -> finelineDto.getStyles().forEach(styleDto -> {
