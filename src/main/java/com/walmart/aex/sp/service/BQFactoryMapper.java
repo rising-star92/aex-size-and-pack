@@ -1,7 +1,6 @@
 package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.buyquantity.*;
-import com.walmart.aex.sp.repository.CcPackOptimizationRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -11,13 +10,6 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class BQFactoryMapper {
-
-    private final CcPackOptimizationRepository ccPackOptimizationRepository;
-
-
-    public BQFactoryMapper(CcPackOptimizationRepository ccPackOptimizationRepository) {
-        this.ccPackOptimizationRepository = ccPackOptimizationRepository;
-    }
 
     public void setFactoriesForFinelines(List<FactoryDTO> factoryDTOS, BuyQtyResponse buyQtyResponse) {
         buyQtyResponse.getLvl3List().forEach(lvl3Dto -> lvl3Dto.getLvl4List()
