@@ -57,6 +57,7 @@ public class SizeAndPackConstants {
     public static final String UNDERSCORE = "_";
     public static final String EMPTY_STRING = "";
     public static final String INITIAL_SET_IDENTIFIER = "IS";
+    public static final String MAX_PACK_CONFIG_NUM = "#number";
 
     //DC Inbound Report Headers
     public static final List<String> DC_INBOUND_REPORT_DEFAULT_HEADERS = Arrays.asList(CATEGORY, SUB_CATEGORY, FINELINE, STYLE, CUSTOMER_CHOICE, COLOR_NAME, COLOR_FAMILY, MERCH_METHOD, SIZE, CHANNEL);
