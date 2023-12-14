@@ -18,7 +18,7 @@ public class BQFactoryMapper {
                                     if (finelineDto.getMetrics() == null) {
                                         finelineDto.setMetrics(new MetricsDto());
                                     }
-                                    finelineDto.getMetrics().setFactories(findFactoriesForFinelines(finelineDto, factoryDTOS));
+                                    finelineDto.getMetrics().setFactories(findFactoriesForFineline(finelineDto, factoryDTOS));
                                 }
                         )));
     }
@@ -31,32 +31,32 @@ public class BQFactoryMapper {
                             if (styleDto.getMetrics() == null) {
                                 styleDto.setMetrics(new MetricsDto());
                             }
-                            styleDto.getMetrics().setFactories(setFactoriesForStyles(styleDto, factoryDTOS));
+                            styleDto.getMetrics().setFactories(setFactoriesForStyle(styleDto, factoryDTOS));
                             styleDto.getCustomerChoices().forEach(customerChoiceDto -> {
                                 if (customerChoiceDto.getMetrics() == null) {
                                     customerChoiceDto.setMetrics(new MetricsDto());
                                 }
-                                customerChoiceDto.getMetrics().setFactories(findFactoriesForCCs(customerChoiceDto, factoryDTOS));
+                                customerChoiceDto.getMetrics().setFactories(findFactoriesForCC(customerChoiceDto, factoryDTOS));
                             });
                         }))));
 
     }
 
-    private List<FactoryDTO> findFactoriesForFinelines(FinelineDto finelineDto, List<FactoryDTO> factoryDTOS) {
+    private List<FactoryDTO> findFactoriesForFineline(FinelineDto finelineDto, List<FactoryDTO> factoryDTOS) {
         return factoryDTOS.stream()
                 .filter(factoryDTO -> factoryDTO.getFinelineNbr().equals(finelineDto.getFinelineNbr()))
                 .distinct()
                 .collect(Collectors.toList());
     }
 
-    private List<FactoryDTO> setFactoriesForStyles(StyleDto styleDto, List<FactoryDTO> factoryDTOS) {
+    private List<FactoryDTO> setFactoriesForStyle(StyleDto styleDto, List<FactoryDTO> factoryDTOS) {
         return factoryDTOS.stream()
                 .filter(factoryDTO -> factoryDTO.getStyleNbr().equals(styleDto.getStyleNbr()))
                 .distinct()
                 .collect(Collectors.toList());
     }
 
-    private List<FactoryDTO> findFactoriesForCCs(CustomerChoiceDto customerChoiceDto, List<FactoryDTO> factoryDTOS) {
+    private List<FactoryDTO> findFactoriesForCC(CustomerChoiceDto customerChoiceDto, List<FactoryDTO> factoryDTOS) {
         return factoryDTOS.stream()
                 .filter(factoryDTO -> factoryDTO.getCcId().equals(customerChoiceDto.getCcId()))
                 .distinct()
