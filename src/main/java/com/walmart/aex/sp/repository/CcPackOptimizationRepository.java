@@ -94,5 +94,5 @@ public interface CcPackOptimizationRepository extends JpaRepository<CcPackOptimi
             " where ccPackOpt.ccPackOptimizationId.stylePackOptimizationID.finelinePackOptimizationID.subCatgPackOptimizationID.merchantPackOptimizationID.planId =?1 " +
             " and (?2 is null OR  ccPackOpt.ccPackOptimizationId.stylePackOptimizationID.finelinePackOptimizationID.finelineNbr = ?2 ) " +
             " and ccPackOpt.overrideFactoryId is not null")
-    List<FactoryDTO> getFactoriesByPlanId(@Param("planId") Long planId, @Param("finelineNbr") Integer finelineNbr);
+    List<FactoryDTO> getFactoriesByPlanId(Long planId, Integer finelineNbr);
 }
