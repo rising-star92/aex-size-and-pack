@@ -42,7 +42,7 @@ public class PackOptConstraintMapperHelper {
         for (Map.Entry<Integer, String> entry : runStatusLongDescriptions.entrySet()) {
             int bumpPackNbr = entry.getKey();
             String errorDescription = null;
-            if(fineLineMapperDto.getChildRunStatusCode().equals(RunStatusCodeType.MAX_PACK_CONFIG_ERROR.getId()) && null!=fineLineMapperDto.getChildReturnMessage()){
+            if(null!=fineLineMapperDto.getChildReturnMessage()){
                 try{
                     UpdatePackOptStatusRequest statusRequest = objectMapper.readValue(fineLineMapperDto.getChildReturnMessage(),UpdatePackOptStatusRequest.class);
                     errorDescription = statusRequest.getStatusLongDesc().trim();
