@@ -10,12 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
@@ -59,7 +54,7 @@ public class PackOptConstraintMapperHelper {
         for (Map.Entry<String, Set<Integer>> entry : errorsToBumpPacks.entrySet()) {
             String errorDescription = entry.getKey();
             Set<Integer> bumpPacks = entry.getValue();
-            if(!fineLineMapperDto.getChildRunStatusCode().equals(RunStatusCodeType.MAX_PACK_CONFIG_ERROR.getId())) {
+            if(getPrefixEligibleRunStatusCodes().contains(fineLineMapperDto.getChildRunStatusCode())) {
                 String bumpPacksString = bumpPacks.stream()
                         .map(bumpPack -> bumpPack == 1 ? getInitialSetOrBumpPackError(bumpPacks, fineLineMapperDto.getChildRunStatusCode()) : BUMP_PACK_ERROR + bumpPack)
                         .collect(Collectors.joining(", "));
@@ -70,7 +65,6 @@ public class PackOptConstraintMapperHelper {
             }
         }
         return runStatusLongDesc;
-
     }
 
     private String getInitialSetOrBumpPackError(Set<Integer> bumpPacks, Integer runStatusCode) {
@@ -84,5 +78,9 @@ public class PackOptConstraintMapperHelper {
               return INITIAL_SET + " + " + BUMP_PACK_ERROR + 1;
             }
          return INITIAL_SET;
+    }
+
+    private static List<Integer> getPrefixEligibleRunStatusCodes() {
+        return List.of(RunStatusCodeType.INITIAL_SET_CC_VALUE_ERROR_MSG.getId(),RunStatusCodeType.BUMP_SET_CC_VALUE_ERROR_MSG.getId());
     }
 }
