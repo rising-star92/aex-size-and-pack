@@ -45,7 +45,27 @@ public class PackOptConstraintMapperHelperTest {
     }
 
     @Test
-    void test_getRunStatusLongDescriptionsWhenRunStatusCodeIsEligibleForPrefix() throws JsonProcessingException {
+    void test_getRunStatusLongDescriptionsWhenRunStatusCodeIsEligibleForPrefixCode14() throws JsonProcessingException {
+        FineLineMapperDto fineLineMapperDto = getFineLinesMapperDto();
+        fineLineMapperDto.setChildRunStatusCode(14);
+        fineLineMapperDto.setChildReturnMessage("{\n" +
+                "    \"statusCode\": 14,\n" +
+                "    \"statusDesc\": \"INITIAL_SET_CC_VALUE_ERROR_MSG\",\n" +
+                "    \"statusLongDesc\": \"Fineline has an initial set with less than 6 units. Please adjust units or consider combining colors.\"\n" +
+                "}");
+        Map<Integer, Map<Integer, String>> finelineBumpStatusMap = new HashMap<>();
+        UpdatePackOptStatusRequest updatePackOptStatusRequest = new UpdatePackOptStatusRequest();
+        updatePackOptStatusRequest.setStatusCode(14);
+        updatePackOptStatusRequest.setStatusDesc("INITIAL_SET_CC_VALUE_ERROR_MSG");
+        updatePackOptStatusRequest.setStatusLongDesc("Fineline has an initial set with less than 6 units. Please adjust units or consider combining colors.");
+        when(objectMapper.readValue(fineLineMapperDto.getChildReturnMessage(),UpdatePackOptStatusRequest.class)).thenReturn(updatePackOptStatusRequest);
+        List<String> result = packOptConstraintMapperHelper.getRunStatusLongDescriptions(fineLineMapperDto,finelineBumpStatusMap);
+        assertNotNull(result);
+        assertEquals("Initial Set : Fineline has an initial set with less than 6 units. Please adjust units or consider combining colors.",result.get(0));
+    }
+
+    @Test
+    void test_getRunStatusLongDescriptionsWhenRunStatusCodeIsEligibleForPrefixCde15() throws JsonProcessingException {
         FineLineMapperDto fineLineMapperDto = getFineLinesMapperDto();
         fineLineMapperDto.setChildRunStatusCode(15);
         fineLineMapperDto.setChildReturnMessage("{\n" +
