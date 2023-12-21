@@ -132,7 +132,7 @@ configDefinitions:
         description: "Initial set threshold"
         type: "INTEGER"
         kind: "SINGLE"
-        defaultValue: 2
+        defaultValue: 1
       "replenishment.constraint":
         description: "Replenishment threshold"
         type: "INTEGER"
