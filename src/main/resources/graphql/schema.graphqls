@@ -367,12 +367,6 @@ type MetricsDto {
     warehousePack: Int
     packRatio: Float
     replenishmentPacks: Int
-    factories: [FactoryDTO]
-}
-
-type FactoryDTO {
-    factoryId: String
-    factoryName: String
 }
 
 type MerchMethodsDto {

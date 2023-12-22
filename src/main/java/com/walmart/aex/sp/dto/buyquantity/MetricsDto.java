@@ -2,8 +2,6 @@ package com.walmart.aex.sp.dto.buyquantity;
 
 import lombok.Data;
 
-import java.util.List;
-
 @Data
 public class MetricsDto {
     private Double sizeProfilePct;
@@ -19,5 +17,4 @@ public class MetricsDto {
     private Integer warehousePack;
     private Double packRatio;
     private Integer replenishmentPacks;
-    private List<FactoryDTO> factories;
 }
