@@ -1,5 +1,6 @@
 package com.walmart.aex.sp.enums;
 
+import java.util.List;
 import java.util.Set;
 
 public enum RunStatusCodeType {
@@ -39,6 +40,9 @@ public enum RunStatusCodeType {
             RunStatusCodeType.SOLVER_NOT_SOLVE_ERROR_MSG.getId(), RunStatusCodeType.COMMON_ERR_MSG.getId(), RunStatusCodeType.INTEGRATION_HUB_TECHNICAL_ERROR.getId(),
             RunStatusCodeType.TIMEOUT_ERROR.getId(),RunStatusCodeType.MAX_PACK_CONFIG_ERROR.getId());
 
+    public static List<Integer> getPrefixEligibleRunStatusCodes() {
+        return List.of(RunStatusCodeType.INITIAL_SET_CC_VALUE_ERROR_MSG.getId(),RunStatusCodeType.BUMP_SET_CC_VALUE_ERROR_MSG.getId());
+    }
     /**
      * @return the id
      */

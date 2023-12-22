@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.walmart.aex.sp.enums.RunStatusCodeType.getPrefixEligibleRunStatusCodes;
 import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
 
 @Service
@@ -80,7 +81,4 @@ public class PackOptConstraintMapperHelper {
          return INITIAL_SET;
     }
 
-    private static List<Integer> getPrefixEligibleRunStatusCodes() {
-        return List.of(RunStatusCodeType.INITIAL_SET_CC_VALUE_ERROR_MSG.getId(),RunStatusCodeType.BUMP_SET_CC_VALUE_ERROR_MSG.getId());
-    }
 }
