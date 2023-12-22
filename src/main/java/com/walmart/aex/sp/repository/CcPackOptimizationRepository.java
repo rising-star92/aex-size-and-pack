@@ -1,5 +1,6 @@
 package com.walmart.aex.sp.repository;
 
+import com.walmart.aex.sp.dto.buyquantity.FactoryDTO;
 import com.walmart.aex.sp.entity.CcPackOptimization;
 import com.walmart.aex.sp.entity.CcPackOptimizationID;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -84,4 +85,14 @@ public interface CcPackOptimizationRepository extends JpaRepository<CcPackOptimi
             "sccf.fineline_nbr =:finelineNbr and " +
             "sccf.channel_id=1 ) as t", nativeQuery = true)
     Integer getTotalCCsAcrossAllSetsByPlanIdFineline(@Param("planId") Long planId, @Param("finelineNbr")Integer finelineNbr);
+
+    @Query(value = "select new com.walmart.aex.sp.dto.buyquantity.FactoryDTO(ccPackOpt.ccPackOptimizationId.stylePackOptimizationID.finelinePackOptimizationID.finelineNbr," +
+            "ccPackOpt.ccPackOptimizationId.stylePackOptimizationID.styleNbr," +
+            "ccPackOpt.ccPackOptimizationId.customerChoice," +
+            "ccPackOpt.overrideFactoryId," +
+            "ccPackOpt.overrideFactoryName) from CcPackOptimization ccPackOpt " +
+            " where ccPackOpt.ccPackOptimizationId.stylePackOptimizationID.finelinePackOptimizationID.subCatgPackOptimizationID.merchantPackOptimizationID.planId =?1 " +
+            " and (?2 is null OR  ccPackOpt.ccPackOptimizationId.stylePackOptimizationID.finelinePackOptimizationID.finelineNbr = ?2 ) " +
+            " and ccPackOpt.overrideFactoryId is not null")
+    List<FactoryDTO> getFactoriesByPlanId(Long planId, Integer finelineNbr);
 }
