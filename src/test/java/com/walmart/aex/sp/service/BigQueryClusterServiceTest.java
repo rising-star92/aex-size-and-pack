@@ -186,7 +186,7 @@ public class BigQueryClusterServiceTest {
                 "                    sc_store_fl.color_family,\n" +
                 "                    sc_store_fl.fiscal_year,\n" +
                 "                    sc_store_fl.season\n" +
-                "                FROM `wmt-e12743607538928aa17e0e22f9.commitment_report_rfa_output_prod.size_clust_store_fineline` AS sc_store_fl,\n" +
+                "                FROM `wmt-e12743607538928aa17e0e22f9.analytics_data_prod.size_clust_store_fineline` AS sc_store_fl,\n" +
                 "                    plan_hierarchy AS h\n" +
                 "                WHERE sc_store_fl.fineline_nbr = COALESCE(h.like_fineline_nbr, h.fineline_nbr)\n" +
                 "                    AND sc_store_fl.dept_nbr = COALESCE(h.like_rpt_lvl_1_nbr, h.rpt_lvl_1_nbr)\n" +
@@ -336,7 +336,7 @@ public class BigQueryClusterServiceTest {
             "                    sc_store_fl.color_family,\n" +
             "                    sc_store_fl.fiscal_year,\n" +
             "                    sc_store_fl.season\n" +
-            "                FROM `wmt-e12743607538928aa17e0e22f9.commitment_report_rfa_output_prod.size_clust_store_fineline` AS sc_store_fl,\n" +
+            "                FROM `wmt-e12743607538928aa17e0e22f9.analytics_data_prod.size_clust_store_fineline` AS sc_store_fl,\n" +
             "                    plan_hierarchy AS h\n" +
             "                WHERE sc_store_fl.fineline_nbr = COALESCE(h.like_fineline_nbr, h.fineline_nbr)\n" +
             "                    AND sc_store_fl.dept_nbr = COALESCE(h.like_rpt_lvl_1_nbr, h.rpt_lvl_1_nbr)\n" +
@@ -494,7 +494,7 @@ public class BigQueryClusterServiceTest {
             "                    sc_store_fl.color_family,\n" +
             "                    sc_store_fl.fiscal_year,\n" +
             "                    sc_store_fl.season\n" +
-            "                FROM `wmt-e12743607538928aa17e0e22f9.commitment_report_rfa_output_prod.size_clust_store_fineline` AS sc_store_fl,\n" +
+            "                FROM `wmt-e12743607538928aa17e0e22f9.analytics_data_prod.size_clust_store_fineline` AS sc_store_fl,\n" +
             "                    plan_hierarchy AS h\n" +
             "                WHERE sc_store_fl.fineline_nbr = COALESCE(h.like_fineline_nbr, h.fineline_nbr)\n" +
             "                    AND sc_store_fl.dept_nbr = COALESCE(h.like_rpt_lvl_1_nbr, h.rpt_lvl_1_nbr)\n" +

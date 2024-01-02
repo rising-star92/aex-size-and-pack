@@ -60,7 +60,7 @@ public class BigQueryClusterService {
     protected String generateQuery(String volumeDeviationLevel)  {
         String analyticsDataset = String.join(".", bigQueryConnectionProperties.getRFAProjectId(), bigQueryConnectionProperties.getAnalyticsData());
         String rfaCcTable = String.join(".", bigQueryConnectionProperties.getRFAProjectId(), bigQueryConnectionProperties.getRFADataSetName(), bigQueryConnectionProperties.getRFACCStageTable());
-        String sizeClusterStoreFlTable = String.join(".", bigQueryConnectionProperties.getRFAProjectId(), bigQueryConnectionProperties.getRFADataSetName(), bigQueryConnectionProperties.getSizeClusterStoreFl());
+        String sizeClusterStoreFlTable = String.join(".", bigQueryConnectionProperties.getRFAProjectId(), bigQueryConnectionProperties.getAnalyticsData(), bigQueryConnectionProperties.getSizeClusterStoreFl());
         String sizeClusterTable = String.join(".", analyticsDataset, bigQueryConnectionProperties.getSizeCluster());
         String sizeColorClusterTable = String.join(".", analyticsDataset, bigQueryConnectionProperties.getSizeColorCluster());
         String queryParams = "WITH MyTable AS ( \n" +
