@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class BQFactoryMapper {
 
+    //Sets Factories for Finelines
     public void setFactoriesForFinelines(List<FactoryDTO> factoryDTOS, BuyQtyResponse buyQtyResponse) {
         if (buyQtyResponse.getLvl3List() != null) {
             buyQtyResponse.getLvl3List().stream()
@@ -30,6 +31,7 @@ public class BQFactoryMapper {
         }
     }
 
+    //Sets Factories for CC/Stlyes
 
     public void setFactoriesForCCs(List<FactoryDTO> factoryDTOS, BuyQtyResponse buyQtyResponse) {
         if (buyQtyResponse.getLvl3List() != null) {
