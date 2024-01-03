@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -14,7 +15,10 @@ public class BQFactoryMapper {
 
     public void setFactoriesForFinelines(List<FactoryDTO> factoryDTOS, BuyQtyResponse buyQtyResponse) {
         if (buyQtyResponse.getLvl3List() != null) {
-            buyQtyResponse.getLvl3List().forEach(lvl3Dto -> lvl3Dto.getLvl4List()
+            buyQtyResponse.getLvl3List().stream()
+                    .filter(lvl3Dto -> lvl3Dto.getLvl4List() != null)
+                    .forEach(lvl3Dto -> lvl3Dto.getLvl4List().stream()
+                    .filter(lvl4Dto -> lvl4Dto.getFinelines() != null)
                     .forEach(lvl4Dto -> lvl4Dto.getFinelines()
                             .forEach(finelineDto -> {
                                         if (finelineDto.getMetrics() == null) {
@@ -29,19 +33,25 @@ public class BQFactoryMapper {
 
     public void setFactoriesForCCs(List<FactoryDTO> factoryDTOS, BuyQtyResponse buyQtyResponse) {
         if (buyQtyResponse.getLvl3List() != null) {
-            buyQtyResponse.getLvl3List().forEach(lvl3Dto -> lvl3Dto.getLvl4List()
-                    .forEach(lvl4Dto -> lvl4Dto.getFinelines()
+            buyQtyResponse.getLvl3List().stream()
+                    .filter(lvl3Dto -> lvl3Dto.getLvl4List() != null)
+                    .forEach(lvl3Dto -> lvl3Dto.getLvl4List().stream()
+                    .filter(lvl4Dto -> lvl4Dto.getFinelines() != null)
+                    .forEach(lvl4Dto -> lvl4Dto.getFinelines().stream()
+                            .filter(finelineDto -> finelineDto.getStyles() != null)
                             .forEach(finelineDto -> finelineDto.getStyles().forEach(styleDto -> {
                                 if (styleDto.getMetrics() == null) {
                                     styleDto.setMetrics(new MetricsDto());
                                 }
                                 styleDto.getMetrics().setFactories(setFactoriesForStyle(styleDto, factoryDTOS));
-                                styleDto.getCustomerChoices().forEach(customerChoiceDto -> {
-                                    if (customerChoiceDto.getMetrics() == null) {
-                                        customerChoiceDto.setMetrics(new MetricsDto());
-                                    }
-                                    customerChoiceDto.getMetrics().setFactories(findFactoriesForCC(customerChoiceDto, factoryDTOS));
-                                });
+                                if(styleDto.getCustomerChoices() != null) {
+                                    styleDto.getCustomerChoices().forEach(customerChoiceDto -> {
+                                        if (customerChoiceDto.getMetrics() == null) {
+                                            customerChoiceDto.setMetrics(new MetricsDto());
+                                        }
+                                        customerChoiceDto.getMetrics().setFactories(findFactoriesForCC(customerChoiceDto, factoryDTOS));
+                                    });
+                                }
                             }))));
         }
     }
