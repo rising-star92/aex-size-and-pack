@@ -1,5 +1,6 @@
 package com.walmart.aex.sp.enums;
 
+import java.util.List;
 import java.util.Set;
 
 public enum RunStatusCodeType {
@@ -19,6 +20,7 @@ public enum RunStatusCodeType {
     SOLVER_NOT_SOLVE_ERROR_MSG(20, "Fineline failed, the max capacity is not enough to meet the pack requirements. Please increase max capacity"),
     TIMEOUT_ERROR(21, "Request failed due to system error, please retrigger Pack Optimization"),
     INTEGRATION_HUB_TECHNICAL_ERROR(22, "Request failed due to system error, please retrigger Pack Optimization"),
+    MAX_PACK_CONFIG_ERROR(23, "No Solution: Review Max no of pack configurations. Need >#number"),
     COMMON_ERR_MSG(100, "Fineline failed, please contact the support team"),
     ERROR(101, "ANALYTICS ERROR");
 
@@ -36,8 +38,11 @@ public enum RunStatusCodeType {
             RunStatusCodeType.DATA_VALIDATIONS_MSG.getId(), RunStatusCodeType.DUPLICATE_DATA_ERROR_MSG.getId(),
             RunStatusCodeType.MODEL_OUTPUT_MSG.getId(), RunStatusCodeType.MODEL_OUTPUT_COLUMNS.getId(),
             RunStatusCodeType.SOLVER_NOT_SOLVE_ERROR_MSG.getId(), RunStatusCodeType.COMMON_ERR_MSG.getId(), RunStatusCodeType.INTEGRATION_HUB_TECHNICAL_ERROR.getId(),
-            RunStatusCodeType.TIMEOUT_ERROR.getId());
+            RunStatusCodeType.TIMEOUT_ERROR.getId(),RunStatusCodeType.MAX_PACK_CONFIG_ERROR.getId());
 
+    public static List<Integer> getPrefixEligibleRunStatusCodes() {
+        return List.of(RunStatusCodeType.INITIAL_SET_CC_VALUE_ERROR_MSG.getId(),RunStatusCodeType.BUMP_SET_CC_VALUE_ERROR_MSG.getId());
+    }
     /**
      * @return the id
      */

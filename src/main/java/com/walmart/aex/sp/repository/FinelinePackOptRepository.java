@@ -79,7 +79,8 @@ public interface FinelinePackOptRepository
             "analytic.lastName,\n" +
             "analyticsChild.bumpPackNbr, \n" +
             "analyticsChild.runStatusCode, \n" +
-            "rChild.runStatusLongDesc) \n" +
+            "rChild.runStatusLongDesc, \n" +
+            "analyticsChild.returnMessage) \n" +
             "FROM MerchCatPlan  merchCatPlan \n" +
             "inner JOIN SubCatPlan subCatPlan ON merchCatPlan.merchCatPlanId.lvl3Nbr = subCatPlan.merchCatPlan.merchCatPlanId.lvl3Nbr \n" +
             "AND merchCatPlan.merchCatPlanId.lvl2Nbr = subCatPlan.merchCatPlan.merchCatPlanId.lvl2Nbr \n" +
