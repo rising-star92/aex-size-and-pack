@@ -2,6 +2,7 @@ package com.walmart.aex.sp.service.helper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.microsoft.sqlserver.jdbc.StringUtils;
 import com.walmart.aex.sp.dto.mapper.FineLineMapperDto;
 import com.walmart.aex.sp.dto.packoptimization.UpdatePackOptStatusRequest;
 import com.walmart.aex.sp.enums.RunStatusCodeType;
@@ -51,7 +52,7 @@ public class PackOptConstraintMapperHelper {
                     log.error("Exception while setting the child update pack optimization status for planId:{} and finelineNbr: {} ",fineLineMapperDto.getPlanId(), fineLineMapperDto.getFineLineNbr());
                 }
             }
-            if(null==errorDescription)
+            if(StringUtils.isEmpty(errorDescription))
             {
                 errorDescription = entry.getValue();
             }
