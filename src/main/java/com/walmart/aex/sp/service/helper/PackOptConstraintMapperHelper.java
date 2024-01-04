@@ -50,7 +50,9 @@ public class PackOptConstraintMapperHelper {
                 }catch(JsonProcessingException exception){
                     log.error("Exception while setting the child update pack optimization status for planId:{} and finelineNbr: {} ",fineLineMapperDto.getPlanId(), fineLineMapperDto.getFineLineNbr());
                 }
-            }else{
+            }
+            if(null==errorDescription)
+            {
                 errorDescription = entry.getValue();
             }
             errorsToBumpPacks.computeIfAbsent(errorDescription, k -> new HashSet<>()).add(bumpPackNbr);
