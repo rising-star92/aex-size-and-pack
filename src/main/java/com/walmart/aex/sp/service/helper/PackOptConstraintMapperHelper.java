@@ -7,26 +7,20 @@ import com.walmart.aex.sp.dto.packoptimization.UpdatePackOptStatusRequest;
 import com.walmart.aex.sp.enums.RunStatusCodeType;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.walmart.aex.sp.enums.RunStatusCodeType.getPrefixEligibleRunStatusCodes;
 import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
 
 @Service
 @Slf4j
 @Transactional
 public class PackOptConstraintMapperHelper {
-    @Autowired
-    static ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
     public PackOptConstraintMapperHelper(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
@@ -46,7 +40,7 @@ public class PackOptConstraintMapperHelper {
             if(!StringUtils.isEmpty(fineLineMapperDto.getChildReturnMessage())){
                 try{
                     UpdatePackOptStatusRequest statusRequest = objectMapper.readValue(fineLineMapperDto.getChildReturnMessage(),UpdatePackOptStatusRequest.class);
-                    if(statusRequest.getStatusLongDesc()!=null)
+                    if(!StringUtils.isEmpty(statusRequest.getStatusLongDesc()))
                         errorDescription = statusRequest.getStatusLongDesc().trim();
                 }catch(JsonProcessingException exception){
                     log.error("Exception while setting the child update pack optimization status for planId:{} and finelineNbr: {} ",fineLineMapperDto.getPlanId(), fineLineMapperDto.getFineLineNbr());
@@ -63,7 +57,7 @@ public class PackOptConstraintMapperHelper {
         for (Map.Entry<String, Set<Integer>> entry : errorsToBumpPacks.entrySet()) {
             String errorDescription = entry.getKey();
             Set<Integer> bumpPacks = entry.getValue();
-            if(!fineLineMapperDto.getChildRunStatusCode().equals(RunStatusCodeType.MAX_PACK_CONFIG_ERROR.getId())) {
+            if(getPrefixEligibleRunStatusCodes().contains(fineLineMapperDto.getChildRunStatusCode())) {
                 String bumpPacksString = bumpPacks.stream()
                         .map(bumpPack -> bumpPack == 1 ? getInitialSetOrBumpPackError(bumpPacks, fineLineMapperDto.getChildRunStatusCode()) : BUMP_PACK_ERROR + bumpPack)
                         .collect(Collectors.joining(", "));
@@ -74,7 +68,6 @@ public class PackOptConstraintMapperHelper {
             }
         }
         return runStatusLongDesc;
-
     }
 
     private String getInitialSetOrBumpPackError(Set<Integer> bumpPacks, Integer runStatusCode) {
@@ -89,4 +82,5 @@ public class PackOptConstraintMapperHelper {
             }
          return INITIAL_SET;
     }
+
 }
