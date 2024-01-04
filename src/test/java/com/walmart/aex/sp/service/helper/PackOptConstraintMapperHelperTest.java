@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.mapper.FineLineMapperDto;
 import com.walmart.aex.sp.dto.packoptimization.UpdatePackOptStatusRequest;
+import com.walmart.aex.sp.enums.RunStatusCodeType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -40,7 +41,7 @@ public class PackOptConstraintMapperHelperTest {
         Map<Integer, Map<Integer, String>> finelineBumpStatusMap = new HashMap<>();
         List<String> result = packOptConstraintMapperHelper.getRunStatusLongDescriptions(fineLineMapperDto,finelineBumpStatusMap);
         assertNotNull(result);
-        assertEquals("Fineline failed, please contact the support team",result.get(0));
+        assertEquals(RunStatusCodeType.NUMTOTALCCS_VALUE_ERROR_MSG.getDescription(),result.get(0));
     }
 
     @Test
@@ -128,7 +129,7 @@ public class PackOptConstraintMapperHelperTest {
         fineLineMapperDto.setChildRunStatusCode(13);
         fineLineMapperDto.setBumpPackNbr(1);
         fineLineMapperDto.setRunStatusCode(101);
-        fineLineMapperDto.setChildRunStatusCodeDesc("Fineline failed, please contact the support team");
+        fineLineMapperDto.setChildRunStatusCodeDesc(RunStatusCodeType.NUMTOTALCCS_VALUE_ERROR_MSG.getDescription());
         return fineLineMapperDto;
     }
 
