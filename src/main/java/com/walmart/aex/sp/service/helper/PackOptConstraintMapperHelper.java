@@ -2,11 +2,11 @@ package com.walmart.aex.sp.service.helper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.microsoft.sqlserver.jdbc.StringUtils;
 import com.walmart.aex.sp.dto.mapper.FineLineMapperDto;
 import com.walmart.aex.sp.dto.packoptimization.UpdatePackOptStatusRequest;
 import com.walmart.aex.sp.enums.RunStatusCodeType;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,7 +43,7 @@ public class PackOptConstraintMapperHelper {
         for (Map.Entry<Integer, String> entry : runStatusLongDescriptions.entrySet()) {
             int bumpPackNbr = entry.getKey();
             String errorDescription = null;
-            if(null!=fineLineMapperDto.getChildReturnMessage()){
+            if(!StringUtils.isEmpty(fineLineMapperDto.getChildReturnMessage())){
                 try{
                     UpdatePackOptStatusRequest statusRequest = objectMapper.readValue(fineLineMapperDto.getChildReturnMessage(),UpdatePackOptStatusRequest.class);
                     if(statusRequest.getStatusLongDesc()!=null)
