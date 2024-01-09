@@ -150,7 +150,7 @@ public class AddStoreBuyQuantityService {
             if (initialSetQuantity.isOneUnitPerStore()) {
                 perStoreQty = perStoreQty + DEFAULT_INITIAL_THRESHOLD;
                 isQty = (long) DEFAULT_INITIAL_THRESHOLD * initialSetQuantity.getRfaSizePackData().getStore_cnt();
-                if ((!CollectionUtils.isEmpty(buyQtyObj.getReplenishments()))) {
+                if (!CollectionUtils.isEmpty(buyQtyObj.getReplenishments()) && BuyQtyCommonUtil.isReplenishmentEligible(initialSetQuantity.getVolumeCluster().getFlowStrategy())) {
                     adjustReplenishmentsForOneUnitPerStore(buyQtyObj, initialSetQuantity.getRfaSizePackData(), initialSetQuantity.getRfaSizePackData().getCustomer_choice(), initialSetQuantity.getSizeDesc(), isQty, perStoreQty, storeList);
                 }
             }
@@ -246,7 +246,7 @@ public class AddStoreBuyQuantityService {
             List<Integer> storeList = storeQuantity.getStoreList();
             double perStoreQty = storeQuantity.getIsUnits();
             double isQty = storeQuantity.getTotalUnits();
-            if ((perStoreQty < initialThreshold && perStoreQty > 0) && (!CollectionUtils.isEmpty(buyQtyObj.getReplenishments()))) {
+            if ((perStoreQty < initialThreshold && perStoreQty > 0) && (!CollectionUtils.isEmpty(buyQtyObj.getReplenishments())) && BuyQtyCommonUtil.isReplenishmentEligible(storeQuantity.getFlowStrategyCode())) {
                 InitialSetWithReplenishment initialSetWithReplenishment = getUnitsFromReplenishment(storeQuantity, buyQtyObj, storeQuantitiesWithLessRep, volumeCluster, initialThreshold, rfaSizePackData.getCustomer_choice(), sizeDesc);
                 isQty = initialSetWithReplenishment.getIsQty();
                 perStoreQty = initialSetWithReplenishment.getPerStoreQty();

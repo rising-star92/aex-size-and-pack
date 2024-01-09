@@ -117,7 +117,10 @@ public class BuyQuantityConstraintService {
         Comparator<StoreQuantity> sqc2 = Comparator.comparing(StoreQuantity::getSizeCluster);
         /* If some store clusters have initial set qtys, then only add replenishment to those store clusters.
            If no store clusters have initial set qty, then populate store clusters until replenishment is depleted */
-        List<StoreQuantity> sortedStoreQty = entry.getValue().getBuyQtyStoreObj().getBuyQuantities().stream().sorted(sqc.thenComparing(sqc2)).collect(Collectors.toList());
+        List<StoreQuantity> sortedStoreQty = entry.getValue().getBuyQtyStoreObj().getBuyQuantities().stream()
+                .filter(sq -> BuyQtyCommonUtil.isReplenishmentEligible(sq.getFlowStrategyCode()))
+                .sorted(sqc.thenComparing(sqc2))
+                .collect(Collectors.toList());
         List<StoreQuantity> populatedStoreQtys = sortedStoreQty.stream().filter(storeQty -> storeQty.getIsUnits() > 0).collect(Collectors.toList());
         List<StoreQuantity> storeQtysToUpdate = populatedStoreQtys.isEmpty() ? sortedStoreQty : populatedStoreQtys;
         for (StoreQuantity storeQuantity : storeQtysToUpdate) {

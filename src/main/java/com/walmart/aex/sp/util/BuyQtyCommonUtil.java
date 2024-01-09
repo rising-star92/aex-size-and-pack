@@ -5,6 +5,7 @@ import com.walmart.aex.sp.dto.bqfp.*;
 import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
 import com.walmart.aex.sp.enums.FixtureTypeRollup;
+import com.walmart.aex.sp.enums.FlowStrategy;
 import com.walmart.aex.sp.service.BuyQuantityMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -223,5 +224,9 @@ public class BuyQtyCommonUtil {
                 .filter(cluster -> cluster.getAnalyticsClusterId().equals(rfaSizePackData.getVolume_group_cluster_id()))
                 .findFirst()
                 .orElse(null);
+    }
+
+    public static boolean isReplenishmentEligible(Integer flowStrategy) {
+        return (null != flowStrategy && flowStrategy.equals(FlowStrategy.REPLENISHMENT_SET.getId()));
     }
 }
