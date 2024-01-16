@@ -600,18 +600,18 @@ public class CalculateFinelineBuyQuantity {
     /**
      * Get unique CalculateQuantity group by size
      */
-    private static CalculateQuantityBySize getCalculateQuantityBySize(List<CalculateQuantityBySize> calculateQuantityBySizeList, Integer volumeClusterId, Float fixtureGroup, String fixtureType, String sizeDesc) {
+    private static CalculateQuantityBySize getCalculateQuantityBySize(List<CalculateQuantityBySize> calculateQuantityBySizeList, CalculateQuantityByUnit calculateQuantityByUnit, String sizeDesc) {
         Optional<CalculateQuantityBySize> optionalCalculateQuantityBySize = calculateQuantityBySizeList.stream()
-                .filter(cq -> cq.getVolumeGroupClusterId().equals(volumeClusterId) &&
-                        cq.getFixtureType().equals(fixtureType) &&
-                        cq.getFixtureGroup().equals(fixtureGroup) &&
+                .filter(cq -> cq.getVolumeGroupClusterId().equals(calculateQuantityByUnit.getVolumeGroupClusterId()) &&
+                        cq.getFixtureType().equals(calculateQuantityByUnit.getFixtureType()) &&
+                        cq.getFixtureGroup().equals(calculateQuantityByUnit.getFixtureGroup()) &&
                         cq.getSizeDesc().equals(sizeDesc))
                 .findFirst();
         if (optionalCalculateQuantityBySize.isEmpty()) {
             CalculateQuantityBySize calculateQuantityBySize = CalculateQuantityBySize.builder()
-                    .volumeGroupClusterId(volumeClusterId)
-                    .fixtureType(fixtureType)
-                    .fixtureGroup(fixtureGroup)
+                    .volumeGroupClusterId(calculateQuantityByUnit.getVolumeGroupClusterId())
+                    .fixtureType(calculateQuantityByUnit.getFixtureType())
+                    .fixtureGroup(calculateQuantityByUnit.getFixtureGroup())
                     .sizeDesc(sizeDesc)
                     .bumpSetQuantities((new ArrayList<>()))
                     .build();
@@ -630,15 +630,13 @@ public class CalculateFinelineBuyQuantity {
             SizeDto sizeDto = entry.getKey();
             BuyQtyObj buyQtyObj = entry.getValue();
             List<CalculateQuantityBySize> calculateQuantityBySizes = Optional.ofNullable(buyQtyObj.getCalculateQuantityBySizes()).orElse(new ArrayList<>());
-            CalculateQuantityBySize calculateQuantityBySize = getCalculateQuantityBySize(calculateQuantityBySizes, calculateQuantityByUnit.getVolumeGroupClusterId(),
-                    calculateQuantityByUnit.getFixtureGroup(), calculateQuantityByUnit.getFixtureType(), sizeDto.getSizeDesc());
+            CalculateQuantityBySize calculateQuantityBySize = getCalculateQuantityBySize(calculateQuantityBySizes, calculateQuantityByUnit, sizeDto.getSizeDesc());
             List<BumpSetQuantity> bumpSetQuantitiesBySize = calculateQuantityBySize.getBumpSetQuantities();
 
             List<InitialSetQuantity> initialSetQuantities = calculateQuantityByUnit.getCalculateInitialSet().getInitialSetQuantities();
-            Optional<InitialSetQuantity> optionalInitialSetQuantity = initialSetQuantities.stream()
+            initialSetQuantities.stream()
                     .filter(isQty -> isQty.getSizeDesc().equals(sizeDto.getSizeDesc()))
-                    .findFirst();
-            optionalInitialSetQuantity.ifPresent(calculateQuantityBySize::setInitialSetQuantity);
+                    .findFirst().ifPresent(calculateQuantityBySize::setInitialSetQuantity);
 
             // BS Split By Size
             List<BumpSetQuantity> bumpSetQuantityList = calculateQuantityByUnit.getCalculateBumpSet().getBumpSetQuantities();
