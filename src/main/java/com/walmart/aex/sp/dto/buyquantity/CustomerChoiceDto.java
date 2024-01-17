@@ -13,6 +13,7 @@ public class CustomerChoiceDto {
     private String colorFamilyDesc;
     private String colorFamily;
     private String altCcDesc;
+    private Metadata metadata;
     private MetricsDto metrics;
     private List<ClustersDto> clusters;
     private List<MerchMethodsDto> merchMethods;
