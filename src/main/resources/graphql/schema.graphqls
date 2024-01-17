@@ -37,6 +37,9 @@ type Mutation {
     addDeptAdminRules(deptAdminRuleRequests: [DeptAdminRuleRequest]!): StatusResponse
     updateDeptAdminRules(deptAdminRuleRequests: [DeptAdminRuleRequest]!): StatusResponse
     deleteDeptAdminRules(deptNbrs: [Int]!): StatusResponse
+    addAppMessages(appMessageTextRequests: [AppMessageTextRequest]!): StatusResponse
+    updateAppMessages(appMessageTextRequests: [AppMessageTextRequest]!): StatusResponse
+    deleteAppMessages(appMessageCodesRequest: [Int]!): StatusResponse
 }
 
 input UpdatePackOptConstraintRequestDTO {
@@ -617,4 +620,11 @@ type PackOptFinelinesByStatusResponse{
     endTs: String
     runStatusCode: Int
     runStatusDesc: String
+}
+
+input AppMessageTextRequest {
+    id: Int
+    typeId: Int
+    desc: String
+    longDesc: String
 }
