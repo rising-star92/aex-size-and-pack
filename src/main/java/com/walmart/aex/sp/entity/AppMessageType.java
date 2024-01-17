@@ -16,7 +16,6 @@ public class AppMessageType {
 
     @Id
     @Column(name = "app_message_type_code", nullable = false)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(name = "app_message_type_desc")
