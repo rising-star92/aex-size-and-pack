@@ -10,6 +10,6 @@ import java.util.List;
 public class Metadata {
     private List<ValidationMessage> validations;
     private String status;
-    private String timestamp;
+    private String lastUpdatedTs;
     private String userName;
 }
