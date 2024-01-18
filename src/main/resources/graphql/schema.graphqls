@@ -388,7 +388,7 @@ type MerchMethodsDto {
 type Metadata {
     validations: [Validation]
     status: String
-    timestamp: String
+    lastUpdatedTs: String
     userName: String
 }
 
