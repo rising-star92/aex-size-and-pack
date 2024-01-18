@@ -89,7 +89,7 @@ public class PackOptimizationController {
             response.setStatus(SUCCESS_STATUS);
         } catch (Exception e) {
             response.setStatus(FAILURE_STATUS);
-            log.error("Exception while updating status :", e);
+            log.error("Exception while updating status for planId : {} , finelineNbr : {} with status : {} : ", planId, finelineNbr, status, e);
         }
         return response;
 
