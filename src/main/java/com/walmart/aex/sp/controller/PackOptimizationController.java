@@ -83,19 +83,16 @@ public class PackOptimizationController {
     @PutMapping(path = "/api/packOptimization/plan/{planId}/fineline/{finelineNbr}/status/{status}")
     public UpdatePkOptResponse updatePackOptStatus(@PathVariable Long planId, @PathVariable String finelineNbr, @PathVariable Integer status, @RequestParam(value = "isResetPackOptStatusFlag", required = false, defaultValue = "false") boolean isResetPackOptStatusFlag, @RequestBody(required = false) UpdatePackOptStatusRequest request ) {
         UpdatePkOptResponse response = new UpdatePkOptResponse();
-        if (RunStatusCodeType.ANALYTICS_RUN_COMPLETED.getId().equals(status) || RunStatusCodeType.ANALYTICS_ERRORS_LIST.contains(status)) {
-            try {
-                packOptService.updatePackOptServiceStatus(planId, finelineNbr, status , isResetPackOptStatusFlag, request);
-                response.setStatus(SUCCESS_STATUS);
-            } catch (Exception e) {
-                response.setStatus(FAILURE_STATUS);
-                log.error("Exception while updating status :", e);
-            }
-            return response;
-        } else {
+        Integer statusToUpdate = (RunStatusCodeType.ANALYTICS_RUN_COMPLETED.getId().equals(status) || RunStatusCodeType.ANALYTICS_ERRORS_LIST.contains(status)) ? status: RunStatusCodeType.COMMON_ERR_MSG.getId();
+        try {
+            packOptService.updatePackOptServiceStatus(planId, finelineNbr, statusToUpdate, isResetPackOptStatusFlag, request);
+            response.setStatus(SUCCESS_STATUS);
+        } catch (Exception e) {
             response.setStatus(FAILURE_STATUS);
-            return response;
+            log.error("Exception while updating status for planId : {} , finelineNbr : {} with status : {} : ", planId, finelineNbr, status, e);
         }
+        return response;
+
     }
 
     @PostMapping(path = "/api/packOptimization/plan/{planId}/fineline/{finelineNbr}")
