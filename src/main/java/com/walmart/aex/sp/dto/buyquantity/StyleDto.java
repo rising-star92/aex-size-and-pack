@@ -9,6 +9,7 @@ import java.util.List;
 public class StyleDto {
     private String styleNbr;
     private String altStyleDesc;
+    private Metadata metadata;
     private MetricsDto metrics;
     private List<ClustersDto> clusters;
     private List<CustomerChoiceDto> customerChoices;

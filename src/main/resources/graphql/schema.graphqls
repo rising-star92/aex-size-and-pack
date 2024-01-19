@@ -317,6 +317,7 @@ type FinelineDto {
     finelineDesc: String
     finelineAltDesc: String
     metrics: MetricsDto
+    metadata: Metadata
     clusters: [ClustersDto]
     styles: [StyleDto]
     }
@@ -325,6 +326,7 @@ type StyleDto {
     styleNbr: String
     altStyleDesc: String
     channelId: Int
+    metadata: Metadata
     metrics: MetricsDto
     clusters: [ClustersDto]
     customerChoices: [CustomerChoiceDto]
@@ -336,6 +338,7 @@ type CustomerChoiceDto {
     channelId: Int
     colorName: String
     colorFamilyDesc: String
+    metadata: Metadata
     metrics: MetricsDto
     clusters: [ClustersDto]
     merchMethods : [MerchMethodsDto]
@@ -350,6 +353,7 @@ type ClustersDto {
 type SizeList {
     ahsSizeId: Int
     sizeDesc: String
+    metadata: Metadata
     metrics: MetricsDto
 }
 
@@ -379,6 +383,18 @@ type MerchMethodsDto {
     merchMethod: String
     metrics: MetricsDto
     sizes: [SizeDto]
+}
+
+type Metadata {
+    validations: [Validation]
+    status: String
+    lastUpdatedTs: String
+    userName: String
+}
+
+type Validation {
+    type: String
+    messages: [String]
 }
 
 type ReplenishmentResponse {

@@ -10,6 +10,7 @@ public class FinelineDto {
     private Integer finelineNbr;
     private String finelineDesc;
     private String finelineAltDesc;
+    private Metadata metadata;
     private MetricsDto metrics;
     private List<ClustersDto> clusters;
     private List<StyleDto> styles;

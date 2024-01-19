@@ -12,6 +12,7 @@ public class SizeDto {
     private Integer ahsSizeId;
     private Integer sizeId;
     private String sizeDesc;
+    private Metadata metadata;
     private MetricsDto metrics;
     private List<Replenishment> replenishments;
 
