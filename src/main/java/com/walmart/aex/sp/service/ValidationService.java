@@ -9,5 +9,5 @@ import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
 import java.util.List;
 
 public interface ValidationService {
-    public List<ValidationCode> validateCalculateBuyQuantityData(List<MerchMethodsDto> merchMethodsDtos, APResponse apResponse, BQFPResponse bqfpResponse, Integer styleNbr, CustomerChoiceDto customerChoiceDto);
+    public ValidationCode validateCalculateBuyQuantityData(List<MerchMethodsDto> merchMethodsDtos, APResponse apResponse, BQFPResponse bqfpResponse, Integer styleNbr, CustomerChoiceDto customerChoiceDto);
 }
