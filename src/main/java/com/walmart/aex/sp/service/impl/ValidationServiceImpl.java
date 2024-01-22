@@ -15,7 +15,7 @@ public class ValidationServiceImpl implements ValidationService {
     //All validation service per dataset - RFAValidationService, BQFPValidationService
 
     @Override
-    public ValidationCode validateCalculateBuyQuantityData(List<MerchMethodsDto> merchMethodsDtos, APResponse apResponse, BQFPResponse bqfpResponse, Integer styleNbr, CustomerChoiceDto customerChoiceDto) {
+    public ValidationCode validateCalculateBuyQuantityData(List<MerchMethodsDto> merchMethodsDtos, APResponse apResponse, BQFPResponse bqfpResponse, String styleNbr, CustomerChoiceDto customerChoiceDto) {
         // separate method to call each individual validation service
         return null;
     }
