@@ -67,4 +67,7 @@ public class SpCustomerChoiceChannelFixtureSize {
 
     @Column(name = "store_obj")
     private String storeObj;
+
+    @Column(name = "app_message_obj")
+    private String messageObj;
 }

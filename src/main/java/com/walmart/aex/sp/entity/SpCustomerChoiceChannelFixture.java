@@ -68,6 +68,9 @@ public class SpCustomerChoiceChannelFixture {
     @Column(name = "bump_pack_cnt")
     private Integer bumpPackCnt;
 
+    @Column(name = "app_message_obj")
+    private String messageObj;
+
     @OneToMany(mappedBy = "spCustomerChoiceChannelFixture", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<SpCustomerChoiceChannelFixtureSize> spCustomerChoiceChannelFixtureSize;

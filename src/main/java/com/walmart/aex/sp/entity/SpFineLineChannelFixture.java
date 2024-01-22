@@ -58,6 +58,9 @@ public class SpFineLineChannelFixture {
     @Column(name = "bump_pack_cnt")
     private Integer bumpPackCnt;
 
+    @Column(name = "app_message_obj")
+    private String messageObj;
+
     @OneToMany(mappedBy = "spFineLineChannelFixture", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<SpStyleChannelFixture> spStyleChannelFixtures;
