@@ -75,6 +75,6 @@ class InitialSetBumpPackQtyServiceTest {
     }
 
     private SpCustomerChoiceChannelFixtureSize getSpCustomerChoiceChannelFixtureSize(int ahsSizeId, String size) {
-        return new SpCustomerChoiceChannelFixtureSize(new SpCustomerChoiceChannelFixtureSizeId(null, ahsSizeId), null, size, null, null, null, null, null, null, null, null, null, null);
+        return new SpCustomerChoiceChannelFixtureSize(new SpCustomerChoiceChannelFixtureSizeId(null, ahsSizeId), null, size, null, null, null, null, null, null, null, null, null, null, null);
     }
 }
