@@ -8,11 +8,13 @@ import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
 import com.walmart.aex.sp.enums.AppMessageText;
 import com.walmart.aex.sp.enums.FlowStrategy;
 import com.walmart.aex.sp.service.BQFPValidationsService;
+import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Service
 public class BQFPValidationsServiceImpl implements BQFPValidationsService {
 
     @Override
@@ -22,7 +24,7 @@ public class BQFPValidationsServiceImpl implements BQFPValidationsService {
         merchMethodsDtos.forEach(merchMethodsDto -> {
 
             Fixture bqfpFixture = getBQFPFixture(bqfpResponse, styleDto, customerChoiceDto, merchMethodsDto);
-            List<Cluster> clusters = getClusters(bqfpFixture);
+            List<Cluster> clusters = null!=bqfpFixture ? bqfpFixture.getClusters():Collections.emptyList();
 
             if (CollectionUtils.isEmpty(clusters)) {
                 //Missing IS Data for fixture
@@ -78,14 +80,6 @@ public class BQFPValidationsServiceImpl implements BQFPValidationsService {
             //Missing IS quantities for fixture
             validationCodes.add(AppMessageText.BQFP_MISSING_IS_QUANTITIES.getId());
         }
-    }
-
-    private List<Cluster> getClusters(Fixture bqfpFixture) {
-        return Optional.of(bqfpFixture)
-                .map(Fixture::getClusters)
-                .stream()
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
     }
 
     private Fixture getBQFPFixture(BQFPResponse bqfpResponse, StyleDto styleDto, CustomerChoiceDto customerChoiceDto, MerchMethodsDto merchMethodsDto) {

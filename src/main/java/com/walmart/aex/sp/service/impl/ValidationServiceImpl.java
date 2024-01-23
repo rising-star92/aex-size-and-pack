@@ -9,10 +9,12 @@ import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
 import com.walmart.aex.sp.service.BQFPValidationsService;
 import com.walmart.aex.sp.service.ValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 public class ValidationServiceImpl implements ValidationService {
 
     //All validation service per dataset - RFAValidationService, BQFPValidationService
