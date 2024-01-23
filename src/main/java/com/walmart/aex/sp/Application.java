@@ -5,12 +5,16 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.retry.annotation.EnableRetry;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @EnableRetry
+@EnableCaching
+@EnableScheduling
 @ComponentScan("com.walmart.platform.txn.springboot.filters")
 @ComponentScan("com.walmart.platform.txn.springboot.interceptor")
 @SpringBootApplication(scanBasePackages = {
