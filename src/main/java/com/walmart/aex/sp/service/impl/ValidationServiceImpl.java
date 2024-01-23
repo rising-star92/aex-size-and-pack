@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -37,8 +37,9 @@ public class ValidationServiceImpl implements ValidationService {
         List<Integer> allValidationCodes = new ArrayList<>();
         // separate method to call each individual validation service
         ValidationResult bqfpValidationResult = bqfpValidationsService.missingBuyQuantity(merchMethodsDtos, bqfpResponse, styleDto, customerChoiceDto);
-        List<Integer> rfaValidationCodes = rfaValidationService.validateRFAData(apResponse, bqfpResponse, styleNbr, customerChoiceDto);
+        ValidationResult rfaValidationResult = rfaValidationService.validateRFAData(apResponse, bqfpResponse, styleDto.getStyleNbr(), customerChoiceDto);
         allValidationCodes.addAll(bqfpValidationResult.getCodes());
+        allValidationCodes.addAll(rfaValidationResult.getCodes());
 
         return ValidationResult.builder().codes(allValidationCodes).build();
     }

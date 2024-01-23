@@ -6,12 +6,13 @@ import com.walmart.aex.sp.dto.bqfp.BQFPResponse;
 import com.walmart.aex.sp.dto.bqfp.CustomerChoice;
 import com.walmart.aex.sp.dto.bqfp.Fixture;
 import com.walmart.aex.sp.dto.buyquantity.CustomerChoiceDto;
+import com.walmart.aex.sp.dto.buyquantity.ValidationResult;
 import com.walmart.aex.sp.enums.AppMessageText;
 import com.walmart.aex.sp.service.RFAValidationService;
 import com.walmart.aex.sp.util.BuyQtyCommonUtil;
 import com.walmart.aex.sp.util.SizeAndPackConstants;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -23,23 +24,23 @@ import java.util.stream.Collectors;
 public class RFAValidationServiceImpl implements RFAValidationService {
 
     @Override
-    public List<Integer> validateRFAData(APResponse apResponse, BQFPResponse bqfpResponse, String styleNbr, CustomerChoiceDto customerChoiceDto) {
+    public ValidationResult validateRFAData(APResponse apResponse, BQFPResponse bqfpResponse, String styleNbr, CustomerChoiceDto customerChoiceDto) {
         List<Integer> rfaValidationCodes = new ArrayList<>();
         if (apResponse.getRfaSizePackData().isEmpty()) {
             // if rfa is empty
             rfaValidationCodes.add(AppMessageText.RFA_NOT_AVAILABLE.getId());
-            return rfaValidationCodes;
+            return ValidationResult.builder().messages(rfaValidationCodes).build();
         }
         List<RFASizePackData> rfaSizePackDataList = apResponse.getRfaSizePackData().stream().filter(rfa -> rfa.getCustomer_choice().equalsIgnoreCase(customerChoiceDto.getCcId())).collect(Collectors.toList());
         if (rfaSizePackDataList.isEmpty()) {
             // rfa is missing for CC
             rfaValidationCodes.add(AppMessageText.RFA_CC_NOT_AVAILABLE.getId());
-            return rfaValidationCodes;
+            return ValidationResult.builder().messages(rfaValidationCodes).build();
         }
         CustomerChoice ccFromBQFP = BuyQtyCommonUtil.getCcFromBQFP(styleNbr, customerChoiceDto.getCcId(), bqfpResponse);
         validateFixture(ccFromBQFP, rfaSizePackDataList, rfaValidationCodes);
         validateColorFamily(customerChoiceDto, rfaSizePackDataList, rfaValidationCodes);
-        return rfaValidationCodes;
+        return ValidationResult.builder().messages(rfaValidationCodes).build();
     }
 
     /**
@@ -57,8 +58,8 @@ public class RFAValidationServiceImpl implements RFAValidationService {
      */
     private void validateColorFamily(CustomerChoiceDto customerChoiceDto, List<RFASizePackData> rfaSizePackDataList, List<Integer> rfaValidationCodes) {
         RFASizePackData rfaSizePackData = rfaSizePackDataList.stream().filter(rfa -> rfa.getCustomer_choice().equalsIgnoreCase(customerChoiceDto.getCcId())).findFirst().orElse(null);
-        if (ObjectUtils.allNotNull(rfaSizePackData, rfaSizePackData.getColor_family(), customerChoiceDto.getColorFamily()) &&
-                !(rfaSizePackData.getColor_family().equalsIgnoreCase(customerChoiceDto.getColorFamily()) ||
+        if (null != rfaSizePackData && StringUtils.isNotEmpty(rfaSizePackData.getColor_family()) &&
+                !((StringUtils.isNotEmpty(customerChoiceDto.getColorFamily()) && rfaSizePackData.getColor_family().equalsIgnoreCase(customerChoiceDto.getColorFamily())) ||
                 rfaSizePackData.getColor_family().equalsIgnoreCase(SizeAndPackConstants.DEFAULT_COLOR_FAMILY)))
             rfaValidationCodes.add(AppMessageText.RFA_MISSING_COLOR_FAMILY.getId());
     }

@@ -7,6 +7,7 @@ import com.walmart.aex.sp.dto.bqfp.CustomerChoice;
 import com.walmart.aex.sp.dto.bqfp.Fixture;
 import com.walmart.aex.sp.dto.bqfp.Style;
 import com.walmart.aex.sp.dto.buyquantity.CustomerChoiceDto;
+import com.walmart.aex.sp.dto.buyquantity.ValidationResult;
 import com.walmart.aex.sp.enums.AppMessageText;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,8 @@ class RFAValidationServiceImplTest {
     private APResponse apResponse;
     private BQFPResponse bqfpResponse;
     private CustomerChoiceDto customerChoiceDto;
+
+    private ValidationResult validationResult;
 
     @InjectMocks
     private RFAValidationServiceImpl rfaValidationService;
@@ -58,9 +61,9 @@ class RFAValidationServiceImplTest {
     @Test
     void validateRFADataWithEmptyListTest() {
         apResponse.setRfaSizePackData(new ArrayList<>());
-        List<Integer> validationCodes = rfaValidationService.validateRFAData(apResponse, bqfpResponse, "Style1", customerChoiceDto);
-        assertEquals(1, validationCodes.size());
-        assertEquals(AppMessageText.RFA_NOT_AVAILABLE.getId(), validationCodes.get(0));
+        validationResult = rfaValidationService.validateRFAData(apResponse, bqfpResponse, "Style1", customerChoiceDto);
+        assertEquals(1, validationResult.getMessages().size());
+        assertEquals(AppMessageText.RFA_NOT_AVAILABLE.getId(), validationResult.getMessages().get(0));
     }
 
     @Test
@@ -71,9 +74,9 @@ class RFAValidationServiceImplTest {
         rfaSizePackData1.setColor_family("BLUE");
 
         apResponse.setRfaSizePackData(List.of(rfaSizePackData1));
-        List<Integer> validationCodes = rfaValidationService.validateRFAData(apResponse, bqfpResponse, "Style1", customerChoiceDto);
-        assertEquals(1, validationCodes.size());
-        assertEquals(AppMessageText.RFA_CC_NOT_AVAILABLE.getId(), validationCodes.get(0));
+        validationResult = rfaValidationService.validateRFAData(apResponse, bqfpResponse, "Style1", customerChoiceDto);
+        assertEquals(1, validationResult.getMessages().size());
+        assertEquals(AppMessageText.RFA_CC_NOT_AVAILABLE.getId(), validationResult.getMessages().get(0));
     }
 
     @Test
@@ -84,9 +87,9 @@ class RFAValidationServiceImplTest {
         rfaSizePackData1.setColor_family("BLUE");
 
         apResponse.setRfaSizePackData(List.of(rfaSizePackData1));
-        List<Integer> validationCodes = rfaValidationService.validateRFAData(apResponse, bqfpResponse, "Style1", customerChoiceDto);
-        assertEquals(1, validationCodes.size());
-        assertEquals(AppMessageText.RFA_MISSING_FIXTURE.getId(), validationCodes.get(0));
+        validationResult = rfaValidationService.validateRFAData(apResponse, bqfpResponse, "Style1", customerChoiceDto);
+        assertEquals(1, validationResult.getMessages().size());
+        assertEquals(AppMessageText.RFA_MISSING_FIXTURE.getId(), validationResult.getMessages().get(0));
     }
 
     @Test
@@ -102,9 +105,9 @@ class RFAValidationServiceImplTest {
         rfaSizePackData2.setColor_family("BROWN");
 
         apResponse.setRfaSizePackData(List.of(rfaSizePackData1, rfaSizePackData2));
-        List<Integer> validationCodes = rfaValidationService.validateRFAData(apResponse, bqfpResponse, "Style1", customerChoiceDto);
-        assertEquals(1, validationCodes.size());
-        assertEquals(AppMessageText.RFA_MISSING_COLOR_FAMILY.getId(), validationCodes.get(0));
+        validationResult = rfaValidationService.validateRFAData(apResponse, bqfpResponse, "Style1", customerChoiceDto);
+        assertEquals(1, validationResult.getMessages().size());
+        assertEquals(AppMessageText.RFA_MISSING_COLOR_FAMILY.getId(), validationResult.getMessages().get(0));
     }
 
     @Test
@@ -120,8 +123,8 @@ class RFAValidationServiceImplTest {
         rfaSizePackData2.setColor_family("DEFAULT");
 
         apResponse.setRfaSizePackData(List.of(rfaSizePackData1, rfaSizePackData2));
-        List<Integer> validationCodes = rfaValidationService.validateRFAData(apResponse, bqfpResponse, "Style1", customerChoiceDto);
-        assertEquals(0, validationCodes.size());
+        validationResult = rfaValidationService.validateRFAData(apResponse, bqfpResponse, "Style1", customerChoiceDto);
+        assertEquals(0, validationResult.getMessages().size());
     }
 
     @Test
@@ -132,9 +135,9 @@ class RFAValidationServiceImplTest {
         rfaSizePackData1.setColor_family("BROWN");
 
         apResponse.setRfaSizePackData(List.of(rfaSizePackData1));
-        List<Integer> validationCodes = rfaValidationService.validateRFAData(apResponse, bqfpResponse, "Style1", customerChoiceDto);
-        assertEquals(2, validationCodes.size());
-        assertTrue(validationCodes.contains(AppMessageText.RFA_MISSING_FIXTURE.getId()));
-        assertTrue(validationCodes.contains(AppMessageText.RFA_MISSING_COLOR_FAMILY.getId()));
+        validationResult = rfaValidationService.validateRFAData(apResponse, bqfpResponse, "Style1", customerChoiceDto);
+        assertEquals(2, validationResult.getMessages().size());
+        assertTrue(validationResult.getMessages().contains(AppMessageText.RFA_MISSING_FIXTURE.getId()));
+        assertTrue(validationResult.getMessages().contains(AppMessageText.RFA_MISSING_COLOR_FAMILY.getId()));
     }
 }

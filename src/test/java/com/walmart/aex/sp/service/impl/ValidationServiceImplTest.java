@@ -6,6 +6,7 @@ import com.walmart.aex.sp.dto.bqfp.CustomerChoice;
 import com.walmart.aex.sp.dto.bqfp.Fixture;
 import com.walmart.aex.sp.dto.bqfp.Style;
 import com.walmart.aex.sp.dto.buyquantity.CustomerChoiceDto;
+import com.walmart.aex.sp.dto.buyquantity.ValidationResult;
 import com.walmart.aex.sp.enums.AppMessageText;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -61,9 +62,9 @@ class ValidationServiceImplTest {
 
     @Test
     void validateCalculateBuyQuantityInputData() {
-        Mockito.when(rfaValidationService.validateRFAData(apResponse, bqfpResponse, "Style1", customerChoiceDto)).thenReturn(List.of(AppMessageText.RFA_NOT_AVAILABLE.getId()));
-        List<Integer> validationCodes = validationService.validateCalculateBuyQuantityInputData(apResponse, bqfpResponse, "Style1", customerChoiceDto);
-        assertEquals(1, validationCodes.size());
-        assertEquals(AppMessageText.RFA_NOT_AVAILABLE.getId(), validationCodes.get(0));
+        Mockito.when(rfaValidationService.validateRFAData(apResponse, bqfpResponse, "Style1", customerChoiceDto)).thenReturn(ValidationResult.builder().messages(List.of(AppMessageText.RFA_NOT_AVAILABLE.getId())).build());
+        ValidationResult validationResult = validationService.validateCalculateBuyQuantityInputData(apResponse, bqfpResponse, "Style1", customerChoiceDto);
+        assertEquals(1, validationResult.getMessages().size());
+        assertEquals(AppMessageText.RFA_NOT_AVAILABLE.getId(), validationResult.getMessages().get(0));
     }
 }
