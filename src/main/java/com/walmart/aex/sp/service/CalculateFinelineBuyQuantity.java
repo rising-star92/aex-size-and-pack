@@ -64,6 +64,7 @@ public class CalculateFinelineBuyQuantity {
     private final BigQueryClusterService bigQueryClusterService;
     private final CalculateInitialSetQuantityService calculateInitialSetQuantityService;
     private final CalculateBumpPackQtyService calculateBumpPackQtyService;
+    private final ValidationService validationService;
     @ManagedConfiguration
     BuyQtyProperties buyQtyProperties;
 
@@ -81,7 +82,8 @@ public class CalculateFinelineBuyQuantity {
                                         LinePlanService linePlanService,
                                         BigQueryClusterService bigQueryClusterService,
                                         CalculateInitialSetQuantityService calculateInitialSetQuantityService,
-                                        CalculateBumpPackQtyService calculateBumpPackQtyService) {
+                                        CalculateBumpPackQtyService calculateBumpPackQtyService,
+                                        ValidationService validationService) {
         this.bqfpService = bqfpService;
         this.objectMapper = objectMapper;
         this.strategyFetchService = strategyFetchService;
@@ -97,6 +99,7 @@ public class CalculateFinelineBuyQuantity {
         this.bigQueryClusterService = bigQueryClusterService;
         this.calculateInitialSetQuantityService = calculateInitialSetQuantityService;
         this.calculateBumpPackQtyService = calculateBumpPackQtyService;
+        this.validationService = validationService;
     }
 
     public CalculateBuyQtyResponse calculateFinelineBuyQty(CalculateBuyQtyRequest calculateBuyQtyRequest, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, CalculateBuyQtyResponse calculateBuyQtyResponse) throws CustomException {
@@ -417,10 +420,13 @@ public class CalculateFinelineBuyQuantity {
                 spCustomerChoiceChannelFixture.setSpCustomerChoiceChannelFixtureId(spCustomerChoiceChannelFixtureId);
             }
             spCustomerChoiceChannelFixture.setMerchMethodCode(spStyleChannelFixture.getMerchMethodCode());
+            List<Integer> ccValidationCodes = validationService.validateCalculateBuyQuantityInputData(apResponse, bqfpResponse, styleDto.getStyleNbr(), customerChoiceDto);
             if (!CollectionUtils.isEmpty(customerChoiceDto.getClusters())) {
-                getCcClusters(styleDto, customerChoiceDto, merchMethodsDtos, apResponse, bqfpResponse, spCustomerChoiceChannelFixture, calculateBuyQtyResponse, calculateBuyQtyParallelRequest, replenishmentCons);
+                getCcClusters(styleDto, customerChoiceDto, merchMethodsDtos, apResponse, bqfpResponse, spCustomerChoiceChannelFixture, calculateBuyQtyResponse, calculateBuyQtyParallelRequest, replenishmentCons, ccValidationCodes);
             }
             spCustomerChoiceChannelFixture.setBumpPackCnt(getCcMaxBumpPackCnt(bqfpResponse,styleDto,customerChoiceDto));
+
+            spCustomerChoiceChannelFixture.setMessageObj(getMessageObj(ccValidationCodes));
             spCustomerChoiceChannelFixtures.add(spCustomerChoiceChannelFixture);
         });
         log.info("calculating Style IS and BS Qty");
@@ -436,7 +442,10 @@ public class CalculateFinelineBuyQuantity {
         return getMaxBumpCountVal(customerChoices);
     }
 
-    private void getCcClusters(StyleDto styleDto, CustomerChoiceDto customerChoiceDto, List<MerchMethodsDto> merchMethodsDtos, APResponse apResponse, BQFPResponse bqfpResponse, SpCustomerChoiceChannelFixture spCustomerChoiceChannelFixture, CalculateBuyQtyResponse calculateBuyQtyResponse, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, ReplenishmentCons replenishmentCons) {
+    private void getCcClusters(StyleDto styleDto, CustomerChoiceDto customerChoiceDto, List<MerchMethodsDto> merchMethodsDtos,
+                               APResponse apResponse, BQFPResponse bqfpResponse, SpCustomerChoiceChannelFixture spCustomerChoiceChannelFixture,
+                               CalculateBuyQtyResponse calculateBuyQtyResponse, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest,
+                               ReplenishmentCons replenishmentCons, List<Integer> ccValidationCodes) {
         Map<SizeDto, BuyQtyObj> storeBuyQtyBySizeId = new HashMap<>();
         Integer initialThreshold = deptAdminRuleService.getInitialThreshold(bqfpResponse.getPlanId(), bqfpResponse.getLvl1Nbr());
         //Replenishment
@@ -945,5 +954,14 @@ public class CalculateFinelineBuyQuantity {
                 .stream()
                 .flatMap(Collection::stream)
                 .anyMatch(replenishment -> (replenishment.getDcInboundUnits() != null && replenishment.getDcInboundUnits() > 0));
+    }
+
+    private String getMessageObj(List<Integer> validationCodes) {
+        try {
+            return objectMapper.writeValueAsString(ValidationCode.builder().messages(validationCodes).build());
+        } catch (Exception ex) {
+            throw new CustomException("Exception occurred while creating validation messages");
+        }
+
     }
 }
