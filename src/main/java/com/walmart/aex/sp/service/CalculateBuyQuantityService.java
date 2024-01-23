@@ -105,8 +105,8 @@ public class CalculateBuyQuantityService {
     private void calculateFinelinesParallel(CalculateBuyQtyRequest calculateBuyQtyRequest, List<CalculateBuyQtyParallelRequest> calculateBuyQtyParallelRequests) {
 
         Set<Integer> finelinesToDelete = calculateBuyQtyParallelRequests.stream()
-                .map(CalculateBuyQtyParallelRequest::getFinelineNbr)
-                .collect(Collectors.toSet());
+              .map(CalculateBuyQtyParallelRequest::getFinelineNbr)
+              .collect(Collectors.toSet());
 
         deleteExistingReplnValues(calculateBuyQtyRequest, finelinesToDelete);
         deleteExistingBuyQuantityValues(calculateBuyQtyRequest, finelinesToDelete);
@@ -157,16 +157,16 @@ public class CalculateBuyQuantityService {
                 .stream()
                 .filter(completableFuture1 -> !completableFuture1.isCompletedExceptionally())
                 .map(completableFuture1 -> {
-                    try {
-                        return completableFuture1.get();
-                    } catch (InterruptedException e) {
-                        log.error("InterruptedException occurred while calculating buy quantity- ", e);
-                        Thread.currentThread().interrupt();
-                    } catch (ExecutionException e) {
-                        log.error("ExecutionException occurred while calculating buy quantity - ", e);
-                        throw new CustomException("Failed to Execute calculate buy quantity");
-                    }
-                    return null;
+                	 try {
+                         return completableFuture1.get();
+                     } catch (InterruptedException e) {
+                    log.error("InterruptedException occurred while calculating buy quantity- ", e);
+                    Thread.currentThread().interrupt();
+                } catch (ExecutionException e) {
+                    log.error("ExecutionException occurred while calculating buy quantity - ", e);
+                    throw new CustomException("Failed to Execute calculate buy quantity");
+                }
+                	 return null;
                 }).collect(Collectors.toList());
 
         if (completableFutures.size() != calculateBuyQtyParallelRequests.size()) {
@@ -175,16 +175,16 @@ public class CalculateBuyQuantityService {
 
         //Save Replenishment
         Set<MerchCatgReplPack> allMerchCatReplns = responses
-                .stream()
-                .map(CalculateBuyQtyResponse::getMerchCatgReplPacks)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toSet());
+              .stream()
+              .map(CalculateBuyQtyResponse::getMerchCatgReplPacks)
+              .flatMap(Collection::stream)
+              .collect(Collectors.toSet());
 
         Set<SpFineLineChannelFixture> allSPFinelineChannelFixtures = responses
-                .stream()
-                .map(CalculateBuyQtyResponse::getSpFineLineChannelFixtures)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toSet());
+              .stream()
+              .map(CalculateBuyQtyResponse::getSpFineLineChannelFixtures)
+              .flatMap(Collection::stream)
+              .collect(Collectors.toSet());
 
         buyQuantityCommonRepository.getSpFineLineChannelFixtureRepository().saveAll(allSPFinelineChannelFixtures);
         replenishmentCommonRepository.getMerchCatgReplPackRepository().saveAll(allMerchCatReplns);
