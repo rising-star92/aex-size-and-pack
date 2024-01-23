@@ -1,32 +1,18 @@
 package com.walmart.aex.sp.service;
 
-import com.walmart.aex.sp.dto.buyquantity.CalculateBuyQtyParallelRequest;
-import com.walmart.aex.sp.dto.buyquantity.CalculateBuyQtyRequest;
-import com.walmart.aex.sp.dto.buyquantity.CalculateBuyQtyResponse;
-import com.walmart.aex.sp.dto.buyquantity.FinelineDto;
-import com.walmart.aex.sp.dto.buyquantity.Lvl3Dto;
-import com.walmart.aex.sp.dto.buyquantity.Lvl4Dto;
-import com.walmart.aex.sp.entity.FinelinePlan;
-import com.walmart.aex.sp.entity.MerchCatgReplPack;
-import com.walmart.aex.sp.entity.SpFineLineChannelFixture;
+import com.walmart.aex.sp.dto.buyquantity.*;
+import com.walmart.aex.sp.entity.*;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.repository.FinelinePlanRepository;
-import com.walmart.aex.sp.repository.common.BuyQuantityCommonRepository;
-import com.walmart.aex.sp.repository.common.ReplenishmentCommonRepository;
+import com.walmart.aex.sp.repository.common.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
+import java.util.*;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -191,10 +177,8 @@ public class CalculateBuyQuantityService {
               .flatMap(Collection::stream)
               .collect(Collectors.toSet());
 
-        buyQuantityCommonRepository.getSpFineLineChannelFixtureRepository()
-                .saveAll(allSPFinelineChannelFixtures);
-        replenishmentCommonRepository.getMerchCatgReplPackRepository()
-                .saveAll(allMerchCatReplns);
+        buyQuantityCommonRepository.getSpFineLineChannelFixtureRepository().saveAll(allSPFinelineChannelFixtures);
+        replenishmentCommonRepository.getMerchCatgReplPackRepository().saveAll(allMerchCatReplns);
     }
 
     private void deleteExistingReplnValues(CalculateBuyQtyRequest calculateBuyQtyRequest, Set<Integer> replFinelinesToDelete) {
