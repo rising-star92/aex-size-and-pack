@@ -709,12 +709,42 @@ public class CalculateFinelineBuyQuantity {
             log.error("Error parsing Json: ", e);
             throw new CustomException("Error parsing Json: " + e);
         }
+        // Add validation codes to CustomerChoiceChannelFixtureSize
+        setCustomerChoiceChannelFixtureSizeValidations(entry, spCustomerChoiceChannelFixtureSize, warningValidations);
         spCustomerChoiceChannelFixtureSizes.add(spCustomerChoiceChannelFixtureSize);
 
         //Replenishment
         if (!CollectionUtils.isEmpty(replenishments) && entry.getValue().getTotalReplenishment() > 0) {
             setCcMmSpReplenishment(ccSpMmReplPacks, entry, (int) entry.getValue().getTotalReplenishment(), (int) Math.round(totalBuyQty));
         }
+    }
+
+    private void setCustomerChoiceChannelFixtureSizeValidations(Map.Entry<SizeDto, BuyQtyObj> entry, SpCustomerChoiceChannelFixtureSize spCustomerChoiceChannelFixtureSize, Set<Integer> warningValidations) {
+        ValidationCode validationCode = entry.getValue().getValidationCode();
+        if (ObjectUtils.isNotEmpty(validationCode)) {
+            Set<Integer> validationCodeValues = new HashSet<>(validationCode.getMessages());
+            try {
+                if (!CollectionUtils.isEmpty(validationCodeValues)) {
+                    warningValidations.addAll(validationCodeValues);
+                    spCustomerChoiceChannelFixtureSize.setAppMessageObj(objectMapper.writeValueAsString(validationCodeValues));
+                }
+            } catch (Exception e) {
+                log.error("Error parsing validationCodes to Json: ", e);
+            throw new CustomException("Error parsing validationCodes to Json: " + e);
+            }
+        }
+    }
+
+    private String getValidationCodesAsString(Set<Integer> validationCodes) {
+        try {
+            if (!CollectionUtils.isEmpty(validationCodes)) {
+                return objectMapper.writeValueAsString(validationCodes);
+            }
+        } catch (Exception e) {
+            log.error("Error parsing validationCodes to Json: ", e);
+            throw new CustomException("Error parsing validationCodes to Json: " + e);
+        }
+        return null;
     }
 
     private double getIsQty(Map.Entry<SizeDto, BuyQtyObj> entry) {

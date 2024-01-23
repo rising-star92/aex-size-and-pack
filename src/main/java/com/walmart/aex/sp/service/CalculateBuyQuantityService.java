@@ -1,6 +1,11 @@
 package com.walmart.aex.sp.service;
 
-import com.walmart.aex.sp.dto.buyquantity.*;
+import com.walmart.aex.sp.dto.buyquantity.CalculateBuyQtyParallelRequest;
+import com.walmart.aex.sp.dto.buyquantity.CalculateBuyQtyRequest;
+import com.walmart.aex.sp.dto.buyquantity.CalculateBuyQtyResponse;
+import com.walmart.aex.sp.dto.buyquantity.FinelineDto;
+import com.walmart.aex.sp.dto.buyquantity.Lvl3Dto;
+import com.walmart.aex.sp.dto.buyquantity.Lvl4Dto;
 import com.walmart.aex.sp.entity.FinelinePlan;
 import com.walmart.aex.sp.entity.MerchCatgReplPack;
 import com.walmart.aex.sp.entity.SpFineLineChannelFixture;
@@ -186,8 +191,10 @@ public class CalculateBuyQuantityService {
               .flatMap(Collection::stream)
               .collect(Collectors.toSet());
 
-        buyQuantityCommonRepository.getSpFineLineChannelFixtureRepository().saveAll(allSPFinelineChannelFixtures);
-        replenishmentCommonRepository.getMerchCatgReplPackRepository().saveAll(allMerchCatReplns);
+        buyQuantityCommonRepository.getSpFineLineChannelFixtureRepository();
+//                .saveAll(allSPFinelineChannelFixtures);
+        replenishmentCommonRepository.getMerchCatgReplPackRepository();
+//                .saveAll(allMerchCatReplns);
     }
 
     private void deleteExistingReplnValues(CalculateBuyQtyRequest calculateBuyQtyRequest, Set<Integer> replFinelinesToDelete) {

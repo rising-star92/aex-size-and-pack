@@ -5,7 +5,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.assortproduct.RFASizePackData;
 import com.walmart.aex.sp.dto.bqfp.Cluster;
 import com.walmart.aex.sp.dto.bqfp.Replenishment;
-import com.walmart.aex.sp.dto.buyquantity.*;
+import com.walmart.aex.sp.dto.buyquantity.AddStoreBuyQuantity;
+import com.walmart.aex.sp.dto.buyquantity.BumpSetQuantity;
+import com.walmart.aex.sp.dto.buyquantity.BuyQtyObj;
+import com.walmart.aex.sp.dto.buyquantity.BuyQtyStoreObj;
+import com.walmart.aex.sp.dto.buyquantity.CalculateQuantityBySize;
+import com.walmart.aex.sp.dto.buyquantity.InitialSetQuantity;
+import com.walmart.aex.sp.dto.buyquantity.InitialSetWithReplenishment;
+import com.walmart.aex.sp.dto.buyquantity.InitialSetWithReplnsConstraint;
+import com.walmart.aex.sp.dto.buyquantity.SizeDto;
+import com.walmart.aex.sp.dto.buyquantity.StoreQuantity;
+import com.walmart.aex.sp.dto.buyquantity.ValidationCode;
 import com.walmart.aex.sp.enums.FixtureTypeRollup;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.properties.BuyQtyProperties;
@@ -17,7 +27,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -141,22 +156,34 @@ public class AddStoreBuyQuantityService {
     }
 
     public void adjustISForOneUnitPerStoreV2(BuyQtyObj buyQtyObj, List<StoreQuantity> storeQuantities) {
+        List<Integer> warningCodes = new ArrayList<>();
         for (CalculateQuantityBySize calculateQuantityBySize: buyQtyObj.getCalculateQuantityBySizes()) {
             InitialSetQuantity initialSetQuantity = calculateQuantityBySize.getInitialSetQuantity();
             List<Integer> storeList = safeReadStoreList(initialSetQuantity.getRfaSizePackData().getStore_list()).stream().sorted().collect(Collectors.toList());
             long perStoreQty = initialSetQuantity.getRoundedPerStoreQty();
             long isQty = initialSetQuantity.getCalculatedISQty();
+            boolean oneUnitRuleToIncreaseTBQ = false;
+            boolean oneUnitRuleToRemoveRepl = false;
             // Based on the flag which we get from calculateInitialSetQty method to figure out which one needs to explicitly set to 1
             if (initialSetQuantity.isOneUnitPerStore()) {
                 perStoreQty = perStoreQty + DEFAULT_INITIAL_THRESHOLD;
                 isQty = (long) DEFAULT_INITIAL_THRESHOLD * initialSetQuantity.getRfaSizePackData().getStore_cnt();
+                oneUnitRuleToIncreaseTBQ = true;
                 if (!CollectionUtils.isEmpty(buyQtyObj.getReplenishments()) && BuyQtyCommonUtil.isReplenishmentEligible(initialSetQuantity.getVolumeCluster().getFlowStrategy())) {
+                    oneUnitRuleToRemoveRepl = true;
                     adjustReplenishmentsForOneUnitPerStore(buyQtyObj, initialSetQuantity.getRfaSizePackData(), initialSetQuantity.getRfaSizePackData().getCustomer_choice(), initialSetQuantity.getSizeDesc(), isQty, perStoreQty, storeList);
                 }
             }
             StoreQuantity storeQuantity = BuyQtyCommonUtil.createStoreQuantity(initialSetQuantity.getRfaSizePackData(), perStoreQty, storeList, isQty, initialSetQuantity.getVolumeCluster());
+            if(oneUnitRuleToIncreaseTBQ) {
+                warningCodes.add(203);
+            }
+            if(oneUnitRuleToRemoveRepl) {
+                warningCodes.add(204);
+            }
             storeQuantities.add(storeQuantity);
         }
+        buyQtyObj.setValidationCode(ValidationCode.builder().messages(warningCodes).build());
     }
 
     // TODO: This needs to be removed once the feature flag goes away for oneUnitPerStore

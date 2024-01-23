@@ -11,4 +11,5 @@ public class BuyQtyObj {
     private List<Replenishment> replenishments;
     private List<CalculateQuantityBySize> calculateQuantityBySizes;
     private long totalReplenishment;
+    private ValidationCode validationCode;
 }
