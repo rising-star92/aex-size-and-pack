@@ -1,18 +1,27 @@
 package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.buyquantity.*;
-import com.walmart.aex.sp.entity.*;
+import com.walmart.aex.sp.entity.FinelinePlan;
+import com.walmart.aex.sp.entity.MerchCatgReplPack;
+import com.walmart.aex.sp.entity.SpFineLineChannelFixture;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.repository.FinelinePlanRepository;
-import com.walmart.aex.sp.repository.common.*;
+import com.walmart.aex.sp.repository.common.BuyQuantityCommonRepository;
+import com.walmart.aex.sp.repository.common.ReplenishmentCommonRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -96,8 +105,8 @@ public class CalculateBuyQuantityService {
     private void calculateFinelinesParallel(CalculateBuyQtyRequest calculateBuyQtyRequest, List<CalculateBuyQtyParallelRequest> calculateBuyQtyParallelRequests) {
 
         Set<Integer> finelinesToDelete = calculateBuyQtyParallelRequests.stream()
-              .map(CalculateBuyQtyParallelRequest::getFinelineNbr)
-              .collect(Collectors.toSet());
+                .map(CalculateBuyQtyParallelRequest::getFinelineNbr)
+                .collect(Collectors.toSet());
 
         deleteExistingReplnValues(calculateBuyQtyRequest, finelinesToDelete);
         deleteExistingBuyQuantityValues(calculateBuyQtyRequest, finelinesToDelete);
@@ -148,16 +157,16 @@ public class CalculateBuyQuantityService {
                 .stream()
                 .filter(completableFuture1 -> !completableFuture1.isCompletedExceptionally())
                 .map(completableFuture1 -> {
-                	 try {
-                         return completableFuture1.get();
-                     } catch (InterruptedException e) {
-                    log.error("InterruptedException occurred while calculating buy quantity- ", e);
-                    Thread.currentThread().interrupt();
-                } catch (ExecutionException e) {
-                    log.error("ExecutionException occurred while calculating buy quantity - ", e);
-                    throw new CustomException("Failed to Execute calculate buy quantity");
-                }
-                	 return null;
+                    try {
+                        return completableFuture1.get();
+                    } catch (InterruptedException e) {
+                        log.error("InterruptedException occurred while calculating buy quantity- ", e);
+                        Thread.currentThread().interrupt();
+                    } catch (ExecutionException e) {
+                        log.error("ExecutionException occurred while calculating buy quantity - ", e);
+                        throw new CustomException("Failed to Execute calculate buy quantity");
+                    }
+                    return null;
                 }).collect(Collectors.toList());
 
         if (completableFutures.size() != calculateBuyQtyParallelRequests.size()) {
@@ -166,16 +175,16 @@ public class CalculateBuyQuantityService {
 
         //Save Replenishment
         Set<MerchCatgReplPack> allMerchCatReplns = responses
-              .stream()
-              .map(CalculateBuyQtyResponse::getMerchCatgReplPacks)
-              .flatMap(Collection::stream)
-              .collect(Collectors.toSet());
+                .stream()
+                .map(CalculateBuyQtyResponse::getMerchCatgReplPacks)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toSet());
 
         Set<SpFineLineChannelFixture> allSPFinelineChannelFixtures = responses
-              .stream()
-              .map(CalculateBuyQtyResponse::getSpFineLineChannelFixtures)
-              .flatMap(Collection::stream)
-              .collect(Collectors.toSet());
+                .stream()
+                .map(CalculateBuyQtyResponse::getSpFineLineChannelFixtures)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toSet());
 
         buyQuantityCommonRepository.getSpFineLineChannelFixtureRepository().saveAll(allSPFinelineChannelFixtures);
         replenishmentCommonRepository.getMerchCatgReplPackRepository().saveAll(allMerchCatReplns);
