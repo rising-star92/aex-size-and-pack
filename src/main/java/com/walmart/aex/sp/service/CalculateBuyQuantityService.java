@@ -191,10 +191,10 @@ public class CalculateBuyQuantityService {
               .flatMap(Collection::stream)
               .collect(Collectors.toSet());
 
-        buyQuantityCommonRepository.getSpFineLineChannelFixtureRepository();
-//                .saveAll(allSPFinelineChannelFixtures);
-        replenishmentCommonRepository.getMerchCatgReplPackRepository();
-//                .saveAll(allMerchCatReplns);
+        buyQuantityCommonRepository.getSpFineLineChannelFixtureRepository()
+                .saveAll(allSPFinelineChannelFixtures);
+        replenishmentCommonRepository.getMerchCatgReplPackRepository()
+                .saveAll(allMerchCatReplns);
     }
 
     private void deleteExistingReplnValues(CalculateBuyQtyRequest calculateBuyQtyRequest, Set<Integer> replFinelinesToDelete) {

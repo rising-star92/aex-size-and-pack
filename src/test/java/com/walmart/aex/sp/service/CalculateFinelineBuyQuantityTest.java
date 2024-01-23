@@ -577,18 +577,23 @@ class CalculateFinelineBuyQuantityTest {
         when(deptAdminRuleService.getInitialThreshold(anyLong(), anyInt())).thenReturn(2);
         CalculateBuyQtyResponse response = calculateFinelineBuyQuantity.calculateFinelineBuyQty(request, pRequest, r);
 
+        // warning validation tests
         List<SpFineLineChannelFixture> spFineLineChannelFixtures = response.getSpFineLineChannelFixtures();
-        assertEquals("[203,204]", spFineLineChannelFixtures.get(0).getAppMessageObj());
-        assertEquals("[203,204]", spFineLineChannelFixtures.get(0).getSpStyleChannelFixtures().iterator().next().getAppMessageObj());
+        // Fineline level
+        assertEquals("[203,204]", spFineLineChannelFixtures.get(0).getMessageObj());
+        // Style level
+        assertEquals("[203,204]", spFineLineChannelFixtures.get(0).getSpStyleChannelFixtures().iterator().next().getMessageObj());
         Set<SpCustomerChoiceChannelFixture> spCustomerChoiceChannelFixture = spFineLineChannelFixtures.get(0).getSpStyleChannelFixtures().iterator().next().getSpCustomerChoiceChannelFixture();
-        List<String> appMsgCC = spCustomerChoiceChannelFixture.stream().map(SpCustomerChoiceChannelFixture::getAppMessageObj).collect(Collectors.toList());
+        // CC level
+        List<String> appMsgCC = spCustomerChoiceChannelFixture.stream().map(SpCustomerChoiceChannelFixture::getMessageObj).collect(Collectors.toList());
         assertEquals(4, appMsgCC.size());
         assertEquals(3, appMsgCC.stream().filter(Objects::nonNull).filter(val -> val.equals("[203,204]")).count());
+        // Size level
         List<Set<SpCustomerChoiceChannelFixtureSize>> spCustomerChoiceChannelFixtureSizeList = spCustomerChoiceChannelFixture.stream().map(SpCustomerChoiceChannelFixture::getSpCustomerChoiceChannelFixtureSize).collect(Collectors.toList());
         assertEquals(4, spCustomerChoiceChannelFixtureSizeList.size());
-        assertEquals(64, (int) spCustomerChoiceChannelFixtureSizeList.stream().flatMap(Collection::stream).count());
-        assertEquals(4, (int) spCustomerChoiceChannelFixtureSizeList.stream().flatMap(Collection::stream).filter(val -> val.getAhsSizeDesc().equals("33X30")).count());
-        assertEquals(3, (int) spCustomerChoiceChannelFixtureSizeList.stream().flatMap(Collection::stream).filter(val -> val.getAhsSizeDesc().equals("33X30")).map(SpCustomerChoiceChannelFixtureSize::getAppMessageObj).filter(Objects::nonNull).filter(val -> val.equals("[203,204]")).count());
+        assertEquals(64, spCustomerChoiceChannelFixtureSizeList.stream().flatMap(Collection::stream).count());
+        assertEquals(4, spCustomerChoiceChannelFixtureSizeList.stream().flatMap(Collection::stream).filter(val -> val.getAhsSizeDesc().equals("33X30")).count());
+        assertEquals(3, spCustomerChoiceChannelFixtureSizeList.stream().flatMap(Collection::stream).filter(val -> val.getAhsSizeDesc().equals("33X30")).map(SpCustomerChoiceChannelFixtureSize::getMessageObj).filter(Objects::nonNull).filter(val -> val.equals("[203,204]")).count());
 
 
         SpCustomerChoiceChannelFixture fixture1 = response.getSpFineLineChannelFixtures()
