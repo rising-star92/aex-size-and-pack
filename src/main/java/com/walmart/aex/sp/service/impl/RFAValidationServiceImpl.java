@@ -29,18 +29,18 @@ public class RFAValidationServiceImpl implements RFAValidationService {
         if (apResponse.getRfaSizePackData().isEmpty()) {
             // if rfa is empty
             rfaValidationCodes.add(AppMessageText.RFA_NOT_AVAILABLE.getId());
-            return ValidationResult.builder().messages(rfaValidationCodes).build();
+            return ValidationResult.builder().codes(rfaValidationCodes).build();
         }
         List<RFASizePackData> rfaSizePackDataList = apResponse.getRfaSizePackData().stream().filter(rfa -> rfa.getCustomer_choice().equalsIgnoreCase(customerChoiceDto.getCcId())).collect(Collectors.toList());
         if (rfaSizePackDataList.isEmpty()) {
             // rfa is missing for CC
             rfaValidationCodes.add(AppMessageText.RFA_CC_NOT_AVAILABLE.getId());
-            return ValidationResult.builder().messages(rfaValidationCodes).build();
+            return ValidationResult.builder().codes(rfaValidationCodes).build();
         }
         CustomerChoice ccFromBQFP = BuyQtyCommonUtil.getCcFromBQFP(styleNbr, customerChoiceDto.getCcId(), bqfpResponse);
         validateFixture(ccFromBQFP, rfaSizePackDataList, rfaValidationCodes);
         validateColorFamily(customerChoiceDto, rfaSizePackDataList, rfaValidationCodes);
-        return ValidationResult.builder().messages(rfaValidationCodes).build();
+        return ValidationResult.builder().codes(rfaValidationCodes).build();
     }
 
     /**

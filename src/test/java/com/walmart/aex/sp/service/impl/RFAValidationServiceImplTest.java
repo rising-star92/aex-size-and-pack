@@ -62,8 +62,8 @@ class RFAValidationServiceImplTest {
     void validateRFADataWithEmptyListTest() {
         apResponse.setRfaSizePackData(new ArrayList<>());
         validationResult = rfaValidationService.validateRFAData(apResponse, bqfpResponse, "Style1", customerChoiceDto);
-        assertEquals(1, validationResult.getMessages().size());
-        assertEquals(AppMessageText.RFA_NOT_AVAILABLE.getId(), validationResult.getMessages().get(0));
+        assertEquals(1, validationResult.getCodes().size());
+        assertEquals(AppMessageText.RFA_NOT_AVAILABLE.getId(), validationResult.getCodes().get(0));
     }
 
     @Test
@@ -75,8 +75,8 @@ class RFAValidationServiceImplTest {
 
         apResponse.setRfaSizePackData(List.of(rfaSizePackData1));
         validationResult = rfaValidationService.validateRFAData(apResponse, bqfpResponse, "Style1", customerChoiceDto);
-        assertEquals(1, validationResult.getMessages().size());
-        assertEquals(AppMessageText.RFA_CC_NOT_AVAILABLE.getId(), validationResult.getMessages().get(0));
+        assertEquals(1, validationResult.getCodes().size());
+        assertEquals(AppMessageText.RFA_CC_NOT_AVAILABLE.getId(), validationResult.getCodes().get(0));
     }
 
     @Test
@@ -88,8 +88,8 @@ class RFAValidationServiceImplTest {
 
         apResponse.setRfaSizePackData(List.of(rfaSizePackData1));
         validationResult = rfaValidationService.validateRFAData(apResponse, bqfpResponse, "Style1", customerChoiceDto);
-        assertEquals(1, validationResult.getMessages().size());
-        assertEquals(AppMessageText.RFA_MISSING_FIXTURE.getId(), validationResult.getMessages().get(0));
+        assertEquals(1, validationResult.getCodes().size());
+        assertEquals(AppMessageText.RFA_MISSING_FIXTURE.getId(), validationResult.getCodes().get(0));
     }
 
     @Test
@@ -106,8 +106,8 @@ class RFAValidationServiceImplTest {
 
         apResponse.setRfaSizePackData(List.of(rfaSizePackData1, rfaSizePackData2));
         validationResult = rfaValidationService.validateRFAData(apResponse, bqfpResponse, "Style1", customerChoiceDto);
-        assertEquals(1, validationResult.getMessages().size());
-        assertEquals(AppMessageText.RFA_MISSING_COLOR_FAMILY.getId(), validationResult.getMessages().get(0));
+        assertEquals(1, validationResult.getCodes().size());
+        assertEquals(AppMessageText.RFA_MISSING_COLOR_FAMILY.getId(), validationResult.getCodes().get(0));
     }
 
     @Test
@@ -124,7 +124,7 @@ class RFAValidationServiceImplTest {
 
         apResponse.setRfaSizePackData(List.of(rfaSizePackData1, rfaSizePackData2));
         validationResult = rfaValidationService.validateRFAData(apResponse, bqfpResponse, "Style1", customerChoiceDto);
-        assertEquals(0, validationResult.getMessages().size());
+        assertEquals(0, validationResult.getCodes().size());
     }
 
     @Test
@@ -136,8 +136,8 @@ class RFAValidationServiceImplTest {
 
         apResponse.setRfaSizePackData(List.of(rfaSizePackData1));
         validationResult = rfaValidationService.validateRFAData(apResponse, bqfpResponse, "Style1", customerChoiceDto);
-        assertEquals(2, validationResult.getMessages().size());
-        assertTrue(validationResult.getMessages().contains(AppMessageText.RFA_MISSING_FIXTURE.getId()));
-        assertTrue(validationResult.getMessages().contains(AppMessageText.RFA_MISSING_COLOR_FAMILY.getId()));
+        assertEquals(2, validationResult.getCodes().size());
+        assertTrue(validationResult.getCodes().contains(AppMessageText.RFA_MISSING_FIXTURE.getId()));
+        assertTrue(validationResult.getCodes().contains(AppMessageText.RFA_MISSING_COLOR_FAMILY.getId()));
     }
 }

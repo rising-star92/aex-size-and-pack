@@ -62,9 +62,9 @@ class ValidationServiceImplTest {
 
     @Test
     void validateCalculateBuyQuantityInputData() {
-        Mockito.when(rfaValidationService.validateRFAData(apResponse, bqfpResponse, "Style1", customerChoiceDto)).thenReturn(ValidationResult.builder().messages(List.of(AppMessageText.RFA_NOT_AVAILABLE.getId())).build());
+        Mockito.when(rfaValidationService.validateRFAData(apResponse, bqfpResponse, "Style1", customerChoiceDto)).thenReturn(ValidationResult.builder().codes(List.of(AppMessageText.RFA_NOT_AVAILABLE.getId())).build());
         ValidationResult validationResult = validationService.validateCalculateBuyQuantityInputData(apResponse, bqfpResponse, "Style1", customerChoiceDto);
-        assertEquals(1, validationResult.getMessages().size());
-        assertEquals(AppMessageText.RFA_NOT_AVAILABLE.getId(), validationResult.getMessages().get(0));
+        assertEquals(1, validationResult.getCodes().size());
+        assertEquals(AppMessageText.RFA_NOT_AVAILABLE.getId(), validationResult.getCodes().get(0));
     }
 }
