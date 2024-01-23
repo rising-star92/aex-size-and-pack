@@ -5,14 +5,14 @@ import com.walmart.aex.sp.dto.bqfp.BQFPResponse;
 import com.walmart.aex.sp.dto.buyquantity.BuyQtyResponse;
 import com.walmart.aex.sp.dto.buyquantity.CustomerChoiceDto;
 import com.walmart.aex.sp.dto.buyquantity.StyleDto;
+import com.walmart.aex.sp.dto.buyquantity.ValidationResult;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
 import com.walmart.aex.sp.enums.FixtureTypeRollup;
 import com.walmart.aex.sp.enums.MerchMethod;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -25,11 +25,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ExtendWith(MockitoExtension.class)
 class BQFPValidationsServiceImplTest {
 
-    @InjectMocks
-    private BQFPValidationsServiceImpl bqfpValidationsService;
-
-    @Spy
+    BQFPValidationsServiceImpl bqfpValidationsService = new BQFPValidationsServiceImpl();
     ObjectMapper mapper = new ObjectMapper();
+
+    ValidationResult actualValidationResults;
 
     @Test
     void test_validateNoValidationErrors() throws IOException {
@@ -48,9 +47,9 @@ class BQFPValidationsServiceImplTest {
         StyleDto styleDto = buyQtyResponse.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0);
         CustomerChoiceDto customerChoiceDto = styleDto.getCustomerChoices().get(0);
 
-        List<Integer> actualValidationCodes = bqfpValidationsService.missingBuyQuantity(merchMethodsDtos, bqfpResponse, styleDto, customerChoiceDto);
+        actualValidationResults = bqfpValidationsService.missingBuyQuantity(merchMethodsDtos, bqfpResponse, styleDto, customerChoiceDto);
 
-        assertEquals(new ArrayList<Integer>(), actualValidationCodes);
+        assertEquals(new ArrayList<Integer>(), actualValidationResults.getCodes());
     }
 
     @Test
@@ -73,11 +72,11 @@ class BQFPValidationsServiceImplTest {
         StyleDto styleDto = buyQtyResponse.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0);
         CustomerChoiceDto customerChoiceDto = styleDto.getCustomerChoices().get(0);
 
-        List<Integer> actualValidationCodes = bqfpValidationsService.missingBuyQuantity(merchMethodsDtos, bqfpResponse, styleDto, customerChoiceDto);
+        actualValidationResults = bqfpValidationsService.missingBuyQuantity(merchMethodsDtos, bqfpResponse, styleDto, customerChoiceDto);
         List<Integer> expectedValidationCodes = new ArrayList<>();
-        expectedValidationCodes.add(200);
+        expectedValidationCodes.add(300);
 
-        assertEquals(expectedValidationCodes, actualValidationCodes);
+        assertEquals(expectedValidationCodes, actualValidationResults.getCodes());
     }
 
     @Test
@@ -97,13 +96,13 @@ class BQFPValidationsServiceImplTest {
         StyleDto styleDto = buyQtyResponse.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0);
         CustomerChoiceDto customerChoiceDto = styleDto.getCustomerChoices().get(0);
 
-        List<Integer> actualValidationCodes = bqfpValidationsService.missingBuyQuantity(merchMethodsDtos, bqfpResponse, styleDto, customerChoiceDto);
+        actualValidationResults = bqfpValidationsService.missingBuyQuantity(merchMethodsDtos, bqfpResponse, styleDto, customerChoiceDto);
         List<Integer> expectedValidationCodes = new ArrayList<>();
-        expectedValidationCodes.add(201);
-        expectedValidationCodes.add(202);
-        expectedValidationCodes.add(203);
-        expectedValidationCodes.add(204);
-        assertEquals(expectedValidationCodes, actualValidationCodes);
+        expectedValidationCodes.add(301);
+        expectedValidationCodes.add(302);
+        expectedValidationCodes.add(303);
+        expectedValidationCodes.add(304);
+        assertEquals(expectedValidationCodes, actualValidationResults.getCodes());
     }
 
     BQFPResponse bqfpResponseFromJson(String path) throws IOException {

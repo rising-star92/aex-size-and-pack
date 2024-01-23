@@ -3,6 +3,7 @@ package com.walmart.aex.sp.service.impl;
 import com.walmart.aex.sp.dto.bqfp.*;
 import com.walmart.aex.sp.dto.buyquantity.CustomerChoiceDto;
 import com.walmart.aex.sp.dto.buyquantity.StyleDto;
+import com.walmart.aex.sp.dto.buyquantity.ValidationResult;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
 import com.walmart.aex.sp.enums.AppMessageText;
 import com.walmart.aex.sp.enums.FlowStrategy;
@@ -15,8 +16,8 @@ import java.util.stream.Collectors;
 public class BQFPValidationsServiceImpl implements BQFPValidationsService {
 
     @Override
-    public List<Integer> missingBuyQuantity(List<MerchMethodsDto> merchMethodsDtos, BQFPResponse bqfpResponse,
-                                       StyleDto styleDto, CustomerChoiceDto customerChoiceDto) {
+    public ValidationResult missingBuyQuantity(List<MerchMethodsDto> merchMethodsDtos, BQFPResponse bqfpResponse,
+                                               StyleDto styleDto, CustomerChoiceDto customerChoiceDto) {
         List<Integer> validationCodes = new ArrayList<>();
         merchMethodsDtos.forEach(merchMethodsDto -> {
 
@@ -33,13 +34,13 @@ public class BQFPValidationsServiceImpl implements BQFPValidationsService {
                 //ERROR: Missing Replenishment Quantities
                 addMissingReplenishmentMsg(validationCodes, bqfpFixture, flowStrategies);
                 //ERROR: Missing BS Quantities
-                addMissingBSQuantitiesNsg(validationCodes, clusters);
+                addMissingBSQuantitiesMsg(validationCodes, clusters);
             }
         });
-        return validationCodes;
+        return ValidationResult.builder().codes(validationCodes).build();
     }
 
-    private void addMissingBSQuantitiesNsg(List<Integer> validationCodes, List<Cluster> clusters) {
+    private void addMissingBSQuantitiesMsg(List<Integer> validationCodes, List<Cluster> clusters) {
         clusters.stream().filter(cluster -> cluster.getFlowStrategy().equals(FlowStrategy.BUMP_SET.getId())).forEach(cluster -> {
             //ERROR: Missing Bumpset Quantities with Flow Strategy Initialset + Bumpset
             if (cluster.getBumpList()
@@ -62,26 +63,25 @@ public class BQFPValidationsServiceImpl implements BQFPValidationsService {
         //ERROR: Missing Replenishment Quantities with Flow Strategy Initialset + Replenishment
         if (flowStrategies.contains(FlowStrategy.REPLENISHMENT_SET.getId()) && (bqfpFixture != null && (CollectionUtils.isEmpty(bqfpFixture.getReplenishments())
                 || bqfpFixture.getReplenishments().stream().filter(Objects::nonNull)
-                .mapToLong(replenishment -> Optional.ofNullable(replenishment.getDcInboundUnits()).orElse((long) 0)).sum() <= 0))) {
+                .mapToLong(replenishment -> Optional.ofNullable(replenishment.getDcInboundUnits()).orElse((long) 0) +
+                        Optional.ofNullable(replenishment.getDcInboundAdjUnits()).orElse((long) 0) ).sum() <= 0))) {
             //Missing Replenishment quantities
             validationCodes.add(AppMessageText.BQFP_MISSING_REPLENISHMENT_QUANTITIES.getId());
         }
     }
 
     private void addMissingISQuantitiesMsg(List<Integer> validationCodes, List<Cluster> clusters) {
-        long bqfpISQty = clusters.stream()
+        if (clusters.stream()
                 .filter(Objects::nonNull)
                 .mapToLong(cluster -> Optional.ofNullable(cluster.getInitialSet().getTotalInitialSetUnits()).orElse((long) 0))
-                .sum();
-
-        if (bqfpISQty <= 0) {
+                .sum() <= 0) {
             //Missing IS quantities for fixture
             validationCodes.add(AppMessageText.BQFP_MISSING_IS_QUANTITIES.getId());
         }
     }
 
     private List<Cluster> getClusters(Fixture bqfpFixture) {
-        return Optional.ofNullable(bqfpFixture)
+        return Optional.of(bqfpFixture)
                 .map(Fixture::getClusters)
                 .stream()
                 .flatMap(Collection::stream)
