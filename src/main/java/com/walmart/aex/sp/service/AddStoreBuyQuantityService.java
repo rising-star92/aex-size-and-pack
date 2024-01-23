@@ -24,6 +24,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class AddStoreBuyQuantityService {
 
+    public static final int ONE_UNIT_RULE_INCREASE_TOTAL_BUY = 210;
+    public static final int ONE_UNIT_RULE_REMOVE_FROM_REPL = 211;
     @Autowired
     ObjectMapper objectMapper;
 
@@ -161,10 +163,10 @@ public class AddStoreBuyQuantityService {
             }
             StoreQuantity storeQuantity = BuyQtyCommonUtil.createStoreQuantity(initialSetQuantity.getRfaSizePackData(), perStoreQty, storeList, isQty, initialSetQuantity.getVolumeCluster());
             if(oneUnitRuleToIncreaseTBQ) {
-                warningCodes.add(203);
+                warningCodes.add(ONE_UNIT_RULE_INCREASE_TOTAL_BUY);
             }
             if(oneUnitRuleToRemoveRepl) {
-                warningCodes.add(204);
+                warningCodes.add(ONE_UNIT_RULE_REMOVE_FROM_REPL);
             }
             storeQuantities.add(storeQuantity);
         }
