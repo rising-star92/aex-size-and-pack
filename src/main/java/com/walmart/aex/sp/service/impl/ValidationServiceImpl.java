@@ -11,22 +11,22 @@ import com.walmart.aex.sp.service.BQFPValidationsService;
 import com.walmart.aex.sp.service.ValidationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Slf4j
 public class ValidationServiceImpl implements ValidationService {
 
     private final RFAValidationService rfaValidationService;
-    @Autowired
-    BQFPValidationsService bqfpValidationsService;
+    private final BQFPValidationsService bqfpValidationsService;
 
-    public ValidationServiceImpl(RFAValidationService rfaValidationService) {
+    public ValidationServiceImpl(RFAValidationService rfaValidationService, BQFPValidationsService bqfpValidationsService) {
         this.rfaValidationService = rfaValidationService;
+        this.bqfpValidationsService = bqfpValidationsService;
     }
 
     /**
@@ -34,13 +34,11 @@ public class ValidationServiceImpl implements ValidationService {
      */
     @Override
     public ValidationResult validateCalculateBuyQuantityInputData(List<MerchMethodsDto> merchMethodsDtos, APResponse apResponse, BQFPResponse bqfpResponse, StyleDto styleDto, CustomerChoiceDto customerChoiceDto) {
-        List<Integer> allValidationCodes = new ArrayList<>();
-        // separate method to call each individual validation service
         ValidationResult bqfpValidationResult = bqfpValidationsService.missingBuyQuantity(merchMethodsDtos, bqfpResponse, styleDto, customerChoiceDto);
         ValidationResult rfaValidationResult = rfaValidationService.validateRFAData(apResponse, bqfpResponse, styleDto.getStyleNbr(), customerChoiceDto);
-        allValidationCodes.addAll(bqfpValidationResult.getCodes());
-        allValidationCodes.addAll(rfaValidationResult.getCodes());
-
+        List<Integer> allValidationCodes = Stream.of(bqfpValidationResult.getCodes(), rfaValidationResult.getCodes())
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
         return ValidationResult.builder().codes(allValidationCodes).build();
     }
 }

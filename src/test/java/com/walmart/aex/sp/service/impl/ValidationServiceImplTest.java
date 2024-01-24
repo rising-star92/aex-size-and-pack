@@ -6,8 +6,14 @@ import com.walmart.aex.sp.dto.bqfp.CustomerChoice;
 import com.walmart.aex.sp.dto.bqfp.Fixture;
 import com.walmart.aex.sp.dto.bqfp.Style;
 import com.walmart.aex.sp.dto.buyquantity.CustomerChoiceDto;
+import com.walmart.aex.sp.dto.buyquantity.StyleDto;
 import com.walmart.aex.sp.dto.buyquantity.ValidationResult;
+import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
 import com.walmart.aex.sp.enums.AppMessageText;
+import com.walmart.aex.sp.enums.FixtureTypeRollup;
+import com.walmart.aex.sp.enums.MerchMethod;
+import com.walmart.aex.sp.service.BQFPValidationsService;
+import com.walmart.aex.sp.service.RFAValidationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,9 +33,13 @@ class ValidationServiceImplTest {
     private APResponse apResponse;
     private BQFPResponse bqfpResponse;
     private CustomerChoiceDto customerChoiceDto;
+    private StyleDto styleDto;
+    private List<MerchMethodsDto> merchMethodsDtoList;
 
     @Mock
-    private RFAValidationServiceImpl rfaValidationService;
+    private BQFPValidationsService bqfpValidationsService;
+    @Mock
+    private RFAValidationService rfaValidationService;
     @InjectMocks
     private ValidationServiceImpl validationService;
 
@@ -56,14 +66,27 @@ class ValidationServiceImplTest {
         customerChoiceDto.setCcId("CC1");
         customerChoiceDto.setColorFamily("BLUE");
 
+        styleDto = new StyleDto();
+        styleDto.setStyleNbr("Style1");
+        styleDto.setCustomerChoices(List.of(customerChoiceDto));
+
         apResponse = new APResponse();
         apResponse.setRfaSizePackData(new ArrayList<>());
+
+        MerchMethodsDto merchMethodsDto = new MerchMethodsDto();
+        merchMethodsDto.setFixtureType(FixtureTypeRollup.RACKS.getDescription());
+        merchMethodsDto.setFixtureTypeRollupId(FixtureTypeRollup.RACKS.getCode());
+        merchMethodsDto.setMerchMethod(MerchMethod.HANGING.getDescription());
+        merchMethodsDto.setMerchMethodCode(MerchMethod.HANGING.getId());
+
+        merchMethodsDtoList = List.of(merchMethodsDto);
     }
 
     @Test
     void validateCalculateBuyQuantityInputData() {
+        Mockito.when(bqfpValidationsService.missingBuyQuantity(merchMethodsDtoList, bqfpResponse, styleDto, customerChoiceDto)).thenReturn(ValidationResult.builder().codes(new ArrayList<>()).build());
         Mockito.when(rfaValidationService.validateRFAData(apResponse, bqfpResponse, "Style1", customerChoiceDto)).thenReturn(ValidationResult.builder().codes(List.of(AppMessageText.RFA_NOT_AVAILABLE.getId())).build());
-        ValidationResult validationResult = validationService.validateCalculateBuyQuantityInputData(apResponse, bqfpResponse, "Style1", customerChoiceDto);
+        ValidationResult validationResult = validationService.validateCalculateBuyQuantityInputData(merchMethodsDtoList, apResponse, bqfpResponse, styleDto, customerChoiceDto);
         assertEquals(1, validationResult.getCodes().size());
         assertEquals(AppMessageText.RFA_NOT_AVAILABLE.getId(), validationResult.getCodes().get(0));
     }

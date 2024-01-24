@@ -8,6 +8,7 @@ import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
 import com.walmart.aex.sp.enums.AppMessageText;
 import com.walmart.aex.sp.enums.FlowStrategy;
 import com.walmart.aex.sp.service.BQFPValidationsService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -15,6 +16,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class BQFPValidationsServiceImpl implements BQFPValidationsService {
 
     @Override

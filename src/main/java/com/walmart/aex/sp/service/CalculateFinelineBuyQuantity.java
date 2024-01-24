@@ -420,7 +420,7 @@ public class CalculateFinelineBuyQuantity {
                 spCustomerChoiceChannelFixture.setSpCustomerChoiceChannelFixtureId(spCustomerChoiceChannelFixtureId);
             }
             spCustomerChoiceChannelFixture.setMerchMethodCode(spStyleChannelFixture.getMerchMethodCode());
-            ValidationResult ccValidationResult = validationService.validateCalculateBuyQuantityInputData(apResponse, bqfpResponse, styleDto.getStyleNbr(), customerChoiceDto);
+            ValidationResult ccValidationResult = validationService.validateCalculateBuyQuantityInputData(merchMethodsDtos, apResponse, bqfpResponse, styleDto, customerChoiceDto);
             if (!CollectionUtils.isEmpty(customerChoiceDto.getClusters())) {
                 getCcClusters(styleDto, customerChoiceDto, merchMethodsDtos, apResponse, bqfpResponse, spCustomerChoiceChannelFixture, calculateBuyQtyResponse, calculateBuyQtyParallelRequest, replenishmentCons, ccValidationResult);
             }
