@@ -6,6 +6,7 @@ import com.walmart.aex.sp.dto.assortproduct.RFASizePackData;
 import com.walmart.aex.sp.dto.bqfp.Cluster;
 import com.walmart.aex.sp.dto.bqfp.Replenishment;
 import com.walmart.aex.sp.dto.buyquantity.*;
+import com.walmart.aex.sp.enums.AppMessageText;
 import com.walmart.aex.sp.enums.FixtureTypeRollup;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.properties.BuyQtyProperties;
@@ -149,25 +150,17 @@ public class AddStoreBuyQuantityService {
             List<Integer> storeList = safeReadStoreList(initialSetQuantity.getRfaSizePackData().getStore_list()).stream().sorted().collect(Collectors.toList());
             long perStoreQty = initialSetQuantity.getRoundedPerStoreQty();
             long isQty = initialSetQuantity.getCalculatedISQty();
-            boolean oneUnitRuleToIncreaseTBQ = false;
-            boolean oneUnitRuleToRemoveRepl = false;
             // Based on the flag which we get from calculateInitialSetQty method to figure out which one needs to explicitly set to 1
             if (initialSetQuantity.isOneUnitPerStore()) {
                 perStoreQty = perStoreQty + DEFAULT_INITIAL_THRESHOLD;
                 isQty = (long) DEFAULT_INITIAL_THRESHOLD * initialSetQuantity.getRfaSizePackData().getStore_cnt();
-                oneUnitRuleToIncreaseTBQ = true;
+                warningCodes.add(AppMessageText.ONE_UNIT_RULE_APPLIED_INCREASE_TOTAL_BUY.getId());
                 if (!CollectionUtils.isEmpty(buyQtyObj.getReplenishments()) && BuyQtyCommonUtil.isReplenishmentEligible(initialSetQuantity.getVolumeCluster().getFlowStrategy())) {
-                    oneUnitRuleToRemoveRepl = true;
+                    warningCodes.add(AppMessageText.ONE_UNIT_RULE_APPLIED_REMOVE_FROM_REPL.getId());
                     adjustReplenishmentsForOneUnitPerStore(buyQtyObj, initialSetQuantity.getRfaSizePackData(), initialSetQuantity.getRfaSizePackData().getCustomer_choice(), initialSetQuantity.getSizeDesc(), isQty, perStoreQty, storeList);
                 }
             }
             StoreQuantity storeQuantity = BuyQtyCommonUtil.createStoreQuantity(initialSetQuantity.getRfaSizePackData(), perStoreQty, storeList, isQty, initialSetQuantity.getVolumeCluster());
-            if(oneUnitRuleToIncreaseTBQ) {
-                warningCodes.add(ONE_UNIT_RULE_INCREASE_TOTAL_BUY);
-            }
-            if(oneUnitRuleToRemoveRepl) {
-                warningCodes.add(ONE_UNIT_RULE_REMOVE_FROM_REPL);
-            }
             storeQuantities.add(storeQuantity);
         }
         buyQtyObj.setValidationCode(ValidationCode.builder().messages(warningCodes).build());
