@@ -1,12 +1,13 @@
 package com.walmart.aex.sp.dto.buyquantity;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import java.util.Set;
 
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ValidationResult {
     Set<Integer> codes;
 }

@@ -49,7 +49,7 @@ public class CalculateFinelineBuyQuantityMapper {
 
     private void setFinelineChanFixtureValidation(SpFineLineChannelFixture spFineLineChannelFixture, Set<SpStyleChannelFixture> spStyleChannelFixtures) {
         Set<Integer> styleValidationCodes = new HashSet<>();
-        ValidationResult finelineValidationResult = new ValidationResult(new ArrayList<>());
+        ValidationResult finelineValidationResult = ValidationResult.builder().codes(new HashSet<>()).build();
         spStyleChannelFixtures.forEach(style -> {
             ValidationResult styleValidationResult = getValidationResult(style.getMessageObj());
             if (!styleValidationResult.getCodes().isEmpty())
@@ -87,7 +87,7 @@ public class CalculateFinelineBuyQuantityMapper {
 
     private void setStyleChanFixtureValidation(SpStyleChannelFixture spStyleChannelFixture, Set<SpCustomerChoiceChannelFixture> spCustomerChoiceChannelFixtures) {
         Set<Integer> ccValidationCodes = new HashSet<>();
-        ValidationResult styleValidationResult = new ValidationResult(new ArrayList<>());
+        ValidationResult styleValidationResult = ValidationResult.builder().codes(new HashSet<>()).build();
         spCustomerChoiceChannelFixtures.forEach(cc -> {
             ValidationResult ccValidationResult = getValidationResult(cc.getMessageObj());
             if (!ccValidationResult.getCodes().isEmpty())
@@ -139,7 +139,7 @@ public class CalculateFinelineBuyQuantityMapper {
 
     private ValidationResult getValidationResult(String messageObj) {
         try {
-            return StringUtils.isNotEmpty(messageObj) ? objectMapper.readValue(messageObj, ValidationResult.class) : new ValidationResult(new ArrayList<>());
+            return StringUtils.isNotEmpty(messageObj) ? objectMapper.readValue(messageObj, ValidationResult.class) : ValidationResult.builder().codes(new HashSet<>()).build();
         } catch (Exception e) {
             throw new CustomException("Exception occurred while deserializing validation messages");
         }
