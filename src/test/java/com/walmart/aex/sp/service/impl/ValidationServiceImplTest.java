@@ -23,9 +23,11 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
 class ValidationServiceImplTest {
@@ -84,10 +86,10 @@ class ValidationServiceImplTest {
 
     @Test
     void validateCalculateBuyQuantityInputData() {
-        Mockito.when(bqfpValidationsService.missingBuyQuantity(merchMethodsDtoList, bqfpResponse, styleDto, customerChoiceDto)).thenReturn(ValidationResult.builder().codes(new ArrayList<>()).build());
-        Mockito.when(rfaValidationService.validateRFAData(apResponse, bqfpResponse, "Style1", customerChoiceDto)).thenReturn(ValidationResult.builder().codes(List.of(AppMessageText.RFA_NOT_AVAILABLE.getId())).build());
+        Mockito.when(bqfpValidationsService.missingBuyQuantity(merchMethodsDtoList, bqfpResponse, styleDto, customerChoiceDto)).thenReturn(ValidationResult.builder().codes(new HashSet<>()).build());
+        Mockito.when(rfaValidationService.validateRFAData(merchMethodsDtoList, apResponse, "Style1", customerChoiceDto)).thenReturn(ValidationResult.builder().codes(Set.of(AppMessageText.RFA_NOT_AVAILABLE.getId())).build());
         ValidationResult validationResult = validationService.validateCalculateBuyQuantityInputData(merchMethodsDtoList, apResponse, bqfpResponse, styleDto, customerChoiceDto);
         assertEquals(1, validationResult.getCodes().size());
-        assertEquals(AppMessageText.RFA_NOT_AVAILABLE.getId(), validationResult.getCodes().get(0));
+        assertEquals(AppMessageText.RFA_NOT_AVAILABLE.getId(), validationResult.getCodes().toArray()[0]);
     }
 }

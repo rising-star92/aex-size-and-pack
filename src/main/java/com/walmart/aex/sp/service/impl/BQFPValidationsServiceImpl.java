@@ -22,7 +22,7 @@ public class BQFPValidationsServiceImpl implements BQFPValidationsService {
     @Override
     public ValidationResult missingBuyQuantity(List<MerchMethodsDto> merchMethodsDtos, BQFPResponse bqfpResponse,
                                                StyleDto styleDto, CustomerChoiceDto customerChoiceDto) {
-        List<Integer> validationCodes = new ArrayList<>();
+        Set<Integer> validationCodes = new HashSet<>();
         merchMethodsDtos.forEach(merchMethodsDto -> {
 
             Fixture bqfpFixture = getBQFPFixture(bqfpResponse, styleDto, customerChoiceDto, merchMethodsDto);
@@ -44,7 +44,7 @@ public class BQFPValidationsServiceImpl implements BQFPValidationsService {
         return ValidationResult.builder().codes(validationCodes).build();
     }
 
-    private void addMissingBSQuantitiesMsg(List<Integer> validationCodes, List<Cluster> clusters) {
+    private void addMissingBSQuantitiesMsg(Set<Integer> validationCodes, List<Cluster> clusters) {
         clusters.stream().filter(cluster -> cluster.getFlowStrategy().equals(FlowStrategy.BUMP_SET.getId())).forEach(cluster -> {
             //ERROR: Missing Bumpset Quantities with Flow Strategy Initialset + Bumpset
             if (cluster.getBumpList()
@@ -63,7 +63,7 @@ public class BQFPValidationsServiceImpl implements BQFPValidationsService {
         });
     }
 
-    private void addMissingReplenishmentMsg(List<Integer> validationCodes, Fixture bqfpFixture, List<Integer> flowStrategies) {
+    private void addMissingReplenishmentMsg(Set<Integer> validationCodes, Fixture bqfpFixture, List<Integer> flowStrategies) {
         //ERROR: Missing Replenishment Quantities with Flow Strategy Initialset + Replenishment
         if (flowStrategies.contains(FlowStrategy.REPLENISHMENT_SET.getId()) && (bqfpFixture != null && (CollectionUtils.isEmpty(bqfpFixture.getReplenishments())
                 || bqfpFixture.getReplenishments().stream().filter(Objects::nonNull)
@@ -74,7 +74,7 @@ public class BQFPValidationsServiceImpl implements BQFPValidationsService {
         }
     }
 
-    private void addMissingISQuantitiesMsg(List<Integer> validationCodes, List<Cluster> clusters) {
+    private void addMissingISQuantitiesMsg(Set<Integer> validationCodes, List<Cluster> clusters) {
         if (clusters.stream()
                 .filter(Objects::nonNull)
                 .mapToLong(cluster -> Optional.ofNullable(cluster.getInitialSet().getTotalInitialSetUnits()).orElse((long) 0))

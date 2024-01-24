@@ -13,12 +13,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -49,7 +50,7 @@ class BQFPValidationsServiceImplTest {
 
         actualValidationResults = bqfpValidationsService.missingBuyQuantity(merchMethodsDtos, bqfpResponse, styleDto, customerChoiceDto);
 
-        assertEquals(new ArrayList<Integer>(), actualValidationResults.getCodes());
+        assertEquals(new HashSet<>(), actualValidationResults.getCodes());
     }
 
     @Test
@@ -73,10 +74,8 @@ class BQFPValidationsServiceImplTest {
         CustomerChoiceDto customerChoiceDto = styleDto.getCustomerChoices().get(0);
 
         actualValidationResults = bqfpValidationsService.missingBuyQuantity(merchMethodsDtos, bqfpResponse, styleDto, customerChoiceDto);
-        List<Integer> expectedValidationCodes = new ArrayList<>();
-        expectedValidationCodes.add(300);
 
-        assertEquals(expectedValidationCodes, actualValidationResults.getCodes());
+        assertEquals(Set.of(300), actualValidationResults.getCodes());
     }
 
     @Test
@@ -97,12 +96,8 @@ class BQFPValidationsServiceImplTest {
         CustomerChoiceDto customerChoiceDto = styleDto.getCustomerChoices().get(0);
 
         actualValidationResults = bqfpValidationsService.missingBuyQuantity(merchMethodsDtos, bqfpResponse, styleDto, customerChoiceDto);
-        List<Integer> expectedValidationCodes = new ArrayList<>();
-        expectedValidationCodes.add(301);
-        expectedValidationCodes.add(302);
-        expectedValidationCodes.add(303);
-        expectedValidationCodes.add(304);
-        assertEquals(expectedValidationCodes, actualValidationResults.getCodes());
+
+        assertEquals(Set.of(301, 302, 303, 304), actualValidationResults.getCodes());
     }
 
     BQFPResponse bqfpResponseFromJson(String path) throws IOException {

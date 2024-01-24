@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -35,10 +36,10 @@ public class ValidationServiceImpl implements ValidationService {
     @Override
     public ValidationResult validateCalculateBuyQuantityInputData(List<MerchMethodsDto> merchMethodsDtos, APResponse apResponse, BQFPResponse bqfpResponse, StyleDto styleDto, CustomerChoiceDto customerChoiceDto) {
         ValidationResult bqfpValidationResult = bqfpValidationsService.missingBuyQuantity(merchMethodsDtos, bqfpResponse, styleDto, customerChoiceDto);
-        ValidationResult rfaValidationResult = rfaValidationService.validateRFAData(apResponse, bqfpResponse, styleDto.getStyleNbr(), customerChoiceDto);
-        List<Integer> allValidationCodes = Stream.of(bqfpValidationResult.getCodes(), rfaValidationResult.getCodes())
+        ValidationResult rfaValidationResult = rfaValidationService.validateRFAData(merchMethodsDtos, apResponse, styleDto.getStyleNbr(), customerChoiceDto);
+        Set<Integer> allValidationCodes = Stream.of(bqfpValidationResult.getCodes(), rfaValidationResult.getCodes())
                 .flatMap(Collection::stream)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
         return ValidationResult.builder().codes(allValidationCodes).build();
     }
 }
