@@ -146,6 +146,9 @@ class CalculateFinelineBuyQuantityTest {
     @Mock
     BigQueryClusterService bigQueryClusterService;
 
+    @Mock
+    ValidationService validationService;
+
    @Spy
    ObjectMapper mapper = new ObjectMapper();
 
@@ -165,7 +168,7 @@ class CalculateFinelineBuyQuantityTest {
        calculateOnlineFinelineBuyQuantity = new  CalculateOnlineFinelineBuyQuantity (mapper, buyQtyReplenishmentMapperService,replenishmentsOptimizationServices, replenishmentService );
        calculateFinelineBuyQuantity = new CalculateFinelineBuyQuantity(bqfpService, mapper, buyQtyReplenishmentMapperService, calculateOnlineFinelineBuyQuantity,
                strategyFetchService,addStoreBuyQuantityService, buyQuantityConstraintService, deptAdminRuleService, replenishmentService, replenishmentsOptimizationServices,
-               midasServiceCall, linePlanService, bigQueryClusterService, calculateInitialSetQuantityService, calculateBumpPackQtyService);
+               midasServiceCall, linePlanService, bigQueryClusterService, calculateInitialSetQuantityService, calculateBumpPackQtyService, validationService);
        setProperties();
     }
 
