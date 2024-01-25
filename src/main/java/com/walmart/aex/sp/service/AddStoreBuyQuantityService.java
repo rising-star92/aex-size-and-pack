@@ -254,6 +254,7 @@ public class AddStoreBuyQuantityService {
             double perStoreQty = storeQuantity.getIsUnits();
             double isQty = storeQuantity.getTotalUnits();
             if ((perStoreQty < initialThreshold && perStoreQty > 0) && (!CollectionUtils.isEmpty(buyQtyObj.getReplenishments())) && BuyQtyCommonUtil.isReplenishmentEligible(storeQuantity.getFlowStrategyCode())) {
+                // 2 unit is rule is applied to Initial Set
                 codes.add(AppMessageText.INITIALSET_TWO_UNIT_PER_STORE_APPLIED.getId());
                 InitialSetWithReplenishment initialSetWithReplenishment = getUnitsFromReplenishment(storeQuantity, buyQtyObj, storeQuantitiesWithLessRep, volumeCluster, initialThreshold, rfaSizePackData.getCustomer_choice(), sizeDesc);
                 isQty = initialSetWithReplenishment.getIsQty();
