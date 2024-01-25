@@ -705,6 +705,8 @@ public class CalculateFinelineBuyQuantity {
         //TODO: Adjust Flow Strategy
         try {
             spCustomerChoiceChannelFixtureSize.setStoreObj(objectMapper.writeValueAsString(entry.getValue().getBuyQtyStoreObj()));
+            // Add validation codes to CustomerChoiceChannelFixtureSize
+            spCustomerChoiceChannelFixtureSize.setMessageObj(objectMapper.writeValueAsString(entry.getValue().getValidationResult()));
         } catch (Exception e) {
             log.error("Error parsing Json: ", e);
             throw new CustomException("Error parsing Json: " + e);

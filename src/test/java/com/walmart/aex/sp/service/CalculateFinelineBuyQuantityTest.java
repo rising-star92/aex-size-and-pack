@@ -538,6 +538,17 @@ class CalculateFinelineBuyQuantityTest {
         when(deptAdminRuleService.getInitialThreshold(anyLong(), anyInt())).thenReturn(2);
         CalculateBuyQtyResponse response = calculateFinelineBuyQuantity.calculateFinelineBuyQty(request, pRequest, r);
 
+        // warning validation tests
+        List<SpFineLineChannelFixture> spFineLineChannelFixtures = response.getSpFineLineChannelFixtures();
+        Set<SpCustomerChoiceChannelFixture> spCustomerChoiceChannelFixture = spFineLineChannelFixtures.get(0).getSpStyleChannelFixtures().iterator().next().getSpCustomerChoiceChannelFixture();
+        // Size level
+        List<Set<SpCustomerChoiceChannelFixtureSize>> spCustomerChoiceChannelFixtureSizeList = spCustomerChoiceChannelFixture.stream().map(SpCustomerChoiceChannelFixture::getSpCustomerChoiceChannelFixtureSize).collect(Collectors.toList());
+        assertEquals(4, spCustomerChoiceChannelFixtureSizeList.size());
+        assertEquals(64, spCustomerChoiceChannelFixtureSizeList.stream().flatMap(Collection::stream).count());
+        assertEquals(4, spCustomerChoiceChannelFixtureSizeList.stream().flatMap(Collection::stream).filter(val -> val.getAhsSizeDesc().equals("33X30")).count());
+        assertEquals(3, spCustomerChoiceChannelFixtureSizeList.stream().flatMap(Collection::stream).filter(val -> val.getAhsSizeDesc().equals("33X30")).map(SpCustomerChoiceChannelFixtureSize::getMessageObj).filter(Objects::nonNull).filter(val -> val.equals("{\"codes\":[210,211]}")).count());
+        assertEquals(1, spCustomerChoiceChannelFixtureSizeList.stream().flatMap(Collection::stream).filter(val -> val.getAhsSizeDesc().equals("33X30")).map(SpCustomerChoiceChannelFixtureSize::getMessageObj).filter(Objects::nonNull).filter(val -> val.equals("{\"codes\":[]}")).count());
+
         SpCustomerChoiceChannelFixture fixture1 = response.getSpFineLineChannelFixtures()
                                                 .stream()
                                                 .map(SpFineLineChannelFixture::getSpStyleChannelFixtures)

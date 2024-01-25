@@ -6,6 +6,7 @@ import com.walmart.aex.sp.dto.assortproduct.RFASizePackData;
 import com.walmart.aex.sp.dto.bqfp.Cluster;
 import com.walmart.aex.sp.dto.bqfp.Replenishment;
 import com.walmart.aex.sp.dto.buyquantity.*;
+import com.walmart.aex.sp.enums.AppMessageText;
 import com.walmart.aex.sp.enums.FixtureTypeRollup;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.properties.BuyQtyProperties;
@@ -141,6 +142,7 @@ public class AddStoreBuyQuantityService {
     }
 
     public void adjustISForOneUnitPerStoreV2(BuyQtyObj buyQtyObj, List<StoreQuantity> storeQuantities) {
+        Set<Integer> warningCodes = new HashSet<>();
         for (CalculateQuantityBySize calculateQuantityBySize: buyQtyObj.getCalculateQuantityBySizes()) {
             InitialSetQuantity initialSetQuantity = calculateQuantityBySize.getInitialSetQuantity();
             List<Integer> storeList = safeReadStoreList(initialSetQuantity.getRfaSizePackData().getStore_list()).stream().sorted().collect(Collectors.toList());
@@ -150,13 +152,16 @@ public class AddStoreBuyQuantityService {
             if (initialSetQuantity.isOneUnitPerStore()) {
                 perStoreQty = perStoreQty + DEFAULT_INITIAL_THRESHOLD;
                 isQty = (long) DEFAULT_INITIAL_THRESHOLD * initialSetQuantity.getRfaSizePackData().getStore_cnt();
+                warningCodes.add(AppMessageText.INITIALSET_ONE_UNIT_PER_STORE_APPLIED.getId());
                 if (!CollectionUtils.isEmpty(buyQtyObj.getReplenishments()) && BuyQtyCommonUtil.isReplenishmentEligible(initialSetQuantity.getVolumeCluster().getFlowStrategy())) {
+                    warningCodes.add(AppMessageText.ADJUST_REPLN_FOR_ONE_UNIT_PER_STORE_APPLIED.getId());
                     adjustReplenishmentsForOneUnitPerStore(buyQtyObj, initialSetQuantity.getRfaSizePackData(), initialSetQuantity.getRfaSizePackData().getCustomer_choice(), initialSetQuantity.getSizeDesc(), isQty, perStoreQty, storeList);
                 }
             }
             StoreQuantity storeQuantity = BuyQtyCommonUtil.createStoreQuantity(initialSetQuantity.getRfaSizePackData(), perStoreQty, storeList, isQty, initialSetQuantity.getVolumeCluster());
             storeQuantities.add(storeQuantity);
         }
+        buyQtyObj.setValidationResult(ValidationResult.builder().codes(warningCodes).build());
     }
 
     // TODO: This needs to be removed once the feature flag goes away for oneUnitPerStore
