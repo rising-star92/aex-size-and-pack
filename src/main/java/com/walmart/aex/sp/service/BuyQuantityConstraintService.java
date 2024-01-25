@@ -3,21 +3,19 @@ package com.walmart.aex.sp.service;
 import com.walmart.aex.sp.dto.assortproduct.RFASizePackData;
 import com.walmart.aex.sp.dto.bqfp.Cluster;
 import com.walmart.aex.sp.dto.bqfp.Replenishment;
-import com.walmart.aex.sp.dto.buyquantity.BuyQtyObj;
-import com.walmart.aex.sp.dto.buyquantity.InitialSetWithReplnsConstraint;
-import com.walmart.aex.sp.dto.buyquantity.SizeDto;
-import com.walmart.aex.sp.dto.buyquantity.StoreQuantity;
+import com.walmart.aex.sp.dto.buyquantity.*;
+import com.walmart.aex.sp.enums.AppMessageText;
 import com.walmart.aex.sp.util.BuyQtyCommonUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.walmart.aex.sp.util.CommonUtil.getValidationCodesFromBuyQtyObj;
 
 @Service
 @Slf4j
@@ -105,7 +103,10 @@ public class BuyQuantityConstraintService {
     }
 
     public void processReplenishmentConstraints(Map.Entry<SizeDto, BuyQtyObj> entry, long totalReplenishment, Integer replenishmentThreshold) {
+        Set<Integer> codes = getValidationCodesFromBuyQtyObj(entry.getValue());
         if (totalReplenishment < replenishmentThreshold && totalReplenishment > 0) {
+            codes.add(AppMessageText.REPLN_UNITS_MOVED_TO_INITIAL_SET.getId());
+            entry.getValue().setValidationResult(ValidationResult.builder().codes(codes).build());
             while (entry.getValue().getTotalReplenishment() > 0)
                 updateReplnToInitialSet(entry);
         }

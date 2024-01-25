@@ -21,6 +21,8 @@ import org.springframework.util.ObjectUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.walmart.aex.sp.util.CommonUtil.getValidationCodesFromBuyQtyObj;
+
 @Service
 @Slf4j
 public class AddStoreBuyQuantityService {
@@ -242,6 +244,7 @@ public class AddStoreBuyQuantityService {
     }
 
     public void adjustISWithConstraint(List<StoreQuantity> storeQuantities, BuyQtyObj buyQtyObj, Integer initialThreshold, String sizeDesc) {
+        Set<Integer> codes = getValidationCodesFromBuyQtyObj(buyQtyObj);
         List<StoreQuantity> storeQuantitiesWithLessRep = new ArrayList<>();
         for (int i = 0; i < storeQuantities.size(); i++) {
             StoreQuantity storeQuantity = storeQuantities.get(i);
@@ -251,6 +254,7 @@ public class AddStoreBuyQuantityService {
             double perStoreQty = storeQuantity.getIsUnits();
             double isQty = storeQuantity.getTotalUnits();
             if ((perStoreQty < initialThreshold && perStoreQty > 0) && (!CollectionUtils.isEmpty(buyQtyObj.getReplenishments())) && BuyQtyCommonUtil.isReplenishmentEligible(storeQuantity.getFlowStrategyCode())) {
+                codes.add(AppMessageText.INITIALSET_TWO_UNIT_PER_STORE_APPLIED.getId());
                 InitialSetWithReplenishment initialSetWithReplenishment = getUnitsFromReplenishment(storeQuantity, buyQtyObj, storeQuantitiesWithLessRep, volumeCluster, initialThreshold, rfaSizePackData.getCustomer_choice(), sizeDesc);
                 isQty = initialSetWithReplenishment.getIsQty();
                 perStoreQty = initialSetWithReplenishment.getPerStoreQty();
@@ -261,6 +265,7 @@ public class AddStoreBuyQuantityService {
             storeQuantities.set(i, storeQuantity);
         }
         storeQuantities.addAll(storeQuantitiesWithLessRep);
+        buyQtyObj.setValidationResult(ValidationResult.builder().codes(codes).build());
     }
 
     private InitialSetWithReplenishment getUnitsFromReplenishment(StoreQuantity storeQuantity, BuyQtyObj buyQtyObj, AddStoreBuyQuantity addStoreBuyQuantity, List<StoreQuantity> storeQuantities, Cluster volumeCluster, Integer initialThreshold) {

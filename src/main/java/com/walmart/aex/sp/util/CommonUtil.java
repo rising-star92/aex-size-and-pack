@@ -1,5 +1,7 @@
 package com.walmart.aex.sp.util;
 
+import com.walmart.aex.sp.dto.buyquantity.BuyQtyObj;
+import com.walmart.aex.sp.dto.buyquantity.ValidationResult;
 import com.walmart.aex.sp.dto.packoptimization.Fineline;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
@@ -10,6 +12,8 @@ import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -112,5 +116,16 @@ public class CommonUtil {
 
     public static LocalDateTime getLocalDateTime(Date result) {
         return result.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+    }
+
+    public static Set<Integer> getValidationCodesFromBuyQtyObj(BuyQtyObj buyQtyObj) {
+        ValidationResult validationResult = buyQtyObj.getValidationResult();
+        Set<Integer> codes;
+        if(!ObjectUtils.isEmpty(validationResult) && !CollectionUtils.isEmpty(validationResult.getCodes())) {
+            codes = validationResult.getCodes();
+        } else {
+            codes = new HashSet<>();
+        }
+        return codes;
     }
 }
