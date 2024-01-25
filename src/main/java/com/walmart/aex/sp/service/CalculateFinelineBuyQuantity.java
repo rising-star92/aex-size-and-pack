@@ -710,17 +710,13 @@ public class CalculateFinelineBuyQuantity {
             throw new CustomException("Error parsing Json: " + e);
         }
         // Add validation codes to CustomerChoiceChannelFixtureSize
-        setCustomerChoiceChannelFixtureSizeValidations(entry, spCustomerChoiceChannelFixtureSize);
+        spCustomerChoiceChannelFixtureSize.setMessageObj(getValidationCodesAsString(entry.getValue().getValidationResult()));
         spCustomerChoiceChannelFixtureSizes.add(spCustomerChoiceChannelFixtureSize);
 
         //Replenishment
         if (!CollectionUtils.isEmpty(replenishments) && entry.getValue().getTotalReplenishment() > 0) {
             setCcMmSpReplenishment(ccSpMmReplPacks, entry, (int) entry.getValue().getTotalReplenishment(), (int) Math.round(totalBuyQty));
         }
-    }
-
-    private void setCustomerChoiceChannelFixtureSizeValidations(Map.Entry<SizeDto, BuyQtyObj> entry, SpCustomerChoiceChannelFixtureSize spCustomerChoiceChannelFixtureSize) {
-        spCustomerChoiceChannelFixtureSize.setMessageObj(getValidationCodesAsString(entry.getValue().getValidationResult()));
     }
 
     private String getValidationCodesAsString(ValidationResult validationResult) {
