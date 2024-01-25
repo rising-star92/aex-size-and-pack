@@ -14,8 +14,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -25,19 +27,20 @@ public class RFAValidationServiceImpl implements RFAValidationService {
     public ValidationResult validateRFAData(List<MerchMethodsDto> merchMethodsDtoList, APResponse apResponse, String styleNbr, CustomerChoiceDto customerChoiceDto) {
         Set<Integer> rfaValidationCodes = new HashSet<>();
         if (apResponse.getRfaSizePackData().isEmpty()) {
-            // if rfa is empty
+            // RFA is empty
             rfaValidationCodes.add(AppMessageText.RFA_NOT_AVAILABLE.getId());
             return buildResult(rfaValidationCodes);
         }
         List<RFASizePackData> rfaSizePackDataList = apResponse.getRfaSizePackData().stream().filter(rfa -> rfa.getCustomer_choice().equalsIgnoreCase(customerChoiceDto.getCcId())).collect(Collectors.toList());
         if (rfaSizePackDataList.isEmpty()) {
-            // rfa is missing for CC
+            // RFA is missing for CC
             rfaValidationCodes.add(AppMessageText.RFA_CC_NOT_AVAILABLE.getId());
             return buildResult(rfaValidationCodes);
         }
         List<String> fixtureTypes = merchMethodsDtoList.stream().map(MerchMethodsDto::getFixtureType).collect(Collectors.toList());
-        validateFixture(fixtureTypes, rfaSizePackDataList, rfaValidationCodes);
-        validateColorFamily(customerChoiceDto, rfaSizePackDataList, rfaValidationCodes);
+        Integer fixtureCode = validateFixture(fixtureTypes, rfaSizePackDataList);
+        Integer colorFamilyCode = validateColorFamily(customerChoiceDto, rfaSizePackDataList);
+        rfaValidationCodes.addAll(Stream.of(fixtureCode, colorFamilyCode).filter(Objects::nonNull).collect(Collectors.toList()));
         return buildResult(rfaValidationCodes);
     }
 
@@ -48,21 +51,25 @@ public class RFAValidationServiceImpl implements RFAValidationService {
     /**
      * RFA missing any fixture type
      */
-    private void validateFixture(List<String> fixtureTypes, List<RFASizePackData> rfaSizePackDataList, Set<Integer> rfaValidationCodes) {
+    private Integer validateFixture(List<String> fixtureTypes, List<RFASizePackData> rfaSizePackDataList) {
+        Integer fixtureCode = null;
         for (String fixtureType : fixtureTypes) {
             if (rfaSizePackDataList.stream().noneMatch(rfa -> rfa.getFixture_type().equalsIgnoreCase(fixtureType)))
-                rfaValidationCodes.add(AppMessageText.RFA_MISSING_FIXTURE.getId());
+                fixtureCode = AppMessageText.RFA_MISSING_FIXTURE.getId();
         }
+        return fixtureCode;
     }
 
     /**
      * RFA is missing any color families
      */
-    private void validateColorFamily(CustomerChoiceDto customerChoiceDto, List<RFASizePackData> rfaSizePackDataList, Set<Integer> rfaValidationCodes) {
+    private Integer validateColorFamily(CustomerChoiceDto customerChoiceDto, List<RFASizePackData> rfaSizePackDataList) {
+        Integer colorFamilyCode = null;
         RFASizePackData rfaSizePackData = rfaSizePackDataList.stream().filter(rfa -> rfa.getCustomer_choice().equalsIgnoreCase(customerChoiceDto.getCcId())).findFirst().orElse(null);
         if (null != rfaSizePackData && StringUtils.isNotEmpty(rfaSizePackData.getColor_family()) &&
                 !((StringUtils.isNotEmpty(customerChoiceDto.getColorFamily()) && rfaSizePackData.getColor_family().equalsIgnoreCase(customerChoiceDto.getColorFamily())) ||
                 rfaSizePackData.getColor_family().equalsIgnoreCase(SizeAndPackConstants.DEFAULT_COLOR_FAMILY)))
-            rfaValidationCodes.add(AppMessageText.RFA_MISSING_COLOR_FAMILY.getId());
+            colorFamilyCode = AppMessageText.RFA_MISSING_COLOR_FAMILY.getId();
+        return colorFamilyCode;
     }
 }
