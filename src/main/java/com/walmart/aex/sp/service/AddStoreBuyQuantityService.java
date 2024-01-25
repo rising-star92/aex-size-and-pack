@@ -25,8 +25,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class AddStoreBuyQuantityService {
 
-    public static final int ONE_UNIT_RULE_INCREASE_TOTAL_BUY = 210;
-    public static final int ONE_UNIT_RULE_REMOVE_FROM_REPL = 211;
     @Autowired
     ObjectMapper objectMapper;
 
