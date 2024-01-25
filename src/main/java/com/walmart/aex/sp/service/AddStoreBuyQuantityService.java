@@ -152,9 +152,9 @@ public class AddStoreBuyQuantityService {
             if (initialSetQuantity.isOneUnitPerStore()) {
                 perStoreQty = perStoreQty + DEFAULT_INITIAL_THRESHOLD;
                 isQty = (long) DEFAULT_INITIAL_THRESHOLD * initialSetQuantity.getRfaSizePackData().getStore_cnt();
-                warningCodes.add(AppMessageText.ONE_UNIT_RULE_APPLIED_INCREASE_TOTAL_BUY.getId());
+                warningCodes.add(AppMessageText.INITIALSET_ONE_UNIT_PER_STORE_APPLIED.getId());
                 if (!CollectionUtils.isEmpty(buyQtyObj.getReplenishments()) && BuyQtyCommonUtil.isReplenishmentEligible(initialSetQuantity.getVolumeCluster().getFlowStrategy())) {
-                    warningCodes.add(AppMessageText.ONE_UNIT_RULE_APPLIED_REMOVE_FROM_REPL.getId());
+                    warningCodes.add(AppMessageText.ADJUST_REPLN_FOR_ONE_UNIT_PER_STORE_APPLIED.getId());
                     adjustReplenishmentsForOneUnitPerStore(buyQtyObj, initialSetQuantity.getRfaSizePackData(), initialSetQuantity.getRfaSizePackData().getCustomer_choice(), initialSetQuantity.getSizeDesc(), isQty, perStoreQty, storeList);
                 }
             }
