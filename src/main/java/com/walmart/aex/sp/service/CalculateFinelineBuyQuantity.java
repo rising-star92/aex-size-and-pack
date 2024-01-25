@@ -705,26 +705,17 @@ public class CalculateFinelineBuyQuantity {
         //TODO: Adjust Flow Strategy
         try {
             spCustomerChoiceChannelFixtureSize.setStoreObj(objectMapper.writeValueAsString(entry.getValue().getBuyQtyStoreObj()));
+            // Add validation codes to CustomerChoiceChannelFixtureSize
+            spCustomerChoiceChannelFixtureSize.setMessageObj(objectMapper.writeValueAsString(entry.getValue().getValidationResult()));
         } catch (Exception e) {
             log.error("Error parsing Json: ", e);
             throw new CustomException("Error parsing Json: " + e);
         }
-        // Add validation codes to CustomerChoiceChannelFixtureSize
-        spCustomerChoiceChannelFixtureSize.setMessageObj(getValidationCodesAsString(entry.getValue().getValidationResult()));
         spCustomerChoiceChannelFixtureSizes.add(spCustomerChoiceChannelFixtureSize);
 
         //Replenishment
         if (!CollectionUtils.isEmpty(replenishments) && entry.getValue().getTotalReplenishment() > 0) {
             setCcMmSpReplenishment(ccSpMmReplPacks, entry, (int) entry.getValue().getTotalReplenishment(), (int) Math.round(totalBuyQty));
-        }
-    }
-
-    private String getValidationCodesAsString(ValidationResult validationResult) {
-        try {
-            return objectMapper.writeValueAsString(validationResult);
-        } catch (Exception e) {
-            log.error("Error parsing validationResult to Json: ", e);
-            throw new CustomException("Error parsing validationResult to Json: " + e);
         }
     }
 
