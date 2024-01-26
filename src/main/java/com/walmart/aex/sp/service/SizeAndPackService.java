@@ -2,6 +2,7 @@ package com.walmart.aex.sp.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.walmart.aex.sp.dto.appmessage.ValidationResponseDTO;
 import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.dto.commitmentreport.InitialBumpSetResponse;
 import com.walmart.aex.sp.dto.commitmentreport.InitialSetPackRequest;
@@ -77,6 +78,7 @@ public class SizeAndPackService {
     private final BQFactoryMapper BQFactoryMapper;
 
     private final CcPackOptimizationRepository ccPackOptimizationRepository;
+    private final AppMessageTextRepository appMessageTextRepository;
 
     @ManagedConfiguration
 	BigQueryConnectionProperties bigQueryConnectionProperties;
@@ -89,7 +91,7 @@ public class SizeAndPackService {
                               SizeAndPackDeleteService sizeAndPackDeleteService, SizeAndPackDeletePlanService sizeAndPackDeletePlanService
             , BuyQtyCommonUtil buyQtyCommonUtil, BigQueryInitialSetPlanService bigQueryInitialSetPlanService, InitialSetPlanMapper initialSetPlanMapper,
                               MerchPackOptimizationRepository merchPackOptimizationRepository, PackOptUpdateDataMapper packOptUpdateDataMapper, PackOptAddDataMapper packOptAddDataMapper,
-                              BigQueryPackStoresService bigQueryPackStoresService, SizeAndPackDeletePackOptMapper sizeAndPackDeletePackOptMapper, CustomerChoiceRepository customerChoiceRepository, BQFactoryMapper BQFactoryMapper,CcPackOptimizationRepository ccPackOptimizationRepository) {
+                              BigQueryPackStoresService bigQueryPackStoresService, SizeAndPackDeletePackOptMapper sizeAndPackDeletePackOptMapper, CustomerChoiceRepository customerChoiceRepository, BQFactoryMapper BQFactoryMapper, CcPackOptimizationRepository ccPackOptimizationRepository, AppMessageTextRepository appMessageTextRepository) {
         this.spFineLineChannelFixtureRepository = spFineLineChannelFixtureRepository;
         this.buyQuantityMapper = buyQuantityMapper;
         this.spCustomerChoiceChannelFixtureRepository = spCustomerChoiceChannelFixtureRepository;
@@ -108,6 +110,7 @@ public class SizeAndPackService {
         this.bigQueryPackStoresService = bigQueryPackStoresService;
         this.sizeAndPackDeletePackOptMapper = sizeAndPackDeletePackOptMapper;
         this.customerChoiceRepository = customerChoiceRepository;
+        this.appMessageTextRepository = appMessageTextRepository;
         this.objectMapper = new ObjectMapper();
         this.BQFactoryMapper = BQFactoryMapper;
         this.ccPackOptimizationRepository = ccPackOptimizationRepository;
@@ -116,12 +119,13 @@ public class SizeAndPackService {
     public BuyQtyResponse fetchFinelineBuyQnty(BuyQtyRequest buyQtyRequest) {
         try {
             List<BuyQntyResponseDTO> buyQntyResponseDTOS;
+            List<ValidationResponseDTO> validationResponseDTOList = appMessageTextRepository.getValidationsByAppMessageCodes();
             if (buyQtyRequest.getChannel() != null) {
                 BuyQtyResponse finelinesWithSizesFromStrategy = strategyFetchService.getBuyQtyDetailsForFinelines(buyQtyRequest);
                 if (finelinesWithSizesFromStrategy != null) {
                     buyQntyResponseDTOS = spFineLineChannelFixtureRepository
                             .getBuyQntyByPlanChannel(buyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(buyQtyRequest.getChannel()));
-                    return buyQtyCommonUtil.filterFinelinesWithSizes(buyQntyResponseDTOS, finelinesWithSizesFromStrategy);
+                    return buyQtyCommonUtil.filterFinelinesWithSizes(buyQntyResponseDTOS, finelinesWithSizesFromStrategy,validationResponseDTOList);
                 }
             } else {
                 BuyQtyResponse buyQtyResponseAllChannels = new BuyQtyResponse();
@@ -131,7 +135,7 @@ public class SizeAndPackService {
                         .stream()
                         .flatMap(Collection::stream)
                         .forEach(buyQntyResponseDTO -> buyQuantityMapper
-                                .mapBuyQntyLvl2Sp(buyQntyResponseDTO, buyQtyResponseAllChannels, null));
+                                .mapBuyQntyLvl2Sp(buyQntyResponseDTO, buyQtyResponseAllChannels, null,validationResponseDTOList));
                 List<FactoryDTO> factoryDTOS = ccPackOptimizationRepository.getFactoriesByPlanId(buyQtyRequest.getPlanId(), null);
                 BQFactoryMapper.setFactoriesForFinelines(factoryDTOS,buyQtyResponseAllChannels);
                 return buyQtyResponseAllChannels;
@@ -145,6 +149,7 @@ public class SizeAndPackService {
 
     public BuyQtyResponse fetchCcBuyQnty(BuyQtyRequest buyQtyRequest, Integer finelineNbr) {
         BuyQtyResponse buyQtyResponse = new BuyQtyResponse();
+        List<ValidationResponseDTO> validationResponseDTOList = appMessageTextRepository.getValidationsByAppMessageCodes();
         try {
             List<BuyQntyResponseDTO> buyQntyResponseDTOS;
             if (buyQtyRequest.getChannel() != null) {
@@ -152,7 +157,7 @@ public class SizeAndPackService {
                 if (stylesCcWithSizesFromStrategy != null) {
                     buyQntyResponseDTOS = spCustomerChoiceChannelFixtureRepository
                             .getBuyQntyByPlanChannelFineline(buyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(buyQtyRequest.getChannel()), finelineNbr);
-                    buyQtyResponse = buyQtyCommonUtil.filterStylesCcWithSizes(buyQntyResponseDTOS, stylesCcWithSizesFromStrategy, finelineNbr);
+                    buyQtyResponse = buyQtyCommonUtil.filterStylesCcWithSizes(buyQntyResponseDTOS, stylesCcWithSizesFromStrategy, finelineNbr,validationResponseDTOList);
                 }
             } else {
                 BuyQtyResponse buyQtyResponseAllChannels = new BuyQtyResponse();
@@ -169,7 +174,7 @@ public class SizeAndPackService {
                         .flatMap(Collection::stream)
                         .filter(buyQntyResponseDTO -> ccsWithSizes.get(buyQntyResponseDTO.getChannelId()).contains(buyQntyResponseDTO.getCcId()))
                         .forEach(buyQntyResponseDTO -> buyQuantityMapper
-                        .mapBuyQntyLvl2Sp(buyQntyResponseDTO, buyQtyResponseAllChannels, finelineNbr));
+                        .mapBuyQntyLvl2Sp(buyQntyResponseDTO, buyQtyResponseAllChannels, finelineNbr,validationResponseDTOList));
                 List<FactoryDTO> factoryDTOS = ccPackOptimizationRepository.getFactoriesByPlanId(buyQtyRequest.getPlanId(), buyQtyRequest.getFinelineNbr());
                 BQFactoryMapper.setFactoriesForCCs(factoryDTOS,buyQtyResponseAllChannels);
 
@@ -205,6 +210,7 @@ public class SizeAndPackService {
 
     public BuyQtyResponse fetchSizeBuyQnty(BuyQtyRequest buyQtyRequest) {
         try {
+            List<ValidationResponseDTO> validationResponseDTOList = appMessageTextRepository.getValidationsByAppMessageCodes();
             BuyQtyResponse buyQtyResponse = strategyFetchService.getBuyQtyResponseSizeProfile(buyQtyRequest);
 
             if (buyQtyResponse != null) {
@@ -216,7 +222,7 @@ public class SizeAndPackService {
                         .stream()
                         .flatMap(Collection::stream)
                         .forEach(sizeDto -> buyQuantityMapper
-                                .mapBuyQntySizeSp(buyQntyResponseDTOS, sizeDto));
+                                .mapBuyQntySizeSp(buyQntyResponseDTOS, sizeDto,validationResponseDTOList));
                 log.info("Fetch Buy Qty CC response: {}", buyQtyResponse);
             }
             return buyQtyResponse;

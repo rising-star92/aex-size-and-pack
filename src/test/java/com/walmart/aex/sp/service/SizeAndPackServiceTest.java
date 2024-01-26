@@ -21,6 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -97,6 +98,9 @@ class SizeAndPackServiceTest {
 
     @Mock
     private CcPackOptimizationRepository ccPackOptimizationRepository;
+    @Mock
+    private AppMessageTextRepository appMessageTextRepository;
+
 
     private static Integer fineline1Nbr = 151;
     private static String styleNbr = "151_2_23_001";
@@ -108,7 +112,7 @@ class SizeAndPackServiceTest {
         sizeAndPackService = new SizeAndPackService(spFineLineChannelFixtureRepository, buyQuantityMapper, spCustomerChoiceChannelFixtureRepository, sizeAndPackObjectMapper,
                 merchCatPlanRepository, strategyFetchService, spCustomerChoiceChannelFixtureSizeRepository, sizeAndPackDeleteService, sizeAndPackDeletePlanService,
                 buyQtyCommonUtil, bigQueryInitialSetPlanService, initialSetPlanMapper, merchPackOptimizationRepository, packOptUpdateDataMapper, packOptAddDataMapper,
-                bigQueryPackStoresService, sizeAndPackDeletePackOptMapper, customerChoiceRepository, BQFactoryMapper, ccPackOptimizationRepository);
+                bigQueryPackStoresService, sizeAndPackDeletePackOptMapper, customerChoiceRepository, BQFactoryMapper, ccPackOptimizationRepository,appMessageTextRepository);
         ReflectionTestUtils.setField(sizeAndPackService, "bigQueryConnectionProperties", bigQueryConnectionProperties);
         lenient().when(bigQueryConnectionProperties.getPackDescriptionFeatureFlag()).thenReturn("true");
     }
@@ -132,7 +136,7 @@ class SizeAndPackServiceTest {
         convertChannelToStore(buyQntyResponseDTOS);
         Mockito.when(spCustomerChoiceChannelFixtureRepository.getBuyQntyByPlanChannelFineline(471l, 1,
                 2855)).thenReturn(buyQntyResponseDTOS);
-
+        Mockito.when(appMessageTextRepository.getValidationsByAppMessageCodes()).thenReturn(new ArrayList<>());
         BuyQtyRequest buyQtyRequest = BuyQtyResponseInputs.fetchBuyQtyRequestForStore();
         buyQtyRequest.setFinelineNbr(2855);
         BuyQtyResponse buyQtyResponse1 = BuyQtyResponseInputs.buyQtyResponseFromJson("/buyQtySizeResponse");

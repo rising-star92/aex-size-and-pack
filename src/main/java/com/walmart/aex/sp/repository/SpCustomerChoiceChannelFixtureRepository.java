@@ -32,6 +32,7 @@ public interface SpCustomerChoiceChannelFixtureRepository extends JpaRepository<
             "sscf.buyQty as styleBuyQty, " +
             "sscf.replnQty as styleReplnQty, " +
             "sscf.adjReplnQty as styleAdjReplnQty, " +
+            "sscf.messageObj as styleMessageObj," +
             "sccf.flowStrategyCode as ccFlowStrategy, " +
             "sccf.merchMethodCode as ccMerchCode, " +
             "sccf.merchMethodShortDesc as ccMerchDesc, " +
@@ -44,7 +45,8 @@ public interface SpCustomerChoiceChannelFixtureRepository extends JpaRepository<
             "ccp.colorFamilyDesc as colorFamilyDesc, " +
             "ccp.colorName as colorName, " +
             "sp.altStyleDesc, " +
-            "ccp.altCcDesc " +
+            "ccp.altCcDesc, " +
+            "sccf.messageObj as ccMessageObj" +
             ") " +
             "from MerchCatPlan msp " +
             "inner join " +
