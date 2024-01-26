@@ -230,4 +230,15 @@ public class BuyQtyCommonUtil {
     public static boolean isReplenishmentEligible(Integer flowStrategy) {
         return (null != flowStrategy && flowStrategy.equals(FlowStrategy.REPLENISHMENT_SET.getId()));
     }
+
+    public static CustomerChoice getCcFromBQFP(String styleNbr, String ccId, BQFPResponse bqfpResponse) {
+        return bqfpResponse.getStyles().stream()
+                .filter(style -> style.getStyleId().equalsIgnoreCase(styleNbr))
+                .map(Style::getCustomerChoices)
+                .flatMap(Collection::stream)
+                .filter(cc -> cc.getCcId().equalsIgnoreCase(ccId))
+                .findFirst()
+                .orElse(null);
+    }
+
 }

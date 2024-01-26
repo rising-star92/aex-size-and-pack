@@ -64,6 +64,8 @@ public class CalculateFinelineBuyQuantity {
     private final BigQueryClusterService bigQueryClusterService;
     private final CalculateInitialSetQuantityService calculateInitialSetQuantityService;
     private final CalculateBumpPackQtyService calculateBumpPackQtyService;
+    private final ValidationService validationService;
+    private final CalculateFinelineBuyQuantityMapper calculateFinelineBuyQuantityMapper;
     @ManagedConfiguration
     BuyQtyProperties buyQtyProperties;
 
@@ -81,7 +83,9 @@ public class CalculateFinelineBuyQuantity {
                                         LinePlanService linePlanService,
                                         BigQueryClusterService bigQueryClusterService,
                                         CalculateInitialSetQuantityService calculateInitialSetQuantityService,
-                                        CalculateBumpPackQtyService calculateBumpPackQtyService) {
+                                        CalculateBumpPackQtyService calculateBumpPackQtyService,
+                                        ValidationService validationService,
+                                        CalculateFinelineBuyQuantityMapper calculateFinelineBuyQuantityMapper) {
         this.bqfpService = bqfpService;
         this.objectMapper = objectMapper;
         this.strategyFetchService = strategyFetchService;
@@ -97,6 +101,8 @@ public class CalculateFinelineBuyQuantity {
         this.bigQueryClusterService = bigQueryClusterService;
         this.calculateInitialSetQuantityService = calculateInitialSetQuantityService;
         this.calculateBumpPackQtyService = calculateBumpPackQtyService;
+        this.validationService = validationService;
+        this.calculateFinelineBuyQuantityMapper = calculateFinelineBuyQuantityMapper;
     }
 
     public CalculateBuyQtyResponse calculateFinelineBuyQty(CalculateBuyQtyRequest calculateBuyQtyRequest, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, CalculateBuyQtyResponse calculateBuyQtyResponse) throws CustomException {
@@ -395,7 +401,7 @@ public class CalculateFinelineBuyQuantity {
             spStyleChannelFixtures.add(spStyleChannelFixture);
         });
         log.info("calculating fineline IS and BS Qty");
-        setFinelineChanFixtures(spFineLineChannelFixture, spStyleChannelFixtures);
+        calculateFinelineBuyQuantityMapper.setFinelineChanFixtures(spFineLineChannelFixture, spStyleChannelFixtures);
         spFineLineChannelFixture.setSpStyleChannelFixtures(spStyleChannelFixtures);
     }
 
@@ -417,14 +423,15 @@ public class CalculateFinelineBuyQuantity {
                 spCustomerChoiceChannelFixture.setSpCustomerChoiceChannelFixtureId(spCustomerChoiceChannelFixtureId);
             }
             spCustomerChoiceChannelFixture.setMerchMethodCode(spStyleChannelFixture.getMerchMethodCode());
+            ValidationResult ccValidationResult = validationService.validateCalculateBuyQuantityInputData(merchMethodsDtos, apResponse, bqfpResponse, styleDto, customerChoiceDto);
             if (!CollectionUtils.isEmpty(customerChoiceDto.getClusters())) {
-                getCcClusters(styleDto, customerChoiceDto, merchMethodsDtos, apResponse, bqfpResponse, spCustomerChoiceChannelFixture, calculateBuyQtyResponse, calculateBuyQtyParallelRequest, replenishmentCons);
+                getCcClusters(styleDto, customerChoiceDto, merchMethodsDtos, apResponse, bqfpResponse, spCustomerChoiceChannelFixture, calculateBuyQtyResponse, calculateBuyQtyParallelRequest, replenishmentCons, ccValidationResult);
             }
             spCustomerChoiceChannelFixture.setBumpPackCnt(getCcMaxBumpPackCnt(bqfpResponse,styleDto,customerChoiceDto));
             spCustomerChoiceChannelFixtures.add(spCustomerChoiceChannelFixture);
         });
         log.info("calculating Style IS and BS Qty");
-        setStyleChanFixtures(spStyleChannelFixture, spCustomerChoiceChannelFixtures);
+        calculateFinelineBuyQuantityMapper.setStyleChanFixtures(spStyleChannelFixture, spCustomerChoiceChannelFixtures);
         spStyleChannelFixture.setSpCustomerChoiceChannelFixture(spCustomerChoiceChannelFixtures);
     }
 
@@ -436,7 +443,10 @@ public class CalculateFinelineBuyQuantity {
         return getMaxBumpCountVal(customerChoices);
     }
 
-    private void getCcClusters(StyleDto styleDto, CustomerChoiceDto customerChoiceDto, List<MerchMethodsDto> merchMethodsDtos, APResponse apResponse, BQFPResponse bqfpResponse, SpCustomerChoiceChannelFixture spCustomerChoiceChannelFixture, CalculateBuyQtyResponse calculateBuyQtyResponse, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, ReplenishmentCons replenishmentCons) {
+    private void getCcClusters(StyleDto styleDto, CustomerChoiceDto customerChoiceDto, List<MerchMethodsDto> merchMethodsDtos,
+                               APResponse apResponse, BQFPResponse bqfpResponse, SpCustomerChoiceChannelFixture spCustomerChoiceChannelFixture,
+                               CalculateBuyQtyResponse calculateBuyQtyResponse, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest,
+                               ReplenishmentCons replenishmentCons, ValidationResult ccValidationResult) {
         Map<SizeDto, BuyQtyObj> storeBuyQtyBySizeId = new HashMap<>();
         Integer initialThreshold = deptAdminRuleService.getInitialThreshold(bqfpResponse.getPlanId(), bqfpResponse.getLvl1Nbr());
         //Replenishment
@@ -481,7 +491,7 @@ public class CalculateFinelineBuyQuantity {
         }
 
         spCustomerChoiceChannelFixture.setSpCustomerChoiceChannelFixtureSize(spCustomerChoiceChannelFixtureSizes);
-        setCcChanFixtures(spCustomerChoiceChannelFixture, spCustomerChoiceChannelFixtureSizes);
+        calculateFinelineBuyQuantityMapper.setCcChanFixtures(spCustomerChoiceChannelFixture, spCustomerChoiceChannelFixtureSizes, ccValidationResult);
     }
 
     private static Integer getVendorPackQty(ReplenishmentCons replenishmentCons, Map.Entry<SizeDto, BuyQtyObj> entry) {
@@ -696,6 +706,8 @@ public class CalculateFinelineBuyQuantity {
         //TODO: Adjust Flow Strategy
         try {
             spCustomerChoiceChannelFixtureSize.setStoreObj(objectMapper.writeValueAsString(entry.getValue().getBuyQtyStoreObj()));
+            // Add validation codes to CustomerChoiceChannelFixtureSize
+            spCustomerChoiceChannelFixtureSize.setMessageObj(objectMapper.writeValueAsString(entry.getValue().getValidationResult()));
         } catch (Exception e) {
             log.error("Error parsing Json: ", e);
             throw new CustomException("Error parsing Json: " + e);
@@ -820,75 +832,6 @@ public class CalculateFinelineBuyQuantity {
                 .orElse(null);
     }
 
-    private void setFinelineChanFixtures(SpFineLineChannelFixture spFineLineChannelFixture, Set<SpStyleChannelFixture> spStyleChannelFixtures) {
-        spFineLineChannelFixture.setInitialSetQty(spStyleChannelFixtures.stream()
-                .filter(Objects::nonNull)
-                .mapToInt(spStyleChannelFixture -> Optional.ofNullable(spStyleChannelFixture.getInitialSetQty()).orElse(0))
-                .sum()
-        );
-        spFineLineChannelFixture.setBumpPackQty(spStyleChannelFixtures.stream()
-                .filter(Objects::nonNull)
-                .mapToInt(spStyleChannelFixture -> Optional.ofNullable(spStyleChannelFixture.getBumpPackQty()).orElse(0))
-                .sum()
-        );
-        spFineLineChannelFixture.setBuyQty(spStyleChannelFixtures.stream()
-                .filter(Objects::nonNull)
-                .mapToInt(spStyleChannelFixture -> Optional.ofNullable(spStyleChannelFixture.getBuyQty()).orElse(0))
-                .sum()
-        );
-        spFineLineChannelFixture.setReplnQty(spStyleChannelFixtures.stream()
-                .filter(Objects::nonNull)
-                .mapToInt(spStyleChannelFixture -> Optional.ofNullable(spStyleChannelFixture.getReplnQty()).orElse(0))
-                .sum()
-        );
-    }
-
-    private void setStyleChanFixtures(SpStyleChannelFixture spStyleChannelFixture, Set<SpCustomerChoiceChannelFixture> spCustomerChoiceChannelFixtures) {
-        spStyleChannelFixture.setInitialSetQty(spCustomerChoiceChannelFixtures.stream()
-                .filter(Objects::nonNull)
-                .mapToInt(spCustomerChoiceChannelFixture -> Optional.ofNullable(spCustomerChoiceChannelFixture.getInitialSetQty()).orElse(0))
-                .sum()
-        );
-        spStyleChannelFixture.setBumpPackQty(spCustomerChoiceChannelFixtures.stream()
-                .filter(Objects::nonNull)
-                .mapToInt(spCustomerChoiceChannelFixture -> Optional.ofNullable(spCustomerChoiceChannelFixture.getBumpPackQty()).orElse(0))
-                .sum()
-        );
-        spStyleChannelFixture.setBuyQty(spCustomerChoiceChannelFixtures.stream()
-                .filter(Objects::nonNull)
-                .mapToInt(spCustomerChoiceChannelFixture -> Optional.ofNullable(spCustomerChoiceChannelFixture.getBuyQty()).orElse(0))
-                .sum()
-        );
-        spStyleChannelFixture.setReplnQty(spCustomerChoiceChannelFixtures.stream()
-                .filter(Objects::nonNull)
-                .mapToInt(spCustomerChoiceChannelFixture -> Optional.ofNullable(spCustomerChoiceChannelFixture.getReplnQty()).orElse(0))
-                .sum()
-        );
-    }
-
-    private void setCcChanFixtures(SpCustomerChoiceChannelFixture spCustomerChoiceChannelFixture, Set<SpCustomerChoiceChannelFixtureSize> spCustomerChoiceChannelFixtureSizes) {
-        spCustomerChoiceChannelFixture.setInitialSetQty(spCustomerChoiceChannelFixtureSizes.stream()
-                .filter(Objects::nonNull)
-                .mapToInt(spCustomerChoiceChannelFixtureSize -> Optional.ofNullable(spCustomerChoiceChannelFixtureSize.getInitialSetQty()).orElse(0))
-                .sum()
-        );
-        spCustomerChoiceChannelFixture.setBumpPackQty(spCustomerChoiceChannelFixtureSizes.stream()
-                .filter(Objects::nonNull)
-                .mapToInt(spCustomerChoiceChannelFixtureSize -> Optional.ofNullable(spCustomerChoiceChannelFixtureSize.getBumpPackQty()).orElse(0))
-                .sum()
-        );
-        spCustomerChoiceChannelFixture.setBuyQty(spCustomerChoiceChannelFixtureSizes.stream()
-                .filter(Objects::nonNull)
-                .mapToInt(spCustomerChoiceChannelFixtureSize -> Optional.ofNullable(spCustomerChoiceChannelFixtureSize.getBuyQty()).orElse(0))
-                .sum()
-        );
-        spCustomerChoiceChannelFixture.setReplnQty(spCustomerChoiceChannelFixtureSizes.stream()
-                .filter(Objects::nonNull)
-                .mapToInt(spCustomerChoiceChannelFixtureSize -> Optional.ofNullable(spCustomerChoiceChannelFixtureSize.getReplnQty()).orElse(0))
-                .sum()
-        );
-    }
-
     private void setCcMmSpReplenishment(Set<CcSpMmReplPack> ccSpMmReplPacks, Map.Entry<SizeDto, BuyQtyObj> entry, int totalReplenishment, int totalBuyQty) {
         CcSpMmReplPackId ccSpMmReplPackId = new CcSpMmReplPackId();
         ccSpMmReplPackId.setAhsSizeId(entry.getKey().getAhsSizeId());
@@ -946,4 +889,5 @@ public class CalculateFinelineBuyQuantity {
                 .flatMap(Collection::stream)
                 .anyMatch(replenishment -> (replenishment.getDcInboundUnits() != null && replenishment.getDcInboundUnits() > 0));
     }
+
 }
