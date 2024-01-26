@@ -556,6 +556,7 @@ public class CalculateFinelineBuyQuantity {
             BuyQtyObj buyQtyObj = entry.getValue();
             BuyQtyStoreObj buyQtyStoreObj = Optional.ofNullable(buyQtyObj.getBuyQtyStoreObj())
                     .orElse(new BuyQtyStoreObj());
+            buyQtyObj.setValidationResult(ValidationResult.builder().codes(new HashSet<>()).build());
 
             List<StoreQuantity> storeQuantities = Optional.ofNullable(buyQtyStoreObj.getBuyQuantities())
                     .orElse(new ArrayList<>());

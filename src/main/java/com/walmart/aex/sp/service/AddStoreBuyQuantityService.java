@@ -142,7 +142,7 @@ public class AddStoreBuyQuantityService {
     }
 
     public void adjustISForOneUnitPerStoreV2(BuyQtyObj buyQtyObj, List<StoreQuantity> storeQuantities) {
-        Set<Integer> warningCodes = new HashSet<>();
+        Set<Integer> warningCodes = buyQtyObj.getValidationResult().getCodes();
         for (CalculateQuantityBySize calculateQuantityBySize: buyQtyObj.getCalculateQuantityBySizes()) {
             InitialSetQuantity initialSetQuantity = calculateQuantityBySize.getInitialSetQuantity();
             List<Integer> storeList = safeReadStoreList(initialSetQuantity.getRfaSizePackData().getStore_list()).stream().sorted().collect(Collectors.toList());
@@ -161,7 +161,6 @@ public class AddStoreBuyQuantityService {
             StoreQuantity storeQuantity = BuyQtyCommonUtil.createStoreQuantity(initialSetQuantity.getRfaSizePackData(), perStoreQty, storeList, isQty, initialSetQuantity.getVolumeCluster());
             storeQuantities.add(storeQuantity);
         }
-        buyQtyObj.setValidationResult(ValidationResult.builder().codes(warningCodes).build());
     }
 
     // TODO: This needs to be removed once the feature flag goes away for oneUnitPerStore
