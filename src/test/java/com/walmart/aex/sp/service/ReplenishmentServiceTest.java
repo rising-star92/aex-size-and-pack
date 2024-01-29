@@ -245,7 +245,7 @@ class ReplenishmentServiceTest {
 
         BuyQtyResponse buyQtyResponse1 = replenishmentService1.fetchOnlineSizeBuyQnty(buyQtyRequest);
 
-        verify(buyQuantityMapper, Mockito.times(5)).mapBuyQntySizeSp(Mockito.any(), Mockito.any(),Mockito.any());
+        verify(buyQuantityMapper, Mockito.times(5)).mapBuyQntySizeSp(Mockito.any(), Mockito.any());
 
     }
 

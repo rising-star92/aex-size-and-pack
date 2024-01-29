@@ -107,7 +107,7 @@ public class ReplenishmentService  {
                 List<BuyQntyResponseDTO> buyQntyResponseDTOS = fineLineReplenishmentRepository.getBuyQntyByPlanChannelOnline(buyQtyRequest.getPlanId(),
                         ChannelType.getChannelIdFromName(buyQtyRequest.getChannel()));
 
-                buyQtyResponse= buyQtyCommonUtil.filterFinelinesWithSizes(buyQntyResponseDTOS,finelinesWithSizesFromStrategy,null);
+                buyQtyResponse= buyQtyCommonUtil.filterFinelinesWithSizes(buyQntyResponseDTOS,finelinesWithSizesFromStrategy);
 
             }
             return buyQtyResponse;
@@ -148,7 +148,7 @@ public class ReplenishmentService  {
                      List<BuyQntyResponseDTO> buyQntyResponseDTOS = spCustomerChoiceReplenishmentRepository.getBuyQntyByPlanChannelOnlineFineline(buyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(buyQtyRequest.getChannel()),
                         finelineNbr);
 
-                    buyQtyResponse= buyQtyCommonUtil.filterStylesCcWithSizes(buyQntyResponseDTOS,stylesCcWithSizesFromStrategy,finelineNbr,null);
+                    buyQtyResponse= buyQtyCommonUtil.filterStylesCcWithSizes(buyQntyResponseDTOS,stylesCcWithSizesFromStrategy,finelineNbr);
 
                     }
 
@@ -212,7 +212,7 @@ public class ReplenishmentService  {
                         .stream()
                         .flatMap(Collection::stream)
                         .forEach(sizeDto -> buyQuantityMapper
-                                .mapBuyQntySizeSp(buyQntyResponseDTOS,sizeDto,null));
+                                .mapBuyQntySizeSp(buyQntyResponseDTOS,sizeDto));
                 log.info("Fetch Buy Qty CC response: {}", buyQtyResponse);
             }
             return buyQtyResponse;

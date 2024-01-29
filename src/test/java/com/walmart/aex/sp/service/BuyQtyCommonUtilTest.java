@@ -40,11 +40,11 @@ class BuyQtyCommonUtilTest {
     {
         List<BuyQntyResponseDTO> buyQntyResponseDTOS = BuyQtyResponseInputs.buyQtyFinelineInput();
         BuyQtyResponse buyQtyResponseFromStrategy = BuyQtyResponseInputs.buyQtyResponseFromJson("/buyQtySizeResponse");
-        buyQtyCommonUtil.filterFinelinesWithSizes(buyQntyResponseDTOS,buyQtyResponseFromStrategy,null);
+        buyQtyCommonUtil.filterFinelinesWithSizes(buyQntyResponseDTOS,buyQtyResponseFromStrategy);
 
-        Mockito.verify(buyQuantityMapper, Mockito.times(1)).mapBuyQntyLvl2Sp(buyQntyResponseDTOS.get(0),new BuyQtyResponse(),null,null);
-        Mockito.verify(buyQuantityMapper, Mockito.times(1)).mapBuyQntyLvl2Sp(buyQntyResponseDTOS.get(1),new BuyQtyResponse(),null,null);
-        Mockito.verify(buyQuantityMapper, Mockito.times(0)).mapBuyQntyLvl2Sp(buyQntyResponseDTOS.get(2),new BuyQtyResponse(),null,null);
+        Mockito.verify(buyQuantityMapper, Mockito.times(1)).mapBuyQntyLvl2Sp(buyQntyResponseDTOS.get(0),new BuyQtyResponse(),null);
+        Mockito.verify(buyQuantityMapper, Mockito.times(1)).mapBuyQntyLvl2Sp(buyQntyResponseDTOS.get(1),new BuyQtyResponse(),null);
+        Mockito.verify(buyQuantityMapper, Mockito.times(0)).mapBuyQntyLvl2Sp(buyQntyResponseDTOS.get(2),new BuyQtyResponse(),null);
 
     }
 
@@ -53,11 +53,11 @@ class BuyQtyCommonUtilTest {
     {
         List<BuyQntyResponseDTO> buyQntyResponseDTOS = BuyQtyResponseInputs.buyQtyStyleCcInput();
         BuyQtyResponse buyQtyResponseFromStrategy = BuyQtyResponseInputs.buyQtyResponseFromJson("/buyQtySizeResponse");
-        buyQtyCommonUtil.filterStylesCcWithSizes(buyQntyResponseDTOS,buyQtyResponseFromStrategy,2855,null);
+        buyQtyCommonUtil.filterStylesCcWithSizes(buyQntyResponseDTOS,buyQtyResponseFromStrategy,2855);
 
-        Mockito.verify(buyQuantityMapper, Mockito.times(1)).mapBuyQntyLvl2Sp(buyQntyResponseDTOS.get(0),new BuyQtyResponse(),2855,null);
-        Mockito.verify(buyQuantityMapper, Mockito.times(1)).mapBuyQntyLvl2Sp(buyQntyResponseDTOS.get(1),new BuyQtyResponse(),2855,null);
-        Mockito.verify(buyQuantityMapper, Mockito.times(0)).mapBuyQntyLvl2Sp(buyQntyResponseDTOS.get(2),new BuyQtyResponse(),2855,null);
+        Mockito.verify(buyQuantityMapper, Mockito.times(1)).mapBuyQntyLvl2Sp(buyQntyResponseDTOS.get(0),new BuyQtyResponse(),2855);
+        Mockito.verify(buyQuantityMapper, Mockito.times(1)).mapBuyQntyLvl2Sp(buyQntyResponseDTOS.get(1),new BuyQtyResponse(),2855);
+        Mockito.verify(buyQuantityMapper, Mockito.times(0)).mapBuyQntyLvl2Sp(buyQntyResponseDTOS.get(2),new BuyQtyResponse(),2855);
 
     }
 

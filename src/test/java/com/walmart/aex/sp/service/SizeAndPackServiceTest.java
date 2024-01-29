@@ -112,7 +112,7 @@ class SizeAndPackServiceTest {
         sizeAndPackService = new SizeAndPackService(spFineLineChannelFixtureRepository, buyQuantityMapper, spCustomerChoiceChannelFixtureRepository, sizeAndPackObjectMapper,
                 merchCatPlanRepository, strategyFetchService, spCustomerChoiceChannelFixtureSizeRepository, sizeAndPackDeleteService, sizeAndPackDeletePlanService,
                 buyQtyCommonUtil, bigQueryInitialSetPlanService, initialSetPlanMapper, merchPackOptimizationRepository, packOptUpdateDataMapper, packOptAddDataMapper,
-                bigQueryPackStoresService, sizeAndPackDeletePackOptMapper, customerChoiceRepository, BQFactoryMapper, ccPackOptimizationRepository,appMessageTextRepository);
+                bigQueryPackStoresService, sizeAndPackDeletePackOptMapper, customerChoiceRepository, BQFactoryMapper, ccPackOptimizationRepository);
         ReflectionTestUtils.setField(sizeAndPackService, "bigQueryConnectionProperties", bigQueryConnectionProperties);
         lenient().when(bigQueryConnectionProperties.getPackDescriptionFeatureFlag()).thenReturn("true");
     }
@@ -136,7 +136,6 @@ class SizeAndPackServiceTest {
         convertChannelToStore(buyQntyResponseDTOS);
         Mockito.when(spCustomerChoiceChannelFixtureRepository.getBuyQntyByPlanChannelFineline(471l, 1,
                 2855)).thenReturn(buyQntyResponseDTOS);
-        Mockito.when(appMessageTextRepository.getValidationsByAppMessageCodes()).thenReturn(new ArrayList<>());
         BuyQtyRequest buyQtyRequest = BuyQtyResponseInputs.fetchBuyQtyRequestForStore();
         buyQtyRequest.setFinelineNbr(2855);
         BuyQtyResponse buyQtyResponse1 = BuyQtyResponseInputs.buyQtyResponseFromJson("/buyQtySizeResponse");

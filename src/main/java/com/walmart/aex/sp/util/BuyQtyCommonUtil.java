@@ -1,6 +1,5 @@
 package com.walmart.aex.sp.util;
 
-import com.walmart.aex.sp.dto.appmessage.ValidationResponseDTO;
 import com.walmart.aex.sp.dto.assortproduct.RFASizePackData;
 import com.walmart.aex.sp.dto.bqfp.*;
 import com.walmart.aex.sp.dto.buyquantity.*;
@@ -58,14 +57,14 @@ public class BuyQtyCommonUtil {
                 .orElse(new ArrayList<>());
     }
 
-    public BuyQtyResponse filterFinelinesWithSizes(List<BuyQntyResponseDTO> buyQntyResponseDTOS, BuyQtyResponse finelinesWithSizesFromStrategy,List<ValidationResponseDTO> validationMessages) {
+    public BuyQtyResponse filterFinelinesWithSizes(List<BuyQntyResponseDTO> buyQntyResponseDTOS, BuyQtyResponse finelinesWithSizesFromStrategy) {
         BuyQtyResponse buyQtyResponse = new BuyQtyResponse();
         buyQntyResponseDTOS.forEach(buyQntyResponseDTO -> getFinelines(buyQntyResponseDTO, finelinesWithSizesFromStrategy)
-                .forEach(finelineNbr -> buyQuantityMapper.mapBuyQntyLvl2Sp(buyQntyResponseDTO, buyQtyResponse, null, validationMessages)));
+                .forEach(finelineNbr -> buyQuantityMapper.mapBuyQntyLvl2Sp(buyQntyResponseDTO, buyQtyResponse, null)));
         return buyQtyResponse;
     }
 
-    public BuyQtyResponse filterStylesCcWithSizes(List<BuyQntyResponseDTO> buyQntyResponseDTOS, BuyQtyResponse stylesCcWithSizesFromStrategy, Integer finelineNbr,List<ValidationResponseDTO> validationMessages) {
+    public BuyQtyResponse filterStylesCcWithSizes(List<BuyQntyResponseDTO> buyQntyResponseDTOS, BuyQtyResponse stylesCcWithSizesFromStrategy, Integer finelineNbr) {
         BuyQtyResponse buyQtyResponse = new BuyQtyResponse();
 
         buyQntyResponseDTOS.forEach(buyQntyResponseDTO -> getFinelines(buyQntyResponseDTO, stylesCcWithSizesFromStrategy)
@@ -76,7 +75,7 @@ public class BuyQtyCommonUtil {
                 .map(StyleDto::getCustomerChoices)
                 .flatMap(Collection::stream)
                 .filter(customerChoiceDto -> customerChoiceDto.getCcId().equals(buyQntyResponseDTO.getCcId()))
-                .forEach(ccId -> buyQuantityMapper.mapBuyQntyLvl2Sp(buyQntyResponseDTO, buyQtyResponse, finelineNbr,validationMessages)));
+                .forEach(ccId -> buyQuantityMapper.mapBuyQntyLvl2Sp(buyQntyResponseDTO, buyQtyResponse, finelineNbr)));
 
         return buyQtyResponse;
     }

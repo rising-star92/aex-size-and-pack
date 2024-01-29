@@ -13,5 +13,15 @@ public interface AppMessageTextMapper {
     AppMessageTextMapper mapper = Mappers.getMapper(AppMessageTextMapper.class);
 
     List<AppMessageText> mapRequestToEntity(List<AppMessageTextRequest> requests);
+
     List<AppMessageTextResponse> mapEntityToResponse(List<AppMessageText> entity);
+
+    default AppMessageTextResponse map(AppMessageText appMessageText) {
+        return AppMessageTextResponse.builder()
+                .id(appMessageText.getId())
+                .typeDesc(appMessageText.getAppMessageType().getDesc())
+                .desc(appMessageText.getDesc())
+                .longDesc(appMessageText.getLongDesc())
+                .build();
+    }
 }

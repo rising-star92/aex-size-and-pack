@@ -1,13 +1,11 @@
 package com.walmart.aex.sp.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.protobuf.Message;
+import com.walmart.aex.sp.dto.appmessage.AppMessageTextResponse;
 import com.walmart.aex.sp.dto.appmessage.ValidationResponseDTO;
-import com.walmart.aex.sp.dto.bqfp.BQFPResponse;
 import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.exception.SizeAndPackException;
-import io.grpc.xds.shaded.io.envoyproxy.envoy.config.rbac.v2.Principal;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -37,6 +35,8 @@ public class BuyQuantityMapperTest {
 
     @Mock
     StrategyFetchService strategyFetchService;
+    @Mock
+    AppMessageTextService appMessageTextService;
 
     @Spy
     private ObjectMapper mapper = new ObjectMapper();
@@ -61,7 +61,7 @@ public class BuyQuantityMapperTest {
         buyQntyResponseDTO.setLvl4Nbr(11);
         buyQntyResponseDTO.setReplnQty(14);
         buyQntyResponseDTO.setInitialSetQty(10);
-        buyQunatityMapper.mapBuyQntyLvl2Sp(buyQntyResponseDTO,fetchFineLineResponse,finelineNbr,null);
+        buyQunatityMapper.mapBuyQntyLvl2Sp(buyQntyResponseDTO,fetchFineLineResponse,finelineNbr);
         assertNotNull(fetchFineLineResponse);
         assertEquals(fetchFineLineResponse.getPlanId(),471l);
 
@@ -85,7 +85,7 @@ public class BuyQuantityMapperTest {
         buyQntyResponseDTO.setLvl4Nbr(11);
         buyQntyResponseDTO.setReplnQty(14);
         buyQntyResponseDTO.setInitialSetQty(10);
-        buyQunatityMapper.mapBuyQntyLvl2Sp(buyQntyResponseDTO,fetchFineLineResponse,null,null);
+        buyQunatityMapper.mapBuyQntyLvl2Sp(buyQntyResponseDTO,fetchFineLineResponse,null);
         assertNotNull(fetchFineLineResponse);
         assertEquals(fetchFineLineResponse.getPlanId(),471l);
         MetricsDto metricsDto = fetchFineLineResponse.getLvl3List().get(0).getLvl4List().get(0).getMetrics();
@@ -115,7 +115,7 @@ public class BuyQuantityMapperTest {
         buyQntyResponseDTO.setInitialSetQty(10);
         buyQntyResponseDTO.setLvl0Nbr(23);
         BuyQtyResponse fetchFineLineResponse= getBuyQtyResponse(buyQntyResponseDTO,null);
-        buyQunatityMapper.mapBuyQntyLvl2Sp(buyQntyResponseDTO,fetchFineLineResponse,null,null);
+        buyQunatityMapper.mapBuyQntyLvl2Sp(buyQntyResponseDTO,fetchFineLineResponse,null);
         assertNotNull(fetchFineLineResponse);
         assertEquals(471l,fetchFineLineResponse.getPlanId());
         MetricsDto metricsDto = fetchFineLineResponse.getLvl3List().get(0).getLvl4List().get(0).getMetrics();
@@ -143,7 +143,7 @@ public class BuyQuantityMapperTest {
         buyQntyResponseDTO.setLvl4Nbr(11);
         buyQntyResponseDTO.setReplnQty(14);
         buyQntyResponseDTO.setInitialSetQty(10);
-        buyQunatityMapper.mapBuyQntyLvl2Sp(buyQntyResponseDTO,fetchFineLineResponse,null,null);
+        buyQunatityMapper.mapBuyQntyLvl2Sp(buyQntyResponseDTO,fetchFineLineResponse,null);
         assertNotNull(fetchFineLineResponse);
         assertEquals(fetchFineLineResponse.getPlanId(),471l);
         MetricsDto metricsDto = fetchFineLineResponse.getLvl3List().get(0).getMetrics();
@@ -163,7 +163,7 @@ public class BuyQuantityMapperTest {
         MetricsDto metricsDto = new MetricsDto();
         sizeDto.setMetrics(metricsDto);
         sizeDtos.add(sizeDto);
-        buyQunatityMapper.mapBuyQntySizeSp(Arrays.asList(buyQntyResponseDTO),sizeDtos.get(0),null);
+        buyQunatityMapper.mapBuyQntySizeSp(Arrays.asList(buyQntyResponseDTO),sizeDtos.get(0));
         assertEquals(100,sizeDto.getMetrics().getBuyQty());
 
     }
@@ -205,7 +205,7 @@ public class BuyQuantityMapperTest {
 
         Mockito.when(strategyFetchService.getBuyQtyResponseSizeProfile(newBuyReq)).thenReturn(buyQtyResponse);
 
-        buyQunatityMapper.mapBuyQntyLvl2Sp(buyQntyResponseDTO,fetchFineLineResponse,2816,null);
+        buyQunatityMapper.mapBuyQntyLvl2Sp(buyQntyResponseDTO,fetchFineLineResponse,2816);
         assertNotNull(fetchFineLineResponse);
         assertEquals(fetchFineLineResponse.getPlanId(),12);
         MetricsDto metricsDto = fetchFineLineResponse.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getCustomerChoices().get(0).getMetrics();
@@ -251,7 +251,7 @@ public class BuyQuantityMapperTest {
         styleDto.setCustomerChoices(customerChoiceDtoList);
         styleDtoList.add(styleDto);
         BuyQtyResponse fetchFineLineResponse= getBuyQtyResponse(buyQntyResponseDTO,styleDtoList);
-        buyQunatityMapper.mapBuyQntyLvl2Sp(buyQntyResponseDTO,fetchFineLineResponse,2816,null);
+        buyQunatityMapper.mapBuyQntyLvl2Sp(buyQntyResponseDTO,fetchFineLineResponse,2816);
         assertEquals(12,fetchFineLineResponse.getPlanId());
         MetricsDto metricsDto = fetchFineLineResponse.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getMetrics();
         assertEquals(metricsDto.getBuyQty(),(934));
@@ -264,21 +264,16 @@ public class BuyQuantityMapperTest {
 
     @Test
     public void testGetMetadataDto_WhenTypesAreDifferent() throws JsonProcessingException {
-        String messageObj = "{\"codes\":[200,201]}";
-        List< ValidationResponseDTO > validationResponseDTO = new ArrayList<>();
-        ValidationResponseDTO validationResponseDTO1 = new ValidationResponseDTO();
-        validationResponseDTO1.setCode(301);
-        validationResponseDTO1.setMessage("RFA_MISSING_DATA");
-        validationResponseDTO1.setType("WARNING");
-        ValidationResponseDTO validationResponseDTO2 = new ValidationResponseDTO();
-        validationResponseDTO2.setCode(302);
-        validationResponseDTO2.setMessage("BQFP_MISSING_IS_DATA");
-        validationResponseDTO2.setType("ERROR");
-        validationResponseDTO.add(validationResponseDTO1);
-        validationResponseDTO.add(validationResponseDTO2);
-        ValidationResult validationResult = ValidationResult.builder().codes(List.of(301,302)).build();
+        String messageObj = "{\"codes\":[150,151]}";
+        List<AppMessageTextResponse> appMessageTextResponseList = new ArrayList<>();
+        AppMessageTextResponse appMessageTextResponse1 =  AppMessageTextResponse.builder().id(150).desc("MISSING_SIZE_ASSOCIATION_FINELINE_LEVEL").typeDesc("Warning").longDesc("One or more CCs are missing size association. Please ensure all CCs have sizes associated and retrigger calculation").build();
+        AppMessageTextResponse appMessageTextResponse2 =  AppMessageTextResponse.builder().id(151).desc("MISSING_MERCH_METHOD_FINELINE_LEVEL").typeDesc("Error").longDesc("Merch method is missing for one or more Fixture types. Please ensure all fixture types are associated to a merch method and retrigger calculation").build();
+        appMessageTextResponseList.add(appMessageTextResponse1);
+        appMessageTextResponseList.add(appMessageTextResponse2);
+        ValidationResult validationResult = ValidationResult.builder().codes(Set.of(150,151)).build();
         Mockito.doReturn(validationResult).when(mapper).readValue(messageObj,ValidationResult.class);
-        Metadata metadata = buyQunatityMapper.getMetadataDto(messageObj,validationResponseDTO);
+        Mockito.when(appMessageTextService.getAllAppMessageText()).thenReturn(appMessageTextResponseList);
+        Metadata metadata = buyQunatityMapper.getMetadataDto(messageObj);
         assertEquals(2,metadata.getValidations().size());
         assertEquals(1,metadata.getValidations().get(0).getMessages().size());
         assertEquals(2,metadata.getValidations().stream().map(validationObj -> validationObj.getType()).collect(Collectors.toSet()).size());
@@ -286,21 +281,16 @@ public class BuyQuantityMapperTest {
 
     @Test
     public void testGetMetadataDto_WhenTypesAreSame() throws JsonProcessingException {
-        String messageObj = "{\"codes\":[200,201]}";
-        List< ValidationResponseDTO > validationResponseDTO = new ArrayList<>();
-        ValidationResponseDTO validationResponseDTO1 = new ValidationResponseDTO();
-        validationResponseDTO1.setCode(301);
-        validationResponseDTO1.setMessage("RFA_MISSING_DATA");
-        validationResponseDTO1.setType("ERROR");
-        ValidationResponseDTO validationResponseDTO2 = new ValidationResponseDTO();
-        validationResponseDTO2.setCode(302);
-        validationResponseDTO2.setMessage("BQFP_MISSING_IS_DATA");
-        validationResponseDTO2.setType("ERROR");
-        validationResponseDTO.add(validationResponseDTO1);
-        validationResponseDTO.add(validationResponseDTO2);
-        ValidationResult validationResult = ValidationResult.builder().codes(List.of(301,302)).build();
+        String messageObj = "{\"codes\":[150,151]}";
+        List<AppMessageTextResponse> appMessageTextResponseList = new ArrayList<>();
+        AppMessageTextResponse appMessageTextResponse1 =  AppMessageTextResponse.builder().id(150).desc("MISSING_SIZE_ASSOCIATION_FINELINE_LEVEL").typeDesc("Warning").longDesc("One or more CCs are missing size association. Please ensure all CCs have sizes associated and retrigger calculation").build();
+        AppMessageTextResponse appMessageTextResponse2 =  AppMessageTextResponse.builder().id(151).desc("MISSING_MERCH_METHOD_FINELINE_LEVEL").typeDesc("Warning").longDesc("Merch method is missing for one or more Fixture types. Please ensure all fixture types are associated to a merch method and retrigger calculation").build();
+        appMessageTextResponseList.add(appMessageTextResponse1);
+        appMessageTextResponseList.add(appMessageTextResponse2);
+        ValidationResult validationResult = ValidationResult.builder().codes(Set.of(150,151)).build();
         Mockito.doReturn(validationResult).when(mapper).readValue(messageObj,ValidationResult.class);
-        Metadata metadata = buyQunatityMapper.getMetadataDto(messageObj,validationResponseDTO);
+        Mockito.when(appMessageTextService.getAllAppMessageText()).thenReturn(appMessageTextResponseList);
+        Metadata metadata = buyQunatityMapper.getMetadataDto(messageObj);
         assertEquals(1,metadata.getValidations().size());
         assertEquals(2,metadata.getValidations().get(0).getMessages().size());
         assertEquals(1,metadata.getValidations().stream().map(validationObj -> validationObj.getType()).collect(Collectors.toSet()).size());

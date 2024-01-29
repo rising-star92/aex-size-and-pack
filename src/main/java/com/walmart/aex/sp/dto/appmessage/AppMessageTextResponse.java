@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AppMessageTextResponse {
     private Integer id;
-    private Integer typeId;
+    private String typeDesc;
     private String desc;
     private String longDesc;
 }
