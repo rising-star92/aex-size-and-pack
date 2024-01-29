@@ -21,7 +21,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -98,8 +97,6 @@ class SizeAndPackServiceTest {
 
     @Mock
     private CcPackOptimizationRepository ccPackOptimizationRepository;
-    @Mock
-    private AppMessageTextRepository appMessageTextRepository;
 
 
     private static Integer fineline1Nbr = 151;
@@ -136,6 +133,7 @@ class SizeAndPackServiceTest {
         convertChannelToStore(buyQntyResponseDTOS);
         Mockito.when(spCustomerChoiceChannelFixtureRepository.getBuyQntyByPlanChannelFineline(471l, 1,
                 2855)).thenReturn(buyQntyResponseDTOS);
+
         BuyQtyRequest buyQtyRequest = BuyQtyResponseInputs.fetchBuyQtyRequestForStore();
         buyQtyRequest.setFinelineNbr(2855);
         BuyQtyResponse buyQtyResponse1 = BuyQtyResponseInputs.buyQtyResponseFromJson("/buyQtySizeResponse");
