@@ -2,7 +2,6 @@ package com.walmart.aex.sp.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.appmessage.AppMessageTextResponse;
-import com.walmart.aex.sp.dto.appmessage.ValidationResponseDTO;
 import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.exception.SizeAndPackException;

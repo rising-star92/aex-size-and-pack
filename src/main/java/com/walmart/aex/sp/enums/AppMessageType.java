@@ -1,9 +1,9 @@
 package com.walmart.aex.sp.enums;
 
 public enum AppMessageType {
-    INFORMATION(0, "INFORMATIONAL"),
-    WARNING(2, "WARNING"),
-    ERROR(3, "ERROR");
+    INFORMATION(0, "Informational message"),
+    WARNING(2, "Warning message"),
+    ERROR(3, "Error message");
 
     private final Integer id;
     private final String description;

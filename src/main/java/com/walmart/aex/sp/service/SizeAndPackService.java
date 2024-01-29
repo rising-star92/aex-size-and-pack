@@ -2,7 +2,6 @@ package com.walmart.aex.sp.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.walmart.aex.sp.dto.appmessage.ValidationResponseDTO;
 import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.dto.commitmentreport.InitialBumpSetResponse;
 import com.walmart.aex.sp.dto.commitmentreport.InitialSetPackRequest;
@@ -117,7 +116,6 @@ public class SizeAndPackService {
     public BuyQtyResponse fetchFinelineBuyQnty(BuyQtyRequest buyQtyRequest) {
         try {
             List<BuyQntyResponseDTO> buyQntyResponseDTOS;
-//            List<ValidationResponseDTO> validationResponseDTOList = appMessageTextRepository.getValidationsByAppMessageCodes();
             if (buyQtyRequest.getChannel() != null) {
                 BuyQtyResponse finelinesWithSizesFromStrategy = strategyFetchService.getBuyQtyDetailsForFinelines(buyQtyRequest);
                 if (finelinesWithSizesFromStrategy != null) {
