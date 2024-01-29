@@ -218,18 +218,18 @@ public class BuyQuantityMapper {
             if (StringUtils.isNotEmpty(messageObj) ) {
                 ValidationResult validationResult = objectMapper.readValue(messageObj, ValidationResult.class);
                 if (Objects.nonNull(validationResult) && !validationResult.getCodes().isEmpty()) {
-                    List<AppMessageTextResponse> matchingValidationResponseDTO = appMessageTextService.getAppMessagesByIds(validationResult.getCodes());
-                    if (!matchingValidationResponseDTO.isEmpty()) {
+                    List<AppMessageTextResponse> matchingAppMessageTexts = appMessageTextService.getAppMessagesByIds(validationResult.getCodes());
+                    if (!matchingAppMessageTexts.isEmpty()) {
                         List<ValidationMessage> validations = new ArrayList<>();
-                        for (AppMessageTextResponse validationObj : matchingValidationResponseDTO) {
-                            ValidationMessage validationMessage = getValidationObjByType(validationObj.getTypeDesc(), validations);
-                            if (Objects.nonNull(validationMessage)) {
-                                validationMessage.getMessages().add(validationObj.getLongDesc());
+                        for (AppMessageTextResponse appMessageTextObj : matchingAppMessageTexts) {
+                            ValidationMessage validationMessage = getValidationObjByType(appMessageTextObj.getTypeDesc(), validations);
+                            if (Objects.nonNull(validationMessage) && !appMessageTextObj.getLongDesc().isBlank()) {
+                                validationMessage.getMessages().add(appMessageTextObj.getLongDesc());
                             } else {
                                 List<String> messages = new ArrayList<>();
-                                messages.add(validationObj.getLongDesc());
+                                messages.add(appMessageTextObj.getLongDesc());
                                 ValidationMessage newValidationMessage = ValidationMessage.builder()
-                                        .type(validationObj.getTypeDesc())
+                                        .type(appMessageTextObj.getTypeDesc())
                                         .messages(messages)
                                         .build();
                                 validations.add(newValidationMessage);

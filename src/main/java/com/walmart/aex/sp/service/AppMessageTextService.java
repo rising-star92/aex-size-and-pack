@@ -2,7 +2,6 @@ package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.appmessage.AppMessageTextRequest;
 import com.walmart.aex.sp.dto.appmessage.AppMessageTextResponse;
-import org.springframework.cache.annotation.Cacheable;
 
 import java.util.List;
 import java.util.Set;
