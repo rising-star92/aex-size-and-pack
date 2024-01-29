@@ -88,7 +88,6 @@ class AppMessageTextServiceImplTest {
     void testDeleteAppMessages() {
         List<Integer> request = List.of(200,201);
         appMessageTextService.deleteAppMessageTexts(request);
-
         verify(appMessageTextRepository, times(1)).deleteAllById(idArgumentCaptor.capture());
         assertNotNull(idArgumentCaptor.getValue());
         assertEquals(2, idArgumentCaptor.getValue().size());

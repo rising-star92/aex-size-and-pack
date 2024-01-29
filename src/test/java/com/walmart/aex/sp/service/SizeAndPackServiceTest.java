@@ -98,7 +98,6 @@ class SizeAndPackServiceTest {
     @Mock
     private CcPackOptimizationRepository ccPackOptimizationRepository;
 
-
     private static Integer fineline1Nbr = 151;
     private static String styleNbr = "151_2_23_001";
     private static String ccId = "151_2_23_001_001";
