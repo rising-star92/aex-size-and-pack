@@ -177,17 +177,17 @@ class CalculateFinelineBuyQuantityTest {
 
     @Test
     void initialSetCalculationTest() throws SizeAndPackException, IOException {
-        final String path = "/plan72fineline1500";
-        BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
-        APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
-        BuyQtyResponse buyQtyResponse = buyQtyResponseFromJson(path.concat("/BuyQtyResponse"));
-        when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
-        when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
-        when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
-        when(deptAdminRuleService.getInitialThreshold(anyLong(), anyInt())).thenReturn(2);
-        when(validationService.validateCalculateBuyQuantityInputData(any(List.class), any(APResponse.class), any(BQFPResponse.class), any(StyleDto.class), any(CustomerChoiceDto.class))).thenReturn(ValidationResult.builder().codes(new HashSet<>(Arrays.asList(100,200))).build());
-        CalculateBuyQtyRequest request = create("store", 50000, 34, 1488, 9071, 7205, 1500, 12L);
-        CalculateBuyQtyParallelRequest pRequest = createFromRequest(request);
+       final String path = "/plan72fineline1500";
+       BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
+       APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
+       BuyQtyResponse buyQtyResponse = buyQtyResponseFromJson(path.concat("/BuyQtyResponse"));
+       when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
+       when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
+       when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
+       when(deptAdminRuleService.getInitialThreshold(anyLong(), anyInt())).thenReturn(2);
+       when(validationService.validateCalculateBuyQuantityInputData(any(List.class), any(APResponse.class), any(BQFPResponse.class), any(StyleDto.class), any(CustomerChoiceDto.class))).thenReturn(ValidationResult.builder().codes(new HashSet<>(Arrays.asList(100,200))).build());
+       CalculateBuyQtyRequest request = create("store", 50000, 34, 1488, 9071, 7205, 1500, 12L);
+       CalculateBuyQtyParallelRequest pRequest = createFromRequest(request);
 
         CalculateBuyQtyResponse r = new CalculateBuyQtyResponse();
         r.setMerchCatgReplPacks(new ArrayList<>());
