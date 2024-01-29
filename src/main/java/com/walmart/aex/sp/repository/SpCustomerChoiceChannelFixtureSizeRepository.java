@@ -32,7 +32,8 @@ public interface SpCustomerChoiceChannelFixtureSizeRepository extends JpaReposit
             "sccfs.initialSetQty, " +
             "sccfs.buyQty, " +
             "sccfs.replnQty, " +
-            "sccfs.adjReplnQty " +
+            "sccfs.adjReplnQty, " +
+            "sccfs.messageObj as sizeMessageObj " +
             ") " +
             "from MerchCatPlan msp " +
             "inner join " +

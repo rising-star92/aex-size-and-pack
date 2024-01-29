@@ -20,10 +20,12 @@ public class BuyQntyResponseDTO {
     private String lvl4Desc;
     private Integer finelineNbr;
     private String finelineDesc;
+    private String finelineMessageObj;
     private String styleNbr;
     private String ccId;
     private Integer ahsSizeId;
     private String sizeDesc;
+    private String sizeMessageObj;
     private Integer flowStrategyCode;
     private Integer merchMethodCode;
     private String merchMethodShortDesc;
@@ -40,6 +42,7 @@ public class BuyQntyResponseDTO {
     private Integer styleBuyQty;
     private Integer styleReplnQty;
     private Integer styleAdjReplnQty;
+    private String styleMessageObj;
     private Integer ccFlowStrategy;
     private Integer ccMerchCode;
     private String ccMerchDesc;
@@ -54,11 +57,12 @@ public class BuyQntyResponseDTO {
     private Integer bumpPackCnt;
     private String altStyleDesc;
     private String altCcDesc;
+    private String ccMessageObj;
 
     public BuyQntyResponseDTO(Long planId, Integer channelId, Integer lvl0Nbr, String lvl0Desc, Integer lvl1Nbr, String lvl1Desc, Integer lvl2Nbr,
                               String lvl2Desc, Integer lvl3Nbr, String lvl3Desc, Integer lvl4Nbr, String lvl4Desc, Integer finelineNbr,
                               String finelineDesc, Integer flowStrategyCode, Integer merchMethodCode, String merchMethodShortDesc, Integer bumpPackQty,
-                              Integer initialSetQty, Integer buyQty, Integer replnQty, Integer adjReplnQty, String altFineLineDesc) {
+                              Integer initialSetQty, Integer buyQty, Integer replnQty, Integer adjReplnQty, String altFineLineDesc,String finelineMessageObj) {
         this.planId=planId;
         this.channelId=channelId;
         this.lvl0Nbr=lvl0Nbr;
@@ -82,13 +86,14 @@ public class BuyQntyResponseDTO {
         this.replnQty=replnQty;
         this.adjReplnQty=adjReplnQty;
         this.altFineLineDesc=altFineLineDesc;
+        this.finelineMessageObj=finelineMessageObj;
     }
 
     public BuyQntyResponseDTO(Long planId, Integer lvl0Nbr, Integer lvl1Nbr, Integer lvl2Nbr, Integer lvl3Nbr, Integer lvl4Nbr, Integer finelineNbr,
                               String styleNbr, String ccId,Integer styleFlowStrategy, Integer styleMerchCode, String styleMerchDesc, Integer styleBumpQty,
-                              Integer styleIsQty, Integer styleBuyQty, Integer styleReplnQty, Integer styleAdjReplnQty,
+                              Integer styleIsQty, Integer styleBuyQty, Integer styleReplnQty, Integer styleAdjReplnQty, String styleMessageObj,
                               Integer ccFlowStrategy, Integer ccMerchCode, String ccMerchDesc, Integer ccBumpQty,
-                              Integer ccIsQty, Integer ccBuyQty, Integer ccReplnQty, Integer ccAdjReplnQty, Integer channelId, String colorFamilyDesc, String colorName, String altStyleDesc, String altCcDesc) {
+                              Integer ccIsQty, Integer ccBuyQty, Integer ccReplnQty, Integer ccAdjReplnQty, Integer channelId, String colorFamilyDesc, String colorName, String altStyleDesc, String altCcDesc, String ccMessageObj) {
         this.planId=planId;
         this.lvl0Nbr=lvl0Nbr;
         this.lvl1Nbr=lvl1Nbr;
@@ -106,6 +111,7 @@ public class BuyQntyResponseDTO {
         this.styleBuyQty=styleBuyQty;
         this.styleReplnQty=styleReplnQty;
         this.styleAdjReplnQty=styleAdjReplnQty;
+        this.styleMessageObj=styleMessageObj;
         this.ccFlowStrategy=ccFlowStrategy;
         this.ccMerchCode=ccMerchCode;
         this.ccMerchDesc=ccMerchDesc;
@@ -119,13 +125,13 @@ public class BuyQntyResponseDTO {
         this.colorName=colorName;
         this.altStyleDesc=altStyleDesc;
         this.altCcDesc=altCcDesc;
-
+        this.ccMessageObj=ccMessageObj;
     }
 
     public BuyQntyResponseDTO(Long planId, Integer lvl0Nbr, Integer lvl1Nbr, Integer lvl2Nbr,
                               Integer lvl3Nbr, Integer lvl4Nbr, Integer finelineNbr, String styleNbr, String ccId, Integer ahsSizeId, String sizeDesc,
                               Integer flowStrategyCode, Integer merchMethodCode, String merchMethodShortDesc, Integer bumpPackQty,
-                              Integer initialSetQty, Integer buyQty, Integer replnQty, Integer adjReplnQty) {
+                              Integer initialSetQty, Integer buyQty, Integer replnQty, Integer adjReplnQty, String sizeMessageObj) {
         this.planId=planId;
         this.lvl0Nbr=lvl0Nbr;
         this.lvl1Nbr=lvl1Nbr;
@@ -145,6 +151,7 @@ public class BuyQntyResponseDTO {
         this.buyQty=buyQty;
         this.replnQty=replnQty;
         this.adjReplnQty=adjReplnQty;
+        this.sizeMessageObj=sizeMessageObj;
     }
 
     public BuyQntyResponseDTO(Long planId, Integer channelId, Integer lvl0Nbr, String lvl0Desc, Integer lvl1Nbr, String lvl1Desc, Integer lvl2Nbr,

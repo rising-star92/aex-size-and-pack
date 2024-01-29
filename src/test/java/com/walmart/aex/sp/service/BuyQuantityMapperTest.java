@@ -1,6 +1,7 @@
 package com.walmart.aex.sp.service;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.walmart.aex.sp.dto.bqfp.BQFPResponse;
+import com.walmart.aex.sp.dto.appmessage.AppMessageTextResponse;
 import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.exception.SizeAndPackException;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
@@ -17,6 +19,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -30,7 +34,10 @@ public class BuyQuantityMapperTest {
 
     @Mock
     StrategyFetchService strategyFetchService;
+    @Mock
+    AppMessageTextService appMessageTextService;
 
+    @Spy
     private ObjectMapper mapper = new ObjectMapper();
 
     private static final Integer finelineNbr=3470;
@@ -252,6 +259,40 @@ public class BuyQuantityMapperTest {
         assertEquals(2816, fetchFineLineResponse.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getFinelineNbr());
         assertEquals("34_2816_2_19_2", fetchFineLineResponse.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getStyleNbr());
         assertEquals("34_2816_2_19_2_CHARCOAL GREY HEATHER", fetchFineLineResponse.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getCustomerChoices().get(0).getCcId());
+    }
+
+    @Test
+    public void testGetMetadataDto_WhenTypesAreDifferent() throws JsonProcessingException {
+        String messageObj = "{\"codes\":[150,151]}";
+        List<AppMessageTextResponse> appMessageTextResponseList = new ArrayList<>();
+        AppMessageTextResponse appMessageTextResponse1 =  AppMessageTextResponse.builder().id(150).desc("MISSING_SIZE_ASSOCIATION_FINELINE_LEVEL").typeDesc("Warning").longDesc("One or more CCs are missing size association. Please ensure all CCs have sizes associated and retrigger calculation").build();
+        AppMessageTextResponse appMessageTextResponse2 =  AppMessageTextResponse.builder().id(151).desc("MISSING_MERCH_METHOD_FINELINE_LEVEL").typeDesc("Error").longDesc("Merch method is missing for one or more Fixture types. Please ensure all fixture types are associated to a merch method and retrigger calculation").build();
+        appMessageTextResponseList.add(appMessageTextResponse1);
+        appMessageTextResponseList.add(appMessageTextResponse2);
+        ValidationResult validationResult = ValidationResult.builder().codes(Set.of(150,151)).build();
+        Mockito.doReturn(validationResult).when(mapper).readValue(messageObj,ValidationResult.class);
+        Mockito.when(appMessageTextService.getAppMessagesByIds(validationResult.getCodes())).thenReturn(appMessageTextResponseList);
+        Metadata metadata = buyQunatityMapper.getMetadataDto(messageObj);
+        assertEquals(2,metadata.getValidations().size());
+        assertEquals(1,metadata.getValidations().get(0).getMessages().size());
+        assertEquals(2,metadata.getValidations().stream().map(validationObj -> validationObj.getType()).collect(Collectors.toSet()).size());
+    }
+
+    @Test
+    public void testGetMetadataDto_WhenTypesAreSame() throws JsonProcessingException {
+        String messageObj = "{\"codes\":[150,151]}";
+        List<AppMessageTextResponse> appMessageTextResponseList = new ArrayList<>();
+        AppMessageTextResponse appMessageTextResponse1 =  AppMessageTextResponse.builder().id(150).desc("MISSING_SIZE_ASSOCIATION_FINELINE_LEVEL").typeDesc("Warning").longDesc("One or more CCs are missing size association. Please ensure all CCs have sizes associated and retrigger calculation").build();
+        AppMessageTextResponse appMessageTextResponse2 =  AppMessageTextResponse.builder().id(151).desc("MISSING_MERCH_METHOD_FINELINE_LEVEL").typeDesc("Warning").longDesc("Merch method is missing for one or more Fixture types. Please ensure all fixture types are associated to a merch method and retrigger calculation").build();
+        appMessageTextResponseList.add(appMessageTextResponse1);
+        appMessageTextResponseList.add(appMessageTextResponse2);
+        ValidationResult validationResult = ValidationResult.builder().codes(Set.of(150,151)).build();
+        Mockito.doReturn(validationResult).when(mapper).readValue(messageObj,ValidationResult.class);
+        Mockito.when(appMessageTextService.getAppMessagesByIds(validationResult.getCodes())).thenReturn(appMessageTextResponseList);
+        Metadata metadata = buyQunatityMapper.getMetadataDto(messageObj);
+        assertEquals(1,metadata.getValidations().size());
+        assertEquals(2,metadata.getValidations().get(0).getMessages().size());
+        assertEquals(1,metadata.getValidations().stream().map(validationObj -> validationObj.getType()).collect(Collectors.toSet()).size());
     }
 
     private BuyQtyResponse sizeProfileResponseFromJson(String filename) throws IOException {

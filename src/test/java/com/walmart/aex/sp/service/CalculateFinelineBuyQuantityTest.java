@@ -151,28 +151,28 @@ class CalculateFinelineBuyQuantityTest {
 
     CalculateFinelineBuyQuantityMapper calculateFinelineBuyQuantityMapper;
 
-   @Spy
-   ObjectMapper mapper = new ObjectMapper();
+    @Spy
+    ObjectMapper mapper = new ObjectMapper();
 
     @BeforeEach
     void setUp() throws SizeAndPackException {
-       MockitoAnnotations.openMocks(this);
-       calculateInitialSetQuantityService = new CalculateInitialSetQuantityService();
-       calculateFinelineBuyQuantityMapper = new CalculateFinelineBuyQuantityMapper(mapper);
-       calculateBumpPackQtyService = new CalculateBumpPackQtyService();
-       buyQuantityConstraintService = new BuyQuantityConstraintService(calculateBumpPackQtyService);
-       addStoreBuyQuantityService = new AddStoreBuyQuantityService(mapper, calculateBumpPackQtyService, buyQuantityConstraintService, calculateInitialSetQuantityService, buyQtyProperties);
-       replenishmentsOptimizationServices = new ReplenishmentsOptimizationService(deptAdminRuleService);
-       BuyQtyReplenishmentMapperService buyQtyReplenishmentMapperService = new BuyQtyReplenishmentMapperService();
-       replenishmentService = new ReplenishmentService(fineLineReplenishmentRepository, spCustomerChoiceReplenishmentRepository, sizeListReplenishmentRepository, catgReplnPkConsRepository,
-               subCatgReplnPkConsRepository, finelineReplnPkConsRepository, styleReplnConsRepository, ccReplnConsRepository,
-               ccMmReplnPkConsRepository, ccSpReplnPkConsRepository, replenishmentMapper, updateReplnConfigMapper, buyQuantityMapper,
-               strategyFetchService, buyQtyCommonUtil, sizeLevelReplenishmentRepository,sizeLevelReplenishmentMapper);
-       calculateOnlineFinelineBuyQuantity = new  CalculateOnlineFinelineBuyQuantity (mapper, buyQtyReplenishmentMapperService,replenishmentsOptimizationServices, replenishmentService );
-       calculateFinelineBuyQuantity = new CalculateFinelineBuyQuantity(bqfpService, mapper, buyQtyReplenishmentMapperService, calculateOnlineFinelineBuyQuantity,
-               strategyFetchService,addStoreBuyQuantityService, buyQuantityConstraintService, deptAdminRuleService, replenishmentService, replenishmentsOptimizationServices,
-               midasServiceCall, linePlanService, bigQueryClusterService, calculateInitialSetQuantityService, calculateBumpPackQtyService, validationService, calculateFinelineBuyQuantityMapper);
-       setProperties();
+        MockitoAnnotations.openMocks(this);
+        calculateInitialSetQuantityService = new CalculateInitialSetQuantityService();
+        calculateFinelineBuyQuantityMapper = new CalculateFinelineBuyQuantityMapper(mapper);
+        calculateBumpPackQtyService = new CalculateBumpPackQtyService();
+        buyQuantityConstraintService = new BuyQuantityConstraintService(calculateBumpPackQtyService);
+        addStoreBuyQuantityService = new AddStoreBuyQuantityService(mapper, calculateBumpPackQtyService, buyQuantityConstraintService, calculateInitialSetQuantityService, buyQtyProperties);
+        replenishmentsOptimizationServices = new ReplenishmentsOptimizationService(deptAdminRuleService);
+        BuyQtyReplenishmentMapperService buyQtyReplenishmentMapperService = new BuyQtyReplenishmentMapperService();
+        replenishmentService = new ReplenishmentService(fineLineReplenishmentRepository, spCustomerChoiceReplenishmentRepository, sizeListReplenishmentRepository, catgReplnPkConsRepository,
+                subCatgReplnPkConsRepository, finelineReplnPkConsRepository, styleReplnConsRepository, ccReplnConsRepository,
+                ccMmReplnPkConsRepository, ccSpReplnPkConsRepository, replenishmentMapper, updateReplnConfigMapper, buyQuantityMapper,
+                strategyFetchService, buyQtyCommonUtil, sizeLevelReplenishmentRepository,sizeLevelReplenishmentMapper);
+        calculateOnlineFinelineBuyQuantity = new  CalculateOnlineFinelineBuyQuantity (mapper, buyQtyReplenishmentMapperService,replenishmentsOptimizationServices, replenishmentService );
+        calculateFinelineBuyQuantity = new CalculateFinelineBuyQuantity(bqfpService, mapper, buyQtyReplenishmentMapperService, calculateOnlineFinelineBuyQuantity,
+                strategyFetchService,addStoreBuyQuantityService, buyQuantityConstraintService, deptAdminRuleService, replenishmentService, replenishmentsOptimizationServices,
+                midasServiceCall, linePlanService, bigQueryClusterService, calculateInitialSetQuantityService, calculateBumpPackQtyService, validationService, calculateFinelineBuyQuantityMapper);
+        setProperties();
     }
 
     @Test
@@ -246,7 +246,7 @@ class CalculateFinelineBuyQuantityTest {
         assertNotNull(response.getMerchCatgReplPacks());
         assertEquals(1, response.getMerchCatgReplPacks().size(), "Only 1 merch catg repl pack created");
         assertEquals((Integer)18417,
-              response.getMerchCatgReplPacks().get(0).getReplUnits(), "Repln units should be 18417 for cc");
+                response.getMerchCatgReplPacks().get(0).getReplUnits(), "Repln units should be 18417 for cc");
 
     }
 
@@ -459,7 +459,7 @@ class CalculateFinelineBuyQuantityTest {
             return mapper.readValue(json, BuyQtyObj.class);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
-           Assertions.fail("Something happened deserializing store object");
+            Assertions.fail("Something happened deserializing store object");
         }
         return null;
     }
@@ -561,13 +561,13 @@ class CalculateFinelineBuyQuantityTest {
         assertEquals(2, spCustomerChoiceChannelFixtureSizeList.stream().flatMap(Collection::stream).filter(val -> val.getAhsSizeDesc().equals("33X30")).map(SpCustomerChoiceChannelFixtureSize::getMessageObj).filter(Objects::nonNull).filter(val -> val.equals("{\"codes\":[]}")).count());
 
         SpCustomerChoiceChannelFixture fixture1 = response.getSpFineLineChannelFixtures()
-                                                .stream()
-                                                .map(SpFineLineChannelFixture::getSpStyleChannelFixtures)
-                                                .flatMap(Collection::stream)
-                                                .map(SpStyleChannelFixture::getSpCustomerChoiceChannelFixture)
-                                                .flatMap(Collection::stream)
-                                                .filter(customer -> customer.getSpCustomerChoiceChannelFixtureId().getCustomerChoice().equals("23_250_0_22_1_ANTHRACITE"))
-                                                .findFirst().get();
+                .stream()
+                .map(SpFineLineChannelFixture::getSpStyleChannelFixtures)
+                .flatMap(Collection::stream)
+                .map(SpStyleChannelFixture::getSpCustomerChoiceChannelFixture)
+                .flatMap(Collection::stream)
+                .filter(customer -> customer.getSpCustomerChoiceChannelFixtureId().getCustomerChoice().equals("23_250_0_22_1_ANTHRACITE"))
+                .findFirst().get();
         Set<SpCustomerChoiceChannelFixtureSize> fixture1Sizes = fixture1.getSpCustomerChoiceChannelFixtureSize();
 
         assertEquals(16, fixture1Sizes.size(), "Fixture 1 Should have 16 sizes present");

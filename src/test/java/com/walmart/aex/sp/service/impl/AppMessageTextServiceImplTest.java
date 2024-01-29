@@ -56,7 +56,7 @@ class AppMessageTextServiceImplTest {
         List<AppMessageTextResponse> appMessageTextResponses = appMessageTextService.getAllAppMessageText();
         assertNotNull(appMessageTextResponses);
         assertEquals(2, appMessageTextResponses.size());
-        assertEquals(1, appMessageTextResponses.stream().filter(appMessageTextResponse -> appMessageTextResponse.getId().equals(200)).map(AppMessageTextResponse::getTypeId).findFirst().orElse(null));
+        assertEquals("ERROR", appMessageTextResponses.stream().filter(appMessageTextResponse -> appMessageTextResponse.getId().equals(200)).map(AppMessageTextResponse::getTypeDesc).findFirst().orElse(null));
     }
 
     @Test
@@ -88,7 +88,6 @@ class AppMessageTextServiceImplTest {
     void testDeleteAppMessages() {
         List<Integer> request = List.of(200,201);
         appMessageTextService.deleteAppMessageTexts(request);
-        
         verify(appMessageTextRepository, times(1)).deleteAllById(idArgumentCaptor.capture());
         assertNotNull(idArgumentCaptor.getValue());
         assertEquals(2, idArgumentCaptor.getValue().size());

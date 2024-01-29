@@ -1,13 +1,18 @@
 package com.walmart.aex.sp.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.walmart.aex.sp.dto.appmessage.AppMessageTextResponse;
 import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.exception.SizeAndPackException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 
 @Service
@@ -15,9 +20,13 @@ import java.util.stream.DoubleStream;
 public class BuyQuantityMapper {
 
     private final StrategyFetchService strategyFetchService;
+    private final ObjectMapper objectMapper;
+    private final AppMessageTextService appMessageTextService;
 
-    BuyQuantityMapper(StrategyFetchService strategyFetchService){
+    BuyQuantityMapper(StrategyFetchService strategyFetchService, ObjectMapper objectMapper, AppMessageTextService appMessageTextService){
         this.strategyFetchService = strategyFetchService;
+        this.objectMapper = objectMapper;
+        this.appMessageTextService = appMessageTextService;
     }
 
     public void mapBuyQntyLvl2Sp(BuyQntyResponseDTO buyQntyResponseDTO, BuyQtyResponse response, Integer finelineNbr) {
@@ -137,7 +146,7 @@ public class BuyQuantityMapper {
         lvl4.setFinelines(mapBuyQntyFlSp(buyQntyResponseDTO, lvl4, finelineNbr));
     }
 
-    private List<FinelineDto> mapBuyQntyFlSp(BuyQntyResponseDTO buyQntyResponseDTO, Lvl4Dto lvl4, Integer finelineNbr) {
+    private List<FinelineDto> mapBuyQntyFlSp(BuyQntyResponseDTO buyQntyResponseDTO, Lvl4Dto lvl4, Integer finelineNbr ) {
         List<FinelineDto> finelineDtoList = Optional.ofNullable(lvl4.getFinelines()).orElse(new ArrayList<>());
 
         finelineDtoList.stream()
@@ -190,41 +199,95 @@ public class BuyQuantityMapper {
         fineline.setChannelId(buyQntyResponseDTO.getChannelId());
         if (finelineNbr == null) {
             fineline.setFinelineDesc(buyQntyResponseDTO.getFinelineDesc());
-            MetricsDto metricsDto = new MetricsDto();
-            metricsDto.setBumpPackQty(Objects.nonNull(buyQntyResponseDTO.getBumpPackQty()) ? buyQntyResponseDTO.getBumpPackQty(): 0);
-            int buyQty = buyQntyResponseDTO.getBuyQty() != null
-                    ? Optional.ofNullable(buyQntyResponseDTO.getBuyQty())
-                    .orElse(0)
-                    : 0;
-
-            metricsDto.setBuyQty(buyQty);
-            int isQty = buyQntyResponseDTO.getInitialSetQty() != null
-                    ? Optional.ofNullable(buyQntyResponseDTO.getInitialSetQty())
-                    .orElse(0)
-                    : 0;
-
-            metricsDto.setFinalInitialSetQty(isQty);
-            int rplnQty = buyQntyResponseDTO.getReplnQty() != null
-                    ? Optional.ofNullable(buyQntyResponseDTO.getReplnQty())
-                    .orElse(0)
-                    : 0;
-
-            metricsDto.setFinalReplenishmentQty(rplnQty);
-
-            int bumpQty = buyQntyResponseDTO.getBumpPackQty() != null
-                    ? Optional.ofNullable(buyQntyResponseDTO.getBumpPackQty())
-                    .orElse(0)
-                    : 0;
-
-            metricsDto.setBumpPackQty(bumpQty);
-
-            metricsDto.setFinalBuyQty(buyQty);
-            fineline.setMetrics(metricsDto);
-
+            fineline.setMetrics(getFlMetricsDto(buyQntyResponseDTO));
+            fineline.setMetadata(getMetadataDto(buyQntyResponseDTO.getFinelineMessageObj()));
         } else {
             fineline.setStyles(mapBuyQntyStyleSp(buyQntyResponseDTO, fineline));
         }
         finelineDtoList.add(fineline);
+    }
+
+    /***
+     * This method will build Metadata object for fineline/style/cc/size level
+     * @param messageObj;
+     * @return Metadata
+     */
+    protected Metadata getMetadataDto(String messageObj) {
+        Metadata metadata = Metadata.builder().build();
+        try {
+            if (StringUtils.isNotEmpty(messageObj) ) {
+                ValidationResult validationResult = objectMapper.readValue(messageObj, ValidationResult.class);
+                if (Objects.nonNull(validationResult) && !validationResult.getCodes().isEmpty()) {
+                    List<AppMessageTextResponse> matchingAppMessageTexts = appMessageTextService.getAppMessagesByIds(validationResult.getCodes());
+                    if (!matchingAppMessageTexts.isEmpty()) {
+                        List<ValidationMessage> validations = new ArrayList<>();
+                        for (AppMessageTextResponse appMessageTextObj : matchingAppMessageTexts) {
+                            ValidationMessage validationMessage = getValidationObjByType(appMessageTextObj.getTypeDesc(), validations);
+                            if (Objects.nonNull(validationMessage) && !appMessageTextObj.getLongDesc().isBlank()) {
+                                validationMessage.getMessages().add(appMessageTextObj.getLongDesc());
+                            } else {
+                                List<String> messages = new ArrayList<>();
+                                messages.add(appMessageTextObj.getLongDesc());
+                                ValidationMessage newValidationMessage = ValidationMessage.builder()
+                                        .type(appMessageTextObj.getTypeDesc())
+                                        .messages(messages)
+                                        .build();
+                                validations.add(newValidationMessage);
+                            }
+                        }
+                        metadata.setValidations(validations);
+                    } else {
+                        log.info("No matching Buy Quantity Validation Message found!");
+                    }
+                }
+            }
+        } catch (JsonProcessingException ex) {
+            log.error("Exception while parsing message object for validation codes :", ex);
+        }
+        return metadata;
+    }
+
+    /***
+     * Below method will fetch the ValidationMessage object for given type , so that we can append new message to its message list
+     * @param type
+     * @param validations
+     * @return ValidationMessage
+     */
+    private ValidationMessage getValidationObjByType(String type, List<ValidationMessage> validations) {
+        return validations.stream().filter( validationObj -> validationObj.getType().equals(type)).findAny().orElse(null);
+    }
+
+    private MetricsDto getFlMetricsDto(BuyQntyResponseDTO buyQntyResponseDTO) {
+        MetricsDto metricsDto = new MetricsDto();
+        metricsDto.setBumpPackQty(Objects.nonNull(buyQntyResponseDTO.getBumpPackQty()) ? buyQntyResponseDTO.getBumpPackQty(): 0);
+        int buyQty = buyQntyResponseDTO.getBuyQty() != null
+                ? Optional.ofNullable(buyQntyResponseDTO.getBuyQty())
+                .orElse(0)
+                : 0;
+
+        metricsDto.setBuyQty(buyQty);
+        int isQty = buyQntyResponseDTO.getInitialSetQty() != null
+                ? Optional.ofNullable(buyQntyResponseDTO.getInitialSetQty())
+                .orElse(0)
+                : 0;
+
+        metricsDto.setFinalInitialSetQty(isQty);
+        int rplnQty = buyQntyResponseDTO.getReplnQty() != null
+                ? Optional.ofNullable(buyQntyResponseDTO.getReplnQty())
+                .orElse(0)
+                : 0;
+
+        metricsDto.setFinalReplenishmentQty(rplnQty);
+
+        int bumpQty = buyQntyResponseDTO.getBumpPackQty() != null
+                ? Optional.ofNullable(buyQntyResponseDTO.getBumpPackQty())
+                .orElse(0)
+                : 0;
+
+        metricsDto.setBumpPackQty(bumpQty);
+
+        metricsDto.setFinalBuyQty(buyQty);
+        return metricsDto;
     }
 
     private List<StyleDto> mapBuyQntyStyleSp(BuyQntyResponseDTO buyQntyResponseDTO, FinelineDto fineline) {
@@ -274,6 +337,7 @@ public class BuyQuantityMapper {
 
         metricsDto.setFinalBuyQty(buyQty);
         styleDto.setMetrics(metricsDto);
+        styleDto.setMetadata(getMetadataDto(buyQntyResponseDTO.getStyleMessageObj()));
         styleDto.setCustomerChoices(mapBuyQntyCcSp(buyQntyResponseDTO, styleDto));
         styleDtoList.add(styleDto);
     }
@@ -440,6 +504,7 @@ public class BuyQuantityMapper {
 
         metricsDto.setBumpPackQty(bumpQty);
         customerChoiceDto.setMetrics(metricsDto);
+        customerChoiceDto.setMetadata(getMetadataDto(buyQntyResponseDTO.getCcMessageObj()));
         customerChoiceDtoList.add(customerChoiceDto);
     }
 
@@ -455,6 +520,7 @@ public class BuyQuantityMapper {
                     metricsDto.setFinalInitialSetQty(Optional.ofNullable(metricsDto.getFinalInitialSetQty()).orElse(0) +Optional.ofNullable(buyQntyResponseDTO.getInitialSetQty()).orElse(0));
                     metricsDto.setFinalReplenishmentQty(Optional.ofNullable(metricsDto.getFinalReplenishmentQty()).orElse(0) + Optional.ofNullable(buyQntyResponseDTO.getReplnQty()).orElse(0));
                     metricsDto.setFinalBuyQty(Optional.ofNullable(metricsDto.getFinalBuyQty()).orElse(0) + Optional.ofNullable(buyQntyResponseDTO.getBuyQty()).orElse(0));
-                });
+                    sizeDto.setMetadata(getMetadataDto(buyQntyResponseDTO.getSizeMessageObj()));
+                        });
     }
 }
