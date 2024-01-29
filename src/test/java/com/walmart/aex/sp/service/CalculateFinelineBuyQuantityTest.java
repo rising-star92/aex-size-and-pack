@@ -557,9 +557,9 @@ class CalculateFinelineBuyQuantityTest {
         assertEquals(4, spCustomerChoiceChannelFixtureSizeList.size());
         assertEquals(64, spCustomerChoiceChannelFixtureSizeList.stream().flatMap(Collection::stream).count());
         assertEquals(4, spCustomerChoiceChannelFixtureSizeList.stream().flatMap(Collection::stream).filter(val -> val.getAhsSizeDesc().equals("33X30")).count());
-        assertEquals(3, spCustomerChoiceChannelFixtureSizeList.stream().flatMap(Collection::stream).filter(val -> val.getAhsSizeDesc().equals("33X30")).map(SpCustomerChoiceChannelFixtureSize::getMessageObj).filter(Objects::nonNull).filter(val -> val.equals("{\"codes\":[210,211,212]}")).count());
+        assertEquals(2, spCustomerChoiceChannelFixtureSizeList.stream().flatMap(Collection::stream).filter(val -> val.getAhsSizeDesc().equals("33X30")).map(SpCustomerChoiceChannelFixtureSize::getMessageObj).filter(Objects::nonNull).filter(val -> val.equals("{\"codes\":[210,211,212]}")).count());
         assertEquals(1, spCustomerChoiceChannelFixtureSizeList.stream().flatMap(Collection::stream).filter(val -> val.getAhsSizeDesc().equals("33X30")).map(SpCustomerChoiceChannelFixtureSize::getMessageObj).filter(Objects::nonNull).filter(val -> val.equals("{\"codes\":[212]}")).count());
-        assertEquals(2, spCustomerChoiceChannelFixtureSizeList.stream().flatMap(Collection::stream).filter(val -> val.getAhsSizeDesc().equals("36X32")).map(SpCustomerChoiceChannelFixtureSize::getMessageObj).filter(Objects::nonNull).filter(val -> val.equals("{\"codes\":[]}")).count());
+        assertEquals(3, spCustomerChoiceChannelFixtureSizeList.stream().flatMap(Collection::stream).filter(val -> val.getAhsSizeDesc().equals("36X32")).map(SpCustomerChoiceChannelFixtureSize::getMessageObj).filter(Objects::nonNull).filter(val -> val.equals("{\"codes\":[]}")).count());
 
         SpCustomerChoiceChannelFixture fixture1 = response.getSpFineLineChannelFixtures()
                 .stream()
