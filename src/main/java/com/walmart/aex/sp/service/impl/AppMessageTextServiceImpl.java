@@ -15,6 +15,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -86,5 +87,19 @@ public class AppMessageTextServiceImpl implements AppMessageTextService {
             log.error("Failed to delete app messages. Exception: {}", ex.getMessage());
             throw new CustomException("Failed to delete app messages.");
         }
+    }
+
+    @Override
+    public List<AppMessageTextResponse> getAppMessagesByIds(Set<Integer> validationCodes) {
+        try {
+            List<AppMessageTextResponse> appMessageTextResponseList = getAllAppMessageText();
+            return appMessageTextResponseList.stream()
+                    .filter(appMessageTextResponse -> validationCodes.contains(appMessageTextResponse.getId()))
+                    .collect(Collectors.toList());
+        } catch (Exception ex) {
+            log.error("Error while getting list of App messages by error codes. Exception: {}", ex.getMessage());
+            throw new CustomException("Exception occurred while retrieving app messages");
+        }
+
     }
 }

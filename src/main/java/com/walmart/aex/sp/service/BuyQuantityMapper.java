@@ -214,22 +214,16 @@ public class BuyQuantityMapper {
      */
     protected Metadata getMetadataDto(String messageObj) {
         Metadata metadata = Metadata.builder().build();
-        List<AppMessageTextResponse> appMessageTextResponseList = appMessageTextService.getAllAppMessageText();
         try {
-            if (StringUtils.isNotEmpty(messageObj) && !CollectionUtils.isEmpty(appMessageTextResponseList)) {
+            if (StringUtils.isNotEmpty(messageObj) ) {
                 ValidationResult validationResult = objectMapper.readValue(messageObj, ValidationResult.class);
                 if (Objects.nonNull(validationResult) && !validationResult.getCodes().isEmpty()) {
-                    Set<Integer> validationCodes = validationResult.getCodes();
-                    List<AppMessageTextResponse> matchingValidationResponseDTO = appMessageTextResponseList.stream()
-                            .filter(appMessageTextResponse -> validationCodes.contains(appMessageTextResponse.getId()))
-                            .collect(Collectors.toList());
+                    List<AppMessageTextResponse> matchingValidationResponseDTO = appMessageTextService.getAppMessagesByIds(validationResult.getCodes());
                     if (!matchingValidationResponseDTO.isEmpty()) {
                         List<ValidationMessage> validations = new ArrayList<>();
                         for (AppMessageTextResponse validationObj : matchingValidationResponseDTO) {
                             ValidationMessage validationMessage = getValidationObjByType(validationObj.getTypeDesc(), validations);
                             if (Objects.nonNull(validationMessage)) {
-                                List<String> messages = validationMessage.getMessages();
-                                messages.add(validationObj.getLongDesc());
                                 validationMessage.getMessages().add(validationObj.getLongDesc());
                             } else {
                                 List<String> messages = new ArrayList<>();
