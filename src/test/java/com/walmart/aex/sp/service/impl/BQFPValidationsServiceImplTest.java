@@ -7,6 +7,7 @@ import com.walmart.aex.sp.dto.buyquantity.CustomerChoiceDto;
 import com.walmart.aex.sp.dto.buyquantity.StyleDto;
 import com.walmart.aex.sp.dto.buyquantity.ValidationResult;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
+import com.walmart.aex.sp.enums.AppMessageText;
 import com.walmart.aex.sp.enums.FixtureTypeRollup;
 import com.walmart.aex.sp.enums.MerchMethod;
 import org.junit.jupiter.api.Test;
@@ -75,7 +76,7 @@ class BQFPValidationsServiceImplTest {
 
         actualValidationResults = bqfpValidationsService.missingBuyQuantity(merchMethodsDtos, bqfpResponse, styleDto, customerChoiceDto);
 
-        assertEquals(Set.of(300), actualValidationResults.getCodes());
+        assertEquals(Set.of(AppMessageText.BQFP_MISSING_IS_DATA.getId()), actualValidationResults.getCodes());
     }
 
     @Test
@@ -97,7 +98,10 @@ class BQFPValidationsServiceImplTest {
 
         actualValidationResults = bqfpValidationsService.missingBuyQuantity(merchMethodsDtos, bqfpResponse, styleDto, customerChoiceDto);
 
-        assertEquals(Set.of(301, 302, 303, 304), actualValidationResults.getCodes());
+        assertEquals(Set.of(AppMessageText.BQFP_MISSING_IS_QUANTITIES.getId(),
+                AppMessageText.BQFP_MISSING_REPLENISHMENT_QUANTITIES.getId(),
+                AppMessageText.BQFP_MISSING_BUMPSET_QUANTITIES.getId(),
+                AppMessageText.BQFP_MISSING_BUMPSET_WEEKS.getId()), actualValidationResults.getCodes());
     }
 
     BQFPResponse bqfpResponseFromJson(String path) throws IOException {
