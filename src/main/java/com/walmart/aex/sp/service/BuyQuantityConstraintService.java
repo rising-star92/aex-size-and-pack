@@ -15,8 +15,6 @@ import org.springframework.util.CollectionUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.walmart.aex.sp.util.CommonUtil.getValidationCodesFromBuyQtyObj;
-
 @Service
 @Slf4j
 public class BuyQuantityConstraintService {
@@ -103,11 +101,17 @@ public class BuyQuantityConstraintService {
     }
 
     public void processReplenishmentConstraints(Map.Entry<SizeDto, BuyQtyObj> entry, long totalReplenishment, Integer replenishmentThreshold) {
-        Set<Integer> codes = getValidationCodesFromBuyQtyObj(entry.getValue());
         if (totalReplenishment < replenishmentThreshold && totalReplenishment > 0) {
             // Replenishment units are moved to Initial Set
-            codes.add(AppMessageText.REPLN_UNITS_MOVED_TO_INITIAL_SET.getId());
-            entry.getValue().setValidationResult(ValidationResult.builder().codes(codes).build());
+            if (ObjectUtils.isNotEmpty(entry.getValue().getValidationResult()) && !CollectionUtils.isEmpty(entry.getValue().getValidationResult().getCodes())) {
+                Set<Integer> warningCodes = entry.getValue().getValidationResult().getCodes();
+                warningCodes.add(AppMessageText.RULE_REPLN_UNITS_MOVED_TO_INITIAL_SET_APPLIED.getId());
+            }
+            else {
+                entry.getValue().setValidationResult(ValidationResult.builder()
+                        .codes(Collections.singleton(AppMessageText.RULE_REPLN_UNITS_MOVED_TO_INITIAL_SET_APPLIED.getId()))
+                        .build());
+            }
             while (entry.getValue().getTotalReplenishment() > 0)
                 updateReplnToInitialSet(entry);
         }

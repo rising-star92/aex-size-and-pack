@@ -21,8 +21,6 @@ import org.springframework.util.ObjectUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.walmart.aex.sp.util.CommonUtil.getValidationCodesFromBuyQtyObj;
-
 @Service
 @Slf4j
 public class AddStoreBuyQuantityService {
@@ -154,9 +152,9 @@ public class AddStoreBuyQuantityService {
             if (initialSetQuantity.isOneUnitPerStore()) {
                 perStoreQty = perStoreQty + DEFAULT_INITIAL_THRESHOLD;
                 isQty = (long) DEFAULT_INITIAL_THRESHOLD * initialSetQuantity.getRfaSizePackData().getStore_cnt();
-                warningCodes.add(AppMessageText.INITIALSET_ONE_UNIT_PER_STORE_APPLIED.getId());
+                warningCodes.add(AppMessageText.RULE_INITIALSET_ONE_UNIT_PER_STORE_APPLIED.getId());
                 if (!CollectionUtils.isEmpty(buyQtyObj.getReplenishments()) && BuyQtyCommonUtil.isReplenishmentEligible(initialSetQuantity.getVolumeCluster().getFlowStrategy())) {
-                    warningCodes.add(AppMessageText.ADJUST_REPLN_FOR_ONE_UNIT_PER_STORE_APPLIED.getId());
+                    warningCodes.add(AppMessageText.RULE_ADJUST_REPLN_FOR_ONE_UNIT_PER_STORE_APPLIED.getId());
                     adjustReplenishmentsForOneUnitPerStore(buyQtyObj, initialSetQuantity.getRfaSizePackData(), initialSetQuantity.getRfaSizePackData().getCustomer_choice(), initialSetQuantity.getSizeDesc(), isQty, perStoreQty, storeList);
                 }
             }
@@ -244,7 +242,7 @@ public class AddStoreBuyQuantityService {
     }
 
     public void adjustISWithConstraint(List<StoreQuantity> storeQuantities, BuyQtyObj buyQtyObj, Integer initialThreshold, String sizeDesc) {
-        Set<Integer> codes = getValidationCodesFromBuyQtyObj(buyQtyObj);
+        Set<Integer> warningCodes = buyQtyObj.getValidationResult().getCodes();
         List<StoreQuantity> storeQuantitiesWithLessRep = new ArrayList<>();
         for (int i = 0; i < storeQuantities.size(); i++) {
             StoreQuantity storeQuantity = storeQuantities.get(i);
@@ -255,7 +253,7 @@ public class AddStoreBuyQuantityService {
             double isQty = storeQuantity.getTotalUnits();
             if ((perStoreQty < initialThreshold && perStoreQty > 0) && (!CollectionUtils.isEmpty(buyQtyObj.getReplenishments())) && BuyQtyCommonUtil.isReplenishmentEligible(storeQuantity.getFlowStrategyCode())) {
                 // 2 unit is rule is applied to Initial Set
-                codes.add(AppMessageText.INITIALSET_TWO_UNIT_PER_STORE_APPLIED.getId());
+                warningCodes.add(AppMessageText.RULE_INITIALSET_TWO_UNIT_PER_STORE_APPLIED.getId());
                 InitialSetWithReplenishment initialSetWithReplenishment = getUnitsFromReplenishment(storeQuantity, buyQtyObj, storeQuantitiesWithLessRep, volumeCluster, initialThreshold, rfaSizePackData.getCustomer_choice(), sizeDesc);
                 isQty = initialSetWithReplenishment.getIsQty();
                 perStoreQty = initialSetWithReplenishment.getPerStoreQty();
@@ -266,7 +264,6 @@ public class AddStoreBuyQuantityService {
             storeQuantities.set(i, storeQuantity);
         }
         storeQuantities.addAll(storeQuantitiesWithLessRep);
-        buyQtyObj.setValidationResult(ValidationResult.builder().codes(codes).build());
     }
 
     private InitialSetWithReplenishment getUnitsFromReplenishment(StoreQuantity storeQuantity, BuyQtyObj buyQtyObj, AddStoreBuyQuantity addStoreBuyQuantity, List<StoreQuantity> storeQuantities, Cluster volumeCluster, Integer initialThreshold) {

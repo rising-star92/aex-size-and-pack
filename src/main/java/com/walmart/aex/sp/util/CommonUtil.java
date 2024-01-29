@@ -21,6 +21,7 @@ import java.time.ZoneId;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -118,14 +119,4 @@ public class CommonUtil {
         return result.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
 
-    public static Set<Integer> getValidationCodesFromBuyQtyObj(BuyQtyObj buyQtyObj) {
-        ValidationResult validationResult = buyQtyObj.getValidationResult();
-        Set<Integer> codes;
-        if(!ObjectUtils.isEmpty(validationResult) && !CollectionUtils.isEmpty(validationResult.getCodes())) {
-            codes = validationResult.getCodes();
-        } else {
-            codes = new HashSet<>();
-        }
-        return codes;
-    }
 }
