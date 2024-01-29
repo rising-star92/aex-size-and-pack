@@ -230,7 +230,7 @@ public class BuyQuantityMapper {
                             if (Objects.nonNull(validationMessage)) {
                                 List<String> messages = validationMessage.getMessages();
                                 messages.add(validationObj.getLongDesc());
-                                validationMessage.setMessages(messages);
+                                validationMessage.getMessages().add(validationObj.getLongDesc());
                             } else {
                                 List<String> messages = new ArrayList<>();
                                 messages.add(validationObj.getLongDesc());
@@ -248,7 +248,7 @@ public class BuyQuantityMapper {
                 }
             }
         } catch (JsonProcessingException ex) {
-            log.info("Exception while parsing message object for validation codes :", ex);
+            log.error("Exception while parsing message object for validation codes :", ex);
         }
         return metadata;
     }
