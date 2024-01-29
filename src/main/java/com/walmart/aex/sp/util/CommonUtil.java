@@ -1,7 +1,5 @@
 package com.walmart.aex.sp.util;
 
-import com.walmart.aex.sp.dto.buyquantity.BuyQtyObj;
-import com.walmart.aex.sp.dto.buyquantity.ValidationResult;
 import com.walmart.aex.sp.dto.packoptimization.Fineline;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl3;
 import com.walmart.aex.sp.dto.planhierarchy.Lvl4;
@@ -12,8 +10,6 @@ import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -21,7 +17,6 @@ import java.time.ZoneId;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -118,5 +113,4 @@ public class CommonUtil {
     public static LocalDateTime getLocalDateTime(Date result) {
         return result.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
-
 }
