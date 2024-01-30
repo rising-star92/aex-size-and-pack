@@ -103,14 +103,9 @@ public class BuyQuantityConstraintService {
     public void processReplenishmentConstraints(Map.Entry<SizeDto, BuyQtyObj> entry, long totalReplenishment, Integer replenishmentThreshold) {
         if (totalReplenishment < replenishmentThreshold && totalReplenishment > 0) {
             // Replenishment units are moved to Initial Set
-            if (ObjectUtils.isNotEmpty(entry.getValue().getValidationResult()) && !CollectionUtils.isEmpty(entry.getValue().getValidationResult().getCodes())) {
+            if (ObjectUtils.isNotEmpty(entry.getValue().getValidationResult())) {
                 Set<Integer> warningCodes = entry.getValue().getValidationResult().getCodes();
                 warningCodes.add(AppMessageText.RULE_REPLN_UNITS_MOVED_TO_INITIAL_SET_APPLIED.getId());
-            }
-            else {
-                entry.getValue().setValidationResult(ValidationResult.builder()
-                        .codes(Collections.singleton(AppMessageText.RULE_REPLN_UNITS_MOVED_TO_INITIAL_SET_APPLIED.getId()))
-                        .build());
             }
             while (entry.getValue().getTotalReplenishment() > 0)
                 updateReplnToInitialSet(entry);
