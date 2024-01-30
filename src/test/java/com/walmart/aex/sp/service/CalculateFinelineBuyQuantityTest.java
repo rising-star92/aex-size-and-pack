@@ -782,6 +782,7 @@ class CalculateFinelineBuyQuantityTest {
 
         SpFineLineChannelFixture fixture1 = response.getSpFineLineChannelFixtures().stream().
                 filter(f -> f.getSpFineLineChannelFixtureId().getFixtureTypeRollUpId().getFixtureTypeRollupId().equals(1)).findFirst().get();
+        assertEquals("{\"codes\":[100,212,213,200]}", fixture1.getMessageObj());
         SpCustomerChoiceChannelFixture customerChoiceChannelFixture1 = fixture1
                 .getSpStyleChannelFixtures().stream().filter(style -> style.getSpStyleChannelFixtureId().getStyleNbr().equals("23_3347_1_25_001"))
                 .findFirst().get()
