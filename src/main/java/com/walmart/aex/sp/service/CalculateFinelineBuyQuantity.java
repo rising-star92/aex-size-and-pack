@@ -480,7 +480,7 @@ public class CalculateFinelineBuyQuantity {
         Set<CcSpMmReplPack> ccSpMmReplPacks = new HashSet<>();
         Integer replenishmentThreshold = deptAdminRuleService.getReplenishmentThreshold(bqfpResponse.getPlanId(), bqfpResponse.getLvl1Nbr());
         for (Map.Entry<SizeDto, BuyQtyObj> entry : storeBuyQtyBySizeId.entrySet()) {
-            Integer vendorPackQty = getVendorPackQty(replenishmentCons, entry);
+            Integer vendorPackQty = null != replenishmentCons.getCcMmReplPackCons() ? getVendorPackQty(replenishmentCons, entry) : null;
             setSizeChanFixtureBuyQty(spCustomerChoiceChannelFixture, replenishments, spCustomerChoiceChannelFixtureSizes, ccSpMmReplPacks, entry, replenishmentThreshold, vendorPackQty, calculateBuyQtyParallelRequest.getLvl1Nbr(), calculateBuyQtyParallelRequest.getPlanId());
         }
 
@@ -495,7 +495,7 @@ public class CalculateFinelineBuyQuantity {
     }
 
     private static Integer getVendorPackQty(ReplenishmentCons replenishmentCons, Map.Entry<SizeDto, BuyQtyObj> entry) {
-        Integer vendorPackQty = VP_DEFAULT;
+        Integer vendorPackQty = replenishmentCons.getCcMmReplPackCons().getVendorPackCount();
         Map<Integer, CcSpMmReplPack> cCSpMmReplPackSizeMap = replenishmentCons.getCcSpMmReplPackConsMap();
         if (!CollectionUtils.isEmpty(cCSpMmReplPackSizeMap) && cCSpMmReplPackSizeMap.containsKey(entry.getKey().getAhsSizeId())) {
             vendorPackQty = cCSpMmReplPackSizeMap.get(entry.getKey().getAhsSizeId()).getVendorPackCnt();
