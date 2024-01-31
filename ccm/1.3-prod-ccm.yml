@@ -168,10 +168,10 @@ configDefinitions:
         kind: "SINGLE"
         defaultValue: 0
       "s3Plans2024.constraint":
-        description: "S2 season 2025 Plans -161,176 need DC replenishment min constraint to 0"
+        description: "S2,S3 and S4 season 2025 Plans need DC replenishment min constraint to 0"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "161, 176, 184, 186"
+        defaultValue: "161, 176, 184, 186, 187, 192"
       "initialSet.oneUnitPerStoreFlag":
         description: "Feature flag to enable the logic for making sure each store gets one unit"
         type: "STRING"
