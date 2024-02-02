@@ -7,12 +7,12 @@ import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.exception.SizeAndPackException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 
 @Service
@@ -244,7 +244,7 @@ public class BuyQuantityMapper {
         } catch (JsonProcessingException ex) {
             log.error("Exception while parsing message object for validation codes :", ex);
         }
-        return metadata;
+        return ObjectUtils.allNull(metadata.getValidations())? null : metadata ;
     }
 
     /***
