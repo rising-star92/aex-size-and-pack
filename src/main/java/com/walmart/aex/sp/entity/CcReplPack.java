@@ -55,6 +55,9 @@ public class CcReplPack
     @Column(name="repl_pack_cnt")
     private Integer replPackCnt;
 
+    @Column(name = "app_message_obj")
+    private String messageObj;
+
     @OneToMany(mappedBy = "ccReplPack", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CcMmReplPack> ccMmReplPack;

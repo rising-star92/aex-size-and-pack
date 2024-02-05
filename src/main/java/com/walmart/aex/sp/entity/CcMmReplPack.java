@@ -62,6 +62,9 @@ public class CcMmReplPack
     @Column(name="replen_obj")
     private String replenObj;
 
+    @Column(name = "app_message_obj")
+    private String messageObj;
+
     @OneToMany(mappedBy = "ccMmReplPack", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CcSpMmReplPack> ccSpMmReplPack;

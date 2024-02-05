@@ -56,6 +56,9 @@ public class FinelineReplPack
     @Column(name = "run_status_code")
     private Integer runStatusCode;
 
+    @Column(name = "app_message_obj")
+    private String messageObj;
+
     @OneToMany(mappedBy = "finelineReplPack", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<StyleReplPack> styleReplPack;
