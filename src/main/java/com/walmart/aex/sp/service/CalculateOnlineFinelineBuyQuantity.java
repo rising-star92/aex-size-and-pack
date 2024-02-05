@@ -1,19 +1,14 @@
 package com.walmart.aex.sp.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.bqfp.BQFPResponse;
-import com.walmart.aex.sp.dto.bqfp.CustomerChoice;
 import com.walmart.aex.sp.dto.bqfp.Replenishment;
-import com.walmart.aex.sp.dto.bqfp.Style;
 import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
 import com.walmart.aex.sp.dto.replenishment.cons.ReplenishmentCons;
 import com.walmart.aex.sp.entity.CcSpMmReplPack;
-import com.walmart.aex.sp.entity.CcSpMmReplPackId;
 import com.walmart.aex.sp.entity.MerchCatgReplPack;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.enums.FixtureTypeRollup;
-import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.util.BuyQtyCommonUtil;
 import com.walmart.aex.sp.util.SizeAndPackConstants;
 import lombok.extern.slf4j.Slf4j;
@@ -28,20 +23,19 @@ import static com.walmart.aex.sp.util.SizeAndPackConstants.VP_DEFAULT;
 @Service
 @Slf4j
 public class CalculateOnlineFinelineBuyQuantity {
-
-    private final ObjectMapper objectMapper;
     private final BuyQtyReplenishmentMapperService buyQtyReplenishmentMapperService;
-
     private final ReplenishmentsOptimizationService replenishmentsOptimizationServices;
     private final ReplenishmentService replenishmentService;
+    private final ValidationService validationService;
 
-    public CalculateOnlineFinelineBuyQuantity(ObjectMapper objectMapper,
-                                              BuyQtyReplenishmentMapperService buyQtyReplenishmentMapperService,
-                                              ReplenishmentsOptimizationService replenishmentsOptimizationServices, ReplenishmentService replenishmentService) {
-        this.objectMapper = objectMapper;
+    public CalculateOnlineFinelineBuyQuantity(BuyQtyReplenishmentMapperService buyQtyReplenishmentMapperService,
+                                              ReplenishmentsOptimizationService replenishmentsOptimizationServices,
+                                              ReplenishmentService replenishmentService,
+                                              ValidationService validationService) {
         this.buyQtyReplenishmentMapperService = buyQtyReplenishmentMapperService;
         this.replenishmentsOptimizationServices = replenishmentsOptimizationServices;
         this.replenishmentService = replenishmentService;
+        this.validationService = validationService;
     }
 
 
@@ -88,20 +82,23 @@ public class CalculateOnlineFinelineBuyQuantity {
         styleDto.getCustomerChoices().forEach(customerChoiceDto -> {
             log.info("Checking if Online Cc are existing: {}", customerChoiceDto);
             //TODO: Delete replenishment if replenishment is deleted after set
+            ValidationResult ccValidationResult = validationService.validateCalculateBuyQuantityInputData(List.of(merchMethodsDto), null, bqfpResponse, styleDto, customerChoiceDto);
             if (!CollectionUtils.isEmpty(customerChoiceDto.getClusters())) {
-                getOnlineCcClusters(styleDto, customerChoiceDto, merchMethodsDto, bqfpResponse, calculateBuyQtyResponse, calculateBuyQtyParallelRequest, replenishmentCons);
+                getOnlineCcClusters(styleDto, customerChoiceDto, merchMethodsDto, bqfpResponse, calculateBuyQtyResponse, calculateBuyQtyParallelRequest, replenishmentCons, ccValidationResult);
             }
         });
     }
 
     private void getOnlineCcClusters(StyleDto styleDto, CustomerChoiceDto customerChoiceDto, MerchMethodsDto merchMethodsDto,
-                                     BQFPResponse bqfpResponse, CalculateBuyQtyResponse calculateBuyQtyResponse, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, ReplenishmentCons replenishmentCons) {
+                                     BQFPResponse bqfpResponse, CalculateBuyQtyResponse calculateBuyQtyResponse,
+                                     CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, ReplenishmentCons replenishmentCons,
+                                     ValidationResult ccValidationResult) {
         Map<SizeDto, BuyQtyObj> storeBuyQtyBySizeId = new HashMap<>();
         //Replenishment
-        List<Replenishment> replenishments = getReplenishments(bqfpResponse, styleDto, customerChoiceDto);
+        List<Replenishment> replenishments = BuyQtyCommonUtil.getReplenishments(bqfpResponse, styleDto, customerChoiceDto);
         log.info("Get All Replenishments if exists for customerchoice: {} and merch method: {}", customerChoiceDto.getCcId(), merchMethodsDto.getFixtureTypeRollupId());
         if (!CollectionUtils.isEmpty(replenishments)) {
-            /** Query the Replenishment constraint if Replenishment unit exits **/
+            // Query the Replenishment constraint if Replenishment unit exist
             if(hasDcInboundAndAdjUnits(replenishments)){
                 replenishmentService.setCcsReplenishmentCons(replenishmentCons, calculateBuyQtyParallelRequest, merchMethodsDto, styleDto, customerChoiceDto);
             }
@@ -127,53 +124,15 @@ public class CalculateOnlineFinelineBuyQuantity {
                             .sum();
                 }
                 if (totalReplenishment > 0) {
-                    setCcMmSpReplenishment(ccSpMmReplPacks, entry, (int) totalReplenishment, (int) totalReplenishment);
+                    ccSpMmReplPacks.add(buyQtyReplenishmentMapperService.setCcMmSpReplenishment(entry, (int) totalReplenishment, (int) totalReplenishment));
                 }
             }
         }
         if (!CollectionUtils.isEmpty(ccSpMmReplPacks)) {
             //Replenishment
-            List<MerchCatgReplPack> merchCatgReplPacks = buyQtyReplenishmentMapperService.setAllReplenishments(styleDto, merchMethodsDto, calculateBuyQtyParallelRequest, calculateBuyQtyResponse, customerChoiceDto, ccSpMmReplPacks, replenishmentCons);
+            List<MerchCatgReplPack> merchCatgReplPacks = buyQtyReplenishmentMapperService.setAllReplenishments(styleDto, merchMethodsDto, calculateBuyQtyParallelRequest, calculateBuyQtyResponse, customerChoiceDto, ccSpMmReplPacks, replenishmentCons, ccValidationResult);
             calculateBuyQtyResponse.setMerchCatgReplPacks(merchCatgReplPacks);
         }
-    }
-
-    private void setCcMmSpReplenishment(Set<CcSpMmReplPack> ccSpMmReplPacks, Map.Entry<SizeDto, BuyQtyObj> entry, int totalReplenishment, int totalBuyQty) {
-        CcSpMmReplPackId ccSpMmReplPackId = new CcSpMmReplPackId();
-        ccSpMmReplPackId.setAhsSizeId(entry.getKey().getAhsSizeId());
-
-        CcSpMmReplPack ccSpMmReplPack = new CcSpMmReplPack();
-        ccSpMmReplPack.setSizeDesc(entry.getKey().getSizeDesc());
-
-        ccSpMmReplPack.setCcSpReplPackId(ccSpMmReplPackId);
-
-        ccSpMmReplPack.setFinalBuyUnits(totalBuyQty);
-        ccSpMmReplPack.setReplUnits(totalReplenishment);
-        try {
-            ccSpMmReplPack.setReplenObj(objectMapper.writeValueAsString(entry.getValue().getReplenishments()));
-        } catch (Exception e) {
-            log.error("Failed to create replenishment Obj for size: {}", entry.getKey(), e);
-            throw new CustomException("Failed to create replenishment Obj for size " + e);
-        }
-
-        ccSpMmReplPacks.add(ccSpMmReplPack);
-    }
-
-
-    //TODO: Move to common Replenishment Utils
-    private List<Replenishment> getReplenishments(BQFPResponse bqfpResponse, StyleDto styleDto, CustomerChoiceDto customerChoiceDto) {
-        return Optional.ofNullable(bqfpResponse.getStyles())
-                .stream()
-                .flatMap(Collection::stream)
-                .filter(style -> style.getStyleId().equalsIgnoreCase(styleDto.getStyleNbr()))
-                .findFirst()
-                .map(Style::getCustomerChoices)
-                .stream()
-                .flatMap(Collection::stream)
-                .filter(customerChoice -> customerChoice.getCcId().equalsIgnoreCase(customerChoiceDto.getCcId()))
-                .findFirst()
-                .map(CustomerChoice::getReplenishments)
-                .orElse(new ArrayList<>());
     }
 
     private void setReplenishmentSizes(ClustersDto clustersDto, List<Replenishment> replenishments, Map<SizeDto, BuyQtyObj> storeBuyQtyBySizeId, Integer lvl1Nbr, Long planId, Map<Integer, CcSpMmReplPack> cCSpMmReplPackSizeMap) {

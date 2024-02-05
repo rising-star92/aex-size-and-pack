@@ -8,18 +8,7 @@ import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.dto.currentlineplan.LikeAssociation;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
 import com.walmart.aex.sp.dto.replenishment.cons.ReplenishmentCons;
-import com.walmart.aex.sp.entity.CcSpMmReplPack;
-import com.walmart.aex.sp.entity.CcSpMmReplPackId;
-import com.walmart.aex.sp.entity.FixtureTypeRollUpId;
-import com.walmart.aex.sp.entity.MerchCatgReplPack;
-import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixture;
-import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixtureId;
-import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixtureSize;
-import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixtureSizeId;
-import com.walmart.aex.sp.entity.SpFineLineChannelFixture;
-import com.walmart.aex.sp.entity.SpFineLineChannelFixtureId;
-import com.walmart.aex.sp.entity.SpStyleChannelFixture;
-import com.walmart.aex.sp.entity.SpStyleChannelFixtureId;
+import com.walmart.aex.sp.entity.*;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.enums.FixtureTypeRollup;
 import com.walmart.aex.sp.enums.VdLevelCode;
@@ -42,7 +31,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
-import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
+import static com.walmart.aex.sp.util.SizeAndPackConstants.DEFAULT_COLOR_FAMILY;
+import static com.walmart.aex.sp.util.SizeAndPackConstants.VP_DEFAULT;
 
 @Service
 @Slf4j
@@ -486,7 +476,7 @@ public class CalculateFinelineBuyQuantity {
 
         if (!CollectionUtils.isEmpty(ccSpMmReplPacks)) {
             //Replenishment
-            List<MerchCatgReplPack> merchCatgReplPacks = buyQtyReplenishmentMapperService.setAllReplenishments(styleDto, merchMethodsDtos.get(0), calculateBuyQtyParallelRequest, calculateBuyQtyResponse, customerChoiceDto, ccSpMmReplPacks, replenishmentCons);
+            List<MerchCatgReplPack> merchCatgReplPacks = buyQtyReplenishmentMapperService.setAllReplenishments(styleDto, merchMethodsDtos.get(0), calculateBuyQtyParallelRequest, calculateBuyQtyResponse, customerChoiceDto, ccSpMmReplPacks, replenishmentCons, ccValidationResult);
             calculateBuyQtyResponse.setMerchCatgReplPacks(merchCatgReplPacks);
         }
 
@@ -717,7 +707,7 @@ public class CalculateFinelineBuyQuantity {
 
         //Replenishment
         if (!CollectionUtils.isEmpty(replenishments) && entry.getValue().getTotalReplenishment() > 0) {
-            setCcMmSpReplenishment(ccSpMmReplPacks, entry, (int) entry.getValue().getTotalReplenishment(), (int) Math.round(totalBuyQty));
+            ccSpMmReplPacks.add(buyQtyReplenishmentMapperService.setCcMmSpReplenishment(entry, (int) entry.getValue().getTotalReplenishment(), (int) Math.round(totalBuyQty)));
         }
     }
 
@@ -831,27 +821,6 @@ public class CalculateFinelineBuyQuantity {
                 .flatMap(Collection::stream)
                 .findFirst()
                 .orElse(null);
-    }
-
-    private void setCcMmSpReplenishment(Set<CcSpMmReplPack> ccSpMmReplPacks, Map.Entry<SizeDto, BuyQtyObj> entry, int totalReplenishment, int totalBuyQty) {
-        CcSpMmReplPackId ccSpMmReplPackId = new CcSpMmReplPackId();
-        ccSpMmReplPackId.setAhsSizeId(entry.getKey().getAhsSizeId());
-
-        CcSpMmReplPack ccSpMmReplPack = new CcSpMmReplPack();
-        ccSpMmReplPack.setSizeDesc(entry.getKey().getSizeDesc());
-
-        ccSpMmReplPack.setCcSpReplPackId(ccSpMmReplPackId);
-
-        ccSpMmReplPack.setFinalBuyUnits(totalBuyQty);
-        ccSpMmReplPack.setReplUnits(totalReplenishment);
-        try {
-            ccSpMmReplPack.setReplenObj(objectMapper.writeValueAsString(entry.getValue().getReplenishments()));
-        } catch (Exception e) {
-            log.error("Failed to create replenishment Obj for size: {}", entry.getKey(), e);
-            throw new CustomException("Failed to create replenishment Obj for size " + e);
-        }
-
-        ccSpMmReplPacks.add(ccSpMmReplPack);
     }
 
     private void setReplenishmentSizes(ClustersDto clustersDto, List<Replenishment> replenishments, Map<SizeDto, BuyQtyObj> storeBuyQtyBySizeId) {

@@ -501,6 +501,23 @@ public class ReplenishmentService  {
         return ccMmReplPackCons;
     }
 
+    public CcSpMmReplPack setVendorPackAndWhsePackCountForCCSpMm(Map<Integer, CcSpMmReplPack> ccSpMmReplPackSizeMap, CcSpMmReplPack ccSpMmReplPack) {
+        if (ccSpMmReplPackSizeMap != null && ccSpMmReplPackSizeMap.containsKey(ccSpMmReplPack.getCcSpReplPackId().getAhsSizeId())) {
+            CcSpMmReplPack ccSpMmReplPackFromDb = ccSpMmReplPackSizeMap.get(ccSpMmReplPack.getCcSpReplPackId().getAhsSizeId());
+            Integer vendorPackCnt = ccSpMmReplPackFromDb.getVendorPackCnt();
+            ccSpMmReplPack.setReplPackCnt(ccSpMmReplPack.getReplUnits() / vendorPackCnt);
+            ccSpMmReplPack.setVendorPackCnt(vendorPackCnt);
+            ccSpMmReplPack.setWhsePackCnt(ccSpMmReplPackFromDb.getWhsePackCnt());
+            ccSpMmReplPack.setVnpkWhpkRatio(ccSpMmReplPackFromDb.getVnpkWhpkRatio());
+        } else {
+            ccSpMmReplPack.setReplPackCnt(ccSpMmReplPack.getReplUnits() / VP_DEFAULT);
+            ccSpMmReplPack.setVendorPackCnt(VP_DEFAULT);
+            ccSpMmReplPack.setWhsePackCnt(WP_DEFAULT);
+            ccSpMmReplPack.setVnpkWhpkRatio(VP_WP_RATIO_DEFAULT);
+        }
+        return ccSpMmReplPack;
+    }
+
     private Map<Integer, CcSpMmReplPack> getCcSpMmReplPackSizeMap(CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, String styleNbr, String ccId, Integer merchCode) {
         List<CcSpMmReplPack> ccSpMmReplPacks = ccSpReplnPkConsRepository.getCcSpMmReplnPkVendorPackAndWhsePackCount(calculateBuyQtyParallelRequest.getPlanId(), ChannelType.getChannelIdFromName(calculateBuyQtyParallelRequest.getChannel()), calculateBuyQtyParallelRequest.getLvl3Nbr(), calculateBuyQtyParallelRequest.getLvl4Nbr(), calculateBuyQtyParallelRequest.getFinelineNbr(), styleNbr, ccId, merchCode);
         return Optional.ofNullable(ccSpMmReplPacks)

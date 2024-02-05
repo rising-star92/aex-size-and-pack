@@ -10,9 +10,11 @@ import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
 import com.walmart.aex.sp.service.BQFPValidationsService;
 import com.walmart.aex.sp.service.ValidationService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -36,7 +38,9 @@ public class ValidationServiceImpl implements ValidationService {
     @Override
     public ValidationResult validateCalculateBuyQuantityInputData(List<MerchMethodsDto> merchMethodsDtos, APResponse apResponse, BQFPResponse bqfpResponse, StyleDto styleDto, CustomerChoiceDto customerChoiceDto) {
         ValidationResult bqfpValidationResult = bqfpValidationsService.missingBuyQuantity(merchMethodsDtos, bqfpResponse, styleDto, customerChoiceDto);
-        ValidationResult rfaValidationResult = rfaValidationService.validateRFAData(merchMethodsDtos, apResponse, styleDto.getStyleNbr(), customerChoiceDto);
+        ValidationResult rfaValidationResult = ValidationResult.builder().codes(new HashSet<>()).build();
+        if (ObjectUtils.allNotNull(apResponse, apResponse.getRfaSizePackData()))
+            rfaValidationResult = rfaValidationService.validateRFAData(merchMethodsDtos, apResponse, styleDto.getStyleNbr(), customerChoiceDto);
         Set<Integer> allValidationCodes = Stream.of(bqfpValidationResult.getCodes(), rfaValidationResult.getCodes())
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
