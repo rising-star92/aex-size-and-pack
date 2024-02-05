@@ -1,14 +1,12 @@
 package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.bqfp.BQFPResponse;
-import com.walmart.aex.sp.dto.buyquantity.CalculateBuyQtyParallelRequest;
-import com.walmart.aex.sp.dto.buyquantity.CalculateBuyQtyResponse;
-import com.walmart.aex.sp.dto.buyquantity.FinelineDto;
-import com.walmart.aex.sp.entity.MerchCatgReplPack;
-import com.walmart.aex.sp.exception.SizeAndPackException;
+import com.walmart.aex.sp.dto.buyquantity.*;
 import org.junit.jupiter.api.Test;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -22,6 +20,7 @@ class CalculateOnlineFinelineBuyQuantityTest extends CalculateFinelineBuyQuantit
         CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest = calculateBuyQtyParallelRequestFromJson(path.concat("/calculateBuyQtyParallelRequest"));
         FinelineDto finelineDto = finelineDtoFromJson(path.concat("/fineLineDto"));
         BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
+        when(bqfpValidationsService.missingBuyQuantity(anyList(), any(BQFPResponse.class), any(StyleDto.class), any(CustomerChoiceDto.class))).thenReturn(ValidationResult.builder().codes(new HashSet<>(List.of(100))).build());
         calculateBuyQtyResponse = calculateOnlineFinelineBuyQuantity.calculateOnlineBuyQty(calculateBuyQtyParallelRequest, finelineDto, bqfpResponse, calculateBuyQtyResponse);
         assertEquals(5568, calculateBuyQtyResponse.getMerchCatgReplPacks().get(0).getFinalBuyUnits().intValue());
         assertEquals(5568, calculateBuyQtyResponse.getMerchCatgReplPacks().get(0).getReplUnits().intValue());

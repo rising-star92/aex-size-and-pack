@@ -7,7 +7,7 @@ import com.walmart.aex.sp.dto.buyquantity.ValidationResult;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
 import com.walmart.aex.sp.enums.AppMessage;
 import com.walmart.aex.sp.enums.FlowStrategy;
-import com.walmart.aex.sp.service.BQFPValidationsService;
+import com.walmart.aex.sp.service.BqfpValidationsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class BQFPValidationsServiceImpl implements BQFPValidationsService {
+public class BqfpValidationsServiceImpl implements BqfpValidationsService {
 
     @Override
     public ValidationResult missingBuyQuantity(List<MerchMethodsDto> merchMethodsDtos, BQFPResponse bqfpResponse,

@@ -8,7 +8,7 @@ import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
 
 import java.util.List;
 
-public interface BQFPValidationsService {
+public interface BqfpValidationsService {
     ValidationResult missingBuyQuantity(List<MerchMethodsDto> merchMethodsDtos, BQFPResponse bqfpResponse,
                                         StyleDto styleDto, CustomerChoiceDto customerChoiceDto);
 }

@@ -25,9 +25,9 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
-class BQFPValidationsServiceImplTest {
+class BqfpValidationsServiceImplTest {
 
-    BQFPValidationsServiceImpl bqfpValidationsService = new BQFPValidationsServiceImpl();
+    BqfpValidationsServiceImpl bqfpValidationsService = new BqfpValidationsServiceImpl();
     ObjectMapper mapper = new ObjectMapper();
 
     ValidationResult actualValidationResults;

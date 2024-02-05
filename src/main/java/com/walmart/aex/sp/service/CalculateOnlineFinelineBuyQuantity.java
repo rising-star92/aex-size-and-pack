@@ -26,16 +26,16 @@ public class CalculateOnlineFinelineBuyQuantity {
     private final BuyQtyReplenishmentMapperService buyQtyReplenishmentMapperService;
     private final ReplenishmentsOptimizationService replenishmentsOptimizationServices;
     private final ReplenishmentService replenishmentService;
-    private final ValidationService validationService;
+    private final BqfpValidationsService bqfpValidationsService;
 
     public CalculateOnlineFinelineBuyQuantity(BuyQtyReplenishmentMapperService buyQtyReplenishmentMapperService,
                                               ReplenishmentsOptimizationService replenishmentsOptimizationServices,
                                               ReplenishmentService replenishmentService,
-                                              ValidationService validationService) {
+                                              BqfpValidationsService bqfpOnlineValidationServiceImpl) {
         this.buyQtyReplenishmentMapperService = buyQtyReplenishmentMapperService;
         this.replenishmentsOptimizationServices = replenishmentsOptimizationServices;
         this.replenishmentService = replenishmentService;
-        this.validationService = validationService;
+        this.bqfpValidationsService = bqfpOnlineValidationServiceImpl;
     }
 
 
@@ -82,7 +82,7 @@ public class CalculateOnlineFinelineBuyQuantity {
         styleDto.getCustomerChoices().forEach(customerChoiceDto -> {
             log.info("Checking if Online Cc are existing: {}", customerChoiceDto);
             //TODO: Delete replenishment if replenishment is deleted after set
-            ValidationResult ccValidationResult = validationService.validateCalculateBuyQuantityInputData(List.of(merchMethodsDto), null, bqfpResponse, styleDto, customerChoiceDto);
+            ValidationResult ccValidationResult = bqfpValidationsService.missingBuyQuantity(List.of(merchMethodsDto), bqfpResponse, styleDto, customerChoiceDto);
             if (!CollectionUtils.isEmpty(customerChoiceDto.getClusters())) {
                 getOnlineCcClusters(styleDto, customerChoiceDto, merchMethodsDto, bqfpResponse, calculateBuyQtyResponse, calculateBuyQtyParallelRequest, replenishmentCons, ccValidationResult);
             }
