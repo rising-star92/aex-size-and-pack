@@ -150,6 +150,9 @@ class CalculateFinelineBuyQuantityTest {
     ValidationService validationService;
 
     @Mock
+    BqfpValidationsService bqfpValidationsService;
+
+    @Mock
     AppMessageTextService appMessageTextService;
 
     CalculateFinelineBuyQuantityMapper calculateFinelineBuyQuantityMapper;
@@ -171,7 +174,7 @@ class CalculateFinelineBuyQuantityTest {
                 ccMmReplnPkConsRepository, ccSpReplnPkConsRepository, replenishmentMapper, updateReplnConfigMapper, buyQuantityMapper,
                 strategyFetchService, buyQtyCommonUtil, sizeLevelReplenishmentRepository,sizeLevelReplenishmentMapper);
         BuyQtyReplenishmentMapperService buyQtyReplenishmentMapperService = new BuyQtyReplenishmentMapperService(mapper, replenishmentService);
-        calculateOnlineFinelineBuyQuantity = new  CalculateOnlineFinelineBuyQuantity (buyQtyReplenishmentMapperService,replenishmentsOptimizationServices, replenishmentService, validationService);
+        calculateOnlineFinelineBuyQuantity = new  CalculateOnlineFinelineBuyQuantity (buyQtyReplenishmentMapperService,replenishmentsOptimizationServices, replenishmentService, bqfpValidationsService);
         calculateFinelineBuyQuantity = new CalculateFinelineBuyQuantity(bqfpService, mapper, buyQtyReplenishmentMapperService, calculateOnlineFinelineBuyQuantity,
                 strategyFetchService,addStoreBuyQuantityService, buyQuantityConstraintService, deptAdminRuleService, replenishmentService, replenishmentsOptimizationServices,
                 midasServiceCall, linePlanService, bigQueryClusterService, calculateInitialSetQuantityService, calculateBumpPackQtyService, validationService, calculateFinelineBuyQuantityMapper);
