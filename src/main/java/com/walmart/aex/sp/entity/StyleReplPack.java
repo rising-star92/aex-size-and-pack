@@ -51,6 +51,9 @@ public class StyleReplPack
     @Column(name="repl_pack_cnt")
     private Integer replPackCnt;
 
+    @Column(name = "app_message_obj")
+    private String messageObj;
+
     @OneToMany(mappedBy = "styleReplPack", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CcReplPack> ccReplPack;
