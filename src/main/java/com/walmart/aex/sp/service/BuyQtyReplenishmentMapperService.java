@@ -5,6 +5,7 @@ import com.walmart.aex.sp.dto.buyquantity.CalculateBuyQtyResponse;
 import com.walmart.aex.sp.dto.buyquantity.CustomerChoiceDto;
 import com.walmart.aex.sp.dto.buyquantity.StyleDto;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
+import com.walmart.aex.sp.dto.replenishment.cons.CcMmReplPackCons;
 import com.walmart.aex.sp.dto.replenishment.cons.ReplenishmentCons;
 import com.walmart.aex.sp.entity.*;
 import com.walmart.aex.sp.enums.ChannelType;
@@ -13,8 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-
-import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
 
 @Slf4j
 @Service
@@ -57,9 +56,7 @@ public class BuyQtyReplenishmentMapperService {
         ccSpMmReplPacks.forEach(ccSpMmReplPack -> setReplenishmentSizeEntity(ccMmReplPack, ccSpMmReplPack, merchMethodsDto));
 
         Map<Integer, CcSpMmReplPack> ccSpMmReplPackSizeMap = replenishmentCons.getCcSpMmReplPackConsMap();
-        ccSpMmReplPacks.forEach( ccSpMmReplPack -> {
-            setVendorPackAndWhsePackCountForCCSpMm(ccSpMmReplPackSizeMap, ccSpMmReplPack);
-        });
+        ccSpMmReplPacks.forEach( ccSpMmReplPack -> setVendorPackAndWhsePackCountForCCSpMm(ccSpMmReplPackSizeMap, ccSpMmReplPack, replenishmentCons.getCcMmReplPackCons()));
         ccMmReplPack.setVendorPackCnt(replenishmentCons.getCcMmReplPackCons().getVendorPackCount());
         ccMmReplPack.setWhsePackCnt(replenishmentCons.getCcMmReplPackCons().getWarehousePackCount());
         ccMmReplPack.setVnpkWhpkRatio(replenishmentCons.getCcMmReplPackCons().getVendorPackWareHousePackRatio());
@@ -287,7 +284,7 @@ public class BuyQtyReplenishmentMapperService {
         ccMmReplPack.setCcSpMmReplPack(ccSpMmReplPacks);
     }
 
-    private void setVendorPackAndWhsePackCountForCCSpMm(Map<Integer, CcSpMmReplPack> ccSpMmReplPackSizeMap, CcSpMmReplPack ccSpMmReplPack) {
+    private void setVendorPackAndWhsePackCountForCCSpMm(Map<Integer, CcSpMmReplPack> ccSpMmReplPackSizeMap, CcSpMmReplPack ccSpMmReplPack, CcMmReplPackCons ccMmReplPackCons) {
         if (ccSpMmReplPackSizeMap != null && ccSpMmReplPackSizeMap.containsKey(ccSpMmReplPack.getCcSpReplPackId().getAhsSizeId())) {
             CcSpMmReplPack ccSpMmReplPackFromDb = ccSpMmReplPackSizeMap.get(ccSpMmReplPack.getCcSpReplPackId().getAhsSizeId());
             Integer vendorPackCnt = ccSpMmReplPackFromDb.getVendorPackCnt();
@@ -296,10 +293,10 @@ public class BuyQtyReplenishmentMapperService {
             ccSpMmReplPack.setWhsePackCnt(ccSpMmReplPackFromDb.getWhsePackCnt());
             ccSpMmReplPack.setVnpkWhpkRatio(ccSpMmReplPackFromDb.getVnpkWhpkRatio());
         } else {
-            ccSpMmReplPack.setReplPackCnt(ccSpMmReplPack.getReplUnits() / VP_DEFAULT);
-            ccSpMmReplPack.setVendorPackCnt(VP_DEFAULT);
-            ccSpMmReplPack.setWhsePackCnt(WP_DEFAULT);
-            ccSpMmReplPack.setVnpkWhpkRatio(VP_WP_RATIO_DEFAULT);
+            ccSpMmReplPack.setReplPackCnt(ccSpMmReplPack.getReplUnits() / ccMmReplPackCons.getVendorPackCount());
+            ccSpMmReplPack.setVendorPackCnt(ccMmReplPackCons.getVendorPackCount());
+            ccSpMmReplPack.setWhsePackCnt(ccMmReplPackCons.getWarehousePackCount());
+            ccSpMmReplPack.setVnpkWhpkRatio(ccMmReplPackCons.getVendorPackWareHousePackRatio());
         }
     }
 }
