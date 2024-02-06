@@ -501,7 +501,7 @@ public class ReplenishmentService  {
         return ccMmReplPackCons;
     }
 
-    public CcSpMmReplPack setVendorPackAndWhsePackCountForCCSpMm(Map<Integer, CcSpMmReplPack> ccSpMmReplPackSizeMap, CcSpMmReplPack ccSpMmReplPack) {
+    public CcSpMmReplPack setVendorPackAndWhsePackCountForCCSpMm(Map<Integer, CcSpMmReplPack> ccSpMmReplPackSizeMap, CcSpMmReplPack ccSpMmReplPack, CcMmReplPackCons ccMmReplPackCons) {
         if (ccSpMmReplPackSizeMap != null && ccSpMmReplPackSizeMap.containsKey(ccSpMmReplPack.getCcSpReplPackId().getAhsSizeId())) {
             CcSpMmReplPack ccSpMmReplPackFromDb = ccSpMmReplPackSizeMap.get(ccSpMmReplPack.getCcSpReplPackId().getAhsSizeId());
             Integer vendorPackCnt = ccSpMmReplPackFromDb.getVendorPackCnt();
@@ -510,10 +510,10 @@ public class ReplenishmentService  {
             ccSpMmReplPack.setWhsePackCnt(ccSpMmReplPackFromDb.getWhsePackCnt());
             ccSpMmReplPack.setVnpkWhpkRatio(ccSpMmReplPackFromDb.getVnpkWhpkRatio());
         } else {
-            ccSpMmReplPack.setReplPackCnt(ccSpMmReplPack.getReplUnits() / VP_DEFAULT);
-            ccSpMmReplPack.setVendorPackCnt(VP_DEFAULT);
-            ccSpMmReplPack.setWhsePackCnt(WP_DEFAULT);
-            ccSpMmReplPack.setVnpkWhpkRatio(VP_WP_RATIO_DEFAULT);
+            ccSpMmReplPack.setReplPackCnt(ccSpMmReplPack.getReplUnits() / ccMmReplPackCons.getVendorPackCount());
+            ccSpMmReplPack.setVendorPackCnt(ccMmReplPackCons.getVendorPackCount());
+            ccSpMmReplPack.setWhsePackCnt(ccMmReplPackCons.getWarehousePackCount());
+            ccSpMmReplPack.setVnpkWhpkRatio(ccMmReplPackCons.getVendorPackWareHousePackRatio());
         }
         return ccSpMmReplPack;
     }
