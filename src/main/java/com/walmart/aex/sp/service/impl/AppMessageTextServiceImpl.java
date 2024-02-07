@@ -126,24 +126,14 @@ public class AppMessageTextServiceImpl implements AppMessageTextService {
         Set<Integer> codesByLevel = new HashSet<>();
         switch (hierarchyLevel) {
             case FINELINE:
+            case STYLE:
                 codes.forEach(code -> {
                     if(com.walmart.aex.sp.enums.AppMessageText.SIZE_PROFILE_PCT_NOT100_CC_LEVEL.getId().equals(code)){
                         codesByLevel.add(com.walmart.aex.sp.enums.AppMessageText.SIZE_PROFILE_PCT_NOT100.getId());
                     } else if (com.walmart.aex.sp.enums.AppMessageText.BQFP_ERRORS_LIST.contains(code)) {
-                        codesByLevel.add(com.walmart.aex.sp.enums.AppMessageText.BQFP_FL_MESSAGE.getId());
+                        codesByLevel.add(com.walmart.aex.sp.enums.AppMessageText.BQFP_MESSAGE.getId());
                     } else if (com.walmart.aex.sp.enums.AppMessageText.RFA_ERRORS_LIST.contains(code)) {
-                        codesByLevel.add(com.walmart.aex.sp.enums.AppMessageText.RFA_FL_MESSAGE.getId());
-                    } else getSizeAlertCodesForOtherLevels(codesByLevel, code);
-                });
-                break;
-            case STYLE:
-                codes.forEach(code-> {
-                    if(com.walmart.aex.sp.enums.AppMessageText.SIZE_PROFILE_PCT_NOT100_CC_LEVEL.getId().equals(code)){
-                        codesByLevel.add(com.walmart.aex.sp.enums.AppMessageText.SIZE_PROFILE_PCT_NOT100.getId());
-                    } else if(com.walmart.aex.sp.enums.AppMessageText.BQFP_ERRORS_LIST.contains(code)){
-                        codesByLevel.add(com.walmart.aex.sp.enums.AppMessageText.BQFP_STYLE_MESSAGE.getId());
-                    } else if (com.walmart.aex.sp.enums.AppMessageText.RFA_ERRORS_LIST.contains(code)) {
-                        codesByLevel.add(com.walmart.aex.sp.enums.AppMessageText.RFA_STYLE_MESSAGE.getId());
+                        codesByLevel.add(com.walmart.aex.sp.enums.AppMessageText.RFA_MESSAGE.getId());
                     } else getSizeAlertCodesForOtherLevels(codesByLevel, code);
                 });
                 break;

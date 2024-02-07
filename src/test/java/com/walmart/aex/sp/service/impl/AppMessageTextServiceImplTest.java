@@ -100,39 +100,27 @@ class AppMessageTextServiceImplTest {
 
     @Test
     void getCodesByLevelTestForFinelineLevel() {
-        Set<Integer> codes= new HashSet<>();
-        codes.add(160);
-        codes.add(163);
-        codes.add(171);
-        codes.add(172);
+        Set<Integer> codes= Set.of(160,163,171,172);
         Set<Integer> result = appMessageTextService.getCodesByLevel(codes,FINELINE);
         Assertions.assertNotNull(result);
         Assertions.assertEquals(2, result.size());
         Assertions.assertTrue(result.contains(301));
-        Assertions.assertTrue(result.contains(303));
+        Assertions.assertTrue(result.contains(302));
     }
 
     @Test
     void getCodesByLevelTestForStyleLevel() {
-        Set<Integer> codes= new HashSet<>();
-        codes.add(160);
-        codes.add(163);
-        codes.add(171);
-        codes.add(172);
+        Set<Integer> codes= Set.of(160,163,171,172);
         Set<Integer> result = appMessageTextService.getCodesByLevel(codes,STYLE);
         Assertions.assertNotNull(result);
         Assertions.assertEquals(2, result.size());
+        Assertions.assertTrue(result.contains(301));
         Assertions.assertTrue(result.contains(302));
-        Assertions.assertTrue(result.contains(304));
     }
 
     @Test
     void getCodesByLevelTestForCCLevel() {
-        Set<Integer> codes= new HashSet<>();
-        codes.add(160);
-        codes.add(163);
-        codes.add(171);
-        codes.add(172);
+        Set<Integer> codes= Set.of(160,163,171,172);
         Set<Integer> result = appMessageTextService.getCodesByLevel(codes,CUSTOMER_CHOICE);
         Assertions.assertNotNull(result);
         Assertions.assertEquals(4, result.size());
@@ -142,25 +130,21 @@ class AppMessageTextServiceImplTest {
 
     @Test
     void getCodesByLevelTestForCCLevelOneUnitAlerts() {
-        Set<Integer> codes= new HashSet<>();
-        codes.add(210);
-        codes.add(211);
+        Set<Integer> codes= Set.of(210,211);
+        Set<Integer> result = appMessageTextService.getCodesByLevel(codes,CUSTOMER_CHOICE);
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(2, result.size());
+        Assertions.assertTrue(result.contains(303));
+        Assertions.assertTrue(result.contains(304));
+    }
+
+    @Test
+    void getCodesByLevelTestForCCLevelAdminRule() {
+        Set<Integer> codes= Set.of(212,213);
         Set<Integer> result = appMessageTextService.getCodesByLevel(codes,CUSTOMER_CHOICE);
         Assertions.assertNotNull(result);
         Assertions.assertEquals(2, result.size());
         Assertions.assertTrue(result.contains(305));
         Assertions.assertTrue(result.contains(306));
-    }
-
-    @Test
-    void getCodesByLevelTestForCCLevelAdminRule() {
-        Set<Integer> codes= new HashSet<>();
-        codes.add(212);
-        codes.add(213);
-        Set<Integer> result = appMessageTextService.getCodesByLevel(codes,CUSTOMER_CHOICE);
-        Assertions.assertNotNull(result);
-        Assertions.assertEquals(2, result.size());
-        Assertions.assertTrue(result.contains(307));
-        Assertions.assertTrue(result.contains(308));
     }
 }
