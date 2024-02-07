@@ -6,7 +6,6 @@ import com.walmart.aex.sp.dto.appmessage.AppMessageTextResponse;
 import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.exception.SizeAndPackException;
-import com.walmart.aex.sp.service.helper.CalBuyQtyAlertMsgMapperHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -25,13 +24,11 @@ public class BuyQuantityMapper {
     private final StrategyFetchService strategyFetchService;
     private final ObjectMapper objectMapper;
     private final AppMessageTextService appMessageTextService;
-    private final CalBuyQtyAlertMsgMapperHelper calBuyQtyAlertMsgMapperHelper;
 
-    BuyQuantityMapper(StrategyFetchService strategyFetchService, ObjectMapper objectMapper, AppMessageTextService appMessageTextService, CalBuyQtyAlertMsgMapperHelper calBuyQtyAlertMsgMapperHelper){
+    BuyQuantityMapper(StrategyFetchService strategyFetchService, ObjectMapper objectMapper, AppMessageTextService appMessageTextService){
         this.strategyFetchService = strategyFetchService;
         this.objectMapper = objectMapper;
         this.appMessageTextService = appMessageTextService;
-        this.calBuyQtyAlertMsgMapperHelper = calBuyQtyAlertMsgMapperHelper;
     }
 
     public void mapBuyQntyLvl2Sp(BuyQntyResponseDTO buyQntyResponseDTO, BuyQtyResponse response, Integer finelineNbr) {
@@ -223,8 +220,8 @@ public class BuyQuantityMapper {
             if (StringUtils.isNotEmpty(messageObj) ) {
                 ValidationResult validationResult = objectMapper.readValue(messageObj, ValidationResult.class);
                 if (Objects.nonNull(validationResult) && !validationResult.getCodes().isEmpty()) {
-                    Set<Integer> codesByLevel = calBuyQtyAlertMsgMapperHelper.getCodesByLevel(validationResult.getCodes(),hierarchyLevel);
-                    List<AppMessageTextResponse> matchingAppMessageTexts = appMessageTextService.getAppMessagesByIds(codesByLevel);
+//                    Set<Integer> codesByLevel = appMessageTextService.getCodesByLevel(validationResult.getCodes(),hierarchyLevel);
+                    List<AppMessageTextResponse> matchingAppMessageTexts = appMessageTextService.getMatchingAppMessageTexts(validationResult.getCodes(),hierarchyLevel);
                     if (!matchingAppMessageTexts.isEmpty()) {
                         List<ValidationMessage> validations = new ArrayList<>();
                         for (AppMessageTextResponse appMessageTextObj : matchingAppMessageTexts) {

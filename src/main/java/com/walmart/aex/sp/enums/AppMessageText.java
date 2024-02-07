@@ -1,6 +1,9 @@
 package com.walmart.aex.sp.enums;
 
+import java.util.HashSet;
 import java.util.Set;
+
+import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
 
 public enum AppMessageText {
     BQFP_MISSING_IS_DATA(160),
@@ -57,6 +60,5 @@ public enum AppMessageText {
     public static final Set<Integer> RULE_IS_REPLN_THRESHOLD_LIST = Set.of(AppMessageText.RULE_INITIALSET_ONE_UNIT_PER_STORE_APPLIED.getId(),AppMessageText.RULE_IS_REPLN_ITM_PC_APPLIED.getId());
     public static final Set<Integer> RULE_ADJUST_REPLN_THRESHOLD_LIST = Set.of(AppMessageText.RULE_INITIALSET_ONE_UNIT_PER_STORE_APPLIED.getId(),AppMessageText.RULE_ADJUST_MIN_REPLN_THRESHOLD_APPLIED.getId());
     public static final Set<Integer> SIZE_PROFILE_NOT100_LIST = Set.of(AppMessageText.SIZE_PROFILE_PCT_NOT100_CC_LEVEL.getId(), AppMessageText.SIZE_PROFILE_PCT_NOT100.getId());
-
 
 }

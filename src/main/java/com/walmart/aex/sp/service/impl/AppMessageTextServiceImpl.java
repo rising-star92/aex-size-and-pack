@@ -14,9 +14,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
 
 @Service
 @Slf4j
@@ -89,7 +92,6 @@ public class AppMessageTextServiceImpl implements AppMessageTextService {
         }
     }
 
-    @Override
     public List<AppMessageTextResponse> getAppMessagesByIds(Set<Integer> validationCodes) {
         try {
             List<AppMessageTextResponse> appMessageTextResponseList = getAllAppMessageText();
@@ -101,5 +103,82 @@ public class AppMessageTextServiceImpl implements AppMessageTextService {
             throw new CustomException("Exception occurred while retrieving app messages");
         }
 
+    }
+
+    /***
+     * This method will return List of AppMessageTextResponse based on hierarchy level by taking in the alert codes
+     * @param codes
+     * @param hierarchyLevel
+     * @return AppMessageTextResponse list
+     */
+    public List<AppMessageTextResponse> getMatchingAppMessageTexts(Set<Integer> codes, String hierarchyLevel) {
+        Set<Integer> codesByLevel = getCodesByLevel(codes,hierarchyLevel);
+        return getAppMessagesByIds(codesByLevel);
+    }
+
+    /***
+     * This method will return the alert error codes by the hierarchy type
+     * @param codes
+     * @param hierarchyLevel
+     * @return
+     */
+    public Set<Integer> getCodesByLevel(Set<Integer> codes, String hierarchyLevel){
+        Set<Integer> codesByLevel = new HashSet<>();
+        switch (hierarchyLevel) {
+            case FINELINE:
+                codes.forEach(code -> {
+                    if(com.walmart.aex.sp.enums.AppMessageText.SIZE_PROFILE_NOT100_LIST.contains(code)){
+                        codesByLevel.add(com.walmart.aex.sp.enums.AppMessageText.SIZE_PROFILE_PCT_NOT100.getId());
+                    } else if (com.walmart.aex.sp.enums.AppMessageText.BQFP_ERRORS_LIST.contains(code)) {
+                        codesByLevel.add(com.walmart.aex.sp.enums.AppMessageText.BQFP_FL_MESSAGE.getId());
+                    } else if (com.walmart.aex.sp.enums.AppMessageText.RFA_ERRORS_LIST.contains(code)) {
+                        codesByLevel.add(com.walmart.aex.sp.enums.AppMessageText.RFA_FL_MESSAGE.getId());
+                    } else getCommonCodes(codesByLevel, code);
+                });
+                break;
+            case STYLE:
+                codes.forEach(code-> {
+                    if(com.walmart.aex.sp.enums.AppMessageText.SIZE_PROFILE_NOT100_LIST.contains(code)){
+                        codesByLevel.add(com.walmart.aex.sp.enums.AppMessageText.SIZE_PROFILE_PCT_NOT100.getId());
+                    } else if(com.walmart.aex.sp.enums.AppMessageText.BQFP_ERRORS_LIST.contains(code)){
+                        codesByLevel.add(com.walmart.aex.sp.enums.AppMessageText.BQFP_STYLE_MESSAGE.getId());
+                    } else if (com.walmart.aex.sp.enums.AppMessageText.RFA_ERRORS_LIST.contains(code)) {
+                        codesByLevel.add(com.walmart.aex.sp.enums.AppMessageText.RFA_STYLE_MESSAGE.getId());
+                    } else getCommonCodes(codesByLevel, code);
+                });
+                break;
+            case CUSTOMER_CHOICE:
+                codes.forEach(code-> {
+                    if(com.walmart.aex.sp.enums.AppMessageText.SIZE_PROFILE_NOT100_LIST.contains(code)){
+                        codesByLevel.add(com.walmart.aex.sp.enums.AppMessageText.SIZE_PROFILE_PCT_NOT100_CC_LEVEL.getId());
+                    }else{
+                        getCommonCodes(codesByLevel, code);
+                    }
+                });
+                break;
+            default :
+                codesByLevel.addAll(codes);
+                break;
+        }
+        return codesByLevel;
+    }
+
+    /***
+     * This method returns error codes for One Unit Rule and Admin Rule common for Fineline, Style and CC levels
+     * @param codesByLevel
+     * @param code
+     */
+    private void getCommonCodes(Set<Integer> codesByLevel, Integer code) {
+        if (com.walmart.aex.sp.enums.AppMessageText.RULE_IS_ONE_UNIT_LIST.contains(code)) {
+            codesByLevel.add(com.walmart.aex.sp.enums.AppMessageText.RULE_IS_ONE_UNIT_PER_STORE_APPLIED.getId());
+        } else if (com.walmart.aex.sp.enums.AppMessageText.RULE_ADJUST_REPLN_ONE_UNIT_LIST.contains(code)) {
+            codesByLevel.add(com.walmart.aex.sp.enums.AppMessageText.RULE_ADJUST_REPLN_FOR_ONE_UNIT_PER_STORE_APPLIED.getId());
+        } else if (com.walmart.aex.sp.enums.AppMessageText.RULE_IS_REPLN_THRESHOLD_LIST.contains(code)) {
+            codesByLevel.add(com.walmart.aex.sp.enums.AppMessageText.RULE_IS_REPLN_ITM_PC_APPLIED.getId());
+        } else if (com.walmart.aex.sp.enums.AppMessageText.RULE_ADJUST_REPLN_THRESHOLD_LIST.contains(code)) {
+            codesByLevel.add(com.walmart.aex.sp.enums.AppMessageText.RULE_ADJUST_MIN_REPLN_THRESHOLD_APPLIED.getId());
+        } else {
+            codesByLevel.add(code);
+        }
     }
 }

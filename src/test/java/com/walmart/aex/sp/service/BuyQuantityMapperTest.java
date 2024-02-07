@@ -5,7 +5,6 @@ import com.walmart.aex.sp.dto.appmessage.AppMessageTextResponse;
 import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.exception.SizeAndPackException;
-import com.walmart.aex.sp.service.helper.CalBuyQtyAlertMsgMapperHelper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -38,8 +37,6 @@ public class BuyQuantityMapperTest {
     StrategyFetchService strategyFetchService;
     @Mock
     AppMessageTextService appMessageTextService;
-    @Mock
-    CalBuyQtyAlertMsgMapperHelper calBuyQtyAlertMsgMapperHelper;
 
     @Spy
     private ObjectMapper mapper = new ObjectMapper();
@@ -275,8 +272,8 @@ public class BuyQuantityMapperTest {
         appMessageTextResponseList.add(appMessageTextResponse2);
         ValidationResult validationResult = ValidationResult.builder().codes(Set.of(150,151)).build();
         Mockito.doReturn(validationResult).when(mapper).readValue(messageObj,ValidationResult.class);
-        Mockito.when(appMessageTextService.getAppMessagesByIds(validationResult.getCodes())).thenReturn(appMessageTextResponseList);
-        Mockito.when(calBuyQtyAlertMsgMapperHelper.getCodesByLevel(validationResult.getCodes(),FINELINE)).thenReturn(validationResult.getCodes());
+//        Mockito.when(appMessageTextService.getAppMessagesByIds(validationResult.getCodes())).thenReturn(appMessageTextResponseList);
+        Mockito.when(appMessageTextService.getMatchingAppMessageTexts(validationResult.getCodes(),FINELINE)).thenReturn(appMessageTextResponseList);
         Metadata metadata = buyQunatityMapper.getMetadataDto(messageObj,FINELINE);
         assertEquals(2,metadata.getValidations().size());
         assertEquals(1,metadata.getValidations().get(0).getMessages().size());
@@ -293,8 +290,9 @@ public class BuyQuantityMapperTest {
         appMessageTextResponseList.add(appMessageTextResponse2);
         ValidationResult validationResult = ValidationResult.builder().codes(Set.of(150,151)).build();
         Mockito.doReturn(validationResult).when(mapper).readValue(messageObj,ValidationResult.class);
-        Mockito.when(appMessageTextService.getAppMessagesByIds(validationResult.getCodes())).thenReturn(appMessageTextResponseList);
-        Mockito.when(calBuyQtyAlertMsgMapperHelper.getCodesByLevel(validationResult.getCodes(),FINELINE)).thenReturn(validationResult.getCodes());
+//        Mockito.when(appMessageTextService.getAppMessagesByIds(validationResult.getCodes())).thenReturn(appMessageTextResponseList);
+//        Mockito.when(appMessageTextService.getCodesByLevel(validationResult.getCodes(),FINELINE)).thenReturn(validationResult.getCodes());
+        Mockito.when(appMessageTextService.getMatchingAppMessageTexts(validationResult.getCodes(),FINELINE)).thenReturn(appMessageTextResponseList);
         Metadata metadata = buyQunatityMapper.getMetadataDto(messageObj,FINELINE);
         assertEquals(1,metadata.getValidations().size());
         assertEquals(2,metadata.getValidations().get(0).getMessages().size());
