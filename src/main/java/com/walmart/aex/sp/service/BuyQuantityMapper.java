@@ -253,14 +253,6 @@ public class BuyQuantityMapper {
         return ObjectUtils.allNull(metadata.getValidations())? null : metadata ;
     }
 
-//    private Set<Integer> getCodesByLevel(Set<Integer> codes, String hierarchyLevel) {
-//        Set<Integer> codesByHierarchyLevel = new HashSet<>();
-//        for(Integer code: codes){
-//            codesByHierarchyLevel.add(AppMessageTextByLevel.getLevelIdByIdAndLevel(code,hierarchyLevel));
-//        }
-//        return codesByHierarchyLevel;
-//    }
-
     /***
      * Below method will fetch the ValidationMessage object for given type , so that we can append new message to its message list
      * @param type
