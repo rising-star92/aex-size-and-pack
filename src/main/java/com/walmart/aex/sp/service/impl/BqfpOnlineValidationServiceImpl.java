@@ -24,9 +24,15 @@ public class BqfpOnlineValidationServiceImpl implements BqfpValidationsService {
 
             List<Replenishment> replenishments = BuyQtyCommonUtil.getReplenishments(bqfpResponse, styleDto, customerChoiceDto);
 
-            if (replenishments.isEmpty() || replenishments.stream().filter(Objects::nonNull)
+            if (!replenishments.isEmpty() && replenishments.stream().filter(Objects::nonNull)
+                    .anyMatch(replenishment -> Optional.ofNullable(replenishment.getDcInboundUnits()).orElse(0L) < 0 ||
+                            Optional.ofNullable(replenishment.getDcInboundAdjUnits()).orElse(0L) < 0 )) {
+                // Repln units include negative values
+                validationCodes.add(AppMessageText.BQFP_REPLN_NEGATIVE_UNITS.getId());
+            } else if (replenishments.isEmpty() || replenishments.stream().filter(Objects::nonNull)
                     .mapToLong(replenishment -> Optional.ofNullable(replenishment.getDcInboundUnits()).orElse((long) 0) +
                             Optional.ofNullable(replenishment.getDcInboundAdjUnits()).orElse((long) 0) ).sum() <= 0) {
+                //Missing Replenishment units
                 validationCodes.add(AppMessageText.BQFP_MISSING_REPLENISHMENT_QUANTITIES.getId());
             }
         });

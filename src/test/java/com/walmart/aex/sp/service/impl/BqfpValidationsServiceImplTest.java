@@ -104,6 +104,30 @@ class BqfpValidationsServiceImplTest {
                 AppMessage.BQFP_MISSING_BS_WEEKS.getId()), actualValidationResults.getCodes());
     }
 
+    @Test
+    void test_validateNegativeISandBSandReplnQty() throws IOException {
+        List<MerchMethodsDto> merchMethodsDtos = new ArrayList<>();
+        MerchMethodsDto merchMethodsDto = new MerchMethodsDto();
+        merchMethodsDto.setFixtureType(FixtureTypeRollup.RACKS.getDescription());
+        merchMethodsDto.setFixtureTypeRollupId(FixtureTypeRollup.RACKS.getCode());
+        merchMethodsDto.setMerchMethod(MerchMethod.HANGING.getDescription());
+        merchMethodsDto.setMerchMethodCode(MerchMethod.HANGING.getId());
+        merchMethodsDtos.add(merchMethodsDto);
+
+        final String path = "/plan72fineline4440";
+        BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponseNegativeBuyQty"));
+        BuyQtyResponse buyQtyResponse = buyQtyResponseFromJson(path.concat("/BuyQtyResponse"));
+
+        StyleDto styleDto = buyQtyResponse.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0);
+        CustomerChoiceDto customerChoiceDto = styleDto.getCustomerChoices().get(0);
+
+        actualValidationResults = bqfpValidationsService.missingBuyQuantity(merchMethodsDtos, bqfpResponse, styleDto, customerChoiceDto);
+
+        assertEquals(Set.of(AppMessage.BQFP_REPLN_NEGATIVE_UNITS.getId(),
+                AppMessage.BQFP_BS_NEGATIVE_UNITS.getId(),
+                AppMessage.BQFP_IS_NEGATIVE_UNITS.getId()), actualValidationResults.getCodes());
+    }
+
     BQFPResponse bqfpResponseFromJson(String path) throws IOException {
         return mapper.readValue(readJsonFileAsString(path), BQFPResponse.class);
     }

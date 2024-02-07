@@ -1,0 +1,595 @@
+{
+  "planId": 12,
+  "lvl0Nbr": 50000,
+  "lvl1Nbr": 34,
+  "lvl2Nbr": 6419,
+  "lvl3Nbr": 12231,
+  "lvl4Nbr": 31516,
+  "finelineNbr": 5160,
+  "styles": [
+    {
+      "styleId": "34_5160_3_24_002",
+      "channelType": "ONLINE",
+      "customerChoices": [
+        {
+          "ccId": "34_5160_3_24_002_NA",
+          "fixtures": [],
+          "replenishments": [
+            {
+              "replnWeek": 12301,
+              "replnWeekDesc": "FYE2024WK01",
+              "remainingUnits": 0,
+              "dcInboundUnits": -1000
+            },
+            {
+              "replnWeek": 12302,
+              "replnWeekDesc": "FYE2024WK02",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12303,
+              "replnWeekDesc": "FYE2024WK03",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12304,
+              "replnWeekDesc": "FYE2024WK04",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12305,
+              "replnWeekDesc": "FYE2024WK05",
+              "remainingUnits": 0,
+              "dcInboundUnits": 0
+            },
+            {
+              "replnWeek": 12306,
+              "replnWeekDesc": "FYE2024WK06",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12307,
+              "replnWeekDesc": "FYE2024WK07",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12308,
+              "replnWeekDesc": "FYE2024WK08",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12309,
+              "replnWeekDesc": "FYE2024WK09",
+              "remainingUnits": 0,
+              "dcInboundUnits": 0
+            },
+            {
+              "replnWeek": 12310,
+              "replnWeekDesc": "FYE2024WK10",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12311,
+              "replnWeekDesc": "FYE2024WK11",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12312,
+              "replnWeekDesc": "FYE2024WK12",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12313,
+              "replnWeekDesc": "FYE2024WK13",
+              "remainingUnits": 0,
+              "dcInboundUnits": 0
+            },
+            {
+              "replnWeek": 12314,
+              "replnWeekDesc": "FYE2024WK14",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12315,
+              "replnWeekDesc": "FYE2024WK15",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12316,
+              "replnWeekDesc": "FYE2024WK16",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12317,
+              "replnWeekDesc": "FYE2024WK17",
+              "remainingUnits": 0,
+              "dcInboundUnits": 0
+            },
+            {
+              "replnWeek": 12318,
+              "replnWeekDesc": "FYE2024WK18",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12319,
+              "replnWeekDesc": "FYE2024WK19",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12320,
+              "replnWeekDesc": "FYE2024WK20",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12321,
+              "replnWeekDesc": "FYE2024WK21",
+              "remainingUnits": 0,
+              "dcInboundUnits": 0
+            },
+            {
+              "replnWeek": 12322,
+              "replnWeekDesc": "FYE2024WK22",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12323,
+              "replnWeekDesc": "FYE2024WK23",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12324,
+              "replnWeekDesc": "FYE2024WK24",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12325,
+              "replnWeekDesc": "FYE2024WK25",
+              "remainingUnits": 0,
+              "dcInboundUnits": 0
+            },
+            {
+              "replnWeek": 12326,
+              "replnWeekDesc": "FYE2024WK26",
+              "remainingUnits": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "styleId": "34_5160_3_24_003",
+      "channelType": "ONLINE",
+      "customerChoices": [
+        {
+          "ccId": "34_5160_3_24_003_COOL MULTI",
+          "fixtures": [],
+          "replenishments": [
+            {
+              "replnWeek": 12301,
+              "replnWeekDesc": "FYE2024WK01",
+              "remainingUnits": 0,
+              "dcInboundUnits": 2777
+            },
+            {
+              "replnWeek": 12302,
+              "replnWeekDesc": "FYE2024WK02",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12303,
+              "replnWeekDesc": "FYE2024WK03",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12304,
+              "replnWeekDesc": "FYE2024WK04",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12305,
+              "replnWeekDesc": "FYE2024WK05",
+              "remainingUnits": 0,
+              "dcInboundUnits": 0
+            },
+            {
+              "replnWeek": 12306,
+              "replnWeekDesc": "FYE2024WK06",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12307,
+              "replnWeekDesc": "FYE2024WK07",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12308,
+              "replnWeekDesc": "FYE2024WK08",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12309,
+              "replnWeekDesc": "FYE2024WK09",
+              "remainingUnits": 0,
+              "dcInboundUnits": 0
+            },
+            {
+              "replnWeek": 12310,
+              "replnWeekDesc": "FYE2024WK10",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12311,
+              "replnWeekDesc": "FYE2024WK11",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12312,
+              "replnWeekDesc": "FYE2024WK12",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12313,
+              "replnWeekDesc": "FYE2024WK13",
+              "remainingUnits": 0,
+              "dcInboundUnits": 0
+            },
+            {
+              "replnWeek": 12314,
+              "replnWeekDesc": "FYE2024WK14",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12315,
+              "replnWeekDesc": "FYE2024WK15",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12316,
+              "replnWeekDesc": "FYE2024WK16",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12317,
+              "replnWeekDesc": "FYE2024WK17",
+              "remainingUnits": 0,
+              "dcInboundUnits": 0
+            },
+            {
+              "replnWeek": 12318,
+              "replnWeekDesc": "FYE2024WK18",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12319,
+              "replnWeekDesc": "FYE2024WK19",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12320,
+              "replnWeekDesc": "FYE2024WK20",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12321,
+              "replnWeekDesc": "FYE2024WK21",
+              "remainingUnits": 0,
+              "dcInboundUnits": 0
+            },
+            {
+              "replnWeek": 12322,
+              "replnWeekDesc": "FYE2024WK22",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12323,
+              "replnWeekDesc": "FYE2024WK23",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12324,
+              "replnWeekDesc": "FYE2024WK24",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12325,
+              "replnWeekDesc": "FYE2024WK25",
+              "remainingUnits": 0,
+              "dcInboundUnits": 0
+            },
+            {
+              "replnWeek": 12326,
+              "replnWeekDesc": "FYE2024WK26",
+              "remainingUnits": 0
+            }
+          ]
+        },
+        {
+          "ccId": "34_5160_3_24_003_BLUE",
+          "fixtures": [],
+          "replenishments": [
+            {
+              "replnWeek": 12301,
+              "replnWeekDesc": "FYE2024WK01",
+              "remainingUnits": 0,
+              "dcInboundUnits": 0
+            },
+            {
+              "replnWeek": 12302,
+              "replnWeekDesc": "FYE2024WK02",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12303,
+              "replnWeekDesc": "FYE2024WK03",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12304,
+              "replnWeekDesc": "FYE2024WK04",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12305,
+              "replnWeekDesc": "FYE2024WK05",
+              "remainingUnits": 0,
+              "dcInboundUnits": 0
+            },
+            {
+              "replnWeek": 12306,
+              "replnWeekDesc": "FYE2024WK06",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12307,
+              "replnWeekDesc": "FYE2024WK07",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12308,
+              "replnWeekDesc": "FYE2024WK08",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12309,
+              "replnWeekDesc": "FYE2024WK09",
+              "remainingUnits": 0,
+              "dcInboundUnits": 0
+            },
+            {
+              "replnWeek": 12310,
+              "replnWeekDesc": "FYE2024WK10",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12311,
+              "replnWeekDesc": "FYE2024WK11",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12312,
+              "replnWeekDesc": "FYE2024WK12",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12313,
+              "replnWeekDesc": "FYE2024WK13",
+              "remainingUnits": 0,
+              "dcInboundUnits": 0
+            },
+            {
+              "replnWeek": 12314,
+              "replnWeekDesc": "FYE2024WK14",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12315,
+              "replnWeekDesc": "FYE2024WK15",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12316,
+              "replnWeekDesc": "FYE2024WK16",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12317,
+              "replnWeekDesc": "FYE2024WK17",
+              "remainingUnits": 0,
+              "dcInboundUnits": 0
+            },
+            {
+              "replnWeek": 12318,
+              "replnWeekDesc": "FYE2024WK18",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12319,
+              "replnWeekDesc": "FYE2024WK19",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12320,
+              "replnWeekDesc": "FYE2024WK20",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12321,
+              "replnWeekDesc": "FYE2024WK21",
+              "remainingUnits": 0,
+              "dcInboundUnits": 0
+            },
+            {
+              "replnWeek": 12322,
+              "replnWeekDesc": "FYE2024WK22",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12323,
+              "replnWeekDesc": "FYE2024WK23",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12324,
+              "replnWeekDesc": "FYE2024WK24",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12325,
+              "replnWeekDesc": "FYE2024WK25",
+              "remainingUnits": 0,
+              "dcInboundUnits": 0
+            },
+            {
+              "replnWeek": 12326,
+              "replnWeekDesc": "FYE2024WK26",
+              "remainingUnits": 0
+            }
+          ]
+        },
+        {
+          "ccId": "34_5160_3_24_003_DENIM BLUE",
+          "fixtures": [],
+          "replenishments": [
+            {
+              "replnWeek": 12301,
+              "replnWeekDesc": "FYE2024WK01",
+              "remainingUnits": 0,
+              "dcInboundUnits": 2777
+            },
+            {
+              "replnWeek": 12302,
+              "replnWeekDesc": "FYE2024WK02",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12303,
+              "replnWeekDesc": "FYE2024WK03",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12304,
+              "replnWeekDesc": "FYE2024WK04",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12305,
+              "replnWeekDesc": "FYE2024WK05",
+              "remainingUnits": 0,
+              "dcInboundUnits": 0
+            },
+            {
+              "replnWeek": 12306,
+              "replnWeekDesc": "FYE2024WK06",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12307,
+              "replnWeekDesc": "FYE2024WK07",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12308,
+              "replnWeekDesc": "FYE2024WK08",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12309,
+              "replnWeekDesc": "FYE2024WK09",
+              "remainingUnits": 0,
+              "dcInboundUnits": 0
+            },
+            {
+              "replnWeek": 12310,
+              "replnWeekDesc": "FYE2024WK10",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12311,
+              "replnWeekDesc": "FYE2024WK11",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12312,
+              "replnWeekDesc": "FYE2024WK12",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12313,
+              "replnWeekDesc": "FYE2024WK13",
+              "remainingUnits": 0,
+              "dcInboundUnits": 0
+            },
+            {
+              "replnWeek": 12314,
+              "replnWeekDesc": "FYE2024WK14",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12315,
+              "replnWeekDesc": "FYE2024WK15",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12316,
+              "replnWeekDesc": "FYE2024WK16",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12317,
+              "replnWeekDesc": "FYE2024WK17",
+              "remainingUnits": 0,
+              "dcInboundUnits": 0
+            },
+            {
+              "replnWeek": 12318,
+              "replnWeekDesc": "FYE2024WK18",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12319,
+              "replnWeekDesc": "FYE2024WK19",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12320,
+              "replnWeekDesc": "FYE2024WK20",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12321,
+              "replnWeekDesc": "FYE2024WK21",
+              "remainingUnits": 0,
+              "dcInboundUnits": 0
+            },
+            {
+              "replnWeek": 12322,
+              "replnWeekDesc": "FYE2024WK22",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12323,
+              "replnWeekDesc": "FYE2024WK23",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12324,
+              "replnWeekDesc": "FYE2024WK24",
+              "remainingUnits": 0
+            },
+            {
+              "replnWeek": 12325,
+              "replnWeekDesc": "FYE2024WK25",
+              "remainingUnits": 0,
+              "dcInboundUnits": 0
+            },
+            {
+              "replnWeek": 12326,
+              "replnWeekDesc": "FYE2024WK26",
+              "remainingUnits": 0
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
