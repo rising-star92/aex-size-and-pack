@@ -272,7 +272,6 @@ public class BuyQuantityMapperTest {
         appMessageTextResponseList.add(appMessageTextResponse2);
         ValidationResult validationResult = ValidationResult.builder().codes(Set.of(150,151)).build();
         Mockito.doReturn(validationResult).when(mapper).readValue(messageObj,ValidationResult.class);
-//        Mockito.when(appMessageTextService.getAppMessagesByIds(validationResult.getCodes())).thenReturn(appMessageTextResponseList);
         Mockito.when(appMessageTextService.getMatchingAppMessageTexts(validationResult.getCodes(),FINELINE)).thenReturn(appMessageTextResponseList);
         Metadata metadata = buyQunatityMapper.getMetadataDto(messageObj,FINELINE);
         assertEquals(2,metadata.getValidations().size());
@@ -290,8 +289,6 @@ public class BuyQuantityMapperTest {
         appMessageTextResponseList.add(appMessageTextResponse2);
         ValidationResult validationResult = ValidationResult.builder().codes(Set.of(150,151)).build();
         Mockito.doReturn(validationResult).when(mapper).readValue(messageObj,ValidationResult.class);
-//        Mockito.when(appMessageTextService.getAppMessagesByIds(validationResult.getCodes())).thenReturn(appMessageTextResponseList);
-//        Mockito.when(appMessageTextService.getCodesByLevel(validationResult.getCodes(),FINELINE)).thenReturn(validationResult.getCodes());
         Mockito.when(appMessageTextService.getMatchingAppMessageTexts(validationResult.getCodes(),FINELINE)).thenReturn(appMessageTextResponseList);
         Metadata metadata = buyQunatityMapper.getMetadataDto(messageObj,FINELINE);
         assertEquals(1,metadata.getValidations().size());
