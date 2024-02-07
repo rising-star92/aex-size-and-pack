@@ -140,4 +140,27 @@ class AppMessageTextServiceImplTest {
         Assertions.assertTrue(result.contains(163));
     }
 
+    @Test
+    void getCodesByLevelTestForCCLevelOneUnitAlerts() {
+        Set<Integer> codes= new HashSet<>();
+        codes.add(210);
+        codes.add(211);
+        Set<Integer> result = appMessageTextService.getCodesByLevel(codes,CUSTOMER_CHOICE);
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(2, result.size());
+        Assertions.assertTrue(result.contains(305));
+        Assertions.assertTrue(result.contains(306));
+    }
+
+    @Test
+    void getCodesByLevelTestForCCLevelAdminRule() {
+        Set<Integer> codes= new HashSet<>();
+        codes.add(212);
+        codes.add(213);
+        Set<Integer> result = appMessageTextService.getCodesByLevel(codes,CUSTOMER_CHOICE);
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(2, result.size());
+        Assertions.assertTrue(result.contains(307));
+        Assertions.assertTrue(result.contains(308));
+    }
 }
