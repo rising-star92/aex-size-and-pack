@@ -5,6 +5,7 @@ import com.walmart.aex.sp.dto.appmessage.AppMessageTextResponse;
 import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.exception.SizeAndPackException;
+import com.walmart.aex.sp.service.helper.CalBuyQtyAlertMsgMapperHelper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.walmart.aex.sp.util.SizeAndPackConstants.FINELINE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 @ExtendWith(MockitoExtension.class)
@@ -36,6 +38,8 @@ public class BuyQuantityMapperTest {
     StrategyFetchService strategyFetchService;
     @Mock
     AppMessageTextService appMessageTextService;
+    @Mock
+    CalBuyQtyAlertMsgMapperHelper calBuyQtyAlertMsgMapperHelper;
 
     @Spy
     private ObjectMapper mapper = new ObjectMapper();
@@ -265,14 +269,15 @@ public class BuyQuantityMapperTest {
     public void testGetMetadataDto_WhenTypesAreDifferent() throws JsonProcessingException {
         String messageObj = "{\"codes\":[150,151]}";
         List<AppMessageTextResponse> appMessageTextResponseList = new ArrayList<>();
-        AppMessageTextResponse appMessageTextResponse1 =  AppMessageTextResponse.builder().id(150).desc("MISSING_SIZE_ASSOCIATION_FINELINE_LEVEL").typeDesc("Warning").longDesc("One or more CCs are missing size association. Please ensure all CCs have sizes associated and retrigger calculation").build();
+        AppMessageTextResponse appMessageTextResponse1 =  AppMessageTextResponse.builder().id(150).desc("MISSING_SIZE_ASSOCIATION_FINELINE_LEVEL").typeDesc("Warning").build();
         AppMessageTextResponse appMessageTextResponse2 =  AppMessageTextResponse.builder().id(151).desc("MISSING_MERCH_METHOD_FINELINE_LEVEL").typeDesc("Error").longDesc("Merch method is missing for one or more Fixture types. Please ensure all fixture types are associated to a merch method and retrigger calculation").build();
         appMessageTextResponseList.add(appMessageTextResponse1);
         appMessageTextResponseList.add(appMessageTextResponse2);
         ValidationResult validationResult = ValidationResult.builder().codes(Set.of(150,151)).build();
         Mockito.doReturn(validationResult).when(mapper).readValue(messageObj,ValidationResult.class);
         Mockito.when(appMessageTextService.getAppMessagesByIds(validationResult.getCodes())).thenReturn(appMessageTextResponseList);
-        Metadata metadata = buyQunatityMapper.getMetadataDto(messageObj);
+        Mockito.when(calBuyQtyAlertMsgMapperHelper.getCodesByLevel(validationResult.getCodes(),FINELINE)).thenReturn(validationResult.getCodes());
+        Metadata metadata = buyQunatityMapper.getMetadataDto(messageObj,FINELINE);
         assertEquals(2,metadata.getValidations().size());
         assertEquals(1,metadata.getValidations().get(0).getMessages().size());
         assertEquals(2,metadata.getValidations().stream().map(validationObj -> validationObj.getType()).collect(Collectors.toSet()).size());
@@ -289,7 +294,8 @@ public class BuyQuantityMapperTest {
         ValidationResult validationResult = ValidationResult.builder().codes(Set.of(150,151)).build();
         Mockito.doReturn(validationResult).when(mapper).readValue(messageObj,ValidationResult.class);
         Mockito.when(appMessageTextService.getAppMessagesByIds(validationResult.getCodes())).thenReturn(appMessageTextResponseList);
-        Metadata metadata = buyQunatityMapper.getMetadataDto(messageObj);
+        Mockito.when(calBuyQtyAlertMsgMapperHelper.getCodesByLevel(validationResult.getCodes(),FINELINE)).thenReturn(validationResult.getCodes());
+        Metadata metadata = buyQunatityMapper.getMetadataDto(messageObj,FINELINE);
         assertEquals(1,metadata.getValidations().size());
         assertEquals(2,metadata.getValidations().get(0).getMessages().size());
         assertEquals(1,metadata.getValidations().stream().map(validationObj -> validationObj.getType()).collect(Collectors.toSet()).size());

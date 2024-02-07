@@ -6,6 +6,7 @@ import com.walmart.aex.sp.dto.appmessage.AppMessageTextResponse;
 import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.exception.SizeAndPackException;
+import com.walmart.aex.sp.service.helper.CalBuyQtyAlertMsgMapperHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -15,6 +16,8 @@ import org.springframework.util.CollectionUtils;
 import java.util.*;
 import java.util.stream.DoubleStream;
 
+import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
+
 @Service
 @Slf4j
 public class BuyQuantityMapper {
@@ -22,11 +25,13 @@ public class BuyQuantityMapper {
     private final StrategyFetchService strategyFetchService;
     private final ObjectMapper objectMapper;
     private final AppMessageTextService appMessageTextService;
+    private final CalBuyQtyAlertMsgMapperHelper calBuyQtyAlertMsgMapperHelper;
 
-    BuyQuantityMapper(StrategyFetchService strategyFetchService, ObjectMapper objectMapper, AppMessageTextService appMessageTextService){
+    BuyQuantityMapper(StrategyFetchService strategyFetchService, ObjectMapper objectMapper, AppMessageTextService appMessageTextService, CalBuyQtyAlertMsgMapperHelper calBuyQtyAlertMsgMapperHelper){
         this.strategyFetchService = strategyFetchService;
         this.objectMapper = objectMapper;
         this.appMessageTextService = appMessageTextService;
+        this.calBuyQtyAlertMsgMapperHelper = calBuyQtyAlertMsgMapperHelper;
     }
 
     public void mapBuyQntyLvl2Sp(BuyQntyResponseDTO buyQntyResponseDTO, BuyQtyResponse response, Integer finelineNbr) {
@@ -200,7 +205,7 @@ public class BuyQuantityMapper {
         if (finelineNbr == null) {
             fineline.setFinelineDesc(buyQntyResponseDTO.getFinelineDesc());
             fineline.setMetrics(getFlMetricsDto(buyQntyResponseDTO));
-            fineline.setMetadata(getMetadataDto(buyQntyResponseDTO.getFinelineMessageObj()));
+            fineline.setMetadata(getMetadataDto(buyQntyResponseDTO.getFinelineMessageObj(),FINELINE));
         } else {
             fineline.setStyles(mapBuyQntyStyleSp(buyQntyResponseDTO, fineline));
         }
@@ -212,13 +217,14 @@ public class BuyQuantityMapper {
      * @param messageObj;
      * @return Metadata
      */
-    protected Metadata getMetadataDto(String messageObj) {
+    protected Metadata getMetadataDto(String messageObj, String hierarchyLevel) {
         Metadata metadata = Metadata.builder().build();
         try {
             if (StringUtils.isNotEmpty(messageObj) ) {
                 ValidationResult validationResult = objectMapper.readValue(messageObj, ValidationResult.class);
                 if (Objects.nonNull(validationResult) && !validationResult.getCodes().isEmpty()) {
-                    List<AppMessageTextResponse> matchingAppMessageTexts = appMessageTextService.getAppMessagesByIds(validationResult.getCodes());
+                    Set<Integer> codesByLevel = calBuyQtyAlertMsgMapperHelper.getCodesByLevel(validationResult.getCodes(),hierarchyLevel);
+                    List<AppMessageTextResponse> matchingAppMessageTexts = appMessageTextService.getAppMessagesByIds(codesByLevel);
                     if (!matchingAppMessageTexts.isEmpty()) {
                         List<ValidationMessage> validations = new ArrayList<>();
                         for (AppMessageTextResponse appMessageTextObj : matchingAppMessageTexts) {
@@ -246,6 +252,14 @@ public class BuyQuantityMapper {
         }
         return ObjectUtils.allNull(metadata.getValidations())? null : metadata ;
     }
+
+//    private Set<Integer> getCodesByLevel(Set<Integer> codes, String hierarchyLevel) {
+//        Set<Integer> codesByHierarchyLevel = new HashSet<>();
+//        for(Integer code: codes){
+//            codesByHierarchyLevel.add(AppMessageTextByLevel.getLevelIdByIdAndLevel(code,hierarchyLevel));
+//        }
+//        return codesByHierarchyLevel;
+//    }
 
     /***
      * Below method will fetch the ValidationMessage object for given type , so that we can append new message to its message list
@@ -337,7 +351,7 @@ public class BuyQuantityMapper {
 
         metricsDto.setFinalBuyQty(buyQty);
         styleDto.setMetrics(metricsDto);
-        styleDto.setMetadata(getMetadataDto(buyQntyResponseDTO.getStyleMessageObj()));
+        styleDto.setMetadata(getMetadataDto(buyQntyResponseDTO.getStyleMessageObj(),STYLE));
         styleDto.setCustomerChoices(mapBuyQntyCcSp(buyQntyResponseDTO, styleDto));
         styleDtoList.add(styleDto);
     }
@@ -504,7 +518,7 @@ public class BuyQuantityMapper {
 
         metricsDto.setBumpPackQty(bumpQty);
         customerChoiceDto.setMetrics(metricsDto);
-        customerChoiceDto.setMetadata(getMetadataDto(buyQntyResponseDTO.getCcMessageObj()));
+        customerChoiceDto.setMetadata(getMetadataDto(buyQntyResponseDTO.getCcMessageObj(),CUSTOMER_CHOICE));
         customerChoiceDtoList.add(customerChoiceDto);
     }
 
@@ -520,7 +534,7 @@ public class BuyQuantityMapper {
                     metricsDto.setFinalInitialSetQty(Optional.ofNullable(metricsDto.getFinalInitialSetQty()).orElse(0) +Optional.ofNullable(buyQntyResponseDTO.getInitialSetQty()).orElse(0));
                     metricsDto.setFinalReplenishmentQty(Optional.ofNullable(metricsDto.getFinalReplenishmentQty()).orElse(0) + Optional.ofNullable(buyQntyResponseDTO.getReplnQty()).orElse(0));
                     metricsDto.setFinalBuyQty(Optional.ofNullable(metricsDto.getFinalBuyQty()).orElse(0) + Optional.ofNullable(buyQntyResponseDTO.getBuyQty()).orElse(0));
-                    sizeDto.setMetadata(getMetadataDto(buyQntyResponseDTO.getSizeMessageObj()));
+                    sizeDto.setMetadata(getMetadataDto(buyQntyResponseDTO.getSizeMessageObj(),SIZE));
                         });
     }
 }
