@@ -7,10 +7,8 @@ import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.enums.AppMessageText;
 import com.walmart.aex.sp.util.BuyQtyCommonUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -103,7 +101,7 @@ public class BuyQuantityConstraintService {
     public void processReplenishmentConstraints(Map.Entry<SizeDto, BuyQtyObj> entry, long totalReplenishment, Integer replenishmentThreshold) {
         if (totalReplenishment < replenishmentThreshold && totalReplenishment > 0) {
             // Replenishment units are moved to Initial Set
-            entry.getValue().getValidationResult().getCodes().add(AppMessageText.RULE_REPLN_UNITS_MOVED_TO_INITIAL_SET_APPLIED.getId());
+            entry.getValue().getValidationResult().getCodes().add(AppMessageText.RULE_ADJUST_MIN_REPLN_THRESHOLD_SIZE_LEVEL_APPLIED.getId());
             while (entry.getValue().getTotalReplenishment() > 0)
                 updateReplnToInitialSet(entry);
         }

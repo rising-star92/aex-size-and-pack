@@ -202,7 +202,7 @@ public class BuyQuantityMapper {
         if (finelineNbr == null) {
             fineline.setFinelineDesc(buyQntyResponseDTO.getFinelineDesc());
             fineline.setMetrics(getFlMetricsDto(buyQntyResponseDTO));
-            fineline.setMetadata(getMetadataDto(buyQntyResponseDTO.getFinelineMessageObj(),FINELINE));
+            fineline.setMetadata(getMetadataDto(buyQntyResponseDTO.getFinelineMessageObj()));
         } else {
             fineline.setStyles(mapBuyQntyStyleSp(buyQntyResponseDTO, fineline));
         }
@@ -214,14 +214,13 @@ public class BuyQuantityMapper {
      * @param messageObj;
      * @return Metadata
      */
-    protected Metadata getMetadataDto(String messageObj, String hierarchyLevel) {
+    protected Metadata getMetadataDto(String messageObj) {
         Metadata metadata = Metadata.builder().build();
         try {
             if (StringUtils.isNotEmpty(messageObj) ) {
                 ValidationResult validationResult = objectMapper.readValue(messageObj, ValidationResult.class);
                 if (Objects.nonNull(validationResult) && !validationResult.getCodes().isEmpty()) {
-//                    Set<Integer> codesByLevel = appMessageTextService.getCodesByLevel(validationResult.getCodes(),hierarchyLevel);
-                    List<AppMessageTextResponse> matchingAppMessageTexts = appMessageTextService.getMatchingAppMessageTexts(validationResult.getCodes(),hierarchyLevel);
+                    List<AppMessageTextResponse> matchingAppMessageTexts = appMessageTextService.getAppMessagesByIds(validationResult.getCodes());
                     if (!matchingAppMessageTexts.isEmpty()) {
                         List<ValidationMessage> validations = new ArrayList<>();
                         for (AppMessageTextResponse appMessageTextObj : matchingAppMessageTexts) {
@@ -340,7 +339,7 @@ public class BuyQuantityMapper {
 
         metricsDto.setFinalBuyQty(buyQty);
         styleDto.setMetrics(metricsDto);
-        styleDto.setMetadata(getMetadataDto(buyQntyResponseDTO.getStyleMessageObj(),STYLE));
+        styleDto.setMetadata(getMetadataDto(buyQntyResponseDTO.getStyleMessageObj()));
         styleDto.setCustomerChoices(mapBuyQntyCcSp(buyQntyResponseDTO, styleDto));
         styleDtoList.add(styleDto);
     }
@@ -507,7 +506,7 @@ public class BuyQuantityMapper {
 
         metricsDto.setBumpPackQty(bumpQty);
         customerChoiceDto.setMetrics(metricsDto);
-        customerChoiceDto.setMetadata(getMetadataDto(buyQntyResponseDTO.getCcMessageObj(),CUSTOMER_CHOICE));
+        customerChoiceDto.setMetadata(getMetadataDto(buyQntyResponseDTO.getCcMessageObj()));
         customerChoiceDtoList.add(customerChoiceDto);
     }
 
@@ -523,7 +522,7 @@ public class BuyQuantityMapper {
                     metricsDto.setFinalInitialSetQty(Optional.ofNullable(metricsDto.getFinalInitialSetQty()).orElse(0) +Optional.ofNullable(buyQntyResponseDTO.getInitialSetQty()).orElse(0));
                     metricsDto.setFinalReplenishmentQty(Optional.ofNullable(metricsDto.getFinalReplenishmentQty()).orElse(0) + Optional.ofNullable(buyQntyResponseDTO.getReplnQty()).orElse(0));
                     metricsDto.setFinalBuyQty(Optional.ofNullable(metricsDto.getFinalBuyQty()).orElse(0) + Optional.ofNullable(buyQntyResponseDTO.getBuyQty()).orElse(0));
-                    sizeDto.setMetadata(getMetadataDto(buyQntyResponseDTO.getSizeMessageObj(),SIZE));
+                    sizeDto.setMetadata(getMetadataDto(buyQntyResponseDTO.getSizeMessageObj()));
                         });
     }
 }

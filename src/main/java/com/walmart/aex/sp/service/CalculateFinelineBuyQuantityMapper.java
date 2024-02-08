@@ -13,14 +13,18 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
+
 @Service
 @Slf4j
 public class CalculateFinelineBuyQuantityMapper {
 
     private final ObjectMapper objectMapper;
+    private final AppMessageTextService appMessageTextService;
 
-    public CalculateFinelineBuyQuantityMapper(ObjectMapper objectMapper) {
+    public CalculateFinelineBuyQuantityMapper(ObjectMapper objectMapper, AppMessageTextService appMessageTextService) {
         this.objectMapper = objectMapper;
+        this.appMessageTextService = appMessageTextService;
     }
 
     public void setFinelineChanFixtures(SpFineLineChannelFixture spFineLineChannelFixture, Set<SpStyleChannelFixture> spStyleChannelFixtures) {
@@ -56,7 +60,7 @@ public class CalculateFinelineBuyQuantityMapper {
                 styleValidationCodes.addAll(styleValidationResult.getCodes());
         });
         if (!styleValidationCodes.isEmpty()) {
-            finelineValidationResult.getCodes().addAll(styleValidationCodes);
+            finelineValidationResult.getCodes().addAll(appMessageTextService.getCodesByHierarchy(styleValidationCodes,FINELINE));
         }
         spFineLineChannelFixture.setMessageObj(setMessage(finelineValidationResult));
     }
@@ -94,7 +98,8 @@ public class CalculateFinelineBuyQuantityMapper {
                 ccValidationCodes.addAll(ccValidationResult.getCodes());
         });
         if (!ccValidationCodes.isEmpty()) {
-            styleValidationResult.getCodes().addAll(ccValidationCodes);
+//            styleValidationResult.getCodes().addAll(ccValidationCodes);
+            styleValidationResult.getCodes().addAll(appMessageTextService.getCodesByHierarchy(ccValidationCodes,STYLE));
         }
 
         spStyleChannelFixture.setMessageObj(setMessage(styleValidationResult));
@@ -132,7 +137,7 @@ public class CalculateFinelineBuyQuantityMapper {
             sizesValidationCodes.addAll(validationResult.getCodes());
         });
         if (!sizesValidationCodes.isEmpty()) {
-            ccValidationResult.getCodes().addAll(sizesValidationCodes);
+            ccValidationResult.getCodes().addAll(appMessageTextService.getCodesByHierarchy(sizesValidationCodes,CUSTOMER_CHOICE));
         }
         spCustomerChoiceChannelFixture.setMessageObj(setMessage(ccValidationResult));
     }

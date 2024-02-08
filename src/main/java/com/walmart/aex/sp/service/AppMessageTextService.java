@@ -11,5 +11,6 @@ public interface AppMessageTextService {
     void addAppMessageTexts(List<AppMessageTextRequest> appMessageTextRequests);
     void updateAppMessageTexts(List<AppMessageTextRequest> appMessageTextRequests);
     void deleteAppMessageTexts(List<Integer> appMessageCodeRequest);
-    List<AppMessageTextResponse> getMatchingAppMessageTexts(Set<Integer> codes, String hierarchyLevel);
+    List<AppMessageTextResponse> getAppMessagesByIds(Set<Integer> validationCodes);
+    Set<Integer> getCodesByHierarchy(Set<Integer> codes, String hierarchyLevel);
 }

@@ -106,23 +106,12 @@ public class AppMessageTextServiceImpl implements AppMessageTextService {
     }
 
     /***
-     * This method will return List of AppMessageTextResponse based on hierarchy level by taking in the alert codes
-     * @param codes
-     * @param hierarchyLevel
-     * @return AppMessageTextResponse list
-     */
-    public List<AppMessageTextResponse> getMatchingAppMessageTexts(Set<Integer> codes, String hierarchyLevel) {
-        Set<Integer> codesByLevel = getCodesByLevel(codes,hierarchyLevel);
-        return getAppMessagesByIds(codesByLevel);
-    }
-
-    /***
      * This method will return the alert error codes by the hierarchy type
      * @param codes
      * @param hierarchyLevel
      * @return
      */
-    public Set<Integer> getCodesByLevel(Set<Integer> codes, String hierarchyLevel){
+    public Set<Integer> getCodesByHierarchy(Set<Integer> codes, String hierarchyLevel){
         Set<Integer> codesByLevel = new HashSet<>();
         switch (hierarchyLevel) {
             case FINELINE:
@@ -134,11 +123,11 @@ public class AppMessageTextServiceImpl implements AppMessageTextService {
                         codesByLevel.add(com.walmart.aex.sp.enums.AppMessageText.BQFP_MESSAGE.getId());
                     } else if (com.walmart.aex.sp.enums.AppMessageText.RFA_ERRORS_LIST.contains(code)) {
                         codesByLevel.add(com.walmart.aex.sp.enums.AppMessageText.RFA_MESSAGE.getId());
-                    } else getSizeAlertCodesForOtherLevels(codesByLevel, code);
+                    } else getSizeAlertCodesForOtherErrors(codesByLevel, code);
                 });
                 break;
             case CUSTOMER_CHOICE:
-                codes.forEach(code-> getSizeAlertCodesForOtherLevels(codesByLevel, code));
+                codes.forEach(code-> getSizeAlertCodesForOtherErrors(codesByLevel, code));
                 break;
             default :
                 codesByLevel.addAll(codes);
@@ -152,14 +141,14 @@ public class AppMessageTextServiceImpl implements AppMessageTextService {
      * @param codesByLevel
      * @param code
      */
-    private void getSizeAlertCodesForOtherLevels(Set<Integer> codesByLevel, Integer code) {
-        if (com.walmart.aex.sp.enums.AppMessageText.RULE_INITIALSET_ONE_UNIT_PER_STORE_APPLIED.getId().equals(code)) {
+    private void getSizeAlertCodesForOtherErrors(Set<Integer> codesByLevel, Integer code) {
+        if (com.walmart.aex.sp.enums.AppMessageText.RULE_INITIALSET_ONE_UNIT_PER_STORE_SIZE_LEVEL_APPLIED.getId().equals(code)) {
             codesByLevel.add(com.walmart.aex.sp.enums.AppMessageText.RULE_IS_ONE_UNIT_PER_STORE_APPLIED.getId());
-        } else if (com.walmart.aex.sp.enums.AppMessageText.RULE_ADJUST_REPLN_FOR_ONE_UNIT_PER_STORE_APPLIED.getId().equals(code)) {
+        } else if (com.walmart.aex.sp.enums.AppMessageText.RULE_ADJUST_REPLN_ONE_UNIT_PER_STORE_SIZE_LEVEL_APPLIED.getId().equals(code)) {
             codesByLevel.add(com.walmart.aex.sp.enums.AppMessageText.RULE_ADJUST_REPLN_ONE_UNIT_PER_STORE_APPLIED.getId());
-        } else if (com.walmart.aex.sp.enums.AppMessageText.RULE_MIN_INITIALSET_THRESHOLD_APPLIED.getId().equals(code)) {
+        } else if (com.walmart.aex.sp.enums.AppMessageText.RULE_IS_REPLN_ITM_PC_RULE_SIZE_LEVEL_APPLIED.getId().equals(code)) {
             codesByLevel.add(com.walmart.aex.sp.enums.AppMessageText.RULE_IS_REPLN_ITM_PC_APPLIED.getId());
-        } else if (com.walmart.aex.sp.enums.AppMessageText.RULE_REPLN_UNITS_MOVED_TO_INITIAL_SET_APPLIED.getId().equals(code)) {
+        } else if (com.walmart.aex.sp.enums.AppMessageText.RULE_ADJUST_MIN_REPLN_THRESHOLD_SIZE_LEVEL_APPLIED.getId().equals(code)) {
             codesByLevel.add(com.walmart.aex.sp.enums.AppMessageText.RULE_ADJUST_MIN_REPLN_THRESHOLD_APPLIED.getId());
         } else {
             codesByLevel.add(code);

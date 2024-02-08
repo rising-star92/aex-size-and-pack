@@ -149,6 +149,9 @@ class CalculateFinelineBuyQuantityTest {
     @Mock
     ValidationService validationService;
 
+    @Mock
+    AppMessageTextService appMessageTextService;
+
     CalculateFinelineBuyQuantityMapper calculateFinelineBuyQuantityMapper;
 
     @Spy
@@ -158,7 +161,7 @@ class CalculateFinelineBuyQuantityTest {
     void setUp() throws SizeAndPackException {
         MockitoAnnotations.openMocks(this);
         calculateInitialSetQuantityService = new CalculateInitialSetQuantityService();
-        calculateFinelineBuyQuantityMapper = new CalculateFinelineBuyQuantityMapper(mapper);
+        calculateFinelineBuyQuantityMapper = new CalculateFinelineBuyQuantityMapper(mapper, appMessageTextService);
         calculateBumpPackQtyService = new CalculateBumpPackQtyService();
         buyQuantityConstraintService = new BuyQuantityConstraintService(calculateBumpPackQtyService);
         addStoreBuyQuantityService = new AddStoreBuyQuantityService(mapper, calculateBumpPackQtyService, buyQuantityConstraintService, calculateInitialSetQuantityService, buyQtyProperties);
@@ -764,6 +767,7 @@ class CalculateFinelineBuyQuantityTest {
         APResponse rfaResponse = apResponseFromJson(path.concat("/RFAResponse"));
         BuyQtyResponse buyQtyResponse = buyQtyResponseFromJson(path.concat("/BuyQtyResponse"));
         StrategyVolumeDeviationResponse strategyVolumeDeviationResponse = strategyVolumeDeviationResponseFromJsonFromJson(path.concat("/VDResponse"));
+        Set<Integer> codesForCC = Set.of(220,222);
         when(bqfpService.getBuyQuantityUnits(any())).thenReturn(bqfpResponse);
         when(strategyFetchService.getAllCcSizeProfiles(any())).thenReturn(buyQtyResponse);
         when(strategyFetchService.getAPRunFixtureAllocationOutput(any())).thenReturn(rfaResponse);
@@ -771,6 +775,7 @@ class CalculateFinelineBuyQuantityTest {
         when(deptAdminRuleService.getInitialThreshold(anyLong(), anyInt())).thenReturn(2);
         when(deptAdminRuleService.getReplenishmentThreshold(anyLong(), anyInt())).thenReturn(750);
         when(validationService.validateCalculateBuyQuantityInputData(any(List.class), any(APResponse.class), any(BQFPResponse.class), any(StyleDto.class), any(CustomerChoiceDto.class))).thenReturn(ValidationResult.builder().codes(new HashSet<>(Arrays.asList(100,200))).build());
+        when(appMessageTextService.getCodesByHierarchy(any(Set.class),any(String.class))).thenReturn(codesForCC);
         CalculateBuyQtyRequest request = create("store", 50000, 23, 3669, 8244, 16906, 3347, 133L);
         CalculateBuyQtyParallelRequest pRequest = createFromRequest(request);
 
@@ -782,7 +787,7 @@ class CalculateFinelineBuyQuantityTest {
 
         SpFineLineChannelFixture fixture1 = response.getSpFineLineChannelFixtures().stream().
                 filter(f -> f.getSpFineLineChannelFixtureId().getFixtureTypeRollUpId().getFixtureTypeRollupId().equals(1)).findFirst().get();
-        assertEquals("{\"codes\":[100,212,213,200]}", fixture1.getMessageObj());
+        assertEquals("{\"codes\":[100,200,220,222]}", fixture1.getMessageObj());
         SpCustomerChoiceChannelFixture customerChoiceChannelFixture1 = fixture1
                 .getSpStyleChannelFixtures().stream().filter(style -> style.getSpStyleChannelFixtureId().getStyleNbr().equals("23_3347_1_25_001"))
                 .findFirst().get()
