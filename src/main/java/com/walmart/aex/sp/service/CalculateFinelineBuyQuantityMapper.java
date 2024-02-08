@@ -60,7 +60,7 @@ public class CalculateFinelineBuyQuantityMapper {
                 styleValidationCodes.addAll(styleValidationResult.getCodes());
         });
         if (!styleValidationCodes.isEmpty()) {
-            finelineValidationResult.getCodes().addAll(appMessageTextService.getCodesByHierarchy(styleValidationCodes,FINELINE));
+            finelineValidationResult.getCodes().addAll(appMessageTextService.getHierarchyIds(styleValidationCodes));
         }
         spFineLineChannelFixture.setMessageObj(setMessage(finelineValidationResult));
     }
@@ -98,8 +98,7 @@ public class CalculateFinelineBuyQuantityMapper {
                 ccValidationCodes.addAll(ccValidationResult.getCodes());
         });
         if (!ccValidationCodes.isEmpty()) {
-//            styleValidationResult.getCodes().addAll(ccValidationCodes);
-            styleValidationResult.getCodes().addAll(appMessageTextService.getCodesByHierarchy(ccValidationCodes,STYLE));
+            styleValidationResult.getCodes().addAll(appMessageTextService.getHierarchyIds(ccValidationCodes));
         }
 
         spStyleChannelFixture.setMessageObj(setMessage(styleValidationResult));
@@ -137,7 +136,7 @@ public class CalculateFinelineBuyQuantityMapper {
             sizesValidationCodes.addAll(validationResult.getCodes());
         });
         if (!sizesValidationCodes.isEmpty()) {
-            ccValidationResult.getCodes().addAll(appMessageTextService.getCodesByHierarchy(sizesValidationCodes,CUSTOMER_CHOICE));
+            ccValidationResult.getCodes().addAll(appMessageTextService.getHierarchyIds(sizesValidationCodes));
         }
         spCustomerChoiceChannelFixture.setMessageObj(setMessage(ccValidationResult));
     }

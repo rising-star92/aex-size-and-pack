@@ -9,7 +9,7 @@ import com.walmart.aex.sp.dto.buyquantity.CustomerChoiceDto;
 import com.walmart.aex.sp.dto.buyquantity.StyleDto;
 import com.walmart.aex.sp.dto.buyquantity.ValidationResult;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
-import com.walmart.aex.sp.enums.AppMessageText;
+import com.walmart.aex.sp.enums.AppMessage;
 import com.walmart.aex.sp.enums.FixtureTypeRollup;
 import com.walmart.aex.sp.enums.MerchMethod;
 import com.walmart.aex.sp.service.BQFPValidationsService;
@@ -87,9 +87,9 @@ class ValidationServiceImplTest {
     @Test
     void validateCalculateBuyQuantityInputData() {
         Mockito.when(bqfpValidationsService.missingBuyQuantity(merchMethodsDtoList, bqfpResponse, styleDto, customerChoiceDto)).thenReturn(ValidationResult.builder().codes(new HashSet<>()).build());
-        Mockito.when(rfaValidationService.validateRFAData(merchMethodsDtoList, apResponse, "Style1", customerChoiceDto)).thenReturn(ValidationResult.builder().codes(Set.of(AppMessageText.RFA_NOT_AVAILABLE.getId())).build());
+        Mockito.when(rfaValidationService.validateRFAData(merchMethodsDtoList, apResponse, "Style1", customerChoiceDto)).thenReturn(ValidationResult.builder().codes(Set.of(AppMessage.RFA_NOT_AVAILABLE.getId())).build());
         ValidationResult validationResult = validationService.validateCalculateBuyQuantityInputData(merchMethodsDtoList, apResponse, bqfpResponse, styleDto, customerChoiceDto);
         assertEquals(1, validationResult.getCodes().size());
-        assertEquals(AppMessageText.RFA_NOT_AVAILABLE.getId(), validationResult.getCodes().toArray()[0]);
+        assertEquals(AppMessage.RFA_NOT_AVAILABLE.getId(), validationResult.getCodes().toArray()[0]);
     }
 }

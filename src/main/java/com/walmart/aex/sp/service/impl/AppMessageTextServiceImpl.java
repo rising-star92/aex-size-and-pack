@@ -4,6 +4,7 @@ import com.walmart.aex.sp.dto.appmessage.AppMessageTextRequest;
 import com.walmart.aex.sp.dto.appmessage.AppMessageTextResponse;
 import com.walmart.aex.sp.dto.mapper.AppMessageTextMapper;
 import com.walmart.aex.sp.entity.AppMessageText;
+import com.walmart.aex.sp.enums.AppMessage;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.repository.AppMessageTextRepository;
 import com.walmart.aex.sp.service.AppMessageTextService;
@@ -13,13 +14,8 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
-
-import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
 
 @Service
 @Slf4j
@@ -105,53 +101,11 @@ public class AppMessageTextServiceImpl implements AppMessageTextService {
 
     }
 
-    /***
-     * This method will return the alert error codes by the hierarchy type
-     * @param codes
-     * @param hierarchyLevel
-     * @return
-     */
-    public Set<Integer> getCodesByHierarchy(Set<Integer> codes, String hierarchyLevel){
-        Set<Integer> codesByLevel = new HashSet<>();
-        switch (hierarchyLevel) {
-            case FINELINE:
-            case STYLE:
-                codes.forEach(code -> {
-                    if(com.walmart.aex.sp.enums.AppMessageText.SIZE_PROFILE_PCT_NOT100_CC_LEVEL.getId().equals(code)){
-                        codesByLevel.add(com.walmart.aex.sp.enums.AppMessageText.SIZE_PROFILE_PCT_NOT100.getId());
-                    } else if (com.walmart.aex.sp.enums.AppMessageText.BQFP_ERRORS_LIST.contains(code)) {
-                        codesByLevel.add(com.walmart.aex.sp.enums.AppMessageText.BQFP_MESSAGE.getId());
-                    } else if (com.walmart.aex.sp.enums.AppMessageText.RFA_ERRORS_LIST.contains(code)) {
-                        codesByLevel.add(com.walmart.aex.sp.enums.AppMessageText.RFA_MESSAGE.getId());
-                    } else getSizeAlertCodesForOtherErrors(codesByLevel, code);
-                });
-                break;
-            case CUSTOMER_CHOICE:
-                codes.forEach(code-> getSizeAlertCodesForOtherErrors(codesByLevel, code));
-                break;
-            default :
-                codesByLevel.addAll(codes);
-                break;
-        }
-        return codesByLevel;
-    }
-
-    /***
-     * This method returns error codes for One Unit Rule and Admin Rule common for Fineline, Style and CC levels
-     * @param codesByLevel
-     * @param code
-     */
-    private void getSizeAlertCodesForOtherErrors(Set<Integer> codesByLevel, Integer code) {
-        if (com.walmart.aex.sp.enums.AppMessageText.RULE_INITIALSET_ONE_UNIT_PER_STORE_SIZE_LEVEL_APPLIED.getId().equals(code)) {
-            codesByLevel.add(com.walmart.aex.sp.enums.AppMessageText.RULE_IS_ONE_UNIT_PER_STORE_APPLIED.getId());
-        } else if (com.walmart.aex.sp.enums.AppMessageText.RULE_ADJUST_REPLN_ONE_UNIT_PER_STORE_SIZE_LEVEL_APPLIED.getId().equals(code)) {
-            codesByLevel.add(com.walmart.aex.sp.enums.AppMessageText.RULE_ADJUST_REPLN_ONE_UNIT_PER_STORE_APPLIED.getId());
-        } else if (com.walmart.aex.sp.enums.AppMessageText.RULE_IS_REPLN_ITM_PC_RULE_SIZE_LEVEL_APPLIED.getId().equals(code)) {
-            codesByLevel.add(com.walmart.aex.sp.enums.AppMessageText.RULE_IS_REPLN_ITM_PC_APPLIED.getId());
-        } else if (com.walmart.aex.sp.enums.AppMessageText.RULE_ADJUST_MIN_REPLN_THRESHOLD_SIZE_LEVEL_APPLIED.getId().equals(code)) {
-            codesByLevel.add(com.walmart.aex.sp.enums.AppMessageText.RULE_ADJUST_MIN_REPLN_THRESHOLD_APPLIED.getId());
-        } else {
-            codesByLevel.add(code);
-        }
+    @Override
+    public Set<Integer> getHierarchyIds(Set<Integer> codes) {
+        return Arrays.stream(AppMessage.values())
+                .filter(message -> codes.contains(message.getId()))
+                .map(AppMessage::getParentId)
+                .collect(Collectors.toSet());
     }
 }

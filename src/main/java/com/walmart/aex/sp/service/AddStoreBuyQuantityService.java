@@ -6,7 +6,7 @@ import com.walmart.aex.sp.dto.assortproduct.RFASizePackData;
 import com.walmart.aex.sp.dto.bqfp.Cluster;
 import com.walmart.aex.sp.dto.bqfp.Replenishment;
 import com.walmart.aex.sp.dto.buyquantity.*;
-import com.walmart.aex.sp.enums.AppMessageText;
+import com.walmart.aex.sp.enums.AppMessage;
 import com.walmart.aex.sp.enums.FixtureTypeRollup;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.properties.BuyQtyProperties;
@@ -152,9 +152,9 @@ public class AddStoreBuyQuantityService {
             if (initialSetQuantity.isOneUnitPerStore()) {
                 perStoreQty = perStoreQty + DEFAULT_INITIAL_THRESHOLD;
                 isQty = (long) DEFAULT_INITIAL_THRESHOLD * initialSetQuantity.getRfaSizePackData().getStore_cnt();
-                warningCodes.add(AppMessageText.RULE_INITIALSET_ONE_UNIT_PER_STORE_SIZE_LEVEL_APPLIED.getId());
+                warningCodes.add(AppMessage.RULE_IS_ONE_UNIT_PER_STORE_SIZE_APPLIED.getId());
                 if (!CollectionUtils.isEmpty(buyQtyObj.getReplenishments()) && BuyQtyCommonUtil.isReplenishmentEligible(initialSetQuantity.getVolumeCluster().getFlowStrategy())) {
-                    warningCodes.add(AppMessageText.RULE_ADJUST_REPLN_ONE_UNIT_PER_STORE_SIZE_LEVEL_APPLIED.getId());
+                    warningCodes.add(AppMessage.RULE_ADJUST_REPLN_ONE_UNIT_PER_STORE_SIZE_APPLIED.getId());
                     adjustReplenishmentsForOneUnitPerStore(buyQtyObj, initialSetQuantity.getRfaSizePackData(), initialSetQuantity.getRfaSizePackData().getCustomer_choice(), initialSetQuantity.getSizeDesc(), isQty, perStoreQty, storeList);
                 }
             }
@@ -253,7 +253,7 @@ public class AddStoreBuyQuantityService {
             double isQty = storeQuantity.getTotalUnits();
             if ((perStoreQty < initialThreshold && perStoreQty > 0) && (!CollectionUtils.isEmpty(buyQtyObj.getReplenishments())) && BuyQtyCommonUtil.isReplenishmentEligible(storeQuantity.getFlowStrategyCode())) {
                 // 2 unit is rule is applied to Initial Set
-                warningCodes.add(AppMessageText.RULE_IS_REPLN_ITM_PC_RULE_SIZE_LEVEL_APPLIED.getId());
+                warningCodes.add(AppMessage.RULE_IS_REPLN_ITM_PC_SIZE_APPLIED.getId());
                 InitialSetWithReplenishment initialSetWithReplenishment = getUnitsFromReplenishment(storeQuantity, buyQtyObj, storeQuantitiesWithLessRep, volumeCluster, initialThreshold, rfaSizePackData.getCustomer_choice(), sizeDesc);
                 isQty = initialSetWithReplenishment.getIsQty();
                 perStoreQty = initialSetWithReplenishment.getPerStoreQty();

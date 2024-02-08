@@ -98,52 +98,10 @@ class AppMessageTextServiceImplTest {
     }
 
     @Test
-    void getCodesByLevelTestForFinelineLevel() {
-        Set<Integer> codes= Set.of(160,163,171,172);
-        Set<Integer> result = appMessageTextService.getCodesByHierarchy(codes,FINELINE);
-        Assertions.assertNotNull(result);
-        Assertions.assertEquals(2, result.size());
-        Assertions.assertTrue(result.contains(165));
-        Assertions.assertTrue(result.contains(174));
-    }
-
-    @Test
-    void getCodesByLevelTestForStyleLevel() {
-        Set<Integer> codes= Set.of(160,163,171,172);
-        Set<Integer> result = appMessageTextService.getCodesByHierarchy(codes,STYLE);
-        Assertions.assertNotNull(result);
-        Assertions.assertEquals(2, result.size());
-        Assertions.assertTrue(result.contains(165));
-        Assertions.assertTrue(result.contains(174));
-    }
-
-    @Test
-    void getCodesByLevelTestForCCLevel() {
-        Set<Integer> codes= Set.of(160,163,171,172);
-        Set<Integer> result = appMessageTextService.getCodesByHierarchy(codes,CUSTOMER_CHOICE);
-        Assertions.assertNotNull(result);
-        Assertions.assertEquals(4, result.size());
-        Assertions.assertTrue(result.contains(160));
-        Assertions.assertTrue(result.contains(163));
-    }
-
-    @Test
-    void getCodesByLevelTestForCCLevelOneUnitAlerts() {
-        Set<Integer> codes= Set.of(213,211);
-        Set<Integer> result = appMessageTextService.getCodesByHierarchy(codes,CUSTOMER_CHOICE);
-        Assertions.assertNotNull(result);
-        Assertions.assertEquals(2, result.size());
-        Assertions.assertTrue(result.contains(210));
-        Assertions.assertTrue(result.contains(212));
-    }
-
-    @Test
-    void getCodesByLevelTestForCCLevelAdminRule() {
-        Set<Integer> codes= Set.of(221,225);
-        Set<Integer> result = appMessageTextService.getCodesByHierarchy(codes,CUSTOMER_CHOICE);
-        Assertions.assertNotNull(result);
-        Assertions.assertEquals(2, result.size());
-        Assertions.assertTrue(result.contains(220));
-        Assertions.assertTrue(result.contains(222));
+    void testGetHierarchyIds() {
+        Set<Integer> request = Set.of(160,161);
+        Set<Integer> hierarchyIds = appMessageTextService.getHierarchyIds(request);
+        assertEquals(1, hierarchyIds.size());
+        assertEquals(160, hierarchyIds.iterator().next());
     }
 }
