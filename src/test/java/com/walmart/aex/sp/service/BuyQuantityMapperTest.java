@@ -266,7 +266,7 @@ public class BuyQuantityMapperTest {
     public void testGetMetadataDto_WhenTypesAreDifferent() throws JsonProcessingException {
         String messageObj = "{\"codes\":[150,151]}";
         List<AppMessageTextResponse> appMessageTextResponseList = new ArrayList<>();
-        AppMessageTextResponse appMessageTextResponse1 =  AppMessageTextResponse.builder().id(150).desc("MISSING_SIZE_ASSOCIATION_FINELINE_LEVEL").typeDesc("Warning").build();
+        AppMessageTextResponse appMessageTextResponse1 =  AppMessageTextResponse.builder().id(150).desc("MISSING_SIZE_ASSOCIATION_FINELINE_LEVEL").typeDesc("Warning").longDesc("One or more CCs are missing size association. Please ensure all CCs have sizes associated and retrigger calculation").build();
         AppMessageTextResponse appMessageTextResponse2 =  AppMessageTextResponse.builder().id(151).desc("MISSING_MERCH_METHOD_FINELINE_LEVEL").typeDesc("Error").longDesc("Merch method is missing for one or more Fixture types. Please ensure all fixture types are associated to a merch method and retrigger calculation").build();
         appMessageTextResponseList.add(appMessageTextResponse1);
         appMessageTextResponseList.add(appMessageTextResponse2);

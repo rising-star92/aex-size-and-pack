@@ -15,8 +15,6 @@ import org.springframework.util.CollectionUtils;
 import java.util.*;
 import java.util.stream.DoubleStream;
 
-import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
-
 @Service
 @Slf4j
 public class BuyQuantityMapper {
