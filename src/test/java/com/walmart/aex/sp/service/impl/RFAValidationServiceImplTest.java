@@ -5,7 +5,7 @@ import com.walmart.aex.sp.dto.assortproduct.RFASizePackData;
 import com.walmart.aex.sp.dto.buyquantity.CustomerChoiceDto;
 import com.walmart.aex.sp.dto.buyquantity.ValidationResult;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
-import com.walmart.aex.sp.enums.AppMessageText;
+import com.walmart.aex.sp.enums.AppMessage;
 import com.walmart.aex.sp.enums.FixtureTypeRollup;
 import com.walmart.aex.sp.enums.MerchMethod;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,7 +55,7 @@ class RFAValidationServiceImplTest {
         apResponse.setRfaSizePackData(new ArrayList<>());
         validationResult = rfaValidationService.validateRFAData(merchMethodsDtoList, apResponse, "Style1", customerChoiceDto);
         assertEquals(1, validationResult.getCodes().size());
-        assertEquals(AppMessageText.RFA_NOT_AVAILABLE.getId(), validationResult.getCodes().toArray()[0]);
+        assertEquals(AppMessage.RFA_NOT_AVAILABLE.getId(), validationResult.getCodes().toArray()[0]);
     }
 
     @Test
@@ -68,7 +68,7 @@ class RFAValidationServiceImplTest {
         apResponse.setRfaSizePackData(List.of(rfaSizePackData1));
         validationResult = rfaValidationService.validateRFAData(merchMethodsDtoList, apResponse, "Style1", customerChoiceDto);
         assertEquals(1, validationResult.getCodes().size());
-        assertEquals(AppMessageText.RFA_CC_NOT_AVAILABLE.getId(), validationResult.getCodes().toArray()[0]);
+        assertEquals(AppMessage.RFA_CC_NOT_AVAILABLE.getId(), validationResult.getCodes().toArray()[0]);
     }
 
     @Test
@@ -81,7 +81,7 @@ class RFAValidationServiceImplTest {
         apResponse.setRfaSizePackData(List.of(rfaSizePackData1));
         validationResult = rfaValidationService.validateRFAData(merchMethodsDtoList, apResponse, "Style1", customerChoiceDto);
         assertEquals(1, validationResult.getCodes().size());
-        assertEquals(AppMessageText.RFA_MISSING_FIXTURE.getId(), validationResult.getCodes().toArray()[0]);
+        assertEquals(AppMessage.RFA_MISSING_FIXTURE.getId(), validationResult.getCodes().toArray()[0]);
     }
 
     @Test
@@ -99,7 +99,7 @@ class RFAValidationServiceImplTest {
         apResponse.setRfaSizePackData(List.of(rfaSizePackData1, rfaSizePackData2));
         validationResult = rfaValidationService.validateRFAData(merchMethodsDtoList, apResponse, "Style1", customerChoiceDto);
         assertEquals(1, validationResult.getCodes().size());
-        assertEquals(AppMessageText.RFA_MISSING_COLOR_FAMILY.getId(), validationResult.getCodes().toArray()[0]);
+        assertEquals(AppMessage.RFA_MISSING_COLOR_FAMILY.getId(), validationResult.getCodes().toArray()[0]);
     }
 
     @Test
@@ -129,7 +129,7 @@ class RFAValidationServiceImplTest {
         apResponse.setRfaSizePackData(List.of(rfaSizePackData1));
         validationResult = rfaValidationService.validateRFAData(merchMethodsDtoList, apResponse, "Style1", customerChoiceDto);
         assertEquals(2, validationResult.getCodes().size());
-        assertTrue(validationResult.getCodes().contains(AppMessageText.RFA_MISSING_FIXTURE.getId()));
-        assertTrue(validationResult.getCodes().contains(AppMessageText.RFA_MISSING_COLOR_FAMILY.getId()));
+        assertTrue(validationResult.getCodes().contains(AppMessage.RFA_MISSING_FIXTURE.getId()));
+        assertTrue(validationResult.getCodes().contains(AppMessage.RFA_MISSING_COLOR_FAMILY.getId()));
     }
 }

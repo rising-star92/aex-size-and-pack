@@ -5,7 +5,7 @@ import com.walmart.aex.sp.dto.buyquantity.CustomerChoiceDto;
 import com.walmart.aex.sp.dto.buyquantity.StyleDto;
 import com.walmart.aex.sp.dto.buyquantity.ValidationResult;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
-import com.walmart.aex.sp.enums.AppMessageText;
+import com.walmart.aex.sp.enums.AppMessage;
 import com.walmart.aex.sp.enums.FlowStrategy;
 import com.walmart.aex.sp.service.BQFPValidationsService;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +30,7 @@ public class BQFPValidationsServiceImpl implements BQFPValidationsService {
 
             if (CollectionUtils.isEmpty(clusters)) {
                 //Missing IS Data for fixture
-                validationCodes.add(AppMessageText.BQFP_MISSING_IS_DATA.getId());
+                validationCodes.add(AppMessage.BQFP_MISSING_IS_DATA.getId());
             } else {
                 List<Integer> flowStrategies = getFlowStrategiesFromCluster(clusters);
                 //Warning: Missing IS Quantities
@@ -51,14 +51,14 @@ public class BQFPValidationsServiceImpl implements BQFPValidationsService {
                     .stream()
                     .filter(Objects::nonNull).mapToLong(bumpset -> Optional.ofNullable(bumpset.getUnits()).orElse((long) 0)).sum() <= 0) {
                 //Missing Bumpset quantities
-                validationCodes.add(AppMessageText.BQFP_MISSING_BUMPSET_QUANTITIES.getId());
+                validationCodes.add(AppMessage.BQFP_MISSING_BS_UNITS.getId());
             }
             //ERROR: Missing Bumpset Weeks with Flow Strategy Initialset + Bumpset and Bumpset Qty > 0
             if (cluster.getBumpList()
                     .stream()
                     .filter(Objects::nonNull).anyMatch(bumpSet -> bumpSet.getUnits() > 0 && bumpSet.getWeekDesc() == null)) {
                 //Missing Bumpset Weeks
-                validationCodes.add(AppMessageText.BQFP_MISSING_BUMPSET_WEEKS.getId());
+                validationCodes.add(AppMessage.BQFP_MISSING_BS_WEEKS.getId());
             }
         });
     }
@@ -70,7 +70,7 @@ public class BQFPValidationsServiceImpl implements BQFPValidationsService {
                 .mapToLong(replenishment -> Optional.ofNullable(replenishment.getDcInboundUnits()).orElse((long) 0) +
                         Optional.ofNullable(replenishment.getDcInboundAdjUnits()).orElse((long) 0) ).sum() <= 0))) {
             //Missing Replenishment quantities
-            validationCodes.add(AppMessageText.BQFP_MISSING_REPLENISHMENT_QUANTITIES.getId());
+            validationCodes.add(AppMessage.BQFP_MISSING_REPLN_UNITS.getId());
         }
     }
 
@@ -80,7 +80,7 @@ public class BQFPValidationsServiceImpl implements BQFPValidationsService {
                 .mapToLong(cluster -> Optional.ofNullable(cluster.getInitialSet().getTotalInitialSetUnits()).orElse((long) 0))
                 .sum() <= 0) {
             //Missing IS quantities for fixture
-            validationCodes.add(AppMessageText.BQFP_MISSING_IS_QUANTITIES.getId());
+            validationCodes.add(AppMessage.BQFP_MISSING_IS_UNITS.getId());
         }
     }
 

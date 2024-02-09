@@ -5,6 +5,7 @@ import com.walmart.aex.sp.dto.appmessage.AppMessageTextResponse;
 import com.walmart.aex.sp.entity.AppMessageText;
 import com.walmart.aex.sp.entity.AppMessageType;
 import com.walmart.aex.sp.repository.AppMessageTextRepository;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,10 +13,13 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+
+import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
 import static org.mockito.Mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -93,4 +97,11 @@ class AppMessageTextServiceImplTest {
         assertEquals(2, idArgumentCaptor.getValue().size());
     }
 
+    @Test
+    void testGetHierarchyIds() {
+        Set<Integer> request = Set.of(160,161);
+        Set<Integer> hierarchyIds = appMessageTextService.getHierarchyIds(request);
+        assertEquals(1, hierarchyIds.size());
+        assertEquals(160, hierarchyIds.iterator().next());
+    }
 }

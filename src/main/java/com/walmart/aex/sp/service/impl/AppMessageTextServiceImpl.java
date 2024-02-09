@@ -4,6 +4,7 @@ import com.walmart.aex.sp.dto.appmessage.AppMessageTextRequest;
 import com.walmart.aex.sp.dto.appmessage.AppMessageTextResponse;
 import com.walmart.aex.sp.dto.mapper.AppMessageTextMapper;
 import com.walmart.aex.sp.entity.AppMessageText;
+import com.walmart.aex.sp.enums.AppMessage;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.repository.AppMessageTextRepository;
 import com.walmart.aex.sp.service.AppMessageTextService;
@@ -13,9 +14,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -89,7 +88,6 @@ public class AppMessageTextServiceImpl implements AppMessageTextService {
         }
     }
 
-    @Override
     public List<AppMessageTextResponse> getAppMessagesByIds(Set<Integer> validationCodes) {
         try {
             List<AppMessageTextResponse> appMessageTextResponseList = getAllAppMessageText();
@@ -101,5 +99,13 @@ public class AppMessageTextServiceImpl implements AppMessageTextService {
             throw new CustomException("Exception occurred while retrieving app messages");
         }
 
+    }
+
+    @Override
+    public Set<Integer> getHierarchyIds(Set<Integer> codes) {
+        return Arrays.stream(AppMessage.values())
+                .filter(message -> codes.contains(message.getId()))
+                .map(AppMessage::getParentId)
+                .collect(Collectors.toSet());
     }
 }
