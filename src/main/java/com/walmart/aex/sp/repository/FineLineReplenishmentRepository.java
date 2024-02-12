@@ -121,7 +121,8 @@ public interface FineLineReplenishmentRepository extends JpaRepository<FinelineR
             "frp.finalBuyUnits as buyQty, " +
             "frp.replUnits as replnQty, " +
             "frp.replUnits as adjReplnQty, " +
-            "fp.altFinelineName) " +
+            "fp.altFinelineName, " +
+            "frp.messageObj as finelineMessageObj) " +
             "from MerchCatPlan msp " +
             "inner join " +
             "SubCatPlan ssp " +

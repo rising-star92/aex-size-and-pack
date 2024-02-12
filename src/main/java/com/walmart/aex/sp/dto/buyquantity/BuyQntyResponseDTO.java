@@ -156,7 +156,7 @@ public class BuyQntyResponseDTO {
 
     public BuyQntyResponseDTO(Long planId, Integer channelId, Integer lvl0Nbr, String lvl0Desc, Integer lvl1Nbr, String lvl1Desc, Integer lvl2Nbr,
                               String lvl2Desc, Integer lvl3Nbr, String lvl3Desc, Integer lvl4Nbr, String lvl4Desc, Integer finelineNbr,
-                              String finelineDesc, Integer buyQty, Integer replnQty, Integer adjReplnQty, String altFineLineDesc) {
+                              String finelineDesc, Integer buyQty, Integer replnQty, Integer adjReplnQty, String altFineLineDesc, String finelineMessageObj) {
         this.planId=planId;
         this.channelId=channelId;
         this.lvl0Nbr=lvl0Nbr;
@@ -175,11 +175,12 @@ public class BuyQntyResponseDTO {
         this.replnQty=replnQty;
         this.adjReplnQty=adjReplnQty;
         this.altFineLineDesc=altFineLineDesc;
+        this.finelineMessageObj=finelineMessageObj;
     }
 
     public BuyQntyResponseDTO(Long planId, Integer lvl0Nbr, Integer lvl1Nbr, Integer lvl2Nbr, Integer lvl3Nbr, Integer lvl4Nbr, Integer finelineNbr,
-                              String styleNbr, String ccId,Integer styleBuyQty, Integer styleReplnQty, Integer styleAdjReplnQty,
-                              Integer ccBuyQty, Integer ccReplnQty, Integer ccAdjReplnQty, Integer channelId, String colorFamilyDesc, String colorName, String altStyleDesc, String altCcDesc) {
+                              String styleNbr, String ccId,Integer styleBuyQty, Integer styleReplnQty, Integer styleAdjReplnQty, String styleMessageObj,
+                              Integer ccBuyQty, Integer ccReplnQty, Integer ccAdjReplnQty, Integer channelId, String colorFamilyDesc, String colorName, String altStyleDesc, String altCcDesc, String ccMessageObj) {
         this.planId=planId;
         this.lvl0Nbr=lvl0Nbr;
         this.lvl1Nbr=lvl1Nbr;
@@ -192,6 +193,7 @@ public class BuyQntyResponseDTO {
         this.styleBuyQty=styleBuyQty;
         this.styleReplnQty=styleReplnQty;
         this.styleAdjReplnQty=styleAdjReplnQty;
+        this.styleMessageObj=styleMessageObj;
         this.ccBuyQty=ccBuyQty;
         this.ccReplnQty=ccReplnQty;
         this.ccAdjReplnQty=ccAdjReplnQty;
@@ -200,11 +202,12 @@ public class BuyQntyResponseDTO {
         this.colorName=colorName;
         this.altStyleDesc=altStyleDesc;
         this.altCcDesc=altCcDesc;
+        this.ccMessageObj=ccMessageObj;
     }
 
     public BuyQntyResponseDTO(Long planId, Integer lvl0Nbr, Integer lvl1Nbr, Integer lvl2Nbr,
                               Integer lvl3Nbr, Integer lvl4Nbr, Integer finelineNbr, String styleNbr, String ccId, Integer ahsSizeId, String sizeDesc,
-                              Integer buyQty, Integer replnQty, Integer adjReplnQty) {
+                              Integer buyQty, Integer replnQty, Integer adjReplnQty, String sizeMessageObj) {
         this.planId=planId;
         this.lvl0Nbr=lvl0Nbr;
         this.lvl1Nbr=lvl1Nbr;
@@ -219,6 +222,7 @@ public class BuyQntyResponseDTO {
         this.buyQty=buyQty;
         this.replnQty=replnQty;
         this.adjReplnQty=adjReplnQty;
+        this.sizeMessageObj=sizeMessageObj;
     }
 
     public BuyQntyResponseDTO(Integer finelineNbr, Integer bumpPackCnt) {
