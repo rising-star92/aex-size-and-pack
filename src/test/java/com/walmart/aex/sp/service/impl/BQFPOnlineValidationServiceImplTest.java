@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.bqfp.BQFPResponse;
 import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
-import com.walmart.aex.sp.enums.AppMessageText;
+import com.walmart.aex.sp.enums.AppMessage;
 import com.walmart.aex.sp.enums.FixtureTypeRollup;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -68,7 +68,7 @@ class BQFPOnlineValidationServiceImplTest {
 
         actualValidationResults = bqfpOnlineValidationServiceImpl.missingBuyQuantity(merchMethodsDtos, bqfpResponse, styleDto, customerChoiceDto);
 
-        assertEquals(Set.of(AppMessageText.BQFP_MISSING_REPLENISHMENT_QUANTITIES.getId()), actualValidationResults.getCodes());
+        assertEquals(Set.of(AppMessage.BQFP_MISSING_REPLN_UNITS.getId()), actualValidationResults.getCodes());
     }
 
     @Test
@@ -89,7 +89,7 @@ class BQFPOnlineValidationServiceImplTest {
 
         actualValidationResults = bqfpOnlineValidationServiceImpl.missingBuyQuantity(merchMethodsDtos, bqfpResponse, styleDto, customerChoiceDto);
 
-        assertEquals(Set.of(AppMessageText.BQFP_REPLN_NEGATIVE_UNITS.getId()), actualValidationResults.getCodes());
+        assertEquals(Set.of(AppMessage.BQFP_REPLN_NEGATIVE_UNITS.getId()), actualValidationResults.getCodes());
     }
 
     BQFPResponse bqfpResponseFromJson(String path) throws IOException {
