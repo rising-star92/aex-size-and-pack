@@ -19,15 +19,15 @@ public class  BuyQtyResponseInputs {
     public static List<BuyQntyResponseDTO> buyQtyFinelineInput(){
         BuyQntyResponseDTO buyQntyResponseDTO = new BuyQntyResponseDTO(471l, 2, 50000, null, 34, null, 6419,
                 null, 12228, null, 31507, null, 2855, null,
-                1125, 1125, 1125, null);
+                1125, 1125, 1125, null,"{\"codes\":[150,151]}");
 
         BuyQntyResponseDTO buyQntyResponseDTO2 = new BuyQntyResponseDTO(471l, 2, 50000, null, 34, null, 6419,
                 null, 12229, null, 31508, null, 2855, null,
-                1125, 1125, 1125, null);
+                1125, 1125, 1125, null,"{\"codes\":[150,151]}");
 
         BuyQntyResponseDTO buyQntyResponseDTO1 = new BuyQntyResponseDTO(471l, 2, 50000, null, 34, null, 6419,
                 null, 12229, null, 31508, null, 2760, null,
-                1125, 1125, 1125, null);
+                1125, 1125, 1125, null,"{\"codes\":[150,151]}");
 
 
         List<BuyQntyResponseDTO> buyQntyResponseDTOS = new ArrayList<>();
@@ -42,15 +42,15 @@ public class  BuyQtyResponseInputs {
     {
         BuyQntyResponseDTO buyQntyResponseDTO1 = new BuyQntyResponseDTO(471l, 50000, 34, 6419,
                 12228, 31507, 2855, "34_2855_4_19_8", "34_2855_4_19_8_BLACK SOOT",
-                1125, 1125, 1125, 1125,1125,1125,2,"Red color family","Red", "34_2855_4_19_8_alt","Test_34_2855_4_19_8_BLACK SOOT");
+                1125, 1125, 1125,"{\"codes\":[150,151]}", 1125,1125,1125,2,"Red color family","Red", "34_2855_4_19_8_alt","Test_34_2855_4_19_8_BLACK SOOT","{\"codes\":[150,151]}");
 
         BuyQntyResponseDTO buyQntyResponseDTO = new BuyQntyResponseDTO(471l, 50000, 34, 6419,
                 12228, 31507, 2855, "34_2855_4_19_8", "34_5471_3_24_001_CHINO TAN",
-                1125, 1125, 1125, 1125,1125,1125,2, "Green color family","Green","Test_34_2855_4_19_8","Test_34_5471_3_24_001_CHINO TAN");
+                1125, 1125, 1125, "{\"codes\":[150,151]}",1125,1125,1125,2, "Green color family","Green","Test_34_2855_4_19_8","Test_34_5471_3_24_001_CHINO TAN","{\"codes\":[150,151]}");
 
         BuyQntyResponseDTO buyQntyResponseDTO2 = new BuyQntyResponseDTO(471l, 50000, 34, 6419,
                 12229, 31508, 2855, "34_2855_4_20_8", "34_2855_4_20_8_BLACK SOOT",
-                1125, 1125, 1125, 1125,1125,1125,2,"Black color family", "Black", "Test_34_2855_4_20_8","Test_34_2855_4_20_8_BLACK SOOT");
+                1125, 1125, 1125,"{\"codes\":[150,151]}", 1125,1125,1125,2,"Black color family", "Black", "Test_34_2855_4_20_8","Test_34_2855_4_20_8_BLACK SOOT","{\"codes\":[150,151]}");
 
         List<BuyQntyResponseDTO> buyQntyResponseDTOS = new ArrayList<>();
         buyQntyResponseDTOS.add(buyQntyResponseDTO1);

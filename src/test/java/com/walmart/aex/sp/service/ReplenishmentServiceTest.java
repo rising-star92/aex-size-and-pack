@@ -225,10 +225,10 @@ class ReplenishmentServiceTest {
 
     @Test
     void fetchSizeBuyQtyTest() throws IOException, SizeAndPackException {
-
+        String messageObj = "{\"codes\":[150,151]}";
         BuyQntyResponseDTO buyQntyResponseDTO = new BuyQntyResponseDTO(88L, 50000, 34, 6420,
                 12238, 31526, 5471, "34_5471_3_24_001", "34_5471_3_24_001_CHINO TAN", 3174, "L",
-                1125, 1125, 1125);
+                1125, 1125, 1125,messageObj);
         List<BuyQntyResponseDTO> buyQntyResponseDTOS = new ArrayList<>();
         buyQntyResponseDTOS.add(buyQntyResponseDTO);
         when(sizeListReplenishmentRepository.getSizeBuyQntyByPlanChannelOnlineCc(88L, 2,
