@@ -137,7 +137,7 @@ public interface SpCustomerChoiceReplenishmentRepository extends JpaRepository<C
             "srp.finalBuyUnits as styleBuyQty, " +
             "srp.replUnits as styleReplnQty, " +
             "srp.replUnits as styleAdjReplnQty, " +
-            "srp.messageObj as styleReplPack, " +
+            "srp.messageObj as styleMessageObj, " +
             "crp.finalBuyUnits as ccBuyQty, " +
             "crp.replUnits as ccReplnQty, " +
             "crp.replUnits as ccAdjReplnQty, " +
