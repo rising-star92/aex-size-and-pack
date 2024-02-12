@@ -25,6 +25,9 @@ class BuyQtyReplenishmentMapperServiceTest {
 
 	@Mock
 	ObjectMapper objectMapper;
+
+	@Mock
+	AppMessageTextService appMessageTextService;
 	
 	@InjectMocks
 	@Spy
@@ -148,6 +151,7 @@ class BuyQtyReplenishmentMapperServiceTest {
 		ValidationResult ccValidationResult = ValidationResult.builder().codes(new HashSet<>(Arrays.asList(100,200))).build();
 
 		Mockito.when(objectMapper.writeValueAsString(Mockito.any())).thenReturn("{\"codes\":[100,200]}");
+		Mockito.when(appMessageTextService.getHierarchyIds(Mockito.anySet())).thenReturn(Set.of(100, 200));
 		List<MerchCatgReplPack> catgReplPacks = buyQtyReplenishmentMapperService.setAllReplenishments(styleDto, merchMethodsDto, calculateBuyQtyParallelRequest, calculateBuyQtyResponse, customerChoiceDto, ccSpMmReplPacks, getReplenishmentCons(), ccValidationResult);
 	
 		assertNotNull(catgReplPacks);

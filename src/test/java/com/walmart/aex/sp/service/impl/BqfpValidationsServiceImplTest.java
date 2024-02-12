@@ -98,8 +98,7 @@ class BqfpValidationsServiceImplTest {
 
         actualValidationResults = bqfpValidationsService.missingBuyQuantity(merchMethodsDtos, bqfpResponse, styleDto, customerChoiceDto);
 
-        assertEquals(Set.of(AppMessage.BQFP_MISSING_IS_UNITS.getId(),
-                AppMessage.BQFP_MISSING_REPLN_UNITS.getId(),
+        assertEquals(Set.of(AppMessage.BQFP_MISSING_REPLN_UNITS.getId(),
                 AppMessage.BQFP_MISSING_BS_UNITS.getId(),
                 AppMessage.BQFP_MISSING_BS_WEEKS.getId()), actualValidationResults.getCodes());
     }

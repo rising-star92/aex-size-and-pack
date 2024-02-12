@@ -3,7 +3,6 @@ package com.walmart.aex.sp.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
-import com.walmart.aex.sp.dto.replenishment.cons.CcMmReplPackCons;
 import com.walmart.aex.sp.dto.replenishment.cons.ReplenishmentCons;
 import com.walmart.aex.sp.entity.*;
 import com.walmart.aex.sp.enums.ChannelType;
@@ -21,10 +20,12 @@ public class BuyQtyReplenishmentMapperService {
 
     private final ObjectMapper objectMapper;
     private final ReplenishmentService replenishmentService;
+    private final AppMessageTextService appMessageTextService;
 
-    public BuyQtyReplenishmentMapperService(ObjectMapper objectMapper, ReplenishmentService replenishmentService) {
+    public BuyQtyReplenishmentMapperService(ObjectMapper objectMapper, ReplenishmentService replenishmentService, AppMessageTextService appMessageTextService) {
         this.objectMapper = objectMapper;
         this.replenishmentService = replenishmentService;
+        this.appMessageTextService = appMessageTextService;
     }
 
     public List<MerchCatgReplPack> setAllReplenishments(StyleDto styleDto, MerchMethodsDto merchMethodsDto,
@@ -97,7 +98,7 @@ public class BuyQtyReplenishmentMapperService {
 
         ValidationResult ccMmValidationResult = getValidationResult(ccMmReplPack.getMessageObj());
         if (!sizeValidationCodes.isEmpty()) {
-            ccMmValidationResult.getCodes().addAll(sizeValidationCodes);
+            ccMmValidationResult.getCodes().addAll(appMessageTextService.getHierarchyIds(sizeValidationCodes));
         }
         ccMmReplPack.setMessageObj(getStringValue(ccMmValidationResult));
         ccMmReplPack.setMerchMethodDesc(merchMethodsDto.getMerchMethod());
@@ -146,7 +147,7 @@ public class BuyQtyReplenishmentMapperService {
 
         ValidationResult styleValidationResult = getValidationResult(styleReplPack.getMessageObj());
         if (Objects.nonNull(ccValidationResult) && !ccValidationResult.getCodes().isEmpty()) {
-            styleValidationResult.getCodes().addAll(ccValidationResult.getCodes());
+            styleValidationResult.getCodes().addAll(appMessageTextService.getHierarchyIds(ccValidationResult.getCodes()));
         }
         styleReplPack.setMessageObj(getStringValue(styleValidationResult));
 

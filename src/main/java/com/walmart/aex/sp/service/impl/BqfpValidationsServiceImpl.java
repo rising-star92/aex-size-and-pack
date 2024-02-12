@@ -57,14 +57,14 @@ public class BqfpValidationsServiceImpl implements BqfpValidationsService {
                         .stream()
                         .filter(Objects::nonNull).mapToLong(bumpset -> Optional.ofNullable(bumpset.getUnits()).orElse(0L)).sum() == 0) {
                 //Missing Bumpset quantities
-                validationCodes.add(AppMessage.BQFP_MISSING_BUMPSET_QUANTITIES.getId());
+                validationCodes.add(AppMessage.BQFP_MISSING_BS_UNITS.getId());
             }
                 //ERROR: Missing Bumpset Weeks with Flow Strategy Initialset + Bumpset and Bumpset Qty > 0
             if (cluster.getBumpList()
                     .stream()
                     .filter(Objects::nonNull).anyMatch(bumpSet -> bumpSet.getUnits() > 0 && bumpSet.getWeekDesc() == null)) {
                 //Missing Bumpset Weeks
-                validationCodes.add(AppMessage.BQFP_MISSING_BUMPSET_WEEKS.getId());
+                validationCodes.add(AppMessage.BQFP_MISSING_BS_WEEKS.getId());
             }
         });
     }
@@ -82,7 +82,7 @@ public class BqfpValidationsServiceImpl implements BqfpValidationsService {
                     .mapToLong(replenishment -> Optional.ofNullable(replenishment.getDcInboundUnits()).orElse(0L) +
                             Optional.ofNullable(replenishment.getDcInboundAdjUnits()).orElse(0L) ).sum() == 0))) {
                 //Missing Replenishment quantities
-                validationCodes.add(AppMessage.BQFP_MISSING_REPLENISHMENT_QUANTITIES.getId());
+                validationCodes.add(AppMessage.BQFP_MISSING_REPLN_UNITS.getId());
             }
         }
     }
