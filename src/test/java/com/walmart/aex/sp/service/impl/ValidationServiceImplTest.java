@@ -12,7 +12,7 @@ import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
 import com.walmart.aex.sp.enums.AppMessage;
 import com.walmart.aex.sp.enums.FixtureTypeRollup;
 import com.walmart.aex.sp.enums.MerchMethod;
-import com.walmart.aex.sp.service.BQFPValidationsService;
+import com.walmart.aex.sp.service.BqfpValidationsService;
 import com.walmart.aex.sp.service.RFAValidationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,7 +39,7 @@ class ValidationServiceImplTest {
     private List<MerchMethodsDto> merchMethodsDtoList;
 
     @Mock
-    private BQFPValidationsService bqfpValidationsService;
+    private BqfpValidationsService bqfpValidationsService;
     @Mock
     private RFAValidationService rfaValidationService;
     @InjectMocks

@@ -135,6 +135,21 @@ public class BuyQtyCommonUtil {
         return sortReplenishments(new ArrayList<>(replnMap.values()));
     }
 
+    public static List<Replenishment> getReplenishments(BQFPResponse bqfpResponse, StyleDto styleDto, CustomerChoiceDto customerChoiceDto) {
+        return Optional.ofNullable(bqfpResponse.getStyles())
+                .stream()
+                .flatMap(Collection::stream)
+                .filter(style -> style.getStyleId().equalsIgnoreCase(styleDto.getStyleNbr()))
+                .findFirst()
+                .map(Style::getCustomerChoices)
+                .stream()
+                .flatMap(Collection::stream)
+                .filter(customerChoice -> customerChoice.getCcId().equalsIgnoreCase(customerChoiceDto.getCcId()))
+                .findFirst()
+                .map(CustomerChoice::getReplenishments)
+                .orElse(new ArrayList<>());
+    }
+
     public static StoreQuantity createStoreQuantity(RFASizePackData rfaSizePackData, double perStoreQty, List<Integer> storeListWithOldQty, double totalUnits, Cluster volumeCluster) {
         StoreQuantity storeQuantity = new StoreQuantity();
         storeQuantity.setTotalUnits(totalUnits);
@@ -228,16 +243,6 @@ public class BuyQtyCommonUtil {
 
     public static boolean isReplenishmentEligible(Integer flowStrategy) {
         return (null != flowStrategy && flowStrategy.equals(FlowStrategy.REPLENISHMENT_SET.getId()));
-    }
-
-    public static CustomerChoice getCcFromBQFP(String styleNbr, String ccId, BQFPResponse bqfpResponse) {
-        return bqfpResponse.getStyles().stream()
-                .filter(style -> style.getStyleId().equalsIgnoreCase(styleNbr))
-                .map(Style::getCustomerChoices)
-                .flatMap(Collection::stream)
-                .filter(cc -> cc.getCcId().equalsIgnoreCase(ccId))
-                .findFirst()
-                .orElse(null);
     }
 
 }

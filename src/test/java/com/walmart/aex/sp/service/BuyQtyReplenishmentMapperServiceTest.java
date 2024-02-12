@@ -1,16 +1,17 @@
 package com.walmart.aex.sp.service;
 
-import com.walmart.aex.sp.dto.buyquantity.CalculateBuyQtyParallelRequest;
-import com.walmart.aex.sp.dto.buyquantity.CalculateBuyQtyResponse;
-import com.walmart.aex.sp.dto.buyquantity.CustomerChoiceDto;
-import com.walmart.aex.sp.dto.buyquantity.StyleDto;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
 import com.walmart.aex.sp.dto.replenishment.cons.*;
 import com.walmart.aex.sp.entity.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -20,48 +21,48 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(MockitoExtension.class)
-public class BuyQtyReplenishmentMapperServiceTest {
+class BuyQtyReplenishmentMapperServiceTest {
+
+	@Mock
+	ObjectMapper objectMapper;
+
+	@Mock
+	AppMessageTextService appMessageTextService;
 	
 	@InjectMocks
 	@Spy
 	BuyQtyReplenishmentMapperService buyQtyReplenishmentMapperService;
-	
-	@Mock
+
 	StyleDto styleDto;
-	@Mock
 	MerchMethodsDto merchMethodsDto;
-	@Mock
 	CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest;
-	@Mock
 	CalculateBuyQtyResponse calculateBuyQtyResponse;
-	@Mock
 	CustomerChoiceDto customerChoiceDto;
-	@Mock
 	Set<CcSpMmReplPack> ccSpMmReplPacks;
 
-	@Mock
-	ReplenishmentCons replenishmentCons;
-	
-	@Test
-	public void testSetAllReplenishments() {
+	@BeforeEach
+	void setup() {
 		calculateBuyQtyParallelRequest = new CalculateBuyQtyParallelRequest();
-		calculateBuyQtyParallelRequest.setPlanId(12l);
+		calculateBuyQtyParallelRequest.setPlanId(12L);
 		calculateBuyQtyParallelRequest.setChannel("store");
 		calculateBuyQtyParallelRequest.setFinelineNbr(2968);
 		calculateBuyQtyParallelRequest.setLvl0Nbr(50000);
 		calculateBuyQtyParallelRequest.setLvl1Nbr(34);
 		calculateBuyQtyParallelRequest.setLvl2Nbr(6419);
 		calculateBuyQtyParallelRequest.setLvl3Nbr(1652);
-		
+
 		List<MerchCatgReplPack> merchCatgReplPacks  = new ArrayList<>();
 		MerchCatgReplPack merchCatgReplPack = new MerchCatgReplPack();
 		MerchCatgReplPackId merchCatgReplPackId = new MerchCatgReplPackId();
 		Set<SubCatgReplPack> subReplPack = new HashSet<>();
 		merchCatgReplPack.setSubReplPack(subReplPack);
-		merchCatgReplPackId.setPlanId(12l);
+		merchCatgReplPackId.setPlanId(12L);
 		merchCatgReplPackId.setFixtureTypeRollupId(1);
-		merchCatgReplPackId.setRepTLvl0(5000);
-		merchCatgReplPackId.setRepTLvl1(35);
+		merchCatgReplPackId.setChannelId(1);
+		merchCatgReplPackId.setRepTLvl0(50000);
+		merchCatgReplPackId.setRepTLvl1(34);
+		merchCatgReplPackId.setRepTLvl2(6419);
+		merchCatgReplPackId.setRepTLvl3(1652);
 		merchCatgReplPack.setFinalBuyUnits(1);
 		merchCatgReplPack.setReplPackCnt(12);
 		merchCatgReplPack.setRunStatusCode(2);
@@ -72,7 +73,7 @@ public class BuyQtyReplenishmentMapperServiceTest {
 		merchCatgReplPacks.add(merchCatgReplPack);
 		calculateBuyQtyResponse =  new CalculateBuyQtyResponse();
 		calculateBuyQtyResponse.setMerchCatgReplPacks(merchCatgReplPacks);
-		
+
 		SubCatgReplPack subCatgReplPack = new SubCatgReplPack();
 		Set<FinelineReplPack> finelineReplPackList = new HashSet<>();
 		SubCatgReplPackId SubCatgReplPackId = new SubCatgReplPackId();
@@ -85,7 +86,7 @@ public class BuyQtyReplenishmentMapperServiceTest {
 		subCatgReplPack.setSubCatgReplPackId(SubCatgReplPackId);
 		subCatgReplPack.setFinelineReplPack(finelineReplPackList);
 		subReplPack.add(subCatgReplPack);
-		
+
 		FinelineReplPack finelineReplPack = new FinelineReplPack();
 		FinelineReplPackId finelineReplPackId = new FinelineReplPackId();
 		Set<StyleReplPack> styleReplPackList = new HashSet<>();
@@ -99,7 +100,7 @@ public class BuyQtyReplenishmentMapperServiceTest {
 		finelineReplPack.setFinelineReplPackId(finelineReplPackId);
 		finelineReplPack.setStyleReplPack(styleReplPackList);
 		finelineReplPackList.add(finelineReplPack);
-		
+
 		StyleReplPack styleReplPack = new StyleReplPack();
 		StyleReplPackId styleReplPackId = new StyleReplPackId();
 		Set<CcReplPack> ccReplPackList = new HashSet<>();
@@ -112,7 +113,7 @@ public class BuyQtyReplenishmentMapperServiceTest {
 		styleReplPack.setStyleReplPackId(styleReplPackId);
 		styleReplPack.setCcReplPack(ccReplPackList);
 		styleReplPackList.add(styleReplPack);
-		
+
 		CcReplPack ccReplPack = new CcReplPack();
 		CcReplPackId ccReplPackId = new CcReplPackId();
 		Set<CcMmReplPack> ccMmReplPackList = new HashSet<>();
@@ -125,7 +126,7 @@ public class BuyQtyReplenishmentMapperServiceTest {
 		ccReplPack.setCcReplPackId(ccReplPackId);
 		ccReplPack.setCcMmReplPack(ccMmReplPackList);
 		ccReplPackList.add(ccReplPack);
-		
+
 		CcMmReplPack ccMmReplPack = new CcMmReplPack();
 		CcMmReplPackId ccMmReplPackId = new CcMmReplPackId();
 		ccSpMmReplPacks = new HashSet<>();
@@ -138,23 +139,42 @@ public class BuyQtyReplenishmentMapperServiceTest {
 		ccMmReplPack.setCcMmReplPackId(ccMmReplPackId);
 		ccMmReplPack.setCcSpMmReplPack(ccSpMmReplPacks);
 		ccMmReplPackList.add(ccMmReplPack);
-				
-		List<MerchCatgReplPack> catgReplPacks=buyQtyReplenishmentMapperService.setAllReplenishments(styleDto, merchMethodsDto, calculateBuyQtyParallelRequest, calculateBuyQtyResponse, customerChoiceDto, ccSpMmReplPacks, getReplenishmentCons());
+
+		customerChoiceDto = new CustomerChoiceDto();
+		styleDto = new StyleDto();
+		merchMethodsDto = new MerchMethodsDto();
+		merchMethodsDto.setMerchMethodCode(1);
+	}
+	
+	@Test
+	void testSetAllReplenishments() throws JsonProcessingException {
+		ValidationResult ccValidationResult = ValidationResult.builder().codes(new HashSet<>(Arrays.asList(100,200))).build();
+
+		Mockito.when(objectMapper.writeValueAsString(Mockito.any())).thenReturn("{\"codes\":[100,200]}");
+		Mockito.when(appMessageTextService.getHierarchyIds(Mockito.anySet())).thenReturn(Set.of(100, 200));
+		List<MerchCatgReplPack> catgReplPacks = buyQtyReplenishmentMapperService.setAllReplenishments(styleDto, merchMethodsDto, calculateBuyQtyParallelRequest, calculateBuyQtyResponse, customerChoiceDto, ccSpMmReplPacks, getReplenishmentCons(), ccValidationResult);
 	
 		assertNotNull(catgReplPacks);
-		assertEquals(1, catgReplPacks.get(0).getFinalBuyUnits());
-		assertEquals(12, catgReplPacks.get(0).getReplPackCnt());
-		assertEquals(2, catgReplPacks.get(0).getRunStatusCode());
+		assertEquals(2, catgReplPacks.get(0).getFinalBuyUnits());
+		assertEquals(0, catgReplPacks.get(0).getReplPackCnt());
+		assertEquals(0, catgReplPacks.get(0).getRunStatusCode());
 		assertEquals(23.0, catgReplPacks.get(0).getVnpkWhpkRatio());
+		assertEquals("{\"codes\":[100,200]}", catgReplPacks.get(0).getSubReplPack().iterator().next().getFinelineReplPack()
+				.iterator().next().getMessageObj());
+		assertEquals("{\"codes\":[100,200]}", catgReplPacks.get(0).getSubReplPack().iterator().next().getFinelineReplPack()
+				.iterator().next().getStyleReplPack().iterator().next().getMessageObj());
+		assertEquals("{\"codes\":[100,200]}", catgReplPacks.get(0).getSubReplPack().iterator().next().getFinelineReplPack()
+				.iterator().next().getStyleReplPack().iterator().next().getCcReplPack().iterator().next().getMessageObj());
+
 		assertEquals(44, catgReplPacks.get(0).getWhsePackCnt());
 		assertEquals(4, catgReplPacks.get(0).getVendorPackCnt());	
 		
 	}
 
 	@Test
-	void testSetAllReplenishmentsDefaultValues() {
+	void testSetAllReplenishmentsDefaultValues() throws JsonProcessingException {
 		calculateBuyQtyParallelRequest = new CalculateBuyQtyParallelRequest();
-		calculateBuyQtyParallelRequest.setPlanId(12l);
+		calculateBuyQtyParallelRequest.setPlanId(12L);
 		calculateBuyQtyParallelRequest.setChannel("store");
 		calculateBuyQtyParallelRequest.setFinelineNbr(2968);
 		calculateBuyQtyParallelRequest.setLvl0Nbr(50000);
@@ -166,12 +186,14 @@ public class BuyQtyReplenishmentMapperServiceTest {
 		calculateBuyQtyResponse =  new CalculateBuyQtyResponse();
 		calculateBuyQtyResponse.setMerchCatgReplPacks(merchCatgReplPacks);
 
-		List<MerchCatgReplPack> catgReplPacks=buyQtyReplenishmentMapperService.setAllReplenishments(styleDto, merchMethodsDto, calculateBuyQtyParallelRequest, calculateBuyQtyResponse, customerChoiceDto, ccSpMmReplPacks, getReplenishmentCons());
+		Mockito.when(objectMapper.writeValueAsString(Mockito.any())).thenReturn("{\"codes\":[]}");
+
+		List<MerchCatgReplPack> catgReplPacks = buyQtyReplenishmentMapperService.setAllReplenishments(styleDto, merchMethodsDto, calculateBuyQtyParallelRequest, calculateBuyQtyResponse, customerChoiceDto, ccSpMmReplPacks, getReplenishmentCons(), ValidationResult.builder().codes(new HashSet<>()).build());
 
 		assertNotNull(catgReplPacks);
-		assertEquals(12, catgReplPacks.get(0).getVendorPackCnt());
-		assertEquals(2, catgReplPacks.get(0).getWhsePackCnt());
-		assertEquals(6, catgReplPacks.get(0).getVnpkWhpkRatio());
+		assertEquals(4, catgReplPacks.get(0).getVendorPackCnt());
+		assertEquals(44, catgReplPacks.get(0).getWhsePackCnt());
+		assertEquals(23.00, catgReplPacks.get(0).getVnpkWhpkRatio());
 		assertEquals(12, catgReplPacks.get(0).getSubReplPack().iterator().next().getVendorPackCnt());
 		assertEquals(2, catgReplPacks.get(0).getSubReplPack().iterator().next().getWhsePackCnt());
 		assertEquals(6, catgReplPacks.get(0).getSubReplPack().iterator().next().getVnpkWhpkRatio());
@@ -211,9 +233,9 @@ public class BuyQtyReplenishmentMapperServiceTest {
 	private ReplenishmentCons getReplenishmentCons() {
 		ReplenishmentCons replenishmentCons = new ReplenishmentCons();
 		MerchCatgReplPackCons merchCatgReplPackCons = new MerchCatgReplPackCons();
-		merchCatgReplPackCons.setVendorPackCount(12);
-		merchCatgReplPackCons.setWarehousePackCount(2);
-		merchCatgReplPackCons.setVendorPackWareHousePackRatio(6.00);
+		merchCatgReplPackCons.setVendorPackCount(4);
+		merchCatgReplPackCons.setWarehousePackCount(44);
+		merchCatgReplPackCons.setVendorPackWareHousePackRatio(23.00);
 		replenishmentCons.setMerchCatgReplPackCons(merchCatgReplPackCons);
 		SubCatgReplPackCons subCatgReplPackCons = new SubCatgReplPackCons();
 		subCatgReplPackCons.setVendorPackCount(12);

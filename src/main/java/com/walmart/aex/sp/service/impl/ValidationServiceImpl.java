@@ -7,7 +7,7 @@ import com.walmart.aex.sp.service.RFAValidationService;
 import com.walmart.aex.sp.dto.buyquantity.StyleDto;
 import com.walmart.aex.sp.dto.buyquantity.ValidationResult;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
-import com.walmart.aex.sp.service.BQFPValidationsService;
+import com.walmart.aex.sp.service.BqfpValidationsService;
 import com.walmart.aex.sp.service.ValidationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,11 +23,11 @@ import java.util.stream.Stream;
 public class ValidationServiceImpl implements ValidationService {
 
     private final RFAValidationService rfaValidationService;
-    private final BQFPValidationsService bqfpValidationsService;
+    private final BqfpValidationsService bqfpValidationsService;
 
-    public ValidationServiceImpl(RFAValidationService rfaValidationService, BQFPValidationsService bqfpValidationsService) {
+    public ValidationServiceImpl(RFAValidationService rfaValidationService, BqfpValidationsService bqfpValidationsServiceImpl) {
         this.rfaValidationService = rfaValidationService;
-        this.bqfpValidationsService = bqfpValidationsService;
+        this.bqfpValidationsService = bqfpValidationsServiceImpl;
     }
 
     /**

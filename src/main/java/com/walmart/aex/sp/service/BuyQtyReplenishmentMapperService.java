@@ -1,16 +1,15 @@
 package com.walmart.aex.sp.service;
 
-import com.walmart.aex.sp.dto.buyquantity.CalculateBuyQtyParallelRequest;
-import com.walmart.aex.sp.dto.buyquantity.CalculateBuyQtyResponse;
-import com.walmart.aex.sp.dto.buyquantity.CustomerChoiceDto;
-import com.walmart.aex.sp.dto.buyquantity.StyleDto;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
-import com.walmart.aex.sp.dto.replenishment.cons.CcMmReplPackCons;
 import com.walmart.aex.sp.dto.replenishment.cons.ReplenishmentCons;
 import com.walmart.aex.sp.entity.*;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.enums.FixtureTypeRollup;
+import com.walmart.aex.sp.exception.CustomException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -19,8 +18,24 @@ import java.util.*;
 @Service
 public class BuyQtyReplenishmentMapperService {
 
-    public List<MerchCatgReplPack> setAllReplenishments(StyleDto styleDto, MerchMethodsDto merchMethodsDto, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, CalculateBuyQtyResponse calculateBuyQtyResponse, CustomerChoiceDto customerChoiceDto, Set<CcSpMmReplPack> ccSpMmReplPacks, ReplenishmentCons replenishmentCons) {
-        List<MerchCatgReplPack> merchCatgReplPacks = calculateBuyQtyResponse.getMerchCatgReplPacks();
+    private final ObjectMapper objectMapper;
+    private final ReplenishmentService replenishmentService;
+    private final AppMessageTextService appMessageTextService;
+
+    public BuyQtyReplenishmentMapperService(ObjectMapper objectMapper, ReplenishmentService replenishmentService, AppMessageTextService appMessageTextService) {
+        this.objectMapper = objectMapper;
+        this.replenishmentService = replenishmentService;
+        this.appMessageTextService = appMessageTextService;
+    }
+
+    public List<MerchCatgReplPack> setAllReplenishments(StyleDto styleDto, MerchMethodsDto merchMethodsDto,
+                                                        CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest,
+                                                        CalculateBuyQtyResponse calculateBuyQtyResponse,
+                                                        CustomerChoiceDto customerChoiceDto,
+                                                        Set<CcSpMmReplPack> ccSpMmReplPacks,
+                                                        ReplenishmentCons replenishmentCons,
+                                                        ValidationResult ccValidationResult) {
+        Set<MerchCatgReplPack> merchCatgReplPacks = new HashSet<>(calculateBuyQtyResponse.getMerchCatgReplPacks());
         // Hard coded FixtureTypeRollUpId for testing calculation
         MerchCatgReplPackId merchCatgReplPackId = new MerchCatgReplPackId(calculateBuyQtyParallelRequest.getPlanId(), calculateBuyQtyParallelRequest.getLvl0Nbr(),
                 calculateBuyQtyParallelRequest.getLvl1Nbr(), calculateBuyQtyParallelRequest.getLvl2Nbr(), calculateBuyQtyParallelRequest.getLvl3Nbr(),
@@ -52,11 +67,14 @@ public class BuyQtyReplenishmentMapperService {
         CcMmReplPackId ccMmReplPackId = new CcMmReplPackId(ccReplPack.getCcReplPackId(), merchMethodsDto.getMerchMethodCode());
         log.info("Replenishment: Check if Cc MM Repln pack Id is existing: {}", ccMmReplPackId);
         CcMmReplPack ccMmReplPack = setCcMmReplnPack(ccMmReplPacks, ccMmReplPackId);
-
-        ccSpMmReplPacks.forEach(ccSpMmReplPack -> setReplenishmentSizeEntity(ccMmReplPack, ccSpMmReplPack, merchMethodsDto));
-
         Map<Integer, CcSpMmReplPack> ccSpMmReplPackSizeMap = replenishmentCons.getCcSpMmReplPackConsMap();
-        ccSpMmReplPacks.forEach( ccSpMmReplPack -> setVendorPackAndWhsePackCountForCCSpMm(ccSpMmReplPackSizeMap, ccSpMmReplPack, replenishmentCons.getCcMmReplPackCons()));
+        Set<Integer> sizeValidationCodes = new HashSet<>();
+        ccSpMmReplPacks.forEach(ccSpMmReplPack -> {
+            setReplenishmentSizeEntity(ccMmReplPack, ccSpMmReplPack, merchMethodsDto);
+            ccSpMmReplPack = replenishmentService.setVendorPackAndWhsePackCountForCCSpMm(ccSpMmReplPackSizeMap, ccSpMmReplPack, replenishmentCons.getCcMmReplPackCons());
+            ValidationResult validationResult = getValidationResult(ccSpMmReplPack.getMessageObj());
+            sizeValidationCodes.addAll(validationResult.getCodes());
+        });
         ccMmReplPack.setVendorPackCnt(replenishmentCons.getCcMmReplPackCons().getVendorPackCount());
         ccMmReplPack.setWhsePackCnt(replenishmentCons.getCcMmReplPackCons().getWarehousePackCount());
         ccMmReplPack.setVnpkWhpkRatio(replenishmentCons.getCcMmReplPackCons().getVendorPackWareHousePackRatio());
@@ -78,7 +96,13 @@ public class BuyQtyReplenishmentMapperService {
         );
         ccMmReplPack.setReplPackCnt(ccMmReplPack.getReplUnits()/ccMmReplPack.getVendorPackCnt());
 
+        ValidationResult ccMmValidationResult = getValidationResult(ccMmReplPack.getMessageObj());
+        if (!sizeValidationCodes.isEmpty()) {
+            ccMmValidationResult.getCodes().addAll(appMessageTextService.getHierarchyIds(sizeValidationCodes));
+        }
+        ccMmReplPack.setMessageObj(getStringValue(ccMmValidationResult));
         ccMmReplPack.setMerchMethodDesc(merchMethodsDto.getMerchMethod());
+
         ccMmReplPacks.add(ccMmReplPack);
 
         //CC
@@ -96,6 +120,10 @@ public class BuyQtyReplenishmentMapperService {
                 .mapToInt(ccMmReplPack1 -> Optional.ofNullable(ccMmReplPack1.getFinalBuyUnits()).orElse(0))
                 .sum());
         ccReplPack.setReplPackCnt(ccReplPack.getReplUnits()/ccReplPack.getVendorPackCnt());
+        if (Objects.nonNull(ccMmValidationResult) && !ccMmValidationResult.getCodes().isEmpty()) {
+            ccValidationResult.getCodes().addAll(ccMmValidationResult.getCodes());
+        }
+        ccReplPack.setMessageObj(getStringValue(ccValidationResult));
 
         ccReplPacks.add(ccReplPack);
 
@@ -116,6 +144,12 @@ public class BuyQtyReplenishmentMapperService {
                 .sum()
         );
         styleReplPack.setReplPackCnt(styleReplPack.getReplUnits()/styleReplPack.getVendorPackCnt());
+
+        ValidationResult styleValidationResult = getValidationResult(styleReplPack.getMessageObj());
+        if (Objects.nonNull(ccValidationResult) && !ccValidationResult.getCodes().isEmpty()) {
+            styleValidationResult.getCodes().addAll(appMessageTextService.getHierarchyIds(ccValidationResult.getCodes()));
+        }
+        styleReplPack.setMessageObj(getStringValue(styleValidationResult));
 
         styleReplPacks.add(styleReplPack);
 
@@ -139,6 +173,12 @@ public class BuyQtyReplenishmentMapperService {
 
         finelineReplPack.setFixtureTypeRollupName(FixtureTypeRollup.getFixtureTypeFromId(merchMethodsDto.getFixtureTypeRollupId()));
         finelineReplPack.setRunStatusCode(0);
+        ValidationResult finelineValidationResult = getValidationResult(finelineReplPack.getMessageObj());
+        if (Objects.nonNull(styleValidationResult) && !styleValidationResult.getCodes().isEmpty()) {
+            finelineValidationResult.getCodes().addAll(styleValidationResult.getCodes());
+        }
+        finelineReplPack.setMessageObj(getStringValue(finelineValidationResult));
+
         finelineReplPacks.add(finelineReplPack);
 
         //Sub catg
@@ -187,7 +227,7 @@ public class BuyQtyReplenishmentMapperService {
         merchCatgReplPack.setRunStatusCode(0);
         merchCatgReplPacks.add(merchCatgReplPack);
 
-        return merchCatgReplPacks;
+        return new ArrayList<>(merchCatgReplPacks);
     }
 
     private CcMmReplPack setCcMmReplnPack(Set<CcMmReplPack> ccMmReplPacks, CcMmReplPackId ccMmReplPackId) {
@@ -231,7 +271,7 @@ public class BuyQtyReplenishmentMapperService {
         return styleReplPack;
     }
 
-    private MerchCatgReplPack setMerchCatgReplPack(List<MerchCatgReplPack> merchCatgReplPacks, MerchCatgReplPackId merchCatgReplPackId) {
+    private MerchCatgReplPack setMerchCatgReplPack(Set<MerchCatgReplPack> merchCatgReplPacks, MerchCatgReplPackId merchCatgReplPackId) {
         MerchCatgReplPack merchCatgReplPack = Optional.of(merchCatgReplPacks)
                 .stream()
                 .flatMap(Collection::stream)
@@ -284,19 +324,37 @@ public class BuyQtyReplenishmentMapperService {
         ccMmReplPack.setCcSpMmReplPack(ccSpMmReplPacks);
     }
 
-    private void setVendorPackAndWhsePackCountForCCSpMm(Map<Integer, CcSpMmReplPack> ccSpMmReplPackSizeMap, CcSpMmReplPack ccSpMmReplPack, CcMmReplPackCons ccMmReplPackCons) {
-        if (ccSpMmReplPackSizeMap != null && ccSpMmReplPackSizeMap.containsKey(ccSpMmReplPack.getCcSpReplPackId().getAhsSizeId())) {
-            CcSpMmReplPack ccSpMmReplPackFromDb = ccSpMmReplPackSizeMap.get(ccSpMmReplPack.getCcSpReplPackId().getAhsSizeId());
-            Integer vendorPackCnt = ccSpMmReplPackFromDb.getVendorPackCnt();
-            ccSpMmReplPack.setReplPackCnt(ccSpMmReplPack.getReplUnits() / vendorPackCnt);
-            ccSpMmReplPack.setVendorPackCnt(vendorPackCnt);
-            ccSpMmReplPack.setWhsePackCnt(ccSpMmReplPackFromDb.getWhsePackCnt());
-            ccSpMmReplPack.setVnpkWhpkRatio(ccSpMmReplPackFromDb.getVnpkWhpkRatio());
-        } else {
-            ccSpMmReplPack.setReplPackCnt(ccSpMmReplPack.getReplUnits() / ccMmReplPackCons.getVendorPackCount());
-            ccSpMmReplPack.setVendorPackCnt(ccMmReplPackCons.getVendorPackCount());
-            ccSpMmReplPack.setWhsePackCnt(ccMmReplPackCons.getWarehousePackCount());
-            ccSpMmReplPack.setVnpkWhpkRatio(ccMmReplPackCons.getVendorPackWareHousePackRatio());
+    public CcSpMmReplPack setCcMmSpReplenishment(Map.Entry<SizeDto, BuyQtyObj> entry, int totalReplenishment, int totalBuyQty) {
+        CcSpMmReplPackId ccSpMmReplPackId = new CcSpMmReplPackId();
+        ccSpMmReplPackId.setAhsSizeId(entry.getKey().getAhsSizeId());
+
+        CcSpMmReplPack ccSpMmReplPack = new CcSpMmReplPack();
+        ccSpMmReplPack.setSizeDesc(entry.getKey().getSizeDesc());
+
+        ccSpMmReplPack.setCcSpReplPackId(ccSpMmReplPackId);
+
+        ccSpMmReplPack.setFinalBuyUnits(totalBuyQty);
+        ccSpMmReplPack.setReplUnits(totalReplenishment);
+        ccSpMmReplPack.setReplenObj(getStringValue(entry.getValue().getReplenishments()));
+        ccSpMmReplPack.setMessageObj(getStringValue(entry.getValue().getValidationResult()));
+
+        return ccSpMmReplPack;
+    }
+
+    private String getStringValue(Object obj) {
+        try {
+            return (Objects.nonNull(obj)) ? objectMapper.writeValueAsString(obj) : null;
+        } catch (Exception e) {
+            log.error("Failed to convert obj into string: {} | {}", obj, e.getMessage());
+            throw new CustomException("Failed to convert obj into string " + e);
+        }
+    }
+
+    private ValidationResult getValidationResult(String messageObj) {
+        try {
+            return StringUtils.isNotEmpty(messageObj) ? objectMapper.readValue(messageObj, ValidationResult.class) : ValidationResult.builder().codes(new HashSet<>()).build();
+        } catch (Exception e) {
+            throw new CustomException("Exception occurred while deserializing validation messages");
         }
     }
 }
