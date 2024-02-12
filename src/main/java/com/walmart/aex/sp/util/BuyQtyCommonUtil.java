@@ -60,7 +60,7 @@ public class BuyQtyCommonUtil {
     public BuyQtyResponse filterFinelinesWithSizes(List<BuyQntyResponseDTO> buyQntyResponseDTOS, BuyQtyResponse finelinesWithSizesFromStrategy) {
         BuyQtyResponse buyQtyResponse = new BuyQtyResponse();
         buyQntyResponseDTOS.forEach(buyQntyResponseDTO -> getFinelines(buyQntyResponseDTO, finelinesWithSizesFromStrategy)
-                .forEach(finelineNbr -> buyQuantityMapper.mapBuyQntyLvl2Sp(buyQntyResponseDTO, buyQtyResponse, null)));
+                .forEach(fineline -> buyQuantityMapper.mapBuyQntyLvl2Sp(buyQntyResponseDTO, buyQtyResponse, fineline.getMetadata(), null)));
         return buyQtyResponse;
     }
 
@@ -75,7 +75,7 @@ public class BuyQtyCommonUtil {
                 .map(StyleDto::getCustomerChoices)
                 .flatMap(Collection::stream)
                 .filter(customerChoiceDto -> customerChoiceDto.getCcId().equals(buyQntyResponseDTO.getCcId()))
-                .forEach(ccId -> buyQuantityMapper.mapBuyQntyLvl2Sp(buyQntyResponseDTO, buyQtyResponse, finelineNbr)));
+                .forEach(cc -> buyQuantityMapper.mapBuyQntyLvl2Sp(buyQntyResponseDTO, buyQtyResponse, cc.getMetadata(), finelineNbr)));
 
         return buyQtyResponse;
     }

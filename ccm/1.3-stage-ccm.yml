@@ -287,12 +287,12 @@ configDefinitions:
         description: "Buy Qty with Sizes for Finelines Query for GraphQL Call"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "query ($planId:Int!,$channel:String!)\n {\n getFinelinesWithSizeAssociation(planId : $planId, channel : $channel)\n {\n planId\n lvl0Nbr\n lvl1Nbr\n lvl2Nbr\n lvl3List{\n lvl3Nbr\n lvl4List{\n lvl4Nbr\n finelines{\n finelineNbr\n }}}}}"
+        defaultValue: "query ($planId:Int!,$channel:String!)\n {\n getFinelinesWithSizeAssociation(planId : $planId, channel : $channel)\n {\n planId\n lvl0Nbr\n lvl1Nbr\n lvl2Nbr\n lvl3List{\n lvl3Nbr\n lvl4List{\n lvl4Nbr\n finelines{\n finelineNbr\n metadata{\n validationCodes\n }}}}}}"
       "buy.qty.style.cc.size.query":
         description: "Buy Qty with Sizes for Styles and Cc Query for GraphQL Call"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "query ($planId:Int!,$channel:String!,$finelineNbr:Int!)\n {\n getStylesCCsWithSizeAssociation(planId : $planId, channel : $channel, finelineNbr: $finelineNbr)\n {\n planId\n lvl0Nbr\n lvl1Nbr\n lvl2Nbr\n lvl3List{\n lvl3Nbr\n lvl4List{\n lvl4Nbr\n finelines{\n finelineNbr\n styles{\n styleNbr\n customerChoices{\n ccId\n }}}}}}}"
+        defaultValue: "query ($planId:Int!,$channel:String!,$finelineNbr:Int!)\n {\n getStylesCCsWithSizeAssociation(planId : $planId, channel : $channel, finelineNbr: $finelineNbr)\n {\n planId\n lvl0Nbr\n lvl1Nbr\n lvl2Nbr\n lvl3List{\n lvl3Nbr\n lvl4List{\n lvl4Nbr\n finelines{\n finelineNbr\n styles{\n styleNbr\n customerChoices{\n ccId\n metadata{\n validationCodes\n }}}}}}}}"
       "size.profile.consumer.id":
         description: "Consumer ID to call Strategy Service"
         type: "STRING"

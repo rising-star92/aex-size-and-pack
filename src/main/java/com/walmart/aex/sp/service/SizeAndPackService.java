@@ -131,7 +131,7 @@ public class SizeAndPackService {
                         .stream()
                         .flatMap(Collection::stream)
                         .forEach(buyQntyResponseDTO -> buyQuantityMapper
-                                .mapBuyQntyLvl2Sp(buyQntyResponseDTO, buyQtyResponseAllChannels, null));
+                                .mapBuyQntyLvl2Sp(buyQntyResponseDTO, buyQtyResponseAllChannels, null, null));
                 List<FactoryDTO> factoryDTOS = ccPackOptimizationRepository.getFactoriesByPlanId(buyQtyRequest.getPlanId(), null);
                 BQFactoryMapper.setFactoriesForFinelines(factoryDTOS,buyQtyResponseAllChannels);
                 return buyQtyResponseAllChannels;
@@ -169,7 +169,7 @@ public class SizeAndPackService {
                         .flatMap(Collection::stream)
                         .filter(buyQntyResponseDTO -> ccsWithSizes.get(buyQntyResponseDTO.getChannelId()).contains(buyQntyResponseDTO.getCcId()))
                         .forEach(buyQntyResponseDTO -> buyQuantityMapper
-                        .mapBuyQntyLvl2Sp(buyQntyResponseDTO, buyQtyResponseAllChannels, finelineNbr));
+                        .mapBuyQntyLvl2Sp(buyQntyResponseDTO, buyQtyResponseAllChannels, null, finelineNbr));
                 List<FactoryDTO> factoryDTOS = ccPackOptimizationRepository.getFactoriesByPlanId(buyQtyRequest.getPlanId(), buyQtyRequest.getFinelineNbr());
                 BQFactoryMapper.setFactoriesForCCs(factoryDTOS,buyQtyResponseAllChannels);
 
