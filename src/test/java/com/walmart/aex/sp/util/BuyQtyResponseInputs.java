@@ -17,18 +17,17 @@ public class  BuyQtyResponseInputs {
     private static final ObjectMapper mapper = new ObjectMapper();
 
     public static List<BuyQntyResponseDTO> buyQtyFinelineInput(){
-        String messageObj = "{\"codes\":[150,151]}";
         BuyQntyResponseDTO buyQntyResponseDTO = new BuyQntyResponseDTO(471l, 2, 50000, null, 34, null, 6419,
                 null, 12228, null, 31507, null, 2855, null,
-                1125, 1125, 1125, null,messageObj);
+                1125, 1125, 1125, null,"{\"codes\":[150,151]}");
 
         BuyQntyResponseDTO buyQntyResponseDTO2 = new BuyQntyResponseDTO(471l, 2, 50000, null, 34, null, 6419,
                 null, 12229, null, 31508, null, 2855, null,
-                1125, 1125, 1125, null,messageObj);
+                1125, 1125, 1125, null,"{\"codes\":[150,151]}");
 
         BuyQntyResponseDTO buyQntyResponseDTO1 = new BuyQntyResponseDTO(471l, 2, 50000, null, 34, null, 6419,
                 null, 12229, null, 31508, null, 2760, null,
-                1125, 1125, 1125, null,messageObj);
+                1125, 1125, 1125, null,"{\"codes\":[150,151]}");
 
 
         List<BuyQntyResponseDTO> buyQntyResponseDTOS = new ArrayList<>();
