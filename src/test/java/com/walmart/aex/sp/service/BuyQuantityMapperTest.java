@@ -57,7 +57,12 @@ class BuyQuantityMapperTest {
         buyQntyResponseDTO.setLvl4Nbr(11);
         buyQntyResponseDTO.setReplnQty(14);
         buyQntyResponseDTO.setInitialSetQty(10);
-        buyQunatityMapper.mapBuyQntyLvl2Sp(buyQntyResponseDTO,fetchFineLineResponse, null, finelineNbr);
+        buyQunatityMapper.mapBuyQntyLvl2Sp(BuyQntyMapperDTO.builder()
+                    .buyQntyResponseDTO(buyQntyResponseDTO)
+                    .response(fetchFineLineResponse)
+                    .metadata(null)
+                    .requestFinelineNbr(finelineNbr)
+                .build());
         assertNotNull(fetchFineLineResponse);
         assertEquals(471L, fetchFineLineResponse.getPlanId());
 
@@ -81,7 +86,12 @@ class BuyQuantityMapperTest {
         buyQntyResponseDTO.setLvl4Nbr(11);
         buyQntyResponseDTO.setReplnQty(14);
         buyQntyResponseDTO.setInitialSetQty(10);
-        buyQunatityMapper.mapBuyQntyLvl2Sp(buyQntyResponseDTO,fetchFineLineResponse, null, null);
+        buyQunatityMapper.mapBuyQntyLvl2Sp(BuyQntyMapperDTO.builder()
+                .buyQntyResponseDTO(buyQntyResponseDTO)
+                .response(fetchFineLineResponse)
+                .metadata(null)
+                .requestFinelineNbr(null)
+                .build());
         assertNotNull(fetchFineLineResponse);
         assertEquals(471L, fetchFineLineResponse.getPlanId());
         MetricsDto metricsDto = fetchFineLineResponse.getLvl3List().get(0).getLvl4List().get(0).getMetrics();
@@ -111,7 +121,12 @@ class BuyQuantityMapperTest {
         buyQntyResponseDTO.setInitialSetQty(10);
         buyQntyResponseDTO.setLvl0Nbr(23);
         BuyQtyResponse fetchFineLineResponse= getBuyQtyResponse(buyQntyResponseDTO,null);
-        buyQunatityMapper.mapBuyQntyLvl2Sp(buyQntyResponseDTO,fetchFineLineResponse,null, null);
+        buyQunatityMapper.mapBuyQntyLvl2Sp(BuyQntyMapperDTO.builder()
+                .buyQntyResponseDTO(buyQntyResponseDTO)
+                .response(fetchFineLineResponse)
+                .metadata(null)
+                .requestFinelineNbr(null)
+                .build());
         assertNotNull(fetchFineLineResponse);
         assertEquals(471L,fetchFineLineResponse.getPlanId());
         MetricsDto metricsDto = fetchFineLineResponse.getLvl3List().get(0).getLvl4List().get(0).getMetrics();
@@ -139,7 +154,12 @@ class BuyQuantityMapperTest {
         buyQntyResponseDTO.setLvl4Nbr(11);
         buyQntyResponseDTO.setReplnQty(14);
         buyQntyResponseDTO.setInitialSetQty(10);
-        buyQunatityMapper.mapBuyQntyLvl2Sp(buyQntyResponseDTO,fetchFineLineResponse,null, null);
+        buyQunatityMapper.mapBuyQntyLvl2Sp(BuyQntyMapperDTO.builder()
+                .buyQntyResponseDTO(buyQntyResponseDTO)
+                .response(fetchFineLineResponse)
+                .metadata(null)
+                .requestFinelineNbr(null)
+                .build());
         assertNotNull(fetchFineLineResponse);
         assertEquals(471L, fetchFineLineResponse.getPlanId());
         MetricsDto metricsDto = fetchFineLineResponse.getLvl3List().get(0).getMetrics();
@@ -201,7 +221,12 @@ class BuyQuantityMapperTest {
 
         Mockito.when(strategyFetchService.getBuyQtyResponseSizeProfile(newBuyReq)).thenReturn(buyQtyResponse);
 
-        buyQunatityMapper.mapBuyQntyLvl2Sp(buyQntyResponseDTO,fetchFineLineResponse, null, 2816);
+        buyQunatityMapper.mapBuyQntyLvl2Sp(BuyQntyMapperDTO.builder()
+                .buyQntyResponseDTO(buyQntyResponseDTO)
+                .response(fetchFineLineResponse)
+                .metadata(null)
+                .requestFinelineNbr(2816)
+                .build());
         assertNotNull(fetchFineLineResponse);
         assertEquals(12, fetchFineLineResponse.getPlanId());
         MetricsDto metricsDto = fetchFineLineResponse.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getCustomerChoices().get(0).getMetrics();
@@ -247,7 +272,12 @@ class BuyQuantityMapperTest {
         styleDto.setCustomerChoices(customerChoiceDtoList);
         styleDtoList.add(styleDto);
         BuyQtyResponse fetchFineLineResponse= getBuyQtyResponse(buyQntyResponseDTO,styleDtoList);
-        buyQunatityMapper.mapBuyQntyLvl2Sp(buyQntyResponseDTO,fetchFineLineResponse, null, 2816);
+        buyQunatityMapper.mapBuyQntyLvl2Sp(BuyQntyMapperDTO.builder()
+                .buyQntyResponseDTO(buyQntyResponseDTO)
+                .response(fetchFineLineResponse)
+                .metadata(null)
+                .requestFinelineNbr(2816)
+                .build());
         assertEquals(12,fetchFineLineResponse.getPlanId());
         MetricsDto metricsDto = fetchFineLineResponse.getLvl3List().get(0).getLvl4List().get(0).getFinelines().get(0).getStyles().get(0).getMetrics();
         assertEquals(metricsDto.getBuyQty(),(934));

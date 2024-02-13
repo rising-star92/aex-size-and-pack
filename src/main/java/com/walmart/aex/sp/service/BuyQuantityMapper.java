@@ -28,7 +28,9 @@ public class BuyQuantityMapper {
         this.appMessageTextService = appMessageTextService;
     }
 
-    public void mapBuyQntyLvl2Sp(BuyQntyResponseDTO buyQntyResponseDTO, BuyQtyResponse response, Metadata metadata, Integer finelineNbr) {
+    public void mapBuyQntyLvl2Sp(BuyQntyMapperDTO buyQntyMapperDTO) {
+        BuyQntyResponseDTO buyQntyResponseDTO = buyQntyMapperDTO.getBuyQntyResponseDTO();
+        BuyQtyResponse response = buyQntyMapperDTO.getResponse();
         if (response.getPlanId() == null) {
             response.setPlanId(buyQntyResponseDTO.getPlanId());
         }
@@ -38,27 +40,27 @@ public class BuyQuantityMapper {
             response.setLvl1Nbr(buyQntyResponseDTO.getLvl1Nbr());
         if (response.getLvl2Nbr() == null)
             response.setLvl2Nbr(buyQntyResponseDTO.getLvl2Nbr());
-        response.setLvl3List(mapBuyQntyLvl3Sp(buyQntyResponseDTO, response, metadata, finelineNbr));
+        response.setLvl3List(mapBuyQntyLvl3Sp(buyQntyMapperDTO));
     }
 
-    private List<Lvl3Dto> mapBuyQntyLvl3Sp(BuyQntyResponseDTO buyQntyResponseDTO, BuyQtyResponse response, Metadata metadata, Integer finelineNbr) {
-        List<Lvl3Dto> lvl3List = Optional.ofNullable(response.getLvl3List()).orElse(new ArrayList<>());
+    private List<Lvl3Dto> mapBuyQntyLvl3Sp(BuyQntyMapperDTO buyQntyMapperDTO) {
+        List<Lvl3Dto> lvl3List = Optional.ofNullable(buyQntyMapperDTO.getResponse().getLvl3List()).orElse(new ArrayList<>());
 
         lvl3List.stream()
-                .filter(lvl3 -> buyQntyResponseDTO.getLvl3Nbr().equals(lvl3.getLvl3Nbr())).findFirst()
-                .ifPresentOrElse(lvl3 -> lvl3.setLvl4List(mapBuyQntyLvl4Sp(buyQntyResponseDTO, lvl3, metadata, finelineNbr)),
-                        () -> setLvl3SP(buyQntyResponseDTO, lvl3List, metadata, finelineNbr));
+                .filter(lvl3 -> buyQntyMapperDTO.getBuyQntyResponseDTO().getLvl3Nbr().equals(lvl3.getLvl3Nbr())).findFirst()
+                .ifPresentOrElse(lvl3 -> lvl3.setLvl4List(mapBuyQntyLvl4Sp(buyQntyMapperDTO, lvl3)),
+                        () -> setLvl3SP(buyQntyMapperDTO, lvl3List));
         return lvl3List;
     }
 
-    private void setLvl3SP(BuyQntyResponseDTO buyQntyResponseDTO, List<Lvl3Dto> lvl3List, Metadata metadata, Integer finelineNbr) {
+    private void setLvl3SP(BuyQntyMapperDTO buyQntyMapperDTO, List<Lvl3Dto> lvl3List) {
         Lvl3Dto lvl3 = new Lvl3Dto();
-        lvl3.setLvl3Nbr(buyQntyResponseDTO.getLvl3Nbr());
-        if (finelineNbr == null) {
-            lvl3.setLvl3Desc(buyQntyResponseDTO.getLvl3Desc());
+        lvl3.setLvl3Nbr(buyQntyMapperDTO.getBuyQntyResponseDTO().getLvl3Nbr());
+        if (Objects.isNull(buyQntyMapperDTO.getRequestFinelineNbr())) {
+            lvl3.setLvl3Desc(buyQntyMapperDTO.getBuyQntyResponseDTO().getLvl3Desc());
         }
         lvl3List.add(lvl3);
-        lvl3.setLvl4List(mapBuyQntyLvl4Sp(buyQntyResponseDTO, lvl3, metadata, finelineNbr));
+        lvl3.setLvl4List(mapBuyQntyLvl4Sp(buyQntyMapperDTO, lvl3));
     }
     private Long ifNullThenZero(Integer i) {
         return Objects.nonNull(i) ? i.longValue() : 0;
@@ -124,39 +126,41 @@ public class BuyQuantityMapper {
     }
 
 
-    private List<Lvl4Dto> mapBuyQntyLvl4Sp(BuyQntyResponseDTO buyQntyResponseDTO, Lvl3Dto lvl3, Metadata metadata, Integer finelineNbr) {
+    private List<Lvl4Dto> mapBuyQntyLvl4Sp(BuyQntyMapperDTO buyQntyMapperDTO, Lvl3Dto lvl3) {
         List<Lvl4Dto> lvl4DtoList = Optional.ofNullable(lvl3.getLvl4List()).orElse(new ArrayList<>());
 
         lvl4DtoList.stream()
-                .filter(lvl4 -> buyQntyResponseDTO.getLvl4Nbr().equals(lvl4.getLvl4Nbr())).findFirst()
-                .ifPresentOrElse(lvl4 -> lvl4.setFinelines(mapBuyQntyFlSp(buyQntyResponseDTO, lvl4, metadata, finelineNbr)),
-                        () -> setLvl4SP(buyQntyResponseDTO, lvl4DtoList, metadata, finelineNbr));
+                .filter(lvl4 -> buyQntyMapperDTO.getBuyQntyResponseDTO().getLvl4Nbr().equals(lvl4.getLvl4Nbr())).findFirst()
+                .ifPresentOrElse(lvl4 -> lvl4.setFinelines(mapBuyQntyFlSp(buyQntyMapperDTO, lvl4)),
+                        () -> setLvl4SP(buyQntyMapperDTO, lvl4DtoList));
         lvl3.setMetrics(lvl4MetricsAggregateQtys(lvl4DtoList));
         return lvl4DtoList;
     }
 
-    private void setLvl4SP(BuyQntyResponseDTO buyQntyResponseDTO, List<Lvl4Dto> lvl4DtoList, Metadata metadata, Integer finelineNbr) {
+    private void setLvl4SP(BuyQntyMapperDTO buyQntyMapperDTO, List<Lvl4Dto> lvl4DtoList) {
         Lvl4Dto lvl4 = new Lvl4Dto();
-        lvl4.setLvl4Nbr(buyQntyResponseDTO.getLvl4Nbr());
-        if (finelineNbr == null) {
-            lvl4.setLvl4Desc(buyQntyResponseDTO.getLvl4Desc());
+        lvl4.setLvl4Nbr(buyQntyMapperDTO.getBuyQntyResponseDTO().getLvl4Nbr());
+        if (Objects.isNull(buyQntyMapperDTO.getRequestFinelineNbr())) {
+            lvl4.setLvl4Desc(buyQntyMapperDTO.getBuyQntyResponseDTO().getLvl4Desc());
         }
         lvl4DtoList.add(lvl4);
-        lvl4.setFinelines(mapBuyQntyFlSp(buyQntyResponseDTO, lvl4, metadata, finelineNbr));
+        lvl4.setFinelines(mapBuyQntyFlSp(buyQntyMapperDTO, lvl4));
     }
 
-    private List<FinelineDto> mapBuyQntyFlSp(BuyQntyResponseDTO buyQntyResponseDTO, Lvl4Dto lvl4, Metadata metadata, Integer finelineNbr ) {
+    private List<FinelineDto> mapBuyQntyFlSp(BuyQntyMapperDTO buyQntyMapperDTO, Lvl4Dto lvl4) {
         List<FinelineDto> finelineDtoList = Optional.ofNullable(lvl4.getFinelines()).orElse(new ArrayList<>());
 
         finelineDtoList.stream()
-                .filter(finelineDto -> buyQntyResponseDTO.getFinelineNbr().equals(finelineDto.getFinelineNbr()) && finelineDto.getChannelId() != null &&
-                        buyQntyResponseDTO.getChannelId().equals(finelineDto.getChannelId())).findFirst()
+                .filter(finelineDto -> buyQntyMapperDTO.getBuyQntyResponseDTO().getFinelineNbr().equals(finelineDto.getFinelineNbr()) && finelineDto.getChannelId() != null &&
+                        buyQntyMapperDTO.getBuyQntyResponseDTO().getChannelId().equals(finelineDto.getChannelId())).findFirst()
                 .ifPresentOrElse(finelineDto -> {
-                            if (finelineNbr != null) {
-                                finelineDto.setStyles(mapBuyQntyStyleSp(buyQntyResponseDTO, metadata, finelineDto));
-                            } else updateFineline(buyQntyResponseDTO, finelineDto);
+                            if (Objects.nonNull(buyQntyMapperDTO.getRequestFinelineNbr())) {
+                                finelineDto.setStyles(mapBuyQntyStyleSp(buyQntyMapperDTO, finelineDto));
+                            } else {
+                                updateFineline(buyQntyMapperDTO.getBuyQntyResponseDTO(), finelineDto);
+                            }
                         },
-                        () -> setFinelineSP(buyQntyResponseDTO, finelineDtoList, metadata, finelineNbr));
+                        () -> setFinelineSP(buyQntyMapperDTO, finelineDtoList));
         lvl4.setMetrics(fineLineMetricsAggregateQtys(finelineDtoList));
         return finelineDtoList;
     }
@@ -191,17 +195,18 @@ public class BuyQuantityMapper {
         finelineDto.setMetrics(metricsDto);
     }
 
-    private void setFinelineSP(BuyQntyResponseDTO buyQntyResponseDTO, List<FinelineDto> finelineDtoList, Metadata metadata, Integer finelineNbr) {
+    private void setFinelineSP(BuyQntyMapperDTO buyQntyMapperDTO, List<FinelineDto> finelineDtoList) {
+        BuyQntyResponseDTO buyQntyResponseDTO = buyQntyMapperDTO.getBuyQntyResponseDTO();
         FinelineDto fineline = new FinelineDto();
         fineline.setFinelineNbr(buyQntyResponseDTO.getFinelineNbr());
         fineline.setFinelineAltDesc(buyQntyResponseDTO.getAltFineLineDesc());
         fineline.setChannelId(buyQntyResponseDTO.getChannelId());
-        if (finelineNbr == null) {
+        if (Objects.isNull(buyQntyMapperDTO.getRequestFinelineNbr())) {
             fineline.setFinelineDesc(buyQntyResponseDTO.getFinelineDesc());
             fineline.setMetrics(getFlMetricsDto(buyQntyResponseDTO));
-            fineline.setMetadata(getMetadataDto(buyQntyResponseDTO.getFinelineMessageObj(), metadata));
+            fineline.setMetadata(getMetadataDto(buyQntyResponseDTO.getFinelineMessageObj(), buyQntyMapperDTO.getMetadata()));
         } else {
-            fineline.setStyles(mapBuyQntyStyleSp(buyQntyResponseDTO, metadata, fineline));
+            fineline.setStyles(mapBuyQntyStyleSp(buyQntyMapperDTO, fineline));
         }
         finelineDtoList.add(fineline);
     }
@@ -212,7 +217,7 @@ public class BuyQuantityMapper {
      * @return Metadata
      */
     protected Metadata getMetadataDto(String messageObj, Metadata metadata) {
-        if (null == metadata) {
+        if (Objects.isNull(metadata)) {
             metadata = Metadata.builder().build();
         }
         List<ValidationMessage> validations = new ArrayList<>();
@@ -298,18 +303,19 @@ public class BuyQuantityMapper {
         return metricsDto;
     }
 
-    private List<StyleDto> mapBuyQntyStyleSp(BuyQntyResponseDTO buyQntyResponseDTO, Metadata metadata, FinelineDto fineline) {
+    private List<StyleDto> mapBuyQntyStyleSp(BuyQntyMapperDTO buyQntyMapperDTO, FinelineDto fineline) {
         List<StyleDto> styleDtoList = Optional.ofNullable(fineline.getStyles()).orElse(new ArrayList<>());
 
         styleDtoList.stream()
-                .filter(styleDto -> buyQntyResponseDTO.getStyleNbr().equals(styleDto.getStyleNbr()) && styleDto.getChannelId() != null &&
-                        buyQntyResponseDTO.getChannelId().equals(styleDto.getChannelId())).findFirst()
-                .ifPresentOrElse(styleDto -> styleDto.setCustomerChoices(mapBuyQntyCcSp(buyQntyResponseDTO, metadata, styleDto)),
-                        () -> setStyleSP(buyQntyResponseDTO, metadata, styleDtoList));
+                .filter(styleDto -> buyQntyMapperDTO.getBuyQntyResponseDTO().getStyleNbr().equals(styleDto.getStyleNbr()) && styleDto.getChannelId() != null &&
+                        buyQntyMapperDTO.getBuyQntyResponseDTO().getChannelId().equals(styleDto.getChannelId())).findFirst()
+                .ifPresentOrElse(styleDto -> styleDto.setCustomerChoices(mapBuyQntyCcSp(buyQntyMapperDTO, styleDto)),
+                        () -> setStyleSP(buyQntyMapperDTO, styleDtoList));
         return styleDtoList;
     }
 
-    private void setStyleSP(BuyQntyResponseDTO buyQntyResponseDTO, Metadata metadata, List<StyleDto> styleDtoList) {
+    private void setStyleSP(BuyQntyMapperDTO buyQntyMapperDTO, List<StyleDto> styleDtoList) {
+        BuyQntyResponseDTO buyQntyResponseDTO = buyQntyMapperDTO.getBuyQntyResponseDTO();
         StyleDto styleDto = new StyleDto();
         styleDto.setStyleNbr(buyQntyResponseDTO.getStyleNbr());
         styleDto.setAltStyleDesc(buyQntyResponseDTO.getAltStyleDesc());
@@ -346,22 +352,22 @@ public class BuyQuantityMapper {
         metricsDto.setFinalBuyQty(buyQty);
         styleDto.setMetrics(metricsDto);
         styleDto.setMetadata(getMetadataDto(buyQntyResponseDTO.getStyleMessageObj(), null));
-        styleDto.setCustomerChoices(mapBuyQntyCcSp(buyQntyResponseDTO, metadata, styleDto));
+        styleDto.setCustomerChoices(mapBuyQntyCcSp(buyQntyMapperDTO, styleDto));
         styleDtoList.add(styleDto);
     }
 
-    private List<CustomerChoiceDto> mapBuyQntyCcSp(BuyQntyResponseDTO buyQntyResponseDTO, Metadata metadata, StyleDto styleDto) {
+    private List<CustomerChoiceDto> mapBuyQntyCcSp(BuyQntyMapperDTO buyQntyMapperDTO, StyleDto styleDto) {
         List<CustomerChoiceDto> customerChoiceDtoList = Optional.ofNullable(styleDto.getCustomerChoices()).orElse(new ArrayList<>());
 
         customerChoiceDtoList.stream()
-                .filter(customerChoiceDto -> buyQntyResponseDTO.getCcId().equals(customerChoiceDto.getCcId()) && customerChoiceDto.getChannelId() != null &&
-                        buyQntyResponseDTO.getChannelId().equals(customerChoiceDto.getChannelId())).findFirst()
+                .filter(customerChoiceDto -> buyQntyMapperDTO.getBuyQntyResponseDTO().getCcId().equals(customerChoiceDto.getCcId()) && customerChoiceDto.getChannelId() != null &&
+                        buyQntyMapperDTO.getBuyQntyResponseDTO().getChannelId().equals(customerChoiceDto.getChannelId())).findFirst()
                 .ifPresentOrElse(customerChoiceDto -> {
                             log.info("Size implementation");
-                            updateCc(buyQntyResponseDTO, customerChoiceDto);
+                            updateCc(buyQntyMapperDTO.getBuyQntyResponseDTO(), customerChoiceDto);
                         },
                         //customerChoiceDto -> customerChoiceDto.setClusters(mapBuyQntySizeSp(buyQntyResponseDTO, customerChoiceDto)),
-                        () -> setCcSP(buyQntyResponseDTO, metadata, customerChoiceDtoList));
+                        () -> setCcSP(buyQntyMapperDTO, customerChoiceDtoList));
 
         if (!CollectionUtils.isEmpty(customerChoiceDtoList)) {
             updateStyle(styleDto, customerChoiceDtoList);
@@ -439,7 +445,8 @@ public class BuyQuantityMapper {
         customerChoiceDto.setMetrics(metricsDto);
     }
 
-    private void setCcSP(BuyQntyResponseDTO buyQntyResponseDTO, Metadata metadata, List<CustomerChoiceDto> customerChoiceDtoList) {
+    private void setCcSP(BuyQntyMapperDTO buyQntyMapperDTO, List<CustomerChoiceDto> customerChoiceDtoList) {
+        BuyQntyResponseDTO buyQntyResponseDTO = buyQntyMapperDTO.getBuyQntyResponseDTO();
         CustomerChoiceDto customerChoiceDto = new CustomerChoiceDto();
         customerChoiceDto.setCcId(buyQntyResponseDTO.getCcId());
         customerChoiceDto.setAltCcDesc(buyQntyResponseDTO.getAltCcDesc());
@@ -512,7 +519,7 @@ public class BuyQuantityMapper {
 
         metricsDto.setBumpPackQty(bumpQty);
         customerChoiceDto.setMetrics(metricsDto);
-        customerChoiceDto.setMetadata(getMetadataDto(buyQntyResponseDTO.getCcMessageObj(), metadata));
+        customerChoiceDto.setMetadata(getMetadataDto(buyQntyResponseDTO.getCcMessageObj(), buyQntyMapperDTO.getMetadata()));
         customerChoiceDtoList.add(customerChoiceDto);
     }
 
