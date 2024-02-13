@@ -4,7 +4,7 @@ owner:
 profiles:
   - springboot-web-jdk11-alpine
   - "git://Tunr:strati-af-ccm2-assets:master:ccm2v2"
-  - goldensignal-strati
+  - "git://ApparelPrecision:aex-kitt-common:main:metrics"
 
 build:
   buildType: maven-j11
@@ -182,7 +182,4 @@ notify:
 alerts:
   slackChannel:
     - apparel-precision-alerts
-setup:
-  featureFlagMap:
-    isGoldenSignalGateEnabled: true
     

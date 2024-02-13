@@ -137,6 +137,8 @@ management:
           - health
           - info
           - loggers
+          - metrics
+          - prometheus
     health:
       show-details: always
   endpoint:
