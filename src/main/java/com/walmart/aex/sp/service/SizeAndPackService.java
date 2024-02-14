@@ -133,6 +133,9 @@ public class SizeAndPackService {
                 HashMap<Integer,List<FinelineDto>> finelinesWithSizes = mergeBuyQtyResponseFineline(finelinesWithSizesFromStrategyStore, finelinesWithSizesFromStrategyOnline);
                 buyQntyResponseDTOS = spFineLineChannelFixtureRepository
                         .getBuyQntyByPlanChannel(buyQtyRequest.getPlanId(), null);
+                BuyQntyMapperDTO buyQntyMapperDTO = BuyQntyMapperDTO.builder()
+                        .response(buyQtyResponseAllChannels).requestFinelineNbr(null)
+                        .build();
 
                 Optional.of(buyQntyResponseDTOS)
                         .stream()
@@ -140,10 +143,11 @@ public class SizeAndPackService {
                         .forEach(buyQntyResponseDTO -> finelinesWithSizes.get(buyQntyResponseDTO.getChannelId())
                                 .stream()
                                 .filter(fineline -> fineline.getFinelineNbr().equals(buyQntyResponseDTO.getFinelineNbr()))
-                                .forEach(fineline -> buyQuantityMapper.mapBuyQntyLvl2Sp(BuyQntyMapperDTO.builder()
-                                        .buyQntyResponseDTO(buyQntyResponseDTO).response(buyQtyResponseAllChannels).metadata(fineline.getMetadata()).requestFinelineNbr(null)
-                                        .build())
-                                )
+                                .forEach(fineline -> {
+                                    buyQntyMapperDTO.setBuyQntyResponseDTO(buyQntyResponseDTO);
+                                    buyQntyMapperDTO.setHierarchyMetadata(HierarchyMetadata.builder().finelineMetadata(fineline.getMetadata()).build());
+                                    buyQuantityMapper.mapBuyQntyLvl2Sp(buyQntyMapperDTO);
+                                })
                         );
                 List<FactoryDTO> factoryDTOS = ccPackOptimizationRepository.getFactoriesByPlanId(buyQtyRequest.getPlanId(), null);
                 BQFactoryMapper.setFactoriesForFinelines(factoryDTOS,buyQtyResponseAllChannels);
@@ -174,19 +178,29 @@ public class SizeAndPackService {
                 buyQtyRequest.setChannel(ChannelType.ONLINE.getDescription());
                 BuyQtyResponse stylesCcWithSizesFromStrategyOnline = strategyFetchService.getBuyQtyDetailsForStylesCc(buyQtyRequest, finelineNbr);
 
-                HashMap<Integer,List<CustomerChoiceDto>> ccsWithSizes = mergeBuyQtyResponseCc(stylesCcWithSizesFromStrategyStore, stylesCcWithSizesFromStrategyOnline);
+                HashMap<Integer,List<StyleDto>> stylesWithSizes = mergeBuyQtyResponseStyleCc(stylesCcWithSizesFromStrategyStore, stylesCcWithSizesFromStrategyOnline);
                 buyQntyResponseDTOS = spCustomerChoiceChannelFixtureRepository
                         .getBuyQntyByPlanChannelFineline(buyQtyRequest.getPlanId(), null, finelineNbr);
+                BuyQntyMapperDTO buyQntyMapperDTO = BuyQntyMapperDTO.builder()
+                        .response(buyQtyResponse).requestFinelineNbr(finelineNbr)
+                        .build();
 
                 Optional.of(buyQntyResponseDTOS)
                         .stream()
                         .flatMap(Collection::stream)
-                        .forEach(buyQntyResponseDTO -> ccsWithSizes.get(buyQntyResponseDTO.getChannelId())
+                        .forEach(buyQntyResponseDTO -> stylesWithSizes.get(buyQntyResponseDTO.getChannelId())
                                 .stream()
-                                .filter(cc -> cc.getCcId().equalsIgnoreCase(buyQntyResponseDTO.getCcId()))
-                                .forEach(cc -> buyQuantityMapper.mapBuyQntyLvl2Sp(BuyQntyMapperDTO.builder()
-                                        .buyQntyResponseDTO(buyQntyResponseDTO).response(buyQtyResponseAllChannels).metadata(cc.getMetadata()).requestFinelineNbr(finelineNbr)
-                                        .build())
+                                .filter(style -> style.getStyleNbr().equalsIgnoreCase(buyQntyResponseDTO.getStyleNbr()))
+                                .forEach(style -> style.getCustomerChoices().stream()
+                                        .filter(cc -> cc.getCcId().equalsIgnoreCase(buyQntyResponseDTO.getCcId()))
+                                        .forEach(cc -> {
+                                            buyQntyMapperDTO.setBuyQntyResponseDTO(buyQntyResponseDTO);
+                                            buyQntyMapperDTO.setHierarchyMetadata(HierarchyMetadata.builder()
+                                                    .styleMetadata(style.getMetadata())
+                                                    .ccMetadata(cc.getMetadata())
+                                                    .build());
+                                            buyQuantityMapper.mapBuyQntyLvl2Sp(buyQntyMapperDTO);
+                                        })
                                 )
                         );
                 List<FactoryDTO> factoryDTOS = ccPackOptimizationRepository.getFactoriesByPlanId(buyQtyRequest.getPlanId(), buyQtyRequest.getFinelineNbr());
@@ -201,22 +215,20 @@ public class SizeAndPackService {
         }
     }
 
-    private HashMap<Integer,List<CustomerChoiceDto>> mergeBuyQtyResponseCc(BuyQtyResponse store, BuyQtyResponse online) {
-        Set<CustomerChoiceDto> ccsStore = store.getLvl3List().stream()
+    private HashMap<Integer,List<StyleDto>> mergeBuyQtyResponseStyleCc(BuyQtyResponse store, BuyQtyResponse online) {
+        Set<StyleDto> stylesStore = store.getLvl3List().stream()
                 .flatMap(lvl3Dto -> lvl3Dto.getLvl4List().stream()
                         .flatMap(lvl4Dto -> lvl4Dto.getFinelines().stream()
-                                .flatMap(finelineDto -> finelineDto.getStyles().stream()
-                                        .flatMap(styleDto -> styleDto.getCustomerChoices().stream()))))
+                                .flatMap(finelineDto -> finelineDto.getStyles().stream())))
                 .collect(Collectors.toSet());
-        Set<CustomerChoiceDto> ccsOnline = online.getLvl3List().stream()
+        Set<StyleDto> stylesOnline = online.getLvl3List().stream()
                 .flatMap(lvl3Dto -> lvl3Dto.getLvl4List().stream()
                         .flatMap(lvl4Dto -> lvl4Dto.getFinelines().stream()
-                                .flatMap(finelineDto -> finelineDto.getStyles().stream()
-                                        .flatMap(styleDto -> styleDto.getCustomerChoices().stream()))))
+                                .flatMap(finelineDto -> finelineDto.getStyles().stream())))
                 .collect(Collectors.toSet());
-        HashMap<Integer,List<CustomerChoiceDto>> result = new HashMap<>();
-        result.put(ChannelType.STORE.getId(),new ArrayList<>(ccsStore));
-        result.put(ChannelType.ONLINE.getId(),new ArrayList<>(ccsOnline));
+        HashMap<Integer,List<StyleDto>> result = new HashMap<>();
+        result.put(ChannelType.STORE.getId(),new ArrayList<>(stylesStore));
+        result.put(ChannelType.ONLINE.getId(),new ArrayList<>(stylesOnline));
         return result;
     }
 

@@ -8,6 +8,6 @@ import lombok.Data;
 public class BuyQntyMapperDTO {
     BuyQntyResponseDTO buyQntyResponseDTO;
     BuyQtyResponse response;
-    Metadata metadata;
+    HierarchyMetadata hierarchyMetadata;
     Integer requestFinelineNbr;
 }

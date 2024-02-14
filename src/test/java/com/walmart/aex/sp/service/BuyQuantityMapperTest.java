@@ -60,7 +60,7 @@ class BuyQuantityMapperTest {
         buyQunatityMapper.mapBuyQntyLvl2Sp(BuyQntyMapperDTO.builder()
                     .buyQntyResponseDTO(buyQntyResponseDTO)
                     .response(fetchFineLineResponse)
-                    .metadata(null)
+                    .hierarchyMetadata(HierarchyMetadata.builder().build())
                     .requestFinelineNbr(finelineNbr)
                 .build());
         assertNotNull(fetchFineLineResponse);
@@ -89,7 +89,7 @@ class BuyQuantityMapperTest {
         buyQunatityMapper.mapBuyQntyLvl2Sp(BuyQntyMapperDTO.builder()
                 .buyQntyResponseDTO(buyQntyResponseDTO)
                 .response(fetchFineLineResponse)
-                .metadata(null)
+                .hierarchyMetadata(HierarchyMetadata.builder().build())
                 .requestFinelineNbr(null)
                 .build());
         assertNotNull(fetchFineLineResponse);
@@ -124,7 +124,7 @@ class BuyQuantityMapperTest {
         buyQunatityMapper.mapBuyQntyLvl2Sp(BuyQntyMapperDTO.builder()
                 .buyQntyResponseDTO(buyQntyResponseDTO)
                 .response(fetchFineLineResponse)
-                .metadata(null)
+                .hierarchyMetadata(HierarchyMetadata.builder().build())
                 .requestFinelineNbr(null)
                 .build());
         assertNotNull(fetchFineLineResponse);
@@ -157,7 +157,7 @@ class BuyQuantityMapperTest {
         buyQunatityMapper.mapBuyQntyLvl2Sp(BuyQntyMapperDTO.builder()
                 .buyQntyResponseDTO(buyQntyResponseDTO)
                 .response(fetchFineLineResponse)
-                .metadata(null)
+                .hierarchyMetadata(HierarchyMetadata.builder().build())
                 .requestFinelineNbr(null)
                 .build());
         assertNotNull(fetchFineLineResponse);
@@ -224,7 +224,7 @@ class BuyQuantityMapperTest {
         buyQunatityMapper.mapBuyQntyLvl2Sp(BuyQntyMapperDTO.builder()
                 .buyQntyResponseDTO(buyQntyResponseDTO)
                 .response(fetchFineLineResponse)
-                .metadata(null)
+                .hierarchyMetadata(HierarchyMetadata.builder().build())
                 .requestFinelineNbr(2816)
                 .build());
         assertNotNull(fetchFineLineResponse);
@@ -275,7 +275,7 @@ class BuyQuantityMapperTest {
         buyQunatityMapper.mapBuyQntyLvl2Sp(BuyQntyMapperDTO.builder()
                 .buyQntyResponseDTO(buyQntyResponseDTO)
                 .response(fetchFineLineResponse)
-                .metadata(null)
+                .hierarchyMetadata(HierarchyMetadata.builder().build())
                 .requestFinelineNbr(2816)
                 .build());
         assertEquals(12,fetchFineLineResponse.getPlanId());
