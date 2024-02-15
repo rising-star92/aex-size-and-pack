@@ -59,23 +59,39 @@ public class BuyQtyCommonUtil {
 
     public BuyQtyResponse filterFinelinesWithSizes(List<BuyQntyResponseDTO> buyQntyResponseDTOS, BuyQtyResponse finelinesWithSizesFromStrategy) {
         BuyQtyResponse buyQtyResponse = new BuyQtyResponse();
+        BuyQntyMapperDTO buyQntyMapperDTO = BuyQntyMapperDTO.builder()
+                .response(buyQtyResponse).requestFinelineNbr(null)
+                .build();
         buyQntyResponseDTOS.forEach(buyQntyResponseDTO -> getFinelines(buyQntyResponseDTO, finelinesWithSizesFromStrategy)
-                .forEach(finelineNbr -> buyQuantityMapper.mapBuyQntyLvl2Sp(buyQntyResponseDTO, buyQtyResponse, null)));
+                .forEach(fineline -> {
+                    buyQntyMapperDTO.setBuyQntyResponseDTO(buyQntyResponseDTO);
+                    buyQntyMapperDTO.setHierarchyMetadata(HierarchyMetadata.builder().finelineMetadata(fineline.getMetadata()).build());
+                    buyQuantityMapper.mapBuyQntyLvl2Sp(buyQntyMapperDTO);
+                }));
         return buyQtyResponse;
     }
 
     public BuyQtyResponse filterStylesCcWithSizes(List<BuyQntyResponseDTO> buyQntyResponseDTOS, BuyQtyResponse stylesCcWithSizesFromStrategy, Integer finelineNbr) {
         BuyQtyResponse buyQtyResponse = new BuyQtyResponse();
-
+        BuyQntyMapperDTO buyQntyMapperDTO = BuyQntyMapperDTO.builder()
+                .response(buyQtyResponse).requestFinelineNbr(finelineNbr)
+                .build();
         buyQntyResponseDTOS.forEach(buyQntyResponseDTO -> getFinelines(buyQntyResponseDTO, stylesCcWithSizesFromStrategy)
                 .stream()
                 .map(FinelineDto::getStyles)
                 .flatMap(Collection::stream)
                 .filter(styleDto -> styleDto.getStyleNbr().equals(buyQntyResponseDTO.getStyleNbr()))
-                .map(StyleDto::getCustomerChoices)
-                .flatMap(Collection::stream)
-                .filter(customerChoiceDto -> customerChoiceDto.getCcId().equals(buyQntyResponseDTO.getCcId()))
-                .forEach(ccId -> buyQuantityMapper.mapBuyQntyLvl2Sp(buyQntyResponseDTO, buyQtyResponse, finelineNbr)));
+                .forEach(styleDto -> styleDto.getCustomerChoices().stream()
+                        .filter(customerChoiceDto -> customerChoiceDto.getCcId().equals(buyQntyResponseDTO.getCcId()))
+                        .forEach(cc -> {
+                            buyQntyMapperDTO.setBuyQntyResponseDTO(buyQntyResponseDTO);
+                            buyQntyMapperDTO.setHierarchyMetadata(HierarchyMetadata.builder()
+                                    .styleMetadata(styleDto.getMetadata())
+                                    .ccMetadata(cc.getMetadata())
+                                    .build());
+                            buyQuantityMapper.mapBuyQntyLvl2Sp(buyQntyMapperDTO);
+                        })
+                ));
 
         return buyQtyResponse;
     }
