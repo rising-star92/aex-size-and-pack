@@ -2,6 +2,7 @@ package com.walmart.aex.sp.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.walmart.aex.sp.dto.appmessage.AppMessageTextResponse;
 import com.walmart.aex.sp.dto.assortproduct.*;
 import com.walmart.aex.sp.dto.bqfp.*;
 import com.walmart.aex.sp.dto.buyquantity.*;
@@ -32,7 +33,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import static com.walmart.aex.sp.util.SizeAndPackConstants.DEFAULT_COLOR_FAMILY;
-import static com.walmart.aex.sp.util.SizeAndPackConstants.VP_DEFAULT;
 
 @Service
 @Slf4j
@@ -56,6 +56,8 @@ public class CalculateFinelineBuyQuantity {
     private final CalculateBumpPackQtyService calculateBumpPackQtyService;
     private final ValidationService validationService;
     private final CalculateFinelineBuyQuantityMapper calculateFinelineBuyQuantityMapper;
+    private final AppMessageTextService appMessageTextService;
+
     @ManagedConfiguration
     BuyQtyProperties buyQtyProperties;
 
@@ -75,7 +77,7 @@ public class CalculateFinelineBuyQuantity {
                                         CalculateInitialSetQuantityService calculateInitialSetQuantityService,
                                         CalculateBumpPackQtyService calculateBumpPackQtyService,
                                         ValidationService validationService,
-                                        CalculateFinelineBuyQuantityMapper calculateFinelineBuyQuantityMapper) {
+                                        CalculateFinelineBuyQuantityMapper calculateFinelineBuyQuantityMapper, AppMessageTextService appMessageTextService) {
         this.bqfpService = bqfpService;
         this.objectMapper = objectMapper;
         this.strategyFetchService = strategyFetchService;
@@ -93,6 +95,7 @@ public class CalculateFinelineBuyQuantity {
         this.calculateBumpPackQtyService = calculateBumpPackQtyService;
         this.validationService = validationService;
         this.calculateFinelineBuyQuantityMapper = calculateFinelineBuyQuantityMapper;
+        this.appMessageTextService = appMessageTextService;
     }
 
     public CalculateBuyQtyResponse calculateFinelineBuyQty(CalculateBuyQtyRequest calculateBuyQtyRequest, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, CalculateBuyQtyResponse calculateBuyQtyResponse) throws CustomException {
@@ -393,6 +396,7 @@ public class CalculateFinelineBuyQuantity {
         log.info("calculating fineline IS and BS Qty");
         calculateFinelineBuyQuantityMapper.setFinelineChanFixtures(spFineLineChannelFixture, spStyleChannelFixtures);
         spFineLineChannelFixture.setSpStyleChannelFixtures(spStyleChannelFixtures);
+        calculateFinelineBuyQuantityMapper.updateSpFinelineFixtures(spFineLineChannelFixture);
     }
 
     private void getCustomerChoices(StyleDto styleDto, List<MerchMethodsDto> merchMethodsDtos, APResponse apResponse, BQFPResponse bqfpResponse,

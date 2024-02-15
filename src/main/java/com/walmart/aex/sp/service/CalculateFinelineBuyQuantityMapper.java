@@ -1,6 +1,8 @@
 package com.walmart.aex.sp.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.walmart.aex.sp.dto.appmessage.AppMessageTextResponse;
 import com.walmart.aex.sp.dto.buyquantity.ValidationResult;
 import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixture;
 import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixtureSize;
@@ -10,8 +12,10 @@ import com.walmart.aex.sp.exception.CustomException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
 
@@ -19,6 +23,7 @@ import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
 @Slf4j
 public class CalculateFinelineBuyQuantityMapper {
 
+    public static final String ERROR = "Error";
     private final ObjectMapper objectMapper;
     private final AppMessageTextService appMessageTextService;
 
@@ -141,6 +146,56 @@ public class CalculateFinelineBuyQuantityMapper {
         spCustomerChoiceChannelFixture.setMessageObj(setMessage(ccValidationResult));
     }
 
+    protected void updateSpFinelineFixtures(SpFineLineChannelFixture spFineLineChannelFixture) {
+        if (spFineLineChannelFixture != null) {
+            List<AppMessageTextResponse> appMessageTexts = appMessageTextService.getAppMessagesByIds(getValidationResult(spFineLineChannelFixture.getMessageObj()).getCodes());
+            boolean isFlCalBuyQtyFailed = appMessageTexts.stream().map(AppMessageTextResponse::getTypeDesc).anyMatch(v -> v.contains(ERROR));
+            if (isFlCalBuyQtyFailed) {
+                if (!CollectionUtils.isEmpty(spFineLineChannelFixture.getSpStyleChannelFixtures())) {
+                    spFineLineChannelFixture.getSpStyleChannelFixtures().forEach(this::updateSpStyleFixtures);
+                    spFineLineChannelFixture.setInitialSetQty(0);
+                    spFineLineChannelFixture.setBumpPackQty(0);
+                    spFineLineChannelFixture.setBuyQty(0);
+                    spFineLineChannelFixture.setReplnQty(0);
+                }
+            }
+        }
+    }
+
+    private void updateSpStyleFixtures(SpStyleChannelFixture spStyleChannelFixture) {
+        if (spStyleChannelFixture != null) {
+            if (!CollectionUtils.isEmpty(spStyleChannelFixture.getSpCustomerChoiceChannelFixture())) {
+                spStyleChannelFixture.getSpCustomerChoiceChannelFixture().forEach(this::updateSpCcFixtures);
+                spStyleChannelFixture.setInitialSetQty(0);
+                spStyleChannelFixture.setBumpPackQty(0);
+                spStyleChannelFixture.setBuyQty(0);
+                spStyleChannelFixture.setReplnQty(0);
+            }
+        }
+    }
+
+    private void updateSpCcFixtures(SpCustomerChoiceChannelFixture spCcChannelFixture) {
+        if (spCcChannelFixture != null) {
+            if (!CollectionUtils.isEmpty(spCcChannelFixture.getSpCustomerChoiceChannelFixtureSize())) {
+                spCcChannelFixture.getSpCustomerChoiceChannelFixtureSize().forEach(this::updateSpCcFixtureSizes
+                );
+                spCcChannelFixture.setInitialSetQty(0);
+                spCcChannelFixture.setBumpPackQty(0);
+                spCcChannelFixture.setBuyQty(0);
+                spCcChannelFixture.setReplnQty(0);
+            }
+        }
+    }
+
+    private void updateSpCcFixtureSizes(SpCustomerChoiceChannelFixtureSize spCcChannelFixtureSize) {
+        if (spCcChannelFixtureSize != null) {
+            spCcChannelFixtureSize.setInitialSetQty(0);
+            spCcChannelFixtureSize.setBumpPackQty(0);
+            spCcChannelFixtureSize.setBuyQty(0);
+            spCcChannelFixtureSize.setReplnQty(0);
+        }
+    }
+
     private ValidationResult getValidationResult(String messageObj) {
         try {
             return StringUtils.isNotEmpty(messageObj) ? objectMapper.readValue(messageObj, ValidationResult.class) : ValidationResult.builder().codes(new HashSet<>()).build();
@@ -157,4 +212,5 @@ public class CalculateFinelineBuyQuantityMapper {
         }
 
     }
+
 }
