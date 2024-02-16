@@ -6,6 +6,7 @@ import com.walmart.aex.sp.dto.buyquantity.CustomerChoiceDto;
 import com.walmart.aex.sp.dto.buyquantity.ValidationResult;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
 import com.walmart.aex.sp.enums.AppMessage;
+import com.walmart.aex.sp.enums.FixtureTypeRollup;
 import com.walmart.aex.sp.service.RFAValidationService;
 import com.walmart.aex.sp.util.SizeAndPackConstants;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +38,7 @@ public class RFAValidationServiceImpl implements RFAValidationService {
             rfaValidationCodes.add(AppMessage.RFA_CC_NOT_AVAILABLE.getId());
             return buildResult(rfaValidationCodes);
         }
-        List<String> fixtureTypes = merchMethodsDtoList.stream().map(MerchMethodsDto::getFixtureType).collect(Collectors.toList());
+        Set<String> fixtureTypes = merchMethodsDtoList.stream().map(mm -> FixtureTypeRollup.getFixtureTypeFromId(mm.getFixtureTypeRollupId())).collect(Collectors.toSet());
         Integer fixtureCode = validateFixture(fixtureTypes, rfaSizePackDataList);
         Integer colorFamilyCode = validateColorFamily(customerChoiceDto, rfaSizePackDataList);
         rfaValidationCodes.addAll(Stream.of(fixtureCode, colorFamilyCode).filter(Objects::nonNull).collect(Collectors.toList()));
@@ -51,7 +52,7 @@ public class RFAValidationServiceImpl implements RFAValidationService {
     /**
      * RFA missing any fixture type
      */
-    private Integer validateFixture(List<String> fixtureTypes, List<RFASizePackData> rfaSizePackDataList) {
+    private Integer validateFixture(Set<String> fixtureTypes, List<RFASizePackData> rfaSizePackDataList) {
         Integer fixtureCode = null;
         for (String fixtureType : fixtureTypes) {
             if (rfaSizePackDataList.stream().noneMatch(rfa -> rfa.getFixture_type().equalsIgnoreCase(fixtureType)))
