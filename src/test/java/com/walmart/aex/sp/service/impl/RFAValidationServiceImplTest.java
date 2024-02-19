@@ -88,15 +88,10 @@ class RFAValidationServiceImplTest {
     void validateRFADataWithMissingColorFamilyTest() {
         RFASizePackData rfaSizePackData1 = new RFASizePackData();
         rfaSizePackData1.setCustomer_choice("CC1");
-        rfaSizePackData1.setFixture_type("WALLS");
+        rfaSizePackData1.setFixture_type("RACKS");
         rfaSizePackData1.setColor_family("BROWN");
 
-        RFASizePackData rfaSizePackData2 = new RFASizePackData();
-        rfaSizePackData2.setCustomer_choice("CC1");
-        rfaSizePackData2.setFixture_type("RACKS");
-        rfaSizePackData2.setColor_family("BROWN");
-
-        apResponse.setRfaSizePackData(List.of(rfaSizePackData1, rfaSizePackData2));
+        apResponse.setRfaSizePackData(List.of(rfaSizePackData1));
         validationResult = rfaValidationService.validateRFAData(merchMethodsDtoList, apResponse, "Style1", customerChoiceDto);
         assertEquals(1, validationResult.getCodes().size());
         assertEquals(AppMessage.RFA_MISSING_COLOR_FAMILY.getId(), validationResult.getCodes().toArray()[0]);
