@@ -203,7 +203,4 @@ public class CalculateFinelineBuyQuantityMapper {
         }
 
     }
-
-
-
 }
