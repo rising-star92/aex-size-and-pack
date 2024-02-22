@@ -1,6 +1,7 @@
 package com.walmart.aex.sp.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.walmart.aex.sp.dto.appmessage.AppMessageTextResponse;
 import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
 import com.walmart.aex.sp.dto.replenishment.cons.ReplenishmentCons;
@@ -23,13 +24,11 @@ public class BuyQtyReplenishmentMapperService {
     private final ObjectMapper objectMapper;
     private final ReplenishmentService replenishmentService;
     private final AppMessageTextService appMessageTextService;
-    private final BuyQtyCommonUtil buyQtyCommonUtil;
 
-    public BuyQtyReplenishmentMapperService(ObjectMapper objectMapper, ReplenishmentService replenishmentService, AppMessageTextService appMessageTextService, BuyQtyCommonUtil buyQtyCommonUtil) {
+    public BuyQtyReplenishmentMapperService(ObjectMapper objectMapper, ReplenishmentService replenishmentService, AppMessageTextService appMessageTextService) {
         this.objectMapper = objectMapper;
         this.replenishmentService = replenishmentService;
         this.appMessageTextService = appMessageTextService;
-        this.buyQtyCommonUtil = buyQtyCommonUtil;
     }
 
     public List<MerchCatgReplPack> setAllReplenishments(StyleDto styleDto, MerchMethodsDto merchMethodsDto,
@@ -372,7 +371,8 @@ public class BuyQtyReplenishmentMapperService {
                 if (subCatgReplPack.getFinelineReplPack() != null) {
                     subCatgReplPack.getFinelineReplPack().forEach(finelineReplPack -> {
                         if (finelineReplPack.getMessageObj() != null) {
-                            boolean isFlCalBuyQtyFailed = buyQtyCommonUtil.isFlCalBuyQtyFailed(getValidationResult(finelineReplPack.getMessageObj()));
+                            List<AppMessageTextResponse> appMessageTexts = appMessageTextService.getAppMessagesByIds(getValidationResult(finelineReplPack.getMessageObj()).getCodes());
+                            boolean isFlCalBuyQtyFailed = BuyQtyCommonUtil.isFlCalBuyQtyFailed(appMessageTexts);
                             if (isFlCalBuyQtyFailed) {
                                 if (finelineReplPack.getStyleReplPack() != null) {
                                     finelineReplPack.getStyleReplPack().forEach(this::resetToZeroStyleReplnPack);

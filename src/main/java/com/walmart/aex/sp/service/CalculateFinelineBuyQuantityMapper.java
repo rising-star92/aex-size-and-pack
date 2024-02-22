@@ -1,6 +1,7 @@
 package com.walmart.aex.sp.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.walmart.aex.sp.dto.appmessage.AppMessageTextResponse;
 import com.walmart.aex.sp.dto.buyquantity.ValidationResult;
 import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixture;
 import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixtureSize;
@@ -21,12 +22,10 @@ public class CalculateFinelineBuyQuantityMapper {
 
     private final ObjectMapper objectMapper;
     private final AppMessageTextService appMessageTextService;
-    private final BuyQtyCommonUtil buyQtyCommonUtil;
 
-    public CalculateFinelineBuyQuantityMapper(ObjectMapper objectMapper, AppMessageTextService appMessageTextService, BuyQtyCommonUtil buyQtyCommonUtil) {
+    public CalculateFinelineBuyQuantityMapper(ObjectMapper objectMapper, AppMessageTextService appMessageTextService) {
         this.objectMapper = objectMapper;
         this.appMessageTextService = appMessageTextService;
-        this.buyQtyCommonUtil = buyQtyCommonUtil;
     }
 
     public void setFinelineChanFixtures(SpFineLineChannelFixture spFineLineChannelFixture, Set<SpStyleChannelFixture> spStyleChannelFixtures) {
@@ -145,7 +144,8 @@ public class CalculateFinelineBuyQuantityMapper {
 
     protected void resetToZeroSpFinelineFixtures(SpFineLineChannelFixture spFineLineChannelFixture) {
         if (spFineLineChannelFixture != null) {
-            boolean isFlCalBuyQtyFailed = buyQtyCommonUtil.isFlCalBuyQtyFailed(getValidationResult(spFineLineChannelFixture.getMessageObj()));
+            List<AppMessageTextResponse> appMessageTexts = appMessageTextService.getAppMessagesByIds(getValidationResult(spFineLineChannelFixture.getMessageObj()).getCodes());
+            boolean isFlCalBuyQtyFailed = BuyQtyCommonUtil.isFlCalBuyQtyFailed(appMessageTexts);
             if (isFlCalBuyQtyFailed && !CollectionUtils.isEmpty(spFineLineChannelFixture.getSpStyleChannelFixtures())) {
                 spFineLineChannelFixture.getSpStyleChannelFixtures().forEach(this::resetToZeroSpStyleFixtures);
                 spFineLineChannelFixture.setInitialSetQty(0);

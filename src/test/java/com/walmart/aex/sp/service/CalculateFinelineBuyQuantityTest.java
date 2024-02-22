@@ -164,7 +164,7 @@ class CalculateFinelineBuyQuantityTest {
     void setUp() throws SizeAndPackException {
         MockitoAnnotations.openMocks(this);
         calculateInitialSetQuantityService = new CalculateInitialSetQuantityService();
-        calculateFinelineBuyQuantityMapper = new CalculateFinelineBuyQuantityMapper(mapper, appMessageTextService, buyQtyCommonUtil);
+        calculateFinelineBuyQuantityMapper = new CalculateFinelineBuyQuantityMapper(mapper, appMessageTextService);
         calculateBumpPackQtyService = new CalculateBumpPackQtyService();
         buyQuantityConstraintService = new BuyQuantityConstraintService(calculateBumpPackQtyService);
         addStoreBuyQuantityService = new AddStoreBuyQuantityService(mapper, calculateBumpPackQtyService, buyQuantityConstraintService, calculateInitialSetQuantityService, buyQtyProperties);
@@ -173,7 +173,7 @@ class CalculateFinelineBuyQuantityTest {
                 subCatgReplnPkConsRepository, finelineReplnPkConsRepository, styleReplnConsRepository, ccReplnConsRepository,
                 ccMmReplnPkConsRepository, ccSpReplnPkConsRepository, replenishmentMapper, updateReplnConfigMapper, buyQuantityMapper,
                 strategyFetchService, buyQtyCommonUtil, sizeLevelReplenishmentRepository,sizeLevelReplenishmentMapper);
-        BuyQtyReplenishmentMapperService buyQtyReplenishmentMapperService = new BuyQtyReplenishmentMapperService(mapper, replenishmentService, appMessageTextService, buyQtyCommonUtil);
+        BuyQtyReplenishmentMapperService buyQtyReplenishmentMapperService = new BuyQtyReplenishmentMapperService(mapper, replenishmentService, appMessageTextService);
         calculateOnlineFinelineBuyQuantity = new  CalculateOnlineFinelineBuyQuantity (buyQtyReplenishmentMapperService,replenishmentsOptimizationServices, replenishmentService, bqfpValidationsService);
         calculateFinelineBuyQuantity = new CalculateFinelineBuyQuantity(bqfpService, mapper, buyQtyReplenishmentMapperService, calculateOnlineFinelineBuyQuantity,
                 strategyFetchService,addStoreBuyQuantityService, buyQuantityConstraintService, deptAdminRuleService, replenishmentService, replenishmentsOptimizationServices,

@@ -250,8 +250,7 @@ public class BuyQtyCommonUtil {
         return (null != flowStrategy && flowStrategy.equals(FlowStrategy.REPLENISHMENT_SET.getId()));
     }
 
-    public boolean isFlCalBuyQtyFailed(ValidationResult validationResult) {
-        List<AppMessageTextResponse> appMessageTexts = appMessageTextService.getAppMessagesByIds(validationResult.getCodes());
+    public static boolean isFlCalBuyQtyFailed(List<AppMessageTextResponse> appMessageTexts) {
         return appMessageTexts.stream().map(AppMessageTextResponse::getTypeDesc).anyMatch(v -> v.contains(ERROR));
     }
 
