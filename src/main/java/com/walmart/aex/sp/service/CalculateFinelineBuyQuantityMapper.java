@@ -142,11 +142,11 @@ public class CalculateFinelineBuyQuantityMapper {
         spCustomerChoiceChannelFixture.setMessageObj(setMessage(ccValidationResult));
     }
 
-    protected void updateSpFinelineFixtures(SpFineLineChannelFixture spFineLineChannelFixture) {
+    protected void resetToZeroSpFinelineFixtures(SpFineLineChannelFixture spFineLineChannelFixture) {
         if (spFineLineChannelFixture != null) {
             boolean isFlCalBuyQtyFailed = isFlCalBuyQtyFailed(spFineLineChannelFixture);
             if (isFlCalBuyQtyFailed && !CollectionUtils.isEmpty(spFineLineChannelFixture.getSpStyleChannelFixtures())) {
-                spFineLineChannelFixture.getSpStyleChannelFixtures().forEach(this::updateSpStyleFixtures);
+                spFineLineChannelFixture.getSpStyleChannelFixtures().forEach(this::resetToZeroSpStyleFixtures);
                 spFineLineChannelFixture.setInitialSetQty(0);
                 spFineLineChannelFixture.setBumpPackQty(0);
                 spFineLineChannelFixture.setBuyQty(0);
@@ -156,14 +156,9 @@ public class CalculateFinelineBuyQuantityMapper {
 
     }
 
-    private boolean isFlCalBuyQtyFailed(SpFineLineChannelFixture spFineLineChannelFixture) {
-        List<AppMessageTextResponse> appMessageTexts = appMessageTextService.getAppMessagesByIds(getValidationResult(spFineLineChannelFixture.getMessageObj()).getCodes());
-        return appMessageTexts.stream().map(AppMessageTextResponse::getTypeDesc).anyMatch(v -> v.contains(ERROR));
-    }
-
-    private void updateSpStyleFixtures(SpStyleChannelFixture spStyleChannelFixture) {
+    private void resetToZeroSpStyleFixtures(SpStyleChannelFixture spStyleChannelFixture) {
         if (spStyleChannelFixture != null && !CollectionUtils.isEmpty(spStyleChannelFixture.getSpCustomerChoiceChannelFixture())) {
-            spStyleChannelFixture.getSpCustomerChoiceChannelFixture().forEach(this::updateSpCcFixtures);
+            spStyleChannelFixture.getSpCustomerChoiceChannelFixture().forEach(this::resetToZeroSpCcFixtures);
             spStyleChannelFixture.setInitialSetQty(0);
             spStyleChannelFixture.setBumpPackQty(0);
             spStyleChannelFixture.setBuyQty(0);
@@ -171,9 +166,9 @@ public class CalculateFinelineBuyQuantityMapper {
         }
     }
 
-    private void updateSpCcFixtures(SpCustomerChoiceChannelFixture spCcChannelFixture) {
+    private void resetToZeroSpCcFixtures(SpCustomerChoiceChannelFixture spCcChannelFixture) {
         if (spCcChannelFixture != null && !CollectionUtils.isEmpty(spCcChannelFixture.getSpCustomerChoiceChannelFixtureSize())) {
-            spCcChannelFixture.getSpCustomerChoiceChannelFixtureSize().forEach(this::updateSpCcFixtureSizes
+            spCcChannelFixture.getSpCustomerChoiceChannelFixtureSize().forEach(this::resetToZeroSpCcFixtureSizes
             );
             spCcChannelFixture.setInitialSetQty(0);
             spCcChannelFixture.setBumpPackQty(0);
@@ -182,7 +177,7 @@ public class CalculateFinelineBuyQuantityMapper {
         }
     }
 
-    private void updateSpCcFixtureSizes(SpCustomerChoiceChannelFixtureSize spCcChannelFixtureSize) {
+    private void resetToZeroSpCcFixtureSizes(SpCustomerChoiceChannelFixtureSize spCcChannelFixtureSize) {
         if (spCcChannelFixtureSize != null) {
             spCcChannelFixtureSize.setInitialSetQty(0);
             spCcChannelFixtureSize.setBumpPackQty(0);
@@ -206,6 +201,11 @@ public class CalculateFinelineBuyQuantityMapper {
             throw new CustomException("Exception occurred while creating validation messages");
         }
 
+    }
+
+    private boolean isFlCalBuyQtyFailed(SpFineLineChannelFixture spFineLineChannelFixture) {
+        List<AppMessageTextResponse> appMessageTexts = appMessageTextService.getAppMessagesByIds(getValidationResult(spFineLineChannelFixture.getMessageObj()).getCodes());
+        return appMessageTexts.stream().map(AppMessageTextResponse::getTypeDesc).anyMatch(v -> v.contains(ERROR));
     }
 
 }

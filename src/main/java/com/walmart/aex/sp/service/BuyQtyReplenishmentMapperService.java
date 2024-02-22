@@ -360,7 +360,11 @@ public class BuyQtyReplenishmentMapperService {
         }
     }
 
-    public void updateMerchCatgReplPack(MerchCatgReplPack merchCatgReplPack) {
+    /***
+     * This method will reset cal buy qty units to zero in case the calculation failed for validation errors
+     * @param merchCatgReplPack
+     */
+    public void resetToZeroMerchCatgReplPack(MerchCatgReplPack merchCatgReplPack) {
         if (merchCatgReplPack != null && merchCatgReplPack.getSubReplPack() != null) {
             merchCatgReplPack.getSubReplPack().forEach(subCatgReplPack -> {
                 if (subCatgReplPack.getFinelineReplPack() != null) {
@@ -369,7 +373,7 @@ public class BuyQtyReplenishmentMapperService {
                             boolean isFlCalBuyQtyFailed = isFlCalBuyQtyFailed(finelineReplPack);
                             if (isFlCalBuyQtyFailed) {
                                 if (finelineReplPack.getStyleReplPack() != null) {
-                                    finelineReplPack.getStyleReplPack().forEach(this::updateStyleReplnPack);
+                                    finelineReplPack.getStyleReplPack().forEach(this::resetToZeroStyleReplnPack);
                                 }
                                 finelineReplPack.setReplUnits(0);
                                 finelineReplPack.setReplPackCnt(0);
@@ -382,11 +386,6 @@ public class BuyQtyReplenishmentMapperService {
                 rollupMerchCatgReplPacks(merchCatgReplPack);
             });
         }
-    }
-
-    private boolean isFlCalBuyQtyFailed(FinelineReplPack finelineReplPack) {
-        List<AppMessageTextResponse> appMessageTexts = appMessageTextService.getAppMessagesByIds(getValidationResult(finelineReplPack.getMessageObj()).getCodes());
-        return appMessageTexts.stream().map(AppMessageTextResponse::getTypeDesc).anyMatch(v -> v.contains("Error"));
     }
 
     private void rollupMerchCatgReplPacks(MerchCatgReplPack merchCatgReplPack) {
@@ -419,38 +418,43 @@ public class BuyQtyReplenishmentMapperService {
 
     }
 
-    private void updateStyleReplnPack(StyleReplPack styleReplPack) {
+    private void resetToZeroStyleReplnPack(StyleReplPack styleReplPack) {
         if (styleReplPack != null && !CollectionUtils.isEmpty(styleReplPack.getCcReplPack())) {
-            styleReplPack.getCcReplPack().forEach(this::updateCcReplnPack);
+            styleReplPack.getCcReplPack().forEach(this::resetToZeroCcReplnPack);
             styleReplPack.setReplUnits(0);
             styleReplPack.setReplPackCnt(0);
             styleReplPack.setFinalBuyUnits(0);
         }
     }
 
-    private void updateCcReplnPack(CcReplPack ccReplPack) {
+    private void resetToZeroCcReplnPack(CcReplPack ccReplPack) {
         if (ccReplPack != null && !CollectionUtils.isEmpty(ccReplPack.getCcMmReplPack())) {
-            ccReplPack.getCcMmReplPack().forEach(this::updateCcMmReplnPack);
+            ccReplPack.getCcMmReplPack().forEach(this::resetToZeroCcMmReplnPack);
             ccReplPack.setReplUnits(0);
             ccReplPack.setReplPackCnt(0);
             ccReplPack.setFinalBuyUnits(0);
         }
     }
 
-    private void updateCcMmReplnPack(CcMmReplPack ccMmReplPack) {
+    private void resetToZeroCcMmReplnPack(CcMmReplPack ccMmReplPack) {
         if (ccMmReplPack != null && !CollectionUtils.isEmpty(ccMmReplPack.getCcSpMmReplPack())) {
-            ccMmReplPack.getCcSpMmReplPack().forEach(this::updateCcSpMmReplnPack);
+            ccMmReplPack.getCcSpMmReplPack().forEach(this::resetToZeroCcSpMmReplnPack);
             ccMmReplPack.setReplUnits(0);
             ccMmReplPack.setReplPackCnt(0);
             ccMmReplPack.setFinalBuyUnits(0);
         }
     }
 
-    private void updateCcSpMmReplnPack(CcSpMmReplPack ccSpMmReplPack) {
+    private void resetToZeroCcSpMmReplnPack(CcSpMmReplPack ccSpMmReplPack) {
         if (ccSpMmReplPack != null ) {
             ccSpMmReplPack.setReplUnits(0);
             ccSpMmReplPack.setReplPackCnt(0);
             ccSpMmReplPack.setFinalBuyUnits(0);
         }
+    }
+
+    private boolean isFlCalBuyQtyFailed(FinelineReplPack finelineReplPack) {
+        List<AppMessageTextResponse> appMessageTexts = appMessageTextService.getAppMessagesByIds(getValidationResult(finelineReplPack.getMessageObj()).getCodes());
+        return appMessageTexts.stream().map(AppMessageTextResponse::getTypeDesc).anyMatch(v -> v.contains("Error"));
     }
 }

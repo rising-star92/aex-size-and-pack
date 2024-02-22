@@ -190,8 +190,8 @@ public class CalculateBuyQuantityService {
               .flatMap(Collection::stream)
               .collect(Collectors.toSet());
         //update the final units based on validation errors
-        allMerchCatReplns.forEach(buyQtyReplenishmentMapperService::updateMerchCatgReplPack);
-        allSPFinelineChannelFixtures.forEach(calculateFinelineBuyQuantityMapper::updateSpFinelineFixtures);
+        allMerchCatReplns.forEach(buyQtyReplenishmentMapperService::resetToZeroMerchCatgReplPack);
+        allSPFinelineChannelFixtures.forEach(calculateFinelineBuyQuantityMapper::resetToZeroSpFinelineFixtures);
         buyQuantityCommonRepository.getSpFineLineChannelFixtureRepository().saveAll(allSPFinelineChannelFixtures);
         replenishmentCommonRepository.getMerchCatgReplPackRepository().saveAll(allMerchCatReplns);
     }

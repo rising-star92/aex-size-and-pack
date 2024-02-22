@@ -22,7 +22,6 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 
 @ExtendWith(MockitoExtension.class)
 class BuyQtyReplenishmentMapperServiceTest {
@@ -244,7 +243,7 @@ class BuyQtyReplenishmentMapperServiceTest {
 		codes.add(160);
 		validationResult.setCodes(codes);
 		Mockito.when(objectMapper.readValue("{\"codes\":[160,170]}", ValidationResult.class)).thenReturn(validationResult);
-		buyQtyReplenishmentMapperService.updateMerchCatgReplPack(merchCatgReplPack);
+		buyQtyReplenishmentMapperService.resetToZeroMerchCatgReplPack(merchCatgReplPack);
 		Assertions.assertEquals(0, merchCatgReplPack.getReplUnits().intValue());
 		Assertions.assertEquals(0, merchCatgReplPack.getReplPackCnt().intValue());
 		Assertions.assertEquals(0, merchCatgReplPack.getFinalBuyUnits().intValue());

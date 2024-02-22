@@ -33,7 +33,7 @@ public class CalculateFinelineBuyQuantityMapperTest {
     void updateSpFinelineFixturesTest() {
         SpFineLineChannelFixture spFineLineChannelFixture = getSpFlChannelFixtures();
         Mockito.when(appMessageTextService.getAppMessagesByIds(any())).thenReturn(getAppMessageTexts());
-        calFlBuyQunatityMapper.updateSpFinelineFixtures(spFineLineChannelFixture);
+        calFlBuyQunatityMapper.resetToZeroSpFinelineFixtures(spFineLineChannelFixture);
         Assertions.assertEquals(0, spFineLineChannelFixture.getInitialSetQty().intValue());
         Assertions.assertEquals(0, spFineLineChannelFixture.getBumpPackQty().intValue());
         Assertions.assertEquals(0, spFineLineChannelFixture.getBuyQty().intValue());
