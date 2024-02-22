@@ -15,6 +15,7 @@ import com.walmart.aex.sp.enums.VdLevelCode;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.exception.SizeAndPackException;
 import com.walmart.aex.sp.properties.BuyQtyProperties;
+import com.walmart.aex.sp.util.AuthUtils;
 import com.walmart.aex.sp.util.BuyQtyCommonUtil;
 import com.walmart.aex.sp.util.SizeAndPackConstants;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
@@ -340,9 +341,16 @@ public class CalculateFinelineBuyQuantity {
                 getStyles(finelineDto.getStyles(), merchMethodsDtos, apResponse, bqfpResponse, spFineLineChannelFixture, calculateBuyQtyParallelRequest, calculateBuyQtyResponse);
             } else log.info("Styles Size Profiles are empty to calculate buy Qty: {}", finelineDto);
             spFineLineChannelFixture.setBumpPackCnt(maxBumpCount);
+            updateFinelineMetadata(spFineLineChannelFixture);
             spFineLineChannelFixtures.add(spFineLineChannelFixture);
         });
         calculateBuyQtyResponse.setSpFineLineChannelFixtures(spFineLineChannelFixtures);
+    }
+
+    private void updateFinelineMetadata(SpFineLineChannelFixture spFineLineChannelFixture) {
+        spFineLineChannelFixture.setCreateUserId(AuthUtils.getAuthenticatedUserName());
+        spFineLineChannelFixture.setCreateTs(new Date());
+        spFineLineChannelFixture.setLastModifiedTs(new Date());
     }
 
     private Integer getMaxBumpCountVal(Set<CustomerChoice> customerChoices) {
