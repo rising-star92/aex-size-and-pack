@@ -1,13 +1,13 @@
 package com.walmart.aex.sp.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.walmart.aex.sp.dto.appmessage.AppMessageTextResponse;
 import com.walmart.aex.sp.dto.buyquantity.ValidationResult;
 import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixture;
 import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixtureSize;
 import com.walmart.aex.sp.entity.SpFineLineChannelFixture;
 import com.walmart.aex.sp.entity.SpStyleChannelFixture;
 import com.walmart.aex.sp.exception.CustomException;
+import com.walmart.aex.sp.util.BuyQtyCommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -19,13 +19,14 @@ import java.util.*;
 @Slf4j
 public class CalculateFinelineBuyQuantityMapper {
 
-    public static final String ERROR = "Error";
     private final ObjectMapper objectMapper;
     private final AppMessageTextService appMessageTextService;
+    private final BuyQtyCommonUtil buyQtyCommonUtil;
 
-    public CalculateFinelineBuyQuantityMapper(ObjectMapper objectMapper, AppMessageTextService appMessageTextService) {
+    public CalculateFinelineBuyQuantityMapper(ObjectMapper objectMapper, AppMessageTextService appMessageTextService, BuyQtyCommonUtil buyQtyCommonUtil) {
         this.objectMapper = objectMapper;
         this.appMessageTextService = appMessageTextService;
+        this.buyQtyCommonUtil = buyQtyCommonUtil;
     }
 
     public void setFinelineChanFixtures(SpFineLineChannelFixture spFineLineChannelFixture, Set<SpStyleChannelFixture> spStyleChannelFixtures) {
@@ -144,7 +145,7 @@ public class CalculateFinelineBuyQuantityMapper {
 
     protected void resetToZeroSpFinelineFixtures(SpFineLineChannelFixture spFineLineChannelFixture) {
         if (spFineLineChannelFixture != null) {
-            boolean isFlCalBuyQtyFailed = isFlCalBuyQtyFailed(spFineLineChannelFixture);
+            boolean isFlCalBuyQtyFailed = buyQtyCommonUtil.isFlCalBuyQtyFailed(getValidationResult(spFineLineChannelFixture.getMessageObj()));
             if (isFlCalBuyQtyFailed && !CollectionUtils.isEmpty(spFineLineChannelFixture.getSpStyleChannelFixtures())) {
                 spFineLineChannelFixture.getSpStyleChannelFixtures().forEach(this::resetToZeroSpStyleFixtures);
                 spFineLineChannelFixture.setInitialSetQty(0);
@@ -203,9 +204,6 @@ public class CalculateFinelineBuyQuantityMapper {
 
     }
 
-    private boolean isFlCalBuyQtyFailed(SpFineLineChannelFixture spFineLineChannelFixture) {
-        List<AppMessageTextResponse> appMessageTexts = appMessageTextService.getAppMessagesByIds(getValidationResult(spFineLineChannelFixture.getMessageObj()).getCodes());
-        return appMessageTexts.stream().map(AppMessageTextResponse::getTypeDesc).anyMatch(v -> v.contains(ERROR));
-    }
+
 
 }

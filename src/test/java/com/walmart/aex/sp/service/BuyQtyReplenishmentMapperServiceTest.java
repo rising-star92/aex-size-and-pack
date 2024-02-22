@@ -2,11 +2,11 @@ package com.walmart.aex.sp.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.walmart.aex.sp.dto.appmessage.AppMessageTextResponse;
 import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
 import com.walmart.aex.sp.dto.replenishment.cons.*;
 import com.walmart.aex.sp.entity.*;
+import com.walmart.aex.sp.util.BuyQtyCommonUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,6 +31,8 @@ class BuyQtyReplenishmentMapperServiceTest {
 
 	@Mock
 	AppMessageTextService appMessageTextService;
+	@Mock
+	BuyQtyCommonUtil buyQtyCommonUtil;
 	
 	@InjectMocks
 	@Spy
@@ -236,7 +238,7 @@ class BuyQtyReplenishmentMapperServiceTest {
 	@Test
 	void testUpdateMerchCatgReplPack() throws JsonProcessingException {
 		MerchCatgReplPack merchCatgReplPack = getMerchCatgReplPacks();
-		Mockito.when(appMessageTextService.getAppMessagesByIds(any())).thenReturn(getAppMessageTexts());
+		Mockito.when(buyQtyCommonUtil.isFlCalBuyQtyFailed(any())).thenReturn(true);
 		ValidationResult validationResult = new ValidationResult();
 		Set<Integer> codes = new HashSet<>();
 		codes.add(170);
@@ -277,13 +279,6 @@ class BuyQtyReplenishmentMapperServiceTest {
 				});
 			});
 		});
-	}
-
-	private List<AppMessageTextResponse> getAppMessageTexts() {
-		List<AppMessageTextResponse> appMessageTextResponseList = new ArrayList<>();
-		AppMessageTextResponse appMessageTextResponse = AppMessageTextResponse.builder().id(160).typeDesc("Error").desc("BQFP_MESSAGE").longDesc("One or more CC have issues with BQFP dataset").build();
-		appMessageTextResponseList.add(appMessageTextResponse);
-		return appMessageTextResponseList;
 	}
 
 	private MerchCatgReplPack getMerchCatgReplPacks() {

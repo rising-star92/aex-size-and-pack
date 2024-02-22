@@ -1,11 +1,13 @@
 package com.walmart.aex.sp.util;
 
+import com.walmart.aex.sp.dto.appmessage.AppMessageTextResponse;
 import com.walmart.aex.sp.dto.assortproduct.RFASizePackData;
 import com.walmart.aex.sp.dto.bqfp.*;
 import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
 import com.walmart.aex.sp.enums.FixtureTypeRollup;
 import com.walmart.aex.sp.enums.FlowStrategy;
+import com.walmart.aex.sp.service.AppMessageTextService;
 import com.walmart.aex.sp.service.BuyQuantityMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -22,9 +24,12 @@ import static java.util.Objects.requireNonNull;
 public class BuyQtyCommonUtil {
 
     private final BuyQuantityMapper buyQuantityMapper;
-    public BuyQtyCommonUtil(BuyQuantityMapper buyQuantityMapper)
+    private final AppMessageTextService appMessageTextService;
+    public static final String ERROR = "Error";
+    public BuyQtyCommonUtil(BuyQuantityMapper buyQuantityMapper, AppMessageTextService appMessageTextService)
     {
         this.buyQuantityMapper = buyQuantityMapper;
+        this.appMessageTextService = appMessageTextService;
     }
 
     public static List<SizeDto> fetchSizes(BuyQtyResponse buyQtyResponse) {
@@ -243,6 +248,11 @@ public class BuyQtyCommonUtil {
 
     public static boolean isReplenishmentEligible(Integer flowStrategy) {
         return (null != flowStrategy && flowStrategy.equals(FlowStrategy.REPLENISHMENT_SET.getId()));
+    }
+
+    public boolean isFlCalBuyQtyFailed(ValidationResult validationResult) {
+        List<AppMessageTextResponse> appMessageTexts = appMessageTextService.getAppMessagesByIds(validationResult.getCodes());
+        return appMessageTexts.stream().map(AppMessageTextResponse::getTypeDesc).anyMatch(v -> v.contains(ERROR));
     }
 
 }

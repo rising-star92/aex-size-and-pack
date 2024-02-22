@@ -1,10 +1,10 @@
 package com.walmart.aex.sp.service;
 
-import com.walmart.aex.sp.dto.appmessage.AppMessageTextResponse;
 import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixture;
 import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixtureSize;
 import com.walmart.aex.sp.entity.SpFineLineChannelFixture;
 import com.walmart.aex.sp.entity.SpStyleChannelFixture;
+import com.walmart.aex.sp.util.BuyQtyCommonUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,9 +13,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -27,12 +25,12 @@ public class CalculateFinelineBuyQuantityMapperTest {
     CalculateFinelineBuyQuantityMapper calFlBuyQunatityMapper;
 
     @Mock
-    AppMessageTextService appMessageTextService;
+    BuyQtyCommonUtil buyQtyCommonUtil;
 
     @Test
     void updateSpFinelineFixturesTest() {
         SpFineLineChannelFixture spFineLineChannelFixture = getSpFlChannelFixtures();
-        Mockito.when(appMessageTextService.getAppMessagesByIds(any())).thenReturn(getAppMessageTexts());
+        Mockito.when(buyQtyCommonUtil.isFlCalBuyQtyFailed(any())).thenReturn(true);
         calFlBuyQunatityMapper.resetToZeroSpFinelineFixtures(spFineLineChannelFixture);
         Assertions.assertEquals(0, spFineLineChannelFixture.getInitialSetQty().intValue());
         Assertions.assertEquals(0, spFineLineChannelFixture.getBumpPackQty().intValue());
@@ -57,13 +55,6 @@ public class CalculateFinelineBuyQuantityMapperTest {
             });
         });
 
-    }
-
-    private List<AppMessageTextResponse> getAppMessageTexts() {
-        List<AppMessageTextResponse> appMessageTextResponseList = new ArrayList<>();
-        AppMessageTextResponse appMessageTextResponse = AppMessageTextResponse.builder().id(160).typeDesc("Error").desc("BQFP_MESSAGE").longDesc("One or more CC have issues with BQFP dataset").build();
-        appMessageTextResponseList.add(appMessageTextResponse);
-        return appMessageTextResponseList;
     }
 
     private SpFineLineChannelFixture getSpFlChannelFixtures() {
