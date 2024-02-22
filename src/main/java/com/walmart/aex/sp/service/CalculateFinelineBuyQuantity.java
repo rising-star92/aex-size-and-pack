@@ -2,7 +2,6 @@ package com.walmart.aex.sp.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.walmart.aex.sp.dto.appmessage.AppMessageTextResponse;
 import com.walmart.aex.sp.dto.assortproduct.*;
 import com.walmart.aex.sp.dto.bqfp.*;
 import com.walmart.aex.sp.dto.buyquantity.*;
@@ -396,7 +395,7 @@ public class CalculateFinelineBuyQuantity {
         log.info("calculating fineline IS and BS Qty");
         calculateFinelineBuyQuantityMapper.setFinelineChanFixtures(spFineLineChannelFixture, spStyleChannelFixtures);
         spFineLineChannelFixture.setSpStyleChannelFixtures(spStyleChannelFixtures);
-        calculateFinelineBuyQuantityMapper.updateSpFinelineFixtures(spFineLineChannelFixture);
+//        calculateFinelineBuyQuantityMapper.updateSpFinelineFixtures(spFineLineChannelFixture);
     }
 
     private void getCustomerChoices(StyleDto styleDto, List<MerchMethodsDto> merchMethodsDtos, APResponse apResponse, BQFPResponse bqfpResponse,
@@ -481,6 +480,7 @@ public class CalculateFinelineBuyQuantity {
         if (!CollectionUtils.isEmpty(ccSpMmReplPacks)) {
             //Replenishment
             List<MerchCatgReplPack> merchCatgReplPacks = buyQtyReplenishmentMapperService.setAllReplenishments(styleDto, merchMethodsDtos.get(0), calculateBuyQtyParallelRequest, calculateBuyQtyResponse, customerChoiceDto, ccSpMmReplPacks, replenishmentCons, ccValidationResult);
+            // todo
             calculateBuyQtyResponse.setMerchCatgReplPacks(merchCatgReplPacks);
         }
 
@@ -711,7 +711,7 @@ public class CalculateFinelineBuyQuantity {
 
         //Replenishment
         if (!CollectionUtils.isEmpty(replenishments) && entry.getValue().getTotalReplenishment() > 0) {
-            ccSpMmReplPacks.add(buyQtyReplenishmentMapperService.setCcMmSpReplenishment(entry, (int) entry.getValue().getTotalReplenishment(), (int) Math.round(totalBuyQty)));
+            ccSpMmReplPacks.add(buyQtyReplenishmentMapperService.setCcMmSpReplenishment(entry, (int) entry.getValue().getTotalReplenishment(), (int) Math.round(totalBuyQty))); // formula for repln
         }
     }
 

@@ -2,10 +2,12 @@ package com.walmart.aex.sp.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.walmart.aex.sp.dto.appmessage.AppMessageTextResponse;
 import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
 import com.walmart.aex.sp.dto.replenishment.cons.*;
 import com.walmart.aex.sp.entity.*;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,6 +21,8 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 
 @ExtendWith(MockitoExtension.class)
 class BuyQtyReplenishmentMapperServiceTest {
@@ -150,7 +154,7 @@ class BuyQtyReplenishmentMapperServiceTest {
 	void testSetAllReplenishments() throws JsonProcessingException {
 		ValidationResult ccValidationResult = ValidationResult.builder().codes(new HashSet<>(Arrays.asList(100,200))).build();
 
-		Mockito.when(objectMapper.writeValueAsString(Mockito.any())).thenReturn("{\"codes\":[100,200]}");
+		Mockito.when(objectMapper.writeValueAsString(any())).thenReturn("{\"codes\":[100,200]}");
 		Mockito.when(appMessageTextService.getHierarchyIds(Mockito.anySet())).thenReturn(Set.of(100, 200));
 		List<MerchCatgReplPack> catgReplPacks = buyQtyReplenishmentMapperService.setAllReplenishments(styleDto, merchMethodsDto, calculateBuyQtyParallelRequest, calculateBuyQtyResponse, customerChoiceDto, ccSpMmReplPacks, getReplenishmentCons(), ccValidationResult);
 	
@@ -186,7 +190,7 @@ class BuyQtyReplenishmentMapperServiceTest {
 		calculateBuyQtyResponse =  new CalculateBuyQtyResponse();
 		calculateBuyQtyResponse.setMerchCatgReplPacks(merchCatgReplPacks);
 
-		Mockito.when(objectMapper.writeValueAsString(Mockito.any())).thenReturn("{\"codes\":[]}");
+		Mockito.when(objectMapper.writeValueAsString(any())).thenReturn("{\"codes\":[]}");
 
 		List<MerchCatgReplPack> catgReplPacks = buyQtyReplenishmentMapperService.setAllReplenishments(styleDto, merchMethodsDto, calculateBuyQtyParallelRequest, calculateBuyQtyResponse, customerChoiceDto, ccSpMmReplPacks, getReplenishmentCons(), ValidationResult.builder().codes(new HashSet<>()).build());
 
@@ -228,6 +232,117 @@ class BuyQtyReplenishmentMapperServiceTest {
 				.iterator().next().getStyleReplPack().iterator().next().getCcReplPack().iterator().next()
 				.getCcMmReplPack().iterator().next().getVnpkWhpkRatio());
 
+	}
+
+	@Test
+	void testUpdateMerchCatgReplPack() throws JsonProcessingException {
+		MerchCatgReplPack merchCatgReplPack = getMerchCatgReplPacks();
+		Mockito.when(appMessageTextService.getAppMessagesByIds(any())).thenReturn(getAppMessageTexts());
+		ValidationResult validationResult = new ValidationResult();
+		Set<Integer> codes = new HashSet<>();
+		codes.add(170);
+		codes.add(160);
+		validationResult.setCodes(codes);
+		Mockito.when(objectMapper.readValue("{\"codes\":[160,170]}", ValidationResult.class)).thenReturn(validationResult);
+		buyQtyReplenishmentMapperService.updateMerchCatgReplPack(merchCatgReplPack);
+		Assertions.assertEquals(0, merchCatgReplPack.getReplUnits().intValue());
+		Assertions.assertEquals(0, merchCatgReplPack.getReplPackCnt().intValue());
+		Assertions.assertEquals(0, merchCatgReplPack.getFinalBuyUnits().intValue());
+		merchCatgReplPack.getSubReplPack().forEach(subCatgReplPack -> {
+			Assertions.assertEquals(0, subCatgReplPack.getReplUnits().intValue());
+			Assertions.assertEquals(0, subCatgReplPack.getReplPackCnt().intValue());
+			Assertions.assertEquals(0, subCatgReplPack.getFinalBuyUnits().intValue());
+			subCatgReplPack.getFinelineReplPack().forEach(finelineReplPack -> {
+				Assertions.assertEquals(0, finelineReplPack.getReplUnits().intValue());
+				Assertions.assertEquals(0, finelineReplPack.getReplPackCnt().intValue());
+				Assertions.assertEquals(0, finelineReplPack.getFinalBuyUnits().intValue());
+				finelineReplPack.getStyleReplPack().forEach(styleReplPack -> {
+					Assertions.assertEquals(0, styleReplPack.getReplUnits().intValue());
+					Assertions.assertEquals(0, styleReplPack.getReplPackCnt().intValue());
+					Assertions.assertEquals(0, styleReplPack.getFinalBuyUnits().intValue());
+					styleReplPack.getCcReplPack().forEach(ccReplPack -> {
+						Assertions.assertEquals(0, ccReplPack.getReplUnits().intValue());
+						Assertions.assertEquals(0, ccReplPack.getReplPackCnt().intValue());
+						Assertions.assertEquals(0, ccReplPack.getFinalBuyUnits().intValue());
+						ccReplPack.getCcMmReplPack().forEach(ccMmReplPack -> {
+							Assertions.assertEquals(0, ccMmReplPack.getReplUnits().intValue());
+							Assertions.assertEquals(0, ccMmReplPack.getReplPackCnt().intValue());
+							Assertions.assertEquals(0, ccMmReplPack.getFinalBuyUnits().intValue());
+							ccMmReplPack.getCcSpMmReplPack().forEach(ccSpMmReplPack -> {
+								Assertions.assertEquals(0, ccSpMmReplPack.getReplUnits().intValue());
+								Assertions.assertEquals(0, ccSpMmReplPack.getReplPackCnt().intValue());
+								Assertions.assertEquals(0, ccSpMmReplPack.getFinalBuyUnits().intValue());
+							});
+						});
+					});
+				});
+			});
+		});
+	}
+
+	private List<AppMessageTextResponse> getAppMessageTexts() {
+		List<AppMessageTextResponse> appMessageTextResponseList = new ArrayList<>();
+		AppMessageTextResponse appMessageTextResponse = AppMessageTextResponse.builder().id(160).typeDesc("Error").desc("BQFP_MESSAGE").longDesc("One or more CC have issues with BQFP dataset").build();
+		appMessageTextResponseList.add(appMessageTextResponse);
+		return appMessageTextResponseList;
+	}
+
+	private MerchCatgReplPack getMerchCatgReplPacks() {
+		MerchCatgReplPack merchCatgReplPack = new MerchCatgReplPack();
+		merchCatgReplPack.setReplPackCnt(48);
+		merchCatgReplPack.setReplUnits(576);
+		merchCatgReplPack.setFinalBuyUnits(576);
+		merchCatgReplPack.setVendorPackCnt(12);
+		Set<SubCatgReplPack> subReplPack = new HashSet<>();
+		SubCatgReplPack subCatgReplPack1 = new SubCatgReplPack();
+		subCatgReplPack1.setReplUnits(576);
+		subCatgReplPack1.setReplPackCnt(48);
+		subCatgReplPack1.setFinalBuyUnits(576);
+		subCatgReplPack1.setVendorPackCnt(12);
+		Set<FinelineReplPack> finelineReplPacks = new HashSet<>();
+		FinelineReplPack finelineReplPack = new FinelineReplPack();
+		finelineReplPack.setReplUnits(576);
+		finelineReplPack.setFinalBuyUnits(576);
+		finelineReplPack.setReplPackCnt(48);
+		finelineReplPack.setVendorPackCnt(12);
+		finelineReplPack.setMessageObj("{\"codes\":[160,170]}");
+		Set<StyleReplPack> styleReplPacks = new HashSet<>();
+		StyleReplPack styleReplPack1 = new StyleReplPack();
+		styleReplPack1.setReplUnits(576);
+		styleReplPack1.setFinalBuyUnits(576);
+		styleReplPack1.setReplPackCnt(48);
+		styleReplPack1.setVendorPackCnt(12);
+		Set<CcReplPack> ccReplPacks = new HashSet<>();
+		CcReplPack ccReplPack1 = new CcReplPack();
+		ccReplPack1.setReplUnits(576);
+		ccReplPack1.setFinalBuyUnits(576);
+		ccReplPack1.setReplPackCnt(48);
+		ccReplPack1.setVendorPackCnt(12);
+		Set<CcMmReplPack> ccMmReplPack = new HashSet<>();
+		CcMmReplPack ccMmReplPack1 = new CcMmReplPack();
+		ccMmReplPack1.setReplUnits(576);
+		ccMmReplPack1.setFinalBuyUnits(576);
+		ccMmReplPack1.setReplPackCnt(48);
+		ccMmReplPack1.setVendorPackCnt(12);
+		Set<CcSpMmReplPack> ccSpMmReplPack = new HashSet<>();
+		CcSpMmReplPack ccSpMmReplPack1 = new CcSpMmReplPack();
+		ccSpMmReplPack1.setReplUnits(576);
+		ccSpMmReplPack1.setFinalBuyUnits(576);
+		ccSpMmReplPack1.setReplPackCnt(48);
+		ccSpMmReplPack1.setVendorPackCnt(12);
+		ccSpMmReplPack.add(ccSpMmReplPack1);
+		ccMmReplPack1.setCcSpMmReplPack(ccSpMmReplPack);
+		ccMmReplPack.add(ccMmReplPack1);
+		ccReplPack1.setCcMmReplPack(ccMmReplPack);
+		ccReplPacks.add(ccReplPack1);
+		styleReplPack1.setCcReplPack(ccReplPacks);
+		styleReplPacks.add(styleReplPack1);
+		finelineReplPack.setStyleReplPack(styleReplPacks);
+		finelineReplPacks.add(finelineReplPack);
+		subCatgReplPack1.setFinelineReplPack(finelineReplPacks);
+		subReplPack.add(subCatgReplPack1);
+		merchCatgReplPack.setSubReplPack(subReplPack);
+		return merchCatgReplPack;
 	}
 
 	private ReplenishmentCons getReplenishmentCons() {

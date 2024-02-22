@@ -1,6 +1,5 @@
 package com.walmart.aex.sp.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.appmessage.AppMessageTextResponse;
 import com.walmart.aex.sp.dto.buyquantity.ValidationResult;
@@ -15,9 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
-import java.util.stream.Stream;
-
-import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
 
 @Service
 @Slf4j
@@ -148,42 +144,41 @@ public class CalculateFinelineBuyQuantityMapper {
 
     protected void updateSpFinelineFixtures(SpFineLineChannelFixture spFineLineChannelFixture) {
         if (spFineLineChannelFixture != null) {
-            List<AppMessageTextResponse> appMessageTexts = appMessageTextService.getAppMessagesByIds(getValidationResult(spFineLineChannelFixture.getMessageObj()).getCodes());
-            boolean isFlCalBuyQtyFailed = appMessageTexts.stream().map(AppMessageTextResponse::getTypeDesc).anyMatch(v -> v.contains(ERROR));
-            if (isFlCalBuyQtyFailed) {
-                if (!CollectionUtils.isEmpty(spFineLineChannelFixture.getSpStyleChannelFixtures())) {
-                    spFineLineChannelFixture.getSpStyleChannelFixtures().forEach(this::updateSpStyleFixtures);
-                    spFineLineChannelFixture.setInitialSetQty(0);
-                    spFineLineChannelFixture.setBumpPackQty(0);
-                    spFineLineChannelFixture.setBuyQty(0);
-                    spFineLineChannelFixture.setReplnQty(0);
-                }
+            boolean isFlCalBuyQtyFailed = isFlCalBuyQtyFailed(spFineLineChannelFixture);
+            if (isFlCalBuyQtyFailed && !CollectionUtils.isEmpty(spFineLineChannelFixture.getSpStyleChannelFixtures())) {
+                spFineLineChannelFixture.getSpStyleChannelFixtures().forEach(this::updateSpStyleFixtures);
+                spFineLineChannelFixture.setInitialSetQty(0);
+                spFineLineChannelFixture.setBumpPackQty(0);
+                spFineLineChannelFixture.setBuyQty(0);
+                spFineLineChannelFixture.setReplnQty(0);
             }
         }
+
+    }
+
+    private boolean isFlCalBuyQtyFailed(SpFineLineChannelFixture spFineLineChannelFixture) {
+        List<AppMessageTextResponse> appMessageTexts = appMessageTextService.getAppMessagesByIds(getValidationResult(spFineLineChannelFixture.getMessageObj()).getCodes());
+        return appMessageTexts.stream().map(AppMessageTextResponse::getTypeDesc).anyMatch(v -> v.contains(ERROR));
     }
 
     private void updateSpStyleFixtures(SpStyleChannelFixture spStyleChannelFixture) {
-        if (spStyleChannelFixture != null) {
-            if (!CollectionUtils.isEmpty(spStyleChannelFixture.getSpCustomerChoiceChannelFixture())) {
-                spStyleChannelFixture.getSpCustomerChoiceChannelFixture().forEach(this::updateSpCcFixtures);
-                spStyleChannelFixture.setInitialSetQty(0);
-                spStyleChannelFixture.setBumpPackQty(0);
-                spStyleChannelFixture.setBuyQty(0);
-                spStyleChannelFixture.setReplnQty(0);
-            }
+        if (spStyleChannelFixture != null && !CollectionUtils.isEmpty(spStyleChannelFixture.getSpCustomerChoiceChannelFixture())) {
+            spStyleChannelFixture.getSpCustomerChoiceChannelFixture().forEach(this::updateSpCcFixtures);
+            spStyleChannelFixture.setInitialSetQty(0);
+            spStyleChannelFixture.setBumpPackQty(0);
+            spStyleChannelFixture.setBuyQty(0);
+            spStyleChannelFixture.setReplnQty(0);
         }
     }
 
     private void updateSpCcFixtures(SpCustomerChoiceChannelFixture spCcChannelFixture) {
-        if (spCcChannelFixture != null) {
-            if (!CollectionUtils.isEmpty(spCcChannelFixture.getSpCustomerChoiceChannelFixtureSize())) {
-                spCcChannelFixture.getSpCustomerChoiceChannelFixtureSize().forEach(this::updateSpCcFixtureSizes
-                );
-                spCcChannelFixture.setInitialSetQty(0);
-                spCcChannelFixture.setBumpPackQty(0);
-                spCcChannelFixture.setBuyQty(0);
-                spCcChannelFixture.setReplnQty(0);
-            }
+        if (spCcChannelFixture != null && !CollectionUtils.isEmpty(spCcChannelFixture.getSpCustomerChoiceChannelFixtureSize())) {
+            spCcChannelFixture.getSpCustomerChoiceChannelFixtureSize().forEach(this::updateSpCcFixtureSizes
+            );
+            spCcChannelFixture.setInitialSetQty(0);
+            spCcChannelFixture.setBumpPackQty(0);
+            spCcChannelFixture.setBuyQty(0);
+            spCcChannelFixture.setReplnQty(0);
         }
     }
 
