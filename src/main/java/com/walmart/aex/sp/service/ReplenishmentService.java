@@ -89,6 +89,7 @@ public class ReplenishmentService  {
             Optional.of(replenishmentResponseDTOS)
                     .stream()
                     .flatMap(Collection::stream)
+                    .filter(replenishmentResponseDTO -> !(replenishmentResponseDTO.getFinelineReplQty().equals(0)))
                     .forEach(replenishmentResponseDTO -> replenishmentMapper
                             .mapReplenishmentLvl2Sp(replenishmentResponseDTO, replenishmentResponse, null,null));
         } catch (Exception e) {

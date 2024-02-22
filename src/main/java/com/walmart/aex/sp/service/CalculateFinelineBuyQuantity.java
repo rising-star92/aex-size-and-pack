@@ -32,7 +32,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import static com.walmart.aex.sp.util.SizeAndPackConstants.DEFAULT_COLOR_FAMILY;
-import static com.walmart.aex.sp.util.SizeAndPackConstants.VP_DEFAULT;
 
 @Service
 @Slf4j
@@ -56,6 +55,7 @@ public class CalculateFinelineBuyQuantity {
     private final CalculateBumpPackQtyService calculateBumpPackQtyService;
     private final ValidationService validationService;
     private final CalculateFinelineBuyQuantityMapper calculateFinelineBuyQuantityMapper;
+
     @ManagedConfiguration
     BuyQtyProperties buyQtyProperties;
 

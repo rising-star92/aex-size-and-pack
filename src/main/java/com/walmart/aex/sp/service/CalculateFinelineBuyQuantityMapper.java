@@ -1,19 +1,20 @@
 package com.walmart.aex.sp.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.walmart.aex.sp.dto.appmessage.AppMessageTextResponse;
 import com.walmart.aex.sp.dto.buyquantity.ValidationResult;
 import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixture;
 import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixtureSize;
 import com.walmart.aex.sp.entity.SpFineLineChannelFixture;
 import com.walmart.aex.sp.entity.SpStyleChannelFixture;
 import com.walmart.aex.sp.exception.CustomException;
+import com.walmart.aex.sp.util.BuyQtyCommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
-
-import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
 
 @Service
 @Slf4j
@@ -139,6 +140,51 @@ public class CalculateFinelineBuyQuantityMapper {
             ccValidationResult.getCodes().addAll(appMessageTextService.getHierarchyIds(sizesValidationCodes));
         }
         spCustomerChoiceChannelFixture.setMessageObj(setMessage(ccValidationResult));
+    }
+
+    protected void resetToZeroSpFinelineFixtures(SpFineLineChannelFixture spFineLineChannelFixture) {
+        if (spFineLineChannelFixture != null) {
+            List<AppMessageTextResponse> appMessageTexts = appMessageTextService.getAppMessagesByIds(getValidationResult(spFineLineChannelFixture.getMessageObj()).getCodes());
+            boolean isFlCalBuyQtyFailed = BuyQtyCommonUtil.isFlCalBuyQtyFailed(appMessageTexts);
+            if (isFlCalBuyQtyFailed && !CollectionUtils.isEmpty(spFineLineChannelFixture.getSpStyleChannelFixtures())) {
+                spFineLineChannelFixture.getSpStyleChannelFixtures().forEach(this::resetToZeroSpStyleFixtures);
+                spFineLineChannelFixture.setInitialSetQty(0);
+                spFineLineChannelFixture.setBumpPackQty(0);
+                spFineLineChannelFixture.setBuyQty(0);
+                spFineLineChannelFixture.setReplnQty(0);
+            }
+        }
+
+    }
+
+    private void resetToZeroSpStyleFixtures(SpStyleChannelFixture spStyleChannelFixture) {
+        if (spStyleChannelFixture != null && !CollectionUtils.isEmpty(spStyleChannelFixture.getSpCustomerChoiceChannelFixture())) {
+            spStyleChannelFixture.getSpCustomerChoiceChannelFixture().forEach(this::resetToZeroSpCcFixtures);
+            spStyleChannelFixture.setInitialSetQty(0);
+            spStyleChannelFixture.setBumpPackQty(0);
+            spStyleChannelFixture.setBuyQty(0);
+            spStyleChannelFixture.setReplnQty(0);
+        }
+    }
+
+    private void resetToZeroSpCcFixtures(SpCustomerChoiceChannelFixture spCcChannelFixture) {
+        if (spCcChannelFixture != null && !CollectionUtils.isEmpty(spCcChannelFixture.getSpCustomerChoiceChannelFixtureSize())) {
+            spCcChannelFixture.getSpCustomerChoiceChannelFixtureSize().forEach(this::resetToZeroSpCcFixtureSizes
+            );
+            spCcChannelFixture.setInitialSetQty(0);
+            spCcChannelFixture.setBumpPackQty(0);
+            spCcChannelFixture.setBuyQty(0);
+            spCcChannelFixture.setReplnQty(0);
+        }
+    }
+
+    private void resetToZeroSpCcFixtureSizes(SpCustomerChoiceChannelFixtureSize spCcChannelFixtureSize) {
+        if (spCcChannelFixtureSize != null) {
+            spCcChannelFixtureSize.setInitialSetQty(0);
+            spCcChannelFixtureSize.setBumpPackQty(0);
+            spCcChannelFixtureSize.setBuyQty(0);
+            spCcChannelFixtureSize.setReplnQty(0);
+        }
     }
 
     private ValidationResult getValidationResult(String messageObj) {

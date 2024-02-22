@@ -1,6 +1,7 @@
 package com.walmart.aex.sp.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.walmart.aex.sp.dto.appmessage.AppMessageTextResponse;
 import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
 import com.walmart.aex.sp.dto.replenishment.cons.ReplenishmentCons;
@@ -8,9 +9,11 @@ import com.walmart.aex.sp.entity.*;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.enums.FixtureTypeRollup;
 import com.walmart.aex.sp.exception.CustomException;
+import com.walmart.aex.sp.util.BuyQtyCommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 
@@ -357,4 +360,99 @@ public class BuyQtyReplenishmentMapperService {
             throw new CustomException("Exception occurred while deserializing validation messages");
         }
     }
+
+    /***
+     * This method will reset cal buy qty units to zero in case the calculation failed for validation errors
+     * @param merchCatgReplPack
+     */
+    public void resetToZeroMerchCatgReplPack(MerchCatgReplPack merchCatgReplPack) {
+        if (merchCatgReplPack != null && merchCatgReplPack.getSubReplPack() != null) {
+            merchCatgReplPack.getSubReplPack().forEach(subCatgReplPack -> {
+                if (subCatgReplPack.getFinelineReplPack() != null) {
+                    subCatgReplPack.getFinelineReplPack().forEach(finelineReplPack -> {
+                        if (finelineReplPack.getMessageObj() != null) {
+                            List<AppMessageTextResponse> appMessageTexts = appMessageTextService.getAppMessagesByIds(getValidationResult(finelineReplPack.getMessageObj()).getCodes());
+                            boolean isFlCalBuyQtyFailed = BuyQtyCommonUtil.isFlCalBuyQtyFailed(appMessageTexts);
+                            if (isFlCalBuyQtyFailed) {
+                                if (finelineReplPack.getStyleReplPack() != null) {
+                                    finelineReplPack.getStyleReplPack().forEach(this::resetToZeroStyleReplnPack);
+                                }
+                                finelineReplPack.setReplUnits(0);
+                                finelineReplPack.setReplPackCnt(0);
+                                finelineReplPack.setFinalBuyUnits(0);
+                            }
+                        }
+                        rollupSubCatgReplnPack(subCatgReplPack);
+                    });
+                }
+                rollupMerchCatgReplPacks(merchCatgReplPack);
+            });
+        }
+    }
+
+    private void rollupMerchCatgReplPacks(MerchCatgReplPack merchCatgReplPack) {
+        merchCatgReplPack.setReplUnits(merchCatgReplPack.getSubReplPack().stream()
+                .filter(Objects::nonNull)
+                .mapToInt(subCatgReplPack1 -> Optional.ofNullable(subCatgReplPack1.getReplUnits()).orElse(0))
+                .sum()
+        );
+        merchCatgReplPack.setFinalBuyUnits(merchCatgReplPack.getSubReplPack().stream()
+                .filter(Objects::nonNull)
+                .mapToInt(subCatgReplPack1 -> Optional.ofNullable(subCatgReplPack1.getFinalBuyUnits()).orElse(0))
+                .sum()
+        );
+        merchCatgReplPack.setReplPackCnt(merchCatgReplPack.getReplUnits()/merchCatgReplPack.getVendorPackCnt());
+    }
+
+    private void rollupSubCatgReplnPack(SubCatgReplPack subCatgReplPack) {
+        subCatgReplPack.setReplUnits(subCatgReplPack.getFinelineReplPack().stream()
+                .filter(Objects::nonNull)
+                .mapToInt(finelineReplPack1 -> Optional.ofNullable(finelineReplPack1.getReplUnits()).orElse(0))
+                .sum()
+        );
+        subCatgReplPack.setFinalBuyUnits(subCatgReplPack.getFinelineReplPack().stream()
+                .filter(Objects::nonNull)
+                .mapToInt(finelineReplPack1 -> Optional.ofNullable(finelineReplPack1.getFinalBuyUnits()).orElse(0))
+                .sum()
+        );
+
+        subCatgReplPack.setReplPackCnt(subCatgReplPack.getReplUnits()/subCatgReplPack.getVendorPackCnt());
+
+    }
+
+    private void resetToZeroStyleReplnPack(StyleReplPack styleReplPack) {
+        if (styleReplPack != null && !CollectionUtils.isEmpty(styleReplPack.getCcReplPack())) {
+            styleReplPack.getCcReplPack().forEach(this::resetToZeroCcReplnPack);
+            styleReplPack.setReplUnits(0);
+            styleReplPack.setReplPackCnt(0);
+            styleReplPack.setFinalBuyUnits(0);
+        }
+    }
+
+    private void resetToZeroCcReplnPack(CcReplPack ccReplPack) {
+        if (ccReplPack != null && !CollectionUtils.isEmpty(ccReplPack.getCcMmReplPack())) {
+            ccReplPack.getCcMmReplPack().forEach(this::resetToZeroCcMmReplnPack);
+            ccReplPack.setReplUnits(0);
+            ccReplPack.setReplPackCnt(0);
+            ccReplPack.setFinalBuyUnits(0);
+        }
+    }
+
+    private void resetToZeroCcMmReplnPack(CcMmReplPack ccMmReplPack) {
+        if (ccMmReplPack != null && !CollectionUtils.isEmpty(ccMmReplPack.getCcSpMmReplPack())) {
+            ccMmReplPack.getCcSpMmReplPack().forEach(this::resetToZeroCcSpMmReplnPack);
+            ccMmReplPack.setReplUnits(0);
+            ccMmReplPack.setReplPackCnt(0);
+            ccMmReplPack.setFinalBuyUnits(0);
+        }
+    }
+
+    private void resetToZeroCcSpMmReplnPack(CcSpMmReplPack ccSpMmReplPack) {
+        if (ccSpMmReplPack != null ) {
+            ccSpMmReplPack.setReplUnits(0);
+            ccSpMmReplPack.setReplPackCnt(0);
+            ccSpMmReplPack.setFinalBuyUnits(0);
+        }
+    }
+
 }

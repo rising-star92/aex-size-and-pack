@@ -31,15 +31,19 @@ public class CalculateBuyQuantityService {
     private final ReplenishmentCommonRepository replenishmentCommonRepository;
     private final CalculateFinelineBuyQuantity calculateFinelineBuyQuantity;
     private final FinelinePlanRepository finelinePlanRepository;
+    private final CalculateFinelineBuyQuantityMapper calculateFinelineBuyQuantityMapper;
+    private final BuyQtyReplenishmentMapperService buyQtyReplenishmentMapperService;
 
     public CalculateBuyQuantityService(BuyQuantityCommonRepository buyQuantityCommonRepository,
                                        ReplenishmentCommonRepository replenishmentCommonRepository,
                                        CalculateFinelineBuyQuantity calculateFinelineBuyQuantity,
-                                       FinelinePlanRepository finelinePlanRepository) {
+                                       FinelinePlanRepository finelinePlanRepository, CalculateFinelineBuyQuantityMapper calculateFinelineBuyQuantityMapper, BuyQtyReplenishmentMapperService buyQtyReplenishmentMapperService) {
         this.buyQuantityCommonRepository = buyQuantityCommonRepository;
         this.replenishmentCommonRepository = replenishmentCommonRepository;
         this.calculateFinelineBuyQuantity = calculateFinelineBuyQuantity;
         this.finelinePlanRepository = finelinePlanRepository;
+        this.calculateFinelineBuyQuantityMapper = calculateFinelineBuyQuantityMapper;
+        this.buyQtyReplenishmentMapperService = buyQtyReplenishmentMapperService;
     }
 
     @Transactional
@@ -185,7 +189,9 @@ public class CalculateBuyQuantityService {
               .map(CalculateBuyQtyResponse::getSpFineLineChannelFixtures)
               .flatMap(Collection::stream)
               .collect(Collectors.toSet());
-
+        //update the final units based on validation errors
+        allMerchCatReplns.forEach(buyQtyReplenishmentMapperService::resetToZeroMerchCatgReplPack);
+        allSPFinelineChannelFixtures.forEach(calculateFinelineBuyQuantityMapper::resetToZeroSpFinelineFixtures);
         buyQuantityCommonRepository.getSpFineLineChannelFixtureRepository().saveAll(allSPFinelineChannelFixtures);
         replenishmentCommonRepository.getMerchCatgReplPackRepository().saveAll(allMerchCatReplns);
     }
