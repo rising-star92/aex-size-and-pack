@@ -28,18 +28,13 @@ public class BqfpValidationsServiceImpl implements BqfpValidationsService {
             Fixture bqfpFixture = getBQFPFixture(bqfpResponse, styleDto, customerChoiceDto, merchMethodsDto);
             List<Cluster> clusters = null!=bqfpFixture ? bqfpFixture.getClusters():Collections.emptyList();
 
-            if (CollectionUtils.isEmpty(clusters)) {
-                //Missing IS Data for fixture
-                validationCodes.add(AppMessage.BQFP_MISSING_IS_DATA.getId());
-            } else {
-                List<Integer> flowStrategies = getFlowStrategiesFromCluster(clusters);
-                //Warning: Missing IS Quantities
-                validateISUnits(validationCodes, clusters);
-                //ERROR: Missing Replenishment Quantities
-                validateReplenishmentUnits(validationCodes, bqfpFixture, flowStrategies);
-                //ERROR: Missing BS Quantities
-                validateBSUnits(validationCodes, clusters);
-            }
+            List<Integer> flowStrategies = getFlowStrategiesFromCluster(clusters);
+            //ERROR: Missing IS Quantities
+            validateISUnits(validationCodes, clusters);
+            //ERROR: Missing Replenishment Quantities
+            validateReplenishmentUnits(validationCodes, bqfpFixture, flowStrategies);
+            //ERROR: Missing BS Quantities
+            validateBSUnits(validationCodes, clusters);
         });
         return ValidationResult.builder().codes(validationCodes).build();
     }
@@ -89,6 +84,12 @@ public class BqfpValidationsServiceImpl implements BqfpValidationsService {
 
     private void validateISUnits(Set<Integer> validationCodes, List<Cluster> clusters) {
         if (clusters.stream()
+                .anyMatch(cluster -> Objects.isNull(cluster.getInitialSet()) ||
+                        Objects.isNull(cluster.getInitialSet().getInitialSetUnitsPerFix()) ||
+                        Objects.isNull(cluster.getInitialSet().getTotalInitialSetUnits()))) {
+            // when IS is null, then it's missing
+            validationCodes.add(AppMessage.BQFP_MISSING_IS_DATA.getId());
+        } else if (clusters.stream()
                 .filter(Objects::nonNull)
                 .anyMatch(cluster -> Optional.ofNullable(cluster.getInitialSet().getTotalInitialSetUnits()).orElse(0L) < 0)) {
             // IS units include negative values
