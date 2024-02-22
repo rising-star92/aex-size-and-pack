@@ -55,7 +55,6 @@ public class CalculateFinelineBuyQuantity {
     private final CalculateBumpPackQtyService calculateBumpPackQtyService;
     private final ValidationService validationService;
     private final CalculateFinelineBuyQuantityMapper calculateFinelineBuyQuantityMapper;
-    private final AppMessageTextService appMessageTextService;
 
     @ManagedConfiguration
     BuyQtyProperties buyQtyProperties;
@@ -76,7 +75,7 @@ public class CalculateFinelineBuyQuantity {
                                         CalculateInitialSetQuantityService calculateInitialSetQuantityService,
                                         CalculateBumpPackQtyService calculateBumpPackQtyService,
                                         ValidationService validationService,
-                                        CalculateFinelineBuyQuantityMapper calculateFinelineBuyQuantityMapper, AppMessageTextService appMessageTextService) {
+                                        CalculateFinelineBuyQuantityMapper calculateFinelineBuyQuantityMapper) {
         this.bqfpService = bqfpService;
         this.objectMapper = objectMapper;
         this.strategyFetchService = strategyFetchService;
@@ -94,7 +93,6 @@ public class CalculateFinelineBuyQuantity {
         this.calculateBumpPackQtyService = calculateBumpPackQtyService;
         this.validationService = validationService;
         this.calculateFinelineBuyQuantityMapper = calculateFinelineBuyQuantityMapper;
-        this.appMessageTextService = appMessageTextService;
     }
 
     public CalculateBuyQtyResponse calculateFinelineBuyQty(CalculateBuyQtyRequest calculateBuyQtyRequest, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest, CalculateBuyQtyResponse calculateBuyQtyResponse) throws CustomException {
@@ -709,7 +707,7 @@ public class CalculateFinelineBuyQuantity {
 
         //Replenishment
         if (!CollectionUtils.isEmpty(replenishments) && entry.getValue().getTotalReplenishment() > 0) {
-            ccSpMmReplPacks.add(buyQtyReplenishmentMapperService.setCcMmSpReplenishment(entry, (int) entry.getValue().getTotalReplenishment(), (int) Math.round(totalBuyQty))); // formula for repln
+            ccSpMmReplPacks.add(buyQtyReplenishmentMapperService.setCcMmSpReplenishment(entry, (int) entry.getValue().getTotalReplenishment(), (int) Math.round(totalBuyQty)));
         }
     }
 

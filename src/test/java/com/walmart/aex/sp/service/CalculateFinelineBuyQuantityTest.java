@@ -177,7 +177,7 @@ class CalculateFinelineBuyQuantityTest {
         calculateOnlineFinelineBuyQuantity = new  CalculateOnlineFinelineBuyQuantity (buyQtyReplenishmentMapperService,replenishmentsOptimizationServices, replenishmentService, bqfpValidationsService);
         calculateFinelineBuyQuantity = new CalculateFinelineBuyQuantity(bqfpService, mapper, buyQtyReplenishmentMapperService, calculateOnlineFinelineBuyQuantity,
                 strategyFetchService,addStoreBuyQuantityService, buyQuantityConstraintService, deptAdminRuleService, replenishmentService, replenishmentsOptimizationServices,
-                midasServiceCall, linePlanService, bigQueryClusterService, calculateInitialSetQuantityService, calculateBumpPackQtyService, validationService, calculateFinelineBuyQuantityMapper, appMessageTextService);
+                midasServiceCall, linePlanService, bigQueryClusterService, calculateInitialSetQuantityService, calculateBumpPackQtyService, validationService, calculateFinelineBuyQuantityMapper);
         setProperties();
     }
 
