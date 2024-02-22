@@ -67,7 +67,7 @@ class BqfpValidationsServiceImplTest {
         final String path = "/plan72fineline4440";
         BQFPResponse bqfpResponse = bqfpResponseFromJson(path.concat("/BQFPResponse"));
 
-        bqfpResponse.getStyles().get(0).getCustomerChoices().get(0).getFixtures().get(0).setClusters(new ArrayList<>());
+        bqfpResponse.getStyles().get(0).getCustomerChoices().get(0).getFixtures().get(0).getClusters().get(0).getInitialSet().setInitialSetUnitsPerFix(null);
 
         BuyQtyResponse buyQtyResponse = buyQtyResponseFromJson(path.concat("/BuyQtyResponse"));
 
