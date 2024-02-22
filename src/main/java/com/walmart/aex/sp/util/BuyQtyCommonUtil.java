@@ -24,12 +24,10 @@ import static java.util.Objects.requireNonNull;
 public class BuyQtyCommonUtil {
 
     private final BuyQuantityMapper buyQuantityMapper;
-    private final AppMessageTextService appMessageTextService;
     public static final String ERROR = "Error";
-    public BuyQtyCommonUtil(BuyQuantityMapper buyQuantityMapper, AppMessageTextService appMessageTextService)
+    public BuyQtyCommonUtil(BuyQuantityMapper buyQuantityMapper)
     {
         this.buyQuantityMapper = buyQuantityMapper;
-        this.appMessageTextService = appMessageTextService;
     }
 
     public static List<SizeDto> fetchSizes(BuyQtyResponse buyQtyResponse) {
