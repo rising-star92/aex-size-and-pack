@@ -395,7 +395,6 @@ public class CalculateFinelineBuyQuantity {
         log.info("calculating fineline IS and BS Qty");
         calculateFinelineBuyQuantityMapper.setFinelineChanFixtures(spFineLineChannelFixture, spStyleChannelFixtures);
         spFineLineChannelFixture.setSpStyleChannelFixtures(spStyleChannelFixtures);
-//        calculateFinelineBuyQuantityMapper.updateSpFinelineFixtures(spFineLineChannelFixture);
     }
 
     private void getCustomerChoices(StyleDto styleDto, List<MerchMethodsDto> merchMethodsDtos, APResponse apResponse, BQFPResponse bqfpResponse,
@@ -480,7 +479,6 @@ public class CalculateFinelineBuyQuantity {
         if (!CollectionUtils.isEmpty(ccSpMmReplPacks)) {
             //Replenishment
             List<MerchCatgReplPack> merchCatgReplPacks = buyQtyReplenishmentMapperService.setAllReplenishments(styleDto, merchMethodsDtos.get(0), calculateBuyQtyParallelRequest, calculateBuyQtyResponse, customerChoiceDto, ccSpMmReplPacks, replenishmentCons, ccValidationResult);
-            // todo
             calculateBuyQtyResponse.setMerchCatgReplPacks(merchCatgReplPacks);
         }
 
