@@ -203,11 +203,11 @@ public class CalculateBuyQuantityService {
         return createStatusResponse(failedFinelines, finelinesToDelete);
     }
 
-    private List<StatusResponse> createStatusResponse(Set<Integer> failedFinelines, Set<Integer> finelinesToDelete) {
+    private List<StatusResponse> createStatusResponse(Set<Integer> failedFinelines, Set<Integer> allFinelines) {
         List<StatusResponse> statusResponses = new ArrayList<>();
-        finelinesToDelete.removeIf(failedFinelines::contains);
-        if (!finelinesToDelete.isEmpty()) {
-            String successFinelines = finelinesToDelete.stream().map(Objects::toString).collect(Collectors.joining(", "));
+        allFinelines.removeIf(failedFinelines::contains);
+        if (!allFinelines.isEmpty()) {
+            String successFinelines = allFinelines.stream().map(Objects::toString).collect(Collectors.joining(", "));
             statusResponses.add(new StatusResponse(SUCCESS_STATUS, successFinelines));
         }
         if (!failedFinelines.isEmpty()) {

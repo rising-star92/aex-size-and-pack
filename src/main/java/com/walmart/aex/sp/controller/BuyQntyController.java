@@ -27,7 +27,6 @@ import java.util.*;
 public class BuyQntyController {
 
     public static final String SUCCESS_STATUS = "Success";
-    private static final String FAILURE_STATUS = "Failure";
 
     private final SizeAndPackService sizeAndPackService;
     private final CalculateBuyQuantityService calculateBuyQuantityService;
@@ -73,11 +72,14 @@ public class BuyQntyController {
     }
 
     @MutationMapping
-    public List<StatusResponse> calculateBuyQty(@Argument CalculateBuyQtyRequest calculateBuyQtyRequest) {
+    public StatusResponse calculateBuyQty(@Argument CalculateBuyQtyRequest calculateBuyQtyRequest) {
+        StatusResponse statusResponse = new StatusResponse();
         try {
-            return calculateBuyQuantityService.calculateBuyQuantity(calculateBuyQtyRequest);
+            statusResponse.setStatuses(calculateBuyQuantityService.calculateBuyQuantity(calculateBuyQtyRequest));
+            return statusResponse;
         } catch (Exception e) {
-            return List.of(new StatusResponse(SizeAndPackConstants.ERROR_STATUS, null));
+            statusResponse.setStatuses(List.of(new StatusResponse(SizeAndPackConstants.ERROR_STATUS, null)));
+            return statusResponse;
         }
     }
     

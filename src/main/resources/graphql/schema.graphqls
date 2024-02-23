@@ -29,7 +29,7 @@ type Mutation {
 	updateReplnConfigByFineline(request: UpdateVnPkWhPkReplnRequest!):UpdateVnPkWhPkResponse!
 	updateReplnConfigByCcMerchMethod(request: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse
 	updateReplnConfigByCcSpMmSize(request: UpdateVnPkWhPkReplnRequest!): UpdateVnPkWhPkResponse
-    calculateBuyQty(calculateBuyQtyRequest: CalculateBuyQtyRequest!): [StatusResponse]!
+    calculateBuyQty(calculateBuyQtyRequest: CalculateBuyQtyRequest!): StatusResponse!
     createRunPackOptExecution(request: RunPackOptRequest!): RunPackOptResponse
     updatePackOptConstraints(request:UpdatePackOptConstraintRequestDTO!):StatusResponse
     updateColorCombination(request: ColorCombinationRequest!): StatusResponse!
@@ -164,6 +164,7 @@ input PackOptConstraintRequest {
 type StatusResponse {
     status: String!
     message: String
+    statuses: [StatusResponse]
 }
 
 type UpdateVnPkWhPkResponse {
