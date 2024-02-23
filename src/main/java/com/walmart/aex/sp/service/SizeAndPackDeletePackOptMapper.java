@@ -48,13 +48,13 @@ public class SizeAndPackDeletePackOptMapper {
             }
             Set<SubCatgPackOptimization> subCatgPackOptimizationSet = fetchSubCatPackOpt(merchantPackOptimizationSet, lvl3.getLvl3Nbr(), lvl4.getLvl4Nbr());
             if (!CollectionUtils.isEmpty(subCatgPackOptimizationSet)) {
-                subCatgPackOptimizationSet.forEach(subCatgPackOptimization -> {
-                    subCatgPackOptimization.getFinelinepackOptimization().removeIf(fineLinePlan -> CollectionUtils.isEmpty(fineLinePlan.getStylePackOptimization()) && fineLinePlan.getFinelinePackOptId().getFinelineNbr().equals(fineline.getFinelineNbr()) && fineLinePlan.getFinelinePackOptId().getSubCatgPackOptimizationID().getMerchantPackOptimizationID().getChannelId().equals(STORE_CHANNEL_ID));
-                });
+                subCatgPackOptimizationSet.forEach(subCatgPackOptimization ->
+                    subCatgPackOptimization.getFinelinepackOptimization().removeIf(fineLinePlan -> CollectionUtils.isEmpty(fineLinePlan.getStylePackOptimization()) && fineLinePlan.getFinelinePackOptId().getFinelineNbr().equals(fineline.getFinelineNbr()) && fineLinePlan.getFinelinePackOptId().getSubCatgPackOptimizationID().getMerchantPackOptimizationID().getChannelId().equals(STORE_CHANNEL_ID))
+                );
                 if (strongKeyFineline.getStyles() == null) {
-                    subCatgPackOptimizationSet.forEach(subCatgPackOptimization -> {
-                        subCatgPackOptimization.getFinelinepackOptimization().removeIf(fineLinePlan -> fineLinePlan.getFinelinePackOptId().getFinelineNbr().equals(fineline.getFinelineNbr()) && fineLinePlan.getFinelinePackOptId().getSubCatgPackOptimizationID().getMerchantPackOptimizationID().getChannelId().equals(STORE_CHANNEL_ID));
-                    });
+                    subCatgPackOptimizationSet.forEach(subCatgPackOptimization ->
+                        subCatgPackOptimization.getFinelinepackOptimization().removeIf(fineLinePlan -> fineLinePlan.getFinelinePackOptId().getFinelineNbr().equals(fineline.getFinelineNbr()) && fineLinePlan.getFinelinePackOptId().getSubCatgPackOptimizationID().getMerchantPackOptimizationID().getChannelId().equals(STORE_CHANNEL_ID))
+                    );
                 }
             }
         });

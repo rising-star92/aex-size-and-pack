@@ -96,10 +96,10 @@ public class DCInboundSheetExporter {
 
     private void writeHeaderLine(Sheet sheet, CellStyle style, List<String> headers) {
         Row row = sheet.createRow(ZERO);
-        int column_num = ZERO;
+        int columnNum = ZERO;
 
         for (String colName : headers) {
-            createCell(row, column_num++, colName,style);
+            createCell(row, columnNum++, colName,style);
         }
     }
 

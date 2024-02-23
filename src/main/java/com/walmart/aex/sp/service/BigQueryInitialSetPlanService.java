@@ -567,9 +567,9 @@ public class BigQueryInitialSetPlanService {
         MetricsVolume metricsVolume = new MetricsVolume();
         List<VolumeClusterDTO> currentRows = uniqueRows.get(key);
         HashMap<Integer,StoreDetail> storeMap = new HashMap<>();
-        currentRows.stream().forEach(volumeClusterDTO -> {
+        currentRows.forEach(volumeClusterDTO -> {
             Integer store = volumeClusterDTO.getStore();
-            Integer qty = Optional.ofNullable(volumeClusterDTO.getIs_quantity()).orElse(volumeClusterDTO.getBs_quantity()).intValue() ;
+            Integer qty = Optional.ofNullable(volumeClusterDTO.getIs_quantity()).orElse(volumeClusterDTO.getBs_quantity()) ;
             if(storeMap.containsKey(store)){
                 StoreDetail storeDetail = storeMap.get(store);
                 storeDetail.setQty(storeDetail.getQty() + qty);
@@ -581,7 +581,7 @@ public class BigQueryInitialSetPlanService {
         metricsVolume.setStores(new ArrayList<>(storeMap.values()));
         metricsVolume.setFixtureAllocation(BigDecimal.valueOf(currentRows.get(0).getFixtureAllocation()));
         metricsVolume.setFixtureType(currentRows.get(0).getFixtureType());
-        metricsVolume.setQuantity(currentRows.stream().flatMapToInt(volumeClusterDTO -> IntStream.of(Optional.ofNullable(volumeClusterDTO.getIs_quantity()).orElse(volumeClusterDTO.getBs_quantity()).intValue())).sum());
+        metricsVolume.setQuantity(currentRows.stream().flatMapToInt(volumeClusterDTO -> IntStream.of(Optional.ofNullable(volumeClusterDTO.getIs_quantity()).orElse(volumeClusterDTO.getBs_quantity()))).sum());
         metricsVolume.setVolumeClusterId(key.getClusterId());
         return metricsVolume;
     }

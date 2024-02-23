@@ -17,20 +17,20 @@ public interface CcSpReplnPkConsRepository extends JpaRepository<CcSpMmReplPack,
 
     @Transactional
     @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query(value = "update rc_cc_sp_mm_replpk_fixtr_cons set vendor_pack_cnt = :vnpk,whse_pack_cnt= :whpk, vnpk_whpk_ratio= :vnpkWhpkRatio, repl_pack_cnt = :replenishmentPackCount where plan_id = :plan_id and \n"
-            + "channel_id = :channel_id and rpt_lvl_3_nbr=:rpt_lvl_3_nbr and rpt_lvl_4_nbr=:rpt_lvl_4_nbr and fineline_nbr=:fineline_nbr and style_nbr=:style_nbr and customer_choice=:customer_choice and merch_method_short_desc=:merchMethodDesc and ahs_size_id=:ahs_size_id ", nativeQuery = true)
-    void updateSizeData(@Param("plan_id") Long plan_id, @Param("channel_id") Integer channel_id,
-                        @Param("rpt_lvl_3_nbr") Integer rpt_lvl_3_nbr, @Param("rpt_lvl_4_nbr") Integer rpt_lvl_4_nbr,
-                        @Param("fineline_nbr") Integer fineline_nbr, @Param("style_nbr") String style_nbr,
-                        @Param("customer_choice") String customer_choice,@Param("ahs_size_id") Integer ahs_size_id, @Param("vnpk") Integer vnpk, @Param("whpk") Integer whpk,
+    @Query(value = "update rc_cc_sp_mm_replpk_fixtr_cons set vendor_pack_cnt = :vnpk,whse_pack_cnt= :whpk, vnpk_whpk_ratio= :vnpkWhpkRatio, repl_pack_cnt = :replenishmentPackCount where plan_id = :planId and \n"
+            + "channel_id = :channelId and rpt_lvl_3_nbr=:rptLvl3Nbr and rpt_lvl_4_nbr=:rptLvl4Nbr and fineline_nbr=:finelineNbr and style_nbr=:styleNbr and customer_choice=:customerChoice and merch_method_short_desc=:merchMethodDesc and ahs_size_id=:ahsSizeId ", nativeQuery = true)
+    void updateSizeData(@Param("plan_id") Long planId, @Param("channel_id") Integer channelId,
+                        @Param("rpt_lvl_3_nbr") Integer rptLvl3Nbr, @Param("rpt_lvl_4_nbr") Integer rptLvl4Nbr,
+                        @Param("fineline_nbr") Integer finelineNbr, @Param("style_nbr") String styleNbr,
+                        @Param("customer_choice") String customerChoice,@Param("ahs_size_id") Integer ahsSizeId, @Param("vnpk") Integer vnpk, @Param("whpk") Integer whpk,
                         @Param("vnpkWhpkRatio") Double vnpkWhpkRatio, @Param("replenishmentPackCount") Integer replenishmentPackCount,
                         @Param("merchMethodDesc") String merchMethodDesc);
 
     @Query(value = "select * from dbo.rc_cc_sp_mm_replpk_fixtr_cons where plan_id = :planId and \n"
-            + "channel_id = :channelId and rpt_lvl_3_nbr=:lvl3Nbr and rpt_lvl_4_nbr=:lvl4Nbr and fineline_nbr=:fineline and style_nbr=:style and customer_choice=:customerChoice and merch_method_short_desc=:merchMethodDesc and ahs_size_id=:ahs_size_id ", nativeQuery = true)
+            + "channel_id = :channelId and rpt_lvl_3_nbr=:lvl3Nbr and rpt_lvl_4_nbr=:lvl4Nbr and fineline_nbr=:fineline and style_nbr=:style and customer_choice=:customerChoice and merch_method_short_desc=:merchMethodDesc and ahs_size_id=:ahsSizeId ", nativeQuery = true)
 	List<CcSpMmReplPack> getCcSpMmReplnPkConsData(@Param("planId")Long planId, @Param("channelId") Integer channelId, @Param("lvl3Nbr") Integer lvl3Nbr, 
 			@Param("lvl4Nbr") Integer lvl4Nbr, @Param("fineline") Integer fineline, @Param("style") String style, @Param("customerChoice") String customerChoice, 
-			@Param("merchMethodDesc") String merchMethodDesc, @Param("ahs_size_id") Integer ahs_size_id);
+			@Param("merchMethodDesc") String merchMethodDesc, @Param("ahs_size_id") Integer ahsSizeId);
     
     @Query(value = "select  csmrp from CcSpMmReplPack csmrp where " +
             "csmrp.ccSpReplPackId.ccMmReplPackId.ccReplPackId.styleReplPackId.finelineReplPackId.subCatgReplPackId.merchCatgReplPackId.planId=:planId " +
