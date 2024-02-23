@@ -365,7 +365,7 @@ public class BuyQtyReplenishmentMapperService {
      * This method will reset cal buy qty units to zero in case the calculation failed for validation errors
      * @param merchCatgReplPack
      */
-    public void resetToZeroMerchCatgReplPack(MerchCatgReplPack merchCatgReplPack) {
+    public void resetToZeroMerchCatgReplPack(MerchCatgReplPack merchCatgReplPack, Set<Integer> failedFinelines) {
         if (merchCatgReplPack != null && merchCatgReplPack.getSubReplPack() != null) {
             merchCatgReplPack.getSubReplPack().forEach(subCatgReplPack -> {
                 if (subCatgReplPack.getFinelineReplPack() != null) {
@@ -374,6 +374,7 @@ public class BuyQtyReplenishmentMapperService {
                             List<AppMessageTextResponse> appMessageTexts = appMessageTextService.getAppMessagesByIds(getValidationResult(finelineReplPack.getMessageObj()).getCodes());
                             boolean isFlCalBuyQtyFailed = BuyQtyCommonUtil.isFlCalBuyQtyFailed(appMessageTexts);
                             if (isFlCalBuyQtyFailed) {
+                                failedFinelines.add(finelineReplPack.getFinelineReplPackId().getFinelineNbr());
                                 if (finelineReplPack.getStyleReplPack() != null) {
                                     finelineReplPack.getStyleReplPack().forEach(this::resetToZeroStyleReplnPack);
                                 }

@@ -20,8 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
@@ -245,8 +244,9 @@ class BuyQtyReplenishmentMapperServiceTest {
 		codes.add(170);
 		codes.add(160);
 		validationResult.setCodes(codes);
+		Set<Integer> failedFinelines = new HashSet<>();
 		Mockito.when(objectMapper.readValue("{\"codes\":[160,170]}", ValidationResult.class)).thenReturn(validationResult);
-		buyQtyReplenishmentMapperService.resetToZeroMerchCatgReplPack(merchCatgReplPack);
+		buyQtyReplenishmentMapperService.resetToZeroMerchCatgReplPack(merchCatgReplPack, failedFinelines);
 		Assertions.assertEquals(0, merchCatgReplPack.getReplUnits().intValue());
 		Assertions.assertEquals(0, merchCatgReplPack.getReplPackCnt().intValue());
 		Assertions.assertEquals(0, merchCatgReplPack.getFinalBuyUnits().intValue());
@@ -280,6 +280,7 @@ class BuyQtyReplenishmentMapperServiceTest {
 				});
 			});
 		});
+		assertTrue(failedFinelines.contains(1234));
 	}
 	private List<AppMessageTextResponse> getAppMessageTexts() {
 		List<AppMessageTextResponse> appMessageTextResponseList = new ArrayList<>();
@@ -301,6 +302,7 @@ class BuyQtyReplenishmentMapperServiceTest {
 		subCatgReplPack1.setVendorPackCnt(12);
 		Set<FinelineReplPack> finelineReplPacks = new HashSet<>();
 		FinelineReplPack finelineReplPack = new FinelineReplPack();
+		finelineReplPack.setFinelineReplPackId(new FinelineReplPackId(null, 1234));
 		finelineReplPack.setReplUnits(576);
 		finelineReplPack.setFinalBuyUnits(576);
 		finelineReplPack.setReplPackCnt(48);
