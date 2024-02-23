@@ -188,7 +188,7 @@ public class CalculateFinelineBuyQuantityMapper {
         }
     }
 
-    private ValidationResult getValidationResult(String messageObj) {
+    public ValidationResult getValidationResult(String messageObj) {
         try {
             return StringUtils.isNotEmpty(messageObj) ? objectMapper.readValue(messageObj, ValidationResult.class) : ValidationResult.builder().codes(new HashSet<>()).build();
         } catch (Exception e) {
