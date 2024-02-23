@@ -381,13 +381,13 @@ public class BuyQtyReplenishmentMapperService {
                                 finelineReplPack.setReplUnits(0);
                                 finelineReplPack.setReplPackCnt(0);
                                 finelineReplPack.setFinalBuyUnits(0);
-                                rollupSubCatgReplnPack(subCatgReplPack);
                             }
                         }
                     });
+                    rollupSubCatgReplnPack(subCatgReplPack);
                 }
-                rollupMerchCatgReplPacks(merchCatgReplPack);
             });
+            rollupMerchCatgReplPacks(merchCatgReplPack);
         }
     }
 
