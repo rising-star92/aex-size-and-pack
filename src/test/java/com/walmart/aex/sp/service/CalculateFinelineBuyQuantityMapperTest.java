@@ -1,11 +1,7 @@
 package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.appmessage.AppMessageTextResponse;
-import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixture;
-import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixtureSize;
-import com.walmart.aex.sp.entity.SpFineLineChannelFixture;
-import com.walmart.aex.sp.entity.SpStyleChannelFixture;
-import com.walmart.aex.sp.util.BuyQtyCommonUtil;
+import com.walmart.aex.sp.entity.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,7 +18,7 @@ import java.util.Set;
 import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
-public class CalculateFinelineBuyQuantityMapperTest {
+class CalculateFinelineBuyQuantityMapperTest {
 
     @InjectMocks
     CalculateFinelineBuyQuantityMapper calFlBuyQunatityMapper;
@@ -33,7 +29,7 @@ public class CalculateFinelineBuyQuantityMapperTest {
     void updateSpFinelineFixturesTest() {
         SpFineLineChannelFixture spFineLineChannelFixture = getSpFlChannelFixtures();
         Mockito.when(appMessageTextService.getAppMessagesByIds(any())).thenReturn(getAppMessageTexts());
-        calFlBuyQunatityMapper.resetToZeroSpFinelineFixtures(spFineLineChannelFixture);
+        calFlBuyQunatityMapper.resetToZeroSpFinelineFixtures(spFineLineChannelFixture, new HashSet<>());
         Assertions.assertEquals(0, spFineLineChannelFixture.getInitialSetQty().intValue());
         Assertions.assertEquals(0, spFineLineChannelFixture.getBumpPackQty().intValue());
         Assertions.assertEquals(0, spFineLineChannelFixture.getBuyQty().intValue());
@@ -65,7 +61,10 @@ public class CalculateFinelineBuyQuantityMapperTest {
         return appMessageTextResponseList;
     }
     private SpFineLineChannelFixture getSpFlChannelFixtures() {
+        SpFineLineChannelFixtureId spFineLineChannelFixtureId = new SpFineLineChannelFixtureId();
+        spFineLineChannelFixtureId.setFineLineNbr(1234);
         SpFineLineChannelFixture spFineLineChannelFixture = new SpFineLineChannelFixture();
+        spFineLineChannelFixture.setSpFineLineChannelFixtureId(spFineLineChannelFixtureId);
         spFineLineChannelFixture.setSpStyleChannelFixtures(getSpStyleChanFixture());
         spFineLineChannelFixture.setInitialSetQty(1000);
         spFineLineChannelFixture.setBumpPackQty(1000);

@@ -1,5 +1,6 @@
 package com.walmart.aex.sp.service;
 
+import com.walmart.aex.sp.dto.StatusResponse;
 import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.entity.FinelinePlan;
 import com.walmart.aex.sp.entity.MerchCatgReplPack;
@@ -14,15 +15,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
+
+import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
 
 @Slf4j
 @Service
@@ -47,7 +45,7 @@ public class CalculateBuyQuantityService {
     }
 
     @Transactional
-    public void calculateBuyQuantity(CalculateBuyQtyRequest calculateBuyQtyRequest) {
+    public List<StatusResponse> calculateBuyQuantity(CalculateBuyQtyRequest calculateBuyQtyRequest) {
         List<CalculateBuyQtyParallelRequest> calculateBuyQtyParallelRequests = new ArrayList<>();
         log.info("Received calculateBuyQtyRequest payload to calculate buy quantity: {} ",calculateBuyQtyRequest);
         try {
@@ -69,10 +67,14 @@ public class CalculateBuyQuantityService {
             } else
                 log.info("No Categories available to calculate buy quantity for request: {}", calculateBuyQtyRequest);
             if (!CollectionUtils.isEmpty(calculateBuyQtyParallelRequests)) {
-                calculateFinelinesParallel(calculateBuyQtyRequest, calculateBuyQtyParallelRequests);
-            } else log.info("No Fineline to process");
+                return calculateFinelinesParallel(calculateBuyQtyRequest, calculateBuyQtyParallelRequests);
+            } else {
+                log.info("No Fineline to process");
+                return List.of(new StatusResponse(ERROR_STATUS, null));
+            }
         } catch (Exception e) {
             log.error("Failed to Calculate Buy Quantity. Error: ", e);
+            throw new CustomException("Failed to Calculate Buy Quantity: " + e.getMessage());
         }
     }
 
@@ -106,7 +108,8 @@ public class CalculateBuyQuantityService {
         return calculateBuyQtyParallelRequest;
     }
 
-    private void calculateFinelinesParallel(CalculateBuyQtyRequest calculateBuyQtyRequest, List<CalculateBuyQtyParallelRequest> calculateBuyQtyParallelRequests) {
+    private List<StatusResponse> calculateFinelinesParallel(CalculateBuyQtyRequest calculateBuyQtyRequest, List<CalculateBuyQtyParallelRequest> calculateBuyQtyParallelRequests) {
+        Set<Integer> failedFinelines = new HashSet<>();
 
         Set<Integer> finelinesToDelete = calculateBuyQtyParallelRequests.stream()
               .map(CalculateBuyQtyParallelRequest::getFinelineNbr)
@@ -145,8 +148,6 @@ public class CalculateBuyQuantityService {
                             calculateBuyQtyResponse =  calculateFinelineBuyQuantity.calculateFinelineBuyQty(calculateBuyQtyRequest, calculateBuyQtyParallelRequest, calculateBuyQtyResponse);
                         }
 
-                        Set<SpFineLineChannelFixture> spFineLineChannelFixturesSet = new HashSet<>(calculateBuyQtyResponse.getSpFineLineChannelFixtures());
-                        Set<MerchCatgReplPack> merchCatgReplPacksSet = new HashSet<>(calculateBuyQtyResponse.getMerchCatgReplPacks());
                         return calculateBuyQtyResponse ;
 
                     } catch (Exception e) {
@@ -190,10 +191,30 @@ public class CalculateBuyQuantityService {
               .flatMap(Collection::stream)
               .collect(Collectors.toSet());
         //update the final units based on validation errors
-        allMerchCatReplns.forEach(buyQtyReplenishmentMapperService::resetToZeroMerchCatgReplPack);
-        allSPFinelineChannelFixtures.forEach(calculateFinelineBuyQuantityMapper::resetToZeroSpFinelineFixtures);
+        for (SpFineLineChannelFixture spFinelineChannelFixture : allSPFinelineChannelFixtures) {
+            calculateFinelineBuyQuantityMapper.resetToZeroSpFinelineFixtures(spFinelineChannelFixture, failedFinelines);
+        }
+        for (MerchCatgReplPack merchCatgReplPack : allMerchCatReplns) {
+            buyQtyReplenishmentMapperService.resetToZeroMerchCatgReplPack(merchCatgReplPack, failedFinelines);
+        }
         buyQuantityCommonRepository.getSpFineLineChannelFixtureRepository().saveAll(allSPFinelineChannelFixtures);
         replenishmentCommonRepository.getMerchCatgReplPackRepository().saveAll(allMerchCatReplns);
+
+        return createStatusResponse(failedFinelines, finelinesToDelete);
+    }
+
+    private List<StatusResponse> createStatusResponse(Set<Integer> failedFinelines, Set<Integer> finelinesToDelete) {
+        List<StatusResponse> statusResponses = new ArrayList<>();
+        finelinesToDelete.removeIf(failedFinelines::contains);
+        if (!finelinesToDelete.isEmpty()) {
+            String successFinelines = finelinesToDelete.stream().map(Objects::toString).collect(Collectors.joining(", "));
+            statusResponses.add(new StatusResponse(SUCCESS_STATUS, successFinelines));
+        }
+        if (!failedFinelines.isEmpty()) {
+            String failedFinelinesStr = failedFinelines.stream().map(Objects::toString).collect(Collectors.joining(", "));
+            statusResponses.add(new StatusResponse(ERROR_STATUS, failedFinelinesStr));
+        }
+        return statusResponses;
     }
 
     private void deleteExistingReplnValues(CalculateBuyQtyRequest calculateBuyQtyRequest, Set<Integer> replFinelinesToDelete) {

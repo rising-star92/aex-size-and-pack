@@ -142,11 +142,12 @@ public class CalculateFinelineBuyQuantityMapper {
         spCustomerChoiceChannelFixture.setMessageObj(setMessage(ccValidationResult));
     }
 
-    protected void resetToZeroSpFinelineFixtures(SpFineLineChannelFixture spFineLineChannelFixture) {
+    protected void resetToZeroSpFinelineFixtures(SpFineLineChannelFixture spFineLineChannelFixture, Set<Integer> failedFinelines) {
         if (spFineLineChannelFixture != null) {
             List<AppMessageTextResponse> appMessageTexts = appMessageTextService.getAppMessagesByIds(getValidationResult(spFineLineChannelFixture.getMessageObj()).getCodes());
             boolean isFlCalBuyQtyFailed = BuyQtyCommonUtil.isFlCalBuyQtyFailed(appMessageTexts);
             if (isFlCalBuyQtyFailed && !CollectionUtils.isEmpty(spFineLineChannelFixture.getSpStyleChannelFixtures())) {
+                failedFinelines.add(spFineLineChannelFixture.getSpFineLineChannelFixtureId().getFineLineNbr());
                 spFineLineChannelFixture.getSpStyleChannelFixtures().forEach(this::resetToZeroSpStyleFixtures);
                 spFineLineChannelFixture.setInitialSetQty(0);
                 spFineLineChannelFixture.setBumpPackQty(0);
