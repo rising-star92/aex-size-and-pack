@@ -55,9 +55,9 @@ public class CalculateBuyQuantityService {
                     if (!CollectionUtils.isEmpty(lvl3Dto.getLvl4List())) {
                         lvl3Dto.getLvl4List().forEach(lvl4Dto -> {
                             if (!CollectionUtils.isEmpty(lvl4Dto.getFinelines())) {
-                                lvl4Dto.getFinelines().forEach(finelineDto -> {
-                                    calculateBuyQtyParallelRequests.add(createCalculateBuyQtyParallelRequest(finelinePlanList, lvl3Dto, lvl4Dto, finelineDto, calculateBuyQtyRequest));
-                                });
+                                lvl4Dto.getFinelines().forEach(finelineDto ->
+                                    calculateBuyQtyParallelRequests.add(createCalculateBuyQtyParallelRequest(finelinePlanList, lvl3Dto, lvl4Dto, finelineDto, calculateBuyQtyRequest))
+                                );
                             } else
                                 log.info("No Finelines available to calculate buy quantity for request: {}", calculateBuyQtyRequest);
                         });
@@ -84,8 +84,8 @@ public class CalculateBuyQuantityService {
                 .map(Lvl3Dto::getLvl4List).flatMap(Collection::stream)
                 .map(Lvl4Dto::getFinelines).flatMap(Collection::stream)
                 .mapToInt(FinelineDto::getFinelineNbr).boxed().collect(Collectors.toList());
-
-        return finelinePlanRepository.findAllByFinelinePlanId_SubCatPlanId_MerchCatPlanId_PlanIdAndFinelinePlanId_FinelineNbrIn(calculateBuyQtyRequest.getPlanId(), finelines).get();
+        Optional<List<FinelinePlan>> finelinePlanList = finelinePlanRepository.findAllByFinelinePlanId_SubCatPlanId_MerchCatPlanId_PlanIdAndFinelinePlanId_FinelineNbrIn(calculateBuyQtyRequest.getPlanId(), finelines);
+        return finelinePlanList.orElse(null);
     }
 
     private static CalculateBuyQtyParallelRequest createCalculateBuyQtyParallelRequest(List<FinelinePlan> finelinePlanList, Lvl3Dto lvl3Dto, Lvl4Dto lvl4Dto, FinelineDto finelineDto, CalculateBuyQtyRequest calculateBuyQtyRequest) {

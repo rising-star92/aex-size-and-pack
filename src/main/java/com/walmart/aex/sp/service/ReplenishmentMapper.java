@@ -133,7 +133,7 @@ public class ReplenishmentMapper {
                 .filter(finelineDto -> replenishmentResponseDTO.getFinelineNbr().equals(finelineDto.getFinelineNbr())).findFirst()
                 .ifPresentOrElse(finelineDto -> {
                             if (finelineNbr != null) {
-                                finelineDto.setStyles(mapReplenishmentStyles(replenishmentResponseDTO, finelineDto, finelineNbr, ccId));
+                                finelineDto.setStyles(mapReplenishmentStyles(replenishmentResponseDTO, finelineDto, ccId));
                             }
                             else updateFlSpMetrics(replenishmentResponseDTO, finelineDto.getMetrics(), finelineNbr, ccId);
                         },
@@ -156,7 +156,7 @@ public class ReplenishmentMapper {
             metricsDto.setReplenishmentPacks(replenishmentResponseDTO.getFinelineReplPack());
             fineline.setMetrics(metricsDto);
         } else {
-            fineline.setStyles(mapReplenishmentStyles(replenishmentResponseDTO, fineline, finelineNbr, ccId));
+            fineline.setStyles(mapReplenishmentStyles(replenishmentResponseDTO, fineline, ccId));
         }
         finelineDtoList.add(fineline);
     }
@@ -171,21 +171,21 @@ public class ReplenishmentMapper {
         }
     }
 
-    private List<StyleDto> mapReplenishmentStyles(ReplenishmentResponseDTO replenishmentResponseDTO, FinelineDto fineline, Integer finelineNbr, String ccId) {
+    private List<StyleDto> mapReplenishmentStyles(ReplenishmentResponseDTO replenishmentResponseDTO, FinelineDto fineline, String ccId) {
         List<StyleDto> styleDtoList = Optional.ofNullable(fineline.getStyles()).orElse(new ArrayList<>());
 
         styleDtoList.stream()
                 .filter(styleDto -> replenishmentResponseDTO.getStyleNbr().equals(styleDto.getStyleNbr())).findFirst()
                 .ifPresentOrElse(styleDto -> {
                             updateCcSpMetrics(replenishmentResponseDTO, styleDto.getMetrics(), ccId);
-                            styleDto.setCustomerChoices(mapReplenishmentCc(replenishmentResponseDTO, styleDto, finelineNbr, ccId));
+                            styleDto.setCustomerChoices(mapReplenishmentCc(replenishmentResponseDTO, styleDto, ccId));
                         }
                                 ,
-                        () -> setStyleSP(replenishmentResponseDTO, styleDtoList, finelineNbr, ccId));
+                        () -> setStyleSP(replenishmentResponseDTO, styleDtoList, ccId));
         return styleDtoList;
     }
 
-    private void setStyleSP(ReplenishmentResponseDTO replenishmentResponseDTO, List<StyleDto> styleDtoList, Integer finelineNbr, String ccId) {
+    private void setStyleSP(ReplenishmentResponseDTO replenishmentResponseDTO, List<StyleDto> styleDtoList, String ccId) {
 
         StyleDto styleDto = new StyleDto();
         styleDto.setStyleNbr(replenishmentResponseDTO.getStyleNbr());
@@ -198,16 +198,16 @@ public class ReplenishmentMapper {
             metricsDto.setWarehousePack(replenishmentResponseDTO.getStyleWhsePackCount());
             metricsDto.setPackRatio(replenishmentResponseDTO.getStyleVnpkWhpkRatio());
             metricsDto.setReplenishmentPacks(replenishmentResponseDTO.getStyleReplPack());
-            styleDto.setCustomerChoices(mapReplenishmentCc(replenishmentResponseDTO, styleDto, finelineNbr, ccId));
+            styleDto.setCustomerChoices(mapReplenishmentCc(replenishmentResponseDTO, styleDto, ccId));
             styleDto.setMetrics(metricsDto);
 
         } else {
-            styleDto.setCustomerChoices(mapReplenishmentCc(replenishmentResponseDTO, styleDto, finelineNbr, ccId));
+            styleDto.setCustomerChoices(mapReplenishmentCc(replenishmentResponseDTO, styleDto, ccId));
         }
         styleDtoList.add(styleDto);
     }
 
-    private List<CustomerChoiceDto> mapReplenishmentCc(ReplenishmentResponseDTO replenishmentResponseDTO, StyleDto styleDto, Integer finelineNbr, String ccId) {
+    private List<CustomerChoiceDto> mapReplenishmentCc(ReplenishmentResponseDTO replenishmentResponseDTO, StyleDto styleDto,String ccId) {
         List<CustomerChoiceDto> customerChoiceList = Optional.ofNullable(styleDto.getCustomerChoices()).orElse(new ArrayList<>());
 
         customerChoiceList.stream()
@@ -218,7 +218,7 @@ public class ReplenishmentMapper {
                             }
                             else updateCcSpMetrics(replenishmentResponseDTO, customerChoiceDto.getMetrics(), ccId);
                         },
-                        () -> setCcSP(replenishmentResponseDTO, customerChoiceList, finelineNbr, ccId));
+                        () -> setCcSP(replenishmentResponseDTO, customerChoiceList, ccId));
         return customerChoiceList;
 
     }
@@ -233,7 +233,7 @@ public class ReplenishmentMapper {
         }
     }
 
-    private void setCcSP(ReplenishmentResponseDTO replenishmentResponseDTO, List<CustomerChoiceDto> customerChoiceDtoList, Integer finelineNbr, String ccId) {
+    private void setCcSP(ReplenishmentResponseDTO replenishmentResponseDTO, List<CustomerChoiceDto> customerChoiceDtoList, String ccId) {
 
         CustomerChoiceDto customerChoiceDto = new CustomerChoiceDto();
         customerChoiceDto.setCcId(replenishmentResponseDTO.getCcId());
