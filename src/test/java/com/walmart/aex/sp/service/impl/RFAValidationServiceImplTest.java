@@ -14,7 +14,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -48,27 +47,6 @@ class RFAValidationServiceImplTest {
         merchMethodsDtoList = List.of(merchMethodsDto);
 
         apResponse = new APResponse();
-    }
-
-    @Test
-    void validateRFADataWithEmptyListTest() {
-        apResponse.setRfaSizePackData(new ArrayList<>());
-        validationResult = rfaValidationService.validateRFAData(merchMethodsDtoList, apResponse, "Style1", customerChoiceDto);
-        assertEquals(1, validationResult.getCodes().size());
-        assertEquals(AppMessage.RFA_NOT_AVAILABLE.getId(), validationResult.getCodes().toArray()[0]);
-    }
-
-    @Test
-    void validateRFADataWithCCNotAvailableTest() {
-        RFASizePackData rfaSizePackData1 = new RFASizePackData();
-        rfaSizePackData1.setCustomer_choice("CC2");
-        rfaSizePackData1.setFixture_type("WALLS");
-        rfaSizePackData1.setColor_family("BLUE");
-
-        apResponse.setRfaSizePackData(List.of(rfaSizePackData1));
-        validationResult = rfaValidationService.validateRFAData(merchMethodsDtoList, apResponse, "Style1", customerChoiceDto);
-        assertEquals(1, validationResult.getCodes().size());
-        assertEquals(AppMessage.RFA_CC_NOT_AVAILABLE.getId(), validationResult.getCodes().toArray()[0]);
     }
 
     @Test

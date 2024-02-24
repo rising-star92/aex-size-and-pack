@@ -13,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -26,22 +25,11 @@ public class RFAValidationServiceImpl implements RFAValidationService {
 
     @Override
     public ValidationResult validateRFAData(List<MerchMethodsDto> merchMethodsDtoList, APResponse apResponse, String styleNbr, CustomerChoiceDto customerChoiceDto) {
-        Set<Integer> rfaValidationCodes = new HashSet<>();
-        if (apResponse.getRfaSizePackData().isEmpty()) {
-            // RFA is empty
-            rfaValidationCodes.add(AppMessage.RFA_NOT_AVAILABLE.getId());
-            return buildResult(rfaValidationCodes);
-        }
         List<RFASizePackData> rfaSizePackDataList = apResponse.getRfaSizePackData().stream().filter(rfa -> rfa.getCustomer_choice().equalsIgnoreCase(customerChoiceDto.getCcId())).collect(Collectors.toList());
-        if (rfaSizePackDataList.isEmpty()) {
-            // RFA is missing for CC
-            rfaValidationCodes.add(AppMessage.RFA_CC_NOT_AVAILABLE.getId());
-            return buildResult(rfaValidationCodes);
-        }
         Set<String> fixtureTypes = merchMethodsDtoList.stream().map(mm -> FixtureTypeRollup.getFixtureTypeFromId(mm.getFixtureTypeRollupId())).collect(Collectors.toSet());
         Integer fixtureCode = validateFixture(fixtureTypes, rfaSizePackDataList);
         Integer colorFamilyCode = validateColorFamily(customerChoiceDto, rfaSizePackDataList);
-        rfaValidationCodes.addAll(Stream.of(fixtureCode, colorFamilyCode).filter(Objects::nonNull).collect(Collectors.toList()));
+        Set<Integer> rfaValidationCodes = Stream.of(fixtureCode, colorFamilyCode).filter(Objects::nonNull).collect(Collectors.toSet());
         return buildResult(rfaValidationCodes);
     }
 
