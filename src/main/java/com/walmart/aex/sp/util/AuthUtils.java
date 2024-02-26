@@ -10,10 +10,6 @@ import java.util.Optional;
 
 @UtilityClass
 public class AuthUtils {
-    public static String getAuthorizationToken() {
-        User authenticatedUser = (User) Optional.ofNullable(SecurityContextHolder.getContext()).flatMap(context -> Optional.ofNullable(context.getAuthentication()).map(Authentication::getPrincipal)).orElse(null);
-        return Optional.ofNullable(authenticatedUser).flatMap(authUser -> Optional.ofNullable(authUser.getAuditUserInfo()).map(AuditUserInfo::getUsernameToken)).orElse(null);
-    }
 
     public static String getAuthenticatedUserName() {
         User authenticatedUser = (User) Optional.ofNullable(SecurityContextHolder.getContext()).flatMap(context -> Optional.ofNullable(context.getAuthentication()).map(Authentication::getPrincipal)).orElse(null);

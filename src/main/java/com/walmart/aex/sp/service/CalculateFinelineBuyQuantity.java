@@ -341,14 +341,15 @@ public class CalculateFinelineBuyQuantity {
                 getStyles(finelineDto.getStyles(), merchMethodsDtos, apResponse, bqfpResponse, spFineLineChannelFixture, calculateBuyQtyParallelRequest, calculateBuyQtyResponse);
             } else log.info("Styles Size Profiles are empty to calculate buy Qty: {}", finelineDto);
             spFineLineChannelFixture.setBumpPackCnt(maxBumpCount);
-            updateFinelineMetadata(spFineLineChannelFixture);
+            updateFinelineMetadata(spFineLineChannelFixture,calculateBuyQtyParallelRequest.getUserId());
             spFineLineChannelFixtures.add(spFineLineChannelFixture);
         });
         calculateBuyQtyResponse.setSpFineLineChannelFixtures(spFineLineChannelFixtures);
     }
 
-    private void updateFinelineMetadata(SpFineLineChannelFixture spFineLineChannelFixture) {
-        spFineLineChannelFixture.setCreateUserId(AuthUtils.getAuthenticatedUserName());
+    private void updateFinelineMetadata(SpFineLineChannelFixture spFineLineChannelFixture,String userId ) {
+        spFineLineChannelFixture.setCreateUserId(userId);
+        spFineLineChannelFixture.setLastModifiedUserId(userId);
         spFineLineChannelFixture.setCreateTs(new Date());
         spFineLineChannelFixture.setLastModifiedTs(new Date());
     }

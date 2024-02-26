@@ -7,6 +7,7 @@ import lombok.ToString;
 @ToString
 public class CalculateBuyQtyParallelRequest {
     private Long planId;
+    private String userId;
     private String channel;
     private Integer lvl0Nbr;
     private Integer lvl1Nbr;

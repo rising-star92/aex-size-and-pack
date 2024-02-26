@@ -9,6 +9,7 @@ import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.repository.FinelinePlanRepository;
 import com.walmart.aex.sp.repository.common.BuyQuantityCommonRepository;
 import com.walmart.aex.sp.repository.common.ReplenishmentCommonRepository;
+import com.walmart.aex.sp.util.AuthUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +41,7 @@ public class CalculateBuyQuantityService {
     @Transactional
     public void calculateBuyQuantity(CalculateBuyQtyRequest calculateBuyQtyRequest) {
         List<CalculateBuyQtyParallelRequest> calculateBuyQtyParallelRequests = new ArrayList<>();
+        calculateBuyQtyRequest.setUserId(AuthUtils.getAuthenticatedUserName());
         log.info("Received calculateBuyQtyRequest payload to calculate buy quantity: {} ",calculateBuyQtyRequest);
         try {
             List<FinelinePlan> finelinePlanList = getFinelinePlans(calculateBuyQtyRequest);
@@ -80,6 +82,7 @@ public class CalculateBuyQuantityService {
     private static CalculateBuyQtyParallelRequest createCalculateBuyQtyParallelRequest(List<FinelinePlan> finelinePlanList, Lvl3Dto lvl3Dto, Lvl4Dto lvl4Dto, FinelineDto finelineDto, CalculateBuyQtyRequest calculateBuyQtyRequest) {
         CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest = new CalculateBuyQtyParallelRequest();
         calculateBuyQtyParallelRequest.setPlanId(calculateBuyQtyRequest.getPlanId());
+        calculateBuyQtyParallelRequest.setUserId(calculateBuyQtyRequest.getUserId());
         calculateBuyQtyParallelRequest.setChannel(calculateBuyQtyRequest.getChannel());
         calculateBuyQtyParallelRequest.setLvl3Nbr(lvl3Dto.getLvl3Nbr());
         calculateBuyQtyParallelRequest.setLvl4Nbr(lvl4Dto.getLvl4Nbr());
