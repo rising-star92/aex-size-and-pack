@@ -33,7 +33,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import static com.walmart.aex.sp.util.SizeAndPackConstants.DEFAULT_COLOR_FAMILY;
-import static com.walmart.aex.sp.util.SizeAndPackConstants.VP_DEFAULT;
 
 @Service
 @Slf4j
@@ -57,6 +56,7 @@ public class CalculateFinelineBuyQuantity {
     private final CalculateBumpPackQtyService calculateBumpPackQtyService;
     private final ValidationService validationService;
     private final CalculateFinelineBuyQuantityMapper calculateFinelineBuyQuantityMapper;
+
     @ManagedConfiguration
     BuyQtyProperties buyQtyProperties;
 
@@ -342,6 +342,7 @@ public class CalculateFinelineBuyQuantity {
             } else log.info("Styles Size Profiles are empty to calculate buy Qty: {}", finelineDto);
             spFineLineChannelFixture.setBumpPackCnt(maxBumpCount);
             updateFinelineMetadata(spFineLineChannelFixture,calculateBuyQtyParallelRequest.getUserId());
+            spFineLineChannelFixture.setMessageObj(addValidationCodesFromStrategy(finelineDto.getMetadata(), spFineLineChannelFixture.getMessageObj()));
             spFineLineChannelFixtures.add(spFineLineChannelFixture);
         });
         calculateBuyQtyResponse.setSpFineLineChannelFixtures(spFineLineChannelFixtures);
@@ -352,6 +353,14 @@ public class CalculateFinelineBuyQuantity {
         spFineLineChannelFixture.setLastModifiedUserId(userId);
         spFineLineChannelFixture.setCreateTs(new Date());
         spFineLineChannelFixture.setLastModifiedTs(new Date());
+    }
+    private String addValidationCodesFromStrategy(Metadata metadata, String messageObj) {
+        if (Objects.nonNull(metadata) && Objects.nonNull(metadata.getValidationCodes()) && !metadata.getValidationCodes().isEmpty()) {
+            ValidationResult validationResult = calculateFinelineBuyQuantityMapper.getValidationResult(messageObj);
+            validationResult.getCodes().addAll(metadata.getValidationCodes());
+            return calculateFinelineBuyQuantityMapper.setMessage(validationResult);
+        }
+        return messageObj;
     }
 
     private Integer getMaxBumpCountVal(Set<CustomerChoice> customerChoices) {

@@ -460,7 +460,7 @@ class ReplenishmentServiceTest {
         ReplenishmentResponseDTO replenishmentResponseDTO1 = new ReplenishmentResponseDTO(88L, 50000, null, 34, "123", 6420,
                 "folded", 12238, "wall", 31526, "rack", 5471, "34_5471_3_24_001", "34_5471_3_24_001_CHINO TAN", "4321", 3174, 543, 12, 45, 54.0, 34, "L",
                 "Black Soot", "Black", 1125, 1125, 1125, 2511, 12.0, 5431,"","");
-
+        replenishmentResponseDTO1.setFinelineReplQty(1125);
         replenishmentResponseDTOS.add(replenishmentResponseDTO1);
         replenishmentRequest.setPlanId(12l);
         replenishmentRequest.setChannel("store");

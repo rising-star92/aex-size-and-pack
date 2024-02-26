@@ -1,8 +1,6 @@
 package com.walmart.aex.sp.repository;
 
-import com.walmart.aex.sp.dto.packoptimization.PackOptFinelinesByStatusResponse;
 import com.walmart.aex.sp.entity.AnalyticsMlSend;
-import com.walmart.aex.sp.entity.CcSpMmReplPack;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

@@ -18,7 +18,7 @@ import java.io.IOException;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class BigQueryClusterServiceTest {
+class BigQueryClusterServiceTest {
     @InjectMocks
     private BigQueryClusterService bigQueryClusterService;
     @Mock

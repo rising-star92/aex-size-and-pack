@@ -164,6 +164,7 @@ input PackOptConstraintRequest {
 type StatusResponse {
     status: String!
     message: String
+    statuses: [StatusResponse]
 }
 
 type UpdateVnPkWhPkResponse {

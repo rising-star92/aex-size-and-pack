@@ -1,11 +1,9 @@
 package com.walmart.aex.sp.dto.buyquantity;
 
-import com.walmart.aex.sp.dto.assortproduct.ColorDefinition;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

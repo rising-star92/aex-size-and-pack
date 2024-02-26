@@ -5,13 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.assortproduct.ColorDefinition;
 import com.walmart.aex.sp.dto.assortproduct.RFASizePackData;
 import com.walmart.aex.sp.dto.assortproduct.RFASizePackRequest;
-import com.walmart.aex.sp.dto.buyquantity.BuyQtyQueryRequest;
-import com.walmart.aex.sp.dto.buyquantity.BuyQtyRequest;
-import com.walmart.aex.sp.dto.buyquantity.BuyQtyResponse;
-import com.walmart.aex.sp.dto.buyquantity.CalculateBuyQtyRequest;
+import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.dto.StatusResponse;
 import com.walmart.aex.sp.enums.ChannelType;
 import com.walmart.aex.sp.service.*;
+import com.walmart.aex.sp.util.SizeAndPackConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
@@ -21,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @Slf4j
@@ -29,7 +27,6 @@ import java.util.List;
 public class BuyQntyController {
 
     public static final String SUCCESS_STATUS = "Success";
-    private static final String FAILURE_STATUS = "Failure";
 
     private final SizeAndPackService sizeAndPackService;
     private final CalculateBuyQuantityService calculateBuyQuantityService;
@@ -76,18 +73,14 @@ public class BuyQntyController {
 
     @MutationMapping
     public StatusResponse calculateBuyQty(@Argument CalculateBuyQtyRequest calculateBuyQtyRequest) {
-
-        StatusResponse response = new StatusResponse();
-
+        StatusResponse statusResponse = new StatusResponse();
         try {
-            calculateBuyQuantityService.calculateBuyQuantity(calculateBuyQtyRequest);
-            response.setStatus(SUCCESS_STATUS);
-            return response;
+            statusResponse.setStatuses(calculateBuyQuantityService.calculateBuyQuantity(calculateBuyQtyRequest));
+            return statusResponse;
         } catch (Exception e) {
-            response.setStatus(FAILURE_STATUS);
+            statusResponse.setStatuses(List.of(new StatusResponse(SizeAndPackConstants.ERROR_STATUS, null)));
+            return statusResponse;
         }
-        response.setStatus(SUCCESS_STATUS);
-        return response;
     }
     
 	@QueryMapping

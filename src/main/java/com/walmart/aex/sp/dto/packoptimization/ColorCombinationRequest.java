@@ -1,6 +1,5 @@
 package com.walmart.aex.sp.dto.packoptimization;
 
-import com.walmart.aex.sp.enums.Action;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
