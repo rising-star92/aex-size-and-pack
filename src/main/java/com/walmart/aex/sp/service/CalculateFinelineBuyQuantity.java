@@ -15,7 +15,6 @@ import com.walmart.aex.sp.enums.VdLevelCode;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.exception.SizeAndPackException;
 import com.walmart.aex.sp.properties.BuyQtyProperties;
-import com.walmart.aex.sp.util.AuthUtils;
 import com.walmart.aex.sp.util.BuyQtyCommonUtil;
 import com.walmart.aex.sp.util.SizeAndPackConstants;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
