@@ -111,12 +111,12 @@ public class CalculateBuyQuantityService {
     private List<StatusResponse> calculateFinelinesParallel(CalculateBuyQtyRequest calculateBuyQtyRequest, List<CalculateBuyQtyParallelRequest> calculateBuyQtyParallelRequests) {
         Set<Integer> failedFinelines = new HashSet<>();
 
-        Set<Integer> finelinesToDelete = calculateBuyQtyParallelRequests.stream()
+        Set<Integer> requestFinelines = calculateBuyQtyParallelRequests.stream()
               .map(CalculateBuyQtyParallelRequest::getFinelineNbr)
               .collect(Collectors.toSet());
 
-        deleteExistingReplnValues(calculateBuyQtyRequest, finelinesToDelete);
-        deleteExistingBuyQuantityValues(calculateBuyQtyRequest, finelinesToDelete);
+        deleteExistingReplnValues(calculateBuyQtyRequest, requestFinelines);
+        deleteExistingBuyQuantityValues(calculateBuyQtyRequest, requestFinelines);
 
         List<SpFineLineChannelFixture> spFineLineChannelFixtures1 = buyQuantityCommonRepository.getSpFineLineChannelFixtureRepository().findSpFineLineChannelFixtureBySpFineLineChannelFixtureId_planIdAndSpFineLineChannelFixtureId_channelId(calculateBuyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(calculateBuyQtyRequest.getChannel())).orElse(new ArrayList<>());
 
@@ -195,12 +195,12 @@ public class CalculateBuyQuantityService {
             calculateFinelineBuyQuantityMapper.resetToZeroSpFinelineFixtures(spFinelineChannelFixture, failedFinelines);
         }
         for (MerchCatgReplPack merchCatgReplPack : allMerchCatReplns) {
-            buyQtyReplenishmentMapperService.resetToZeroMerchCatgReplPack(merchCatgReplPack, failedFinelines);
+            buyQtyReplenishmentMapperService.resetToZeroMerchCatgReplPack(merchCatgReplPack, requestFinelines, failedFinelines);
         }
         buyQuantityCommonRepository.getSpFineLineChannelFixtureRepository().saveAll(allSPFinelineChannelFixtures);
         replenishmentCommonRepository.getMerchCatgReplPackRepository().saveAll(allMerchCatReplns);
 
-        return createStatusResponse(failedFinelines, finelinesToDelete);
+        return createStatusResponse(failedFinelines, requestFinelines);
     }
 
     private List<StatusResponse> createStatusResponse(Set<Integer> failedFinelines, Set<Integer> allFinelines) {
