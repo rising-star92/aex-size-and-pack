@@ -49,6 +49,7 @@ public class CalculateBuyQuantityService {
     public List<StatusResponse> calculateBuyQuantity(CalculateBuyQtyRequest calculateBuyQtyRequest) {
         List<CalculateBuyQtyParallelRequest> calculateBuyQtyParallelRequests = new ArrayList<>();
         calculateBuyQtyRequest.setUserId(getAuthenticatedUserName());
+        calculateBuyQtyRequest.setCreateTs(new Date());
         log.info("Received calculateBuyQtyRequest payload to calculate buy quantity: {} ",calculateBuyQtyRequest);
         try {
             List<FinelinePlan> finelinePlanList = getFinelinePlans(calculateBuyQtyRequest);
@@ -94,6 +95,7 @@ public class CalculateBuyQuantityService {
         CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest = new CalculateBuyQtyParallelRequest();
         calculateBuyQtyParallelRequest.setPlanId(calculateBuyQtyRequest.getPlanId());
         calculateBuyQtyParallelRequest.setUserId(calculateBuyQtyRequest.getUserId());
+        calculateBuyQtyParallelRequest.setCreateTs(calculateBuyQtyRequest.getCreateTs());
         calculateBuyQtyParallelRequest.setChannel(calculateBuyQtyRequest.getChannel());
         calculateBuyQtyParallelRequest.setLvl3Nbr(lvl3Dto.getLvl3Nbr());
         calculateBuyQtyParallelRequest.setLvl4Nbr(lvl4Dto.getLvl4Nbr());
