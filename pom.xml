@@ -92,11 +92,11 @@
             <artifactId>spring-boot-starter-graphql</artifactId>
         </dependency>
 
-	  <!-- Google BigQuery dependency -->
-	    <dependency>
-          <groupId>com.google.cloud</groupId>
-          <artifactId>google-cloud-bigquery</artifactId>
-          <version>${google.cloud.version}</version>
+        <!-- Google BigQuery dependency -->
+        <dependency>
+            <groupId>com.google.cloud</groupId>
+            <artifactId>google-cloud-bigquery</artifactId>
+            <version>${google.cloud.version}</version>
         </dependency>
         <!-- Google Cloud Storage dependency -->
         <dependency>
@@ -161,16 +161,16 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-devtools</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-ui</artifactId>
             <version>1.7.0</version>
-		</dependency>
+        </dependency>
 
         <dependency>
             <groupId>org.apache.poi</groupId>
@@ -198,7 +198,7 @@
         <dependency>
             <groupId>com.walmart.aex</groupId>
             <artifactId>aex-security-common</artifactId>
-            <version>1.0.39</version>
+            <version>1.0.54</version>
         </dependency>
 
         <!-- Spring Retry Dependency -->
@@ -278,12 +278,12 @@
             <artifactId>commons-text</artifactId>
             <version>1.10.0</version>
         </dependency>
-        
+
         <dependency>
-		      <groupId>org.springframework.security</groupId>
-		      <artifactId>spring-security-config</artifactId>
-		      <version>${spring.security.version}</version>
-		</dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
+            <version>${spring.security.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -419,5 +419,5 @@
             </plugin>
         </plugins>
     </build>
-    
+
 </project>

@@ -10,7 +10,6 @@ import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.repository.FinelinePlanRepository;
 import com.walmart.aex.sp.repository.common.BuyQuantityCommonRepository;
 import com.walmart.aex.sp.repository.common.ReplenishmentCommonRepository;
-import com.walmart.aex.sp.util.AuthUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +20,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
+import static com.walmart.aex.security.service.UserDetailsService.getAuthenticatedUserName;
 import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
 
 @Slf4j
@@ -48,7 +48,7 @@ public class CalculateBuyQuantityService {
     @Transactional
     public List<StatusResponse> calculateBuyQuantity(CalculateBuyQtyRequest calculateBuyQtyRequest) {
         List<CalculateBuyQtyParallelRequest> calculateBuyQtyParallelRequests = new ArrayList<>();
-        calculateBuyQtyRequest.setUserId(AuthUtils.getAuthenticatedUserName());
+        calculateBuyQtyRequest.setUserId(getAuthenticatedUserName());
         log.info("Received calculateBuyQtyRequest payload to calculate buy quantity: {} ",calculateBuyQtyRequest);
         try {
             List<FinelinePlan> finelinePlanList = getFinelinePlans(calculateBuyQtyRequest);
