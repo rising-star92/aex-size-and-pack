@@ -267,4 +267,17 @@ public class BuyQtyCommonUtil {
         return appMessageTexts.stream().map(AppMessageTextResponse::getTypeDesc).anyMatch(v -> v.contains(ERROR));
     }
 
+    public static Set<Integer> getValidationCodesFromRequest(CalculateBuyQtyRequest calculateBuyQtyRequest, Integer finelineNbr) {
+        return Optional.ofNullable(calculateBuyQtyRequest.getLvl3List()).stream()
+                .flatMap(Collection::stream)
+                .map(Lvl3Dto::getLvl4List)
+                .flatMap(Collection::stream)
+                .map(Lvl4Dto::getFinelines)
+                .flatMap(Collection::stream)
+                .filter(fineline -> fineline.getFinelineNbr().equals(finelineNbr))
+                .findFirst()
+                .map(fineline -> new HashSet<>(fineline.getMetadata().getValidationCodes()))
+                .orElse(new HashSet<>());
+    }
+
 }

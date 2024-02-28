@@ -1,6 +1,7 @@
 package com.walmart.aex.sp.service;
 
 import com.walmart.aex.sp.dto.appmessage.AppMessageTextResponse;
+import com.walmart.aex.sp.dto.buyquantity.CalculateBuyQtyRequest;
 import com.walmart.aex.sp.entity.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -29,7 +30,7 @@ class CalculateFinelineBuyQuantityMapperTest {
     void updateSpFinelineFixturesTest() {
         SpFineLineChannelFixture spFineLineChannelFixture = getSpFlChannelFixtures();
         Mockito.when(appMessageTextService.getAppMessagesByIds(any())).thenReturn(getAppMessageTexts());
-        calFlBuyQunatityMapper.resetToZeroSpFinelineFixtures(spFineLineChannelFixture, new HashSet<>());
+        calFlBuyQunatityMapper.resetToZeroSpFinelineFixtures(spFineLineChannelFixture, new HashSet<>(), new CalculateBuyQtyRequest());
         Assertions.assertEquals(0, spFineLineChannelFixture.getInitialSetQty().intValue());
         Assertions.assertEquals(0, spFineLineChannelFixture.getBumpPackQty().intValue());
         Assertions.assertEquals(0, spFineLineChannelFixture.getBuyQty().intValue());
