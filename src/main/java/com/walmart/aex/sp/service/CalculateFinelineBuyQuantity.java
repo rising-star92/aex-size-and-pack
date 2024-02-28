@@ -341,6 +341,7 @@ public class CalculateFinelineBuyQuantity {
             } else log.info("Styles Size Profiles are empty to calculate buy Qty: {}", finelineDto);
             spFineLineChannelFixture.setBumpPackCnt(maxBumpCount);
             updateFinelineMetadata(spFineLineChannelFixture,calculateBuyQtyParallelRequest.getUserId(), calculateBuyQtyParallelRequest.getCreateTs());
+            spFineLineChannelFixture.setMessageObj(addValidationCodesFromStrategy(finelineDto.getMetadata(), spFineLineChannelFixture.getMessageObj()));
             spFineLineChannelFixtures.add(spFineLineChannelFixture);
         });
         calculateBuyQtyResponse.setSpFineLineChannelFixtures(spFineLineChannelFixtures);
@@ -351,6 +352,14 @@ public class CalculateFinelineBuyQuantity {
         spFineLineChannelFixture.setLastModifiedUserId(userId);
         spFineLineChannelFixture.setCreateTs(createTs);
         spFineLineChannelFixture.setLastModifiedTs(new Date());
+    }
+    private String addValidationCodesFromStrategy(Metadata metadata, String messageObj) {
+        if (Objects.nonNull(metadata) && Objects.nonNull(metadata.getValidationCodes()) && !metadata.getValidationCodes().isEmpty()) {
+            ValidationResult validationResult = calculateFinelineBuyQuantityMapper.getValidationResult(messageObj);
+            validationResult.getCodes().addAll(metadata.getValidationCodes());
+            return calculateFinelineBuyQuantityMapper.setMessage(validationResult);
+        }
+        return messageObj;
     }
 
     private Integer getMaxBumpCountVal(Set<CustomerChoice> customerChoices) {

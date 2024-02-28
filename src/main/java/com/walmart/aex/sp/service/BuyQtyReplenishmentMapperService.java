@@ -365,15 +365,13 @@ public class BuyQtyReplenishmentMapperService {
      * This method will reset cal buy qty units to zero in case the calculation failed for validation errors
      * @param merchCatgReplPack
      */
-    public void resetToZeroMerchCatgReplPack(MerchCatgReplPack merchCatgReplPack,Set<Integer> requestFinelines, Set<Integer> failedFinelines, CalculateBuyQtyRequest calculateBuyQtyRequest) {
+    public void resetToZeroMerchCatgReplPack(MerchCatgReplPack merchCatgReplPack,Set<Integer> requestFinelines, Set<Integer> failedFinelines) {
         if (merchCatgReplPack != null && merchCatgReplPack.getSubReplPack() != null) {
             merchCatgReplPack.getSubReplPack().forEach(subCatgReplPack -> {
                 if (subCatgReplPack.getFinelineReplPack() != null) {
                     subCatgReplPack.getFinelineReplPack().forEach(finelineReplPack -> {
                         if (finelineReplPack.getMessageObj() != null) {
-                            Set<Integer> validationCodes = BuyQtyCommonUtil.getValidationCodesFromRequest(calculateBuyQtyRequest, finelineReplPack.getFinelineReplPackId().getFinelineNbr());
-                            validationCodes.addAll(getValidationResult(finelineReplPack.getMessageObj()).getCodes());
-                            List<AppMessageTextResponse> appMessageTexts = appMessageTextService.getAppMessagesByIds(validationCodes);
+                            List<AppMessageTextResponse> appMessageTexts = appMessageTextService.getAppMessagesByIds(getValidationResult(finelineReplPack.getMessageObj()).getCodes());
                             boolean isFlCalBuyQtyFailed = BuyQtyCommonUtil.isFlCalBuyQtyFailed(appMessageTexts);
                             if (isFlCalBuyQtyFailed && requestFinelines.contains(finelineReplPack.getFinelineReplPackId().getFinelineNbr())) {
                                 failedFinelines.add(finelineReplPack.getFinelineReplPackId().getFinelineNbr());
