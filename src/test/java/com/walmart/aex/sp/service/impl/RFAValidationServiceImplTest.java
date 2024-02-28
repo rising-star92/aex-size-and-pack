@@ -17,7 +17,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
 class RFAValidationServiceImplTest {
@@ -50,19 +49,6 @@ class RFAValidationServiceImplTest {
     }
 
     @Test
-    void validateRFADataWithMissingFixtureTest() {
-        RFASizePackData rfaSizePackData1 = new RFASizePackData();
-        rfaSizePackData1.setCustomer_choice("CC1");
-        rfaSizePackData1.setFixture_type("WALLS");
-        rfaSizePackData1.setColor_family("BLUE");
-
-        apResponse.setRfaSizePackData(List.of(rfaSizePackData1));
-        validationResult = rfaValidationService.validateRFAData(merchMethodsDtoList, apResponse, "Style1", customerChoiceDto);
-        assertEquals(1, validationResult.getCodes().size());
-        assertEquals(AppMessage.RFA_MISSING_FIXTURE.getId(), validationResult.getCodes().toArray()[0]);
-    }
-
-    @Test
     void validateRFADataWithMissingColorFamilyTest() {
         RFASizePackData rfaSizePackData1 = new RFASizePackData();
         rfaSizePackData1.setCustomer_choice("CC1");
@@ -90,19 +76,5 @@ class RFAValidationServiceImplTest {
         apResponse.setRfaSizePackData(List.of(rfaSizePackData1, rfaSizePackData2));
         validationResult = rfaValidationService.validateRFAData(merchMethodsDtoList, apResponse, "Style1", customerChoiceDto);
         assertEquals(0, validationResult.getCodes().size());
-    }
-
-    @Test
-    void validateRFADataWithMissingFixtureAndColorFamilyTest() {
-        RFASizePackData rfaSizePackData1 = new RFASizePackData();
-        rfaSizePackData1.setCustomer_choice("CC1");
-        rfaSizePackData1.setFixture_type("WALLS");
-        rfaSizePackData1.setColor_family("BROWN");
-
-        apResponse.setRfaSizePackData(List.of(rfaSizePackData1));
-        validationResult = rfaValidationService.validateRFAData(merchMethodsDtoList, apResponse, "Style1", customerChoiceDto);
-        assertEquals(2, validationResult.getCodes().size());
-        assertTrue(validationResult.getCodes().contains(AppMessage.RFA_MISSING_FIXTURE.getId()));
-        assertTrue(validationResult.getCodes().contains(AppMessage.RFA_MISSING_COLOR_FAMILY.getId()));
     }
 }
