@@ -299,7 +299,7 @@ class BuyQuantityMapperTest {
         ValidationResult validationResult = ValidationResult.builder().codes(new HashSet<>(List.of(151))).build();
         Mockito.doReturn(validationResult).when(mapper).readValue(messageObj,ValidationResult.class);
         Mockito.when(appMessageTextService.getAppMessagesByIds(validationResult.getCodes())).thenReturn(appMessageTextResponseList);
-        Metadata metadata = buyQunatityMapper.getMetadataDto(messageObj, Metadata.builder().validationCodes(Set.of(150)).build());
+        Metadata metadata = buyQunatityMapper.getMetadataDto(messageObj, Metadata.builder().validationCodes(List.of(150)).build());
         assertEquals(2,metadata.getValidations().size());
         assertEquals(1,metadata.getValidations().get(0).getMessages().size());
         assertEquals(2,metadata.getValidations().stream().map(ValidationMessage::getType).collect(Collectors.toSet()).size());

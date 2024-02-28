@@ -2,7 +2,7 @@ package com.walmart.aex.sp.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.aex.sp.dto.appmessage.AppMessageTextResponse;
-import com.walmart.aex.sp.dto.buyquantity.ValidationResult;
+import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixture;
 import com.walmart.aex.sp.entity.SpCustomerChoiceChannelFixtureSize;
 import com.walmart.aex.sp.entity.SpFineLineChannelFixture;
@@ -142,9 +142,11 @@ public class CalculateFinelineBuyQuantityMapper {
         spCustomerChoiceChannelFixture.setMessageObj(setMessage(ccValidationResult));
     }
 
-    protected void resetToZeroSpFinelineFixtures(SpFineLineChannelFixture spFineLineChannelFixture, Set<Integer> failedFinelines) {
+    protected void resetToZeroSpFinelineFixtures(SpFineLineChannelFixture spFineLineChannelFixture, Set<Integer> failedFinelines, CalculateBuyQtyRequest calculateBuyQtyRequest) {
         if (spFineLineChannelFixture != null) {
-            List<AppMessageTextResponse> appMessageTexts = appMessageTextService.getAppMessagesByIds(getValidationResult(spFineLineChannelFixture.getMessageObj()).getCodes());
+            Set<Integer> validationCodes = BuyQtyCommonUtil.getValidationCodesFromRequest(calculateBuyQtyRequest, spFineLineChannelFixture.getSpFineLineChannelFixtureId().getFineLineNbr());
+            validationCodes.addAll(getValidationResult(spFineLineChannelFixture.getMessageObj()).getCodes());
+            List<AppMessageTextResponse> appMessageTexts = appMessageTextService.getAppMessagesByIds(validationCodes);
             boolean isFlCalBuyQtyFailed = BuyQtyCommonUtil.isFlCalBuyQtyFailed(appMessageTexts);
             if (isFlCalBuyQtyFailed && !CollectionUtils.isEmpty(spFineLineChannelFixture.getSpStyleChannelFixtures())) {
                 failedFinelines.add(spFineLineChannelFixture.getSpFineLineChannelFixtureId().getFineLineNbr());

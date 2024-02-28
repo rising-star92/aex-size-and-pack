@@ -107,6 +107,7 @@ input Lvl4Request {
 input FinelineRequest {
     finelineNbr: Int
     finelineName: String
+    metadata: MetadataRequest
     styles:[StyleRequest]
 }
 
@@ -122,6 +123,10 @@ input StyleRequest {
 
 input CustomerChoiceRequest {
     ccId: String
+}
+
+input MetadataRequest {
+    validationCodes: [Int]
 }
 
 type InitialBumpSetResponse{
@@ -391,6 +396,7 @@ type MerchMethodsDto {
 
 type Metadata {
     validations: [Validation]
+    validationCodes: [Int]
     status: String
     lastUpdatedTs: String
     userName: String
