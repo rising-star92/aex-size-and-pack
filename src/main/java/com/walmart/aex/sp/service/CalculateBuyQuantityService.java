@@ -197,10 +197,10 @@ public class CalculateBuyQuantityService {
               .collect(Collectors.toSet());
         //update the final units based on validation errors
         for (SpFineLineChannelFixture spFinelineChannelFixture : allSPFinelineChannelFixtures) {
-            calculateFinelineBuyQuantityMapper.resetToZeroSpFinelineFixtures(spFinelineChannelFixture, failedFinelines, calculateBuyQtyRequest);
+            calculateFinelineBuyQuantityMapper.resetToZeroSpFinelineFixtures(spFinelineChannelFixture, failedFinelines);
         }
         for (MerchCatgReplPack merchCatgReplPack : allMerchCatReplns) {
-            buyQtyReplenishmentMapperService.resetToZeroMerchCatgReplPack(merchCatgReplPack, requestFinelines, failedFinelines, calculateBuyQtyRequest);
+            buyQtyReplenishmentMapperService.resetToZeroMerchCatgReplPack(merchCatgReplPack, requestFinelines, failedFinelines);
         }
         buyQuantityCommonRepository.getSpFineLineChannelFixtureRepository().saveAll(allSPFinelineChannelFixtures);
         replenishmentCommonRepository.getMerchCatgReplPackRepository().saveAll(allMerchCatReplns);

@@ -243,7 +243,7 @@ class BuyQtyReplenishmentMapperServiceTest {
 		validationResult.setCodes(codes);
 		Set<Integer> failedFinelines = new HashSet<>();
 		Mockito.when(objectMapper.readValue("{\"codes\":[160,170]}", ValidationResult.class)).thenReturn(validationResult);
-		buyQtyReplenishmentMapperService.resetToZeroMerchCatgReplPack(merchCatgReplPack, Set.of(1234), failedFinelines, new CalculateBuyQtyRequest());
+		buyQtyReplenishmentMapperService.resetToZeroMerchCatgReplPack(merchCatgReplPack, Set.of(1234), failedFinelines);
 		Assertions.assertEquals(0, merchCatgReplPack.getReplUnits().intValue());
 		Assertions.assertEquals(0, merchCatgReplPack.getReplPackCnt().intValue());
 		Assertions.assertEquals(0, merchCatgReplPack.getFinalBuyUnits().intValue());
