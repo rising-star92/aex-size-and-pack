@@ -21,7 +21,7 @@ import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
-class CalculateBuyQuantityServiceTest {
+public class CalculateBuyQuantityServiceTest {
     @InjectMocks
     private CalculateBuyQuantityService calculateBuyQuantityService;
 
@@ -107,8 +107,8 @@ class CalculateBuyQuantityServiceTest {
         Mockito.when(spFineLineChannelFixtureRepository.findSpFineLineChannelFixtureBySpFineLineChannelFixtureId_planIdAndSpFineLineChannelFixtureId_channelId(any(),any())).thenReturn(Optional.of(spFineLineChannelFixtureList));
 
         CalculateBuyQtyResponse calculateBuyQtyResponse = new CalculateBuyQtyResponse();
-        Mockito.doNothing().when(calculateFinelineBuyQuantityMapper).resetToZeroSpFinelineFixtures(any(),any(), any());
-        Mockito.doNothing().when(buyQtyReplenishmentMapperService).resetToZeroMerchCatgReplPack(any(),any(),any(), any());
+        Mockito.doNothing().when(calculateFinelineBuyQuantityMapper).resetToZeroSpFinelineFixtures(any(),any());
+        Mockito.doNothing().when(buyQtyReplenishmentMapperService).resetToZeroMerchCatgReplPack(any(),any(),any());
         calculateBuyQtyResponse.setMerchCatgReplPacks(merchCatgReplPacks);
         calculateBuyQtyResponse.setSpFineLineChannelFixtures(spFineLineChannelFixtureList);
         Mockito.when(calculateFinelineBuyQuantity.calculateFinelineBuyQtyV2(any(),any(),any())).thenReturn(calculateBuyQtyResponse);
