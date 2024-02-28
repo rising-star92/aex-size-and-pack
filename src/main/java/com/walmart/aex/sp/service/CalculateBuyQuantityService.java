@@ -20,6 +20,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
+import static com.walmart.aex.security.service.UserDetailsService.getAuthenticatedUserName;
 import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
 
 @Slf4j
@@ -47,6 +48,8 @@ public class CalculateBuyQuantityService {
     @Transactional
     public List<StatusResponse> calculateBuyQuantity(CalculateBuyQtyRequest calculateBuyQtyRequest) {
         List<CalculateBuyQtyParallelRequest> calculateBuyQtyParallelRequests = new ArrayList<>();
+        calculateBuyQtyRequest.setUserId(getAuthenticatedUserName());
+        calculateBuyQtyRequest.setCreateTs(new Date());
         log.info("Received calculateBuyQtyRequest payload to calculate buy quantity: {} ",calculateBuyQtyRequest);
         try {
             List<FinelinePlan> finelinePlanList = getFinelinePlans(calculateBuyQtyRequest);
@@ -91,6 +94,8 @@ public class CalculateBuyQuantityService {
     private static CalculateBuyQtyParallelRequest createCalculateBuyQtyParallelRequest(List<FinelinePlan> finelinePlanList, Lvl3Dto lvl3Dto, Lvl4Dto lvl4Dto, FinelineDto finelineDto, CalculateBuyQtyRequest calculateBuyQtyRequest) {
         CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest = new CalculateBuyQtyParallelRequest();
         calculateBuyQtyParallelRequest.setPlanId(calculateBuyQtyRequest.getPlanId());
+        calculateBuyQtyParallelRequest.setUserId(calculateBuyQtyRequest.getUserId());
+        calculateBuyQtyParallelRequest.setCreateTs(calculateBuyQtyRequest.getCreateTs());
         calculateBuyQtyParallelRequest.setChannel(calculateBuyQtyRequest.getChannel());
         calculateBuyQtyParallelRequest.setLvl3Nbr(lvl3Dto.getLvl3Nbr());
         calculateBuyQtyParallelRequest.setLvl4Nbr(lvl4Dto.getLvl4Nbr());
