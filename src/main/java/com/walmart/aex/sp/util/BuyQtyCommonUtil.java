@@ -276,7 +276,8 @@ public class BuyQtyCommonUtil {
                 .flatMap(Collection::stream)
                 .filter(fineline -> fineline.getFinelineNbr().equals(finelineNbr))
                 .findFirst()
-                .map(fineline -> new HashSet<>(fineline.getMetadata().getValidationCodes()))
+                .map(FinelineDto::getMetadata)
+                .map(m -> new HashSet<>(m.getValidationCodes()))
                 .orElse(new HashSet<>());
     }
 
