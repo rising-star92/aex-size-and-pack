@@ -182,7 +182,7 @@ public class SizeAndPackService {
                 buyQntyResponseDTOS = spCustomerChoiceChannelFixtureRepository
                         .getBuyQntyByPlanChannelFineline(buyQtyRequest.getPlanId(), null, finelineNbr);
                 BuyQntyMapperDTO buyQntyMapperDTO = BuyQntyMapperDTO.builder()
-                        .response(buyQtyResponse).requestFinelineNbr(finelineNbr)
+                        .response(buyQtyResponseAllChannels).requestFinelineNbr(finelineNbr)
                         .build();
 
                 Optional.of(buyQntyResponseDTOS)
