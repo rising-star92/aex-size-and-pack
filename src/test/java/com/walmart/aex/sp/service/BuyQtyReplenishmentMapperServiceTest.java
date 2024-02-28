@@ -7,7 +7,6 @@ import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
 import com.walmart.aex.sp.dto.replenishment.cons.*;
 import com.walmart.aex.sp.entity.*;
-import com.walmart.aex.sp.util.BuyQtyCommonUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,9 +30,7 @@ class BuyQtyReplenishmentMapperServiceTest {
 
 	@Mock
 	AppMessageTextService appMessageTextService;
-	@Mock
-	BuyQtyCommonUtil buyQtyCommonUtil;
-	
+
 	@InjectMocks
 	@Spy
 	BuyQtyReplenishmentMapperService buyQtyReplenishmentMapperService;
