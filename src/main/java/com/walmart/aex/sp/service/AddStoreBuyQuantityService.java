@@ -119,26 +119,31 @@ public class AddStoreBuyQuantityService {
         double isQty = initialSetQuantity.getIsQty();
         // Based on the flag which we get from calculateInitialSetQty method to figure our which one is explicitly been set to 1
         if (initialSetQuantity.isOneUnitPerStore() && (!CollectionUtils.isEmpty(buyQtyObj.getReplenishments()))) {
-            adjustReplenishmentsForOneUnitPerStore(buyQtyObj, rfaSizePackData, addStoreBuyQuantity.getCustomerChoiceDto().getCcId(), sizeDto.getSizeDesc(), isQty, perStoreQty, storeList);
+            adjustReplenishmentsForOneUnitPerStore(buyQtyObj, rfaSizePackData, sizeDto.getSizeDesc(), isQty, perStoreQty, storeList, null);
         }
         StoreQuantity storeQuantity = BuyQtyCommonUtil.createStoreQuantity(rfaSizePackData, perStoreQty, storeList, isQty, volumeCluster);
         initialSetQuantities.add(storeQuantity);
     }
 
-    private void adjustReplenishmentsForOneUnitPerStore(BuyQtyObj buyQtyObj, RFASizePackData rfaSizePackData, String ccId, String sizeDesc, double isQty, double perStoreQty, List<Integer> storeList) {
+    private void adjustReplenishmentsForOneUnitPerStore(BuyQtyObj buyQtyObj, RFASizePackData rfaSizePackData, String sizeDesc, double isQty, double perStoreQty, List<Integer> storeList, Set<Integer> warningCodes) {
+        if (Objects.isNull(warningCodes)) {
+            warningCodes = new HashSet<>();
+        }
         long totalReplenishment = getTotalReplenishment(buyQtyObj);
         if (totalReplenishment > 0) {
+            warningCodes.add(AppMessage.RULE_ADJUST_REPLN_ONE_UNIT_PER_STORE_SIZE_APPLIED.getId());
             double totalReducedReplenishment = rfaSizePackData.getStore_cnt();
             if (totalReplenishment >= totalReducedReplenishment) {
                 buyQuantityConstraintService.getISWithMoreReplenConstraint(buyQtyObj, totalReducedReplenishment, rfaSizePackData, DEFAULT_INITIAL_THRESHOLD);
-                log.debug("| Replenishment count after adjusting with more replenishment | : {} | {} | {} | {} | {} | {} | {}", ccId, sizeDesc, FixtureTypeRollup.getFixtureIdFromName(rfaSizePackData.getFixture_type()), isQty, perStoreQty, storeList.size(), getTotalReplenishment(buyQtyObj));
+                log.debug("| Replenishment count after adjusting with more replenishment | : {} | {} | {} | {} | {} | {} | {}", rfaSizePackData.getCustomer_choice(), sizeDesc, FixtureTypeRollup.getFixtureIdFromName(rfaSizePackData.getFixture_type()), isQty, perStoreQty, storeList.size(), getTotalReplenishment(buyQtyObj));
             } else {
+                warningCodes.add(AppMessage.RULE_ADJUST_REPLN_ONE_UNIT_PER_STORE_SIZE_APPLIED.getId());
                 // When the replenishment is less than the store count, reduce available replenishment count to zero
                 buyQtyObj.getReplenishments().stream()
                         .filter(rep -> rep.getAdjReplnUnits() > 0)
                         .forEach(replenishment -> replenishment.setAdjReplnUnits(0L));
 
-                log.debug("| Replenishment count after adjusting with less replenishment | : {} | {} | {} | {} | {} | {} | {}", ccId, sizeDesc, FixtureTypeRollup.getFixtureIdFromName(rfaSizePackData.getFixture_type()), isQty, perStoreQty, storeList.size(), getTotalReplenishment(buyQtyObj));
+                log.debug("| Replenishment count after adjusting with less replenishment | : {} | {} | {} | {} | {} | {} | {}", rfaSizePackData.getCustomer_choice(), sizeDesc, FixtureTypeRollup.getFixtureIdFromName(rfaSizePackData.getFixture_type()), isQty, perStoreQty, storeList.size(), getTotalReplenishment(buyQtyObj));
             }
         }
     }
@@ -154,10 +159,10 @@ public class AddStoreBuyQuantityService {
             if (initialSetQuantity.isOneUnitPerStore()) {
                 perStoreQty = perStoreQty + DEFAULT_INITIAL_THRESHOLD;
                 isQty = (long) DEFAULT_INITIAL_THRESHOLD * initialSetQuantity.getRfaSizePackData().getStore_cnt();
-                warningCodes.add(AppMessage.RULE_IS_ONE_UNIT_PER_STORE_SIZE_APPLIED.getId());
-                if (!CollectionUtils.isEmpty(buyQtyObj.getReplenishments()) && BuyQtyCommonUtil.isReplenishmentEligible(initialSetQuantity.getVolumeCluster().getFlowStrategy())) {
-                    warningCodes.add(AppMessage.RULE_ADJUST_REPLN_ONE_UNIT_PER_STORE_SIZE_APPLIED.getId());
-                    adjustReplenishmentsForOneUnitPerStore(buyQtyObj, initialSetQuantity.getRfaSizePackData(), initialSetQuantity.getRfaSizePackData().getCustomer_choice(), initialSetQuantity.getSizeDesc(), isQty, perStoreQty, storeList);
+                if (!CollectionUtils.isEmpty(buyQtyObj.getReplenishments()) && getTotalReplenishment(buyQtyObj) > 0 && BuyQtyCommonUtil.isReplenishmentEligible(initialSetQuantity.getVolumeCluster().getFlowStrategy())) {
+                    adjustReplenishmentsForOneUnitPerStore(buyQtyObj, initialSetQuantity.getRfaSizePackData(), initialSetQuantity.getSizeDesc(), isQty, perStoreQty, storeList, warningCodes);
+                } else {
+                    warningCodes.add(AppMessage.RULE_IS_ONE_UNIT_PER_STORE_SIZE_APPLIED.getId());
                 }
             }
             StoreQuantity storeQuantity = BuyQtyCommonUtil.createStoreQuantity(initialSetQuantity.getRfaSizePackData(), perStoreQty, storeList, isQty, initialSetQuantity.getVolumeCluster());
@@ -215,10 +220,6 @@ public class AddStoreBuyQuantityService {
 
     /**
      * Calculate the admin rule based on the minimum threshold and bump sets.
-     * @param addStoreBuyQuantity
-     * @param initialSetQuantities
-     * @param buyQtyObj
-     * @param initialThreshold
      */
     private void setInitialSetAndBumpSetQtyV2(AddStoreBuyQuantity addStoreBuyQuantity, List<StoreQuantity> initialSetQuantities, BuyQtyObj buyQtyObj, Integer initialThreshold) {
         List<StoreQuantity> initialSetQuantitiesWithLessRep = new ArrayList<>();
