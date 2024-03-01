@@ -449,9 +449,7 @@ public class SizeAndPackService {
             Optional.of(rfaInitialSetBumpSetResponses).stream().flatMap(Collection::stream).forEach(
                     intialSetResponseOne ->
                             initialSetPlanMapper.mapInitialSetPlan(intialSetResponseOne, response, request.getFinelineNbr()));
-            if (Boolean.parseBoolean(bigQueryConnectionProperties.getPackDescriptionFeatureFlag())) {
-                setPackDescription(request, response);
-            }
+            setPackDescription(request, response);
 		} catch (Exception e) {
 			log.error("Exception While fetching Initial Set Pack Quantities :", e);
 		}
@@ -485,14 +483,10 @@ public class SizeAndPackService {
         }
         return response;
     }
-    
+
+    // todo
     public List<PackDetailsVolumeResponse> getPackStoreDetailsByVolumeCluster(InitialSetVolumeRequest request)
     {
-    	if(!Boolean.parseBoolean(bigQueryConnectionProperties.getPackStoreFeatureFlag()))
-    	{
-    		return Collections.emptyList();
-    	}
-    	
     	List<PackDetailsVolumeResponse> responses = new ArrayList<>();
     	for(FinelineVolume finelineVolume : request.getFinelines())
     	{

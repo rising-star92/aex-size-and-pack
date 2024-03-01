@@ -110,7 +110,6 @@ class SizeAndPackServiceTest {
                 buyQtyCommonUtil, bigQueryInitialSetPlanService, initialSetPlanMapper, merchPackOptimizationRepository, packOptUpdateDataMapper, packOptAddDataMapper,
                 bigQueryPackStoresService, sizeAndPackDeletePackOptMapper, customerChoiceRepository, BQFactoryMapper, ccPackOptimizationRepository);
         ReflectionTestUtils.setField(sizeAndPackService, "bigQueryConnectionProperties", bigQueryConnectionProperties);
-        lenient().when(bigQueryConnectionProperties.getPackDescriptionFeatureFlag()).thenReturn("true");
     }
 
     @Test
