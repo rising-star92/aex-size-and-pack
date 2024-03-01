@@ -74,8 +74,7 @@ public class StoreDistributionService {
 							packData.setFinelineNbr(fineline.getFinelineNbr());
 							packData.setPackId(fineline.getPackId());
 							packData.setInStoreWeek(fineline.getInStoreWeek());
-							StoreDistributionData storeDistributionData = new StoreDistributionData();
-							storeDistributionData = bigQueryStoreDistributionService.getStoreDistributionData(packData);
+							StoreDistributionData storeDistributionData = bigQueryStoreDistributionService.getStoreDistributionData(packData);
 
 							if (storeDistributionData != null
 									&& storeDistributionData.getStoreDistributionList() != null)

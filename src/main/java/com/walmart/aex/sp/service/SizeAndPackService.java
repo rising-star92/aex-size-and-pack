@@ -484,7 +484,6 @@ public class SizeAndPackService {
         return response;
     }
 
-    // todo
     public List<PackDetailsVolumeResponse> getPackStoreDetailsByVolumeCluster(InitialSetVolumeRequest request)
     {
     	List<PackDetailsVolumeResponse> responses = new ArrayList<>();
