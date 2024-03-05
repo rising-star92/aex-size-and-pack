@@ -71,9 +71,9 @@ public class PlanAdminRuleServiceImpl implements PlanAdminRuleService {
         if(!CollectionUtils.isEmpty(plaAdminRuleRequests)) {
             List<PlanAdminRule> planAdminRules = PlanAdminRuleMapper.mapper.mapRequestToEntity(plaAdminRuleRequests);
             Set<Long> planIds = plaAdminRuleRequests.stream().map(PlanAdminRuleRequest::getPlanId).collect(Collectors.toSet());
-            List<PlanAdminRule> planAdminRules1 = planAdminRulesRespository.findAllById(planIds);
+            List<PlanAdminRule> existingPlanAdminRules = planAdminRulesRespository.findAllById(planIds);
             for (PlanAdminRule planAdminRule : planAdminRules) {
-                Optional<PlanAdminRule> existing = planAdminRules1.stream().filter(planAdminRule1 -> planAdminRule1.getPlanId().equals(planAdminRule.getPlanId())).findAny();
+                Optional<PlanAdminRule> existing = existingPlanAdminRules.stream().filter(planAdminRule1 -> planAdminRule1.getPlanId().equals(planAdminRule.getPlanId())).findAny();
                 if(existing.isPresent()) {
                     updatedRecords.add(planAdminRule);
                 }
