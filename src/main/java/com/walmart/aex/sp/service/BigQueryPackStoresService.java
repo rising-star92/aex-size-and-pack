@@ -243,7 +243,7 @@ public class BigQueryPackStoresService
 	    	 stylePackVolumes.add(StylePackVolume.builder()
 					 .styleId(stylePack.getStyleId())
 	    			 .packId(stylePack.getPackId())
-					 .packDescription(Boolean.parseBoolean(bigQueryConnectionProperties.getPackDescriptionFeatureFlag()) && null != stylePack.getPackId() ?
+					 .packDescription(null != stylePack.getPackId() ?
 							 PackOptimizationUtil.createPackDescription(stylePack.getPackId(),
 									 stylePack.getMerchMethod(),
 									 stylePack.getBumpPackNbr(),

@@ -213,8 +213,6 @@ class BigQueryPackStoresServiceTest
         lenient().when(bigQueryConnectionProperties.getRFAProjectId()).thenReturn("wmt-e12743607538928");
         lenient().when(bigQueryConnectionProperties.getRFADataSetName()).thenReturn("commitment_report_rfa_output_stg");
         lenient().when(bigQueryConnectionProperties.getRFACCStageTable()).thenReturn("rfa_cc_out_parquet");
-
-        lenient().when(bigQueryConnectionProperties.getPackDescriptionFeatureFlag()).thenReturn("true");
     }
 
     private StrategyVolumeDeviationResponse getVolumeDeviationStrategyResponse() 
