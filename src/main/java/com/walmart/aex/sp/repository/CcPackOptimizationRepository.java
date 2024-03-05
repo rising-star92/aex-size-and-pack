@@ -58,32 +58,18 @@ public interface CcPackOptimizationRepository extends JpaRepository<CcPackOptimi
             "AND ccPackOpt.ccPackOptimizationId.stylePackOptimizationID.finelinePackOptimizationID.finelineNbr =?7 ")
     List<CcPackOptimization> findCCPackOptimizationByFineLineNbr(Long planId, Integer lvl0Nbr, Integer lvl1Nbr, Integer lvl2Nbr, Integer lvl3Nbr, Integer lvl4Nbr, Integer finelineNbr);
 
-    @Query(value = "select sum(t.bump_pack_cnt + 1) from (" +
-            "select distinct(sccf.customer_choice) , sccf.bump_pack_cnt  " +
-            "from [dbo].[sp_cc_chan_fixtr] sccf " +
-            "left join [dbo].[fineline_pkopt_cons] fp ON " +
-            "sccf.plan_id = fp.plan_id " +
-            "AND sccf.rpt_lvl_0_nbr = fp.rpt_lvl_0_nbr " +
-            "AND sccf.rpt_lvl_1_nbr = fp.rpt_lvl_1_nbr " +
-            "AND sccf.rpt_lvl_2_nbr  = fp.rpt_lvl_2_nbr " +
-            "AND sccf.rpt_lvl_3_nbr = fp.rpt_lvl_3_nbr " +
-            "AND sccf.rpt_lvl_4_nbr = fp.rpt_lvl_4_nbr " +
-            "AND sccf.fineline_nbr = fp.fineline_nbr " +
-            "AND  sccf.channel_id = fp.channel_id " +
-            "inner join  [dbo].[cc_pkopt_cons] ccp  ON " +
-            "sccf.plan_id = ccp.plan_id " +
-            "AND sccf.rpt_lvl_0_nbr = ccp.rpt_lvl_0_nbr " +
-            "AND sccf.rpt_lvl_1_nbr = ccp.rpt_lvl_1_nbr " +
-            "AND sccf.rpt_lvl_2_nbr = ccp.rpt_lvl_2_nbr " +
-            "AND sccf.rpt_lvl_3_nbr = ccp.rpt_lvl_3_nbr " +
-            "AND sccf.rpt_lvl_4_nbr = ccp.rpt_lvl_4_nbr " +
-            "AND sccf.fineline_nbr = ccp.fineline_nbr " +
-            "AND sccf.style_nbr= ccp.style_nbr " +
-            "AND sccf.customer_choice = ccp.customer_choice " +
-            "AND sccf.channel_id = ccp.channel_id " +
-            "where sccf.plan_id =:planId and " +
-            "sccf.fineline_nbr =:finelineNbr and " +
-            "sccf.channel_id=1 ) as t", nativeQuery = true)
+    @Query(value = "select sum((a.mm_cnt * a.bump_pack_cnt) + (a.mm_cnt * a.initial_set_cnt)) from \n" +
+            "(select \n" +
+            "sccf.customer_choice, \n" +
+            "count(sccf.merch_method_code) mm_cnt, \n" +
+            "sccf.bump_pack_cnt,\n" +
+            "1 as initial_set_cnt\n" +
+            "from [dbo].[sp_cc_chan_fixtr] sccf  \n" +
+            "where sccf.plan_id =:planId and  \n" +
+            "sccf.fineline_nbr =:finelineNbr and  \n" +
+            "sccf.channel_id=1 and \n" +
+            "(sccf.bump_pack_qty + sccf.initial_set_qty > 0)\n" +
+            "group by sccf.customer_choice , sccf.bump_pack_cnt ) a", nativeQuery = true)
     Integer getTotalCCsAcrossAllSetsByPlanIdFineline(@Param("planId") Long planId, @Param("finelineNbr")Integer finelineNbr);
 
     @Query(value = "select new com.walmart.aex.sp.dto.buyquantity.FactoryDTO(ccPackOpt.ccPackOptimizationId.stylePackOptimizationID.finelinePackOptimizationID.finelineNbr," +
