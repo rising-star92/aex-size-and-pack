@@ -15,6 +15,8 @@ import org.springframework.util.CollectionUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -34,7 +36,7 @@ public class PlanAdminRuleServiceImpl implements PlanAdminRuleService {
     public List<PlanAdminRuleResponse> getPlanAdminRules(List<Long> planIds) {
         List<PlanAdminRule> planAdminRules;
         try {
-            if (CollectionUtils.isEmpty(planIds)){
+            if (!CollectionUtils.isEmpty(planIds)){
                 planAdminRules = planAdminRulesRespository.findAllById(planIds);
             }else{
                 planAdminRules = planAdminRulesRespository.findAll();
@@ -68,8 +70,10 @@ public class PlanAdminRuleServiceImpl implements PlanAdminRuleService {
         List<PlanAdminRule> updatedRecords = new ArrayList<>();
         if(!CollectionUtils.isEmpty(plaAdminRuleRequests)) {
             List<PlanAdminRule> planAdminRules = PlanAdminRuleMapper.mapper.mapRequestToEntity(plaAdminRuleRequests);
+            Set<Long> planIds = plaAdminRuleRequests.stream().map(PlanAdminRuleRequest::getPlanId).collect(Collectors.toSet());
+            List<PlanAdminRule> planAdminRules1 = planAdminRulesRespository.findAllById(planIds);
             for (PlanAdminRule planAdminRule : planAdminRules) {
-                Optional<PlanAdminRule> existing = planAdminRulesRespository.findById(planAdminRule.getPlanId());
+                Optional<PlanAdminRule> existing = planAdminRules1.stream().filter(planAdminRule1 -> planAdminRule1.getPlanId().equals(planAdminRule.getPlanId())).findAny();
                 if(existing.isPresent()) {
                     updatedRecords.add(planAdminRule);
                 }
