@@ -1,13 +1,8 @@
 package com.walmart.aex.sp.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -15,10 +10,17 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "dept_admin_rules", schema = "dbo")
-public class DeptAdminRule {
-
+@Table(name = "plan_admin_rules", schema = "dbo")
+public class PlanAdminRule {
     @Id
+    @Column(name = "plan_id", nullable = false)
+    private Long planId;
+
+    @MapsId(value = "deptNbr")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "dept_nbr", nullable = false)
+    private DeptAdminRule deptAdminRule;
+
     @Column(name = "dept_nbr", nullable = false)
     private Integer deptNbr;
 
@@ -27,8 +29,4 @@ public class DeptAdminRule {
 
     @Column(name = "min_repl_item_units", nullable = false)
     private Integer minReplItemUnits;
-
-    @OneToMany(mappedBy = "deptAdminRule", fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<PlanAdminRule> planAdminRules;
 }

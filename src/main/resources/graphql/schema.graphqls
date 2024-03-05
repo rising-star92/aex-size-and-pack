@@ -18,6 +18,7 @@ type Query {
      getReplItemRule(planId: Int!, lvl1Nbr: Int!): ReplItemResponse!
      getPackStoreDetailsByVolumeCluster(request: InitialSetVolumeRequest!): [PackDetailsVolumeResponse]!
      fetchPackOptFinelinesByStatus(statusCodes: [Int]!): [PackOptFinelinesByStatusResponse]!
+     getPlanAdminRules(planIds: [Int]!): [PlanAdminRuleResponse]!
 }
 
 
@@ -40,6 +41,9 @@ type Mutation {
     addAppMessages(appMessageTextRequests: [AppMessageTextRequest]!): StatusResponse
     updateAppMessages(appMessageTextRequests: [AppMessageTextRequest]!): StatusResponse
     deleteAppMessages(appMessageCodesRequest: [Int]!): StatusResponse
+    addPlanAdminRules(planAdminRuleRequests: [PlanAdminRuleRequest]!): StatusResponse
+    updatePlanAdminRules(planAdminRuleRequests: [PlanAdminRuleRequest]!): StatusResponse
+    deletePlanAdminRules(planIds: [Int]!): StatusResponse
 }
 
 input UpdatePackOptConstraintRequestDTO {
@@ -636,6 +640,13 @@ type StoreMetrics {
     qty: Int
 }
 
+type PlanAdminRuleResponse{
+    planId: Int
+    deptNbr: Int
+    replItemPieceRule: Int
+    minReplItemUnits: Int
+}
+
 type PackOptFinelinesByStatusResponse{
     planId: Int
     finelineNbr: Int
@@ -650,4 +661,11 @@ input AppMessageTextRequest {
     typeId: Int
     desc: String
     longDesc: String
+}
+
+input PlanAdminRuleRequest {
+    planId: Int
+    deptNbr: Int
+    replItemPieceRule: Int
+    minReplItemUnits: Int
 }
