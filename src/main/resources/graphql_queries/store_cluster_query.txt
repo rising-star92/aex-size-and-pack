@@ -1,0 +1,9 @@
+query($clusterInfoFindAllInput: ClusterInfoGetInput!) {
+    clusterInfo(clusterInfoFindAllInput: $clusterInfoFindAllInput) {
+        clusterName
+        storeList
+        clusterType
+        clusterAttributes
+        createdBy
+    }
+}

@@ -7,6 +7,7 @@ import com.walmart.aex.sp.dto.buyquantity.BuyQtyResponse;
 import com.walmart.aex.sp.dto.buyquantity.StrategyVolumeDeviationResponse;
 import com.walmart.aex.sp.dto.currentlineplan.Lvl3;
 import com.walmart.aex.sp.dto.plandefinition.PlanIdResponse;
+import com.walmart.aex.sp.dto.store.cluster.ClusterInfo;
 import lombok.Data;
 
 import java.util.List;
@@ -23,4 +24,5 @@ public class Payload {
     private List<Lvl3> getLinePlanFinelines;
     private StrategyVolumeDeviationResponse getVolumeDeviationStrategySelection;
     private PlanIdResponse getPlanById;
+    private List<ClusterInfo> clusterInfo;
 }
