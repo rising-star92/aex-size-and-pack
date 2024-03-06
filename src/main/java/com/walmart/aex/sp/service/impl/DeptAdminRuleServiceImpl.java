@@ -2,6 +2,7 @@ package com.walmart.aex.sp.service.impl;
 
 import com.walmart.aex.sp.dto.deptadminrule.DeptAdminRuleRequest;
 import com.walmart.aex.sp.dto.deptadminrule.DeptAdminRuleResponse;
+import com.walmart.aex.sp.dto.deptadminrule.PlanAdminRuleResponse;
 import com.walmart.aex.sp.dto.deptadminrule.ReplItemResponse;
 import com.walmart.aex.sp.dto.mapper.DeptAdminRuleMapper;
 import com.walmart.aex.sp.entity.DeptAdminRule;
@@ -9,6 +10,7 @@ import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.properties.BuyQtyProperties;
 import com.walmart.aex.sp.repository.DeptAdminRuleRepository;
 import com.walmart.aex.sp.service.DeptAdminRuleService;
+import com.walmart.aex.sp.service.PlanAdminRuleService;
 import com.walmart.aex.sp.util.CommonUtil;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
@@ -34,9 +36,11 @@ public class DeptAdminRuleServiceImpl implements DeptAdminRuleService {
     private BuyQtyProperties buyQtyProperties;
 
     private final DeptAdminRuleRepository deptAdminRuleRepository;
+    private final PlanAdminRuleService planAdminRuleService;
 
-    public DeptAdminRuleServiceImpl(DeptAdminRuleRepository deptAdminRuleRepository) {
+    public DeptAdminRuleServiceImpl(DeptAdminRuleRepository deptAdminRuleRepository, PlanAdminRuleService planAdminRuleService) {
         this.deptAdminRuleRepository = deptAdminRuleRepository;
+        this.planAdminRuleService = planAdminRuleService;
     }
 
     @Override
@@ -107,23 +111,37 @@ public class DeptAdminRuleServiceImpl implements DeptAdminRuleService {
     @Override
     public ReplItemResponse getReplItemRule(Long planId, Integer lvl1Nbr) {
         ReplItemResponse response = new ReplItemResponse();
-        String plans = buyQtyProperties.getS3PlanIds();
-        int currentPlan = Math.toIntExact(planId);
-        List<Integer> s3Plans2024 = CommonUtil.getNumbersFromString(plans);
-        if(s3Plans2024.contains(currentPlan)) {
-            response.setReplItemPieceRule(buyQtyProperties.getInitialThreshold());
-            response.setMinReplItemUnits(buyQtyProperties.getReplenishmentThreshold());
-        } else {
-            List<DeptAdminRuleResponse> deptAdminRules = getDeptAdminRules(List.of(lvl1Nbr));
-            if(CollectionUtils.isEmpty(deptAdminRules)) {
-                response.setReplItemPieceRule(DEFAULT_REPL_ITEM_PIECE_RULE);
-                response.setMinReplItemUnits(DEFAULT_MIN_REPL_ITEM_UNITS);
+        if(Boolean.TRUE.equals(buyQtyProperties.getPlanAdminRuleFlag())){
+            List<PlanAdminRuleResponse> planAdminRules = planAdminRuleService.getPlanAdminRules(List.of(planId));
+            if(!CollectionUtils.isEmpty(planAdminRules)){
+                response.setReplItemPieceRule(planAdminRules.iterator().next().getReplItemPieceRule());
+                response.setMinReplItemUnits(planAdminRules.iterator().next().getMinReplItemUnits());
+            }else {
+                fetchDeptAdminRule(lvl1Nbr, response);
+            }
+        }else{
+            String plans = buyQtyProperties.getS3PlanIds();
+            int currentPlan = Math.toIntExact(planId);
+            List<Integer> s3Plans2024 = CommonUtil.getNumbersFromString(plans);
+            if(s3Plans2024.contains(currentPlan)) {
+                response.setReplItemPieceRule(buyQtyProperties.getInitialThreshold());
+                response.setMinReplItemUnits(buyQtyProperties.getReplenishmentThreshold());
             } else {
-                response.setReplItemPieceRule(deptAdminRules.iterator().next().getReplItemPieceRule());
-                response.setMinReplItemUnits(deptAdminRules.iterator().next().getMinReplItemUnits());
+                fetchDeptAdminRule(lvl1Nbr, response);
             }
         }
         return response;
+    }
+
+    private void fetchDeptAdminRule(Integer lvl1Nbr, ReplItemResponse response) {
+        List<DeptAdminRuleResponse> deptAdminRules = getDeptAdminRules(List.of(lvl1Nbr));
+        if(CollectionUtils.isEmpty(deptAdminRules)) {
+            response.setReplItemPieceRule(DEFAULT_REPL_ITEM_PIECE_RULE);
+            response.setMinReplItemUnits(DEFAULT_MIN_REPL_ITEM_UNITS);
+        } else {
+            response.setReplItemPieceRule(deptAdminRules.iterator().next().getReplItemPieceRule());
+            response.setMinReplItemUnits(deptAdminRules.iterator().next().getMinReplItemUnits());
+        }
     }
 
     @Override

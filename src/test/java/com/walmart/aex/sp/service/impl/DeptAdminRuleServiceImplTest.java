@@ -2,11 +2,14 @@ package com.walmart.aex.sp.service.impl;
 
 import com.walmart.aex.sp.dto.deptadminrule.DeptAdminRuleRequest;
 import com.walmart.aex.sp.dto.deptadminrule.DeptAdminRuleResponse;
+import com.walmart.aex.sp.dto.deptadminrule.PlanAdminRuleResponse;
 import com.walmart.aex.sp.dto.deptadminrule.ReplItemResponse;
 import com.walmart.aex.sp.entity.DeptAdminRule;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.properties.BuyQtyProperties;
 import com.walmart.aex.sp.repository.DeptAdminRuleRepository;
+import com.walmart.aex.sp.repository.PlanAdminRulesRespository;
+import com.walmart.aex.sp.service.PlanAdminRuleService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,6 +44,9 @@ class DeptAdminRuleServiceImplTest {
 
     @Mock
     private DeptAdminRuleRepository deptAdminRuleRepository;
+
+    @Mock
+    private PlanAdminRuleService planAdminRulesService;
 
     private List<DeptAdminRule> dbResponse;
     private DeptAdminRuleRequest deptAdminRuleRequest;
@@ -204,6 +210,7 @@ class DeptAdminRuleServiceImplTest {
         Field field = ReflectionUtils.findField(DeptAdminRuleServiceImpl.class, "buyQtyProperties");
         field.setAccessible(true);
         field.set(deptAdminRuleService, buyQtyProperties);
+        when(buyQtyProperties.getPlanAdminRuleFlag()).thenReturn(Boolean.FALSE);
         when(buyQtyProperties.getS3PlanIds()).thenReturn("22, 33, 44");
         when(buyQtyProperties.getInitialThreshold()).thenReturn(2);
         when(buyQtyProperties.getReplenishmentThreshold()).thenReturn(500);
@@ -216,6 +223,7 @@ class DeptAdminRuleServiceImplTest {
     void test_getReplItemRuleShouldReturnDefaultValuesIfDeptNbrDoesNotExist() throws IllegalAccessException {
         Field field = ReflectionUtils.findField(DeptAdminRuleServiceImpl.class, "buyQtyProperties");
         field.setAccessible(true);
+        when(buyQtyProperties.getPlanAdminRuleFlag()).thenReturn(Boolean.FALSE);
         field.set(deptAdminRuleService, buyQtyProperties);
         when(buyQtyProperties.getS3PlanIds()).thenReturn("22, 33, 44");
         when(deptAdminRuleRepository.findAllById(anyList())).thenReturn(Collections.emptyList());
@@ -228,9 +236,24 @@ class DeptAdminRuleServiceImplTest {
     void test_getReplItemRuleShouldReturnValuesFromDB() throws IllegalAccessException {
         Field field = ReflectionUtils.findField(DeptAdminRuleServiceImpl.class, "buyQtyProperties");
         field.setAccessible(true);
+        when(buyQtyProperties.getPlanAdminRuleFlag()).thenReturn(Boolean.FALSE);
         field.set(deptAdminRuleService, buyQtyProperties);
         when(buyQtyProperties.getS3PlanIds()).thenReturn("22, 33, 44");
         when(deptAdminRuleRepository.findAllById(anyList())).thenReturn(Collections.singletonList(dbResponse.get(0)));
+        ReplItemResponse repelItemRule = deptAdminRuleService.getReplItemRule(23L, 35);
+        assertEquals(55, repelItemRule.getReplItemPieceRule());
+        assertEquals(22, repelItemRule.getMinReplItemUnits());
+    }
+
+    @Test
+    void test_getReplItemRuleShouldReturnValuesFromPlanAdminRule() throws IllegalAccessException {
+        Field field = ReflectionUtils.findField(DeptAdminRuleServiceImpl.class, "buyQtyProperties");
+        assert field != null;
+        field.setAccessible(true);
+        when(buyQtyProperties.getPlanAdminRuleFlag()).thenReturn(Boolean.TRUE);
+        field.set(deptAdminRuleService, buyQtyProperties);
+        PlanAdminRuleResponse planAdminRuleResponse = new PlanAdminRuleResponse(23L,35,55,22);
+        when(planAdminRulesService.getPlanAdminRules(anyList())).thenReturn(List.of(planAdminRuleResponse));
         ReplItemResponse repelItemRule = deptAdminRuleService.getReplItemRule(23L, 35);
         assertEquals(55, repelItemRule.getReplItemPieceRule());
         assertEquals(22, repelItemRule.getMinReplItemUnits());
