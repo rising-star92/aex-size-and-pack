@@ -61,9 +61,9 @@ public class StoreClusterService {
         return Optional.ofNullable(response)
                 .map(GraphQLResponse::getData)
                 .map(Payload::getClusterInfo)
-                .map(clusterList -> clusterList.stream()
-                        .collect(Collectors.toMap(ClusterInfo::getClusterName, ClusterInfo::getStoreList)))
-                .orElse(null);
+                .stream()
+                .flatMap(Collection::stream)
+                .collect(Collectors.toMap(ClusterInfo::getClusterName, ClusterInfo::getStoreList));
     }
 
 }
