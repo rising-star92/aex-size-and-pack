@@ -7,5 +7,6 @@ import lombok.Data;
 @AllArgsConstructor
 public class StoreDetail {
     private Integer store;
+    private String groupingType;
     private Integer qty;
 }

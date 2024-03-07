@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.cloud.bigquery.BigQuery;
 import com.google.cloud.bigquery.QueryJobConfiguration;
 import com.google.cloud.bigquery.TableResult;
+import com.walmart.aex.sp.dto.StoreClusterMap;
 import com.walmart.aex.sp.dto.bqfp.*;
 import com.walmart.aex.sp.dto.buyquantity.FinelineVolumeDeviationDto;
 import com.walmart.aex.sp.dto.buyquantity.StrategyVolumeDeviationResponse;
@@ -39,18 +40,22 @@ public class BigQueryInitialSetPlanService {
     private final StrategyFetchService strategyFetchService;
     private final BigQuery bigQuery;
     private final LinePlanService linePlanService;
+    private final StoreClusterService storeClusterService;
     @ManagedConfiguration
     BigQueryConnectionProperties bigQueryConnectionProperties;
 
     @ManagedConfiguration
     private GraphQLProperties graphQLProperties;
 
-    public BigQueryInitialSetPlanService(ObjectMapper objectMapper, BQFPService bqfpService, StrategyFetchService strategyFetchService, LinePlanService linePlanService, BigQuery bigQuery) {
+    public BigQueryInitialSetPlanService(ObjectMapper objectMapper, BQFPService bqfpService,
+                                         StrategyFetchService strategyFetchService, LinePlanService linePlanService,
+                                         BigQuery bigQuery, StoreClusterService storeClusterService) {
         this.objectMapper = objectMapper;
         this.bqfpService = bqfpService;
         this.strategyFetchService = strategyFetchService;
         this.linePlanService = linePlanService;
         this.bigQuery = bigQuery;
+        this.storeClusterService = storeClusterService;
     }
 
     public List<RFAInitialSetBumpSetResponse> getInitialAndBumpSetDetails(InitialSetPackRequest rfaSizePackRequest) {
@@ -489,7 +494,11 @@ public class BigQueryInitialSetPlanService {
         }catch (Exception e){
             log.error("Error Occured while fetch Bump Pack information", e);
         }
-        return formatUniqueRows(request, uniqueRows);
+
+        StoreClusterMap storeClusterMap = storeClusterService.fetchPOStoreClusterGrouping(request.getInterval(),
+                String.valueOf(request.getFiscalYear()));
+
+        return formatUniqueRows(request, uniqueRows, storeClusterMap);
     }
 
     private String findBumpSqlQuery(Long planId, FinelineVolume request, String volumeDeviationLevel, LikeAssociation likeAssociation) {
@@ -507,7 +516,8 @@ public class BigQueryInitialSetPlanService {
         throw new RuntimeException("Invalid Deviation Level, Fineline, Subcategory, Category are valid values");
     }
 
-    private List<InitialSetVolumeResponse> formatUniqueRows(FinelineVolume request, HashMap<VolumeQueryId, List<VolumeClusterDTO>> uniqueRows) {
+    private List<InitialSetVolumeResponse> formatUniqueRows(FinelineVolume request, HashMap<VolumeQueryId,
+            List<VolumeClusterDTO>> uniqueRows, StoreClusterMap storeClusterMap) {
         List<InitialSetVolumeResponse> initialSetVolumeResponseList = new ArrayList<>();
         uniqueRows.keySet().forEach(key -> {
             String styleId = key.getStyleNbr();
@@ -516,7 +526,7 @@ public class BigQueryInitialSetPlanService {
                 initialSetVolume.setStyleId(styleId);
                 initialSetVolume.setFinelineNbr(request.getFinelineNbr());
                 List<CustomerChoicesVolume> customerChoicesVolumes = new ArrayList<>();
-                CustomerChoicesVolume customerChoicesVolume = getCustomerChoicesVolume(uniqueRows, key);
+                CustomerChoicesVolume customerChoicesVolume = getCustomerChoicesVolume(uniqueRows, key, storeClusterMap);
 
                 customerChoicesVolumes.add(customerChoicesVolume);
                 initialSetVolume.setCustomerChoices(customerChoicesVolumes);
@@ -525,15 +535,15 @@ public class BigQueryInitialSetPlanService {
                 CustomerChoicesVolume customerChoicesVolume1 = initialSetVolume.getCustomerChoices().stream().filter(customerChoicesVolume2 -> customerChoicesVolume2.getCcId().equals(key.getCc())).findFirst().orElse(new CustomerChoicesVolume());
                 if (customerChoicesVolume1.getCcId() == null) {
                     customerChoicesVolume1.setCcId(key.getCc());
-                    CustomerChoicesVolume customerChoicesVolume = getCustomerChoicesVolume(uniqueRows, key);
+                    CustomerChoicesVolume customerChoicesVolume = getCustomerChoicesVolume(uniqueRows, key, storeClusterMap);
                     initialSetVolume.getCustomerChoices().add(customerChoicesVolume);
                 } else {
                     IsPlan isPlan = customerChoicesVolume1.getIsPlans().stream().filter(isPlan1 -> Objects.equals(isPlan1.getInStoreWeek(), key.getInStoreWeek())).findFirst().orElse(new IsPlan());
                     if (isPlan.getMetrics() == null) {
-                        IsPlan newIsPlan = getIsPlan(uniqueRows, key);
+                        IsPlan newIsPlan = getIsPlan(uniqueRows, key, storeClusterMap);
                         customerChoicesVolume1.getIsPlans().add(newIsPlan);
                     } else {
-                        MetricsVolume metricsVolume = getMetricsVolume(uniqueRows, key);
+                        MetricsVolume metricsVolume = getMetricsVolume(uniqueRows, key, storeClusterMap);
                         isPlan.getMetrics().add(metricsVolume);
                     }
                 }
@@ -542,28 +552,31 @@ public class BigQueryInitialSetPlanService {
         return initialSetVolumeResponseList;
     }
 
-    private CustomerChoicesVolume getCustomerChoicesVolume(HashMap<VolumeQueryId, List<VolumeClusterDTO>> uniqueRows, VolumeQueryId key) {
+    private CustomerChoicesVolume getCustomerChoicesVolume(HashMap<VolumeQueryId, List<VolumeClusterDTO>> uniqueRows,
+                                                           VolumeQueryId key, StoreClusterMap storeClusterMap) {
         CustomerChoicesVolume customerChoicesVolume = new CustomerChoicesVolume();
         customerChoicesVolume.setCcId(key.getCc());
 
         List<IsPlan> isPlanList = new ArrayList<>();
-        isPlanList.add(getIsPlan(uniqueRows, key));
+        isPlanList.add(getIsPlan(uniqueRows, key, storeClusterMap));
         customerChoicesVolume.setIsPlans(isPlanList);
         return customerChoicesVolume;
     }
 
-    private IsPlan getIsPlan(HashMap<VolumeQueryId, List<VolumeClusterDTO>> uniqueRows, VolumeQueryId key) {
+    private IsPlan getIsPlan(HashMap<VolumeQueryId, List<VolumeClusterDTO>> uniqueRows, VolumeQueryId key,
+                             StoreClusterMap storeClusterMap) {
         IsPlan isPlan = new IsPlan();
         isPlan.setInStoreWeek(key.getInStoreWeek());
 
-        MetricsVolume metricsVolume = getMetricsVolume(uniqueRows, key);
+        MetricsVolume metricsVolume = getMetricsVolume(uniqueRows, key, storeClusterMap);
         List<MetricsVolume> metricsVolumes = new ArrayList<>();
         metricsVolumes.add(metricsVolume);
         isPlan.setMetrics(metricsVolumes);
         return isPlan;
     }
 
-    private MetricsVolume getMetricsVolume(HashMap<VolumeQueryId, List<VolumeClusterDTO>> uniqueRows, VolumeQueryId key) {
+    private MetricsVolume getMetricsVolume(HashMap<VolumeQueryId, List<VolumeClusterDTO>> uniqueRows, VolumeQueryId key,
+                                           StoreClusterMap storeClusterMap) {
         MetricsVolume metricsVolume = new MetricsVolume();
         List<VolumeClusterDTO> currentRows = uniqueRows.get(key);
         HashMap<Integer,StoreDetail> storeMap = new HashMap<>();
@@ -575,7 +588,9 @@ public class BigQueryInitialSetPlanService {
                 storeDetail.setQty(storeDetail.getQty() + qty);
                 storeMap.put(store,storeDetail);
             } else {
-                storeMap.put(store,new StoreDetail(store,qty));
+                storeMap.put(store,new StoreDetail(store, Optional.ofNullable(storeClusterMap)
+                        .map(storeCluster -> storeCluster.getKey(store))
+                        .orElse(null), qty));
             }
         });
         metricsVolume.setStores(new ArrayList<>(storeMap.values()));

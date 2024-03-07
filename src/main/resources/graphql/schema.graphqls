@@ -610,6 +610,7 @@ type MetricsVolume {
 
 type StoreDetail {
     store: Int!
+    groupingType: String
     qty: Int!
 }
 
