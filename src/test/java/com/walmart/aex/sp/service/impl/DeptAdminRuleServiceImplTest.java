@@ -41,9 +41,6 @@ class DeptAdminRuleServiceImplTest {
     @Mock
     private DeptAdminRuleRepository deptAdminRuleRepository;
 
-    @Mock
-    private PlanAdminRuleService planAdminRulesService;
-
     private List<DeptAdminRule> dbResponse;
     private DeptAdminRuleRequest deptAdminRuleRequest;
     private List<DeptAdminRuleResponse> actual;
