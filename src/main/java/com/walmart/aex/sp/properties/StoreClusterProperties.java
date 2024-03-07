@@ -9,4 +9,7 @@ public interface StoreClusterProperties {
     @Property(propertyName = "store.cluster.url")
     String getStoreClusterUrl();
 
+    @Property(propertyName = "enable.po.store.cluster")
+    Boolean isPOStoreClusterEnabled();
+
 }

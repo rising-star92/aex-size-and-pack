@@ -538,3 +538,8 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "https://cluster-solution-service.dev.aex.walmart.com/graphql"
+      "enable.po.store.cluster":
+        description: "Flag to enable Store Cluster for PO"
+        type: "BOOLEAN"
+        kind: "SINGLE"
+        defaultValue: true
