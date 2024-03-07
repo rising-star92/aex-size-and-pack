@@ -117,6 +117,8 @@ input FinelineRequest {
 
 input InitialSetPackRequest{
 	planId: Int
+    interval: String
+    fiscalYear: Int
 	finelineNbr: Int
 }
 
@@ -154,6 +156,7 @@ type PackDetails{
 	uuId: String
 	metrics: [Metrics]
 	bumpPackNbr: Int
+    groupingTypes: [String]
 }
 
 type Metrics{

@@ -1,6 +1,8 @@
 package com.walmart.aex.sp.dto.commitmentreport;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
@@ -12,4 +14,5 @@ public class PackDetails {
 	  private List<Metrics> metrics;
 	  private String uuId;
 	  private Integer bumpPackNbr;
+	  private Set<String> groupingTypes = new HashSet<>();
 }

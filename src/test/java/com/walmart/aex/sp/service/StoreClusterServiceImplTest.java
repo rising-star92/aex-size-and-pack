@@ -84,7 +84,6 @@ public class StoreClusterServiceImplTest {
     @Test
     void testFetchPOStoreClusterGroupingDisabled() throws SizeAndPackException, IOException, IllegalAccessException {
         // Arrange
-
         Field storeClusterPropertiesField = ReflectionUtils.findField(StoreClusterServiceImpl.class, "storeClusterProperties");
         assert storeClusterPropertiesField != null;
         storeClusterPropertiesField.setAccessible(true);
