@@ -33,7 +33,7 @@ public class PlanAdminRuleServiceImpl implements PlanAdminRuleService {
      * @return List<PlanAdminRuleResponse>
      */
     @Override
-    public List<PlanAdminRuleResponse> getPlanAdminRules(List<Long> planIds) {
+    public Set<PlanAdminRuleResponse> getPlanAdminRules(List<Long> planIds) {
         List<PlanAdminRule> planAdminRules;
         try {
             if (!CollectionUtils.isEmpty(planIds)){

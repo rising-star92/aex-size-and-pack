@@ -11,6 +11,7 @@ import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Set;
 
 import static com.walmart.aex.sp.util.SizeAndPackConstants.*;
 
@@ -24,7 +25,7 @@ public class PlanAdminRuleController {
     }
 
     @QueryMapping
-    public List<PlanAdminRuleResponse> getPlanAdminRules(@Argument List<Long> planIds) {
+    public Set<PlanAdminRuleResponse> getPlanAdminRules(@Argument List<Long> planIds) {
         return planAdminRuleService.getPlanAdminRules(planIds);
     }
 
