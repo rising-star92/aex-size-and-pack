@@ -8,5 +8,4 @@ public class PlanAdminRuleResponse {
     private Integer deptNbr;
     private Integer replItemPieceRule;
     private Integer minReplItemUnits;
-
 }
