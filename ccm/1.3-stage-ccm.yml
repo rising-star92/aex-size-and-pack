@@ -418,6 +418,21 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "stg"
+      "store.cluster.consumer.id":
+        description: "Consumer ID to call Assort Product"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "93c617a1-31ec-4333-a819-683ef7514cc0"
+      "store.cluster.consumer.name":
+        description: "Consumer service name"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "CLUSTER_SOLUTION_SERVICE"
+      "store.cluster.consumer.env":
+        description: "Consumer Environment"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "stage"
   bigQueryConfig:
     description: "Big Query Config to connect with GCP tables"
     resolutionPaths:
@@ -513,3 +528,13 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "[155, 161, 162, 163, 167, 171, 172, 174, 176, 183]"
+  storeClusterConfig:
+    description: "Store Cluster API Config"
+    resolutionPaths:
+      - default: "/envProfile/envName"
+    properties:
+      "store.cluster.url":
+        description: "URL for Store Cluster API"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "https://cluster-solution-service.uat.aex.walmart.com/graphql"
