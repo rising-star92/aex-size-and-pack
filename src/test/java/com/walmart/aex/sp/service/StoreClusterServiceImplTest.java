@@ -68,6 +68,7 @@ public class StoreClusterServiceImplTest {
 
         when(graphQLService.post(anyString(), anyString(), anyMap(), anyMap()))
                 .thenReturn(response);
+        when(storeClusterProperties.isPOStoreClusterEnabled()).thenReturn(true);
         when(storeClusterProperties.getStoreClusterUrl()).thenReturn("http://localhost:8080/graphql");
 
         // Act
@@ -78,6 +79,23 @@ public class StoreClusterServiceImplTest {
         assertEquals(2, storeCluster.size());
         assertEquals("offshore", storeCluster.getKey(1822));
         assertEquals("onshore", storeCluster.getKey(1));
+    }
+
+    @Test
+    void testFetchPOStoreClusterGroupingDisabled() throws SizeAndPackException, IOException, IllegalAccessException {
+        // Arrange
+
+        Field storeClusterPropertiesField = ReflectionUtils.findField(StoreClusterServiceImpl.class, "storeClusterProperties");
+        assert storeClusterPropertiesField != null;
+        storeClusterPropertiesField.setAccessible(true);
+        storeClusterPropertiesField.set(storeClusterService, storeClusterProperties);
+
+        // Act
+        StoreClusterMap storeCluster = storeClusterService.fetchPOStoreClusterGrouping("S1", "2025");
+
+        // Assert
+        assertNotNull(storeCluster);
+        assertEquals(0, storeCluster.size());
     }
 
 }
