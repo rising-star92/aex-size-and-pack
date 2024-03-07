@@ -6,7 +6,6 @@ import com.walmart.aex.sp.dto.gql.GraphQLResponse;
 import com.walmart.aex.sp.exception.SizeAndPackException;
 import com.walmart.aex.sp.properties.GraphQLProperties;
 import com.walmart.aex.sp.properties.StoreClusterProperties;
-import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,7 +28,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class StoreClusterServiceTest {
+public class StoreClusterServiceImplTest {
 
     @Mock
     private GraphQLService graphQLService;
@@ -41,7 +40,7 @@ public class StoreClusterServiceTest {
     private GraphQLProperties graphQLProperties;
 
     @InjectMocks
-    private StoreClusterService storeClusterService;
+    private StoreClusterServiceImpl storeClusterService;
 
     private ObjectMapper objectMapper;
 
@@ -58,12 +57,12 @@ public class StoreClusterServiceTest {
                 .getResource("/data/storeClusterResponse.json")).getFile());
         GraphQLResponse response = objectMapper.readValue(storeClusterInfoResponseFile, GraphQLResponse.class);
 
-        Field storeClusterPropertiesField = ReflectionUtils.findField(StoreClusterService.class, "storeClusterProperties");
+        Field storeClusterPropertiesField = ReflectionUtils.findField(StoreClusterServiceImpl.class, "storeClusterProperties");
         assert storeClusterPropertiesField != null;
         storeClusterPropertiesField.setAccessible(true);
         storeClusterPropertiesField.set(storeClusterService, storeClusterProperties);
 
-        Field graphQlPropertiesField = ReflectionUtils.findField(StoreClusterService.class, "graphQLProperties");
+        Field graphQlPropertiesField = ReflectionUtils.findField(StoreClusterServiceImpl.class, "graphQLProperties");
         assert graphQlPropertiesField != null;
         graphQlPropertiesField.setAccessible(true);
         graphQlPropertiesField.set(storeClusterService, graphQLProperties);
