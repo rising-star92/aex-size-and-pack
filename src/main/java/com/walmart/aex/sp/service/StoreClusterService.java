@@ -1,5 +1,6 @@
 package com.walmart.aex.sp.service;
 
+import com.walmart.aex.sp.dto.StoreClusterMap;
 import com.walmart.aex.sp.exception.SizeAndPackException;
 
 import java.util.List;
@@ -16,6 +17,6 @@ public interface StoreClusterService {
      * @return clusterName (like offshore/onshore) along with the list of store numbers
      * @throws SizeAndPackException
      */
-    Map<String, List<Integer>> fetchPOStoreClusterGrouping(String season, String fiscalYear) throws SizeAndPackException;
+    StoreClusterMap fetchPOStoreClusterGrouping(String season, String fiscalYear) throws SizeAndPackException;
 
 }

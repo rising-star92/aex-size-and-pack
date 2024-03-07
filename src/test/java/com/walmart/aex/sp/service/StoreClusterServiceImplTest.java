@@ -2,6 +2,7 @@ package com.walmart.aex.sp.service;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.walmart.aex.sp.dto.StoreClusterMap;
 import com.walmart.aex.sp.dto.gql.GraphQLResponse;
 import com.walmart.aex.sp.exception.SizeAndPackException;
 import com.walmart.aex.sp.properties.GraphQLProperties;
@@ -17,8 +18,6 @@ import org.springframework.util.ReflectionUtils;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -72,11 +71,13 @@ public class StoreClusterServiceImplTest {
         when(storeClusterProperties.getStoreClusterUrl()).thenReturn("http://localhost:8080/graphql");
 
         // Act
-        Map<String, List<Integer>> storeCluster = storeClusterService.fetchPOStoreClusterGrouping("S1", "2025");
+        StoreClusterMap storeCluster = storeClusterService.fetchPOStoreClusterGrouping("S1", "2025");
 
         // Assert
         assertNotNull(storeCluster);
         assertEquals(2, storeCluster.size());
+        assertEquals("offshore", storeCluster.getKey(1822));
+        assertEquals("onshore", storeCluster.getKey(1));
     }
 
 }
