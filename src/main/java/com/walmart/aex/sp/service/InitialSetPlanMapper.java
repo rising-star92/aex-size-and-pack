@@ -1,11 +1,9 @@
 package com.walmart.aex.sp.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import com.walmart.aex.sp.dto.StoreClusterMap;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -88,10 +86,16 @@ public class InitialSetPlanMapper {
 								   List<PackDetails> packDetails, StoreClusterMap storeClusterMap) {
 		PackDetails paDetails = new PackDetails();
 		paDetails.setPackId(rfaInitialSetBumpSetResponse.getPack_id());
-		Optional.ofNullable(storeClusterMap)
-				.map(storeCluster -> storeCluster.getKey(rfaInitialSetBumpSetResponse.getStore()))
-				.filter(StringUtils::isNotEmpty)
-				.ifPresent(groupingType -> paDetails.getGroupingTypes().add(groupingType));
+
+		if(CollectionUtils.isNotEmpty(rfaInitialSetBumpSetResponse.getStores())) {
+			for (Map.Entry<String, List<Integer>> entry : storeClusterMap.entrySet()) {
+				if (CollectionUtils.isNotEmpty(CollectionUtils.intersection(entry.getValue(),
+						rfaInitialSetBumpSetResponse.getStores()))) {
+					paDetails.getGroupingTypes().add(entry.getKey());
+				}
+			}
+		}
+
 		paDetails.setMetrics(mapInitialSetPackMetrics(rfaInitialSetBumpSetResponse,paDetails));
 		paDetails.setUuId(rfaInitialSetBumpSetResponse.getUuid());
 		paDetails.setBumpPackNbr(rfaInitialSetBumpSetResponse.getBumpPackNbr());
