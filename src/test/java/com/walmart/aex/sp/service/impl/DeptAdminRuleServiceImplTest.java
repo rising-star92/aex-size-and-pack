@@ -2,14 +2,11 @@ package com.walmart.aex.sp.service.impl;
 
 import com.walmart.aex.sp.dto.deptadminrule.DeptAdminRuleRequest;
 import com.walmart.aex.sp.dto.deptadminrule.DeptAdminRuleResponse;
-import com.walmart.aex.sp.dto.deptadminrule.PlanAdminRuleResponse;
 import com.walmart.aex.sp.dto.deptadminrule.ReplItemResponse;
 import com.walmart.aex.sp.entity.DeptAdminRule;
-import com.walmart.aex.sp.entity.PlanAdminRule;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.properties.BuyQtyProperties;
 import com.walmart.aex.sp.repository.DeptAdminRuleRepository;
-import com.walmart.aex.sp.service.PlanAdminRuleService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -249,30 +246,7 @@ class DeptAdminRuleServiceImplTest {
         deptAdminRule.setDeptNbr(35);
         deptAdminRule.setReplItemPieceRule(100);
         deptAdminRule.setMinReplItemUnits(2500);
-        PlanAdminRule planAdminRule = new PlanAdminRule();
-        planAdminRule.setPlanId(23L);
-        planAdminRule.setDeptNbr(35);
-        planAdminRule.setReplItemPieceRule(55);
-        planAdminRule.setMinReplItemUnits(22);
-        deptAdminRule.setPlanAdminRules(Set.of(planAdminRule));
-        when(deptAdminRuleRepository.findAllById(anyList())).thenReturn(List.of(deptAdminRule));
-        ReplItemResponse repelItemRule = deptAdminRuleService.getReplItemRule(23L, 35);
-        assertEquals(55, repelItemRule.getReplItemPieceRule());
-        assertEquals(22, repelItemRule.getMinReplItemUnits());
-    }
-
-    @Test
-    void test_getReplItemRuleShouldReturnValuesWhenPlanAdminRuleIsEmpty() throws IllegalAccessException {
-        Field field = ReflectionUtils.findField(DeptAdminRuleServiceImpl.class, "buyQtyProperties");
-        assert field != null;
-        field.setAccessible(true);
-        when(buyQtyProperties.getPlanAdminRuleFlag()).thenReturn(Boolean.TRUE);
-        field.set(deptAdminRuleService, buyQtyProperties);
-        DeptAdminRule deptAdminRule = new DeptAdminRule();
-        deptAdminRule.setDeptNbr(35);
-        deptAdminRule.setReplItemPieceRule(100);
-        deptAdminRule.setMinReplItemUnits(2500);
-        when(deptAdminRuleRepository.findAllById(anyList())).thenReturn(List.of(deptAdminRule));
+        when(deptAdminRuleRepository.getReplnRuleCons(23L, 35)).thenReturn(deptAdminRule);
         ReplItemResponse repelItemRule = deptAdminRuleService.getReplItemRule(23L, 35);
         assertEquals(100, repelItemRule.getReplItemPieceRule());
         assertEquals(2500, repelItemRule.getMinReplItemUnits());
@@ -285,7 +259,7 @@ class DeptAdminRuleServiceImplTest {
         field.setAccessible(true);
         when(buyQtyProperties.getPlanAdminRuleFlag()).thenReturn(Boolean.TRUE);
         field.set(deptAdminRuleService, buyQtyProperties);
-        when(deptAdminRuleRepository.findAllById(anyList())).thenReturn(null);
+        when(deptAdminRuleRepository.getReplnRuleCons(23L, 35)).thenReturn(null);
         ReplItemResponse repelItemRule = deptAdminRuleService.getReplItemRule(23L, 35);
         assertEquals(2, repelItemRule.getReplItemPieceRule());
         assertEquals(2500, repelItemRule.getMinReplItemUnits());

@@ -21,9 +21,7 @@ public interface DeptAdminRuleMapper {
     @Mapping(source = "deptAdminRule.minReplItemUnits", target = "minReplItemUnits")
     DeptAdminRuleResponse depAdminRulesToDeptAdminRuleResponses(DeptAdminRule deptAdminRule, Set<PlanAdminRuleResponse> planAdminRuleResponses);
 
-    PlanAdminRuleResponse mapPlanAdminRuleEntityToResponse( PlanAdminRule planAdminRule);
-
-    Set<PlanAdminRuleResponse> mapPlanAdminRuleEntityListToResponseList( Set<PlanAdminRule> planAdminRule);
+    Set<PlanAdminRuleResponse> mapPlanAdminRuleEntityListToResponseSet(Set<PlanAdminRule> planAdminRule);
 
     List<DeptAdminRule> deptAdminRuleRequestToDeptAdminRules(List<DeptAdminRuleRequest> deptAdminRuleRequests);
 
