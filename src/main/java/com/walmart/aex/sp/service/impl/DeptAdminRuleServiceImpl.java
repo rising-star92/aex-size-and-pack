@@ -46,9 +46,6 @@ public class DeptAdminRuleServiceImpl implements DeptAdminRuleService {
         } else {
             deptAdminRuleList = deptAdminRuleRepository.findAllById(deptNumbers);
         }
-        if(CollectionUtils.isEmpty(deptAdminRuleList)){
-            return deptAdminRuleResponses;
-        }
         deptAdminRuleList.forEach(deptAdminRule -> {
             Set<PlanAdminRuleResponse> planAdminRuleResponses = DeptAdminRuleMapper.deptAdminRuleMapper.mapPlanAdminRuleEntityListToResponseSet(deptAdminRule.getPlanAdminRules());
             DeptAdminRuleResponse deptAdminRuleResponse = DeptAdminRuleMapper.deptAdminRuleMapper.depAdminRulesToDeptAdminRuleResponses(deptAdminRule, planAdminRuleResponses);
