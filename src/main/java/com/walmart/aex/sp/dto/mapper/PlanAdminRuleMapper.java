@@ -3,7 +3,6 @@ package com.walmart.aex.sp.dto.mapper;
 import com.walmart.aex.sp.dto.deptadminrule.PlanAdminRuleRequest;
 import com.walmart.aex.sp.dto.deptadminrule.PlanAdminRuleResponse;
 import com.walmart.aex.sp.entity.PlanAdminRule;
-import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
