@@ -9,6 +9,7 @@ import com.walmart.aex.sp.properties.GraphQLProperties;
 import com.walmart.aex.sp.properties.StoreClusterProperties;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -71,6 +72,14 @@ public class StoreClusterServiceImpl implements StoreClusterService {
                     .forEach(clusterInfo -> storeClusterMap.put(clusterInfo.getClusterName(), clusterInfo.getStoreList()));
         }
         return storeClusterMap;
+    }
+
+    @Override
+    @CacheEvict(value = "aex_po_store_grouping",
+            cacheManager = "memCacheManager",
+            allEntries = true)
+    public void invalidateStoreClusterCache() {
+        log.info("Store Cluster Cache Evicted...");
     }
 
 }

@@ -3,9 +3,6 @@ package com.walmart.aex.sp.service;
 import com.walmart.aex.sp.dto.StoreClusterMap;
 import com.walmart.aex.sp.exception.SizeAndPackException;
 
-import java.util.List;
-import java.util.Map;
-
 public interface StoreClusterService {
 
     /**
@@ -18,5 +15,7 @@ public interface StoreClusterService {
      * @throws SizeAndPackException
      */
     StoreClusterMap fetchPOStoreClusterGrouping(String season, String fiscalYear) throws SizeAndPackException;
+
+    void invalidateStoreClusterCache();
 
 }
