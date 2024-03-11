@@ -117,8 +117,7 @@ public class DeptAdminRuleServiceImpl implements DeptAdminRuleService {
                 response.setReplItemPieceRule(deptAdminRule.getReplItemPieceRule());
                 response.setMinReplItemUnits(deptAdminRule.getMinReplItemUnits());
             }else{
-                response.setReplItemPieceRule(DEFAULT_REPL_ITEM_PIECE_RULE);
-                response.setMinReplItemUnits(DEFAULT_MIN_REPL_ITEM_UNITS);
+                setDefaultReplnRule(response);
             }
 
         } else {
@@ -131,15 +130,20 @@ public class DeptAdminRuleServiceImpl implements DeptAdminRuleService {
             } else {
                 List<DeptAdminRuleResponse> deptAdminRules = getDeptAdminRules(List.of(lvl1Nbr));
                 if(CollectionUtils.isEmpty(deptAdminRules)) {
-                    response.setReplItemPieceRule(DEFAULT_REPL_ITEM_PIECE_RULE);
-                    response.setMinReplItemUnits(DEFAULT_MIN_REPL_ITEM_UNITS);
+                    setDefaultReplnRule(response);
                 } else {
-                    response.setReplItemPieceRule(deptAdminRules.iterator().next().getReplItemPieceRule());
-                    response.setMinReplItemUnits(deptAdminRules.iterator().next().getMinReplItemUnits());
+                    DeptAdminRuleResponse ruleResponse = deptAdminRules.iterator().next();
+                    response.setReplItemPieceRule(ruleResponse.getReplItemPieceRule());
+                    response.setMinReplItemUnits(ruleResponse.getMinReplItemUnits());
                 }
             }
         }
         return response;
+    }
+
+    private void setDefaultReplnRule(ReplItemResponse response) {
+        response.setReplItemPieceRule(DEFAULT_REPL_ITEM_PIECE_RULE);
+        response.setMinReplItemUnits(DEFAULT_MIN_REPL_ITEM_UNITS);
     }
 
     @Override
