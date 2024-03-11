@@ -21,8 +21,6 @@ public interface PlanAdminRuleMapper {
     PlanAdminRule mapRequestToEntity(PlanAdminRuleRequest request);
     List<PlanAdminRule> mapRequestListToEntityList(List<PlanAdminRuleRequest> requests);
 
-    List<PlanAdminRuleResponse> mapEntityToResponse(List<PlanAdminRule> entity);
-
     default Date getCurrentDate() {
         return new Date();
     }
