@@ -1,5 +1,8 @@
 package com.walmart.aex.sp.service;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.walmart.aex.sp.dto.StoreClusterMap;
 import com.walmart.aex.sp.dto.buyquantity.BuyQntyResponseDTO;
 import com.walmart.aex.sp.dto.buyquantity.BuyQtyRequest;
 import com.walmart.aex.sp.dto.buyquantity.BuyQtyResponse;
@@ -20,9 +23,11 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 import static com.walmart.aex.sp.util.BuyQtyResponseInputs.convertChannelToStore;
 import static com.walmart.aex.sp.util.SizeAndPackTest.getPlanSizeAndPackDeleteDTO;
@@ -98,6 +103,11 @@ class SizeAndPackServiceTest {
     @Mock
     private CcPackOptimizationRepository ccPackOptimizationRepository;
 
+    @Mock
+    private StoreClusterService storeClusterService;
+
+    private ObjectMapper objectMapper;
+
     private static Integer fineline1Nbr = 151;
     private static String styleNbr = "151_2_23_001";
     private static String ccId = "151_2_23_001_001";
@@ -105,10 +115,12 @@ class SizeAndPackServiceTest {
     @BeforeEach
     void setup() {
         initialSetPlanMapper = new InitialSetPlanMapper();
+        this.objectMapper = new ObjectMapper();
+        this.objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         sizeAndPackService = new SizeAndPackService(spFineLineChannelFixtureRepository, buyQuantityMapper, spCustomerChoiceChannelFixtureRepository, sizeAndPackObjectMapper,
                 merchCatPlanRepository, strategyFetchService, spCustomerChoiceChannelFixtureSizeRepository, sizeAndPackDeleteService, sizeAndPackDeletePlanService,
                 buyQtyCommonUtil, bigQueryInitialSetPlanService, initialSetPlanMapper, merchPackOptimizationRepository, packOptUpdateDataMapper, packOptAddDataMapper,
-                bigQueryPackStoresService, sizeAndPackDeletePackOptMapper, customerChoiceRepository, BQFactoryMapper, ccPackOptimizationRepository);
+                bigQueryPackStoresService, sizeAndPackDeletePackOptMapper, customerChoiceRepository, BQFactoryMapper, ccPackOptimizationRepository, storeClusterService);
         ReflectionTestUtils.setField(sizeAndPackService, "bigQueryConnectionProperties", bigQueryConnectionProperties);
     }
 
@@ -173,17 +185,24 @@ class SizeAndPackServiceTest {
     }
 
     @Test
-    void getInitialSetAndBumpSetDetailsTest() {
+    void getInitialSetAndBumpSetDetailsTest() throws SizeAndPackException, IOException {
         PackDescCustChoiceDTO packDescCustChoiceDTO = new PackDescCustChoiceDTO();
         packDescCustChoiceDTO.setCcId("34_3463_2_21_3_BKRINS");
         packDescCustChoiceDTO.setColorName("WHITE");
         packDescCustChoiceDTO.setAltFinelineDesc("3463 - FINELINE DESC");
 
+        File storeClusterInfoResponseFile = new File(Objects.requireNonNull(this.getClass()
+                .getResource("/data/storeClusterServiceResponse.json")).getFile());
+        StoreClusterMap storeClusterResponse = objectMapper.readValue(storeClusterInfoResponseFile, StoreClusterMap.class);
+
         InitialSetPackRequest request = new InitialSetPackRequest();
         request.setPlanId(114);
         request.setFinelineNbr(3463);
+        request.setInterval("S1");
+        request.setFiscalYear(2025);
         when(bigQueryInitialSetPlanService.getInitialAndBumpSetDetails(any(InitialSetPackRequest.class))).thenReturn(getRFAInitialSetBumpSetData());
         when(customerChoiceRepository.getCustomerChoicesByFinelineAndPlanId(anyLong(), anyInt(), anyInt())).thenReturn(List.of(packDescCustChoiceDTO));
+        when(storeClusterService.fetchPOStoreClusterGrouping(anyString(), anyString())).thenReturn(storeClusterResponse);
         InitialBumpSetResponse response = sizeAndPackService.getInitialAndBumpSetDetails(request);
 
         PackDetails packDetails = response.getIntialSetStyles().stream()

@@ -2,6 +2,7 @@ package com.walmart.aex.sp.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.walmart.aex.sp.dto.StoreClusterMap;
 import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.dto.commitmentreport.InitialBumpSetResponse;
 import com.walmart.aex.sp.dto.commitmentreport.InitialSetPackRequest;
@@ -78,6 +79,8 @@ public class SizeAndPackService {
 
     private final CcPackOptimizationRepository ccPackOptimizationRepository;
 
+    private final StoreClusterService storeClusterService;
+
     @ManagedConfiguration
 	BigQueryConnectionProperties bigQueryConnectionProperties;
 
@@ -89,7 +92,9 @@ public class SizeAndPackService {
                               SizeAndPackDeleteService sizeAndPackDeleteService, SizeAndPackDeletePlanService sizeAndPackDeletePlanService
             , BuyQtyCommonUtil buyQtyCommonUtil, BigQueryInitialSetPlanService bigQueryInitialSetPlanService, InitialSetPlanMapper initialSetPlanMapper,
                               MerchPackOptimizationRepository merchPackOptimizationRepository, PackOptUpdateDataMapper packOptUpdateDataMapper, PackOptAddDataMapper packOptAddDataMapper,
-                              BigQueryPackStoresService bigQueryPackStoresService, SizeAndPackDeletePackOptMapper sizeAndPackDeletePackOptMapper, CustomerChoiceRepository customerChoiceRepository, BQFactoryMapper BQFactoryMapper, CcPackOptimizationRepository ccPackOptimizationRepository) {
+                              BigQueryPackStoresService bigQueryPackStoresService, SizeAndPackDeletePackOptMapper sizeAndPackDeletePackOptMapper, CustomerChoiceRepository customerChoiceRepository,
+                              BQFactoryMapper BQFactoryMapper, CcPackOptimizationRepository ccPackOptimizationRepository,
+                              StoreClusterService storeClusterService) {
         this.spFineLineChannelFixtureRepository = spFineLineChannelFixtureRepository;
         this.buyQuantityMapper = buyQuantityMapper;
         this.spCustomerChoiceChannelFixtureRepository = spCustomerChoiceChannelFixtureRepository;
@@ -111,6 +116,7 @@ public class SizeAndPackService {
         this.objectMapper = new ObjectMapper();
         this.BQFactoryMapper = BQFactoryMapper;
         this.ccPackOptimizationRepository = ccPackOptimizationRepository;
+        this.storeClusterService = storeClusterService;
     }
 
     public BuyQtyResponse fetchFinelineBuyQnty(BuyQtyRequest buyQtyRequest) {
@@ -446,9 +452,13 @@ public class SizeAndPackService {
 				rfaInitialSetBumpSetResponses = bigQueryInitialSetPlanService.getInitialAndBumpSetDetails(request);
 			}
 
+            StoreClusterMap storeClusterMap = storeClusterService.fetchPOStoreClusterGrouping(request.getInterval(),
+                    String.valueOf(request.getFiscalYear()));
+
             Optional.of(rfaInitialSetBumpSetResponses).stream().flatMap(Collection::stream).forEach(
                     intialSetResponseOne ->
-                            initialSetPlanMapper.mapInitialSetPlan(intialSetResponseOne, response, request.getFinelineNbr()));
+                            initialSetPlanMapper.mapInitialSetPlan(intialSetResponseOne, response,
+                                    request.getFinelineNbr(), storeClusterMap));
             setPackDescription(request, response);
 		} catch (Exception e) {
 			log.error("Exception While fetching Initial Set Pack Quantities :", e);
