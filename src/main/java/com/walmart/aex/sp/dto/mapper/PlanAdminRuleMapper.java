@@ -7,12 +7,11 @@ import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
+import java.util.Set;
 
 @Mapper
 public interface PlanAdminRuleMapper {
     PlanAdminRuleMapper mapper = Mappers.getMapper(PlanAdminRuleMapper.class);
     List<PlanAdminRule> mapRequestToEntity(List<PlanAdminRuleRequest> requests);
-
-    List<PlanAdminRuleResponse> mapEntityToResponse(List<PlanAdminRule> entity);
-
+    Set<PlanAdminRuleResponse> mapEntityToResponse(List<PlanAdminRule> entity);
 }

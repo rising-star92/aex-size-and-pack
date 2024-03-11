@@ -1,11 +1,11 @@
 package com.walmart.aex.sp.dto.deptadminrule;
 
 import lombok.Data;
+import lombok.experimental.SuperBuilder;
 
 @Data
-public class PlanAdminRuleRequest {
+@SuperBuilder
+public class PlanAdminRuleRequest extends ReplItemResponse {
     private Long planId;
     private Integer deptNbr;
-    private Integer replItemPieceRule;
-    private Integer minReplItemUnits;
 }
