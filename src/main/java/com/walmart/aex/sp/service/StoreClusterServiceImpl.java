@@ -9,6 +9,7 @@ import com.walmart.aex.sp.properties.GraphQLProperties;
 import com.walmart.aex.sp.properties.StoreClusterProperties;
 import io.strati.ccm.utils.client.annotation.ManagedConfiguration;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -25,7 +26,7 @@ public class StoreClusterServiceImpl implements StoreClusterService {
     private final GraphQLService graphQLService;
 
     @ManagedConfiguration
-    private StoreClusterProperties storeClusterProperties;
+    public StoreClusterProperties storeClusterProperties;
 
     @ManagedConfiguration
     private GraphQLProperties graphQLProperties;
@@ -34,8 +35,10 @@ public class StoreClusterServiceImpl implements StoreClusterService {
         this.graphQLService = graphQLService;
     }
 
-    // TODO - Add Caching
     @Override
+    @Cacheable(value = "aex_po_store_grouping",
+            cacheManager = "memCacheManager",
+            condition = "#root.target.storeClusterProperties.isPOStoreClusterEnabled()")
     public StoreClusterMap fetchPOStoreClusterGrouping(String season, String fiscalYear) throws SizeAndPackException {
         log.info("Fetching PO Store Cluster Grouping from StoreClusterAPI...");
         StoreClusterMap storeClusterMap = new StoreClusterMap();
