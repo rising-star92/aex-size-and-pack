@@ -143,6 +143,11 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "12, 8, 9, 73"
+      "planAdminRule.featureFlag":
+        description: "Feature flag to enable the logic for getting Admin Rule for Plans from table"
+        type: "BOOLEAN"
+        kind: "SINGLE"
+        defaultValue: True
       "initialSet.oneUnitPerStoreFlag":
         description: "Feature flag to enable the logic for making sure each store gets one unit"
         type: "STRING"

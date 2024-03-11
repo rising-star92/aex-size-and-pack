@@ -9,6 +9,7 @@ import org.mapstruct.factory.Mappers;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import static com.walmart.aex.security.service.UserDetailsService.getAuthenticatedUserName;
 
@@ -30,4 +31,5 @@ public interface PlanAdminRuleMapper {
         return getAuthenticatedUserName();
     }
 
+    Set<PlanAdminRuleResponse> mapEntityToResponse(List<PlanAdminRule> entity);
 }
