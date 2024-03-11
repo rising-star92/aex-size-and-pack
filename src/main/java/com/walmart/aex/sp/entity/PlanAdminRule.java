@@ -1,8 +1,10 @@
 package com.walmart.aex.sp.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -19,6 +21,7 @@ public class PlanAdminRule {
     @MapsId(value = "deptNbr")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dept_nbr", nullable = false)
+    @JsonIgnore
     private DeptAdminRule deptAdminRule;
 
     @Column(name = "dept_nbr", nullable = false)
@@ -29,4 +32,16 @@ public class PlanAdminRule {
 
     @Column(name = "min_repl_item_units", nullable = false)
     private Integer minReplItemUnits;
+
+    @Column(name = "create_ts")
+    private Date createTs;
+
+    @Column(name = "create_userid")
+    private String createUserId;
+
+    @Column(name = "last_modified_ts")
+    private Date lastModifiedTs;
+
+    @Column(name = "last_modified_userid")
+    private String lastModifiedUserId;
 }
