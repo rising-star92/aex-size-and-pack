@@ -53,7 +53,13 @@ public class PlanAdminRuleServiceImpl implements PlanAdminRuleService {
     public void addPlanAdminRules(List<PlanAdminRuleRequest> planAdminRuleRequests) {
         try {
             if (!CollectionUtils.isEmpty(planAdminRuleRequests)) {
-                List<PlanAdminRule> planAdminRules = PlanAdminRuleMapper.mapper.mapRequestListToEntityList(planAdminRuleRequests);
+                Date createDate = new Date();
+                String userId = getAuthenticatedUserName();
+                planAdminRuleRequests.forEach(planAdminRuleRequest -> {
+                    planAdminRuleRequest.setCreateTs(createDate);
+                    planAdminRuleRequest.setCreateUserId(userId);
+                });
+                List<PlanAdminRule> planAdminRules = PlanAdminRuleMapper.mapper.mapRequestToEntity(planAdminRuleRequests);
                 planAdminRulesRespository.saveAll(planAdminRules);
             }
         } catch (Exception ex) {
@@ -68,7 +74,7 @@ public class PlanAdminRuleServiceImpl implements PlanAdminRuleService {
     public void updatePlanAdminRules(List<PlanAdminRuleRequest> plaAdminRuleRequests) {
         List<PlanAdminRule> updatedRecords = new ArrayList<>();
         if(!CollectionUtils.isEmpty(plaAdminRuleRequests)) {
-            List<PlanAdminRule> planAdminRules = PlanAdminRuleMapper.mapper.mapRequestListToEntityList(plaAdminRuleRequests);
+            List<PlanAdminRule> planAdminRules = PlanAdminRuleMapper.mapper.mapRequestToEntity(plaAdminRuleRequests);
             Set<Long> planIds = plaAdminRuleRequests.stream().map(PlanAdminRuleRequest::getPlanId).collect(Collectors.toSet());
             List<PlanAdminRule> existingPlanAdminRules = planAdminRulesRespository.findAllById(planIds);
             for (PlanAdminRule planAdminRule : planAdminRules) {
@@ -76,8 +82,6 @@ public class PlanAdminRuleServiceImpl implements PlanAdminRuleService {
                 if(existing.isPresent()) {
                     planAdminRule.setLastModifiedTs(new Date());
                     planAdminRule.setLastModifiedUserId(getAuthenticatedUserName());
-                    planAdminRule.setCreateTs(existing.get().getCreateTs());  // to avoid overwriting the creation Time
-                    planAdminRule.setCreateUserId(existing.get().getCreateUserId()); // to avoid overwriting the creation User
                     updatedRecords.add(planAdminRule);
                 }
             }

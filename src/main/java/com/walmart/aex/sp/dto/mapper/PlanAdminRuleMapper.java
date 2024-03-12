@@ -16,18 +16,7 @@ import static com.walmart.aex.security.service.UserDetailsService.getAuthenticat
 @Mapper
 public interface PlanAdminRuleMapper {
     PlanAdminRuleMapper mapper = Mappers.getMapper(PlanAdminRuleMapper.class);
-    @Mapping(target = "createTs", expression = "java(getCurrentDate())")
-    @Mapping(target = "createUserId", expression = "java(getUserId())")
-    PlanAdminRule mapRequestToEntity(PlanAdminRuleRequest request);
-    List<PlanAdminRule> mapRequestListToEntityList(List<PlanAdminRuleRequest> requests);
-
-    default Date getCurrentDate() {
-        return new Date();
-    }
-
-    default String getUserId() {
-        return getAuthenticatedUserName();
-    }
+    List<PlanAdminRule> mapRequestToEntity(List<PlanAdminRuleRequest> requests);
 
     Set<PlanAdminRuleResponse> mapEntityToResponse(List<PlanAdminRule> entity);
 }
