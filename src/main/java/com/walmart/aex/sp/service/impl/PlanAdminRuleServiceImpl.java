@@ -73,6 +73,8 @@ public class PlanAdminRuleServiceImpl implements PlanAdminRuleService {
     @Override
     public void updatePlanAdminRules(List<PlanAdminRuleRequest> plaAdminRuleRequests) {
         List<PlanAdminRule> updatedRecords = new ArrayList<>();
+        Date updateDate = new Date();
+        String userId = getAuthenticatedUserName();
         if(!CollectionUtils.isEmpty(plaAdminRuleRequests)) {
             List<PlanAdminRule> planAdminRules = PlanAdminRuleMapper.mapper.mapRequestToEntity(plaAdminRuleRequests);
             Set<Long> planIds = plaAdminRuleRequests.stream().map(PlanAdminRuleRequest::getPlanId).collect(Collectors.toSet());
@@ -80,8 +82,8 @@ public class PlanAdminRuleServiceImpl implements PlanAdminRuleService {
             for (PlanAdminRule planAdminRule : planAdminRules) {
                 Optional<PlanAdminRule> existing = existingPlanAdminRules.stream().filter(planAdminRule1 -> planAdminRule1.getPlanId().equals(planAdminRule.getPlanId())).findAny();
                 if(existing.isPresent()) {
-                    planAdminRule.setLastModifiedTs(new Date());
-                    planAdminRule.setLastModifiedUserId(getAuthenticatedUserName());
+                    planAdminRule.setLastModifiedTs(updateDate);
+                    planAdminRule.setLastModifiedUserId(userId);
                     updatedRecords.add(planAdminRule);
                 }
             }
