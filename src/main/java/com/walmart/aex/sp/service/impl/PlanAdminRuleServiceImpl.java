@@ -12,11 +12,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.walmart.aex.security.service.UserDetailsService.getAuthenticatedUserName;
 
 @Service
 @Slf4j
@@ -54,6 +53,12 @@ public class PlanAdminRuleServiceImpl implements PlanAdminRuleService {
     public void addPlanAdminRules(List<PlanAdminRuleRequest> planAdminRuleRequests) {
         try {
             if (!CollectionUtils.isEmpty(planAdminRuleRequests)) {
+                Date createDate = new Date();
+                String userId = getAuthenticatedUserName();
+                planAdminRuleRequests.forEach(planAdminRuleRequest -> {
+                    planAdminRuleRequest.setCreateTs(createDate);
+                    planAdminRuleRequest.setCreateUserId(userId);
+                });
                 List<PlanAdminRule> planAdminRules = PlanAdminRuleMapper.mapper.mapRequestToEntity(planAdminRuleRequests);
                 planAdminRulesRespository.saveAll(planAdminRules);
             }
@@ -68,6 +73,8 @@ public class PlanAdminRuleServiceImpl implements PlanAdminRuleService {
     @Override
     public void updatePlanAdminRules(List<PlanAdminRuleRequest> plaAdminRuleRequests) {
         List<PlanAdminRule> updatedRecords = new ArrayList<>();
+        Date updateDate = new Date();
+        String userId = getAuthenticatedUserName();
         if(!CollectionUtils.isEmpty(plaAdminRuleRequests)) {
             List<PlanAdminRule> planAdminRules = PlanAdminRuleMapper.mapper.mapRequestToEntity(plaAdminRuleRequests);
             Set<Long> planIds = plaAdminRuleRequests.stream().map(PlanAdminRuleRequest::getPlanId).collect(Collectors.toSet());
@@ -75,6 +82,8 @@ public class PlanAdminRuleServiceImpl implements PlanAdminRuleService {
             for (PlanAdminRule planAdminRule : planAdminRules) {
                 Optional<PlanAdminRule> existing = existingPlanAdminRules.stream().filter(planAdminRule1 -> planAdminRule1.getPlanId().equals(planAdminRule.getPlanId())).findAny();
                 if(existing.isPresent()) {
+                    planAdminRule.setLastModifiedTs(updateDate);
+                    planAdminRule.setLastModifiedUserId(userId);
                     updatedRecords.add(planAdminRule);
                 }
             }

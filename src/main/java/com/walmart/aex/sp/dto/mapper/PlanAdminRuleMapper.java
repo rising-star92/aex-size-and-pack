@@ -14,4 +14,5 @@ public interface PlanAdminRuleMapper {
     PlanAdminRuleMapper mapper = Mappers.getMapper(PlanAdminRuleMapper.class);
     List<PlanAdminRule> mapRequestToEntity(List<PlanAdminRuleRequest> requests);
     Set<PlanAdminRuleResponse> mapEntityToResponse(List<PlanAdminRule> entity);
+
 }
