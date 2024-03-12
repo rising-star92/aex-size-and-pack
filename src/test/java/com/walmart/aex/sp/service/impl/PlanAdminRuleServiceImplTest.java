@@ -60,7 +60,7 @@ class PlanAdminRuleServiceImplTest {
 
     @Test
     void test_addPlanAdminRulesShouldAddData() {
-        planAdminRuleRequest = PlanAdminRuleRequest.builder().planId(12L).deptNbr(34).minReplItemUnits(22).replItemPieceRule(55).build();
+        PlanAdminRuleRequest planAdminRuleRequest = new PlanAdminRuleRequest(12L,34,22,55);
         List<PlanAdminRuleRequest> request = new ArrayList<>(Collections.singletonList(planAdminRuleRequest));
         planAdminRuleService.addPlanAdminRules(request);
         verify(planAdminRulesRespository, Mockito.times(1)).saveAll(planAdminRuleCaptor.capture());
@@ -94,9 +94,8 @@ class PlanAdminRuleServiceImplTest {
 
     @Test
     void test_updatePlanAdminRulesShouldUpdateData() {
-        planAdminRuleRequest = PlanAdminRuleRequest.builder().planId(12L).deptNbr(34).minReplItemUnits(22).replItemPieceRule(55).build();
-        PlanAdminRuleRequest planAdminRuleRequest1 = PlanAdminRuleRequest.builder().
-                planId(73L).deptNbr(23).minReplItemUnits(22).replItemPieceRule(55).build();
+        PlanAdminRuleRequest planAdminRuleRequest = new PlanAdminRuleRequest(12L,34,22,55);
+        PlanAdminRuleRequest planAdminRuleRequest1 =  new PlanAdminRuleRequest(73L,23,22,55);
         List<PlanAdminRuleRequest> request = new ArrayList<>(Arrays.asList(planAdminRuleRequest, planAdminRuleRequest1));
         when(planAdminRulesRespository.findAllById(any())).thenReturn(List.of(PlanAdminRule.builder().planId(12L).deptNbr(34).minReplItemUnits(11).replItemPieceRule(44).build()));
         planAdminRuleService.updatePlanAdminRules(request);
