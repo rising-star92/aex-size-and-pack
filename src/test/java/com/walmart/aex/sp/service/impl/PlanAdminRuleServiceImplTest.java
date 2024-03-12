@@ -20,7 +20,7 @@ import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class PlanAdminRuleServiceImplTest {
+class PlanAdminRuleServiceImplTest {
     @InjectMocks
     private PlanAdminRuleServiceImpl planAdminRuleService;
 
@@ -87,7 +87,8 @@ public class PlanAdminRuleServiceImplTest {
     void test_deletePlanAdminRulesShouldThrowExceptionIfPlanIdIsNotAvailable() {
         doThrow(RuntimeException.class).when(planAdminRulesRespository).deleteAllById(anySet());
         when(planAdminRulesRespository.findById(12L)).thenReturn(Optional.of(dbResponse.get(0)));
-        assertThrows(CustomException.class, () -> planAdminRuleService.deletePlanAdminRule(Collections.singletonList(12L)));
+        List<Long> planIds = List.of(12L);
+        assertThrows(CustomException.class, () -> planAdminRuleService.deletePlanAdminRule(planIds));
     }
 
 
