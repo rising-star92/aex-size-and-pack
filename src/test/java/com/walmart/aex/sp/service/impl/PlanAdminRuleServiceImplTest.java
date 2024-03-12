@@ -77,7 +77,6 @@ public class PlanAdminRuleServiceImplTest {
 
     @Test
     void test_deletePlanAdminRulesShouldPartialDeleteData() {
-        when(planAdminRulesRespository.findById(12L)).thenReturn(Optional.of(dbResponse.get(0)));
         planAdminRuleService.deletePlanAdminRule(Collections.singletonList(12L));
         verify(planAdminRulesRespository, Mockito.times(1))
                 .deleteAllById(planIdCaptor.capture());
