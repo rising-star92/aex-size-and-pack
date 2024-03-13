@@ -76,14 +76,16 @@ public class PlanAdminRuleServiceImpl implements PlanAdminRuleService {
         Date updateDate = new Date();
         String userId = getAuthenticatedUserName();
         if(!CollectionUtils.isEmpty(plaAdminRuleRequests)) {
-            List<PlanAdminRule> planAdminRules = PlanAdminRuleMapper.mapper.mapRequestToEntity(plaAdminRuleRequests);
+//            List<PlanAdminRule> planAdminRules = PlanAdminRuleMapper.mapper.mapRequestToEntity(plaAdminRuleRequests);
             Set<Long> planIds = plaAdminRuleRequests.stream().map(PlanAdminRuleRequest::getPlanId).collect(Collectors.toSet());
             List<PlanAdminRule> existingPlanAdminRules = planAdminRulesRespository.findAllById(planIds);
-            for (PlanAdminRule planAdminRule : planAdminRules) {
-                Optional<PlanAdminRule> existing = existingPlanAdminRules.stream().filter(planAdminRule1 -> planAdminRule1.getPlanId().equals(planAdminRule.getPlanId())).findAny();
-                if(existing.isPresent()) {
+            for (PlanAdminRule planAdminRule : existingPlanAdminRules) {
+                PlanAdminRuleRequest request = plaAdminRuleRequests.stream().filter(planAdminRule1 -> planAdminRule1.getPlanId().equals(planAdminRule.getPlanId())).findFirst().orElse(null);
+                if(Objects.nonNull(request)) {
                     planAdminRule.setLastModifiedTs(updateDate);
                     planAdminRule.setLastModifiedUserId(userId);
+                    planAdminRule.setReplItemPieceRule(request.getReplItemPieceRule());
+                    planAdminRule.setMinReplItemUnits(request.getMinReplItemUnits());
                     updatedRecords.add(planAdminRule);
                 }
             }
