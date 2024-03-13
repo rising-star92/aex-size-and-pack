@@ -74,4 +74,4 @@ flows:
         - log: "Add Plan Admin Rule Failed: ${response.error}"
       else:
         - log: "PlanId ${planId} was added Successfully: ${response}"
-        - throw: "Following list of planIds received a non-200 response code: ${storesFailed} - Refer to logs for more info."
+        - throw: "Following list of planIds received a non-200 response code: ${storesFailed} - Refer to logs for more info. "
