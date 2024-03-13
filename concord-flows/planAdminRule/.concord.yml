@@ -1,0 +1,78 @@
+configuration:
+  runtime: "concord-v2"
+  arguments:
+    group: "CN=GTAX_DEVS,.*"
+    concordUrl: "https://concord.dev.walmart.com"
+    concordTxnUrl: "${concordUrl}/#/process/${txId}"
+
+profiles:
+  dev:
+    configuration:
+      arguments:
+        rioGslb: "rio.stage.walmart.net"
+        spGraphQlEndpoint: "http://aex-size-and-pack.aex.dev.walmart.net/graphql"
+        env: dev
+
+publicFlows:
+  - planAdminRuleFormDestinations
+  - planAdminRule
+
+forms:
+  addPlanAdminRuleForm:
+    - planId: { label: "Specify Plan ID ", type: "int", min: 0, max: 99999 }
+    - deptNbr: { label: "Specify Dept Nbr ", type: "int", min: 0, max: 99999 }
+    - replenishmentItemPieceRule: { label: "Specify the replenishment item piece rule", type: "int", min: 0, max: 99999 }
+    - minReplenishmentQtyByItem: { label: "Source the minimum replenishment Qty By Item", type: "int", min: 0, max: 99999 }
+
+flows:
+  planAdminRule:
+    - log: "Processing stores provided"
+    - call: addPlanAdminRulesToDB
+
+  planAdminRuleFormDestinations:
+    - call: validateProfile
+    - form: addPlanAdminRuleForm
+      runAs:
+        ldap:
+          - group: ${group}
+    - log: "Starting - Adding Plan Admin Rules"
+    - call: multiDestinations
+      in:
+        planId: ${addPlanAdminRuleForm.planId}
+        deptNbr: ${addPlanAdminRuleForm.deptNbr}
+        replenishmentItemPieceRule: ${addPlanAdminRuleForm.replenishmentItemPieceRule}
+        minReplenishmentQtyByItem: ${addPlanAdminRuleForm.minReplenishmentQtyByItem}
+
+  validateProfile:
+    - if: ${env.isEmpty()}
+      then:
+        - log: "Profile was not provided"
+        - exit
+
+  addPlanAdminRulesToDB:
+    - call: addPlanAdminRuleToDB
+      in:
+        planAdminRuleRequests: ${item}
+        spUrl: "http://aex-size-and-pack.aex.dev.walmart.net/graphql"
+
+  addPlanAdminRuleToDB:
+    - log: "Adding Plan Admin rule: ${planAdminRuleRequests}"
+    - task: http
+      in:
+        method: POST
+        url: ${spGraphQlEndpoint}
+        request: json
+        body:
+          destination:
+            baseDivision: ${baseDivision}
+            countryCode: ${countryCode}
+            sourceStoreNumber: ${sourceStore}
+            destinationStoreNumber: ${destinationStore}
+        response: string
+      out: response
+    - if: ${not response.ok}
+      then:
+        - log: "Add RIO Destination for store ${sourceStore} Failed: ${response.error}"
+      else:
+        - log: "Store ${sourceStore} was added Successfully: ${response}"
+        - throw: "Following list of stores received a non-200 response code: ${storesFailed} - Refer to logs for more info."
