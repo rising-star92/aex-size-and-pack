@@ -16,7 +16,7 @@ public class PlanAdminRuleRequest extends ReplItemResponse {
     private String createUserId;
 
     public PlanAdminRuleRequest(Long planId, Integer deptNbr, Integer replItemPieceRule, Integer minReplItemUnits) {
-        super(minReplItemUnits, replItemPieceRule);
+        super(replItemPieceRule , minReplItemUnits);
         this.planId = planId;
         this.deptNbr = deptNbr;
     }
