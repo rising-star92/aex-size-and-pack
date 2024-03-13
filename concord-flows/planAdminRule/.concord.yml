@@ -17,12 +17,15 @@ publicFlows:
   - planAdminRuleForm
 
 forms:
-  addPlanAdminRuleForm:
-    - action: { label: "Select the action", type: "string", allow: [ "ADD","UPDATE" ]}
+  actionForm:
+    - action: { label: "Select the action", type: "string", allow: [ "ADD","UPDATE","DELETE" ]}
+  addUpdatePlanAdminRuleForm:
     - planId: { label: "Enter Plan ID ", type: "int", min: 0, max: 99999 }
     - deptNbr: { label: "Enter Department Number ", type: "int", min: 0, max: 99999 }
     - replenishmentItemPieceRule: { label: "Enter the Replenishment Item Piece rule", type: "int", min: 0, max: 99999 }
     - minReplenishmentQtyByItem: { label: "Enter the Minimum Replenishment Qty By Item", type: "int", min: 0, max: 99999 }
+  deletePlanAdminRuleForm:
+    - planId: { label: "Enter Plan ID ", type: "int", min: 0, max: 99999 }
 
 flows:
   managePlanAdminRulesToDB:
@@ -46,24 +49,45 @@ flows:
 
   planAdminRuleForm:
     - call: validateProfile
-    - form: addPlanAdminRuleForm
+    - form: actionForm
       runAs:
         ldap:
           - group: ${group}
-    - log: "Starting - Adding Plan Admin Rules"
-    - call: managePlanAdminRulesToDB
+    - log: "Starting - Managing Plan Admin Rules"
+    - call: actionSelected
       in:
-        action: ${addPlanAdminRuleForm.action}
-        planId: ${addPlanAdminRuleForm.planId}
-        deptNbr: ${addPlanAdminRuleForm.deptNbr}
-        replItemPieceRule: ${addPlanAdminRuleForm.replenishmentItemPieceRule}
-        minReplItemUnits: ${addPlanAdminRuleForm.minReplenishmentQtyByItem}
+        action: ${actionForm.action}
 
   validateProfile:
     - if: ${env.isEmpty()}
       then:
         - log: "Profile was not provided"
         - exit
+
+  actionSelected:
+    - if: ${action == "DELETE"}
+      then:
+        - log: "Deleting Plan Admin Rule"
+        - form: deletePlanAdminRuleForm
+          runAs:
+            ldap:
+              - group: ${group}
+        - call: managePlanAdminRulesToDB
+          in:
+            planId: ${addPlanAdminRuleForm.planId}
+      else:
+        - log: "Adding/Updating Plan Admin Rule"
+        - form: addUpdatePlanAdminRuleForm
+          runAs:
+            ldap:
+              - group: ${group}
+        - call: managePlanAdminRulesToDB
+          in:
+            action: ${action}
+            planId: ${addUpdatePlanAdminRuleForm.planId}
+            deptNbr: ${addUpdatePlanAdminRuleForm.deptNbr}
+            replItemPieceRule: ${addUpdatePlanAdminRuleForm.replenishmentItemPieceRule}
+            minReplItemUnits: ${addUpdatePlanAdminRuleForm.minReplenishmentQtyByItem}
 
   addPlanAdminRuleToDB:
     - log: "Adding Plan Admin rule: ${planAdminRuleRequests}"
