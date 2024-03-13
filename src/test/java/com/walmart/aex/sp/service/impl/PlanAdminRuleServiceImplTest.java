@@ -103,7 +103,7 @@ class PlanAdminRuleServiceImplTest {
         verify(planAdminRulesRespository, Mockito.times(1))
                 .saveAll(planAdminRuleCaptor.capture());
         assertEquals(1, planAdminRuleCaptor.getValue().size());
-        assertEquals(22, planAdminRuleCaptor.getValue().iterator().next().getMinReplItemUnits());
-        assertEquals(55, planAdminRuleCaptor.getValue().iterator().next().getReplItemPieceRule());
+        assertEquals(55, planAdminRuleCaptor.getValue().iterator().next().getMinReplItemUnits());
+        assertEquals(22, planAdminRuleCaptor.getValue().iterator().next().getReplItemPieceRule());
     }
 }
