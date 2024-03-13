@@ -14,12 +14,12 @@ profiles:
         env: dev
 
 publicFlows:
-  - planAdminRuleForm
+  - managePlanAdminRuleFlow
+  - deletePlanAdminRuleFlow
 
 forms:
-  actionForm:
-    - action: { label: "Select the action", type: "string", allow: [ "ADD","UPDATE","DELETE" ]}
-  addUpdatePlanAdminRuleForm:
+  managePlanAdminRuleForm:
+    - action: { label: "Select the action", type: "string", allow: [ "ADD","UPDATE" ]}
     - planId: { label: "Enter Plan ID ", type: "int", min: 0, max: 99999 }
     - deptNbr: { label: "Enter Department Number ", type: "int", min: 0, max: 99999 }
     - replenishmentItemPieceRule: { label: "Enter the Replenishment Item Piece rule", type: "int", min: 0, max: 99999 }
@@ -28,6 +28,32 @@ forms:
     - planId: { label: "Enter Plan ID ", type: "int", min: 0, max: 99999 }
 
 flows:
+  managePlanAdminRuleFlow:
+    - call: validateProfile
+    - form: managePlanAdminRuleForm
+      runAs:
+        ldap:
+          - group: ${group}
+    - log: "Starting - Adding Plan Admin Rules"
+    - call: managePlanAdminRulesToDB
+      in:
+        action: ${managePlanAdminRuleForm.action}
+        planId: ${managePlanAdminRuleForm.planId}
+        deptNbr: ${managePlanAdminRuleForm.deptNbr}
+        replItemPieceRule: ${managePlanAdminRuleForm.replenishmentItemPieceRule}
+        minReplItemUnits: ${managePlanAdminRuleForm.minReplenishmentQtyByItem}
+
+  deletePlanAdminRuleFlow:
+    - call: validateProfile
+    - form: deletePlanAdminRuleForm
+      runAs:
+        ldap:
+          - group: ${group}
+    - log: "Starting - Delete Plan Admin Rules"
+    - call: managePlanAdminRulesToDB
+      in:
+        planId: ${deletePlanAdminRuleForm.planId}
+
   managePlanAdminRulesToDB:
     - if: ${action == "ADD"}
       then:
@@ -38,7 +64,8 @@ flows:
               deptNbr: ${deptNbr}
               replItemPieceRule: ${replItemPieceRule}
               minReplItemUnits: ${minReplItemUnits}
-      else:
+    - if: ${action == "UPDATE"}
+      then:
         - call: updatePlanAdminRuleToDB
           in:
             planAdminRuleRequests:
@@ -46,48 +73,16 @@ flows:
               deptNbr: ${deptNbr}
               replItemPieceRule: ${replItemPieceRule}
               minReplItemUnits: ${minReplItemUnits}
-
-  planAdminRuleForm:
-    - call: validateProfile
-    - form: actionForm
-      runAs:
-        ldap:
-          - group: ${group}
-    - log: "Starting - Managing Plan Admin Rules"
-    - call: actionSelected
-      in:
-        action: ${actionForm.action}
+      else:
+        - call: deletePlanAdminRuleToDB
+              in:
+                planId: ${planId}
 
   validateProfile:
     - if: ${env.isEmpty()}
       then:
         - log: "Profile was not provided"
         - exit
-
-  actionSelected:
-    - if: ${action == "DELETE"}
-      then:
-        - log: "Deleting Plan Admin Rule"
-        - form: deletePlanAdminRuleForm
-          runAs:
-            ldap:
-              - group: ${group}
-        - call: managePlanAdminRulesToDB
-          in:
-            planId: ${addPlanAdminRuleForm.planId}
-      else:
-        - log: "Adding/Updating Plan Admin Rule"
-        - form: addUpdatePlanAdminRuleForm
-          runAs:
-            ldap:
-              - group: ${group}
-        - call: managePlanAdminRulesToDB
-          in:
-            action: ${action}
-            planId: ${addUpdatePlanAdminRuleForm.planId}
-            deptNbr: ${addUpdatePlanAdminRuleForm.deptNbr}
-            replItemPieceRule: ${addUpdatePlanAdminRuleForm.replenishmentItemPieceRule}
-            minReplItemUnits: ${addUpdatePlanAdminRuleForm.minReplenishmentQtyByItem}
 
   addPlanAdminRuleToDB:
     - log: "Adding Plan Admin rule: ${planAdminRuleRequests}"
@@ -136,3 +131,27 @@ flows:
         - log: "Update Plan Admin Rule Failed: ${response.error}"
       else:
         - log: "PlanId ${planId} was updated Successfully: ${response}"
+
+  deletePlanAdminRuleToDB:
+    - log: "Delete Plan Admin rule: ${planId}"
+    - task: http
+      in:
+        method: POST
+        url: ${spGraphQlEndpoint}
+        request: json
+        body:
+          query: "mutation deletePlanAdminRules($planIds: [Int]!) {\n    deletePlanAdminRules(planIds: $planIds){\n        status\n        message\n\n }\n\n}"
+          variables:
+            planIds: ${planId}
+        headers:
+          content-type: "application/json"
+          WM_CONSUMER.ID: ${consumerId}
+          WM_SVC.NAME: ${serviceName}
+          WM_SVC.ENV: ${env}
+        response: json
+      out: response
+    - if: ${not response.ok}
+      then:
+        - log: "Delete Plan Admin Rule Failed: ${response.error}"
+      else:
+        - log: "PlanId ${planId} was deleted Successfully: ${response}"
