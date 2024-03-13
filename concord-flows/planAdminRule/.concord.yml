@@ -29,14 +29,20 @@ flows:
     - if: ${action == "ADD"}
       then:
         - call: addPlanAdminRuleToDB
+            in:
+              planAdminRuleRequests:
+                planId: ${planId}
+                deptNbr: ${deptNbr}
+                replItemPieceRule: ${replItemPieceRule}
+                minReplItemUnits: ${minReplItemUnits}
       else:
         - call: updatePlanAdminRuleToDB
-      in:
-        planAdminRuleRequests:
-          planId: ${planId}
-          deptNbr: ${deptNbr}
-          replItemPieceRule: ${replItemPieceRule}
-          minReplItemUnits: ${minReplItemUnits}
+            in:
+              planAdminRuleRequests:
+                planId: ${planId}
+                deptNbr: ${deptNbr}
+                replItemPieceRule: ${replItemPieceRule}
+                minReplItemUnits: ${minReplItemUnits}
 
   planAdminRuleForm:
     - call: validateProfile
