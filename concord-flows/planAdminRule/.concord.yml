@@ -57,11 +57,11 @@ flows:
         url: ${spGraphQlEndpoint}
         request: json
         body:
-          destination:
-            baseDivision: ${baseDivision}
-            countryCode: ${countryCode}
-            sourceStoreNumber: ${sourceStore}
-            destinationStoreNumber: ${destinationStore}
+          planAdminRuleRequests:
+            planId: ${planId}
+            deptNbr: ${deptNbr}
+            replenishmentItemPieceRule: ${replenishmentItemPieceRule}
+            minReplenishmentQtyByItem: ${minReplenishmentQtyByItem}
         headers:
           content-type: "application/json",
           WM_CONSUMER.ID: "34f7ca77-3dfc-46df-a86b-1ba6e4908d0e",
