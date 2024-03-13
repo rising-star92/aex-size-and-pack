@@ -1,9 +1,7 @@
 configuration:
   runtime: "concord-v2"
   arguments:
-    group: "CN=GTAX_DEVS,.*"
-    concordUrl: "https://concord.prod.walmart.com"
-    concordTxnUrl: "${concordUrl}/#/process/${txId}"
+    group: "CN=apparel-precision-kitt,.*"
 
 profiles:
   dev:
@@ -11,6 +9,8 @@ profiles:
       arguments:
         spBaseUrl: "aex-size-and-pack.aex.dev.walmart.net"
         spGraphQlEndpoint: "http://aex-size-and-pack.aex.dev.walmart.net/graphql"
+        consumerId: "34f7ca77-3dfc-46df-a86b-1ba6e4908d0e",
+        serviceName: "AEX_SIZE_AND_PACK",
         env: dev
 
 publicFlows:
@@ -57,16 +57,18 @@ flows:
         url: ${spGraphQlEndpoint}
         request: json
         body:
-          planAdminRuleRequests:
-            planId: ${planId}
-            deptNbr: ${deptNbr}
-            replenishmentItemPieceRule: ${replenishmentItemPieceRule}
-            minReplenishmentQtyByItem: ${minReplenishmentQtyByItem}
+          query : "mutation addPlanAdminRules($planAdminRuleRequests: [PlanAdminRuleRequest]!) {\n    addPlanAdminRules(planAdminRuleRequests: $planAdminRuleRequests){\n        status\n        message\n }\n}"
+          variables :
+            planAdminRuleRequests:
+              planId: ${planId}
+              deptNbr: ${deptNbr}
+              replenishmentItemPieceRule: ${replenishmentItemPieceRule}
+              minReplenishmentQtyByItem: ${minReplenishmentQtyByItem}
         headers:
           content-type: "application/json",
-          WM_CONSUMER.ID: "34f7ca77-3dfc-46df-a86b-1ba6e4908d0e",
-          WM_SVC.NAME: "AEX_SIZE_AND_PACK",
-          WM_SVC.ENV: "dev"
+          WM_CONSUMER.ID: ${consumerId},
+          WM_SVC.NAME: ${serviceName},
+          WM_SVC.ENV: ${env}
         response: string
       out: response
     - if: ${not response.ok}
