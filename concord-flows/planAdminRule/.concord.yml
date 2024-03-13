@@ -27,7 +27,11 @@ flows:
   addPlanAdminRulesToDB:
     - call: addPlanAdminRuleToDB
       in:
-        planAdminRuleRequests: ${item}
+        planAdminRuleRequests:
+          planId: ${planId}
+          deptNbr: ${deptNbr}
+          replenishmentItemPieceRule: ${replenishmentItemPieceRule}
+          minReplenishmentQtyByItem: ${minReplenishmentQtyByItem}
 
   planAdminRuleForm:
     - call: validateProfile
@@ -59,17 +63,13 @@ flows:
         body:
           query : "mutation addPlanAdminRules($planAdminRuleRequests: [PlanAdminRuleRequest]!) {\n    addPlanAdminRules(planAdminRuleRequests: $planAdminRuleRequests){\n        status\n        message\n }\n}"
           variables :
-            planAdminRuleRequests:
-              planId: ${planId}
-              deptNbr: ${deptNbr}
-              replenishmentItemPieceRule: ${replenishmentItemPieceRule}
-              minReplenishmentQtyByItem: ${minReplenishmentQtyByItem}
+            planAdminRuleRequests: ${planAdminRuleRequests}
         headers:
           content-type: "application/json"
           WM_CONSUMER.ID: ${consumerId}
           WM_SVC.NAME: ${serviceName}
           WM_SVC.ENV: ${env}
-        response: string
+        response: json
       out: response
     - if: ${not response.ok}
       then:
