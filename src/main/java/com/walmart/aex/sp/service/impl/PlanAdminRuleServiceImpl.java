@@ -76,7 +76,6 @@ public class PlanAdminRuleServiceImpl implements PlanAdminRuleService {
         Date updateDate = new Date();
         String userId = getAuthenticatedUserName();
         if(!CollectionUtils.isEmpty(plaAdminRuleRequests)) {
-//            List<PlanAdminRule> planAdminRules = PlanAdminRuleMapper.mapper.mapRequestToEntity(plaAdminRuleRequests);
             Set<Long> planIds = plaAdminRuleRequests.stream().map(PlanAdminRuleRequest::getPlanId).collect(Collectors.toSet());
             List<PlanAdminRule> existingPlanAdminRules = planAdminRulesRespository.findAllById(planIds);
             for (PlanAdminRule planAdminRule : existingPlanAdminRules) {
