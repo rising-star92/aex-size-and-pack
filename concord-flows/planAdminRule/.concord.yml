@@ -18,14 +18,19 @@ publicFlows:
 
 forms:
   addPlanAdminRuleForm:
-    - planId: { label: "Specify Plan ID ", type: "int", min: 0, max: 99999 }
-    - deptNbr: { label: "Specify Dept Nbr ", type: "int", min: 0, max: 99999 }
-    - replenishmentItemPieceRule: { label: "Specify the replenishment item piece rule", type: "int", min: 0, max: 99999 }
-    - minReplenishmentQtyByItem: { label: "Source the minimum replenishment Qty By Item", type: "int", min: 0, max: 99999 }
+    - action: { label: "Select the action", type: "string", allow: [ "ADD","UPDATE" ]}
+    - planId: { label: "Enter Plan ID ", type: "int", min: 0, max: 99999 }
+    - deptNbr: { label: "Enter Department Number ", type: "int", min: 0, max: 99999 }
+    - replenishmentItemPieceRule: { label: "Enter the Replenishment Item Piece rule", type: "int", min: 0, max: 99999 }
+    - minReplenishmentQtyByItem: { label: "Enter the Minimum Replenishment Qty By Item", type: "int", min: 0, max: 99999 }
 
 flows:
-  addPlanAdminRulesToDB:
-    - call: addPlanAdminRuleToDB
+  managePlanAdminRulesToDB:
+    - if: ${action == "ADD"}
+      then:
+        - call: addPlanAdminRuleToDB
+      else:
+        - call: updatePlanAdminRuleToDB
       in:
         planAdminRuleRequests:
           planId: ${planId}
@@ -40,8 +45,9 @@ flows:
         ldap:
           - group: ${group}
     - log: "Starting - Adding Plan Admin Rules"
-    - call: addPlanAdminRulesToDB
+    - call: managePlanAdminRulesToDB
       in:
+        action: ${addPlanAdminRuleForm.action}
         planId: ${addPlanAdminRuleForm.planId}
         deptNbr: ${addPlanAdminRuleForm.deptNbr}
         replItemPieceRule: ${addPlanAdminRuleForm.replenishmentItemPieceRule}
@@ -76,3 +82,27 @@ flows:
         - log: "Add Plan Admin Rule Failed: ${response.error}"
       else:
         - log: "PlanId ${planId} was added Successfully: ${response}"
+
+  updatePlanAdminRuleToDB:
+    - log: "Update Plan Admin rule: ${planAdminRuleRequests}"
+    - task: http
+      in:
+        method: POST
+        url: ${spGraphQlEndpoint}
+        request: json
+        body:
+          query: "mutation updatePlanAdminRules($planAdminRuleRequests: [PlanAdminRuleRequest]!) {\n    updatePlanAdminRules(planAdminRuleRequests: $planAdminRuleRequests){\n        status\n        message\n\n }\n\n}"
+          variables:
+            planAdminRuleRequests: ${planAdminRuleRequests}
+        headers:
+          content-type: "application/json"
+          WM_CONSUMER.ID: ${consumerId}
+          WM_SVC.NAME: ${serviceName}
+          WM_SVC.ENV: ${env}
+        response: json
+      out: response
+    - if: ${not response.ok}
+      then:
+        - log: "Update Plan Admin Rule Failed: ${response.error}"
+      else:
+        - log: "PlanId ${planId} was updated Successfully: ${response}"
