@@ -30,8 +30,8 @@ flows:
         planAdminRuleRequests:
           planId: ${planId}
           deptNbr: ${deptNbr}
-          replenishmentItemPieceRule: ${replenishmentItemPieceRule}
-          minReplenishmentQtyByItem: ${minReplenishmentQtyByItem}
+          replItemPieceRule: ${replItemPieceRule}
+          minReplItemUnits: ${minReplItemUnits}
 
   planAdminRuleForm:
     - call: validateProfile
@@ -44,8 +44,8 @@ flows:
       in:
         planId: ${addPlanAdminRuleForm.planId}
         deptNbr: ${addPlanAdminRuleForm.deptNbr}
-        replenishmentItemPieceRule: ${addPlanAdminRuleForm.replenishmentItemPieceRule}
-        minReplenishmentQtyByItem: ${addPlanAdminRuleForm.minReplenishmentQtyByItem}
+        replItemPieceRule: ${addPlanAdminRuleForm.replenishmentItemPieceRule}
+        minReplItemUnits: ${addPlanAdminRuleForm.minReplenishmentQtyByItem}
 
   validateProfile:
     - if: ${env.isEmpty()}
@@ -76,4 +76,3 @@ flows:
         - log: "Add Plan Admin Rule Failed: ${response.error}"
       else:
         - log: "PlanId ${planId} was added Successfully: ${response}"
-        - throw: "Following list of planIds received a non-200 response code: ${storesFailed} - Refer to logs for more info. "
