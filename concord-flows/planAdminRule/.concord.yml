@@ -2,20 +2,19 @@ configuration:
   runtime: "concord-v2"
   arguments:
     group: "CN=GTAX_DEVS,.*"
-    concordUrl: "https://concord.dev.walmart.com"
+    concordUrl: "https://concord.prod.walmart.com"
     concordTxnUrl: "${concordUrl}/#/process/${txId}"
 
 profiles:
   dev:
     configuration:
       arguments:
-        rioGslb: "rio.stage.walmart.net"
+        spBaseUrl: "aex-size-and-pack.aex.dev.walmart.net"
         spGraphQlEndpoint: "http://aex-size-and-pack.aex.dev.walmart.net/graphql"
         env: dev
 
 publicFlows:
-  - planAdminRuleFormDestinations
-  - planAdminRule
+  - planAdminRuleForm
 
 forms:
   addPlanAdminRuleForm:
@@ -25,18 +24,19 @@ forms:
     - minReplenishmentQtyByItem: { label: "Source the minimum replenishment Qty By Item", type: "int", min: 0, max: 99999 }
 
 flows:
-  planAdminRule:
-    - log: "Processing stores provided"
-    - call: addPlanAdminRulesToDB
+  addPlanAdminRulesToDB:
+    - call: addPlanAdminRuleToDB
+      in:
+        planAdminRuleRequests: ${item}
 
-  planAdminRuleFormDestinations:
+  planAdminRuleForm:
     - call: validateProfile
     - form: addPlanAdminRuleForm
       runAs:
         ldap:
           - group: ${group}
     - log: "Starting - Adding Plan Admin Rules"
-    - call: multiDestinations
+    - call: addPlanAdminRulesToDB
       in:
         planId: ${addPlanAdminRuleForm.planId}
         deptNbr: ${addPlanAdminRuleForm.deptNbr}
@@ -48,12 +48,6 @@ flows:
       then:
         - log: "Profile was not provided"
         - exit
-
-  addPlanAdminRulesToDB:
-    - call: addPlanAdminRuleToDB
-      in:
-        planAdminRuleRequests: ${item}
-        spUrl: "http://aex-size-and-pack.aex.dev.walmart.net/graphql"
 
   addPlanAdminRuleToDB:
     - log: "Adding Plan Admin rule: ${planAdminRuleRequests}"
@@ -68,11 +62,16 @@ flows:
             countryCode: ${countryCode}
             sourceStoreNumber: ${sourceStore}
             destinationStoreNumber: ${destinationStore}
+        headers:
+          content-type: "application/json",
+          WM_CONSUMER.ID: "34f7ca77-3dfc-46df-a86b-1ba6e4908d0e",
+          WM_SVC.NAME: "AEX_SIZE_AND_PACK",
+          WM_SVC.ENV: "dev"
         response: string
       out: response
     - if: ${not response.ok}
       then:
-        - log: "Add RIO Destination for store ${sourceStore} Failed: ${response.error}"
+        - log: "Add Plan Admin Rule Failed: ${response.error}"
       else:
-        - log: "Store ${sourceStore} was added Successfully: ${response}"
-        - throw: "Following list of stores received a non-200 response code: ${storesFailed} - Refer to logs for more info."
+        - log: "PlanId ${planId} was added Successfully: ${response}"
+        - throw: "Following list of planIds received a non-200 response code: ${storesFailed} - Refer to logs for more info."
