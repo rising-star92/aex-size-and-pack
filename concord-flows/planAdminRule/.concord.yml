@@ -7,8 +7,8 @@ profiles:
   dev:
     configuration:
       arguments:
-        spBaseUrl: "aex-size-and-pack.aex.dev.walmart.net"
-        spGraphQlEndpoint: "http://aex-size-and-pack.aex.dev.walmart.net/graphql"
+        spBaseUrl: "aex-size-and-pack.aex.dev.walmart.net",
+        spGraphQlEndpoint: "http://aex-size-and-pack.aex.dev.walmart.net/graphql",
         consumerId: "34f7ca77-3dfc-46df-a86b-1ba6e4908d0e",
         serviceName: "AEX_SIZE_AND_PACK",
         env: dev
