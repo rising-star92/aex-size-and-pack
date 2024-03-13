@@ -53,6 +53,7 @@ flows:
     - call: managePlanAdminRulesToDB
       in:
         planId: ${deletePlanAdminRuleForm.planId}
+        action: "DELETE"
 
   managePlanAdminRulesToDB:
     - if: ${action == "ADD"}
