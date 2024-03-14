@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -57,7 +58,7 @@ public class PlanAdminRuleServiceImpl implements PlanAdminRuleService {
                 String userId = getAuthenticatedUserName();
                 planAdminRuleRequests.forEach(planAdminRuleRequest -> {
                     planAdminRuleRequest.setCreateTs(createDate);
-                    planAdminRuleRequest.setCreateUserId(userId);
+                    planAdminRuleRequest.setCreateUserId(Objects.nonNull(planAdminRuleRequest.getCreateUserId()) ? planAdminRuleRequest.getCreateUserId() : userId);
                 });
                 List<PlanAdminRule> planAdminRules = PlanAdminRuleMapper.mapper.mapRequestToEntity(planAdminRuleRequests);
                 planAdminRulesRespository.saveAll(planAdminRules);
@@ -82,7 +83,7 @@ public class PlanAdminRuleServiceImpl implements PlanAdminRuleService {
                 PlanAdminRuleRequest request = plaAdminRuleRequests.stream().filter(planAdminRule1 -> planAdminRule1.getPlanId().equals(planAdminRule.getPlanId())).findFirst().orElse(null);
                 if(Objects.nonNull(request)) {
                     planAdminRule.setLastModifiedTs(updateDate);
-                    planAdminRule.setLastModifiedUserId(userId);
+                    planAdminRule.setLastModifiedUserId(Objects.nonNull(request.getLastModifiedUserId()) ? request.getLastModifiedUserId() : userId);
                     planAdminRule.setReplItemPieceRule(request.getReplItemPieceRule());
                     planAdminRule.setMinReplItemUnits(request.getMinReplItemUnits());
                     updatedRecords.add(planAdminRule);

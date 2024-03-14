@@ -2,7 +2,6 @@ package com.walmart.aex.sp.dto.deptadminrule;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
 import java.util.Date;
 
@@ -14,10 +13,13 @@ public class PlanAdminRuleRequest extends ReplItemResponse {
     private Integer deptNbr;
     private Date createTs;
     private String createUserId;
+    private String lastModifiedUserId;
 
-    public PlanAdminRuleRequest(Long planId, Integer deptNbr, Integer replItemPieceRule, Integer minReplItemUnits) {
+    public PlanAdminRuleRequest(Long planId, Integer deptNbr, Integer replItemPieceRule, Integer minReplItemUnits, String createUserId , String lastModifiedUserId ) {
         super(replItemPieceRule , minReplItemUnits);
         this.planId = planId;
         this.deptNbr = deptNbr;
+        this.createUserId = createUserId;
+        this.lastModifiedUserId = lastModifiedUserId;
     }
 }

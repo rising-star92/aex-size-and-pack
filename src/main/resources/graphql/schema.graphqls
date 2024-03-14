@@ -672,4 +672,6 @@ input PlanAdminRuleRequest {
     deptNbr: Int
     replItemPieceRule: Int
     minReplItemUnits: Int
+    createUserId : String
+    lastModifiedUserId : String
 }
