@@ -108,7 +108,7 @@ scm:
 memcached.cache:
   servers: meghacache.stg.truedemand-stg.ms-df-cache.stg-az-eastus2-1.prod.us.walmart.net:24464
   provider: static
-  expiration: 30d
+  expiration: 1d
 ---
 spring:
   main:
