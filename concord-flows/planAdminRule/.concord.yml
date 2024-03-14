@@ -33,7 +33,7 @@ flows:
       runAs:
         ldap:
           - group: ${group}
-    - log: "Starting - Adding Plan Admin Rules"
+    - log: "Starting - Adding/Updating Plan Admin Rules"
     - call: managePlanAdminRulesToDB
       in:
         action: ${managePlanAdminRuleForm.action}
@@ -49,7 +49,7 @@ flows:
         ldap:
           - group: ${group}
     - log: "Starting - Delete Plan Admin Rules"
-    - call: managePlanAdminRulesToDB
+    - call: deletePlanAdminRulesToDB
       in:
         planId: ${deletePlanAdminRuleForm.planId}
         action: "DELETE"
@@ -64,8 +64,7 @@ flows:
               deptNbr: ${deptNbr}
               replItemPieceRule: ${replItemPieceRule}
               minReplItemUnits: ${minReplItemUnits}
-    - if: ${action == "UPDATE"}
-      then:
+      else:
         - call: updatePlanAdminRuleToDB
           in:
             planAdminRuleRequests:
@@ -73,10 +72,11 @@ flows:
               deptNbr: ${deptNbr}
               replItemPieceRule: ${replItemPieceRule}
               minReplItemUnits: ${minReplItemUnits}
-      else:
-        - call: deletePlanAdminRuleToDB
-          in:
-            planId: ${planId}
+
+  deletePlanAdminRulesToDB:
+    - call: deletePlanAdminRuleToDB
+      in:
+        planId: ${planId}
 
   validateProfile:
     - if: ${env.isEmpty()}
