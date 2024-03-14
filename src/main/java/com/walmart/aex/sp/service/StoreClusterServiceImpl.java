@@ -3,6 +3,8 @@ package com.walmart.aex.sp.service;
 import com.walmart.aex.sp.dto.StoreClusterMap;
 import com.walmart.aex.sp.dto.gql.GraphQLResponse;
 import com.walmart.aex.sp.dto.gql.Payload;
+import com.walmart.aex.sp.dto.store.cluster.ClusterAttributes;
+import com.walmart.aex.sp.dto.store.cluster.ClusterInfoRequest;
 import com.walmart.aex.sp.exception.CustomException;
 import com.walmart.aex.sp.exception.SizeAndPackException;
 import com.walmart.aex.sp.properties.GraphQLProperties;
@@ -39,7 +41,8 @@ public class StoreClusterServiceImpl implements StoreClusterService {
     @Override
     @Cacheable(value = "aex_po_store_grouping",
             cacheManager = "memCacheManager",
-            condition = "#root.target.storeClusterProperties.isPOStoreClusterEnabled()")
+            condition = "#root.target.storeClusterProperties.isPOStoreClusterEnabled()",
+            unless = "#result == null || #result.size() == 0")
     public StoreClusterMap fetchPOStoreClusterGrouping(String season, String fiscalYear) throws SizeAndPackException {
         log.info("Fetching PO Store Cluster Grouping from StoreClusterAPI...");
         StoreClusterMap storeClusterMap = new StoreClusterMap();
@@ -58,9 +61,17 @@ public class StoreClusterServiceImpl implements StoreClusterService {
             headers.put(WM_SVC_NAME, graphQLProperties.getStoreClusterConsumerName());
             headers.put(WM_SVC_ENV, graphQLProperties.getStoreClusterConsumerEnv());
 
-            // TODO - Change to query using season & fiscal year
+            ClusterAttributes clusterAttributes = new ClusterAttributes();
+            clusterAttributes.setGroupingType("po-grouping");
+            clusterAttributes.setSeason(season);
+            clusterAttributes.setFiscalYear(fiscalYear);
+
+            ClusterInfoRequest clusterInfoRequest = new ClusterInfoRequest();
+            clusterInfoRequest.setAppType("aex-fashion");
+            clusterInfoRequest.setClusterAttributes(clusterAttributes);
+
             Map<String, Object> request = new HashMap<>();
-            request.put("createdBy", "v0r00n2");
+            request.put("clusterInfoFindAllInput", clusterInfoRequest);
 
             GraphQLResponse response = graphQLService.post(storeClusterProperties.getStoreClusterUrl(), query, headers, request);
 
