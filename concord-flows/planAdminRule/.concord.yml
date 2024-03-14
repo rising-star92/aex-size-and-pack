@@ -78,6 +78,7 @@ flows:
               deptNbr: ${deptNbr}
               replItemPieceRule: ${replItemPieceRule}
               minReplItemUnits: ${minReplItemUnits}
+              createUserId: ${initiator.username}
       else:
         - call: updatePlanAdminRuleToDB
           in:
@@ -86,6 +87,7 @@ flows:
               deptNbr: ${deptNbr}
               replItemPieceRule: ${replItemPieceRule}
               minReplItemUnits: ${minReplItemUnits}
+              lastModifiedUserId: ${initiator.username}
 
   deletePlanAdminRulesToDB:
     - call: deletePlanAdminRuleToDB
