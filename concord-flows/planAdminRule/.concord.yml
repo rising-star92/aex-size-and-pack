@@ -11,6 +11,13 @@ profiles:
         consumerId: "34f7ca77-3dfc-46df-a86b-1ba6e4908d0e"
         serviceName: "AEX_SIZE_AND_PACK"
         env: dev
+  stage:
+    configuration:
+      arguments:
+        spGraphQlEndpoint: "http://aex-size-and-pack.aex.stg.walmart.net/graphql"
+        consumerId: "1a2209d5-8183-4792-a002-de5f720ed20c"
+        serviceName: "AEX_SIZE_AND_PACK"
+        env: stg
 
 publicFlows:
   - managePlanAdminRuleFlow
