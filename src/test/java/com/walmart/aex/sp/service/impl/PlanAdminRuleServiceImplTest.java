@@ -30,7 +30,6 @@ class PlanAdminRuleServiceImplTest {
     private List<PlanAdminRule> dbResponse;
 
     private Set<PlanAdminRuleResponse> actual;
-    private PlanAdminRuleRequest planAdminRuleRequest;
     @Captor
     private ArgumentCaptor<List<PlanAdminRule>> planAdminRuleCaptor;
     @Captor
@@ -60,11 +59,12 @@ class PlanAdminRuleServiceImplTest {
 
     @Test
     void test_addPlanAdminRulesShouldAddData() {
-        PlanAdminRuleRequest planAdminRuleRequest = new PlanAdminRuleRequest(12L,34,22,55);
+        PlanAdminRuleRequest planAdminRuleRequest = new PlanAdminRuleRequest(12L,34,22,55, "d0o03d1" , null);
         List<PlanAdminRuleRequest> request = new ArrayList<>(Collections.singletonList(planAdminRuleRequest));
         planAdminRuleService.addPlanAdminRules(request);
         verify(planAdminRulesRespository, Mockito.times(1)).saveAll(planAdminRuleCaptor.capture());
         assertEquals(1, planAdminRuleCaptor.getValue().size());
+        assertEquals("d0o03d1", planAdminRuleCaptor.getValue().get(0).getCreateUserId());
     }
 
     @Test
@@ -94,8 +94,8 @@ class PlanAdminRuleServiceImplTest {
 
     @Test
     void test_updatePlanAdminRulesShouldUpdateData() {
-        PlanAdminRuleRequest planAdminRuleRequest = new PlanAdminRuleRequest(12L,34,22,55);
-        PlanAdminRuleRequest planAdminRuleRequest1 =  new PlanAdminRuleRequest(73L,23,22,55);
+        PlanAdminRuleRequest planAdminRuleRequest = new PlanAdminRuleRequest(12L,34,22,55, null, "d0o03d1");
+        PlanAdminRuleRequest planAdminRuleRequest1 =  new PlanAdminRuleRequest(73L,23,22,55, null, "d0o03d1");
         List<PlanAdminRuleRequest> request = new ArrayList<>(Arrays.asList(planAdminRuleRequest, planAdminRuleRequest1));
         when(planAdminRulesRespository.findAllById(any())).thenReturn(List.of(PlanAdminRule.builder().planId(12L).deptNbr(34).minReplItemUnits(11).replItemPieceRule(44).build()));
         planAdminRuleService.updatePlanAdminRules(request);
@@ -105,5 +105,6 @@ class PlanAdminRuleServiceImplTest {
         assertEquals(1, planAdminRuleCaptor.getValue().size());
         assertEquals(55, planAdminRuleCaptor.getValue().iterator().next().getMinReplItemUnits());
         assertEquals(22, planAdminRuleCaptor.getValue().iterator().next().getReplItemPieceRule());
+        assertEquals("d0o03d1", planAdminRuleCaptor.getValue().iterator().next().getLastModifiedUserId());
     }
 }
