@@ -15,9 +15,16 @@ profiles:
     configuration:
       arguments:
         spGraphQlEndpoint: "http://aex-size-and-pack.aex.stg.walmart.net/graphql"
-        consumerId: "1a2209d5-8183-4792-a002-de5f720ed20c"
+        consumerId: "93c617a1-31ec-4333-a819-683ef7514cc0"
         serviceName: "AEX_SIZE_AND_PACK"
         env: stg
+  prod:
+    configuration:
+      arguments:
+        spGraphQlEndpoint: "http://aex-size-and-pack.aex.prod.walmart.net/graphql"
+        consumerId: "d2d64ad5-b8e5-4cb6-b8d2-7ee21832ebcd"
+        serviceName: "AEX_SIZE_AND_PACK"
+        env: prod
 
 publicFlows:
   - managePlanAdminRuleFlow
@@ -93,6 +100,7 @@ flows:
 
   addPlanAdminRuleToDB:
     - log: "Adding Plan Admin rule: ${planAdminRuleRequests}"
+    - log: "Adding Plan Admin rule user: ${${initiator.username}}"
     - task: http
       in:
         method: POST
