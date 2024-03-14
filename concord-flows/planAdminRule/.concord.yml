@@ -100,7 +100,7 @@ flows:
 
   addPlanAdminRuleToDB:
     - log: "Adding Plan Admin rule: ${planAdminRuleRequests}"
-    - log: "Adding Plan Admin rule user: ${${initiator.username}}"
+    - log: "Adding Plan Admin rule user: ${initiator.username}"
     - task: http
       in:
         method: POST
