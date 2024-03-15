@@ -113,6 +113,7 @@ flows:
         - log: "Add Plan Admin Rule Failed: ${response.error}"
       else:
         - log: "PlanId ${planId} was added Successfully: ${response}"
+        - exit
 
   updatePlanAdminRuleToDB:
     - log: "Update Plan Admin rule: ${planAdminRuleRequests}"
