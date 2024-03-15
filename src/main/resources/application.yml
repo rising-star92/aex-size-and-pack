@@ -32,6 +32,11 @@ scm:
       enabled: true
   snapshot:
     enabled: true
+
+memcached.cache:
+  servers: meghacache.dev.truedemand-dev.ms-df-cache.stg-az-eastus2-1.prod.us.walmart.net:24464
+  provider: static
+  expiration: 1d
 ---
 spring:
   main:
@@ -63,6 +68,11 @@ scm:
       enabled: true
   snapshot:
     enabled: true
+
+memcached.cache:
+  servers: meghacache.dev.truedemand-dev.ms-df-cache.stg-az-eastus2-1.prod.us.walmart.net:24464
+  provider: static
+  expiration: 1d
 ---
 spring:
   main:
@@ -94,6 +104,11 @@ scm:
       enabled: true
   snapshot:
     enabled: true
+
+memcached.cache:
+  servers: meghacache.stg.truedemand-stg.ms-df-cache.stg-az-eastus2-1.prod.us.walmart.net:24464
+  provider: static
+  expiration: 1d
 ---
 spring:
   main:
@@ -125,6 +140,11 @@ scm:
       enabled: true
   snapshot:
     enabled: true
+
+memcached.cache:
+  servers: meghacache.prod.truedemand-prod.ms-df-cache.prod-az-eastus2-1.prod.us.walmart.net:20192,meghacache.prod.truedemand-prod.ms-df-cache.prod-az-southcentralus-28.prod.us.walmart.net:20192
+  provider: static
+  expiration: 1d
 ---
 management:
   health:
