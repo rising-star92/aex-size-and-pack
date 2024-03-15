@@ -117,6 +117,7 @@ flows:
 
   updatePlanAdminRuleToDB:
     - log: "Update Plan Admin rule: ${planAdminRuleRequests}"
+    - log: "Adding Plan Admin rule user: ${initiator.username}"
     - call: callHttpPOST
       in:
         query: "mutation updatePlanAdminRules($planAdminRuleRequests: [PlanAdminRuleRequest]!) {\n    updatePlanAdminRules(planAdminRuleRequests: $planAdminRuleRequests){\n        status\n        message\n\n }\n\n}"
@@ -130,7 +131,8 @@ flows:
         - log: "PlanId ${planId} was updated Successfully: ${response}"
 
   deletePlanAdminRuleToDB:
-    - log: "Delete Plan Admin rule: ${planId}"
+    - log: "Delete Plan Admin rule for PlanId: ${planId}"
+    - log: "Adding Plan Admin rule user: ${initiator.username}"
     - call: callHttpPOST
       in:
         query: "mutation deletePlanAdminRules($planIds: [Int]!) {\n    deletePlanAdminRules(planIds: $planIds){\n        status\n        message\n\n }\n\n}"
@@ -144,7 +146,7 @@ flows:
         - log: "PlanId ${planId} was deleted Successfully: ${response}"
 
   callHttpPOST:
-    - log: "Plan Admin rule HTTP POST call initiated: ${planId}"
+    - log: "Plan Admin rule HTTP POST call initiated for PlanId: ${planId}"
     - task: http
       in:
         method: POST
