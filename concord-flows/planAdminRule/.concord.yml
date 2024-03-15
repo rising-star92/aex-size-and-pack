@@ -103,21 +103,11 @@ flows:
   addPlanAdminRuleToDB:
     - log: "Adding Plan Admin rule: ${planAdminRuleRequests}"
     - log: "Adding Plan Admin rule user: ${initiator.username}"
-    - task: http
+    - call: callHttpPOST
       in:
-        method: POST
-        url: ${spGraphQlEndpoint}
-        request: json
-        body:
-          query : "mutation addPlanAdminRules($planAdminRuleRequests: [PlanAdminRuleRequest]!) {\n    addPlanAdminRules(planAdminRuleRequests: $planAdminRuleRequests){\n        status\n        message\n }\n}"
-          variables :
-            planAdminRuleRequests: ${planAdminRuleRequests}
-        headers:
-          content-type: "application/json"
-          WM_CONSUMER.ID: ${consumerId}
-          WM_SVC.NAME: ${serviceName}
-          WM_SVC.ENV: ${env}
-        response: json
+        query: "mutation addPlanAdminRules($planAdminRuleRequests: [PlanAdminRuleRequest]!) {\n    addPlanAdminRules(planAdminRuleRequests: $planAdminRuleRequests){\n        status\n        message\n }\n}"
+        variables :
+          planAdminRuleRequests: ${planAdminRuleRequests}
       out: response
     - if: ${not response.ok}
       then:
@@ -172,3 +162,26 @@ flows:
         - log: "Delete Plan Admin Rule Failed: ${response.error}"
       else:
         - log: "PlanId ${planId} was deleted Successfully: ${response}"
+
+  callHttpPOST:
+    - log: "Delete Plan Admin rule: ${planId}"
+    - task: http
+      in:
+        method: POST
+        url: ${spGraphQlEndpoint}
+        request: json
+        body:
+          query: ${query}
+          variables: ${variables}
+          headers:
+            content-type: "application/json"
+            WM_CONSUMER.ID: ${consumerId}
+            WM_SVC.NAME: ${serviceName}
+            WM_SVC.ENV: ${env}
+          response: json
+      out: response
+    - if: ${not response.ok}
+      then:
+        - log: "Http POST call Failed: ${response.error}"
+      else:
+        - log: "Http POST call was Successfully: ${response}"
