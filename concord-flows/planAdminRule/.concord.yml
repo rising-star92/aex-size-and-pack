@@ -173,12 +173,12 @@ flows:
         body:
           query: ${query}
           variables: ${variables}
-          headers:
-            content-type: "application/json"
-            WM_CONSUMER.ID: ${consumerId}
-            WM_SVC.NAME: ${serviceName}
-            WM_SVC.ENV: ${env}
-          response: json
+        headers:
+           content-type: "application/json"
+           WM_CONSUMER.ID: ${consumerId}
+           WM_SVC.NAME: ${serviceName}
+           WM_SVC.ENV: ${env}
+        response: json
       out: response
     - if: ${not response.ok}
       then:
