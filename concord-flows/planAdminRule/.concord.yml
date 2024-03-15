@@ -117,21 +117,11 @@ flows:
 
   updatePlanAdminRuleToDB:
     - log: "Update Plan Admin rule: ${planAdminRuleRequests}"
-    - task: http
+    - call: callHttpPOST
       in:
-        method: POST
-        url: ${spGraphQlEndpoint}
-        request: json
-        body:
-          query: "mutation updatePlanAdminRules($planAdminRuleRequests: [PlanAdminRuleRequest]!) {\n    updatePlanAdminRules(planAdminRuleRequests: $planAdminRuleRequests){\n        status\n        message\n\n }\n\n}"
-          variables:
-            planAdminRuleRequests: ${planAdminRuleRequests}
-        headers:
-          content-type: "application/json"
-          WM_CONSUMER.ID: ${consumerId}
-          WM_SVC.NAME: ${serviceName}
-          WM_SVC.ENV: ${env}
-        response: json
+        query: "mutation updatePlanAdminRules($planAdminRuleRequests: [PlanAdminRuleRequest]!) {\n    updatePlanAdminRules(planAdminRuleRequests: $planAdminRuleRequests){\n        status\n        message\n\n }\n\n}"
+        variables:
+          planAdminRuleRequests: ${planAdminRuleRequests}
       out: response
     - if: ${not response.ok}
       then:
@@ -141,21 +131,11 @@ flows:
 
   deletePlanAdminRuleToDB:
     - log: "Delete Plan Admin rule: ${planId}"
-    - task: http
+    - call: callHttpPOST
       in:
-        method: POST
-        url: ${spGraphQlEndpoint}
-        request: json
-        body:
-          query: "mutation deletePlanAdminRules($planIds: [Int]!) {\n    deletePlanAdminRules(planIds: $planIds){\n        status\n        message\n\n }\n\n}"
-          variables:
-            planIds: ${planId}
-        headers:
-          content-type: "application/json"
-          WM_CONSUMER.ID: ${consumerId}
-          WM_SVC.NAME: ${serviceName}
-          WM_SVC.ENV: ${env}
-        response: json
+        query: "mutation deletePlanAdminRules($planIds: [Int]!) {\n    deletePlanAdminRules(planIds: $planIds){\n        status\n        message\n\n }\n\n}"
+        variables:
+          planIds: ${planId}
       out: response
     - if: ${not response.ok}
       then:
@@ -164,7 +144,7 @@ flows:
         - log: "PlanId ${planId} was deleted Successfully: ${response}"
 
   callHttpPOST:
-    - log: "Delete Plan Admin rule: ${planId}"
+    - log: "Plan Admin rule HTTP POST call initiated: ${planId}"
     - task: http
       in:
         method: POST
@@ -184,4 +164,4 @@ flows:
       then:
         - log: "Http POST call Failed: ${response.error}"
       else:
-        - log: "Http POST call was Successfully: ${response}"
+        - log: "Http POST call was Successful: ${response}"
