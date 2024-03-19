@@ -102,7 +102,7 @@ configDefinitions:
         "description": "Query for fetching color families"
         "type": "STRING"
         "kind": "SINGLE"
-        "defaultValue": '{"query":{"select":[{"field":"*"}],"from":"get_store_color_families","params":{"season":%s,"deptNbr":%d,"finelineNbr":%d,"year":%d}}}'
+        "defaultValue": '{"query":{"select":[{"field":"*"}],"from":"get_store_color_families","params":{"season":%s,"deptNbr":%d,"deptCatgNbr":%d,"deptSubCatgNbr":%d,"finelineNbr":%d,"year":%d}}}'
   httpConfig:
     description: "HTTP Configurations"
     resolutionPaths:
