@@ -210,7 +210,7 @@ public class CalculateFinelineBuyQuantity {
         if (null == likeFinelineResponse) {
             colorFamiliesFromMidas = colorFamiliesCompletableFuture.get();
         } else {
-            colorFamiliesFromMidas = getColorFamilies(calculateBuyQtyRequest.getSeasonCode(), calculateBuyQtyRequest.getFiscalYear(), likeFinelineResponse.getLvl1Nbr(), Integer.parseInt(likeFinelineResponse.getId()));
+            colorFamiliesFromMidas = getColorFamilies(calculateBuyQtyRequest.getSeasonCode(), calculateBuyQtyRequest.getFiscalYear(), likeFinelineResponse.getLvl1Nbr(), likeFinelineResponse.getLvl3Nbr(), likeFinelineResponse.getLvl4Nbr(), Integer.parseInt(likeFinelineResponse.getId()));
         }
         // Match the colors between DS and Strategy, if not found then use DEFAULT
         return getAssociatedColorFamilies(colorFamiliesFromMidas, buyQtyResponse);
@@ -303,7 +303,7 @@ public class CalculateFinelineBuyQuantity {
     private CompletableFuture<List<String>> getColorFamiliesCompleteFuture(CalculateBuyQtyRequest calculateBuyQtyRequest, CalculateBuyQtyParallelRequest calculateBuyQtyParallelRequest) {
         return CompletableFuture.supplyAsync(() -> {
             try {
-                return getColorFamilies(calculateBuyQtyRequest.getSeasonCode(), calculateBuyQtyRequest.getFiscalYear(), calculateBuyQtyParallelRequest.getLvl1Nbr(), calculateBuyQtyParallelRequest.getFinelineNbr());
+                return getColorFamilies(calculateBuyQtyRequest.getSeasonCode(), calculateBuyQtyRequest.getFiscalYear(), calculateBuyQtyParallelRequest.getLvl1Nbr(), calculateBuyQtyParallelRequest.getLvl3Nbr(), calculateBuyQtyParallelRequest.getLvl4Nbr(), calculateBuyQtyParallelRequest.getFinelineNbr());
             } catch (SizeAndPackException e) {
                 throw new CustomException("Failed to fetch Color Families");
             }
@@ -793,9 +793,9 @@ public class CalculateFinelineBuyQuantity {
         return bqfpService.getBuyQuantityUnits(bqfpRequest);
     }
 
-    private List<String> getColorFamilies(String season, Integer fiscalYear, Integer deptNbr, Integer finelineNbr) throws SizeAndPackException {
+    private List<String> getColorFamilies(String season, Integer fiscalYear, Integer deptNbr, Integer deptCatgNbr, Integer deptSubCatgNbr, Integer finelineNbr) throws SizeAndPackException {
         try {
-            return midasServiceCall.fetchColorFamilies(season, fiscalYear, deptNbr, finelineNbr);
+            return midasServiceCall.fetchColorFamilies(season, fiscalYear, deptNbr, deptCatgNbr, deptSubCatgNbr, finelineNbr);
         } catch (CustomException e) {
             log.error("An exception occurred while fetching color families from midas: {}", e.getMessage());
             throw new SizeAndPackException("An exception occurred while fetching color families from midas");

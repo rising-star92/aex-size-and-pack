@@ -912,7 +912,7 @@ class CalculateFinelineBuyQuantityTest {
         ReflectionTestUtils.setField(calculateFinelineBuyQuantity, "buyQtyProperties", buyQtyProperties);
         lenient().when(buyQtyProperties.getOneUnitPerStoreFeatureFlag()).thenReturn("true");
         lenient().when(buyQtyProperties.getDeviationFlag()).thenReturn("true");
-        lenient().when(midasServiceCall.fetchColorFamilies(Mockito.anyString(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt())).thenReturn(List.of("DEFAULT"));
+        lenient().when(midasServiceCall.fetchColorFamilies(Mockito.anyString(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt())).thenReturn(List.of("DEFAULT"));
         lenient().when(linePlanService.getLikeAssociation(Mockito.anyLong(), Mockito.anyInt())).thenReturn(null);
     }
 

@@ -24,7 +24,6 @@ import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
@@ -94,11 +93,11 @@ public class MidasServiceCall {
    }
 
    @Retryable(backoff = @Backoff(delay = 1000))
-   public List<String> fetchColorFamilies(String season, Integer fiscalYear, Integer deptNbr, Integer finelineNbr) {
+   public List<String> fetchColorFamilies(String season, Integer fiscalYear, Integer deptNbr, Integer deptCatgNbr, Integer deptSubCatgNbr, Integer finelineNbr) {
       List<String> emptyList = new ArrayList<>();
       try {
          String seasonString = "'" + season + "'";
-         final String query = String.format(midasProperties.getMidasColorFamiliesQuery(), seasonString, deptNbr, finelineNbr, fiscalYear);
+         final String query = String.format(midasProperties.getMidasColorFamiliesQuery(), seasonString, deptNbr, deptCatgNbr, deptSubCatgNbr, finelineNbr, fiscalYear);
          String url = midasProperties.getMidasApiBaseURL();
          log.info("Invoking Midas API for Create event with URL : {} and query : {}", url, query);
 
