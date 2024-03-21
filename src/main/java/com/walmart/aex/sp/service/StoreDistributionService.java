@@ -42,8 +42,7 @@ public class StoreDistributionService {
 
 		try {
 			if (request != null && request.getPackInfoList() != null)
-				packInfoList = request.getPackInfoList();// Request is created in the form of a list to add multiple
-			// planIds and finelines in the future
+				packInfoList = request.getPackInfoList();
 
 			storeDistributionList = callBigQueryService(packInfoList);
 
@@ -61,14 +60,12 @@ public class StoreDistributionService {
 		List<StoreDistributionDTO> storeDistributionList = new ArrayList<>();
 		PackData packData = new PackData();
 
-		// Extracting planId, fineline, packId and inStoreWeek for each object in the
-		// list in the
-		// request and calling Big Query service
 		try {
 			packInfoList.forEach(packInfoObj -> {
 				if (packInfoObj.getPlanId() != null
 						&& packInfoObj.getChannel().equalsIgnoreCase(ChannelType.STORE.name())
 						&& packInfoObj.getFinelineDataList() != null) {
+
 					packData.setPlanId(packInfoObj.getPlanId());
 					List<FinelineData> finelineDataList = packInfoObj.getFinelineDataList();
 
@@ -77,16 +74,19 @@ public class StoreDistributionService {
 							packData.setFinelineNbr(fineline.getFinelineNbr());
 							packData.setPackId(fineline.getPackId());
 							packData.setInStoreWeek(fineline.getInStoreWeek());
+
 							StoreDistributionData storeDistributionData = bigQueryStoreDistributionService.getStoreDistributionData(packData);
 
 							StoreClusterMap storeClusterMap = null;
-							try {
-								storeClusterMap = storeClusterService.fetchPOStoreClusterGrouping(packInfoObj.getSeason(), packInfoObj.getFiscalYear());
-							} catch (SizeAndPackException e) {
-								throw new RuntimeException(e);
+							if(fineline.getGroupingType() != null) {
+								try {
+									storeClusterMap = storeClusterService.fetchPOStoreClusterGrouping(packInfoObj.getSeason(), packInfoObj.getFiscalYear());
+								} catch (SizeAndPackException e) {
+									throw new RuntimeException(e);
+								}
 							}
 
-							if(storeClusterMap != null) {
+							if(storeClusterMap != null && !storeClusterMap.isEmpty()) {
 								List<Integer> stores = storeClusterMap.get(fineline.getGroupingType());
 
 								if (storeDistributionData != null
@@ -105,10 +105,11 @@ public class StoreDistributionService {
 							}
 						}
 					});
-				} catch (Exception e) {
-					log.error("Exception details are ", e);
 				}
-
-				return storeDistributionList;
-			}
+			});
+		} catch (Exception e) {
+			log.error("Exception details are ", e);
 		}
+		return storeDistributionList;
+	}
+}

@@ -62,7 +62,7 @@ public class BigQueryStoreDistributionService {
 		this.bigQuery = bigQuery;
 	}
 
-	public StoreDistributionData getStoreDistributionData(PackData packData, String groupingType) {
+	public StoreDistributionData getStoreDistributionData(PackData packData) {
 		StoreDistributionData storeDistributionData = new StoreDistributionData();
 		List<StoreDistributionDTO> storeDistributionList;
 
