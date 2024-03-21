@@ -98,6 +98,7 @@ public class StoreDistributionService {
 										if (stores != null && stores.contains(storeDistributionDTO.getStore())) {
 											storeDistributionList.add(storeDistributionDTO);
 										}
+
 									}
 								}
 							} else {
