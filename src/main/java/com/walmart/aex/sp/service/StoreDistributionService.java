@@ -62,7 +62,7 @@ public class StoreDistributionService {
 		PackData packData = new PackData();
 
 		// Extracting planId, fineline, packId and inStoreWeek for each object in the
-		// list in the
+		// list in
 		// request and calling Big Query service
 		try {
 			packInfoList.forEach(packInfoObj -> {
