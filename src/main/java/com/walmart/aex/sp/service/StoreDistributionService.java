@@ -78,7 +78,10 @@ public class StoreDistributionService {
 							StoreDistributionData storeDistributionData = bigQueryStoreDistributionService.getStoreDistributionData(packData);
 
 							StoreClusterMap storeClusterMap = null;
-							if(fineline.getGroupingType() != null) {
+							StoreDistributionData storeDistributionData = bigQueryStoreDistributionService.getStoreDistributionData(packData);
+
+							StoreClusterMap storeClusterMap = null;
+							if(fineline.getGroupingType() != null && packInfoObj.getSeason() != null && packInfoObj.getFiscalYear() != null) {
 								try {
 									storeClusterMap = storeClusterService.fetchPOStoreClusterGrouping(packInfoObj.getSeason(), packInfoObj.getFiscalYear());
 								} catch (SizeAndPackException e) {

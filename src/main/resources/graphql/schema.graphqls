@@ -516,12 +516,15 @@ input PackInfo {
   planId: Int!
   channel: String!
   finelineDataList:[FinelineData]
+  season: String
+  fiscalYear: Int
 }
 
 input FinelineData {
   finelineNbr: Int!
   packId: String!
   inStoreWeek: Int!
+  groupingType: String
 }
 
 type StoreDistributionResponse {
