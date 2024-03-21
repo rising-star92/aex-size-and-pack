@@ -75,7 +75,6 @@ public class StoreDistributionService {
 							packData.setPackId(fineline.getPackId());
 							packData.setInStoreWeek(fineline.getInStoreWeek());
 
-							StoreClusterMap storeClusterMap = null;
 							StoreDistributionData storeDistributionData = bigQueryStoreDistributionService.getStoreDistributionData(packData);
 
 							StoreClusterMap storeClusterMap = null;
