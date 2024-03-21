@@ -29,10 +29,13 @@ class StoreDistributionServiceTest {
     
     private StoreDistributionData storeDistributionData;
 
+    @Mock
+    private StoreClusterService  storeClusterService;
+
     @BeforeEach
     void setUp() throws IOException {
         MockitoAnnotations.openMocks(this);
-        storeDistributionService = new StoreDistributionService(bigQueryStoreDistributionService, new StoreDistributionMapper());
+        storeDistributionService = new StoreDistributionService(bigQueryStoreDistributionService, new StoreDistributionMapper(), storeClusterService);
         setData();
     }
 
