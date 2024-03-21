@@ -95,7 +95,7 @@ public class StoreDistributionService {
 								if (storeDistributionData != null
 										&& storeDistributionData.getStoreDistributionList() != null) {
 									for (StoreDistributionDTO storeDistributionDTO : storeDistributionData.getStoreDistributionList()) {
-										if (stores.contains(storeDistributionDTO.getStore())) {
+										if (stores != null && stores.contains(storeDistributionDTO.getStore())) {
 											storeDistributionList.add(storeDistributionDTO);
 										}
 									}
