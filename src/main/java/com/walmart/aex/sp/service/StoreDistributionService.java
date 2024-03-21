@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import com.walmart.aex.sp.dto.StoreClusterMap;
+import com.walmart.aex.sp.exception.SizeAndPackException;
 import org.springframework.stereotype.Service;
 
 import com.walmart.aex.sp.dto.storedistribution.FinelineData;
@@ -24,11 +26,13 @@ public class StoreDistributionService {
 
 	private final BigQueryStoreDistributionService bigQueryStoreDistributionService;
 	private final StoreDistributionMapper storeDistributionMapper;
+	private final StoreClusterService storeClusterService;
 
 	public StoreDistributionService(BigQueryStoreDistributionService bigQueryStoreDistributionService,
-			StoreDistributionMapper storeDistributionMapper) {
+									StoreDistributionMapper storeDistributionMapper, StoreClusterService storeClusterService) {
 		this.bigQueryStoreDistributionService = bigQueryStoreDistributionService;
 		this.storeDistributionMapper = storeDistributionMapper;
+		this.storeClusterService = storeClusterService;
 	}
 
 	public StoreDistributionResponse fetchStoreDistributionResponse(PackInfoRequest request) {
@@ -39,7 +43,7 @@ public class StoreDistributionService {
 		try {
 			if (request != null && request.getPackInfoList() != null)
 				packInfoList = request.getPackInfoList();// Request is created in the form of a list to add multiple
-															// planIds and finelines in the future
+			// planIds and finelines in the future
 
 			storeDistributionList = callBigQueryService(packInfoList);
 
@@ -69,26 +73,42 @@ public class StoreDistributionService {
 					List<FinelineData> finelineDataList = packInfoObj.getFinelineDataList();
 
 					finelineDataList.forEach(fineline -> {
-						if (fineline.getFinelineNbr() != null && fineline.getPackId() != null
-								&& fineline.getInStoreWeek() != null) {
+						if (fineline.getFinelineNbr() != null && fineline.getPackId() != null && fineline.getInStoreWeek() != null) {
 							packData.setFinelineNbr(fineline.getFinelineNbr());
 							packData.setPackId(fineline.getPackId());
 							packData.setInStoreWeek(fineline.getInStoreWeek());
-							StoreDistributionData storeDistributionData = new StoreDistributionData();
-							storeDistributionData = bigQueryStoreDistributionService.getStoreDistributionData(packData);
+							StoreDistributionData storeDistributionData = bigQueryStoreDistributionService.getStoreDistributionData(packData);
 
-							if (storeDistributionData != null
-									&& storeDistributionData.getStoreDistributionList() != null)
-								storeDistributionList.addAll(storeDistributionData.getStoreDistributionList());
+							StoreClusterMap storeClusterMap = null;
+							try {
+								storeClusterMap = storeClusterService.fetchPOStoreClusterGrouping(packInfoObj.getSeason(), packInfoObj.getFiscalYear());
+							} catch (SizeAndPackException e) {
+								throw new RuntimeException(e);
+							}
+
+							if(storeClusterMap != null) {
+								List<Integer> stores = storeClusterMap.get(fineline.getGroupingType());
+
+								if (storeDistributionData != null
+										&& storeDistributionData.getStoreDistributionList() != null) {
+									for (StoreDistributionDTO storeDistributionDTO : storeDistributionData.getStoreDistributionList()) {
+										if (stores.contains(storeDistributionDTO.getStore())) {
+											storeDistributionList.add(storeDistributionDTO);
+										}
+									}
+								}
+							} else {
+								if (storeDistributionData != null
+										&& storeDistributionData.getStoreDistributionList() != null) {
+									storeDistributionList.addAll(storeDistributionData.getStoreDistributionList());
+								}
+							}
 						}
 					});
+				} catch (Exception e) {
+					log.error("Exception details are ", e);
 				}
 
-			});
-		} catch (Exception e) {
-			log.error("Exception details are ", e);
+				return storeDistributionList;
+			}
 		}
-
-		return storeDistributionList;
-	}
-}
