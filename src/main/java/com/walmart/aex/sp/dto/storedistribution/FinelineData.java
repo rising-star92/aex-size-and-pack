@@ -8,4 +8,5 @@ public class FinelineData {
 	private String packId;
 	private Long inStoreWeek;
 	private String groupingType;
+
 }

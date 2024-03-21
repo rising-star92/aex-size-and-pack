@@ -11,5 +11,4 @@ public class PackInfo {
 	private String fiscalYear;
 	private String channel;
 	private List<FinelineData> finelineDataList;
-
 }
