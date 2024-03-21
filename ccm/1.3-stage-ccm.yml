@@ -102,7 +102,7 @@ configDefinitions:
         "description": "Query for fetching color families"
         "type": "STRING"
         "kind": "SINGLE"
-        "defaultValue": '{"query":{"select":[{"field":"*"}],"from":"get_store_color_families","params":{"season":%s,"deptNbr":%d,"finelineNbr":%d,"year":%d}}}'
+        "defaultValue": '{"query":{"select":[{"field":"*"}],"from":"get_store_color_families","params":{"season":%s,"deptNbr":%d,"deptCatgNbr":%d,"deptSubCatgNbr":%d,"finelineNbr":%d,"year":%d}}}'
   httpConfig:
     description: "HTTP Configurations"
     resolutionPaths:
@@ -143,6 +143,11 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "12, 8, 9, 73"
+      "planAdminRule.featureFlag":
+        description: "Feature flag to enable the logic for getting Admin Rule for Plans from table"
+        type: "BOOLEAN"
+        kind: "SINGLE"
+        defaultValue: True
       "initialSet.oneUnitPerStoreFlag":
         description: "Feature flag to enable the logic for making sure each store gets one unit"
         type: "STRING"
@@ -418,6 +423,21 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "stg"
+      "store.cluster.consumer.id":
+        description: "Consumer ID to call Assort Product"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "93c617a1-31ec-4333-a819-683ef7514cc0"
+      "store.cluster.consumer.name":
+        description: "Consumer service name"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "CLUSTER_SOLUTION_SERVICE"
+      "store.cluster.consumer.env":
+        description: "Consumer Environment"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "stage"
   bigQueryConfig:
     description: "Big Query Config to connect with GCP tables"
     resolutionPaths:
@@ -493,21 +513,6 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "size_clust_store_fineline"
-      "store.distribution.feature.flag":
-        description: "enable v1/v2 of store distribution API"
-        type: "STRING"
-        kind: "SINGLE"
-        defaultValue: "true"
-      "pack.store.feature.flag":
-        description: "feature flag to enable pack store API"
-        type: "STRING"
-        kind: "SINGLE"
-        defaultValue: "true"
-      "pack.description.feature.flag":
-        description: "Flag to enable packDescription feature"
-        type: "STRING"
-        kind: "SINGLE"
-        defaultValue: "true"
       "de.size.cluster.table.feature.flag":
         description: "Flag to enable usage of GCP size_clust_store_fineline Tables in the big query"
         type: "STRING"
@@ -528,3 +533,18 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "[155, 161, 162, 163, 167, 171, 172, 174, 176, 183]"
+  storeClusterConfig:
+    description: "Store Cluster API Config"
+    resolutionPaths:
+      - default: "/envProfile/envName"
+    properties:
+      "store.cluster.url":
+        description: "URL for Store Cluster API"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "https://cluster-solution-service.uat.aex.walmart.com/graphql"
+      "enable.po.store.cluster":
+        description: "Flag to enable Store Cluster for PO"
+        type: "BOOLEAN"
+        kind: "SINGLE"
+        defaultValue: true

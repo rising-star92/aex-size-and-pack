@@ -18,6 +18,7 @@ type Query {
      getReplItemRule(planId: Int!, lvl1Nbr: Int!): ReplItemResponse!
      getPackStoreDetailsByVolumeCluster(request: InitialSetVolumeRequest!): [PackDetailsVolumeResponse]!
      fetchPackOptFinelinesByStatus(statusCodes: [Int]!): [PackOptFinelinesByStatusResponse]!
+     getPlanAdminRules(planIds: [Int]!): [PlanAdminRuleResponse]!
 }
 
 
@@ -40,6 +41,9 @@ type Mutation {
     addAppMessages(appMessageTextRequests: [AppMessageTextRequest]!): StatusResponse
     updateAppMessages(appMessageTextRequests: [AppMessageTextRequest]!): StatusResponse
     deleteAppMessages(appMessageCodesRequest: [Int]!): StatusResponse
+    addPlanAdminRules(planAdminRuleRequests: [PlanAdminRuleRequest]!): StatusResponse
+    updatePlanAdminRules(planAdminRuleRequests: [PlanAdminRuleRequest]!): StatusResponse
+    deletePlanAdminRules(planIds: [Int]!): StatusResponse
 }
 
 input UpdatePackOptConstraintRequestDTO {
@@ -107,11 +111,14 @@ input Lvl4Request {
 input FinelineRequest {
     finelineNbr: Int
     finelineName: String
+    metadata: MetadataRequest
     styles:[StyleRequest]
 }
 
 input InitialSetPackRequest{
 	planId: Int
+    interval: String
+    fiscalYear: Int
 	finelineNbr: Int
 }
 
@@ -122,6 +129,10 @@ input StyleRequest {
 
 input CustomerChoiceRequest {
     ccId: String
+}
+
+input MetadataRequest {
+    validationCodes: [Int]
 }
 
 type InitialBumpSetResponse{
@@ -145,6 +156,7 @@ type PackDetails{
 	uuId: String
 	metrics: [Metrics]
 	bumpPackNbr: Int
+    groupingTypes: [String]
 }
 
 type Metrics{
@@ -391,6 +403,7 @@ type MerchMethodsDto {
 
 type Metadata {
     validations: [Validation]
+    validationCodes: [Int]
     status: String
     lastUpdatedTs: String
     userName: String
@@ -603,6 +616,7 @@ type MetricsVolume {
 
 type StoreDetail {
     store: Int!
+    groupingType: String
     qty: Int!
 }
 
@@ -633,6 +647,13 @@ type StoreMetrics {
     qty: Int
 }
 
+type PlanAdminRuleResponse{
+    planId: Int
+    deptNbr: Int
+    replItemPieceRule: Int
+    minReplItemUnits: Int
+}
+
 type PackOptFinelinesByStatusResponse{
     planId: Int
     finelineNbr: Int
@@ -647,4 +668,13 @@ input AppMessageTextRequest {
     typeId: Int
     desc: String
     longDesc: String
+}
+
+input PlanAdminRuleRequest {
+    planId: Int
+    deptNbr: Int
+    replItemPieceRule: Int
+    minReplItemUnits: Int
+    createUserId : String
+    lastModifiedUserId : String
 }

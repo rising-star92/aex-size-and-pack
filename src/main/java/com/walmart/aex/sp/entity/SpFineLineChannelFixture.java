@@ -5,6 +5,7 @@ import lombok.*;
 import net.minidev.json.annotate.JsonIgnore;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.Set;
 
 @Getter
@@ -60,6 +61,18 @@ public class SpFineLineChannelFixture {
 
     @Column(name = "app_message_obj")
     private String messageObj;
+
+    @Column(name= "create_userid")
+    private String createUserId;
+
+    @Column(name= "last_modified_userid")
+    private String lastModifiedUserId;
+
+    @Column(name= "create_ts")
+    private Date createTs;
+
+    @Column(name= "last_modified_ts")
+    private Date lastModifiedTs;
 
     @OneToMany(mappedBy = "spFineLineChannelFixture", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL, orphanRemoval = true)

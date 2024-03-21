@@ -1,16 +1,14 @@
 package com.walmart.aex.sp.dto.deptadminrule;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DeptAdminRuleRequest {
+public class DeptAdminRuleRequest extends ReplItemResponse {
     private Integer deptNbr;
-    private Integer replItemPieceRule;
-    private Integer minReplItemUnits;
 }

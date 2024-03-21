@@ -42,15 +42,6 @@ public interface BigQueryConnectionProperties {
 	@Property(propertyName = "analytics.data.size.color.cluster")
 	String getSizeColorCluster();
 
-	@Property(propertyName = "store.distribution.feature.flag")
-	String getStoreDistributionFeatureFlag();
-	
-	@Property(propertyName = "pack.store.feature.flag")
-	String getPackStoreFeatureFlag();
-
-	@Property(propertyName = "pack.description.feature.flag")
-	String getPackDescriptionFeatureFlag();
-
 	@Property(propertyName = "de.size.cluster.table.feature.flag")
 	String getDESizeClusterFeatureFlag();
 
