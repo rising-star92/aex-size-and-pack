@@ -8,5 +8,4 @@ import lombok.Data;
 public class PackInfoRequest {
 	private List<PackInfo> packInfoList;
 	private String groupingType;
-
 }
