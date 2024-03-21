@@ -62,6 +62,15 @@ public interface GraphQLProperties {
     @Property(propertyName = "buy.qty.line.plan.consumer.env")
     String getBuyQtyLinePlanConsumerEnv();
 
+    @Property(propertyName = "store.cluster.consumer.id")
+    String getStoreClusterConsumerId();
+
+    @Property(propertyName = "store.cluster.consumer.name")
+    String getStoreClusterConsumerName();
+
+    @Property(propertyName = "store.cluster.consumer.env")
+    String getStoreClusterConsumerEnv();
+
     @Property(propertyName = "buy.qty.rfa.weeks.url")
     String getRfaWeeksUrl();
 

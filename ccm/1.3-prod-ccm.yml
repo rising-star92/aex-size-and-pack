@@ -172,6 +172,11 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "161, 176, 184, 186, 187, 192"
+      "planAdminRule.featureFlag":
+        description: "Feature flag to enable the logic for getting Admin Rule for Plans from table"
+        type: "BOOLEAN"
+        kind: "SINGLE"
+        defaultValue: True
       "initialSet.oneUnitPerStoreFlag":
         description: "Feature flag to enable the logic for making sure each store gets one unit"
         type: "STRING"
@@ -286,17 +291,17 @@ configDefinitions:
         description: "Get All CC's Size Profile Query for GraphQL Call"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "query ($sizeProfileRequest:SizeProfileRequest!)\n {\n getAllCcSizeClus(sizeProfileRequest:  $sizeProfileRequest)\n {\n planId\n lvl0Nbr\n lvl1Nbr\n lvl2Nbr\n lvl3List{\n lvl3Nbr\n lvl4List{\n lvl4Nbr\n finelines{\n finelineNbr\n merchMethods{\n fixtureTypeRollupId\n merchMethod\n merchMethodCode\n }\n metrics{\n sizeProfilePct\n adjSizeProfilePct\n avgSizeProfilePct\n adjAvgSizeProfilePct\n }\n clusters{\n clusterID\n sizes{\n ahsSizeId\n sizeDesc\n metrics{\n sizeProfilePct\n adjSizeProfilePct\n avgSizeProfilePct\n adjAvgSizeProfilePct\n }\n }\n }\n styles{\n styleNbr\n metrics{\n sizeProfilePct\n adjSizeProfilePct\n avgSizeProfilePct\n adjAvgSizeProfilePct\n }\n clusters{\n clusterID\n sizes{\n ahsSizeId\n sizeDesc\n metrics{\n sizeProfilePct\n adjSizeProfilePct\n avgSizeProfilePct\n adjAvgSizeProfilePct\n }\n }\n }\n customerChoices{\n ccId\n colorFamily\n metrics{\n sizeProfilePct\n adjSizeProfilePct\n avgSizeProfilePct\n adjAvgSizeProfilePct\n }\n clusters{\n clusterID\n sizes{\n ahsSizeId\n sizeDesc\n metrics{\n sizeProfilePct\n adjSizeProfilePct\n avgSizeProfilePct\n adjAvgSizeProfilePct\n }}}}}}}}}}"
+        defaultValue: "query ($sizeProfileRequest:SizeProfileRequest!)\n {\n getAllCcSizeClus(sizeProfileRequest: $sizeProfileRequest)\n {\n planId\n lvl0Nbr\n lvl1Nbr\n lvl2Nbr\n lvl3List{\n lvl3Nbr\n lvl4List{\n lvl4Nbr\n finelines{\n finelineNbr\n metadata{\n validationCodes\n }\n merchMethods{\n fixtureTypeRollupId\n merchMethod\n merchMethodCode\n }\n metrics{\n sizeProfilePct\n adjSizeProfilePct\n avgSizeProfilePct\n adjAvgSizeProfilePct\n }\n clusters{\n clusterID\n sizes{\n ahsSizeId\n sizeDesc\n metrics{\n sizeProfilePct\n adjSizeProfilePct\n avgSizeProfilePct\n adjAvgSizeProfilePct\n }\n }\n }\n styles{\n styleNbr\n metrics{\n sizeProfilePct\n adjSizeProfilePct\n avgSizeProfilePct\n adjAvgSizeProfilePct\n }\n clusters{\n clusterID\n sizes{\n ahsSizeId\n sizeDesc\n metrics{\n sizeProfilePct\n adjSizeProfilePct\n avgSizeProfilePct\n adjAvgSizeProfilePct\n }\n }\n }\n customerChoices{\n ccId\n colorFamily\n metrics{\n sizeProfilePct\n adjSizeProfilePct\n avgSizeProfilePct\n adjAvgSizeProfilePct\n }\n clusters{\n clusterID\n sizes{\n ahsSizeId\n sizeDesc\n metrics{\n sizeProfilePct\n adjSizeProfilePct\n avgSizeProfilePct\n adjAvgSizeProfilePct\n }}}}}}}}}}"
       "buy.qty.finelines.size.query":
         description: "Buy Qty with Sizes for Finelines Query for GraphQL Call"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "query ($planId:Int!,$channel:String!)\n {\n getFinelinesWithSizeAssociation(planId : $planId, channel : $channel)\n {\n planId\n lvl0Nbr\n lvl1Nbr\n lvl2Nbr\n lvl3List{\n lvl3Nbr\n lvl4List{\n lvl4Nbr\n finelines{\n finelineNbr\n }}}}}"
+        defaultValue: "query ($planId:Int!,$channel:String!)\n {\n getFinelinesWithSizeAssociation(planId : $planId, channel : $channel)\n {\n planId\n lvl0Nbr\n lvl1Nbr\n lvl2Nbr\n lvl3List{\n lvl3Nbr\n lvl4List{\n lvl4Nbr\n finelines{\n finelineNbr\n metadata{\n validationCodes\n }}}}}}"
       "buy.qty.style.cc.size.query":
         description: "Buy Qty with Sizes for Styles and Cc Query for GraphQL Call"
         type: "STRING"
         kind: "SINGLE"
-        defaultValue: "query ($planId:Int!,$channel:String!,$finelineNbr:Int!)\n {\n getStylesCCsWithSizeAssociation(planId : $planId, channel : $channel, finelineNbr: $finelineNbr)\n {\n planId\n lvl0Nbr\n lvl1Nbr\n lvl2Nbr\n lvl3List{\n lvl3Nbr\n lvl4List{\n lvl4Nbr\n finelines{\n finelineNbr\n styles{\n styleNbr\n customerChoices{\n ccId\n }}}}}}}"
+        defaultValue: "query ($planId:Int!,$channel:String!,$finelineNbr:Int!)\n {\n getStylesCCsWithSizeAssociation(planId : $planId, channel : $channel, finelineNbr: $finelineNbr)\n {\n planId\n lvl0Nbr\n lvl1Nbr\n lvl2Nbr\n lvl3List{\n lvl3Nbr\n lvl4List{\n lvl4Nbr\n finelines{\n finelineNbr\n styles{\n styleNbr\n metadata{\n validationCodes\n } customerChoices{\n ccId\n metadata{\n validationCodes\n }}}}}}}}"
       "size.profile.consumer.id":
         description: "Consumer ID to call Strategy Service"
         type: "STRING"
@@ -422,6 +427,21 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "prod"
+      "store.cluster.consumer.id":
+        description: "Consumer ID to call Assort Product"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "80eac37e-62ff-4d41-a106-c5bff13827e9"
+      "store.cluster.consumer.name":
+        description: "Consumer service name"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "CLUSTER_SOLUTION_SERVICE"
+      "store.cluster.consumer.env":
+        description: "Consumer Environment"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "prod"
   bigQueryConfig:
     description: "Big Query Config to connect with GCP tables"
     resolutionPaths:
@@ -492,23 +512,8 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "size_clust_store_fineline"
-      "store.distribution.feature.flag":
-        description: "enable v1/v2  of store distribution API"
-        type: "STRING"
-        kind: "SINGLE"
-        defaultValue: "true"
-      "pack.store.feature.flag":
-        description: "feature flag to enable pack store API"
-        type: "STRING"
-        kind: "SINGLE"
-        defaultValue: "true"
       "de.size.cluster.table.feature.flag":
         description: "Flag to enable usage of GCP size_clust_store_fineline Tables in the big query"
-        type: "STRING"
-        kind: "SINGLE"
-        defaultValue: "true"
-      "pack.description.feature.flag":
-        description: "Flag to enable packDescription feature"
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "true"
@@ -527,5 +532,20 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "[155, 161, 162, 163, 167, 171, 172, 174, 176, 183]"
+  storeClusterConfig:
+    description: "Store Cluster API Config"
+    resolutionPaths:
+      - default: "/envProfile/envName"
+    properties:
+      "store.cluster.url":
+        description: "URL for Store Cluster API"
+        type: "STRING"
+        kind: "SINGLE"
+        defaultValue: "https://cluster-solution-service.uat.aex.walmart.com/graphql"
+      "enable.po.store.cluster":
+        description: "Flag to enable Store Cluster for PO"
+        type: "BOOLEAN"
+        kind: "SINGLE"
+        defaultValue: false
 apiVersion: "2.0"
 kind: "ServiceConfig"

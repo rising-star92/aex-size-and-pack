@@ -73,11 +73,15 @@ class BigQueryPackStoresServiceTest
     @Mock
     private LinePlanService linePlanService;
 
+    @Mock
+    private StoreClusterService storeClusterService;
+
     @BeforeEach
     void setUp() throws IOException 
     {
         MockitoAnnotations.openMocks(this);
-        bigQueryInitialSetPlanService = new BigQueryInitialSetPlanService(new ObjectMapper(), bqfpService, strategyFetchService, linePlanService, bigQuery);
+        bigQueryInitialSetPlanService = new BigQueryInitialSetPlanService(new ObjectMapper(), bqfpService,
+                strategyFetchService, linePlanService, bigQuery, storeClusterService);
         bigQueryPackStoresService = new BigQueryPackStoresService(new ObjectMapper(), bigQuery, strategyFetchService, customerChoiceRepository, linePlanService);
         ReflectionTestUtils.setField(bigQueryInitialSetPlanService, "bigQueryConnectionProperties",
         		bigQueryConnectionProperties);
@@ -213,8 +217,6 @@ class BigQueryPackStoresServiceTest
         lenient().when(bigQueryConnectionProperties.getRFAProjectId()).thenReturn("wmt-e12743607538928");
         lenient().when(bigQueryConnectionProperties.getRFADataSetName()).thenReturn("commitment_report_rfa_output_stg");
         lenient().when(bigQueryConnectionProperties.getRFACCStageTable()).thenReturn("rfa_cc_out_parquet");
-
-        lenient().when(bigQueryConnectionProperties.getPackDescriptionFeatureFlag()).thenReturn("true");
     }
 
     private StrategyVolumeDeviationResponse getVolumeDeviationStrategyResponse() 

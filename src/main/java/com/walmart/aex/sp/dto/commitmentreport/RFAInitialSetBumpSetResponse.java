@@ -2,6 +2,9 @@ package com.walmart.aex.sp.dto.commitmentreport;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
+
+import java.util.List;
+
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RFAInitialSetBumpSetResponse {
@@ -19,5 +22,6 @@ public class RFAInitialSetBumpSetResponse {
 	private String uuid;
 	private String product_fineline;
 	private Integer bumpPackNbr;
+	private List<Integer> stores;
 
 }

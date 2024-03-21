@@ -19,11 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -204,6 +200,7 @@ class DeptAdminRuleServiceImplTest {
         Field field = ReflectionUtils.findField(DeptAdminRuleServiceImpl.class, "buyQtyProperties");
         field.setAccessible(true);
         field.set(deptAdminRuleService, buyQtyProperties);
+        when(buyQtyProperties.getPlanAdminRuleFlag()).thenReturn(Boolean.FALSE);
         when(buyQtyProperties.getS3PlanIds()).thenReturn("22, 33, 44");
         when(buyQtyProperties.getInitialThreshold()).thenReturn(2);
         when(buyQtyProperties.getReplenishmentThreshold()).thenReturn(500);
@@ -216,6 +213,7 @@ class DeptAdminRuleServiceImplTest {
     void test_getReplItemRuleShouldReturnDefaultValuesIfDeptNbrDoesNotExist() throws IllegalAccessException {
         Field field = ReflectionUtils.findField(DeptAdminRuleServiceImpl.class, "buyQtyProperties");
         field.setAccessible(true);
+        when(buyQtyProperties.getPlanAdminRuleFlag()).thenReturn(Boolean.FALSE);
         field.set(deptAdminRuleService, buyQtyProperties);
         when(buyQtyProperties.getS3PlanIds()).thenReturn("22, 33, 44");
         when(deptAdminRuleRepository.findAllById(anyList())).thenReturn(Collections.emptyList());
@@ -228,12 +226,43 @@ class DeptAdminRuleServiceImplTest {
     void test_getReplItemRuleShouldReturnValuesFromDB() throws IllegalAccessException {
         Field field = ReflectionUtils.findField(DeptAdminRuleServiceImpl.class, "buyQtyProperties");
         field.setAccessible(true);
+        when(buyQtyProperties.getPlanAdminRuleFlag()).thenReturn(Boolean.FALSE);
         field.set(deptAdminRuleService, buyQtyProperties);
         when(buyQtyProperties.getS3PlanIds()).thenReturn("22, 33, 44");
         when(deptAdminRuleRepository.findAllById(anyList())).thenReturn(Collections.singletonList(dbResponse.get(0)));
         ReplItemResponse repelItemRule = deptAdminRuleService.getReplItemRule(23L, 35);
         assertEquals(55, repelItemRule.getReplItemPieceRule());
         assertEquals(22, repelItemRule.getMinReplItemUnits());
+    }
+
+    @Test
+    void test_getReplItemRuleShouldReturnValuesFromPlanAdminRule() throws IllegalAccessException {
+        Field field = ReflectionUtils.findField(DeptAdminRuleServiceImpl.class, "buyQtyProperties");
+        assert field != null;
+        field.setAccessible(true);
+        when(buyQtyProperties.getPlanAdminRuleFlag()).thenReturn(Boolean.TRUE);
+        field.set(deptAdminRuleService, buyQtyProperties);
+        DeptAdminRule deptAdminRule = new DeptAdminRule();
+        deptAdminRule.setDeptNbr(35);
+        deptAdminRule.setReplItemPieceRule(100);
+        deptAdminRule.setMinReplItemUnits(2500);
+        when(deptAdminRuleRepository.getReplnRuleCons(23L, 35)).thenReturn(deptAdminRule);
+        ReplItemResponse repelItemRule = deptAdminRuleService.getReplItemRule(23L, 35);
+        assertEquals(100, repelItemRule.getReplItemPieceRule());
+        assertEquals(2500, repelItemRule.getMinReplItemUnits());
+    }
+
+    @Test
+    void test_getReplItemRuleShouldReturnValuesWhenPlanAdminRuleIsEmptyAndDeptAdminRuleIsAlsoEmpty() throws IllegalAccessException {
+        Field field = ReflectionUtils.findField(DeptAdminRuleServiceImpl.class, "buyQtyProperties");
+        assert field != null;
+        field.setAccessible(true);
+        when(buyQtyProperties.getPlanAdminRuleFlag()).thenReturn(Boolean.TRUE);
+        field.set(deptAdminRuleService, buyQtyProperties);
+        when(deptAdminRuleRepository.getReplnRuleCons(23L, 35)).thenReturn(null);
+        ReplItemResponse repelItemRule = deptAdminRuleService.getReplItemRule(23L, 35);
+        assertEquals(2, repelItemRule.getReplItemPieceRule());
+        assertEquals(2500, repelItemRule.getMinReplItemUnits());
     }
 
 }

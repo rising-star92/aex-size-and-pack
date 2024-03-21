@@ -268,7 +268,6 @@ class BigQueryStoreDistributionServiceTest {
         lenient().when(bigQueryConnectionProperties.getRFAProjectId()).thenReturn("wmt-prod");
         lenient().when(bigQueryConnectionProperties.getRFADataSetName()).thenReturn("rfa_output");
         lenient().when(bigQueryConnectionProperties.getRFACCStageTable()).thenReturn("out_parquet");
-        lenient().when(bigQueryConnectionProperties.getStoreDistributionFeatureFlag()).thenReturn("true");
 
         lenient().when(graphQLProperties.getPlanDefinitionConsumerId()).thenReturn("planDefConsumerId");
         lenient().when(graphQLProperties.getPlanDefinitionConsumerName()).thenReturn("planDefConsumerName");

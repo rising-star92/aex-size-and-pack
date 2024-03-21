@@ -6,10 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -29,4 +27,8 @@ public class DeptAdminRule {
 
     @Column(name = "min_repl_item_units", nullable = false)
     private Integer minReplItemUnits;
+
+    @OneToMany(mappedBy = "deptAdminRule", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<PlanAdminRule> planAdminRules;
 }

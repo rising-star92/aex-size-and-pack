@@ -19,4 +19,7 @@ public interface BuyQtyProperties {
 
     @Property(propertyName = "buyQty.deviationFlag")
     String getDeviationFlag();
+
+    @Property(propertyName = "planAdminRule.featureFlag")
+    Boolean getPlanAdminRuleFlag();
 }

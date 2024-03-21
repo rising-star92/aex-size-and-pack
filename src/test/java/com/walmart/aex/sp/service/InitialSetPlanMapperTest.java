@@ -3,14 +3,19 @@ package com.walmart.aex.sp.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.walmart.aex.sp.dto.StoreClusterMap;
 import com.walmart.aex.sp.dto.commitmentreport.InitialSetPlan;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -31,14 +36,26 @@ class InitialSetPlanMapperTest {
 	@InjectMocks
 	InitialSetPlanMapper initialSetPlanMapper;
 	
-	private final ObjectMapper mapper = new ObjectMapper();
+	private ObjectMapper mapper;
+
+	@BeforeEach
+	void setup() {
+		this.mapper = new ObjectMapper();
+		this.mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+	}
 
 	@Test
-	void getInitialBumpSetDataTest() {
+	void getInitialBumpSetDataTest() throws IOException {
+
+		File storeClusterInfoResponseFile = new File(Objects.requireNonNull(this.getClass()
+				.getResource("/data/storeClusterServiceResponse.json")).getFile());
+		StoreClusterMap storeClusterResponse = mapper.readValue(storeClusterInfoResponseFile, StoreClusterMap.class);
+
 		RFAInitialSetBumpSetResponses rfaInitialSetBumpSetResponses = getInitialBumpSetFromRFAResponse();
 		InitialBumpSetResponse initialBumpSetResponse = new InitialBumpSetResponse();
 		Optional.of(rfaInitialSetBumpSetResponses.getRfaInitialSetBumpSetResponses()).stream().flatMap(Collection::stream).forEach(
-				intialSetResponseOne -> initialSetPlanMapper.mapInitialSetPlan(intialSetResponseOne, initialBumpSetResponse, 5141));
+				intialSetResponseOne -> initialSetPlanMapper.mapInitialSetPlan(intialSetResponseOne,
+						initialBumpSetResponse, 5141, storeClusterResponse));
 		
 		assertNotNull(initialBumpSetResponse);
 

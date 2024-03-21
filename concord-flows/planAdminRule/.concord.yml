@@ -1,0 +1,169 @@
+configuration:
+  runtime: "concord-v2"
+  arguments:
+    group: "CN=apparel-precision-kitt,.*"
+
+profiles:
+  dev:
+    configuration:
+      arguments:
+        spGraphQlEndpoint: "http://aex-size-and-pack.aex.dev.walmart.net/graphql"
+        consumerId: "34f7ca77-3dfc-46df-a86b-1ba6e4908d0e"
+        serviceName: "AEX_SIZE_AND_PACK"
+        env: dev
+  stage:
+    configuration:
+      arguments:
+        spGraphQlEndpoint: "http://aex-size-and-pack.aex.stg.walmart.net/graphql"
+        consumerId: "93c617a1-31ec-4333-a819-683ef7514cc0"
+        serviceName: "AEX_SIZE_AND_PACK"
+        env: stg
+  prod:
+    configuration:
+      arguments:
+        spGraphQlEndpoint: "http://aex-size-and-pack.aex.prod.walmart.net/graphql"
+        consumerId: "d2d64ad5-b8e5-4cb6-b8d2-7ee21832ebcd"
+        serviceName: "AEX_SIZE_AND_PACK"
+        env: prod
+
+publicFlows:
+  - managePlanAdminRuleFlow
+  - deletePlanAdminRuleFlow
+
+forms:
+  managePlanAdminRuleForm:
+    - action: { label: "Select the action", type: "string", allow: [ "ADD","UPDATE" ]}
+    - planId: { label: "Enter Plan ID ", type: "int", min: 0, max: 99999 }
+    - deptNbr: { label: "Enter Department Number ", type: "int", min: 0, max: 99999 }
+    - replenishmentItemPieceRule: { label: "Enter the Replenishment Item Piece rule", type: "int", min: 0, max: 99999 }
+    - minReplenishmentQtyByItem: { label: "Enter the Minimum Replenishment Qty By Item", type: "int", min: 0, max: 99999 }
+  deletePlanAdminRuleForm:
+    - planId: { label: "Enter Plan ID ", type: "int", min: 0, max: 99999 }
+
+flows:
+  managePlanAdminRuleFlow:
+    - call: validateProfile
+    - form: managePlanAdminRuleForm
+      runAs:
+        ldap:
+          - group: ${group}
+    - log: "Starting - Adding/Updating Plan Admin Rules"
+    - call: managePlanAdminRulesToDB
+      in:
+        action: ${managePlanAdminRuleForm.action}
+        planId: ${managePlanAdminRuleForm.planId}
+        deptNbr: ${managePlanAdminRuleForm.deptNbr}
+        replItemPieceRule: ${managePlanAdminRuleForm.replenishmentItemPieceRule}
+        minReplItemUnits: ${managePlanAdminRuleForm.minReplenishmentQtyByItem}
+
+  deletePlanAdminRuleFlow:
+    - call: validateProfile
+    - form: deletePlanAdminRuleForm
+      runAs:
+        ldap:
+          - group: ${group}
+    - log: "Starting - Delete Plan Admin Rules"
+    - call: deletePlanAdminRulesToDB
+      in:
+        planId: ${deletePlanAdminRuleForm.planId}
+
+  managePlanAdminRulesToDB:
+    - if: ${action == "ADD"}
+      then:
+        - call: addPlanAdminRuleToDB
+          in:
+            planAdminRuleRequests:
+              planId: ${planId}
+              deptNbr: ${deptNbr}
+              replItemPieceRule: ${replItemPieceRule}
+              minReplItemUnits: ${minReplItemUnits}
+              createUserId: ${initiator.username}
+      else:
+        - call: updatePlanAdminRuleToDB
+          in:
+            planAdminRuleRequests:
+              planId: ${planId}
+              deptNbr: ${deptNbr}
+              replItemPieceRule: ${replItemPieceRule}
+              minReplItemUnits: ${minReplItemUnits}
+              lastModifiedUserId: ${initiator.username}
+
+  deletePlanAdminRulesToDB:
+    - call: deletePlanAdminRuleToDB
+      in:
+        planId: ${planId}
+
+  validateProfile:
+    - if: ${env.isEmpty()}
+      then:
+        - log: "Profile was not provided"
+        - exit
+
+  addPlanAdminRuleToDB:
+    - log: "Adding Plan Admin rule: ${planAdminRuleRequests}"
+    - log: "Adding Plan Admin rule user: ${initiator.username}"
+    - call: callHttpPOST
+      in:
+        query: "mutation addPlanAdminRules($planAdminRuleRequests: [PlanAdminRuleRequest]!) {\n    addPlanAdminRules(planAdminRuleRequests: $planAdminRuleRequests){\n        status\n        message\n }\n}"
+        variables :
+          planAdminRuleRequests: ${planAdminRuleRequests}
+      out: response
+    - if: ${not response.ok}
+      then:
+        - log: "Add Plan Admin Rule Failed: ${response.error}"
+      else:
+        - log: "PlanId ${planId} was added Successfully: ${response}"
+        - exit
+
+  updatePlanAdminRuleToDB:
+    - log: "Update Plan Admin rule: ${planAdminRuleRequests}"
+    - log: "Adding Plan Admin rule user: ${initiator.username}"
+    - call: callHttpPOST
+      in:
+        query: "mutation updatePlanAdminRules($planAdminRuleRequests: [PlanAdminRuleRequest]!) {\n    updatePlanAdminRules(planAdminRuleRequests: $planAdminRuleRequests){\n        status\n        message\n\n }\n\n}"
+        variables:
+          planAdminRuleRequests: ${planAdminRuleRequests}
+      out: response
+    - if: ${not response.ok}
+      then:
+        - log: "Update Plan Admin Rule Failed: ${response.error}"
+      else:
+        - log: "PlanId ${planId} was updated Successfully: ${response}"
+
+  deletePlanAdminRuleToDB:
+    - log: "Delete Plan Admin rule for PlanId: ${planId}"
+    - log: "Adding Plan Admin rule user: ${initiator.username}"
+    - call: callHttpPOST
+      in:
+        query: "mutation deletePlanAdminRules($planIds: [Int]!) {\n    deletePlanAdminRules(planIds: $planIds){\n        status\n        message\n\n }\n\n}"
+        variables:
+          planIds: ${planId}
+      out: response
+    - if: ${not response.ok}
+      then:
+        - log: "Delete Plan Admin Rule Failed: ${response.error}"
+      else:
+        - log: "PlanId ${planId} was deleted Successfully: ${response}"
+
+  callHttpPOST:
+    - log: "Plan Admin rule HTTP POST call initiated for PlanId: ${planId}"
+    - task: http
+      in:
+        method: POST
+        url: ${spGraphQlEndpoint}
+        request: json
+        body:
+          query: ${query}
+          variables: ${variables}
+        headers:
+           content-type: "application/json"
+           WM_CONSUMER.ID: ${consumerId}
+           WM_SVC.NAME: ${serviceName}
+           WM_SVC.ENV: ${env}
+        response: json
+      out: response
+    - if: ${not response.ok}
+      then:
+        - log: "Http POST call Failed: ${response.error}"
+      else:
+        - log: "Http POST call was Successful: ${response}"

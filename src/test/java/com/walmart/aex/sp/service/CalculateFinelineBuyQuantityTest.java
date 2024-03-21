@@ -563,7 +563,7 @@ class CalculateFinelineBuyQuantityTest {
         assertEquals(4, spCustomerChoiceChannelFixtureSizeList.size());
         assertEquals(64, spCustomerChoiceChannelFixtureSizeList.stream().flatMap(Collection::stream).count());
         assertEquals(4, spCustomerChoiceChannelFixtureSizeList.stream().flatMap(Collection::stream).filter(val -> val.getAhsSizeDesc().equals("33X30")).count());
-        assertEquals(2, spCustomerChoiceChannelFixtureSizeList.stream().flatMap(Collection::stream).filter(val -> val.getAhsSizeDesc().equals("33X30")).map(SpCustomerChoiceChannelFixtureSize::getMessageObj).filter(Objects::nonNull).filter(val -> val.equals("{\"codes\":[211,213,221]}")).count());
+        assertEquals(2, spCustomerChoiceChannelFixtureSizeList.stream().flatMap(Collection::stream).filter(val -> val.getAhsSizeDesc().equals("33X30")).map(SpCustomerChoiceChannelFixtureSize::getMessageObj).filter(Objects::nonNull).filter(val -> val.equals("{\"codes\":[211,221]}")).count());
         assertEquals(1, spCustomerChoiceChannelFixtureSizeList.stream().flatMap(Collection::stream).filter(val -> val.getAhsSizeDesc().equals("33X30")).map(SpCustomerChoiceChannelFixtureSize::getMessageObj).filter(Objects::nonNull).filter(val -> val.equals("{\"codes\":[221]}")).count());
         assertEquals(3, spCustomerChoiceChannelFixtureSizeList.stream().flatMap(Collection::stream).filter(val -> val.getAhsSizeDesc().equals("36X32")).map(SpCustomerChoiceChannelFixtureSize::getMessageObj).filter(Objects::nonNull).filter(val -> val.equals("{\"codes\":[]}")).count());
 
@@ -912,7 +912,7 @@ class CalculateFinelineBuyQuantityTest {
         ReflectionTestUtils.setField(calculateFinelineBuyQuantity, "buyQtyProperties", buyQtyProperties);
         lenient().when(buyQtyProperties.getOneUnitPerStoreFeatureFlag()).thenReturn("true");
         lenient().when(buyQtyProperties.getDeviationFlag()).thenReturn("true");
-        lenient().when(midasServiceCall.fetchColorFamilies(Mockito.anyString(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt())).thenReturn(List.of("DEFAULT"));
+        lenient().when(midasServiceCall.fetchColorFamilies(Mockito.anyString(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt())).thenReturn(List.of("DEFAULT"));
         lenient().when(linePlanService.getLikeAssociation(Mockito.anyLong(), Mockito.anyInt())).thenReturn(null);
     }
 
