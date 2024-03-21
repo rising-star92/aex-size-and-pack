@@ -1,21 +1,22 @@
-package com.walmart.aex.sp.service;
+package com.walmart.aex.sp.service.impl;
 
 import com.walmart.aex.sp.dto.StoreClusterMap;
 import com.walmart.aex.sp.dto.storedistribution.*;
 import com.walmart.aex.sp.enums.ChannelType;
+import com.walmart.aex.sp.service.BigQueryStoreDistributionService;
+import com.walmart.aex.sp.service.StoreDistributionMapper;
+import com.walmart.aex.sp.service.StoreDistributionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
-
-import org.mockito.MockitoAnnotations;
 
 public class StoreDistributionServiceTest {
 
