@@ -77,29 +77,26 @@ public class StoreDistributionService {
 
 							StoreDistributionData storeDistributionData = bigQueryStoreDistributionService.getStoreDistributionData(packData);
 
-							StoreClusterMap storeClusterMap = null;
-							if(fineline.getGroupingType() != null && packInfoObj.getSeason() != null && packInfoObj.getFiscalYear() != null) {
-								try {
-									storeClusterMap = storeClusterService.fetchPOStoreClusterGrouping(packInfoObj.getSeason(), packInfoObj.getFiscalYear());
-								} catch (SizeAndPackException e) {
-									throw new RuntimeException(e);
-								}
-							}
-
-							if(storeClusterMap != null && !storeClusterMap.isEmpty()) {
-								List<Integer> stores = storeClusterMap.get(fineline.getGroupingType());
-
-								if (storeDistributionData != null
-										&& storeDistributionData.getStoreDistributionList() != null) {
-									for (StoreDistributionDTO storeDistributionDTO : storeDistributionData.getStoreDistributionList()) {
-										if (stores != null && stores.contains(storeDistributionDTO.getStore())) {
-											storeDistributionList.add(storeDistributionDTO);
-										}
+							if (storeDistributionData != null && storeDistributionData.getStoreDistributionList() != null) {
+								StoreClusterMap storeClusterMap = null;
+								if(fineline.getGroupingType() != null && packInfoObj.getSeason() != null && packInfoObj.getFiscalYear() != null) {
+									try {
+										storeClusterMap = storeClusterService.fetchPOStoreClusterGrouping(packInfoObj.getSeason(), packInfoObj.getFiscalYear());
+									} catch (SizeAndPackException e) {
+										throw new RuntimeException(e);
 									}
 								}
-							} else {
-								if (storeDistributionData != null
-										&& storeDistributionData.getStoreDistributionList() != null) {
+
+								if(storeClusterMap != null && !storeClusterMap.isEmpty()) {
+									List<Integer> stores = storeClusterMap.get(fineline.getGroupingType());
+									if (stores != null) {
+										for (StoreDistributionDTO storeDistributionDTO : storeDistributionData.getStoreDistributionList()) {
+											if (stores.contains(storeDistributionDTO.getStore())) {
+												storeDistributionList.add(storeDistributionDTO);
+											}
+										}
+									}
+								} else {
 									storeDistributionList.addAll(storeDistributionData.getStoreDistributionList());
 								}
 							}
