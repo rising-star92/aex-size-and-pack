@@ -176,6 +176,12 @@ public class SizeAndPackService {
                     buyQntyResponseDTOS = spCustomerChoiceChannelFixtureRepository
                             .getBuyQntyByPlanChannelFineline(buyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(buyQtyRequest.getChannel()), finelineNbr);
                     buyQtyResponse = buyQtyCommonUtil.filterStylesCcWithSizes(buyQntyResponseDTOS, stylesCcWithSizesFromStrategy, finelineNbr);
+
+                    // Check feature flag 'enable_ecom_sp' and fetch 'Online Receipt Quantity'
+                    if (featureFlagService.isEnabled("enable_ecom_sp")) {
+                        Integer onlineReceiptQuantity = someService.getOnlineReceiptQuantity();
+                        buyQtyResponse.setOnlineReceiptQuantity(onlineReceiptQuantity);
+                    }
                 }
             } else {
                 BuyQtyResponse buyQtyResponseAllChannels = new BuyQtyResponse();
@@ -217,7 +223,7 @@ public class SizeAndPackService {
             return buyQtyResponse;
         } catch (Exception e) {
             log.error("Exception While fetching CC Buy Qunatities with Sizes:", e);
-            throw new CustomException("Failed to fetch CC Buy Qunatities with Sizes, due to" + e);
+            throw new CustomException("Failed to fetch CC Buy Quantities with Sizes, due to" + e);
         }
     }
 

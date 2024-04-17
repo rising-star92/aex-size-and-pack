@@ -22,4 +22,7 @@ public interface BuyQtyProperties {
 
     @Property(propertyName = "planAdminRule.featureFlag")
     Boolean getPlanAdminRuleFlag();
+
+    @Property(propertyName = "enable.ecomm.sp.feature.flag")
+    boolean isEnableEcommSP();
 }

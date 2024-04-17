@@ -335,7 +335,240 @@
                             "pctTotalRemainingUnits": 1.0
                         }
                     ],
-                    "replenishments": [],
+                    "replenishments": [ {
+                        "replnUnits": 124,
+                        "adjReplnUnits": null,
+                        "replnWeek": 12402,
+                        "replnWeekDesc": "FYE2025WK02",
+                        "remainingUnits": 4935,
+                        "dcInboundUnits": 682,
+                        "dcInboundAdjUnits": null
+                    },
+                        {
+                            "replnUnits": 111,
+                            "adjReplnUnits": null,
+                            "replnWeek": 12403,
+                            "replnWeekDesc": "FYE2025WK03",
+                            "remainingUnits": 4935,
+                            "dcInboundUnits": 0,
+                            "dcInboundAdjUnits": null
+                        },
+                        {
+                            "replnUnits": 130,
+                            "adjReplnUnits": null,
+                            "replnWeek": 12404,
+                            "replnWeekDesc": "FYE2025WK04",
+                            "remainingUnits": 4935,
+                            "dcInboundUnits": 0,
+                            "dcInboundAdjUnits": null
+                        },
+                        {
+                            "replnUnits": 149,
+                            "adjReplnUnits": null,
+                            "replnWeek": 12405,
+                            "replnWeekDesc": "FYE2025WK05",
+                            "remainingUnits": 4935,
+                            "dcInboundUnits": 0,
+                            "dcInboundAdjUnits": null
+                        },
+                        {
+                            "replnUnits": 168,
+                            "adjReplnUnits": null,
+                            "replnWeek": 12406,
+                            "replnWeekDesc": "FYE2025WK06",
+                            "remainingUnits": 4935,
+                            "dcInboundUnits": 702,
+                            "dcInboundAdjUnits": null
+                        },
+                        {
+                            "replnUnits": 171,
+                            "adjReplnUnits": null,
+                            "replnWeek": 12407,
+                            "replnWeekDesc": "FYE2025WK07",
+                            "remainingUnits": 4935,
+                            "dcInboundUnits": 0,
+                            "dcInboundAdjUnits": null
+                        },
+                        {
+                            "replnUnits": 184,
+                            "adjReplnUnits": null,
+                            "replnWeek": 12408,
+                            "replnWeekDesc": "FYE2025WK08",
+                            "remainingUnits": 4935,
+                            "dcInboundUnits": 0,
+                            "dcInboundAdjUnits": null
+                        },
+                        {
+                            "replnUnits": 164,
+                            "adjReplnUnits": null,
+                            "replnWeek": 12409,
+                            "replnWeekDesc": "FYE2025WK09",
+                            "remainingUnits": 4935,
+                            "dcInboundUnits": 0,
+                            "dcInboundAdjUnits": null
+                        },
+                        {
+                            "replnUnits": 183,
+                            "adjReplnUnits": null,
+                            "replnWeek": 12410,
+                            "replnWeekDesc": "FYE2025WK10",
+                            "remainingUnits": 4935,
+                            "dcInboundUnits": 971,
+                            "dcInboundAdjUnits": null
+                        },
+                        {
+                            "replnUnits": 205,
+                            "adjReplnUnits": null,
+                            "replnWeek": 12411,
+                            "replnWeekDesc": "FYE2025WK11",
+                            "remainingUnits": 4935,
+                            "dcInboundUnits": 0,
+                            "dcInboundAdjUnits": null
+                        },
+                        {
+                            "replnUnits": 208,
+                            "adjReplnUnits": null,
+                            "replnWeek": 12412,
+                            "replnWeekDesc": "FYE2025WK12",
+                            "remainingUnits": 4935,
+                            "dcInboundUnits": 0,
+                            "dcInboundAdjUnits": null
+                        },
+                        {
+                            "replnUnits": 269,
+                            "adjReplnUnits": null,
+                            "replnWeek": 12413,
+                            "replnWeekDesc": "FYE2025WK13",
+                            "remainingUnits": 4935,
+                            "dcInboundUnits": 0,
+                            "dcInboundAdjUnits": null
+                        },
+                        {
+                            "replnUnits": 289,
+                            "adjReplnUnits": null,
+                            "replnWeek": 12414,
+                            "replnWeekDesc": "FYE2025WK14",
+                            "remainingUnits": 4935,
+                            "dcInboundUnits": 1425,
+                            "dcInboundAdjUnits": null
+                        },
+                        {
+                            "replnUnits": 303,
+                            "adjReplnUnits": null,
+                            "replnWeek": 12415,
+                            "replnWeekDesc": "FYE2025WK15",
+                            "remainingUnits": 4935,
+                            "dcInboundUnits": 0,
+                            "dcInboundAdjUnits": null
+                        },
+                        {
+                            "replnUnits": 352,
+                            "adjReplnUnits": null,
+                            "replnWeek": 12416,
+                            "replnWeekDesc": "FYE2025WK16",
+                            "remainingUnits": 4935,
+                            "dcInboundUnits": 0,
+                            "dcInboundAdjUnits": null
+                        },
+                        {
+                            "replnUnits": 378,
+                            "adjReplnUnits": null,
+                            "replnWeek": 12417,
+                            "replnWeekDesc": "FYE2025WK17",
+                            "remainingUnits": 4935,
+                            "dcInboundUnits": 0,
+                            "dcInboundAdjUnits": null
+                        },
+                        {
+                            "replnUnits": 392,
+                            "adjReplnUnits": null,
+                            "replnWeek": 12418,
+                            "replnWeekDesc": "FYE2025WK18",
+                            "remainingUnits": 4935,
+                            "dcInboundUnits": 1155,
+                            "dcInboundAdjUnits": null
+                        },
+                        {
+                            "replnUnits": 430,
+                            "adjReplnUnits": null,
+                            "replnWeek": 12419,
+                            "replnWeekDesc": "FYE2025WK19",
+                            "remainingUnits": 4935,
+                            "dcInboundUnits": 0,
+                            "dcInboundAdjUnits": null
+                        },
+                        {
+                            "replnUnits": 391,
+                            "adjReplnUnits": null,
+                            "replnWeek": 12420,
+                            "replnWeekDesc": "FYE2025WK20",
+                            "remainingUnits": 4935,
+                            "dcInboundUnits": 0,
+                            "dcInboundAdjUnits": null
+                        },
+                        {
+                            "replnUnits": 334,
+                            "adjReplnUnits": null,
+                            "replnWeek": 12421,
+                            "replnWeekDesc": "FYE2025WK21",
+                            "remainingUnits": 4935,
+                            "dcInboundUnits": 0,
+                            "dcInboundAdjUnits": null
+                        },
+                        {
+                            "replnUnits": 0,
+                            "adjReplnUnits": null,
+                            "replnWeek": 12422,
+                            "replnWeekDesc": "FYE2025WK22",
+                            "remainingUnits": 4935,
+                            "dcInboundUnits": 0,
+                            "dcInboundAdjUnits": null
+                        },
+                        {
+                            "replnUnits": 0,
+                            "adjReplnUnits": null,
+                            "replnWeek": 12423,
+                            "replnWeekDesc": "FYE2025WK23",
+                            "remainingUnits": 4935,
+                            "dcInboundUnits": 0,
+                            "dcInboundAdjUnits": null
+                        },
+                        {
+                            "replnUnits": 0,
+                            "adjReplnUnits": null,
+                            "replnWeek": 12424,
+                            "replnWeekDesc": "FYE2025WK24",
+                            "remainingUnits": 4935,
+                            "dcInboundUnits": 0,
+                            "dcInboundAdjUnits": null
+                        },
+                        {
+                            "replnUnits": 0,
+                            "adjReplnUnits": null,
+                            "replnWeek": 12425,
+                            "replnWeekDesc": "FYE2025WK25",
+                            "remainingUnits": 4935,
+                            "dcInboundUnits": 0,
+                            "dcInboundAdjUnits": null
+                        },
+                        {
+                            "replnUnits": 0,
+                            "adjReplnUnits": null,
+                            "replnWeek": 12426,
+                            "replnWeekDesc": "FYE2025WK26",
+                            "remainingUnits": 4935,
+                            "dcInboundUnits": 0,
+                            "dcInboundAdjUnits": null
+                        },
+                        {
+                            "replnUnits": 0,
+                            "adjReplnUnits": null,
+                            "replnWeek": 12427,
+                            "replnWeekDesc": "FYE2025WK27",
+                            "remainingUnits": 4935,
+                            "dcInboundUnits": 0,
+                            "dcInboundAdjUnits": null
+                        }],
                     "remainingUnits": 4935
                 },
                 {

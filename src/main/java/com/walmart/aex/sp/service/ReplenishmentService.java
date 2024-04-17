@@ -142,22 +142,26 @@ public class ReplenishmentService  {
 
     public BuyQtyResponse fetchOnlineCcBuyQnty(BuyQtyRequest buyQtyRequest, Integer finelineNbr) {
         BuyQtyResponse buyQtyResponse = new BuyQtyResponse();
-            try {
-                BuyQtyResponse stylesCcWithSizesFromStrategy = strategyFetchService.getBuyQtyDetailsForStylesCc(buyQtyRequest,finelineNbr);
+        try {
+            BuyQtyResponse stylesCcWithSizesFromStrategy = strategyFetchService.getBuyQtyDetailsForStylesCc(buyQtyRequest, finelineNbr);
 
-                if (stylesCcWithSizesFromStrategy != null) {
-                     List<BuyQntyResponseDTO> buyQntyResponseDTOS = spCustomerChoiceReplenishmentRepository.getBuyQntyByPlanChannelOnlineFineline(buyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(buyQtyRequest.getChannel()),
-                        finelineNbr);
+            if (stylesCcWithSizesFromStrategy != null) {
+                List<BuyQntyResponseDTO> buyQntyResponseDTOS = spCustomerChoiceReplenishmentRepository.getBuyQntyByPlanChannelOnlineFineline(buyQtyRequest.getPlanId(), ChannelType.getChannelIdFromName(buyQtyRequest.getChannel()), finelineNbr);
 
-                    buyQtyResponse= buyQtyCommonUtil.filterStylesCcWithSizes(buyQntyResponseDTOS,stylesCcWithSizesFromStrategy,finelineNbr);
+                buyQtyResponse = buyQtyCommonUtil.filterStylesCcWithSizes(buyQntyResponseDTOS, stylesCcWithSizesFromStrategy, finelineNbr);
 
-                    }
+                if (featureFlagService.isEnabled("enable_ecom_sp")) {
+                    Integer onlineBuyQty = someService.getOnlineReceiptQuantity();
+                    // Assuming that the method getStyles() returns the list of StyleDto objects
+                    buyQtyResponse.getStyles().forEach(style -> style.getMetrics().setOnlineBuyQty(onlineBuyQty));
+                }
+            }
 
             return buyQtyResponse;
 
         } catch (Exception e) {
-                log.error("Exception While fetching CC Buy Qunatities with Sizes:", e);
-                throw new CustomException("Failed to fetch CC Buy Qunatities with Sizes, due to" + e);
+            log.error("Exception While fetching CC Buy Quantities with Sizes:", e);
+            throw new CustomException("Failed to fetch CC Buy Quantities with Sizes, due to" + e);
         }
     }
 

@@ -15,4 +15,5 @@ public class BuyQtyResponse {
     private Integer lvl2Nbr;
     private String lvl2Desc;
     private List<Lvl3Dto> lvl3List;
+    private Integer onlineReceiptQuantity;
 }

@@ -158,6 +158,11 @@ configDefinitions:
         type: "STRING"
         kind: "SINGLE"
         defaultValue: "true"
+        "enable.ecomm.sp.feature.flag":
+          description: "Flag to enable sp ecomm feature"
+          type: "BOOLEAN"
+          kind: "SINGLE"
+          defaultValue: True
   bqfpServiceConfig:
     description: ""
     resolutionPaths:
