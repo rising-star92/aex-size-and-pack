@@ -20,4 +20,5 @@ public class MetricsDto {
     private Double packRatio;
     private Integer replenishmentPacks;
     private List<FactoryDTO> factories;
+    private Integer onlineBuyQty;
 }

@@ -26,8 +26,6 @@ import java.util.*;
 
 public class BuyQntyController {
 
-    public static final String SUCCESS_STATUS = "Success";
-
     private final SizeAndPackService sizeAndPackService;
     private final CalculateBuyQuantityService calculateBuyQuantityService;
     private final ReplenishmentService replenishmentService;
@@ -54,12 +52,20 @@ public class BuyQntyController {
     }
 
     @QueryMapping
-    public BuyQtyResponse getCcBuyQtyDetails(@Argument BuyQtyRequest buyQtyRequest, @Argument Integer finelineNbr)
-    {
+    public BuyQtyResponse getCcBuyQtyDetails(@Argument BuyQtyRequest buyQtyRequest, @Argument Integer finelineNbr) {
+        BuyQtyResponse response;
         if (buyQtyRequest.getChannel() != null && buyQtyRequest.getChannel().equalsIgnoreCase(ChannelType.ONLINE.name())) {
-            return replenishmentService.fetchOnlineCcBuyQnty(buyQtyRequest, finelineNbr);
+            response = replenishmentService.fetchOnlineCcBuyQnty(buyQtyRequest, finelineNbr);
+        } else {
+            response = sizeAndPackService.fetchCcBuyQnty(buyQtyRequest, finelineNbr);
         }
-        else return sizeAndPackService.fetchCcBuyQnty(buyQtyRequest, finelineNbr);
+
+        if (featureFlagService.isEnabled("enable_ecom_sp")) {
+            Integer onlineReceiptQuantity = someService.getOnlineReceiptQuantity();
+            response.setOnlineReceiptQuantity(onlineReceiptQuantity);
+        }
+
+        return response;
     }
 
     @QueryMapping
@@ -76,8 +82,10 @@ public class BuyQntyController {
         StatusResponse statusResponse = new StatusResponse();
         try {
             statusResponse.setStatuses(calculateBuyQuantityService.calculateBuyQuantity(calculateBuyQtyRequest));
+            statusResponse.setStatus(SizeAndPackConstants.SUCCESS_STATUS);
             return statusResponse;
         } catch (Exception e) {
+            statusResponse.setStatus(SizeAndPackConstants.ERROR_STATUS);
             statusResponse.setStatuses(List.of(new StatusResponse(SizeAndPackConstants.ERROR_STATUS, null)));
             return statusResponse;
         }

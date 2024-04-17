@@ -42,24 +42,26 @@ public class BqfpValidationsServiceImpl implements BqfpValidationsService {
     private void validateBSUnits(Set<Integer> validationCodes, List<Cluster> clusters) {
         clusters.stream().filter(cluster -> cluster.getFlowStrategy().equals(FlowStrategy.BUMP_SET.getId())).forEach(cluster -> {
             //ERROR: Missing Bumpset Quantities with Flow Strategy Initialset + Bumpset
-            if (cluster.getBumpList()
-                    .stream()
-                    .filter(Objects::nonNull)
-                    .anyMatch(bumpset -> Optional.ofNullable(bumpset.getUnits()).orElse(0L) < 0)) {
-                // BS units include negative values
-                validationCodes.add(AppMessage.BQFP_BS_NEGATIVE_UNITS.getId());
-            } else if (cluster.getBumpList()
+            if (Objects.nonNull(cluster.getBumpList()) && !cluster.getBumpList().isEmpty()) {
+                if (cluster.getBumpList()
+                        .stream()
+                        .filter(Objects::nonNull)
+                        .anyMatch(bumpset -> Optional.ofNullable(bumpset.getUnits()).orElse(0L) < 0)) {
+                    // BS units include negative values
+                    validationCodes.add(AppMessage.BQFP_BS_NEGATIVE_UNITS.getId());
+                } else if (cluster.getBumpList()
                         .stream()
                         .filter(Objects::nonNull).mapToLong(bumpset -> Optional.ofNullable(bumpset.getUnits()).orElse(0L)).sum() == 0) {
-                //Missing Bumpset quantities
-                validationCodes.add(AppMessage.BQFP_MISSING_BS_UNITS.getId());
-            }
+                    //Missing Bumpset quantities
+                    validationCodes.add(AppMessage.BQFP_MISSING_BS_UNITS.getId());
+                }
                 //ERROR: Missing Bumpset Weeks with Flow Strategy Initialset + Bumpset and Bumpset Qty > 0
-            if (cluster.getBumpList()
-                    .stream()
-                    .filter(Objects::nonNull).anyMatch(bumpSet -> bumpSet.getUnits() > 0 && bumpSet.getWeekDesc() == null)) {
-                //Missing Bumpset Weeks
-                validationCodes.add(AppMessage.BQFP_MISSING_BS_WEEKS.getId());
+                if (cluster.getBumpList()
+                        .stream()
+                        .filter(Objects::nonNull).anyMatch(bumpSet -> bumpSet.getUnits() > 0 && bumpSet.getWeekDesc() == null)) {
+                    //Missing Bumpset Weeks
+                    validationCodes.add(AppMessage.BQFP_MISSING_BS_WEEKS.getId());
+                }
             }
         });
     }

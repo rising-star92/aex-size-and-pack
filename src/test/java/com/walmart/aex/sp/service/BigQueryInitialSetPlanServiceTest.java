@@ -1,8 +1,10 @@
 package com.walmart.aex.sp.service;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.cloud.PageImpl;
 import com.google.cloud.bigquery.*;
+import com.walmart.aex.sp.dto.StoreClusterMap;
 import com.walmart.aex.sp.dto.bqfp.BQFPResponse;
 import com.walmart.aex.sp.dto.buyquantity.FinelineVolumeDeviationDto;
 import com.walmart.aex.sp.dto.buyquantity.StrategyVolumeDeviationResponse;
@@ -21,10 +23,12 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -48,21 +52,34 @@ class BigQueryInitialSetPlanServiceTest {
     private BQFPService bqfpService;
     @Mock
     private LinePlanService linePlanService;
+    @Mock
+    private StoreClusterService storeClusterService;
+
+    private ObjectMapper objectMapper;
 
     @BeforeEach
     void setUp() throws IOException {
         MockitoAnnotations.openMocks(this);
-        bigQueryInitialSetPlanService = new BigQueryInitialSetPlanService(new ObjectMapper(), bqfpService, strategyFetchService, linePlanService, bigQuery);
+        this.objectMapper = new ObjectMapper();
+        this.objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        bigQueryInitialSetPlanService = new BigQueryInitialSetPlanService(new ObjectMapper(), bqfpService,
+                strategyFetchService, linePlanService, bigQuery, storeClusterService);
         ReflectionTestUtils.setField(bigQueryInitialSetPlanService, "bigQueryConnectionProperties", bigQueryConnectionProperties);
         setData();
         setProperties();
     }
     @Test
-    void getInitialAndBumpSetDetailsByVolumeClusterTest() throws SizeAndPackException {
+    void getInitialAndBumpSetDetailsByVolumeClusterTest() throws SizeAndPackException, IOException {
         Long planId = 73l;
         FinelineVolume request = getFinelineVolume();
         StrategyVolumeDeviationResponse volumeDeviationResponse = getVolumeDeviationStrategyResponse();
+
+        File storeClusterInfoResponseFile = new File(Objects.requireNonNull(this.getClass()
+                .getResource("/data/storeClusterServiceResponse.json")).getFile());
+        StoreClusterMap storeClusterResponse = objectMapper.readValue(storeClusterInfoResponseFile, StoreClusterMap.class);
+
         when(strategyFetchService.getStrategyVolumeDeviation(planId, request.getFinelineNbr())).thenReturn(volumeDeviationResponse);
+        when(storeClusterService.fetchPOStoreClusterGrouping(anyString(), anyString())).thenReturn(storeClusterResponse);
         try {
             when(bigQuery.query(any(QueryJobConfiguration.class))).thenReturn(isResult);
             when(bqfpService.getBqfpResponse(anyInt(), anyInt())).thenReturn(bqfpResponse);
@@ -77,12 +94,18 @@ class BigQueryInitialSetPlanServiceTest {
     }
 
     @Test
-    void getInitialAndBumpSetDetailsByVolumeClusterTestWhenVolumeDeviationIsPassed() throws SizeAndPackException {
+    void getInitialAndBumpSetDetailsByVolumeClusterTestWhenVolumeDeviationIsPassed() throws SizeAndPackException, IOException {
         Long planId = 73l;
         FinelineVolume request = getFinelineVolumeWithVolDeviation();
+
+        File storeClusterInfoResponseFile = new File(Objects.requireNonNull(this.getClass()
+                .getResource("/data/storeClusterServiceResponse.json")).getFile());
+        StoreClusterMap storeClusterResponse = objectMapper.readValue(storeClusterInfoResponseFile, StoreClusterMap.class);
+
         try {
             when(bigQuery.query(any(QueryJobConfiguration.class))).thenReturn(isResult);
             when(bqfpService.getBqfpResponse(anyInt(), anyInt())).thenReturn(bqfpResponse);
+            when(storeClusterService.fetchPOStoreClusterGrouping(anyString(), anyString())).thenReturn(storeClusterResponse);
             List<InitialSetVolumeResponse> response = bigQueryInitialSetPlanService.getInitialAndBumpSetDetailsByVolumeCluster(planId,request);
             assertEquals(1, response.size());
             assertEquals(2, response.get(0).getCustomerChoices().size());

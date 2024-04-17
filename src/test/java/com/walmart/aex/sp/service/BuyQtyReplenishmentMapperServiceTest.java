@@ -7,7 +7,6 @@ import com.walmart.aex.sp.dto.buyquantity.*;
 import com.walmart.aex.sp.dto.replenishment.MerchMethodsDto;
 import com.walmart.aex.sp.dto.replenishment.cons.*;
 import com.walmart.aex.sp.entity.*;
-import com.walmart.aex.sp.util.BuyQtyCommonUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,9 +30,7 @@ class BuyQtyReplenishmentMapperServiceTest {
 
 	@Mock
 	AppMessageTextService appMessageTextService;
-	@Mock
-	BuyQtyCommonUtil buyQtyCommonUtil;
-	
+
 	@InjectMocks
 	@Spy
 	BuyQtyReplenishmentMapperService buyQtyReplenishmentMapperService;
@@ -246,7 +243,7 @@ class BuyQtyReplenishmentMapperServiceTest {
 		validationResult.setCodes(codes);
 		Set<Integer> failedFinelines = new HashSet<>();
 		Mockito.when(objectMapper.readValue("{\"codes\":[160,170]}", ValidationResult.class)).thenReturn(validationResult);
-		buyQtyReplenishmentMapperService.resetToZeroMerchCatgReplPack(merchCatgReplPack, Set.of(1234), failedFinelines);
+		buyQtyReplenishmentMapperService.resetToZeroMerchCatgReplPack(merchCatgReplPack, Set.of(1234), failedFinelines, new CalculateBuyQtyRequest());
 		Assertions.assertEquals(0, merchCatgReplPack.getReplUnits().intValue());
 		Assertions.assertEquals(0, merchCatgReplPack.getReplPackCnt().intValue());
 		Assertions.assertEquals(0, merchCatgReplPack.getFinalBuyUnits().intValue());
